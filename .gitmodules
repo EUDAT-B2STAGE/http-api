@@ -1,0 +1,6 @@
+[submodule "angulask"]
+	path = angulask
+	url = https://github.com/pdonorio/angulask
+[submodule "rest-mock"]
+	path = rest-mock
+	url = https://github.com/pdonorio/rest-mock
