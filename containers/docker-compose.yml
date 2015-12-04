@@ -1,0 +1,33 @@
+
+###############
+backend:
+  image: pdonorio/py3api
+  hostname: restapi
+  #command: sleep infinity
+  command: ./run.py
+  ports:
+    - 8081:5000
+  volumes:
+    - .:/code:rw
+  working_dir: /code
+
+###############
+frontend:
+    image: pdonorio/flasking
+    command: ./app.py
+    #command: sleep infinity
+    environment:
+        FLASK_CONFIGURATION: development
+    volumes:
+        - ..:/data
+    #     - ../jsdev/bower_components:/data/angulask/static/bower
+    #     - ../jsdev/src/app:/data/angulask/static/app
+    ports:
+        - 80:5000
+
+###############
+bower:
+    image: pdonorio/jsdev
+    working_dir: /web
+    volumes:
+        - ../jsdev:/web

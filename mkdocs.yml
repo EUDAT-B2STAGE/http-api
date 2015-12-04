@@ -1,0 +1,3 @@
+site_name: FlaskAngularRestpages:
+- Introduction: index.md
+theme: journal
