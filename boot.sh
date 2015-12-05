@@ -1,6 +1,6 @@
 #!/bin/bash
 
-services="backend"
+services="backend frontend"
 com="docker-compose"
 
 cd containers
