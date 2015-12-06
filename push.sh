@@ -17,10 +17,11 @@ do
 done
 
 $com add $services
+# $com add *
 if [ "$1" == "quick" ];then
     $com commit -m 'Submodules updates'
 else
-    $com
+    $com commit
 fi
 
 $push

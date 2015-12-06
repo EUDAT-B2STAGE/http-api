@@ -21,7 +21,7 @@ frontend:
         FLASK_CONFIGURATION: development
     volumes:
         - ../angulask:/data
-    #     - ../jsdev/bower_components:/data/angulask/static/bower
+        - ../vanilla/jslibs/bower_components:/data/angulask/static/bower
     #     - ../jsdev/src/app:/data/angulask/static/app
     ports:
         - 80:5000
@@ -32,7 +32,6 @@ frontend:
 # Make automatic to install
 bower:
     image: pdonorio/jsdev
-    working_dir: /web
-    command: sleep infinity
+    working_dir: /tmp/vanilla/jslibs
     volumes:
-        - ../vanilla/jslibs:/web
+        - ..:/tmp

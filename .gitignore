@@ -1,3 +1,7 @@
+
+# bower
+vanilla/jslibs/bower_components
+
 # Sublime text
 *.sublime-*
 
