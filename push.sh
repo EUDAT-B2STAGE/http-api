@@ -7,6 +7,7 @@ push="$com push origin master"
 for service in $services;
 do
     echo "Repo '$service' push"
+    cd $service
     # Push submodules
     $push
     # Interrupt if problems appear
@@ -14,6 +15,7 @@ do
         echo "Failed"
         exit 1
     fi
+    cd ..
 done
 
 $com add $services
