@@ -9,13 +9,13 @@ webbuild="bower"
 cd containers
 
 # Bower install
-if [ $1 == "bower" ]; then
+if [ "$1" == "bower" ]; then
 
 
     bcom="$com run $webbuild bower install"
     if [ "$2" != "" ]; then
         bcom="${bcom} $2 --save"
-        echo "Install package(s) $2"
+        echo "Install package(s): $2"
     else
         docker-compose pull
         # git submodule init

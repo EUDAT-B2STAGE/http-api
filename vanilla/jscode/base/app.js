@@ -1,1 +1,0 @@
-../../../angulask/jsdev/src/app/app.js

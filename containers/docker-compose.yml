@@ -16,7 +16,7 @@ backend:
 frontend:
     image: pdonorio/flasking
     command: ./app.py
-    command: sleep infinity
+    #command: sleep infinity
     environment:
         FLASK_CONFIGURATION: development
     working_dir: /data/angulask
@@ -24,17 +24,18 @@ frontend:
         # Main dir. It has to be the root directory, to make links work
         - ..:/data
         # js/css libraries installed via bower
-        - ../vanilla/jslibs/bower_components:/data/angulask/static/bower
+        - ../vanilla/jslibs/bower_components:/data/angulask/angulask/static/bower
         # All the angular blueprints
-        - ../vanilla/jscode:/data/angulask/static/app
-        # Angular templates ?
+        - ../vanilla/jscode:/data/angulask/angulask/static/app
+        # # Angular templates ?
         # Python pages ?
-        # Python templates ?
-        # Python configurations ?
+        - ../vanilla/pages:/data/angulask/angulask/pypages
+        # # Python templates ?
+        # # Python configurations ?
     ports:
         - 80:5000
     links:
-        - backend:api
+        - backend:myapi
 
 ###############
 # Make automatic to install
