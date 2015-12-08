@@ -16,6 +16,8 @@ Requested only the first time and after code updates
 ./boot.sh bower
 ```
 
+Note: all the specific configurations and files that could/should be edited can be found inside the `vanilla/` directory.
+
 ## How to run
 
 ```bash
@@ -27,7 +29,7 @@ Requested only the first time and after code updates
 
 ```bash
 # From the root directory of the project
-./boot.sh bower PACKAGENAME
+./boot.sh bower PACKAGE_NAME
 ```
 
 ## Scaffold
