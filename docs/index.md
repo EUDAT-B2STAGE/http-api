@@ -13,7 +13,13 @@ Requested only the first time and after code updates
 
 ```bash
 # From the root directory of the project
-./boot.sh bower
+./boot.sh init
+```
+
+When you already have a running project
+and you need to update the code, images and libraries:
+```bash
+./boot.sh update
 ```
 
 Note: all the specific configurations and files that could/should be edited can be found inside the `vanilla/` directory.
@@ -21,19 +27,18 @@ Note: all the specific configurations and files that could/should be edited can 
 ## How to run
 
 ```bash
-# From the root directory of the project
 ./boot.sh
 ```
 
 ## Install a new package via bower
 
 ```bash
-# From the root directory of the project
 ./boot.sh bower PACKAGE_NAME
 ```
 
 ## Scaffold
 
+```bash
 ├── jscode
 │   └── base
 │       └── script.js
@@ -52,3 +57,4 @@ Note: all the specific configurations and files that could/should be edited can 
     └── framework
         ├── footer.html
         └── header.html
+```
