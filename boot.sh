@@ -3,25 +3,47 @@
 #############################
 com="docker-compose"
 services="backend frontend"
+repos="angulask rest-mock"
 webbuild="bower"
 
 #############################
 cd containers
 
+bcom="$com run $webbuild bower install"
+
+# First time install
+if [ "$1" == "init" ]; then
+
+    echo "Download docker images"
+    docker-compose pull
+    echo "Download submodules"
+    git submodule init
+    git submodule update
+    echo "Build bower packages"
+    $bcom
+    echo "Completed"
+
+# Update repos, packages and images
+else if [ "$1" == "update" ]; then
+
+    docker-compose pull
+    # for service in $services;
+    # do
+    #     echo "Repo '$service' push"
+    #     cd $service
+    #     git pull origin master
+    #     cd ..
+    # done
+    git submodule sync
+    git submodule update
+    $bcom
+
 # Bower install
-if [ "$1" == "bower" ]; then
+else if [ "$1" == "bower" ]; then
 
-
-    bcom="$com run $webbuild bower install"
     if [ "$2" != "" ]; then
         bcom="${bcom} $2 --save"
         echo "Install package(s): $2"
-    else
-        docker-compose pull
-        # git submodule init
-        git submodule sync
-        git submodule update
-        echo "Build bower packages"
     fi
     $bcom
 

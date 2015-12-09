@@ -18,6 +18,7 @@ frontend:
     command: ./app.py
     #command: sleep infinity
     environment:
+        #FLASK_CONFIGURATION: production
         FLASK_CONFIGURATION: development
     working_dir: /data/angulask
     volumes:
