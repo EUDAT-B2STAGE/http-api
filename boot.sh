@@ -24,7 +24,7 @@ if [ "$1" == "init" ]; then
     echo "Completed"
 
 # Update repos, packages and images
-else if [ "$1" == "update" ]; then
+elif [ "$1" == "update" ]; then
 
     docker-compose pull
     # for service in $services;
@@ -39,7 +39,7 @@ else if [ "$1" == "update" ]; then
     $bcom
 
 # Bower install
-else if [ "$1" == "bower" ]; then
+elif [ "$1" == "bower" ]; then
 
     if [ "$2" != "" ]; then
         bcom="${bcom} $2 --save"
