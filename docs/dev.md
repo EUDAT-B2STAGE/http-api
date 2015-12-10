@@ -4,6 +4,16 @@
 If you use `restangulask` as a base for your project,
 this page will help you through.
 
+## Switch app mode/level
+
+Edit `containers/docker-compose.yml`.
+Choose the `APP_MODE` variable which will be reflected to all containers:
+
+* `production`
+* `development` (no real dbs, sqllite and flask in restartable mode)
+* `debug` (containers start with sleep instead of running commands)
+
+
 ## Install a new package via bower
 
 In case you need to add some angular module, if not provided yet:

@@ -1,10 +1,30 @@
 
-###############
+###############################
+# GLOBAL CONFIGURATION
+conf:
+    image: busybox
+    command: ./boot
+    environment:
+        ## If you are still developing
+        ## (flask wsgi restartable on edit + sqllite dbs + print DEBUG level)
+        # APP_MODE: development
+
+        ## If you need to get serious
+        ## (gunicorn/nginx servers + postgres dbs + print INFO level)
+        # APP_MODE: production
+
+        ## If you are testing something that does not work
+        ## (containers that do not start anything)
+        APP_MODE: debug
+###############################
+
+
+###############################
 backend:
+    extends:
+        service: conf
     image: pdonorio/py3api
     hostname: restapi
-    #command: sleep infinity
-    command: ./run.py
     ports:
         - 8081:5000
     volumes:
@@ -17,14 +37,11 @@ backend:
         # Rest API configuration
         - ../vanilla/specs/endpoints.ini:/code/confs/endpoints.ini
 
-###############
+###############################
 frontend:
+    extends:
+        service: conf
     image: pdonorio/flasking
-    command: ./app.py
-    #command: sleep infinity
-    environment:
-        #FLASK_CONFIGURATION: production
-        FLASK_CONFIGURATION: development
     working_dir: /data/angulask
     volumes:
         # Main dir. It has to be the root directory, to make links work
@@ -43,7 +60,7 @@ frontend:
     links:
         - backend:myapi
 
-###############
+###############################
 # Make automatic to install
 bower:
     image: pdonorio/jsdev
