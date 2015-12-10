@@ -3,20 +3,19 @@
 
 ## The project
 
-An attempt to mix Flask on both Frontend and Backend
+An attempt to mix Flask on both Frontend and Backend,
+but with some extra help on client side from Angularjs.
 
-but with some extra help on client side from Angularjs
+## Start-up your project
 
-## Init the project
-
-Requested only the first time and after code updates
+Requested only the first time, after cloning from github:
 
 ```bash
 # From the root directory of the project
 ./boot.sh init
 ```
 
-When you already have a running project
+Subsequently, when you already have a running project
 and you need to update the code, images and libraries:
 ```bash
 ./boot.sh update
@@ -24,19 +23,27 @@ and you need to update the code, images and libraries:
 
 Note: all the specific configurations and files that could/should be edited can be found inside the `vanilla/` directory.
 
-## How to run
+## Customize and run
+
+Now the project is ready, and you can:
+
+* Add [REST API resources](api.md) endpoints
+* Add [Flask website pages]() **[TODO]**
+* Or contributing by [developing new features](dev.md)
+
+To test you simply need to run:
 
 ```bash
+# Run Forest, run!
 ./boot.sh
 ```
 
-## Install a new package via bower
-
-```bash
-./boot.sh bower PACKAGE_NAME
-```
+The command will bring up a Flask CMS mixed with Angularjs code,
+and a REST API Flask service with user login.
 
 ## Scaffold
+
+**WARNING: THIS SHOULD BE UPDATED**
 
 ```bash
 ├── jscode

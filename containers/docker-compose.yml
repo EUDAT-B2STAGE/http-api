@@ -5,12 +5,17 @@ backend:
     hostname: restapi
     #command: sleep infinity
     command: ./run.py
-    #command: /bin/bash -c "cd /code; ./run.py"
     ports:
         - 8081:5000
     volumes:
-        - ../rest-mock:/code:ro
+        # Sql lite database
         - apilitedb:/dbs
+        # Base code
+        - ../rest-mock:/code
+        # Rest API endpoints
+        - ../vanilla/apis:/code/restapi/resources/custom
+        # Rest API configuration
+        - ../vanilla/specs/endpoints.ini:/code/confs/endpoints.ini
 
 ###############
 frontend:
@@ -28,10 +33,10 @@ frontend:
         - ../vanilla/jslibs/bower_components:/data/angulask/angulask/static/bower
         # All the angular blueprints
         - ../vanilla/jscode:/data/angulask/angulask/static/app
-        # # Angular templates ?
         # Python pages ?
         - ../vanilla/pages:/data/angulask/angulask/pypages
         # # Python templates ?
+        # # Angular HTML templates ?
         # # Python configurations ?
     ports:
         - 80:5000
