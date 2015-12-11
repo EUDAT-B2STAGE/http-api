@@ -26,4 +26,7 @@ else
     $com commit
 fi
 
+# Original repo
 $push
+# Private repo
+$com push private master
