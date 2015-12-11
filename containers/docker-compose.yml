@@ -7,7 +7,7 @@ conf:
     environment:
         ## If you are still developing
         ## (flask wsgi restartable on edit + sqllite dbs + print DEBUG level)
-        APP_MODE: development
+        # APP_MODE: development
 
         ## If you need to get serious
         ## (gunicorn/nginx servers + postgres dbs + print INFO level)
@@ -15,7 +15,7 @@ conf:
 
         ## If you are testing something that does not work
         ## (containers that do not start anything)
-        # APP_MODE: debug
+        APP_MODE: debug
 ###############################
 
 
@@ -50,9 +50,11 @@ frontend:
         - ../vanilla/jslibs/bower_components:/data/angulask/angulask/static/bower
         # All the angular blueprints
         - ../vanilla/jscode:/data/angulask/angulask/static/app
-        # Python pages ?
+        # Python pages
         - ../vanilla/pages:/data/angulask/angulask/pypages
-        # # Python templates ?
+        # Python templates
+        - ../vanilla/templates/python:/data/angulask/angulask/templates/custom
+        # # CSS and/or framework ?
         # # Angular HTML templates ?
         # # Python configurations ?
     ports:

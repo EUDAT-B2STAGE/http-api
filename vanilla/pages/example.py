@@ -4,21 +4,12 @@
 """
 An example of custom (Restful) flask view.
 
-IMPORTANT:
-You need to define a Blueprint called 'restbp' to make this work.
+VERY IMPORTANT:
+You need to define a Blueprint variable called 'bp' to make this work.
 """
 
 from __future__ import absolute_import
 from ..views import RestView, generate_blueprint
-
-"""
-// TO FIX:
-
-* Choose a dynamic template folder
-    - based on blueprint name?
-    - use variable from config to give the base
-
-"""
 
 
 # Restful view class
@@ -27,6 +18,4 @@ class ToDo(RestView):
     def get(self):
         return self.render('test.html')
 
-bp = generate_blueprint(__name__,
-                        classes=[ToDo],
-                        folder='/data/angulask')
+bp = generate_blueprint(__name__, classes=[ToDo])
