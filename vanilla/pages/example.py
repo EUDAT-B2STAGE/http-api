@@ -14,9 +14,6 @@ from ..views import RestView, generate_blueprint
 """
 // TO FIX:
 
-* Make dynamic assignment of all endpoints on all classes
-    - check only the ones which derive from RestView
-* Make dynamic load of blueprints inside 'create_app' ...??
 * Choose a dynamic template folder
     - based on blueprint name?
     - use variable from config to give the base
