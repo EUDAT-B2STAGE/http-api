@@ -13,6 +13,14 @@ Choose the `APP_MODE` variable which will be reflected to all containers:
 * `development` (no real dbs, sqllite and flask in restartable mode)
 * `debug` (containers start with sleep instead of running commands)
 
+Note: if you use debug, to start the app inside the container:
+
+```bash
+$ docker ps
+# see the name of the container you need to debug
+$ docker exec -it CONTAINER_NAME bash
+# ./boot devel
+```
 
 ## Install a new package via bower
 
