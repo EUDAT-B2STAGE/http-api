@@ -16,6 +16,6 @@ from ..views import RestView, generate_blueprint
 class ToDo(RestView):
     """ A test """
     def get(self):
-        return self.render('test.html')
+        return self.render('material.html')  # 'test.html')
 
 bp = generate_blueprint(__name__, classes=[ToDo])
