@@ -31,22 +31,39 @@
 </head>
 
 <body ng-app="materializeApp" ng-controller="BodyController">
-<!--
 
-  <ul id="slide-out" class="side-nav fixed">
-    <li><a href="#!">First Sidebar Link</a></li>
-    <li><a href="#!">Second Sidebar Link</a></li>
-  </ul>
-  <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+<ul id="slide-out" class="side-nav fixed">
+    <li class="logo"> <h3> A LOGO </h3> </li>
+    <li class="no-padding">
+      <ul class="collapsible collapsible-accordion">
+        <li class="bold active">
+        <a class="collapsible-header waves-effect waves-teal active">
+        <b>Category</b> </a>
+          <div class="collapsible-body">
+            <ul>
+              <li><a href="">Element 1</a></li>
+              <li><a href="">Element 2</a></li>
+              <li><a href="">Element 3</a></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </li>
+</ul>
 
--->
+<main>
 
-
-  <div class="navbar-fixed">
+  <div class="navbar">
     <nav>
       <div class="nav-wrapper teal">
       &nbsp;
-      <a href="#" class="brand-logo">Logo</a>
+      &nbsp;
+      <a href="#" class="brand-logo"
+        data-activates="slide-out"
+        data-sidenav="left"
+        data-menuwidth="240"
+        data-closeonclick="false"
+      >MyBrand</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <li><a href="sass.html">Sass</a></li>
         <li><a href="badges.html">Components</a></li>
@@ -99,6 +116,7 @@
     <div class="parallax"><img src="http://materializecss.com/images/parallax2.jpg"></div>
   </div>
 
+</main>
 
 <footer class="page-footer teal darken-2">
   <div class="container">
@@ -125,6 +143,7 @@
     </div>
   </div>
 </footer>
+
 
 <script type="text/javascript">
 (function($){
