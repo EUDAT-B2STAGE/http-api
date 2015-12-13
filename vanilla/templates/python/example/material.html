@@ -9,6 +9,8 @@
     <!-- CSS -->
     <link rel="stylesheet"
         href="static/bower/materialize/dist/css/materialize.min.css">
+    <link rel="stylesheet"
+        href="static/css/custom_material.css">
 
     <!-- FONT -->
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -23,32 +25,47 @@
     <script
         src="static/bower/materialize/dist/js/materialize.min.js"></script>
 
-    <!-- ANGULAR APP
-    <script type="text/javascript" src="src/angular-materialize.js"></script>
-    <script type="text/javascript" src="js/app.js"></script>
-    -->
+    <!-- ANGULAR APP -->
+    <script type="text/javascript" src="static/bower/angular-materialize/src/angular-materialize.js"></script>
+    <script type="text/javascript" src="static/app/material.js"></script>
 </head>
-<body>
 
-<!--
 <body ng-app="materializeApp" ng-controller="BodyController">
+<!--
+
+  <ul id="slide-out" class="side-nav fixed">
+    <li><a href="#!">First Sidebar Link</a></li>
+    <li><a href="#!">Second Sidebar Link</a></li>
+  </ul>
+  <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+
 -->
+
+
+  <div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper teal">
+      &nbsp;
+      <a href="#" class="brand-logo">Logo</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="sass.html">Sass</a></li>
+        <li><a href="badges.html">Components</a></li>
+        <li><a href="collapsible.html">JavaScript</a></li>
+      </ul>
+      </div>
+    </nav>
+  </div>
+
 
 <div class="container">
 
- <div class="card">
-    <div class="card-image waves-effect waves-block waves-light">
-      <img class="activator" src="http://materializecss.com/images/office.jpg">
+
+<div class="row">
+    <div class="col s12 m12">
+        Test
     </div>
-    <div class="card-content">
-      <span class="card-title activator grey-text text-darken-4">Card Title<i class="material-icons right">more_vert</i></span>
-      <p><a href="#">This is a link</a></p>
-    </div>
-    <div class="card-reveal">
-      <span class="card-title grey-text text-darken-4">Card Title<i class="material-icons right">close</i></span>
-      <p>Here is some more information about this product that is only revealed once clicked on.</p>
-    </div>
-  </div>
+</div>
+
 
   <div class="row">
     <div class="col s12 m7">
@@ -67,8 +84,55 @@
       </div>
     </div>
   </div>
-
 </div>
+
+  <div class="parallax-container">
+    <div class="parallax"><img src="http://materializecss.com/images/parallax1.jpg"></div>
+  </div>
+  <div class="section white">
+    <div class="row container">
+      <h2 class="header">Parallax</h2>
+      <p class="grey-text text-darken-3 lighten-3">Parallax is an effect where the background content or image in this case, is moved at a different speed than the foreground content while scrolling.</p>
+    </div>
+  </div>
+  <div class="parallax-container">
+    <div class="parallax"><img src="http://materializecss.com/images/parallax2.jpg"></div>
+  </div>
+
+
+<footer class="page-footer teal darken-2">
+  <div class="container">
+    <div class="row">
+      <div class="col l6 s12">
+        <h5 class="white-text">Footer Content</h5>
+        <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+      </div>
+      <div class="col l4 offset-l2 s12">
+        <h5 class="white-text">Links</h5>
+        <ul>
+          <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
+          <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
+          <li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
+          <li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+    © 2014 Copyright Text
+    <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+    </div>
+  </div>
+</footer>
+
+<script type="text/javascript">
+(function($){
+  $(function(){
+    $('.parallax').parallax();
+  }); // end of document ready
+})(jQuery); // end of jQuery name space
+</script>
 
 </body>
 </html>
