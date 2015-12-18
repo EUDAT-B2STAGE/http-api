@@ -44,6 +44,9 @@ frontend:
     image: pdonorio/flasking
     working_dir: /data/angulask
     volumes:
+        # Sql lite database & common models
+        - apilitedb:/dbs
+        - ../rest-mock/restapi/models.py:/data/angulask/angulask/models/api.py
         # Main dir. It has to be the root directory, to make links work
         - ..:/data
         # js/css libraries installed via bower
@@ -63,9 +66,23 @@ frontend:
         - backend:myapi
 
 ###############################
-# Make automatic to install
+# Make automatic to install libraries
 bower:
     image: pdonorio/jsdev
     working_dir: /tmp/vanilla/jslibs
     volumes:
         - ..:/tmp
+
+#################################
+# Database administration
+
+# This image let you access the postgres db with a 'phpmyadmin' like web page
+sqladmin:
+    image: clue/adminer
+    # Sql lite database & common models
+    volumes:
+        - apilitedb:/dbs
+    # links:
+    #     - sql:db
+    ports:
+        - 8888:80
