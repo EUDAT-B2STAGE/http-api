@@ -1,25 +1,71 @@
 (function() {
   'use strict';
 
-  angular
+///////////////////////////////////////////
+///////////////////////////////////////////
+/********************/
+angular
     .module('web')
+/********************/
 
+//////////////////////////////
 .controller('DataController', function($scope, $state) {
-
     console.log("TEST DATA")
-
 })
-
+//////////////////////////////
 .controller('DataIDController', function($scope, $state, $stateParams) {
-
     $scope.id = $stateParams.id ;
-
 })
-
-
+//////////////////////////////
+.service('auth', authService)
+//////////////////////////////
 .controller('MainController', MainController);
-  /** @ngInject */
-  function MainController($scope, $log, $location, $http) {
+
+
+
+///////////////////////////////////////////
+// https://thinkster.io/angularjs-jwt-auth
+///////////////////////////////////////////
+function authService($window, $http) {
+  var self = this;
+// Add JWT methods here
+
+    self.saveToken = function(token) {
+      $window.localStorage['jwtToken'] = token;
+      return token;
+    }
+    self.getToken = function() {
+      return $window.localStorage['jwtToken'];
+    }
+
+    self.login = function(token) {
+        var req = {
+            method: 'GET',
+            url: 'http://awesome.dev:8081' + '/' + 'api/checklogged',
+            headers: {
+            "Authentication-Token" : token
+            //   'Content-Type': undefined
+            },
+            //data: { test: 'test' }
+        }
+
+        return $http(req).then(
+            function successCallback(response) {
+                console.log("OK");
+                console.log(response);
+                return self.saveToken(token);
+          }, function errorCallback(response) {
+                console.log("FAILED TO LOG");
+                console.log(response);
+                return self.saveToken(null);
+        });
+    }
+
+
+}
+
+//////////////////////////////
+function MainController($scope, $log, $location, auth) {
 /*
     $log.debug("Controller");
     console.log($location);
@@ -27,45 +73,21 @@
     $log.debug($location.$$url);
 */
 
-/////////////////////////////////////////////
+var token = "WyIxIiwiODFmMjFhNWVkMTA4MjY0ZDk1ZjJmZDFiZTlhZWVjMDYiXQ.CVgRvg.UQqt6SGH6Hd5nyPaLl1rNYOCCVw" // + "BB"
 
-var token = "WyIxIiwiODFmMjFhNWVkMTA4MjY0ZDk1ZjJmZDFiZTlhZWVjMDYiXQ.CVfqjA.14pSa8ZAkUTvKVqggMGSnzjxxkE" // + "BB"
+    auth.login(token).then(function logged(some){
+        console.log("Token in storage is:", auth.getToken());
+    });
 
-var req = {
- method: 'GET',
- url: 'http://awesome.dev:8081' + '/' + 'api/checklogged',
- headers: {
- "Authentication-Token" : token
- //   'Content-Type': undefined
- },
- //data: { test: 'test' }
-}
-
-$http(req).then(
-    function successCallback(response) {
-        console.log("OK")
-        console.log(response)
-    // this callback will be called asynchronously
-    // when the response is available
-  }, function errorCallback(response) {
-        console.log("BAD")
-    // called asynchronously if an error occurs
-    // or server returns response with an error status.
-});
-/////////////////////////////////////////////
-
-
-
+    /////////////////////////////////////
     $scope.active = false;
     $scope.variab = 'testing';
-
     $scope.route = {
         "angular": false,
         //"id": 42,
         "new": false,
         "uhm": false,
     }
-
 
     var refresh = function() {
 
