@@ -22,6 +22,17 @@
                 },
             })
 
+            .state("login", {
+            url: "/login",
+                views: {
+                    "main": {
+                        template: 'Welcome to data page <div ui-view="id"></div>',
+                        controller: 'LoginController',
+
+                    }
+                }
+                })
+
             .state("data", {
             url: "/data",
                 views: {
