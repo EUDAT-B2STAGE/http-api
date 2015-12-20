@@ -17,16 +17,45 @@
 })
 
 
-    .controller('MainController', MainController);
-
+.controller('MainController', MainController);
   /** @ngInject */
-  function MainController($scope, $log, $location) {
+  function MainController($scope, $log, $location, $http) {
 /*
     $log.debug("Controller");
     console.log($location);
     var absUrl = $location.absUrl();
     $log.debug($location.$$url);
 */
+
+/////////////////////////////////////////////
+
+var token = "WyIxIiwiODFmMjFhNWVkMTA4MjY0ZDk1ZjJmZDFiZTlhZWVjMDYiXQ.CVfqjA.14pSa8ZAkUTvKVqggMGSnzjxxkE" // + "BB"
+
+var req = {
+ method: 'GET',
+ url: 'http://awesome.dev:8081' + '/' + 'api/checklogged',
+ headers: {
+ "Authentication-Token" : token
+ //   'Content-Type': undefined
+ },
+ //data: { test: 'test' }
+}
+
+$http(req).then(
+    function successCallback(response) {
+        console.log("OK")
+        console.log(response)
+    // this callback will be called asynchronously
+    // when the response is available
+  }, function errorCallback(response) {
+        console.log("BAD")
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+});
+/////////////////////////////////////////////
+
+
+
     $scope.active = false;
     $scope.variab = 'testing';
 
