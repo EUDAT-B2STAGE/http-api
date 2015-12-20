@@ -28,14 +28,6 @@ function MainController($scope, $log, $location, auth) {
     var absUrl = $location.absUrl();
     $log.debug($location.$$url);
 */
-
-var token = "WyIxIiwiODFmMjFhNWVkMTA4MjY0ZDk1ZjJmZDFiZTlhZWVjMDYiXQ.CVgRvg.UQqt6SGH6Hd5nyPaLl1rNYOCCVw" // + "BB"
-
-    auth.login(token).then(function logged(some){
-        console.log("Token in storage is:", auth.getToken());
-    });
-
-    /////////////////////////////////////
     $scope.active = false;
     $scope.variab = 'testing';
     $scope.route = {

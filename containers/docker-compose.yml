@@ -51,14 +51,13 @@ frontend:
         - ..:/data
         # js/css libraries installed via bower
         - ../vanilla/jslibs/bower_components:/data/angulask/angulask/static/bower
-        # All the angular blueprints
+        # All the angular blueprints (&& templates)
         - ../vanilla/jscode:/data/angulask/angulask/static/app
         # Python pages
         - ../vanilla/pages:/data/angulask/angulask/pypages
         # Python templates
         - ../vanilla/templates/python:/data/angulask/angulask/templates/custom
         # # CSS and/or framework ?
-        # # Angular HTML templates ?
         # # Python configurations ?
     ports:
         - 80:5000

@@ -18,6 +18,7 @@
                 views: {
                     "main": {
                         template: 'Home page<br>Go to <a ui-sref="data">link</a>.',
+                        controller: 'MainController',
                     }
                 },
             })
@@ -26,7 +27,7 @@
             url: "/login",
                 views: {
                     "main": {
-                        template: 'Welcome to data page <div ui-view="id"></div>',
+                        templateUrl: '/static/app/templates/login.html',
                         controller: 'LoginController',
 
                     }

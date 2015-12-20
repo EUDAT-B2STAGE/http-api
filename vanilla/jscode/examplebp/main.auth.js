@@ -1,6 +1,20 @@
 (function() {
   'use strict';
-angular.module('web').service('auth', authService);
+angular.module('web').service('auth', authService)
+.controller('LoginController', LoginController)
+;
+
+//////////////////////////////
+function LoginController($scope, $log, auth) {
+
+$log.debug("Login Controller");
+var token = "WyIxIiwiODFmMjFhNWVkMTA4MjY0ZDk1ZjJmZDFiZTlhZWVjMDYiXQ.CVgRvg.UQqt6SGH6Hd5nyPaLl1rNYOCCVw" // + "BB"
+
+auth.login(token).then(function logged(some){
+    console.log("Token in storage is:", auth.getToken());
+});
+
+}
 
 ///////////////////////////////////////////
 // https://thinkster.io/angularjs-jwt-auth
