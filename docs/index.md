@@ -12,13 +12,13 @@ Requested only the first time, after cloning from github:
 
 ```bash
 # From the root directory of the project
-./boot.sh init
+scripts/boot.sh init
 ```
 
 Subsequently, when you already have a running project
 and you need to update the code, images and libraries:
 ```bash
-./boot.sh update
+scripts/boot.sh update
 ```
 
 Note: all the specific configurations and files that could/should be edited can be found inside the `vanilla/` directory.
@@ -35,7 +35,7 @@ To test you simply need to run:
 
 ```bash
 # Run Forest, run!
-./boot.sh
+scripts/boot.sh
 ```
 
 The command will bring up a Flask CMS mixed with Angularjs code,

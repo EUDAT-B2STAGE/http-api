@@ -8,14 +8,19 @@ angular.module('web').service('auth', authService)
 function LoginController($scope, $log, auth) {
 
     $log.debug("Login Controller");
+
+/*
     var token = "WyIxIiwiODFmMjFhNWVkMTA4MjY0ZDk1ZjJmZDFiZTlhZWVjMDYiXQ.CVgRvg.UQqt6SGH6Hd5nyPaLl1rNYOCCVw" // + "BB"
 
-    auth.login(token).then(function logged(some){
+    auth.authenticatedRequest(token)
+     .then(function logged(some){
         console.log("Token in storage is:", auth.getToken());
     });
+*/
 
-    $scope.loginfun = function() {
-        $log.debug("TEST");
+    $scope.loginfun = function(some) {
+        $log.debug("TEST", some);
+        auth.requestToken(some);
     }
 
 }
@@ -24,9 +29,12 @@ function LoginController($scope, $log, auth) {
 // https://thinkster.io/angularjs-jwt-auth
 ///////////////////////////////////////////
 function authService($window, $http) {
-  var self = this;
-// Add JWT methods here
 
+    var self = this;
+    var FE_URL = 'http://awesome.dev'
+    var API_URL = 'http://awesome.dev:8081/api'
+
+////////////
     self.saveToken = function(token) {
       $window.localStorage['jwtToken'] = token;
       return token;
@@ -34,16 +42,33 @@ function authService($window, $http) {
     self.getToken = function() {
       return $window.localStorage['jwtToken'];
     }
+////////////
 
-    self.login = function(token) {
+    self.requestToken = function(content) {
+        var req = {
+            method: 'POST',
+            url: FE_URL + '/auth',
+            // headers: {
+            //   'Content-Type': undefined
+            // },
+            data: { 'username': content.email, 'password': content.pwd }
+        }
+
+        $http(req).then(
+            function successCallback(response) {
+                console.log("OK");
+                console.log(response);
+          }, function errorCallback(response) {
+                console.log("FAILED");
+                console.log(response);
+        });
+    }
+
+    self.authenticatedRequest = function(token) {
         var req = {
             method: 'GET',
-            url: 'http://awesome.dev:8081' + '/' + 'api/checklogged',
-            headers: {
-            "Authentication-Token" : token
-            //   'Content-Type': undefined
-            },
-            //data: { test: 'test' }
+            url: API_URL + '/checklogged',
+            headers: { "Authentication-Token" : token },
         }
 
         return $http(req).then(

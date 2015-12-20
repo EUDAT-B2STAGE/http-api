@@ -23,16 +23,26 @@
                 },
             })
 
+            ////////////////////////////
             .state("login", {
-            url: "/login",
-                views: {
+                url: "/login",
+                 views: {
                     "main": {
                         templateUrl: '/static/app/templates/login.html',
                         controller: 'LoginController',
-
                     }
                 }
-                })
+            })
+            .state("logged", {
+                url: "/app",
+                 views: {
+                    "main": {
+                        template: '<b>Logged</b>!!!',
+                        controller: 'MainController',
+                    }
+                }
+            })
+            ////////////////////////////
 
             .state("data", {
             url: "/data",
