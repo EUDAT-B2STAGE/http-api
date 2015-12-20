@@ -1,2 +1,24 @@
 
-Welcome to my js login page 
+<h2> Welcome to my js login page </h2>
+
+  <form action="" method=post class="form-horizontal">
+    <h4>Signin to Angulask </h4>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="username" name="username" class="input-xlarge"
+            placeholder="Enter Username" required>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+          <input type="password" id="password" name="password" class="input-xlarge"
+            placeholder="Enter Password" required>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+          <button ng-click='loginfun()'
+          	type="submit" class="btn btn-success">Signin</button>
+        </div>
+    </div>
+  </form>

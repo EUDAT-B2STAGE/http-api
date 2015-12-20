@@ -7,12 +7,16 @@ angular.module('web').service('auth', authService)
 //////////////////////////////
 function LoginController($scope, $log, auth) {
 
-$log.debug("Login Controller");
-var token = "WyIxIiwiODFmMjFhNWVkMTA4MjY0ZDk1ZjJmZDFiZTlhZWVjMDYiXQ.CVgRvg.UQqt6SGH6Hd5nyPaLl1rNYOCCVw" // + "BB"
+    $log.debug("Login Controller");
+    var token = "WyIxIiwiODFmMjFhNWVkMTA4MjY0ZDk1ZjJmZDFiZTlhZWVjMDYiXQ.CVgRvg.UQqt6SGH6Hd5nyPaLl1rNYOCCVw" // + "BB"
 
-auth.login(token).then(function logged(some){
-    console.log("Token in storage is:", auth.getToken());
-});
+    auth.login(token).then(function logged(some){
+        console.log("Token in storage is:", auth.getToken());
+    });
+
+    $scope.loginfun = function() {
+        $log.debug("TEST");
+    }
 
 }
 
