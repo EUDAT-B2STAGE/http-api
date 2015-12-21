@@ -7,6 +7,7 @@
         'restangular',
         'mgcrea.ngStrap',
         'ui.router',
+	'satellizer',
     ]);
 
 })();

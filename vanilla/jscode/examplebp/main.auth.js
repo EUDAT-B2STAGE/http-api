@@ -2,10 +2,28 @@
   'use strict';
 angular.module('web').service('auth', authService)
 .controller('LoginController', LoginController)
-;
 
+
+.config(function($authProvider) {
+
+        var host = $location.host();
+        var protocol = $location.protocol();
+
+	$authProvider.loginUrl = protocol + "://" + host + "/auth"; 
+	$authProvider.tokenName = 'authentication_token';
+
+	$authProvider.oauth1({
+		  name: null,
+		  url: null,
+		  authorizationEndpoint: null,
+		  redirectUri: null,
+		  type: null,
+		  popupOptions: null
+	});
+
+});
 //////////////////////////////
-function LoginController($scope, $log, auth) {
+function LoginController($scope, $log, $auth) {
 
     $log.debug("Login Controller");
 
@@ -21,9 +39,9 @@ function LoginController($scope, $log, auth) {
     $scope.loginfun = function(credentials) {
         $log.debug("Requested with", credentials);
 
-        auth.requestToken(credentials)
-         .then(function logged(response){
-            $log.debug("Token in storage is:", auth.getToken());
+    	$auth.login(credentials).then(function (loginResponse) {
+		console.log(loginResponse);
+		console.log($auth.getToken());
         });
     }
 
