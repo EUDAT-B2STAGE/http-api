@@ -18,9 +18,13 @@ function LoginController($scope, $log, auth) {
     });
 */
 
-    $scope.loginfun = function(some) {
-        $log.debug("TEST", some);
-        auth.requestToken(some);
+    $scope.loginfun = function(credentials) {
+        $log.debug("Requested with", credentials);
+
+        auth.requestToken(credentials)
+         .then(function logged(response){
+            $log.debug("Token in storage is:", auth.getToken());
+        });
     }
 
 }
@@ -28,7 +32,7 @@ function LoginController($scope, $log, auth) {
 ///////////////////////////////////////////
 // https://thinkster.io/angularjs-jwt-auth
 ///////////////////////////////////////////
-function authService($window, $http) {
+function authService($window, $http, $log) {
 
     var self = this;
     var FE_URL = 'http://awesome.dev'
@@ -54,13 +58,14 @@ function authService($window, $http) {
             data: { 'username': content.email, 'password': content.pwd }
         }
 
-        $http(req).then(
+        return $http(req).then(
             function successCallback(response) {
-                console.log("OK");
-                console.log(response);
+                $log.info("Authentication successful");
+                return self.saveToken(response.data.user.authentication_token);
           }, function errorCallback(response) {
-                console.log("FAILED");
-                console.log(response);
+                $log.error("Authentication FAILED")
+                //console.log(response);
+                return self.saveToken(null);
         });
     }
 
@@ -75,10 +80,9 @@ function authService($window, $http) {
             function successCallback(response) {
                 console.log("OK");
                 console.log(response);
-                return self.saveToken(token);
           }, function errorCallback(response) {
-                console.log("FAILED TO LOG");
-                console.log(response);
+                $log.warn("Expired or invalid token");
+                //console.log(response);
                 return self.saveToken(null);
         });
     }
