@@ -8,26 +8,26 @@ angular
     .module('web')
 /********************/
 
+/*
 //////////////////////////////
 .controller('DataController', function($scope, $state) {
-    console.log("TEST DATA")
+    console.log("TEST DATA");
 })
 //////////////////////////////
 .controller('DataIDController', function($scope, $state, $stateParams) {
     $scope.id = $stateParams.id ;
 })
 //////////////////////////////
+*/
 .controller('MainController', MainController);
 
 
-//////////////////////////////
-function MainController($scope, $log, $location, auth) {
+function MainController($scope, $log, $location) {
+
+console.log("TEST");
+$scope.some = "Hello world";
+
 /*
-    $log.debug("Controller");
-    console.log($location);
-    var absUrl = $location.absUrl();
-    $log.debug($location.$$url);
-*/
     $scope.active = false;
     $scope.variab = 'testing';
     $scope.route = {
@@ -116,6 +116,8 @@ function MainController($scope, $log, $location, auth) {
 
     refresh([]);
 
+*/
 
-  }
+}
+
 })();
