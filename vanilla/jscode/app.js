@@ -9,11 +9,15 @@
         'ui.router', //'ngRoute',
 //BOOTSTRAP
         //'mgcrea.ngStrap',
-//OTHERS
-        // THE LOADING BAR
+// THE LOADING BAR
         //'angular-loading-bar',
         'cfp.loadingBar',
-        // THE LOADING BAR
+/*
+// LAZY LOAD
+        'oc.lazyLoad',
+*/
+
+// OTHERS?
     ]);
 
 })();

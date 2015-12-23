@@ -2,6 +2,7 @@
   'use strict';
 
 angular.module('web')
+    //.config(config_modules)
     .config(config);
 
 /* NG ROUTER
@@ -17,6 +18,25 @@ function config($routeProvider, $locationProvider, $logProvider)
         })
         .otherwise({ redirectTo: '/test' });
     console.log("TEST 2");
+}
+*/
+
+/* LAZY LOADING
+function config_modules($ocLazyLoadProvider) {
+
+    var mylib =
+        "http://awesome.dev" +
+        "/static/bower/angular-loading-bar/build/loading-bar.min.js"
+
+    $ocLazyLoadProvider.config({
+      modules: [{
+        name: 'cfp.loadingBar',
+        files: [mylib],
+      }]
+    });
+
+//$ocLazyLoadProvider.load('cfp.loadingBar');
+
 }
 */
 

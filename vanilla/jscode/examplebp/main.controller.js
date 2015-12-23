@@ -25,14 +25,13 @@ angular
 function MainController($scope, $log, $location, $timeout, cfpLoadingBar)
 {
 
-cfpLoadingBar.start();
-console.log("TEST before timeout");
-$timeout(function() {
-    console.log("TEST completed timeout");
-    $scope.some = "Hello world";
-    cfpLoadingBar.complete();
-}, 2000);
-
+    cfpLoadingBar.start();
+    console.log("TEST before timeout");
+    $timeout(function() {
+        console.log("TEST completed timeout");
+        $scope.some = "Hello world";
+        cfpLoadingBar.complete();
+    }, 2000);
 
 /*
     $scope.active = false;

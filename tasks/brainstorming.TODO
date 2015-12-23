@@ -1,20 +1,33 @@
 
-Ideally:
+  ✔ Angulask @done (15-12-23 16:29)
+    ✔ loading bar @done (15-12-23 16:22)
+    https://github.com/chieffancypants/angular-loading-bar
+    ✔ new branch 'standalone' from master @done (15-12-23 16:25)
 
-  ☐ Angulask
-    ☐ new branch 'standalone' from master
-    ☐ Cleaning code
-    ☐ move static and templates into vanilla?
   ☐ Angular centric
-    ☐ complete login
-    ☐ remove useless modules
-      ☐ from bower too
-      ☐ dictionary with bower modules
-        ☐ a list to select them
-    ☐ be carefull with ui-router
+    ✔ remove useless modules @done (15-12-23 16:33)
+      ✔ from bower too @done (15-12-23 16:33)
+    ✔ be carefull with ui-router @done (15-12-23 16:33)
+    ☐ base root /
 
- ☐ one time binding
-    https://www.binpress.com/tutorial/speeding-up-angular-js-with-simple-optimizations/135
+  ☐ New routes
+   ☐ welcome (low js, only material)
+     ☐ login button send to app
+     ☐ description, features, about/contacts
+   ☐ root js app
+     ☐ nolinks pages
+       ☐ login jwttoken and satellizer
+       ☐ logout
+     ☐ main page
+       ☐ search
+       ☐ submission
+       ☐ profile and settings
+
+    ☐ Cleaning code
+      ☐ move static and templates into vanilla?
+      ☐ create config dir with json (css and js files to load)
+
+☐ pull request frameworks branch
 
   ☐ JWT apis?
   https://thinkster.io/angularjs-jwt-auth
@@ -30,3 +43,14 @@ Ideally:
   ☐ Material fisarmonica as steps?
   ☐ Search
     ☐ A quick single view
+
+
+One time binding:
+    https://www.binpress.com/tutorial/speeding-up-angular-js-with-simple-optimizations/135
+
+JS  LAZY LOAD:
+    # https://oclazyload.readme.io/docs/systemjs
+    bowerdir + "oclazyload/dist/ocLazyLoad.min.js",
+
+PIPELINE STEPS:
+  http://devcenter.wercker.com/learn/pipelines/how-it-works.html
