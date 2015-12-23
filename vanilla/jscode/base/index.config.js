@@ -4,6 +4,7 @@
 angular.module('web')
     .config(config);
 
+/* NG ROUTER
 function config($routeProvider, $locationProvider, $logProvider)
 {
     $locationProvider.html5Mode(true);
@@ -17,9 +18,9 @@ function config($routeProvider, $locationProvider, $logProvider)
         .otherwise({ redirectTo: '/test' });
     console.log("TEST 2");
 }
+*/
 
-/* UI ROUTER?
-    function config(
+function config(
         $logProvider, $locationProvider, $interpolateProvider,
         $stateProvider, $urlRouterProvider)
     {
@@ -28,14 +29,25 @@ function config($routeProvider, $locationProvider, $logProvider)
         // HTML5 mode: remove hash bang to let url be parsable
         $locationProvider.html5Mode(true);
         // Change angular variables from {{}} to [[]]
-        $interpolateProvider.startSymbol('[[').endSymbol(']]');
+        //$interpolateProvider.startSymbol('[[').endSymbol(']]');
 
         $stateProvider
             .state('home', {
+/*
+                resolve: {
+                    tmp: function($timeout, $rootScope) {
+                        return $timeout((function(){
+                            $rootScope.hideme = true;
+                            console.log("Waited");
+                        }, 2000))
+                    },
+                },
+*/
                 url: "/",
                 views: {
                     "main": {
-                        template: 'Home page<br><a ui-sref="data">link</a>.',
+                        templateUrl: '/static/app/templates/home.html',
+                        //template: 'Home page<br><a ui-sref="data">link</a>.',
                         controller: 'MainController',
                     }
                 },
@@ -96,6 +108,5 @@ function config($routeProvider, $locationProvider, $logProvider)
 
         $urlRouterProvider.otherwise('/notfound');
     }
-*/
 
 })();

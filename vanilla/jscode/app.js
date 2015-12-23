@@ -4,12 +4,16 @@
   angular
     .module('web', [
         //'ngAnimate',
-        //'ngCookies', 'ngSanitize',
-        //'restangular',
-        //'mgcrea.ngStrap',
+        'ngSanitize',
     	'satellizer',
-        //'ui.router',
-        'ngRoute',
+        'ui.router', //'ngRoute',
+//BOOTSTRAP
+        //'mgcrea.ngStrap',
+//OTHERS
+        // THE LOADING BAR
+        //'angular-loading-bar',
+        'cfp.loadingBar',
+        // THE LOADING BAR
     ]);
 
 })();

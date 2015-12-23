@@ -22,10 +22,17 @@ angular
 .controller('MainController', MainController);
 
 
-function MainController($scope, $log, $location) {
+function MainController($scope, $log, $location, $timeout, cfpLoadingBar)
+{
 
-console.log("TEST");
-$scope.some = "Hello world";
+cfpLoadingBar.start();
+console.log("TEST before timeout");
+$timeout(function() {
+    console.log("TEST completed timeout");
+    $scope.some = "Hello world";
+    cfpLoadingBar.complete();
+}, 2000);
+
 
 /*
     $scope.active = false;

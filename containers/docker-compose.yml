@@ -46,7 +46,7 @@ frontend:
     volumes:
         # Sql lite database & common models
         - apilitedb:/dbs
-        - ../rest-mock/restapi/models.py:/data/angulask/angulask/models/api.py
+        #- ../rest-mock/restapi/models.py:/data/angulask/angulask/models/api.py
         # Main dir. It has to be the root directory, to make links work
         - ..:/data
         # js/css libraries installed via bower
@@ -63,18 +63,6 @@ frontend:
         - 80:5000
     links:
         - backend:myapi
-
-###############################
-# Static test/debug
-static:
-    image: nginx
-    volumes:
-        - ./nginx.conf:/etc/nginx/conf.d/default.conf
-        - ../vanilla/jslibs/bower_components:/static/bower
-        - ../vanilla/jscode:/static/app
-        - ../angulask/angulask/static/test.html:/usr/share/nginx/html/index.html
-    ports:
-        - 80:80
 
 ###############################
 # Make automatic to install libraries
@@ -97,3 +85,15 @@ sqladmin:
     #     - sql:db
     ports:
         - 8888:80
+
+# ###############################
+# # Static test/debug
+# static:
+#     image: nginx
+#     volumes:
+#         - ./nginx.conf:/etc/nginx/conf.d/default.conf
+#         - ../vanilla/jslibs/bower_components:/static/bower
+#         - ../vanilla/jscode:/static/app
+#         - ../angulask/angulask/static/test.html:/usr/share/nginx/html/index.html
+#     ports:
+#         - 80:80
