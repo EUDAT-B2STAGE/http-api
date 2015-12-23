@@ -52,26 +52,14 @@ function config(
         //$interpolateProvider.startSymbol('[[').endSymbol(']]');
 
         $stateProvider
-            .state('home', {
-/*
-                resolve: {
-                    tmp: function($timeout, $rootScope) {
-                        return $timeout((function(){
-                            $rootScope.hideme = true;
-                            console.log("Waited");
-                        }, 2000))
-                    },
-                },
-*/
-                url: "/",
-                views: {
-                    "main": {
-                        templateUrl: '/static/app/templates/home.html',
-                        //template: 'Home page<br><a ui-sref="data">link</a>.',
-                        controller: 'MainController',
-                    }
-                },
-            })
+
+/////////////////////////////////////////////////////////
+// THIS IS USED DIRECTLY BY PYTHON?
+            //.state('welcome', { url: "/helloworld", })
+// DOES NOT WORK...
+
+/////////////////////////////////////////////////////////
+// TRUE JS PAGES FROM HERE BELOW
 
             ////////////////////////////
             .state("login", {
@@ -94,14 +82,21 @@ function config(
                 }
             })
             .state("logged", {
-                url: "/app",
-                 views: {
+                url: "/app"
+                // Abstract state?
+            })
+
+            .state('logged.searh', {
+                url: "^/search",
+                views: {
                     "main": {
-                        template: '<b>Logged</b>!!!',
+                        templateUrl: '/static/app/templates/home.html',
                         controller: 'MainController',
                     }
-                }
+                },
             })
+
+/*
             ////////////////////////////
 
             .state("data", {
@@ -125,8 +120,10 @@ function config(
                 },
             });
 
+*/
 
-        $urlRouterProvider.otherwise('/notfound');
+
+        $urlRouterProvider.otherwise('/login');
     }
 
 })();
