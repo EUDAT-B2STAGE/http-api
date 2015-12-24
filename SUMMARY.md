@@ -1,4 +1,4 @@
 # Summary
 
-* Index
+* [Index](gitbook/index.md)
 
