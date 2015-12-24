@@ -34,12 +34,18 @@ function LoginController($scope, $window, $log, $auth) {
     $scope.loginfun = function(credentials) {
         $log.debug("Requested with", credentials);
 
-        $auth.login(credentials).then(function (loginResponse) {
-            console.log(loginResponse);
-            console.log($auth.getToken());
-            // Reload python pages
-            $window.location.reload();
-        });
+        $auth.login(credentials).then(
+            function (loginResponse) {
+                console.log(loginResponse);
+                console.log($auth.getToken());
+                // Reload python pages
+                //$window.location.reload();
+            }, function(errorResponse) {
+                $log.warn("Failed");
+                console.log(errorResponse.data.errors);
+
+            }
+            );
     }
 
     $scope.logoutfun = function() {

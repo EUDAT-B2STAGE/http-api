@@ -10,8 +10,9 @@
     ✔ be carefull with ui-router @done (15-12-23 16:33)
     ☐ base root /
 
-  ☐ New routes
+  ✔ New routes @done (15-12-23 18:50)
    ☐ welcome (low js, only material)
+     ☐ fix welcome title
      ☐ login button send to app
      ☐ description, features, about/contacts
    ☐ root js app
