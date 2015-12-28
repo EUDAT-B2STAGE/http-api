@@ -10,6 +10,11 @@
     ✔ be carefull with ui-router @done (15-12-23 16:33)
     ☐ base root /
 
+  ☐ Cleaning code
+    ☐ move static and templates into vanilla?
+    ✔ create config dir with json (css and js files to load) @done (15-12-28 19:00)
+    ☐ json file for extra-framework file?
+
   ✔ New routes @done (15-12-23 18:50)
    ☐ welcome (low js, only material)
      ☐ fix welcome title
@@ -23,10 +28,6 @@
        ☐ search
        ☐ submission
        ☐ profile and settings
-
-    ☐ Cleaning code
-      ☐ move static and templates into vanilla?
-      ☐ create config dir with json (css and js files to load)
 
 ☐ Am i using sanitize?
 
