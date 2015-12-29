@@ -43,6 +43,7 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
 
 $stateProvider
     ////////////////////////////
+
     .state("login", {
         url: "/login",
         resolve: {
@@ -74,7 +75,7 @@ $stateProvider
         // Abstract state?
         views: {
             "main": {
-                template: "<div ui-view='loggedview'></div>",
+                template: "<div ui-view='loggedview'>You are logged now</div>",
                 //controller: 'MainController',
             }
         },
@@ -88,7 +89,7 @@ $stateProvider
                 controller: 'MainController',
             }
         },
-    })
+    });
 
     //$urlRouterProvider.otherwise('/login');
     //$urlRouterProvider.otherwise('/app/search');
@@ -98,9 +99,33 @@ $stateProvider
 //https://github.com/angular-ui/ui-router/issues/1022#issuecomment-50628789
     $urlRouterProvider.otherwise(function ($injector) {
         var $state = $injector.get('$state');
-        //return $state.go('login');
-        $state.go('login');
+        return $state.go('login');
     });
+/* 
+    // In case you want to redirect to external link
+    $urlRouterProvider.otherwise(function () {
+        window.location.href = '/';
+        //$location.path('/helloworld');
+        //$location.replace();
+    });
+*/
+/*
+    .state("hello", {
+        url: "/helloworld",
+        resolve: {
+            skipIfAuthenticated: _skipIfAuthenticated
+        },
+        views: {
+            "main": {
+                controller: function($window) {
+                    //Reload python pages
+                    console.log("Reload!");
+                    $window.location.reload();
+                }
+            }
+        }
+    })
+*/
 
 }
 

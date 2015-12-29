@@ -12,16 +12,20 @@
   https://medium.com/@petehouston/protect-authentication-routes-in-angular-ui-router-and-satellizer-7745257a7e6#.tcuhppb0s
 
   ☐ Cleaning code
+    ✔ test login @done (15-12-29 15:48)
+    ☐ test logout
     ☐ move static and templates into vanilla?
     ✔ create config dir with json (css and js files to load) @done (15-12-28 19:00)
-    ☐ json file for extra-framework file?
+    ✘ json file for extra-framework file? @cancelled (15-12-29 15:13)
 
   ✔ New routes @done (15-12-23 18:50)
    ☐ welcome (low js, only material)
-     ☐ fix welcome title
-     ☐ login button send to app
+     ✔ fix welcome title @done (15-12-29 15:42)
+     ✘ login button send to app @cancelled (15-12-29 15:42)
      ☐ description, features, about/contacts
    ☐ root js app
+     ☐ loginer: save in flask db ip @idea
+        ☐ prompt login if no token found for that ip?
      ☐ nolinks pages
        ☐ login jwttoken and satellizer
        ☐ logout

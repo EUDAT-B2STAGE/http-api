@@ -26,7 +26,7 @@ angular.module('web')
 ;
 
 //////////////////////////////
-function LoginController($scope, $window, $log, $auth) {
+function LoginController($scope, $window, $log, $auth, $state) {
 
     $log.debug("Login Controller");
     $log.debug("Actual token is:", $auth.getToken());
@@ -38,6 +38,7 @@ function LoginController($scope, $window, $log, $auth) {
             function (loginResponse) {
                 console.log(loginResponse);
                 console.log($auth.getToken());
+                $state.go('logged');
                 // Reload python pages
                 //$window.location.reload();
             }, function(errorResponse) {
