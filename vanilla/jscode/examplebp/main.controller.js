@@ -24,6 +24,7 @@ angular
 
 function MainController($scope, $log, $location, $timeout, cfpLoadingBar)
 {
+    $log.info("Main");
 
     cfpLoadingBar.start();
     console.log("TEST before timeout");

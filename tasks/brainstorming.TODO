@@ -3,12 +3,13 @@
     ✔ loading bar @done (15-12-23 16:22)
     https://github.com/chieffancypants/angular-loading-bar
     ✔ new branch 'standalone' from master @done (15-12-23 16:25)
-
-  ☐ Angular centric
+  ✔ Angular centric @done (15-12-29 14:29)
     ✔ remove useless modules @done (15-12-23 16:33)
       ✔ from bower too @done (15-12-23 16:33)
     ✔ be carefull with ui-router @done (15-12-23 16:33)
-    ☐ base root /
+    ✔ base root / @done (15-12-29 14:29)
+  ✔ Test login redirect with ui router resolver @done (15-12-29 14:30)
+  https://medium.com/@petehouston/protect-authentication-routes-in-angular-ui-router-and-satellizer-7745257a7e6#.tcuhppb0s
 
   ☐ Cleaning code
     ☐ move static and templates into vanilla?
