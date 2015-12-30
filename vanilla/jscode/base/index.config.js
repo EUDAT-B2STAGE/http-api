@@ -69,10 +69,14 @@ $stateProvider
         },
         // Implement main route for landing page after login
         views: {
+            "menu": {
+                templateUrl: 'static/app/templates/menu.html',
+                controller: 'AppRootController',
+            },
             "main": {
         // and add a child view called 'loggedview' for logged pages
                 templateUrl: 'static/app/templates/logged.html',
-                controller: 'AppRootController',
+                //controller: 'AppRootController',
             }
         },
     })

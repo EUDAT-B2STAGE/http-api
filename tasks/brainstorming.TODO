@@ -15,7 +15,8 @@
     ✔ login with font awesome loading @done (15-12-30 15:27)
     ✔ Cycle through ui routes @done (15-12-30 16:39)
       ✔ logout, search, submit @done (15-12-30 16:39)
-      ☐ topbar buttons controlled by angular inside template
+      ✔ topbar buttons controlled by angular inside template @done (15-12-30 17:53)
+    ☐ What if API down? JS
     ☐ material welcome
 
   ☐ Cleaning code
