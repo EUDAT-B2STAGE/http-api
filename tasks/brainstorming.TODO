@@ -12,12 +12,12 @@
   https://medium.com/@petehouston/protect-authentication-routes-in-angular-ui-router-and-satellizer-7745257a7e6#.tcuhppb0s
 
   ☐ Cleaning code
-    ✔ test login @done (15-12-29 15:48)
-    ☐ test logout
+    ✔ test login @done (15-12-30 09:59)
+    ✔ test logout @done (15-12-30 09:59)
+    ☐ a better reload page for login
     ☐ move static and templates into vanilla?
     ✔ create config dir with json (css and js files to load) @done (15-12-28 19:00)
     ✘ json file for extra-framework file? @cancelled (15-12-29 15:13)
-
   ✔ New routes @done (15-12-23 18:50)
    ☐ welcome (low js, only material)
      ✔ fix welcome title @done (15-12-29 15:42)
@@ -34,7 +34,34 @@
        ☐ submission
        ☐ profile and settings
 
-☐ Am i using sanitize?
+JS LIBS:
+  ☐ Am i using sanitize?
+  ☐ controller as
+  https://toddmotto.com/digging-into-angulars-controller-as-syntax/
+
+<div ng-controller="MainCtrl as main">
+  {{ main.title }}
+  <div ng-controller="AnotherCtrl as another">
+    Scope title: {{ another.title }}
+    Parent title: {{ main.title }}
+    <div ng-controller="YetAnotherCtrl as yet">
+      Scope title: {{ yet.title }}
+      Parent title: {{ another.title }}
+      Parent parent title: {{ main.title }}
+    </div>
+  </div>
+</div>
+
+  ☐ controller filters 
+  https://toddmotto.com/use-controller-filters-to-prevent-digest-performance-issues/
+  ☐ foreach implementation
+  https://toddmotto.com/simple-foreach-implementation-for-objects-nodelists-arrays-with-automatic-type-looping/
+  ☐ image lazy loading
+  https://toddmotto.com/echo-js-simple-javascript-image-lazy-loading/
+  ☐ detect no wifi
+  https://toddmotto.com/nofi-detecting-no-wifi-callbacks-for-offline-states-with-html5/
+  ☐ DOM manipulation
+  https://toddmotto.com/apollo-js-standalone-class-manipulation-api-for-html5-and-legacy-dom/
 
 ☐ pull request frameworks branch
 
