@@ -1,5 +1,11 @@
 
-<h2> Welcome to my js login page </h2>
+
+<div ng-if="load">
+  Loading <i class="fa fa-refresh fa-spin"></i>
+</div>
+
+<div ng-if="!load">
+  <h2> Welcome to my js login page </h2>
 
   <form class="form-horizontal">
     <h4>Signin to Angulask </h4>
@@ -24,3 +30,4 @@
         </div>
     </div>
   </form>
+</div>

@@ -4,6 +4,7 @@
 angular.module('web')
 //.service('auth', authService)
 .controller('LoginController', LoginController)
+.controller('LogoutController', LogoutController)
 
 .config(function($authProvider) {
 
@@ -56,10 +57,19 @@ While for logout i made the button "Yes" to let it happen.
 */
 
 //////////////////////////////
-function LoginController($scope, $window, $location, $log, $auth, $state) {
+function LoginController($scope, $window, $location, $log, $auth, $state, $timeout) {
 
     $log.debug("Login Controller");
-    $log.debug("Actual token is:", $auth.getToken());
+    $scope.load = true;
+    $timeout(function() {
+        var token = $auth.getToken();
+        $log.debug("Actual token is:", token);
+        if (token !== null) {
+            $state.go('logged');
+        } else {
+            $scope.load = false;
+        }
+    }, 1000);
 
     $scope.loginfun = function(credentials) {
         $log.debug("Requested with", credentials);
@@ -69,11 +79,11 @@ function LoginController($scope, $window, $location, $log, $auth, $state) {
                 console.log(loginResponse);
                 console.log($auth.getToken());
 /////////////////////////////////////////
-// HOW CAN I MAKE THIS TWO IN ONE LINE?
-                $state.go('logged');
+// THERE IS NO WAY TO MAKE THIS TWO IN ONE COMMAND...
+                //$state.go('logged');
                 $window.location.reload();
-// HOW CAN I MAKE THIS TWO IN ONE LINE?
 /////////////////////////////////////////
+
             }, function(errorResponse) {
                 $log.warn("Failed");
                 console.log(errorResponse.data.errors);
@@ -81,6 +91,11 @@ function LoginController($scope, $window, $location, $log, $auth, $state) {
             }
             );
     }
+}
+
+function LogoutController($scope, $log, $auth) 
+{
+    $log.debug("Logout Controller");
 
     $scope.logoutfun = function() {
 

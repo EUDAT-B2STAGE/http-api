@@ -7,11 +7,15 @@ angular.module('web').config(config);
 // source http://j.mp/1VnxlQS
 function _skipIfAuthenticated($q, $state, $auth) {
     var defer = $q.defer();
+    //console.log("STATE", $state);
+/*
     if($auth.isAuthenticated()) {
         defer.reject();
     } else {
         defer.resolve();
     }
+*/
+        defer.resolve();
     return defer.promise;
 }
  
@@ -59,10 +63,13 @@ $stateProvider
     })
     .state("logout", {
         url: "/logout",
+        resolve: {
+            redirectIfNotAuthenticated: _redirectIfNotAuthenticated
+        },
         views: {
             "main": {
                 templateUrl: '/static/app/templates/logout.html',
-                controller: 'LoginController',
+                controller: 'LogoutController',
             }
         }
     })
@@ -72,11 +79,11 @@ $stateProvider
             redirectIfNotAuthenticated: _redirectIfNotAuthenticated
             //logginer: function($auth) {
         },
-        // Abstract state?
+        // Implement main route for landing page after login
         views: {
             "main": {
-                template: "<div ui-view='loggedview'>You are logged now</div>",
-                //controller: 'MainController',
+        // and add a child view called 'loggedview' for logged pages
+                templateUrl: 'static/app/templates/logged.html'
             }
         },
     })

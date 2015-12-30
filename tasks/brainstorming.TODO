@@ -11,11 +11,19 @@
   ✔ Test login redirect with ui router resolver @done (15-12-29 14:30)
   https://medium.com/@petehouston/protect-authentication-routes-in-angular-ui-router-and-satellizer-7745257a7e6#.tcuhppb0s
 
+  ☐ Various
+    ✔ login with font awesome loading @done (15-12-30 15:27)
+    ☐ topbar buttons controlled by angular inside template
+      ☐ logout, search, submit
+    ☐ material welcome
+
   ☐ Cleaning code
     ✔ test login @done (15-12-30 09:59)
     ✔ test logout @done (15-12-30 09:59)
-    ☐ a better reload page for login
+    ✘ a better reload page for login @cancelled (15-12-30 15:08)
     ☐ move static and templates into vanilla?
+    ☐ probably remove angulask as a separate project
+      ☐ remove it from push pull and boot script
     ✔ create config dir with json (css and js files to load) @done (15-12-28 19:00)
     ✘ json file for extra-framework file? @cancelled (15-12-29 15:13)
   ✔ New routes @done (15-12-23 18:50)
