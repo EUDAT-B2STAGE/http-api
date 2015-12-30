@@ -100,7 +100,7 @@ $stateProvider
     .state("logged.logout", {
         url: "/logout",
         views: {
-            "main": {
+            "loggedview": {
                 templateUrl: '/static/app/templates/logout.html',
                 controller: 'LogoutController',
             }
@@ -109,7 +109,7 @@ $stateProvider
 
     // Routes definition end
     ;
-    
+
 //$urlRouterProvider.otherwise('/login');
 
 // Ui router kinda bug fixing 
