@@ -61,18 +61,6 @@ $stateProvider
             }
         }
     })
-    .state("logout", {
-        url: "/logout",
-        resolve: {
-            redirectIfNotAuthenticated: _redirectIfNotAuthenticated
-        },
-        views: {
-            "main": {
-                templateUrl: '/static/app/templates/logout.html',
-                controller: 'LogoutController',
-            }
-        }
-    })
     .state("logged", {
         url: "/app",
         resolve: {
@@ -83,7 +71,18 @@ $stateProvider
         views: {
             "main": {
         // and add a child view called 'loggedview' for logged pages
-                templateUrl: 'static/app/templates/logged.html'
+                templateUrl: 'static/app/templates/logged.html',
+                controller: 'AppRootController',
+            }
+        },
+    })
+
+    .state('logged.submit', {
+        url: "/submit",
+        views: {
+            "loggedview": {
+                templateUrl: '/static/app/templates/home.html',
+                controller: 'MainController',
             }
         },
     })
@@ -96,10 +95,22 @@ $stateProvider
                 controller: 'MainController',
             }
         },
-    });
+    })
 
-    //$urlRouterProvider.otherwise('/login');
-    //$urlRouterProvider.otherwise('/app/search');
+    .state("logged.logout", {
+        url: "/logout",
+        views: {
+            "main": {
+                templateUrl: '/static/app/templates/logout.html',
+                controller: 'LogoutController',
+            }
+        }
+    })
+
+    // Routes definition end
+    ;
+    
+//$urlRouterProvider.otherwise('/login');
 
 // Ui router kinda bug fixing 
 // CHECK THIS IN THE NEAR FUTURE

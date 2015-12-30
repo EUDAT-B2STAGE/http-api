@@ -13,8 +13,9 @@
 
   ☐ Various
     ✔ login with font awesome loading @done (15-12-30 15:27)
-    ☐ topbar buttons controlled by angular inside template
-      ☐ logout, search, submit
+    ✔ Cycle through ui routes @done (15-12-30 16:39)
+      ✔ logout, search, submit @done (15-12-30 16:39)
+      ☐ topbar buttons controlled by angular inside template
     ☐ material welcome
 
   ☐ Cleaning code
@@ -62,7 +63,7 @@ JS LIBS:
 
   ☐ controller filters 
   https://toddmotto.com/use-controller-filters-to-prevent-digest-performance-issues/
-  ☐ foreach implementation
+  ✔ foreach implementation @done (15-12-30 16:37)
   https://toddmotto.com/simple-foreach-implementation-for-objects-nodelists-arrays-with-automatic-type-looping/
   ☐ image lazy loading
   https://toddmotto.com/echo-js-simple-javascript-image-lazy-loading/
