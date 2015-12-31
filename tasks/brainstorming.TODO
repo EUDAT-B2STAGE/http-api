@@ -16,8 +16,11 @@
     ✔ Cycle through ui routes @done (15-12-30 16:39)
       ✔ logout, search, submit @done (15-12-30 16:39)
       ✔ topbar buttons controlled by angular inside template @done (15-12-30 17:53)
-    ☐ What if API down? JS
+    ✔ choose framework based on what's first inside json @done (15-12-31 11:38)
+      ✔ material, bootstrap, foundation @done (15-12-31 11:38)
     ☐ material welcome
+      ☐ jinja2 expand of material index
+    ☐ What if API down? JS
 
   ☐ Cleaning code
     ✔ test login @done (15-12-30 09:59)
@@ -73,9 +76,7 @@ JS LIBS:
   ☐ DOM manipulation
   https://toddmotto.com/apollo-js-standalone-class-manipulation-api-for-html5-and-legacy-dom/
 
-☐ pull request frameworks branch
-
-  ☐ JWT apis?
+JWT apis:
   https://thinkster.io/angularjs-jwt-auth
 
   ☐ Material framework
