@@ -18,8 +18,12 @@
       ✔ topbar buttons controlled by angular inside template @done (15-12-30 17:53)
     ✔ choose framework based on what's first inside json @done (15-12-31 11:38)
       ✔ material, bootstrap, foundation @done (15-12-31 11:38)
-    ☐ material welcome
-      ☐ jinja2 expand of material index
+    ✔ material welcome @done (15-12-31 12:05)
+      ✔ jinja2 expand of material index @done (15-12-31 12:05)
+    ☐ Fix jinja2 template material
+      ☐ topbar
+      ☐ parallax ng-repeat
+        ☐ based on content and images
     ☐ What if API down? JS
 
   ☐ Cleaning code

@@ -7,8 +7,10 @@
         'ngSanitize',
     	'satellizer',
         'ui.router', //'ngRoute',
-//BOOTSTRAP
+// BOOTSTRAP
         //'mgcrea.ngStrap',
+// MATERIAL DESIGN
+        'ui.materialize',
 // THE LOADING BAR
         //'angular-loading-bar',
         'cfp.loadingBar',
