@@ -1,5 +1,6 @@
-<ul class="nav navbar-nav">
-	<li class="nav-item" ng-repeat='item in menu'>
-	    <a class="nav-link" ui-sref="logged.{{item}}">{{item}}</a>
+<!-- Angular dynamic material menu -->
+<ul id="nav-mobile" class="right hide-on-med-and-down">
+	<li ng-repeat='item in menu'>
+		<a ui-sref="logged.{{item}}">{{item}}</a>
 	</li>
 </ul>
