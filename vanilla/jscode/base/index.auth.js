@@ -69,7 +69,7 @@ function LoginController($scope, $window, $location, $log, $auth, $state, $timeo
         } else {
             $scope.load = false;
         }
-    }, 1000);
+    }, 1200);
 
     $scope.loginfun = function(credentials) {
         $log.debug("Requested with", credentials);

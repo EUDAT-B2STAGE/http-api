@@ -1,31 +1,8 @@
 
-  ✔ Angulask @done (15-12-23 16:29)
-    ✔ loading bar @done (15-12-23 16:22)
-    https://github.com/chieffancypants/angular-loading-bar
-    ✔ new branch 'standalone' from master @done (15-12-23 16:25)
-  ✔ Angular centric @done (15-12-29 14:29)
-    ✔ remove useless modules @done (15-12-23 16:33)
-      ✔ from bower too @done (15-12-23 16:33)
-    ✔ be carefull with ui-router @done (15-12-23 16:33)
-    ✔ base root / @done (15-12-29 14:29)
-  ✔ Test login redirect with ui router resolver @done (15-12-29 14:30)
-  https://medium.com/@petehouston/protect-authentication-routes-in-angular-ui-router-and-satellizer-7745257a7e6#.tcuhppb0s
-
-  ☐ Various
-    ✔ login with font awesome loading @done (15-12-30 15:27)
-    ✔ Cycle through ui routes @done (15-12-30 16:39)
-      ✔ logout, search, submit @done (15-12-30 16:39)
-      ✔ topbar buttons controlled by angular inside template @done (15-12-30 17:53)
-    ✔ choose framework based on what's first inside json @done (15-12-31 11:38)
-      ✔ material, bootstrap, foundation @done (15-12-31 11:38)
-    ✔ material welcome @done (15-12-31 12:05)
-      ✔ jinja2 expand of material index @done (15-12-31 12:05)
-    ☐ Fix jinja2 template material
-      ☐ topbar
-      ☐ parallax ng-repeat
-        ☐ based on content and images
-    ☐ What if API down? JS
-
+PROTOTYPE:
+  ☐ parallax ng-repeat
+    ☐ based on content and images
+  ☐ What if API down? JS
   ☐ Cleaning code
     ✔ test login @done (15-12-30 09:59)
     ✔ test logout @done (15-12-30 09:59)
@@ -109,3 +86,30 @@ JS  LAZY LOAD:
 
 PIPELINE STEPS:
   http://devcenter.wercker.com/learn/pipelines/how-it-works.html
+
+--- ✄ -----------------------
+--- ✄ -----------------------
+
+COMPLETED:
+  ✔ Angulask @done (15-12-23 16:29)
+    ✔ loading bar @done (15-12-23 16:22)
+    https://github.com/chieffancypants/angular-loading-bar
+    ✔ new branch 'standalone' from master @done (15-12-23 16:25)
+  ✔ Angular centric @done (15-12-29 14:29)
+    ✔ remove useless modules @done (15-12-23 16:33)
+      ✔ from bower too @done (15-12-23 16:33)
+    ✔ be carefull with ui-router @done (15-12-23 16:33)
+    ✔ base root / @done (15-12-29 14:29)
+  ✔ Test login redirect with ui router resolver @done (15-12-29 14:30)
+  https://medium.com/@petehouston/protect-authentication-routes-in-angular-ui-router-and-satellizer-7745257a7e6#.tcuhppb0s
+
+  ✔ login with font awesome loading @done (15-12-30 15:27)
+  ✔ Cycle through ui routes @done (15-12-30 16:39)
+    ✔ logout, search, submit @done (15-12-30 16:39)
+    ✔ topbar buttons controlled by angular inside template @done (15-12-30 17:53)
+  ✔ choose framework based on what's first inside json @done (15-12-31 11:38)
+    ✔ material, bootstrap, foundation @done (15-12-31 11:38)
+  ✔ material welcome @done (15-12-31 12:05)
+    ✔ jinja2 expand of material index @done (15-12-31 12:05)
+  ✔ Fix jinja2 template material @done (16-01-02 15:58)
+    ✔ topbar @done (16-01-02 15:58)
