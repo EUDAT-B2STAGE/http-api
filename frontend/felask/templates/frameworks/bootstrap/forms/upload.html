@@ -1,0 +1,20 @@
+{% extends 'frameworks/bootstrap/main.html' %}
+{% block title %}Upload file{% endblock %}
+{% block content %}
+<br>
+<div class="page-header">
+  <h1>Upload file</h1>
+</div>
+<p class="lead"> Status: {{ status | safe }}
+
+ <div class="row"> <div class="col-sm-12">
+
+    <form action="upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="file"><br /><br />
+      <input type="submit" value="Upload">
+    </form>
+
+ </div> </div>
+
+</p>
+{% endblock %}

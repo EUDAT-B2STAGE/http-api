@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="web">
+  <head>
+    <title>{{ project }}{% if self.title() %}:{% endif %} {% block title %}{% endblock %}</title>
+    <!-- meta -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1.0">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- /meta -->
+{%- if mydomain -%}
+    <!-- needed by angular location routing -->
+    <base href="{{ mydomain }}"/>
+{%- endif %}
+    <!-- styles -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+{%- for css in stylesheets %}
+    <link rel="stylesheet" href="{{ css }}" />
+{%- endfor -%}
+{%- block customstylesheets %}{% endblock %}
+    <!-- fonts (if any)-->
+{%- for font in htmlfonts %}
+    <link rel="stylesheet" href="{{ font|safe }}" />
+{%- endfor %}
+    <!-- styles -->
+</head>
+
+<body {%- block bodyclass %}{% endblock -%} {% block ngapp %}{% endblock -%} >
+
+{%- block topbar %}{% endblock -%}
+
+<!-- PAGE CONTENT -->
+<main id="content" role="main">
+{%- block flashmessages %}{% endblock -%}
+{%- block content %}{% endblock -%}
+</main>
+
+{%- block footer %}{%- endblock %}
+<!-- javascript -->
+{% for js in jsfiles -%}
+    <script src="{{ js }}"></script>
+{% endfor -%}
+<!-- javascript -->
+
+<script type="text/javascript">
+/*
+  //Google Analytics - Change UA-XXXXX-X to be your site's ID
+  window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
+  Modernizr.load({
+    load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+  });
+*/
+{%- block javascript %}{%- endblock %}
+</script>
+
+</body>
+</html>

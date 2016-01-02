@@ -1,32 +1,38 @@
 
 PROTOTYPE:
-  ☐ parallax ng-repeat
-    ☐ based on content and images
-  ☐ What if API down? JS
-  ☐ Cleaning code
-    ✔ test login @done (15-12-30 09:59)
-    ✔ test logout @done (15-12-30 09:59)
-    ✘ a better reload page for login @cancelled (15-12-30 15:08)
-    ☐ move static and templates into vanilla?
-    ☐ probably remove angulask as a separate project
-      ☐ remove it from push pull and boot script
-    ✔ create config dir with json (css and js files to load) @done (15-12-28 19:00)
-    ✘ json file for extra-framework file? @cancelled (15-12-29 15:13)
-  ✔ New routes @done (15-12-23 18:50)
-   ☐ welcome (low js, only material)
-     ✔ fix welcome title @done (15-12-29 15:42)
-     ✘ login button send to app @cancelled (15-12-29 15:42)
-     ☐ description, features, about/contacts
-   ☐ root js app
-     ☐ loginer: save in flask db ip @idea
-        ☐ prompt login if no token found for that ip?
-     ☐ nolinks pages
-       ☐ login jwttoken and satellizer
-       ☐ logout
-     ☐ main page
-       ☐ search
-       ☐ submission
-       ☐ profile and settings
+☐ Cleaning code
+  ✔ test login @done (15-12-30 09:59)
+  ✔ test logout @done (15-12-30 09:59)
+  ✘ a better reload page for login @cancelled (15-12-30 15:08)
+  ✔ create config dir with json (css and js files to load) @done (15-12-28 19:00)
+  ✘ json file for extra-framework file? @cancelled (15-12-29 15:13)
+  ☐ move static and templates into vanilla?
+  ☐ probably remove angulask as a separate project
+    ☐ remove it from push pull and boot script
+☐ loginer: save in flask db ip @idea
+  ☐ prompt login if no token found for that ip?
+    ☐ ummm @dontknow
+  ☐ Popolate user data and profile dropdown in topbar via python?
+   ✔ main page @done (16-01-02 16:47)
+     ✔ search @done (16-01-02 16:47)
+     ✔ submission @done (16-01-02 16:47)
+☐ Logout
+  ☐ js -> flask frontend -> api flask
+☐ parallax ng-repeat
+  ☐ based on content and images
+☐ What if API down? JS
+
+SEARCH:
+  ☐ base api
+    ☐ rethinkdb?
+
+WELCOME:
+  ☐ slide through parts
+  http://materializecss.com/scrollspy.html
+
+SUBMIT:
+  ☐ Submission steps
+  http://materializecss.com/collections.html
 
 HTTPS:
   ☐ nginx acme and let's encrypt beta
@@ -76,6 +82,25 @@ JWT apis:
   ☐ Search
     ☐ A quick single view
 
+FROM PREVIOUS 'frontend' angulask:
+- Rest JWT
+  ☐ informations to pass along? user?
+- Add pages
+  ☐ with ease
+- Flask blueprint?
+ ☐ auth blueprint (login part)
+ 
+☐ Angular blueprint load
+
+ui router pitfall:
+  http://www.codelord.net/2015/06/02/angularjs-pitfalls-using-ui-routers-resolve/
+☐ Api connection retry?
+https://github.com/rholder/retrying
+☐ reduce html size on whitespaces
+https://github.com/mitsuhiko/jinja2-htmlcompress
+☐ How to quickly add a blueprint for a whole new suburl
+http://flask.pocoo.org/snippets/59/
+
 
 One time binding:
     https://www.binpress.com/tutorial/speeding-up-angular-js-with-simple-optimizations/135
@@ -113,3 +138,9 @@ COMPLETED:
     ✔ jinja2 expand of material index @done (15-12-31 12:05)
   ✔ Fix jinja2 template material @done (16-01-02 15:58)
     ✔ topbar @done (16-01-02 15:58)
+  ✔ New routes @done (15-12-23 18:50)
+   ✔ welcome (low js, only material) @done (16-01-02 16:47)
+     ✔ fix welcome title @done (15-12-29 15:42)
+     ✘ login button send to app @cancelled (15-12-29 15:42)
+     ✔ description, features, about/contacts @done (16-01-02 16:47)
+ ✔ root js app @done (16-01-02 16:48)

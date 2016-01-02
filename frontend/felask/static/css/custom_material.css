@@ -1,0 +1,21 @@
+
+/*
+  header, main, footer {
+    padding-left: 180px;
+  }
+
+  @media only screen and (max-width : 800px) {
+    header, main, footer {
+      padding-left: 0;
+    }
+  }
+
+*/
+header, main, footer {
+  padding: 0;
+  margin: 0;
+}
+
+.navbar {
+  margin-bottom: 2em;
+}

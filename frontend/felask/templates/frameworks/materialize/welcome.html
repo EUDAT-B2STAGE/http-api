@@ -1,0 +1,133 @@
+{% extends 'frameworks/materialize/base.html' %}
+
+{%- block content %}
+
+<!-- TOPBAR -->
+<div class="navbar">
+	<nav>
+	  <div class="nav-wrapper teal">
+	  <a href="#" class="brand-logo"
+	  	style='padding-left: 30px;'
+	    data-activates="slide-out" data-sidenav="left"
+	    data-menuwidth="180" data-closeonclick="false">
+	    ProjectName
+	  </a>
+	  <ul id="nav-mobile" class="right hide-on-med-and-down">
+	    <li><a href="/login">Login</a></li>
+	  </ul>
+	  </div>
+	</nav>
+</div>
+<!-- TOPBAR END -->
+
+<!-- SLIDER -->
+<div class="container">
+  <div class="slider" height='350' transition='300' slider>
+    <ul class="slides">
+        <li>
+            <img src="http://lorempixel.com/800/500/nature/3"> <!-- random image -->
+            <div class="caption center-align">
+                <h3>Our brand new site!</h3>
+                <h5 class="light grey-text text-lighten-3">Here we go.</h5>
+            </div>
+        </li>
+        <li>
+            <img src="http://lorempixel.com/800/500/nature/2"> <!-- random image -->
+            <div class="caption left-align">
+                <h3>Second page</h3>
+                <h5 class="light grey-text text-lighten-3">After the first.</h5>
+            </div>
+        </li>
+        <li>
+                <img src="http://lorempixel.com/800/500/nature/1"> <!-- random image -->
+                <div class="caption right-align">
+            <h3>Almost there</h3>
+            <h5 class="light grey-text text-lighten-3">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet distinctio quis temporibus vero reprehenderit expedita quaerat voluptas pariatur. Officiis adipisci, eveniet voluptates placeat possimus eos culpa nihil tempora perspiciatis voluptatibus.
+            .</h5>
+            </div>
+        </li>
+        <li>
+            <img src="http://lorempixel.com/800/500/nature/4"> <!-- random image -->
+            <div class="caption center-align">
+                <h3>This is our big Tagline!</h3>
+                <h5 class="light grey-text text-lighten-3">Here's our small slogan.</h5>
+            </div>
+        </li>
+    </ul>
+  </div>
+</div>
+<!-- SLIDER END -->
+
+<!-- PARALLAX -->
+  <div class="parallax-container">
+    <div class="parallax"><img src="http://materializecss.com/images/parallax1.jpg"></div>
+  </div>
+
+  <div class="section white">
+    <div class="row container">
+      <h2 class="header">Welcome!</h2>
+      <p class="grey-text text-darken-3 lighten-3">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+    </div>
+  </div>
+
+  <div class="parallax-container">
+    <div class="parallax"><img src="http://materializecss.com/images/parallax2.jpg"></div>
+  </div>
+
+  <div class="section white">
+    <div class="row container">
+      <h2 class="header">Here to help you</h2>
+      <p class="grey-text text-darken-3 lighten-3">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+    </div>
+  </div>
+
+  <div class="parallax-container">
+    <div class="parallax"><img src="http://materializecss.com/images/parallax1.jpg"></div>
+  </div>
+<!-- PARALLAX END -->
+
+{% endblock %}
+
+{%- if footer %}{% block footer %}
+<footer class="page-footer teal darken-2">
+  <div class="container">
+    <div class="row">
+      <div class="col l6 s12">
+        <h5 class="white-text">About us</h5>
+        <p class="grey-text text-lighten-4">There is so much more to say!</p>
+      </div>
+      <div class="col l4 offset-l2 s12">
+        <h5 class="white-text">Links</h5>
+        <ul>
+          <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
+          <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
+          <li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
+          <li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+    © 2014 Copyright Text
+    <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+    </div>
+  </div>
+  {% block extrafootercontent %}{% endblock %}
+</footer>
+{% endblock %}{% endif -%}

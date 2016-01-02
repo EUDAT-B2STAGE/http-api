@@ -3,7 +3,8 @@
 #############################
 com="docker-compose"
 services="backend frontend"
-repos="angulask rest-mock"
+repos="rest-mock"
+#repos="angulask rest-mock"
 webbuild="bower"
 
 #############################
@@ -27,13 +28,13 @@ if [ "$1" == "init" ]; then
 elif [ "$1" == "update" ]; then
 
     docker-compose pull
-    # for service in $services;
-    # do
-    #     echo "Repo '$service' push"
-    #     cd $service
-    #     git pull origin master
-    #     cd ..
-    # done
+    for service in $services;
+    do
+        echo "Repo '$service' fetch"
+        cd $service
+        git pull origin master
+        cd ..
+    done
     git submodule sync
     git submodule update
     $bcom

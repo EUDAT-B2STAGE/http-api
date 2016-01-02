@@ -31,7 +31,7 @@ backend:
         # Sql lite database
         - apilitedb:/dbs
         # Base code
-        - ../rest-mock:/code
+        - ../backend:/code
         # Rest API endpoints
         - ../vanilla/apis:/code/restapi/resources/custom
         # Rest API configuration
@@ -42,23 +42,20 @@ frontend:
     extends:
         service: conf
     image: pdonorio/flasking
-    working_dir: /data/angulask
+    working_dir: /data/frontend
     volumes:
         # Sql lite database & common models
         - apilitedb:/dbs
-        #- ../rest-mock/restapi/models.py:/data/angulask/angulask/models/api.py
         # Main dir. It has to be the root directory, to make links work
         - ..:/data
         # js/css libraries installed via bower
-        - ../vanilla/jslibs/bower_components:/data/angulask/angulask/static/bower
+        - ../vanilla/jslibs/bower_components:/data/frontend/felask/static/bower
         # All the angular blueprints (&& templates)
-        - ../vanilla/jscode:/data/angulask/angulask/static/app
+        - ../vanilla/jscode:/data/frontend/felask/static/app
         # Python pages
-        - ../vanilla/pages:/data/angulask/angulask/pypages
+        - ../vanilla/pages:/data/frontend/felask/pypages
         # Python templates
-        - ../vanilla/templates/python:/data/angulask/angulask/templates/custom
-        # # CSS and/or framework ?
-        # # Python configurations ?
+        - ../vanilla/templates/python:/data/frontend/felask/templates/custom
     ports:
         - 80:5000
     links:
@@ -85,15 +82,3 @@ sqladmin:
     #     - sql:db
     ports:
         - 8888:80
-
-# ###############################
-# # Static test/debug
-# static:
-#     image: nginx
-#     volumes:
-#         - ./nginx.conf:/etc/nginx/conf.d/default.conf
-#         - ../vanilla/jslibs/bower_components:/static/bower
-#         - ../vanilla/jscode:/static/app
-#         - ../angulask/angulask/static/test.html:/usr/share/nginx/html/index.html
-#     ports:
-#         - 80:80

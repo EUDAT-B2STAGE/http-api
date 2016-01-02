@@ -1,0 +1,18 @@
+Some:
+- Rest JWT
+  ☐ informations to pass along? user?
+- Add pages
+  ☐ with ease
+- Flask blueprint?
+ ☐ auth blueprint (login part)
+ 
+☐ Angular blueprint load
+
+ui router pitfall:
+  http://www.codelord.net/2015/06/02/angularjs-pitfalls-using-ui-routers-resolve/
+☐ Api connection retry?
+https://github.com/rholder/retrying
+☐ reduce html size on whitespaces
+https://github.com/mitsuhiko/jinja2-htmlcompress
+☐ How to quickly add a blueprint for a whole new suburl
+http://flask.pocoo.org/snippets/59/

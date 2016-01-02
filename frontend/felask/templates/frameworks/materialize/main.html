@@ -1,0 +1,37 @@
+{% extends 'frameworks/materialize/base.html' %}
+
+{%- block title %} {{ jstitle }} {% endblock %}
+
+{%- block topbar %}
+<!-- TOPBAR -->
+<div class="navbar z-depth-2">
+	<nav>
+	  <div class="nav-wrapper cyan darken-3">
+	  <a href="#" class="brand-logo"
+	  	style='padding-left: 30px;'
+	    data-activates="slide-out" data-sidenav="left"
+	    data-menuwidth="180" data-closeonclick="false">
+		{%- if g.user.is_authenticated -%} 
+			Inside the app
+		{%- else -%}
+			Login form
+		{%- endif -%}
+	  </a>
+		{% if g.user.is_authenticated %}
+		<div ui-view='menu'></div>
+		{% endif %}
+	  </div>
+	</nav>
+</div>
+<!-- TOPBAR END -->
+{% endblock %}
+
+{%- block content %}
+<div class="container">
+	<div ui-view='main'></div>
+</div>
+{% endblock %}
+
+{%- if footer %}{% block footer %}
+{{footer|safe}}
+{% endblock %}{% endif -%}

@@ -1,0 +1,56 @@
+{% extends 'index.html' %}
+
+{%- block topbar %}
+<!-- TOPBAR -->
+{%- if topbar_color %}
+    {% if topbar_color == 'dark' %}
+<nav class="navbar navbar-dark bg-inverse navbar-fixed-top">
+    {% else %}
+<nav class="navbar navbar-fixed-top navbar-light bg-faded" style="background-color: #{{ topbar_color }};">
+    {% endif %}
+{% else %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+{% endif -%}
+
+{%- for logo in logos -%}
+<a href="#" class="pull-right" style='padding-right:10px;'>
+    <img src="{{ logo.src }}" width="{{ logo.width }}">
+</a>
+{% endfor -%}
+<a class="navbar-brand pull-left" href="/"> <i class="fa fa-briefcase"></i> {{ project }} </a>
+{% if g.user.is_authenticated %}
+<div ui-view='menu'></div>
+{% endif %}
+</nav>
+{% endblock %}
+
+{%- block flashmessages %}
+    {%- with messages = get_flashed_messages(with_categories=true) %}
+    <!-- Possible alerts: info success warning danger -->
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'message' %}
+                    <div class="alert alert-info alert-dismissible" role="alert">
+                {% else %}
+                    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                {% endif %}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ message }}
+                </div>
+            {% endfor -%}
+        {% endif -%}
+    {% endwith -%}
+{% endblock -%}
+
+
+{%- if footer %}
+    {% block footer %}
+    <footer class="footer">
+      <div class="container">
+          <br>
+          <p> {{ footer | safe }} </p>
+          {% block extrafootercontent %}{% endblock %}
+      </div>
+    </footer>
+    {% endblock %}
+{% endif -%}

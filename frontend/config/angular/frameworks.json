@@ -1,0 +1,65 @@
+{
+// MAIN DIRS
+	"staticdir": "static",
+	"bowerdir": "bower",
+// // CSS files 
+// //(starting from bower dir)
+	"css": [
+		"font-awesome/css/font-awesome.min.css",
+		//
+		// ## Choose your framework:
+		//
+		// # BOOTSTRAP
+		// "bootstrap/dist/css/bootstrap.min.css",
+		// # MATERIAL
+		"materialize/dist/css/materialize.min.css",
+		//
+		//"animate.css/animate.min.css"
+		"angular-loading-bar/build/loading-bar.min.css"
+	],
+// USER CUSTOM CSS
+	"customcss" : [
+		// # BOOTSTRAP
+		//"css/custom.css"
+		// # MATERIAL
+		"css/custom_material.css"
+	],
+// Cool FONTS
+	"fonts" : [
+		"http://fonts.googleapis.com/icon?family=Material+Icons"
+	],
+// Angular framework and app files
+//(starting from bower dir)
+	"js": [
+		// # JQUERY 
+		"jquery/dist/jquery.min.js",
+		//(needed by material... don't like!)
+		// # ANGULAR
+		"angular/angular.min.js",
+	    "angular-sanitize/angular-sanitize.min.js",
+	    //"angular-animate/angular-animate.min.js",
+	    //"angular-route/angular-route.min.js",
+	    "angular-ui-router/release/angular-ui-router.min.js",
+		// # BOOTSTRAP
+	    //"angular-strap/dist/angular-strap.min.js",
+	    //"angular-strap/dist/angular-strap.tpl.min.js",
+		// # MATERIAL
+	    "materialize/dist/js/materialize.min.js",
+	    "angular-materialize/src/angular-materialize.js",
+	    // # OTHER LIBS
+	    "satellizer/satellizer.min.js",
+	    "angular-loading-bar/build/loading-bar.min.js"
+	// JWT ?
+		//
+	// libs on demand
+	    //"moment/min/moment.min.js",
+	],
+// USER CUSTOM APP
+	"customjs": [
+// Force order: the angularjs app declaration should be the first
+	    "app/app.js"
+	],
+	"imgs": [
+		//
+	]
+}

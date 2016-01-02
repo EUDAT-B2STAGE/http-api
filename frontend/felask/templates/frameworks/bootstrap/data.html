@@ -1,0 +1,42 @@
+{% extends 'frameworks/bootstrap/main.html' %}
+{% block title %}View data{% endblock %}
+{% block content %}
+<br>
+<div class="page-header">
+  <h1>Data management</h1>
+</div>
+<p class="lead">
+    Status: {{ status | safe }}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                <a class="nav-link
+                {% if formname == 'view' %} active {% endif %}"
+                href="/view"> View </a> </li>
+              <li class="nav-item">
+                <a class="nav-link
+                {% if formname == 'insert' %} active {% endif %}"
+                href="/insert"> Insert </a> </li>
+<!--
+              <li class="nav-item">
+                <a class="nav-link
+                {% if formname == 'search' %} active {% endif %}"
+                href="search"> Search </a> </li>
+-->
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 padb">
+
+<!--             <h2>{{formname.capitalize()}} tab</h2>
+ -->
+            {% block datacontent %}{% endblock %}
+        </div>
+    </div>
+
+</p>
+{% endblock %}

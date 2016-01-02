@@ -1,8 +1,4 @@
-[submodule "angulask"]
-	path = angulask
-	url = https://github.com/pdonorio/angulask
-    branch = frameworks
 [submodule "rest-mock"]
-	path = rest-mock
-    url = https://github.com/pdonorio/rest-mock
-    branch = master
+  path = backend
+  url = https://github.com/pdonorio/rest-mock
+  branch = master

@@ -1,0 +1,27 @@
+{% extends 'frameworks/bootstrap/data.html' %}
+
+{% block datacontent %}
+{% from "frameworks/bootstrap/forms/_formbootstr.html" import render_field %}
+<form action="{{ formname }}" method="post">
+
+{% if keyfield %}
+    {{ render_field(form[keyfield], placeholder=keyfield.replace('_',' ').capitalize(),
+        required=true, autofocus=true) }}
+{% endif %}
+
+{% for item in selected %}
+    {% if form[item] %}
+        {{ render_field(form[item]) }}
+    {% endif %}
+{% endfor %}
+
+{{ form.csrf_token }}
+<div class="form-group row">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary">
+        {{formname.capitalize()}} data
+      </button>
+    </div>
+</div>
+</form>
+{% endblock %}
