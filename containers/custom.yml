@@ -1,0 +1,20 @@
+
+rdb:
+    image: rethinkdb
+    hostname: rdbmaster
+    volumes:
+        - rdbdata:/data
+
+custombe:
+    extends:
+        file: docker-compose.yml
+        service: backend
+    links:
+        - rdb:db
+
+customfe:
+    extends:
+        file: docker-compose.yml
+        service: frontend
+    links:
+        - custombe:myapi

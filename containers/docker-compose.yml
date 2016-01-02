@@ -58,8 +58,8 @@ frontend:
         - ../vanilla/templates/python:/data/frontend/felask/templates/custom
     ports:
         - 80:5000
-    links:
-        - backend:myapi
+    # links:
+    #     - backend:myapi
 
 ###############################
 # Make automatic to install libraries

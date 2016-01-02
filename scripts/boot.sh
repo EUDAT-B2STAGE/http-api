@@ -1,8 +1,10 @@
 #!/bin/bash
 
 #############################
-com="docker-compose"
-services="backend frontend"
+extra="-f docker-compose.yml -f custom.yml"
+com="docker-compose $extra"
+#services="backend frontend"
+services="custombe customfe"
 webbuild="bower"
 
 #############################

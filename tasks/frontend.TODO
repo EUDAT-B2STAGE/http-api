@@ -1,4 +1,9 @@
 
+Welcome and goodbye. And thanks for all the fish!
+
+#MAIN COM
+docker-compose -f docker-compose.yml -f custom.yml up -d customfe
+# PRIVATE GIT
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 
 PROTOTYPE:
@@ -26,7 +31,8 @@ PROTOTYPE:
 
 SEARCH:
   ☐ base api
-    ☐ rethinkdb?
+    ✔ rethinkdb? @done (16-01-02 23:35)
+    ☐ add code
 
 WELCOME:
   ☐ slide through parts
@@ -37,6 +43,7 @@ SUBMIT:
   http://materializecss.com/collections.html
 
 HTTPS:
+  ☐ nginx proxy
   ☐ nginx acme and let's encrypt beta
   http://steveltn.me/2015/12/18/nginx-acme
 
