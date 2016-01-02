@@ -51,6 +51,10 @@
        ☐ submission
        ☐ profile and settings
 
+HTTPS:
+  ☐ nginx acme and let's encrypt beta
+  http://steveltn.me/2015/12/18/nginx-acme
+
 JS LIBS:
   ☐ Am i using sanitize?
   ☐ controller as

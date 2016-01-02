@@ -34,10 +34,15 @@ function _redirectIfNotAuthenticated($q, $state, $auth, $timeout) {
     return defer.promise;
 }
 
-// ROUTES
+/*********************************
+* ROUTING
+*********************************/
 function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider) //, $interpolateProvider)
 {
 
+// BASE CONFS
+    var framework = 'materialize';
+    var templateDir = '/static/app/templates/' + framework + '/';
 	// Enable log
 	$logProvider.debugEnabled(true); //.hashPrefix('!');
     // HTML5 mode: remove hash bang to let url be parsable
@@ -45,6 +50,7 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
     // Change angular variables from {{}} to [[]]
     //$interpolateProvider.startSymbol('[[').endSymbol(']]');
 
+// ROUTES
 $stateProvider
     ////////////////////////////
 
@@ -56,7 +62,7 @@ $stateProvider
         views: {
             "main": {
                 //template: '<br><h1>test</h1> [[angular]]',
-                templateUrl: '/static/app/templates/login.html',
+                templateUrl: templateDir + 'login.html',
                 controller: 'LoginController',
             }
         }
@@ -70,12 +76,12 @@ $stateProvider
         // Implement main route for landing page after login
         views: {
             "menu": {
-                templateUrl: 'static/app/templates/menu.html',
+                templateUrl: templateDir + 'menu.html',
                 controller: 'AppRootController',
             },
             "main": {
         // and add a child view called 'loggedview' for logged pages
-                templateUrl: 'static/app/templates/logged.html',
+                templateUrl: templateDir + 'logged.html',
                 //controller: 'AppRootController',
             }
         },
@@ -85,7 +91,7 @@ $stateProvider
         url: "/submit",
         views: {
             "loggedview": {
-                templateUrl: '/static/app/templates/home.html',
+                templateUrl: templateDir + 'home.html',
                 controller: 'MainController',
             }
         },
@@ -95,7 +101,7 @@ $stateProvider
         url: "/search",
         views: {
             "loggedview": {
-                templateUrl: '/static/app/templates/home.html',
+                templateUrl: templateDir + 'home.html',
                 controller: 'MainController',
             }
         },
@@ -105,7 +111,7 @@ $stateProvider
         url: "/logout",
         views: {
             "loggedview": {
-                templateUrl: '/static/app/templates/logout.html',
+                templateUrl: templateDir + 'logout.html',
                 controller: 'LogoutController',
             }
         }
