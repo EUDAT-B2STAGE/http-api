@@ -1,4 +1,6 @@
 
+git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
+
 PROTOTYPE:
 ☐ Cleaning code
   ✔ test login @done (15-12-30 09:59)

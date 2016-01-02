@@ -1,6 +1,6 @@
 #!/bin/bash
 
-services="rest-mock"
+services="backend"
 #services="angulask rest-mock"
 com="git"
 pull="$com pull origin master"
