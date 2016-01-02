@@ -3,8 +3,6 @@
 #############################
 com="docker-compose"
 services="backend frontend"
-repos="rest-mock"
-#repos="angulask rest-mock"
 webbuild="bower"
 
 #############################
@@ -28,6 +26,8 @@ if [ "$1" == "init" ]; then
 elif [ "$1" == "update" ]; then
 
     docker-compose pull
+    current=`pwd`
+    cd ..
     for service in $services;
     do
         echo "Repo '$service' fetch"
@@ -37,6 +37,7 @@ elif [ "$1" == "update" ]; then
     done
     git submodule sync
     git submodule update
+    cd $current
     $bcom
 
 # Bower install
