@@ -1,5 +1,5 @@
 
-Welcome and goodbye. And thanks for all the fish!
+> Welcome and goodbye. And thanks for all the fish!
 
 #MAIN COM
 docker-compose -f docker-compose.yml -f custom.yml up -d customfe
@@ -33,8 +33,8 @@ SEARCH:
   ☐ base api
     ✔ rethinkdb? @done (16-01-02 23:35)
     ✔ add code @done (16-01-03 01:04)
-    ☐ put a flag for rethinkdb connection when app startup
-    ☐ convert old tables into json schemas
+    ✔ put a flag for rethinkdb connection when app startup @done (16-01-03 15:07)
+    ✔ convert old tables into json schemas @done (16-01-03 15:07)
 
 WELCOME:
   ☐ slide through parts
@@ -93,6 +93,16 @@ JWT apis:
   ☐ Search
     ☐ A quick single view
 
+ REALTIME (rethink changefeed):
+  ☐ Change Feed
+    ☐ python?
+    https://www.rethinkdb.com/docs/changefeeds/python/
+      ☐ could register an angular timeout to 
+    ☐ or directly js?
+    "Unlike other cursors, the output of changes is infinite: 
+    the cursor will block until more elements are available. "
+    https://github.com/neumino/rethinkdbdash
+
 FROM PREVIOUS 'frontend' angulask:
 - Rest JWT
   ☐ informations to pass along? user?
@@ -122,6 +132,10 @@ JS  LAZY LOAD:
 
 PIPELINE STEPS:
   http://devcenter.wercker.com/learn/pipelines/how-it-works.html
+
+# RETHINKDB MYADMIN
+docker-compose run bower bash
+$ npm install chateau
 
 --- ✄ -----------------------
 --- ✄ -----------------------

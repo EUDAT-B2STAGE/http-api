@@ -1,7 +1,10 @@
 
 rethinkdb:
-    image: rethinkdb
+    image: pdonorio/myrethinkdb
     hostname: rdbmaster
+    # Web admin
+    ports:
+        - 7778:8080
     volumes:
         - rdbdata:/data
 
