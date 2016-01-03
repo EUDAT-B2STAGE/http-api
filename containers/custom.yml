@@ -1,5 +1,5 @@
 
-rdb:
+rethinkdb:
     image: rethinkdb
     hostname: rdbmaster
     volumes:
@@ -10,7 +10,7 @@ custombe:
         file: docker-compose.yml
         service: backend
     links:
-        - rdb:db
+        - rethinkdb:rdb
 
 customfe:
     extends:

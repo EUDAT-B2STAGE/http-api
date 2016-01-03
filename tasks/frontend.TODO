@@ -32,7 +32,9 @@ PROTOTYPE:
 SEARCH:
   ☐ base api
     ✔ rethinkdb? @done (16-01-02 23:35)
-    ☐ add code
+    ✔ add code @done (16-01-03 01:04)
+    ☐ put a flag for rethinkdb connection when app startup
+    ☐ convert old tables into json schemas
 
 WELCOME:
   ☐ slide through parts
