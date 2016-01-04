@@ -35,6 +35,9 @@ SEARCH:
     ✔ add code @done (16-01-03 01:04)
     ✔ put a flag for rethinkdb connection when app startup @done (16-01-03 15:07)
     ✔ convert old tables into json schemas @done (16-01-03 15:07)
+    ☐ Checks 
+      ☐ json response
+      ☐ filters?
 
 WELCOME:
   ☐ slide through parts
