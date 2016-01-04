@@ -30,14 +30,18 @@ PROTOTYPE:
 ☐ What if API down? JS
 
 SEARCH:
-  ☐ base api
+  ✔ base api @done (16-01-04 11:40)
     ✔ rethinkdb? @done (16-01-02 23:35)
     ✔ add code @done (16-01-03 01:04)
     ✔ put a flag for rethinkdb connection when app startup @done (16-01-03 15:07)
     ✔ convert old tables into json schemas @done (16-01-03 15:07)
-    ☐ Checks 
-      ☐ json response
-      ☐ filters?
+  ✔ Checks  @done (16-01-04 11:40)
+    ✔ json response @done (16-01-04 01:39)
+  ☐ Land page for search
+    ✔ api call @done (16-01-04 13:56)
+    ☐ table
+      ☐ filters? @ohboy
+  ☐ change loading bar template
 
 WELCOME:
   ☐ slide through parts

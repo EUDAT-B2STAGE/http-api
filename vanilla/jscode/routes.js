@@ -101,8 +101,8 @@ $stateProvider
         url: "/search",
         views: {
             "loggedview": {
-                templateUrl: templateDir + 'home.html',
-                controller: 'MainController',
+                templateUrl: templateDir + 'searching.html',
+                controller: 'SearchController',
             }
         },
     })
@@ -156,6 +156,5 @@ $stateProvider
 */
 
 }
-
 
 })();

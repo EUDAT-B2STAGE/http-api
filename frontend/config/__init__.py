@@ -22,7 +22,7 @@ FRAMEWORKS = ['bootstrap', 'materialize', 'foundation']
 
 BACKEND = False
 for key in os.environ.keys():
-    if 'backend' in key.lower():
+    if 'myapi' == key.lower()[0:5]:
         BACKEND = True
 
 
