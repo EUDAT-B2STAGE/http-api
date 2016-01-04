@@ -42,6 +42,7 @@ frontend:
     extends:
         service: conf
     image: pdonorio/flasking
+    hostname: frontend
     working_dir: /data/frontend
     volumes:
         # Sql lite database & common models
