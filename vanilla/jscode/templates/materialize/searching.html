@@ -11,20 +11,21 @@ Search page!
   <table class='bordered highlight responsive-table'>
     <thead>
       <tr>
-          <th data-field="id">Name</th>
-          <th data-field="name">Item Name</th>
-          <th data-field="price">Item Price</th>
+          <th data-field="id">Record</th>
+          <th data-field="name">Content</th>
       </tr>
     </thead>
 
     <tbody>
       <tr ng-repeat='row in data'>
         <td>{{ row.record }}</td>
-        <td>{{ row.steps }}</td>
         <td>
-            <div ng-repeat'mystep in row.steps'>
-                {{ mystep }}
-            
+            <div ng-repeat='mystep in row.steps'>
+                <i>Step {{ mystep.step }}</i>:
+                <span ng-repeat='fields in mystep.data'>
+                    {{ fields.value }}
+                </span>
+            </div>
         </td>
       </tr>
     </tbody>
