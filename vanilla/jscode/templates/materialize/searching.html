@@ -1,6 +1,11 @@
-
 <h4>
 Search page!
 </h4>
 
-{{ some }}
+<div ng-if='data'>
+    RECORD: {{data[0]['record']}}<br>
+    {{ data[0] }}
+</div>
+<div ng-if='error'>
+    <b>ERROR: {{ error }}</b>
+</div>

@@ -14,12 +14,13 @@ function SearchService($window, $http, $auth, $log) {
         window.location.host + ':' + API_PORT + 
         '/api/'
         ;
+    var SEARCH_ENDPOINT = 'newstepscontent';
 
     self.getData = function(content) {
         var token = $auth.getToken();
         var req = {
             method: 'GET',
-            url: API_URL + 'newsteps',
+            url: API_URL + SEARCH_ENDPOINT,
             headers: {
                 'Authentication-Token': token,
             }

@@ -14,10 +14,10 @@ function SearchController($scope, $log, $timeout, cfpLoadingBar, search)
         search.getData().then(function(out){
             if (typeof out == 'string') {
                $log.error(out);
-               $scope.some = "Service down...";
+               $scope.error = "Service down...";
             } else {
                console.log(out);
-               $scope.some = out.data;
+               $scope.data = out.data;
             }
         });
         cfpLoadingBar.complete();
