@@ -2,10 +2,32 @@
 Search page!
 </h4>
 
-<div ng-if='data'>
-    RECORD: {{data[0]['record']}}<br>
-    {{ data[0] }}
-</div>
 <div ng-if='error'>
     <b>ERROR: {{ error }}</b>
+</div>
+
+<div ng-if='data'>
+
+  <table class='bordered highlight responsive-table'>
+    <thead>
+      <tr>
+          <th data-field="id">Name</th>
+          <th data-field="name">Item Name</th>
+          <th data-field="price">Item Price</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr ng-repeat='row in data'>
+        <td>{{ row.record }}</td>
+        <td>{{ row.steps }}</td>
+        <td>
+            <div ng-repeat'mystep in row.steps'>
+                {{ mystep }}
+            
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
 </div>
