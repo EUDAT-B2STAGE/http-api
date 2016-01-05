@@ -47,6 +47,7 @@ SEARCH:
     ✔ api call @done (16-01-04 13:56)
     ☐ table
       ☐ filters? @ohboy
+  ☐ paging
   ☐ change loading bar template
 
 WELCOME:

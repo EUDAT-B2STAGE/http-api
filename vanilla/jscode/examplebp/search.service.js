@@ -14,7 +14,11 @@ function SearchService($window, $http, $auth, $log) {
         window.location.host + ':' + API_PORT + 
         '/api/'
         ;
+
     var SEARCH_ENDPOINT = 'newstepscontent';
+    var SUBMIT_ENDPOINT = 'newsteps';
+    var DOCUMENTS_ENDPOINT = 'docs';
+    var USERS_ENDPOINT = 'accounts';
 
     self.getData = function(content) {
         var token = $auth.getToken();
