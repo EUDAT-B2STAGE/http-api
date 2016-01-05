@@ -28,3 +28,14 @@ header, main, footer {
     position: relative;
     margin-top: 42px;
 }
+
+.transcription {
+  font-family: "Lucida Console", Monaco, monospace;
+  height: 600px; 
+  overflow-y: scroll;
+  padding: 5px;
+}
+
+.celltop {
+  vertical-align: top;
+}
