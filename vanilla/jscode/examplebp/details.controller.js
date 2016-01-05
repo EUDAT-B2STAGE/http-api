@@ -10,12 +10,13 @@ function DetailsController($scope, $log, $stateParams, search)
     $scope.record = $stateParams.id;
 
     function preProcessData(data) {
-        return "One";
+        console.log(data);
+        return data[0].steps;
     }
 
     function loadData() {
 
-        search.getData().then(function(out){
+        search.getSingleData($stateParams.id).then(function(out){
             if (typeof out == 'string') {
                $log.error(out);
                $scope.error = "Service down...";

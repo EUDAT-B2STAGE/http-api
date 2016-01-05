@@ -1,29 +1,28 @@
-<h4>
-View page
-</h4>
+<h3>
+  Record <br> 
+  '{{ record }}'
+</h3>
 
 <div ng-if='error'>
     <b>ERROR: {{ error }}</b>
 </div>
 
-<div ng-if='data'>
-
-  Record {{ record }}
-
-  <table class='bordered highlight responsive-table'>
-    <thead>
-      <tr>
-          <th data-field="main">Uhm</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <td> 
-            Uhm
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
+<div ng-if='data' class="row">
+      <div ng-repeat='step in data'>
+        <table class='striped responsive-table'>
+         <thead>
+           <tr>
+             <td colspan="2"> <h4> STEP {{step.step}} </h4> </td>
+           </tr>
+         </thead>
+          <tbody>
+            <tr ng-if='row.value' ng-repeat='row in step.data'>
+              <th> {{ row.name }} </th>
+              <td> {{ row.value }} </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 </div>
+
+

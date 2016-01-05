@@ -16,6 +16,8 @@ function AppRootController($scope, $log, $state)
 		var key = 'logged.'
 		//console.log(x.name.slice(0, key.length));
 		if (x.name.slice(0, key.length) == key) {
+// TO FIX:
+// if state has mandatory params, skip it from MENU
 			$scope.menu.push(x.name.substr(7));
 		}
 	});

@@ -15,31 +15,57 @@ function SearchService($window, $http, $auth, $log) {
         '/api/'
         ;
 
-    var SEARCH_ENDPOINT = 'newstepscontent';
-    //var SEARCH_ENDPOINT = 'datakeys';
-    var SUBMIT_ENDPOINT = 'newsteps';
-    //var SUBMIT_ENDPOINT = 'datavalues';
+    var SEARCH_ENDPOINT = 'datavalues';
+    var SUBMIT_ENDPOINT = 'datakeys';
     var DOCUMENTS_ENDPOINT = 'docs';
     var USERS_ENDPOINT = 'accounts';
 
-    self.getData = function(content) {
+    self.getOrDefault = function (value, mydefault) {
+        return typeof value !== 'undefined' ? value : mydefault;
+    }
+
+    self.apiCall = function (endpoint, key, method, data) {
+
+        //DEFAULTS
+        endpoint = self.getOrDefault(endpoint, SEARCH_ENDPOINT);
+        if (typeof key !== 'undefined') {
+            endpoint += '/' + key;
+        }
+        method = self.getOrDefault(method, 'GET');
+        if (method == 'GET') {
+            data = {};
+        }
+        data = self.getOrDefault(data, {});
+
         var token = $auth.getToken();
         var req = {
-            method: 'GET',
-            url: API_URL + SEARCH_ENDPOINT,
+            method: method,
+            url: API_URL + endpoint,
             headers: {
+                'Content-Type': 'application/json',
                 'Authentication-Token': token,
-            }
+            },
+            data: data,
         }
+        console.log("DATA", data);
 
         return $http(req).then(
             function successCallback(response) {
-                $log.debug("API search call successful");
+                $log.debug("API call successful");
                 return response.data;
           }, function errorCallback(response) {
-                $log.error("Failed to call")
+                $log.error("API failed to call")
                 return response.data;
         });
+    }
+
+    // All possible calls
+    self.getData = function() {
+        return self.apiCall(SEARCH_ENDPOINT);
+    }
+
+    self.getSingleData = function(id) {
+        return self.apiCall(SEARCH_ENDPOINT, id);
     }
 
 }
