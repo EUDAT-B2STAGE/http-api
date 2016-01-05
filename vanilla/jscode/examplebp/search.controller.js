@@ -4,7 +4,7 @@
 angular.module('web')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $log, $timeout, cfpLoadingBar, search)
+function SearchController($scope, $log, $state, search)
 {
     $log.info("Ready to search");
 
@@ -17,7 +17,9 @@ function SearchController($scope, $log, $timeout, cfpLoadingBar, search)
 
         //console.log(x);
         elements.push({
-          // Checks?
+// Checks on positions?
+          'id': 
+            x.record,
           'fête': 
             x.steps[2].data[0].value,
           'source': 
@@ -43,18 +45,16 @@ function SearchController($scope, $log, $timeout, cfpLoadingBar, search)
         });
     }
 
-    loadData();
 
 /* LOADING BAR
     cfpLoadingBar.start();
-
     $timeout(function() {
         console.log("TEST completed timeout");
-
-
         cfpLoadingBar.complete();
     }, 400);
 */
+    // INIT
+    loadData();
 
 }
 

@@ -107,6 +107,16 @@ $stateProvider
         },
     })
 
+    .state('logged.details', {
+        url: "/details/:id",
+        views: {
+            "loggedview": {
+                templateUrl: templateDir + 'details.html',
+                controller: 'DetailsController',
+            }
+        },
+    })
+
     .state("logged.logout", {
         url: "/logout",
         views: {

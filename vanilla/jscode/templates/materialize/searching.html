@@ -1,5 +1,5 @@
 <h4>
-Search page!
+Search page
 </h4>
 
 <div ng-if='error'>
@@ -19,20 +19,20 @@ Search page!
 
     <tbody>
       <tr ng-repeat='row in data'>
-        <td ng-repeat='(key, value) in row'>
+        <td ng-repeat='(key, value) in row' ng-if='key != "id"'>
             {{ value }}
         </td>
-<!--
-        <td>{{ row.record }}</td>
         <td>
-            <div ng-repeat='mystep in row.steps'>
-                <i>Step {{ mystep.step }}</i>:
-                <span ng-repeat='fields in mystep.data'>
-                    {{ fields.value }}
-                </span>
-            </div>
+            <a ui-sref='logged.details({id: row.id})'
+                class="waves-effect waves-light btn-floating">
+                <i class="material-icons">web</i>
+            </a>
         </td>
--->
+        <td>
+            <a class="waves-effect waves-light btn-floating disabled">
+                <i class="material-icons">mode_edit</i>
+            </a>
+        </td>
       </tr>
     </tbody>
   </table>
