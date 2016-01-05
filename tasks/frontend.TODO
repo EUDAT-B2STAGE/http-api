@@ -52,12 +52,19 @@ SEARCH:
         ☐ POST with key 'query' and json nested query
       ✔ buttons + single element @done (16-01-05 15:15)
     ☐ paging
+  ☐ Details
+    ☐ pages
+    ☐ images
+      ☐ lazy load 
+      https://github.com/Treri/me-lazyload
+      or
+      https://github.com/Pentiado/angular-lazy-img
+  ☐ View for parties
   ☐ change loading bar template
     ✔ removed for now @done (16-01-05 09:41)
 
 WELCOME:
-  ☐ slide through parts
-  http://materializecss.com/scrollspy.html
+  ☐ scrollspy also here
 
 SUBMIT:
   ☐ Submission steps

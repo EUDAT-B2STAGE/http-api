@@ -17,7 +17,7 @@ function SearchService($window, $http, $auth, $log) {
 
     var SEARCH_ENDPOINT = 'datavalues';
     var SUBMIT_ENDPOINT = 'datakeys';
-    var DOCUMENTS_ENDPOINT = 'docs';
+    var DOCUMENTS_ENDPOINT = 'datadocs';
     var USERS_ENDPOINT = 'accounts';
 
     self.getOrDefault = function (value, mydefault) {
@@ -34,8 +34,10 @@ function SearchService($window, $http, $auth, $log) {
         method = self.getOrDefault(method, 'GET');
         if (method == 'GET') {
             data = {};
+        } else {
+            data = self.getOrDefault(data, {});
+            $log.debug("Sending data", data);
         }
-        data = self.getOrDefault(data, {});
 
         var token = $auth.getToken();
         var req = {
@@ -47,7 +49,6 @@ function SearchService($window, $http, $auth, $log) {
             },
             data: data,
         }
-        console.log("DATA", data);
 
         return $http(req).then(
             function successCallback(response) {
@@ -69,7 +70,11 @@ function SearchService($window, $http, $auth, $log) {
     }
 
     self.getSteps = function(id) {
-        return self.apiCall(SUBMIT_ENDPOINT);
+        return self.apiCall(SUBMIT_ENDPOINT, id);
+    }
+
+    self.getDocs = function(id) {
+        return self.apiCall(DOCUMENTS_ENDPOINT, id);
     }
 
 }

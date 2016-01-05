@@ -14,7 +14,10 @@
 
    <div class="col s12 m9 l10">
   <!-- content -->
-      <div ng-repeat='step in data' id="step{{step.step}}" class="section scrollspy" scrollspy>
+
+      <!-- text -->
+      <div ng-repeat='step in data' id="step{{step.step}}" 
+        class="section scrollspy" scrollspy>
         <table class='striped responsive-table'>
          <thead>
            <tr>
@@ -28,7 +31,28 @@
             </tr>
           </tbody>
         </table>
-     </div>
+      </div>
+
+      <!-- pages -->
+      <div ng-repeat='image in images' id="image{{image.code}}" 
+        class="section scrollspy" scrollspy>
+        <h4> Page {{image.code}} </h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Transcription</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ image.filename }}</td>
+              <td> <div ng-bind-html-unsafe="image.transcriptions"></div> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
   <!-- content -->
    </div>
 
@@ -39,6 +63,11 @@
         <li ng-repeat='step in data'> 
           <a href="#step{{step.step}}">
             {{stepnames[step.step]}} 
+          </a>
+        </li>
+        <li ng-repeat='image in images'> 
+          <a href="#image{{image.code}}">
+            Page {{image.code}} 
           </a>
         </li>
       </ul>
