@@ -19,3 +19,12 @@ header, main, footer {
 .navbar {
   margin-bottom: 2em;
 }
+
+.pinned {
+    position: fixed !important;
+}
+
+.toc-wrapper {
+    position: relative;
+    margin-top: 42px;
+}

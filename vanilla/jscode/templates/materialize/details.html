@@ -1,14 +1,19 @@
-<h3>
-  Record <br> 
-  '{{ record }}'
-</h3>
+<!--
+<h3> Record <br> '{{ record }}' </h3>
+-->
 
-<div ng-if='error'>
-    <b>ERROR: {{ error }}</b>
+<div ng-if='error'> 
+  <!-- NO DATA -->
+  <b>ERROR: {{ error }}</b> 
 </div>
 
-<div ng-if='data' class="row">
-      <div ng-repeat='step in data'>
+<div ng-if='data'>
+  <!-- WITH DATA -->
+ <div class="row">
+
+   <div class="col s12 m9 l10">
+  <!-- CONTENT -->
+      <div ng-repeat='step in data' id="step{{step.step}}" class="section scrollspy" scrollspy>
         <table class='striped responsive-table'>
          <thead>
            <tr>
@@ -22,7 +27,23 @@
             </tr>
           </tbody>
         </table>
-      </div>
-</div>
+     </div>
+  <!-- CONTENT -->
+   </div>
 
+    <div class="col hide-on-small-only m3 l2">
+  <!-- Summary -->
+     <div class="pinned toc-wrapper">
+      <ul class="section table-of-contents">
+        <li ng-repeat='step in data'> 
+          <a 
+          href="#step{{step.step}}">Step {{step.step}} </a>
+        </li>
+      </ul>
+     </div>
+  <!-- Summary -->
+    </div>
+
+ </div> <!-- END OF ROW -->
+</div> <!-- END OF DATA -->
 
