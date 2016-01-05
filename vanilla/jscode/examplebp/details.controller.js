@@ -7,21 +7,32 @@ angular.module('web')
 function DetailsController($scope, $log, $stateParams, search)
 {
     $log.info("Single element");
-    $scope.record = $stateParams.id;
 
     function preProcessData(data) {
-        console.log(data);
-        return data[0].steps;
+        //console.log("Pre data", data);
+        return data.steps;
     }
 
     function loadData() {
 
-        search.getSingleData($stateParams.id).then(function(out){
+        search.getSingleData($stateParams.id).then(function(out_single){
             if (typeof out == 'string') {
                $log.error(out);
                $scope.error = "Service down...";
             } else {
-               $scope.data = preProcessData(out.data);
+               search.getSteps().then(function(out_steps) {
+                    if (typeof out == 'string') {
+                       $log.error(out);
+                       $scope.error = "Service down...";
+                    } else {
+                        var steps = [];
+                        forEach(out_steps.data, function (obj, i) {
+                            steps[obj.step.num] = obj.step.name;
+                        });
+                        $scope.data = preProcessData(out_single.data[0]);
+                        $scope.stepnames = steps;
+                    }
+               });
             }
         });
     }

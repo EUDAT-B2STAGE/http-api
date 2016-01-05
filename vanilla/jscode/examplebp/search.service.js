@@ -68,6 +68,10 @@ function SearchService($window, $http, $auth, $log) {
         return self.apiCall(SEARCH_ENDPOINT, id);
     }
 
+    self.getSteps = function(id) {
+        return self.apiCall(SUBMIT_ENDPOINT);
+    }
+
 }
 
 })();
