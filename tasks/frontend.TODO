@@ -45,10 +45,11 @@ SEARCH:
     ✔ json response @done (16-01-04 01:39)
   ☐ Land page for search
     ✔ api call @done (16-01-04 13:56)
-    ☐ table
+    ✔ table @done (16-01-05 09:40)
       ☐ filters? @ohboy
-  ☐ paging
+    ☐ paging
   ☐ change loading bar template
+    ✔ removed for now @done (16-01-05 09:41)
 
 WELCOME:
   ☐ slide through parts
@@ -183,3 +184,16 @@ COMPLETED:
      ✘ login button send to app @cancelled (15-12-29 15:42)
      ✔ description, features, about/contacts @done (16-01-02 16:47)
  ✔ root js app @done (16-01-02 16:48)
+
+--- ✄ -----------------------
+ ☐ TextAngular
+http://textangular.com/
+ ☐ TinyMCE
+https://www.tinymce.com/
+https://github.com/angular-ui/ui-tinymce
+ ☐ ngWYSIWYG
+http://psergus.github.io/ngWYSIWYG/
+ ☐ Froala (99$)
+https://www.froala.com/wysiwyg-editor
+
+

@@ -11,13 +11,18 @@ Search page!
   <table class='bordered highlight responsive-table'>
     <thead>
       <tr>
-          <th data-field="id">Record</th>
-          <th data-field="name">Content</th>
+          <th data-field="main">Fête</th>
+          <th data-field="source">Source</th>
+          <th data-field="name">Extrait</th>
       </tr>
     </thead>
 
     <tbody>
       <tr ng-repeat='row in data'>
+        <td ng-repeat='(key, value) in row'>
+            {{ value }}
+        </td>
+<!--
         <td>{{ row.record }}</td>
         <td>
             <div ng-repeat='mystep in row.steps'>
@@ -27,6 +32,7 @@ Search page!
                 </span>
             </div>
         </td>
+-->
       </tr>
     </tbody>
   </table>

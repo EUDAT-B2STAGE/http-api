@@ -16,7 +16,9 @@ function SearchService($window, $http, $auth, $log) {
         ;
 
     var SEARCH_ENDPOINT = 'newstepscontent';
+    //var SEARCH_ENDPOINT = 'datakeys';
     var SUBMIT_ENDPOINT = 'newsteps';
+    //var SUBMIT_ENDPOINT = 'datavalues';
     var DOCUMENTS_ENDPOINT = 'docs';
     var USERS_ENDPOINT = 'accounts';
 
