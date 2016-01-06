@@ -1,8 +1,5 @@
-<div class="container">
   
-  <h4>
-  Search page
-  </h4>
+<!-- <h4> Archive </h4> -->
 
   <div ng-if='error'>
       <b>ERROR: {{ error }}</b>
@@ -44,6 +41,10 @@
       </tbody>
     </table>
 
-  </div>
+    <pagination
+      page="1" page-size="10" total="800"
+      show-prev-next="true" dots=".." hide-if-empty="true"
+      adjacent="5" scroll-top="true"
+      pagination-action="changePage(page)" />
 
-</div>
+  </div>

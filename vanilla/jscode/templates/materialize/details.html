@@ -34,6 +34,12 @@
       </div>
 
       <!-- pages -->
+      <div ng-hide='images' class="card-panel red darken-4">
+        <span class="white-text">
+          No images or transcriptions found for this record.
+        </span>
+      </div>
+
       <div ng-repeat='image in images' id="image{{image.id}}" 
         class="section scrollspy" scrollspy>
         <h4> Page {{image.code}} </h4>
@@ -41,19 +47,33 @@
           <thead>
             <tr>
               <th>Image</th>
-              <th>Transcription</th>
+              <th ng-if="image.transcriptions">Transcription</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td class="celltop">
-                <img class="responsive-img z-depth-3" 
+                <img materialboxed 
+                  class="responsive-img z-depth-3 materialboxed"
+                  data-caption="{{image.code}}"
                   ng-src="static/uploads/{{ image.filename }}">
               </td>
-              <td width='55%' class="celltop"> 
-                <div ng-bind-html="image.transcriptions"
-                  class='transcription flow-text z-depth-3'
-                  ></div> 
+              <td width='55%' class="celltop" ng-if="image.transcriptions"> 
+
+<ul ng-if="image.transcriptions.length > 1" 
+  class="collapsible popout" data-collapsible="accordion" watch>
+<!-- Many transcript -->
+    <li ng-repeat="transcript in image.transcriptions track by $index">
+        <div class="collapsible-header">Transcript n.{{$index + 1}}</div>
+        <div class="collapsible-body transcription flow-text"
+            ng-bind-html="image.transcriptions"></div>
+    </li>
+</ul>
+
+<div ng-if="image.transcriptions.length == 1"
+  ng-bind-html="image.transcriptions" class='transcription flow-text z-depth-3'>
+<!-- One transcript -->
+</div> 
               </td>
             </tr>
           </tbody>
@@ -65,7 +85,7 @@
 
     <div class="col hide-on-small-only m2 l1">
   <!-- Summary -->
-     <div class="pinned toc-wrapper">
+      <div pushpin pushpin-offset="1">
       <ul class="section table-of-contents">
         <li ng-repeat='step in data'> 
           <a href="#step{{step.step}}">
@@ -82,6 +102,6 @@
   <!-- Summary -->
     </div>
 
+
  </div> <!-- END OF ROW -->
 </div> <!-- END OF DATA -->
-

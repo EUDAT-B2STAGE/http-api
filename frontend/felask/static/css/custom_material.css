@@ -20,6 +20,7 @@ header, main, footer {
   margin-bottom: 2em;
 }
 
+/* Push-pin CSS3 equivalence
 .pinned {
     position: fixed !important;
 }
@@ -28,6 +29,7 @@ header, main, footer {
     position: relative;
     margin-top: 42px;
 }
+*/
 
 .transcription {
   font-family: "Lucida Console", Monaco, monospace;
