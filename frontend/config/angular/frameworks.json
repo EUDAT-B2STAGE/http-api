@@ -48,7 +48,8 @@
 	    "angular-materialize/src/angular-materialize.js",
 	    // # OTHER LIBS
 	    "satellizer/satellizer.min.js",
-	    "angular-loading-bar/build/loading-bar.min.js"
+	    "angular-loading-bar/build/loading-bar.min.js",
+	    "angular-lazy-img/release/angular-lazy-img.min.js"
 	// JWT ?
 		//
 	// libs on demand

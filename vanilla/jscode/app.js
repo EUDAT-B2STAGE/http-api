@@ -14,10 +14,8 @@
 // THE LOADING BAR
         //'angular-loading-bar',
         'cfp.loadingBar',
-/*
-// LAZY LOAD
-        'oc.lazyLoad',
-*/
+// IMAGES LAZ LOAD
+        'angularLazyImg',
 
 // OTHERS?
     ]);

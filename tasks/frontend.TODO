@@ -48,9 +48,7 @@ SEARCH:
   ✔ Details @done (16-01-06 01:08)
     ✔ pages @done (16-01-06 01:08)
     ✔ images @done (16-01-06 01:08)
-      ☐ lazy load 
-      https://github.com/Treri/me-lazyload
-      or
+      ✔ lazy load  @done (16-01-06 01:48)
       https://github.com/Pentiado/angular-lazy-img
   ☐ Land page for search
     ✔ api call @done (16-01-04 13:56)
@@ -67,10 +65,15 @@ SEARCH:
     ☐ angular open new tab /page
     ☐ via python request and jinja template
 
+Tabs?
+http://krescruz.github.io/angular-materialize/#tabs
+
 WELCOME:
+  ☐ put given images
   ☐ scrollspy also here
 
 SUBMIT:
+  ☐ Submission skeleton with collapsible or collections
   ☐ Submission steps
   http://materializecss.com/collections.html
 
