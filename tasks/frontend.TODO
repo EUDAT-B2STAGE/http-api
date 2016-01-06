@@ -53,15 +53,20 @@ SEARCH:
   ☐ Land page for search
     ✔ api call @done (16-01-04 13:56)
     ✔ table @done (16-01-05 09:40)
-      ☐ filters
-        ☐ POST with key 'filter' and json data
-      ☐ direct query?
-        ☐ POST with key 'query' and json nested query
+      ☐ POST with key 'operations' and json data
+        ☐ for each operation claim a 'position'
+        ☐ operations
+          ☐ filter
+          ☐ groupby
+          ☐ order
+          ☐ and so on
+      ☐ TypeAhead autocomplete
+      https://material.angularjs.org/latest/demo/autocomplete
       ✔ buttons + single element @done (16-01-05 15:15)
     ✔ thumbnail @done (16-01-06 02:20)
     ✔ paging @done (16-01-06 01:08)
       ☐ add functionality
-  ☐ View for parties
+    ☐ View for parties
   ☐ Zoomify 
     ☐ angular open new tab /page
     ☐ via python request and jinja template
@@ -72,6 +77,7 @@ http://krescruz.github.io/angular-materialize/#tabs
 WELCOME:
   ☐ put given images
   ☐ scrollspy also here
+  ☐ little search as one section: on every field
 
 SUBMIT:
   ☐ Submission skeleton with collapsible or collections

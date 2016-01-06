@@ -56,6 +56,14 @@ function SearchController($scope, $log, $state, search)
         });
     }
 
+    $scope.search = function(input) {
+      $log.info("Search!", input);
+    }
+
+    $scope.changePage = function(page) {
+      $log.info("Page", page);
+    }
+
 
 /* LOADING BAR
     cfpLoadingBar.start();

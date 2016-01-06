@@ -1,6 +1,6 @@
 <!-- Angular dynamic material menu -->
 <ul id="nav-mobile" class="right hide-on-med-and-down">
 	<li ng-repeat='item in menu'>
-		<a ui-sref="logged.{{item}}">{{item}}</a>
+		<a ui-sref="logged.{{item.toLowerCase()}}">{{item}}</a>
 	</li>
 </ul>

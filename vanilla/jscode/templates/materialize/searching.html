@@ -1,11 +1,32 @@
   
 <!-- <h4> Archive </h4> -->
 
-  <div ng-if='error'>
-      <b>ERROR: {{ error }}</b>
+<div ng-if='error'>
+    <b>ERROR: {{ error }}</b>
+</div>
+
+<div ng-if='data'>
+
+  <ul class="tabs z-depth-1" tabs>
+      <li class="tab col s3"><a class="active" href="#simple">Simple</a></li>
+      <li class="tab col s3"><a href="#tree">Tree view</a></li>
+      <li class="tab col s3"><a href="#list">List</a></li>
+  </ul>
+
+  <div id="simple" class="col s12">
+      
+  <div class="row" style='padding-top:20px;'>
+    <div class="input-field col s2"></div>
+    <div class="input-field col s8">
+      <i class="material-icons prefix">search</i>
+      <input id="icon_prefix" type="text" class="validate" 
+         ng-value="{{selected}}" ng-model="selected" ng-change="search(selected )"
+         autofocus>
+      <label for="icon_prefix">Search across the database</label>
+    </div>
+    <div class="input-field col s2"></div>
   </div>
 
-  <div ng-if='data'>
 
     <table class='bordered highlight responsive-table'>
       <thead>
@@ -32,8 +53,9 @@
               lazy-img="/static/uploads/{{ row.image }}" 
               class="z-depth-1">
           </td>
-          <td ng-repeat='(key, value) in row' ng-if='key != "id" || key !="image"'>
-              {{ value }}
+          <td ng-repeat='(key, value) in row' 
+            ng-if='key != "id" && key !="image"'>
+            {{ value }}
           </td>
           <td>
               <a ui-sref='logged.details({id: row.id})'
@@ -60,5 +82,15 @@
       show-prev-next="true" dots=".." hide-if-empty="true"
       adjacent="5" scroll-top="true"
       pagination-action="changePage(page)" />
+    </div>
 
-  </div>
+    <div id="tree" class="col s12">
+      Tree view
+    </div>
+
+    <div id="list" class="col s12">
+      List
+    </div>
+
+<!-- END OF DATA DIV -->
+</div>
