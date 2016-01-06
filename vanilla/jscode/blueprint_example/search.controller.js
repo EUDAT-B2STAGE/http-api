@@ -6,69 +6,56 @@ angular.module('web')
 
 function SearchController($scope, $log, $state, search)
 {
-    $log.info("Ready to search");
+  $log.info("Ready to search");
 
-    function preProcessData(data) {
-
-      var elements = [];
-      forEach(data, function (x, i) {
-
-// CHECK FOR DOCS images
-
-        //console.log(x);
-        elements.push({
+  function preProcessData(data) {
+    var elements = [];
+    forEach(data, function (x, i) {
+      elements.push({
+        'id': x.record,
+        'image': null,
+// TO FIX: 
 // Checks on positions?
-          'id': 
-            x.record,
-          'image':
-            null,
-          'fête': 
-            x.steps[2].data[0].value,
-          'source': 
-            x.steps[1].data[0].value,
-          'extrait':
-            x.steps[0].data[0].value,
-        });
+// there must better options to get those values with the right names
+        'fête': x.steps[2].data[0].value,
+        'source': x.steps[1].data[0].value,
+        'extrait': x.steps[0].data[0].value,
       });
-        //console.log(elements);
-      return elements;
+    });
+    return elements;
+  }
 
-    }
+  function loadData() {
 
-    function loadData() {
+      var json = {'test': 'me'};
+      //search.getData().then(function(out_data){
+      search.getFromQuery(json).then(function(out_data) {
+        console.log(out_data);
+        if (checkApiResponseTypeError(out_data)) {
+          setScopeError(out_data, $log, $scope);
+        } else {
+          $scope.data = preProcessData(out_data.data);
+          forEach($scope.data, function(x,i) {
+            search.getDocs(x.id).then(function(out_docs) { 
+              if (out_docs.count > 0) {
 
-        var json = {'test': 'me'};
-        search.getFromQuery(json).then(function(response){
-          console.log(response);
-        });
-        return true;
+                $scope.data[i].image = 
+                  out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
+                    + '/TileGroup0/0-0-0.jpg';
+              }
+            });
+          });
+        }
+      });
+  }
 
-        search.getData().then(function(out_data){
-            if (checkApiResponseTypeError(out_data)) {
-              setScopeError(out_data, $log, $scope);
-            } else {
-              $scope.data = preProcessData(out_data.data);
-              forEach($scope.data, function(x,i){
-                search.getDocs(x.id).then(function(out_docs) { 
-                  if (out_docs.count > 0) {
+  $scope.search = function(input) {
+    $log.info("Search!", input);
+  }
 
-                    $scope.data[i].image = 
-                      out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-                        + '/TileGroup0/0-0-0.jpg';
-                  }
-                });
-              });
-            }
-        });
-    }
-
-    $scope.search = function(input) {
-      $log.info("Search!", input);
-    }
-
-    $scope.changePage = function(page) {
-      $log.info("Page", page);
-    }
+  $scope.changePage = function(page) {
+    $log.info("Page", page);
+  }
 
 
 /* LOADING BAR
@@ -79,7 +66,7 @@ function SearchController($scope, $log, $state, search)
     }, 400);
 */
     // INIT
-    loadData();
+  loadData();
 
 }
 
