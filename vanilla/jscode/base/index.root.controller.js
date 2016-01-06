@@ -20,7 +20,7 @@ function AppRootController($scope, $log, $state)
             // a - the view is a sub child
             // b - there is a parameter into the url (so direct link won't work)
         if (suffix.indexOf('.') < 0 && x.url.indexOf(':') < 0) {
-            console.log(x, i, suffix, suffix.indexOf('.'));
+            //console.log(x, i, suffix, suffix.indexOf('.'));
     		if (prefix == key) {
     			$scope.menu.push(x.name.substr(7));
     		}

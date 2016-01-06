@@ -20,6 +20,8 @@ function SearchController($scope, $log, $state, search)
 // Checks on positions?
           'id': 
             x.record,
+          'image':
+            null,
           'fête': 
             x.steps[2].data[0].value,
           'source': 
@@ -35,12 +37,21 @@ function SearchController($scope, $log, $state, search)
 
     function loadData() {
 
-        search.getData().then(function(out){
-            if (typeof out == 'string') {
-               $log.error(out);
-               $scope.error = "Service down...";
+        search.getData().then(function(out_data){
+            if (checkApiResponseTypeError(out_data)) {
+              setScopeError(out_data);
             } else {
-               $scope.data = preProcessData(out.data);
+              $scope.data = preProcessData(out_data.data);
+              forEach($scope.data, function(x,i){
+                search.getDocs(x.id).then(function(out_docs) { 
+                  if (out_docs.count > 0) {
+
+                    $scope.data[i].image = 
+                      out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
+                        + '/TileGroup0/0-0-0.jpg';
+                  }
+                });
+              });
             }
         });
     }

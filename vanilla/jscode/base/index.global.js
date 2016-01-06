@@ -14,3 +14,11 @@ var forEach = function (collection, callback, scope) {
   }
 };
 
+function checkApiResponseTypeError(data) {
+  return typeof data == 'string';
+}
+
+function setScopeError(message) {
+  $log.error(message);
+  $scope.error = "Service down...";
+}

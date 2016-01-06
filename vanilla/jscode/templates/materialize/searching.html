@@ -10,6 +10,7 @@
     <table class='bordered highlight responsive-table'>
       <thead>
         <tr>
+            <th data-field="source">Vignette</th>
             <th data-field="main">Fête</th>
             <th data-field="source">Source</th>
             <th data-field="name">Extrait</th>
@@ -18,7 +19,20 @@
 
       <tbody>
         <tr ng-repeat='row in data'>
-          <td ng-repeat='(key, value) in row' ng-if='key != "id"'>
+          <!-- IMAGE -->
+          <td> 
+            <div ng-hide='row.image'> 
+              <a class="waves-effect waves-light btn disabled">
+                <i class="material-icons blue-grey-text">
+                  center_focus_weak
+                </i>
+              </a>
+            </div>
+            <img ng-if='row.image' 
+              lazy-img="/static/uploads/{{ row.image }}" 
+              class="z-depth-1">
+          </td>
+          <td ng-repeat='(key, value) in row' ng-if='key != "id" || key !="image"'>
               {{ value }}
           </td>
           <td>
