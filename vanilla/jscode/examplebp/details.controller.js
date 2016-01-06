@@ -13,16 +13,16 @@ function DetailsController($scope, $log, $stateParams, search)
       // SINGLE DETAILS
       search.getSingleData($stateParams.id).then(function(out_single){
         if (checkApiResponseTypeError(out_single)) {
-            setScopeError(out_single);
+            setScopeError(out_single, $log, $scope);
         } else {
             if (out_single.count < 1) {
-               setScopeError("No data found");
+               setScopeError("No data found", $log, $scope);
                return;
             }
           // STEPS INFO
           search.getSteps().then(function(out_steps) {
             if (checkApiResponseTypeError(out_steps)) {
-                setScopeError(out_steps);
+                setScopeError(out_steps, $log, $scope);
             } else {
                 var steps = [];
                 forEach(out_steps.data, function (obj, i) {
@@ -33,7 +33,7 @@ function DetailsController($scope, $log, $stateParams, search)
                 //DOCUMENTS
                 search.getDocs($stateParams.id).then(function(out_docs) {
                   if (checkApiResponseTypeError(out_docs)) {
-                    setScopeError(out_docs);
+                    setScopeError(out_docs, $log, $scope);
                   } else {
                       if (out_docs.count > 0) {
                           $scope.images = out_docs.data[0].images;

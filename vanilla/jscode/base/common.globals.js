@@ -18,9 +18,9 @@ function checkApiResponseTypeError(data) {
   return typeof data == 'string';
 }
 
-function setScopeError(message) {
-  $log.error(message);
-  $scope.error = "Service down...";
+function setScopeError(message, log, scope) {
+  log.error(message);
+  scope.error = "Service down...";
 }
 
 String.prototype.capitalizeFirstLetter = function() {

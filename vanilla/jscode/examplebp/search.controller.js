@@ -39,7 +39,7 @@ function SearchController($scope, $log, $state, search)
 
         search.getData().then(function(out_data){
             if (checkApiResponseTypeError(out_data)) {
-              setScopeError(out_data);
+              setScopeError(out_data, $log, $scope);
             } else {
               $scope.data = preProcessData(out_data.data);
               forEach($scope.data, function(x,i){
