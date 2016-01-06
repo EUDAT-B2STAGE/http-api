@@ -8,7 +8,10 @@ function RestApiService($window, $http, $auth, $log) {
 
     var self = this;
 
+    // This is for development.
+    // In production nginx should provide access to 'api' url
     var API_PORT = 8081;
+
     var API_URL =
         window.location.protocol + "//" + 
         window.location.host + ':' + API_PORT + 
@@ -30,7 +33,7 @@ function RestApiService($window, $http, $auth, $log) {
 
         //DEFAULTS
         endpoint = self.getOrDefault(endpoint, self.endpoints.search);
-        if (typeof key !== 'undefined') {
+        if (typeof key !== 'undefined' && method != 'POST') {
             endpoint += '/' + key;
         }
         method = self.getOrDefault(method, 'GET');

@@ -25,6 +25,10 @@ function SearchService($log, api) {
         return api.apiCall(api.endpoints.documents, id);
     }
 
+    self.getFromQuery = function(json) {
+        return api.apiCall(api.endpoints.search, 'query', 'POST', {'query':json});
+    }
+
 }
 
 })();

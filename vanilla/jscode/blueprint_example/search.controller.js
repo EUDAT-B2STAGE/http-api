@@ -37,6 +37,12 @@ function SearchController($scope, $log, $state, search)
 
     function loadData() {
 
+        var json = {'test': 'me'};
+        search.getFromQuery(json).then(function(response){
+          console.log(response);
+        });
+        return true;
+
         search.getData().then(function(out_data){
             if (checkApiResponseTypeError(out_data)) {
               setScopeError(out_data, $log, $scope);
