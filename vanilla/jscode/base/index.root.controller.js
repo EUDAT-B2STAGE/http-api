@@ -22,7 +22,7 @@ function AppRootController($scope, $log, $state)
         if (suffix.indexOf('.') < 0 && x.url.indexOf(':') < 0) {
             //console.log(x, i, suffix, suffix.indexOf('.'));
     		if (prefix == key) {
-    			$scope.menu.push(x.name.substr(7));
+    			$scope.menu.push(x.name.substr(7).capitalizeFirstLetter());
     		}
         }
 	});
