@@ -15,6 +15,38 @@ function SearchController($scope, $log, $state, search)
   //var templateDir = templateDirBase + framework + '/';
   $scope.customTemplateDir = templateDirBase + 'custom/' + framework + '/';
 
+////////////////////////////////////////
+////////////////////////////////////////
+  self.types = [
+      {value: 0, text: 'string', desc:
+          'All text is allowed'},
+      {value: 1, text: 'number', desc:
+          'Only integers values'},
+      {value: 2, text: 'email', desc:
+          'Only e-mail address (e.g. name@mailserver.org)'},
+      {value: 3, text: 'url', desc:
+          'Only web URL (e.g. http://website.com)'},
+      {value: 4, text: 'date', desc:
+          'Choose a day from a calendar'},
+      {value: 5, text: 'time', desc:
+          'Choose hour and minutes'},
+      {value: 6, text: 'pattern', desc:
+          'Define a regular expression for a custom type'},
+      {value: 7, text: 'color', desc:
+          'Only colors in hexadecimal value. Choose from color picker.'},
+      {value: 8, text: 'list', desc:
+          'Define a list of possible values (e.g. a dictionary)'},
+  ];
+  function getType(key) {
+      // save type to be sure in the future?
+      var type = self.types[0].text;
+      if (self.types[key])
+          type = self.types[key].text;
+      return type;
+  }
+////////////////////////////////////////
+////////////////////////////////////////
+
   function preProcessData(data) {
     var elements = [];
     forEach(data, function (x, i) {
@@ -56,27 +88,43 @@ $scope.treeOptions = {
         labelSelected: "a8"
     }
 }
-$scope.showSelected = function(sel) {
-  $log.info("Selected node", sel);
-   //$scope.selectedNode = sel;
+$scope.showSelected = function(selected) {
+  $log.info("Selected node", selected);
+  $scope.selectedTreeObj = selected.info;
 };
 
-function treeProcessData(data) {
-  console.log(data);
-  $scope.myTree = 
-    [
-        { "name" : "Joe", "age" : "21", "children" : [
-            { "name" : "Smith", "age" : "42", "children" : [] },
-            { "name" : "Gary", "age" : "21", "children" : [
-                { "name" : "Jenifer", "age" : "23", "children" : [
-                    { "name" : "Dani", "age" : "32", "children" : [] },
-                    { "name" : "Max", "age" : "34", "children" : [] }
-                ]}
-            ]}
-        ]},
-        { "name" : "Albert", "age" : "33", "children" : [] },
-        { "name" : "Ron", "age" : "29", "children" : [] }
-    ];
+$scope.ucFirst = function(string) {
+  return string.capitalizeFirstLetter();
+}
+
+function treeProcessData(steps) {
+
+  var tree = [];
+
+  forEach(steps, function(single, i){
+    //console.log(i, single);
+    var fields = [];
+    forEach(single.fields, function(field, j){
+      //console.log(field);
+      var infos = {
+        'name': field.name,
+        'values': field.options,
+        'type': getType(field.type),
+        'required': field.required,
+      };
+      fields.push({
+        'type': 'field', 'name': field.name, 'info': infos, 
+        "children": []});
+    });
+    //console.log(fields);
+    tree.push({
+      'type': 'step', 'name': single.step.name, 
+      "children": fields});
+  });
+
+  console.log("TREE", tree);
+  $scope.myTree = tree;
+
 }
 
 /*****************************/
@@ -139,22 +187,23 @@ $scope.data = {}
         if (checkApiResponseTypeError(out_data)) {
           setScopeError(out_data, $log, $scope);
         } else {
-          treeProcessData(out_data.data);
-          console.log($scope.myTree);
-          return true;
-          $scope.data = preProcessData(out_data.data);
-          forEach($scope.data, function(x,i) {
-            search.getDocs(x.id).then(function(out_docs) { 
-              if (out_docs.count > 0) {
+          search.getSteps().then(function(out_steps) { 
+            treeProcessData(out_steps.data);
+            return true;
+            $scope.data = preProcessData(out_data.data);
+            forEach($scope.data, function(x,i) {
+              search.getDocs(x.id).then(function(out_docs) { 
+                if (out_docs.count > 0) {
 
-                $scope.data[i].image = 
-                  out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-                    + '/TileGroup0/0-0-0.jpg';
-              }
-            });
-          });
-        }
-      });
+                  $scope.data[i].image = 
+                    out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
+                      + '/TileGroup0/0-0-0.jpg';
+                }
+              }); // GET DOCUMENTS
+            }); // FOREACH
+          }); // STEPS
+        } // ELSE
+      }); // GET DATA
   }
 
   $scope.search = function(input) {
