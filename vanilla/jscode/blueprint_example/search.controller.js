@@ -143,17 +143,31 @@ $scope.data = {}
   }
 
   // https://material.angularjs.org/latest/demo/autocomplete
-  self.states = loadAll();
+  self.states = {};
   $scope.results = [];
 
   function loadAll() {
-    var allStates = 'test, hello mah, hello world';
+
+    var auto = [];
+    forEach($scope.autocomplete, function(data, step){
+      forEach(data, function(state, key){
+        auto.push({
+          value: state.toLowerCase(),
+          display: state,
+          type: step,
+        })
+      });
+    });
+    return auto;
+/*
+    var allStates = 'test, hello mah, Hello world';
       return allStates.split(/, +/g).map( function (state) {
         return {
           value: state.toLowerCase(),
           display: state
         };
       });
+*/
   }
   function createFilterFor(query) {
     var lowercaseQuery = angular.lowercase(query);
@@ -180,7 +194,8 @@ $scope.data = {}
 
       // Load autocomplete for each step
       $scope.autocomplete = [];
-      for (var i = 0; i < 3; i++) {
+      var steps = 3;
+      for (var i = 0; i < steps; i++) {
         var json = {
           'limit': 0, 
           'autocomplete': {'step': i+1, 'position': 1}
@@ -189,8 +204,10 @@ $scope.data = {}
           if (out_data.count < 2) {
             return false;
           }
-          $scope.autocomplete.push(out_data.data, i);
-          console.log(out_data);
+          $scope.autocomplete.push(out_data.data);
+          if ($scope.autocomplete.length == steps) {
+            self.states = loadAll(); 
+          }
         });
       };
 

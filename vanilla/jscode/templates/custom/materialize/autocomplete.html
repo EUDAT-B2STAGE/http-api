@@ -7,7 +7,9 @@
     <md-content layout-padding layout="column">
       <form ng-submit="$event.preventDefault()">
 
-        <md-chips ng-model="results" readonly="false"
+        <md-chips ng-model="results" 
+          readonly="false"
+          md-require-match="true"
           md-transform-chip="newChip($chip)">
 
           <md-autocomplete
@@ -16,12 +18,10 @@
               md-selected-item-change="selectedItemChange(item)"
               md-items="item in querySearch(searchText)"
               md-item-text="item.display"
-              md-min-length="0"
               md-menu-class="autocomplete-custom-template"
-              placeholder="Write to search">
-<!-- to activate autofocus:
+              md-min-length="1"
+              placeholder="Write to search"
               md-autofocus >
--->
 
             <md-item-template>
               <span class="item-title">
