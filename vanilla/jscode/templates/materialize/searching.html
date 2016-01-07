@@ -1,3 +1,50 @@
+
+<div layout="column" ng-cloak>
+<md-content layout-padding layout="column">
+  <form ng-submit="$event.preventDefault()">
+    <h2 class="md-title"> I will make you search </h2>
+
+    <md-chips ng-model="results" readonly="false"
+      md-transform-chip="newChip($chip)">
+      <md-autocomplete
+          md-search-text-change="searchTextChange(searchText)"
+          md-search-text="searchText"
+          md-selected-item-change="selectedItemChange(item)"
+          md-items="item in querySearch(searchText)"
+          md-item-text="item.display"
+          md-min-length="0"
+          md-menu-class="autocomplete-custom-template"
+          placeholder="Write to search" 
+          md-autofocus>
+        <md-item-template>
+          <span class="item-title">
+            <span md-highlight-text="searchText" md-highlight-flags="^i"
+            >{{item.display}}</span>
+          </span>
+          <span class="item-metadata">
+            <span class="item-metastat">
+              <i>Type: <strong>{{item.type}}</strong></i>
+            </span>
+          </span>
+        </md-item-template>
+<!--
+        <md-not-found>
+          No states matching "{{searchText}}" were found.
+          <a ng-click="newState(searchText)">Create a new one!</a>
+        </md-not-found>
+-->
+      </md-autocomplete>
+        <md-chip-template>
+        <span>
+          <strong>[{{$index+1}}] {{$chip.display}}</strong>
+          <em>({{$chip.type}})</em>
+        </span>
+      </md-chip-template>
+      </md-chips>
+      <br/>
+    </form>
+  </md-content>
+</div>
   
 <!-- <h4> Archive </h4> -->
 
@@ -6,6 +53,7 @@
 </div>
 
 <div ng-if='data'>
+
 
   <ul class="tabs z-depth-1" tabs>
       <li class="tab col s3"><a class="active" href="#simple">Simple</a></li>

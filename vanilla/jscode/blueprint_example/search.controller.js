@@ -25,7 +25,49 @@ function SearchController($scope, $log, $state, search)
     return elements;
   }
 
+/*****************************/
+  // https://material.angularjs.org/latest/demo/chips
+  $scope.newChip = function(chip) {
+    console.log("CHIP", chip);
+  }
+
+  // https://material.angularjs.org/latest/demo/autocomplete
+  var self = this;
+  self.states = loadAll();
+  $scope.results = [];
+
+  function loadAll() {
+    var allStates = 'test, hello mah, hello world';
+      return allStates.split(/, +/g).map( function (state) {
+        return {
+          value: state.toLowerCase(),
+          display: state
+        };
+      });
+  }
+  function createFilterFor(query) {
+    var lowercaseQuery = angular.lowercase(query);
+    return function filterFn(state) {
+      return (state.value.indexOf(lowercaseQuery) === 0);
+    };
+  }
+  $scope.querySearch = function(query) {
+    //$log.debug("CHECK", self.states);
+    return query ? self.states.filter( createFilterFor(query) ) : self.states;
+  }
+/*
+  $scope.searchTextChange = function(text) {
+    $log.debug('Text changed to ' + text);
+  }
+*/
+  $scope.selectedItemChange = function(item) {
+    $log.info('Item changed to ' + JSON.stringify(item));
+  }
+/*****************************/
+
   function loadData() {
+
+  return true;
 
       var json = {'test': 'me'};
       //search.getData().then(function(out_data){

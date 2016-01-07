@@ -9,6 +9,8 @@
         'ui.router', //'ngRoute',
 // BOOTSTRAP
         //'mgcrea.ngStrap',
+// OFFICIAL MATERIAL
+        'ngMaterial',
 // MATERIAL DESIGN
         'ui.materialize',
 // THE LOADING BAR

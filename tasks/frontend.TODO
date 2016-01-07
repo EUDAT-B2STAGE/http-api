@@ -53,6 +53,20 @@ SEARCH:
   ☐ Land page for search
     ✔ api call @done (16-01-04 13:56)
     ✔ table @done (16-01-05 09:40)
+      ✔ TypeAhead autocomplete @done (16-01-07 03:15)
+      https://material.angularjs.org/latest/demo/autocomplete
+      ✔ Chips to add multiple words @done (16-01-07 03:15)
+      http://materializecss.com/chips.html
+      ✔ buttons + single element @done (16-01-05 15:15)
+    ✔ thumbnail @done (16-01-06 02:20)
+    ✔ paging @done (16-01-06 01:08)
+      ☐ template
+      ☐ action
+
+#IMPORTANT
+    ☐ View for parties
+    ☐ Tree from steps
+    ☐ RDB query
       ☐ POST with key 'operations' and json data
         ☐ for each operation claim a 'position', then chain them
         ☐ operations
@@ -60,21 +74,12 @@ SEARCH:
           ☐ groupby
           ☐ order
           ☐ and so on
-      ☐ TypeAhead autocomplete
-      https://material.angularjs.org/latest/demo/autocomplete
-      ☐ Chips to add multiple words
-      http://materializecss.com/chips.html
-      ✔ buttons + single element @done (16-01-05 15:15)
-    ✔ thumbnail @done (16-01-06 02:20)
-    ✔ paging @done (16-01-06 01:08)
-      ☐ template
-      ☐ action
-    ☐ View for parties
-    ☐ Tree from steps
     https://wix.github.io/angular-tree-control/
     http://jsfiddle.net/eu81273/8LWUc/18/
     OR 
     http://nickperkinslondon.github.io/angular-bootstrap-nav-tree/test/bs3_ng120_test_page.html
+#IMPORTANT
+
   ☐ Zoomify 
     ☐ angular open new tab /page
     ☐ via python request and jinja template

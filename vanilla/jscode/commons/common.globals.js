@@ -14,8 +14,16 @@ var forEach = function (collection, callback, scope) {
   }
 };
 
-function checkApiResponseTypeError(data) {
-  return typeof data == 'string';
+Object.prototype.hasOwnProperty = function(property) {
+    return typeof this[property] !== 'undefined';
+};
+
+function checkApiResponseTypeError(obj) {
+  if (typeof obj == 'string') {
+    return true;
+  } else if (obj.hasOwnProperty('message')) {
+    return true;
+  }
 }
 
 function setScopeError(message, log, scope) {
