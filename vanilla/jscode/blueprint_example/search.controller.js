@@ -28,7 +28,11 @@ function SearchController($scope, $log, $state, search)
 /*****************************/
   // https://material.angularjs.org/latest/demo/chips
   $scope.newChip = function(chip) {
-    console.log("CHIP", chip);
+    $log.info("Requested tag:", chip);
+    if (typeof chip == 'string') {
+      $log.debug("User chip");
+      return {value:chip, display:chip, type:'custom'};
+    }
   }
 
   // https://material.angularjs.org/latest/demo/autocomplete

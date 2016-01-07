@@ -62,18 +62,17 @@ SEARCH:
     ✔ paging @done (16-01-06 01:08)
       ☐ template
       ☐ action
+    ☐ RDB queries
+      ☐ for each operation claim a 'position', then chain them
 
 #IMPORTANT
+    ☐ RDB query
+      ✔ POST with key 'operations' and json data @done (16-01-07 03:18)
+        ☐ Do a @workaround
+          ☐ specific query on a given json key
+    ☐ Complete chips and typeahead
     ☐ View for parties
     ☐ Tree from steps
-    ☐ RDB query
-      ☐ POST with key 'operations' and json data
-        ☐ for each operation claim a 'position', then chain them
-        ☐ operations
-          ☐ filter
-          ☐ groupby
-          ☐ order
-          ☐ and so on
     https://wix.github.io/angular-tree-control/
     http://jsfiddle.net/eu81273/8LWUc/18/
     OR 
