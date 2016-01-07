@@ -1,0 +1,56 @@
+<table class='bordered highlight responsive-table'>
+  <thead>
+    <tr>
+        <th data-field="source">Vignette</th>
+        <th data-field="main">Fête</th>
+        <th data-field="source">Source</th>
+        <th data-field="name">Extrait</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr ng-repeat='row in data'>
+      <!-- IMAGE -->
+      <td> 
+        <div ng-hide='row.image'> 
+          <a class="waves-effect waves-light btn disabled">
+            <i class="material-icons blue-grey-text">
+              center_focus_weak
+            </i>
+          </a>
+        </div>
+        <img ng-if='row.image' 
+          lazy-img="/static/uploads/{{ row.image }}" 
+          class="z-depth-1">
+      </td>
+      <td ng-repeat='(key, value) in row' 
+        ng-if='key != "id" && key !="image"'>
+        {{ value }}
+      </td>
+      <td>
+          <a ui-sref='logged.details({id: row.id})'
+              class="waves-effect waves-light btn-floating lime lighten-3">
+              <i class="material-icons blue-grey-text">web</i>
+          </a>
+      </td>
+      <td>
+          <a class="waves-effect waves-light btn-floating disabled">
+              <i class="material-icons">mode_edit</i>
+          </a>
+      </td>
+      <td>
+          <a class="waves-effect waves-light btn-floating disabled">
+              <i class="material-icons">delete</i>
+          </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<pagination
+  page="1" page-size="10" total="800"
+  show-prev-next="true" dots=".." hide-if-empty="true"
+  adjacent="5" scroll-top="true"
+  pagination-action="changePage(page)" 
+  />
+

@@ -7,6 +7,10 @@ angular.module('web')
 function SearchController($scope, $log, $state, search)
 {
   $log.info("Ready to search");
+  var framework = 'materialize';
+  var templateDirBase = '/static/app/templates/';
+  //var templateDir = templateDirBase + framework + '/';
+  $scope.customTemplateDir = templateDirBase + 'custom/' + framework + '/';
 
   function preProcessData(data) {
     var elements = [];

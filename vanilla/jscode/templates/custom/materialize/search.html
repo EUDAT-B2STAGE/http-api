@@ -1,13 +1,11 @@
 
-  
-<!-- <h4> Archive </h4> -->
-
 <div ng-if='error'>
     <b>ERROR: {{ error }}</b>
 </div>
 
 <div ng-if='data'>
 
+  <!-- TABS -->
   <ul class="tabs z-depth-1" tabs>
       <li class="tab col s3"><a class="active" href="#simple">Simple</a></li>
       <li class="tab col s3"><a href="#tree">Tree view</a></li>
@@ -15,141 +13,19 @@
   </ul>
 
   <div id="simple" class="col s12 tabtop">
-      
-<!-- SEARCH INPUT -->
-<md-content layout-padding layout="column">
-  <form ng-submit="$event.preventDefault()">
-
-<table>
-  <tr>
-    <td> <i class="material-icons prefix">search</i> </td>
-    <td width='95%'>
-      
-    <md-chips ng-model="results" readonly="false"
-      md-transform-chip="newChip($chip)">
-      <md-autocomplete
-          md-search-text-change="searchTextChange(searchText)"
-          md-search-text="searchText"
-          md-selected-item-change="selectedItemChange(item)"
-          md-items="item in querySearch(searchText)"
-          md-item-text="item.display"
-          md-min-length="0"
-          md-menu-class="autocomplete-custom-template"
-          placeholder="Write to search" 
-          md-autofocus>
-        <md-item-template>
-          <span class="item-title">
-            <span md-highlight-text="searchText" md-highlight-flags="^i"
-            >{{item.display}}</span>
-          </span>
-          <span class="item-metadata">
-            <span class="item-metastat">
-              <i>Type: <strong>{{item.type}}</strong></i>
-            </span>
-          </span>
-        </md-item-template>
-<!--
-        <md-not-found>
-          No states matching "{{searchText}}" were found.
-          <a ng-click="newState(searchText)">Create a new one!</a>
-        </md-not-found>
--->
-      </md-autocomplete>
-        <md-chip-template>
-        <span>
-          <strong>[{{$index+1}}] {{$chip.display}}</strong>
-          <em>({{$chip.type}})</em>
-        </span>
-      </md-chip-template>
-      </md-chips>
-      <br/>
-    </form>
-  </md-content>
-    </td>
-  </tr>
-</table>
-
-<!-- OLD
-  <div class="row" style='padding-top:20px;'>
-    <div class="input-field col s2"></div>
-    <div class="input-field col s8">
-      <i class="material-icons prefix">search</i>
-      <input id="my_search" type="text" class="validate" 
-         ng-value="{{selected}}" ng-model="selected" ng-change="search(selected )"
-         autofocus>
-      <label for="my_search">Search across the database</label>
+    <div ng-include="customTemplateDir + '/autocomplete.html'"></div>
+    <!-- DIV FOR DATA > 0 -->
+    <div ng-if='data.length > 0'>
+      <div ng-include="customTemplateDir + '/datatable.html'"></div>
     </div>
-    <div class="input-field col s2"></div>
+  </div> <!-- DIV FOR simple TAB -->
+
+  <div id="tree" class="col s12 tabtop">
+    Tree view
   </div>
--->
-<!-- SEARCH INPUT -->
 
-  <div ng-if='data.length > 0'>
-    <table class='bordered highlight responsive-table'>
-      <thead>
-        <tr>
-            <th data-field="source">Vignette</th>
-            <th data-field="main">Fête</th>
-            <th data-field="source">Source</th>
-            <th data-field="name">Extrait</th>
-        </tr>
-      </thead>
+  <div id="list" class="col s12 tabtop">
+    List
+  </div>
 
-      <tbody>
-        <tr ng-repeat='row in data'>
-          <!-- IMAGE -->
-          <td> 
-            <div ng-hide='row.image'> 
-              <a class="waves-effect waves-light btn disabled">
-                <i class="material-icons blue-grey-text">
-                  center_focus_weak
-                </i>
-              </a>
-            </div>
-            <img ng-if='row.image' 
-              lazy-img="/static/uploads/{{ row.image }}" 
-              class="z-depth-1">
-          </td>
-          <td ng-repeat='(key, value) in row' 
-            ng-if='key != "id" && key !="image"'>
-            {{ value }}
-          </td>
-          <td>
-              <a ui-sref='logged.details({id: row.id})'
-                  class="waves-effect waves-light btn-floating lime lighten-3">
-                  <i class="material-icons blue-grey-text">web</i>
-              </a>
-          </td>
-          <td>
-              <a class="waves-effect waves-light btn-floating disabled">
-                  <i class="material-icons">mode_edit</i>
-              </a>
-          </td>
-          <td>
-              <a class="waves-effect waves-light btn-floating disabled">
-                  <i class="material-icons">delete</i>
-              </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <pagination
-      page="1" page-size="10" total="800"
-      show-prev-next="true" dots=".." hide-if-empty="true"
-      adjacent="5" scroll-top="true"
-      pagination-action="changePage(page)" />
-  </div> <!-- DIV FOR DATA > 0 -->
-
-    </div> <!-- DIV FOR simple TAB -->
-
-    <div id="tree" class="col s12 tabtop">
-      Tree view
-    </div>
-
-    <div id="list" class="col s12 tabtop">
-      List
-    </div>
-
-<!-- END OF DATA DIV -->
 </div>
