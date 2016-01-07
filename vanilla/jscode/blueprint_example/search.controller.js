@@ -7,6 +7,9 @@ angular.module('web')
 function SearchController($scope, $log, $state, search)
 {
   $log.info("Ready to search");
+  var self = this;
+
+  // Template Directories
   var framework = 'materialize';
   var templateDirBase = '/static/app/templates/';
   //var templateDir = templateDirBase + framework + '/';
@@ -29,6 +32,53 @@ function SearchController($scope, $log, $state, search)
     return elements;
   }
 
+
+/*****************************/
+// https://github.com/wix/angular-tree-control
+
+// options are found http://wix.github.io/angular-tree-control/
+$scope.treeOptions = {
+    nodeChildren: "children",
+    dirSelectable: false, //true,
+/*
+    isSelectable: function(node) {
+      return node.label.indexOf("Joe") !== 0;
+    },
+*/
+    injectClasses: {
+        ul: "a1",
+        li: "a2",
+        liSelected: "a7",
+        iExpanded: "a3",
+        iCollapsed: "a4",
+        iLeaf: "a5",
+        label: "a6",
+        labelSelected: "a8"
+    }
+}
+$scope.showSelected = function(sel) {
+  $log.info("Selected node", sel);
+   //$scope.selectedNode = sel;
+};
+
+function treeProcessData(data) {
+  console.log(data);
+  $scope.myTree = 
+    [
+        { "name" : "Joe", "age" : "21", "children" : [
+            { "name" : "Smith", "age" : "42", "children" : [] },
+            { "name" : "Gary", "age" : "21", "children" : [
+                { "name" : "Jenifer", "age" : "23", "children" : [
+                    { "name" : "Dani", "age" : "32", "children" : [] },
+                    { "name" : "Max", "age" : "34", "children" : [] }
+                ]}
+            ]}
+        ]},
+        { "name" : "Albert", "age" : "33", "children" : [] },
+        { "name" : "Ron", "age" : "29", "children" : [] }
+    ];
+}
+
 /*****************************/
 
 //REMOVEME
@@ -45,7 +95,6 @@ $scope.data = {}
   }
 
   // https://material.angularjs.org/latest/demo/autocomplete
-  var self = this;
   self.states = loadAll();
   $scope.results = [];
 
@@ -79,16 +128,20 @@ $scope.data = {}
 /*****************************/
 
   function loadData() {
+      $log.debug("Loading data");
 
-  return true;
-
+/*  RDB QUERY or FILTER
       var json = {'test': 'me'};
-      //search.getData().then(function(out_data){
       search.getFromQuery(json).then(function(out_data) {
+*/
+      search.getData().then(function(out_data){
         console.log(out_data);
         if (checkApiResponseTypeError(out_data)) {
           setScopeError(out_data, $log, $scope);
         } else {
+          treeProcessData(out_data.data);
+          console.log($scope.myTree);
+          return true;
           $scope.data = preProcessData(out_data.data);
           forEach($scope.data, function(x,i) {
             search.getDocs(x.id).then(function(out_docs) { 

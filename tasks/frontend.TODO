@@ -7,8 +7,6 @@ docker-compose -f docker-compose.yml -f custom.yml up -d customfe
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 
 PROTOTYPE:
-☐ parallax ng-repeat
-  ☐ based on content and images
 ☐ What if API down? 
   ☐ At boot/login
   ☐ Changing page
@@ -34,6 +32,7 @@ PROTOTYPE:
      ✔ submission @done (16-01-02 16:47)
   ☐ Logout
     ☐ js -> flask frontend -> api flask
+  ☐ change loading bar template
 
 SEARCH:
   ✔ base api @done (16-01-04 11:40)
@@ -43,14 +42,13 @@ SEARCH:
     ✔ convert old tables into json schemas @done (16-01-03 15:07)
   ✔ Checks  @done (16-01-04 11:40)
     ✔ json response @done (16-01-04 01:39)
-  ☐ change loading bar template
     ✔ removed for now @done (16-01-05 09:41)
   ✔ Details @done (16-01-06 01:08)
     ✔ pages @done (16-01-06 01:08)
     ✔ images @done (16-01-06 01:08)
       ✔ lazy load  @done (16-01-06 01:48)
       https://github.com/Pentiado/angular-lazy-img
-  ☐ Land page for search
+  ✔ Land page for search @done (16-01-07 16:05)
     ✔ api call @done (16-01-04 13:56)
     ✔ table @done (16-01-05 09:40)
       ✔ TypeAhead autocomplete @done (16-01-07 03:15)
@@ -59,35 +57,33 @@ SEARCH:
       http://materializecss.com/chips.html
       ✔ buttons + single element @done (16-01-05 15:15)
     ✔ thumbnail @done (16-01-06 02:20)
-    ✔ paging @done (16-01-06 01:08)
-      ☐ template
-      ☐ action
-    ☐ RDB queries
-      ☐ for each operation claim a 'position', then chain them
+    ✔ paging template @done (16-01-07 16:05)
 
 #IMPORTANT
-    ☐ RDB query
+SEARCH:
+    ✔ RDB query @done (16-01-07 16:03)
       ✔ POST with key 'operations' and json data @done (16-01-07 03:18)
-        ☐ Do a @workaround
-          ☐ specific query on a given json key
-    ☐ Complete chips and typeahead
-    ☐ View for parties
-    ☐ Tree from steps
-    https://wix.github.io/angular-tree-control/
-    http://jsfiddle.net/eu81273/8LWUc/18/
+      ☐ test with js
+      ☐ Complete chips and typeahead
+      ☐ TAB: View for parties
+    ☐ TAB: Tree from steps @treecontrol
     OR 
     http://nickperkinslondon.github.io/angular-bootstrap-nav-tree/test/bs3_ng120_test_page.html
-#IMPORTANT
-
-  ☐ Zoomify 
-    ☐ angular open new tab /page
-    ☐ via python request and jinja template
 
 WELCOME:
   ☐ put given images
   ☐ scrollspy also here
   ☐ quick search 
     ☐ separate scrollspy section: on every field
+  ☐ parallax ng-repeat?
+    ☐ based on content and images
+
+#IMPORTANT
+
+  ☐ Zoomify 
+    ☐ angular open new tab /page
+    ☐ via python request and jinja template
+  ☐ Paging action
 
 SUBMIT:
   ☐ Submission skeleton with collapsible or collections

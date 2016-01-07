@@ -18,9 +18,11 @@
               md-item-text="item.display"
               md-min-length="0"
               md-menu-class="autocomplete-custom-template"
-              placeholder="Write to search" 
-              md-autofocus
-              >
+              placeholder="Write to search">
+<!-- to activate autofocus:
+              md-autofocus >
+-->
+
             <md-item-template>
               <span class="item-title">
                 <span md-highlight-text="searchText" md-highlight-flags="^i"
@@ -50,7 +52,7 @@
 
         </form>
       </md-content>
-      
+
 <!-- SEARCH INPUT -->
     </td>
   </tr>

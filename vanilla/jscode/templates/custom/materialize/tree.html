@@ -1,0 +1,15 @@
+
+<div class="card-panel blue lighten-3">
+    <span class="white-text">
+    Select a component to display info
+    </span>
+</div>
+
+<!-- normal -->
+<treecontrol class="tree-classic"
+   tree-model="myTree"
+   options="treeOptions"
+   on-selection="showSelected(node)"
+   selected-node="node1">
+   Type: {{node.name}} [age {{node.age}}]
+</treecontrol>

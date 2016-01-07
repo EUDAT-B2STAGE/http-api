@@ -18,6 +18,8 @@
         'cfp.loadingBar',
 // IMAGES LAZ LOAD
         'angularLazyImg',
+// MAKE DATA TREE explorer
+        'treeControl',
 
 // OTHERS?
     ]);
