@@ -65,10 +65,9 @@ SEARCH:
       ✔ POST with key 'operations' and json data @done (16-01-07 03:18)
       ☐ test with js
       ☐ Complete chips and typeahead
-      ☐ TAB: View for parties
-    ☐ TAB: Tree from steps @treecontrol
-    OR 
-    http://nickperkinslondon.github.io/angular-bootstrap-nav-tree/test/bs3_ng120_test_page.html
+      ✔ TAB: View for parties @done (16-01-07 23:28)
+        ☐ should add the picture file of the first extrait i found
+    ✔ TAB: Tree from steps @treecontrol @done (16-01-07 19:04)
 
 WELCOME:
   ☐ put given images

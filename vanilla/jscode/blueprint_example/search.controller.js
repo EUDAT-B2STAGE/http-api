@@ -178,6 +178,24 @@ $scope.data = {}
   function loadData() {
       $log.debug("Loading data");
 
+      // Load autocomplete for each step
+      $scope.autocomplete = [];
+      for (var i = 0; i < 3; i++) {
+        var json = {
+          'limit': 0, 
+          'autocomplete': {'step': i+1, 'position': 1}
+        };
+        search.getFromQuery(json).then(function(out_data) {
+          if (out_data.count < 2) {
+            return false;
+          }
+          $scope.autocomplete.push(out_data.data, i);
+          console.log(out_data);
+        });
+      };
+
+      // Load real data and filter
+
 /*  RDB QUERY or FILTER
       var json = {'test': 'me'};
       search.getFromQuery(json).then(function(out_data) {

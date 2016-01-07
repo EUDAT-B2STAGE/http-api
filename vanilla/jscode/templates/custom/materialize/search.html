@@ -8,8 +8,8 @@
   <!-- TABS -->
   <ul class="tabs z-depth-1" tabs>
       <li class="tab col s3"><a href="#simple">Simple</a></li>
-      <li class="tab col s3"><a class="active" href="#tree">Tree view</a></li>
-      <li class="tab col s3"><a href="#list">List</a></li>
+      <li class="tab col s3"><a href="#tree">Tree view</a></li>
+      <li class="tab col s3"><a class="active" href="#list">List</a></li>
   </ul>
 
   <!-- AUTOCOMPLETE SEARCH -->
@@ -28,7 +28,7 @@
 
   <!-- LIST of another fiedl -->
   <div id="list" class="col s12 tabtop">
-    List
+    <div ng-include="customTemplateDir + 'somelist.html'"></div>
   </div>
 
 </div>
