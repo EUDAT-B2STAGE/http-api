@@ -26,6 +26,11 @@ function SearchController($scope, $log, $state, search)
   }
 
 /*****************************/
+
+//REMOVEME
+$scope.data = {}
+//REMOVEME
+
   // https://material.angularjs.org/latest/demo/chips
   $scope.newChip = function(chip) {
     $log.info("Requested tag:", chip);

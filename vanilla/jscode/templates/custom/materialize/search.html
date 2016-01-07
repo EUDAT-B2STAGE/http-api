@@ -1,9 +1,30 @@
 
-<div layout="column" ng-cloak>
+  
+<!-- <h4> Archive </h4> -->
+
+<div ng-if='error'>
+    <b>ERROR: {{ error }}</b>
+</div>
+
+<div ng-if='data'>
+
+  <ul class="tabs z-depth-1" tabs>
+      <li class="tab col s3"><a class="active" href="#simple">Simple</a></li>
+      <li class="tab col s3"><a href="#tree">Tree view</a></li>
+      <li class="tab col s3"><a href="#list">List</a></li>
+  </ul>
+
+  <div id="simple" class="col s12 tabtop">
+      
+<!-- SEARCH INPUT -->
 <md-content layout-padding layout="column">
   <form ng-submit="$event.preventDefault()">
-    <h2 class="md-title"> I will make you search </h2>
 
+<table>
+  <tr>
+    <td> <i class="material-icons prefix">search</i> </td>
+    <td width='95%'>
+      
     <md-chips ng-model="results" readonly="false"
       md-transform-chip="newChip($chip)">
       <md-autocomplete
@@ -44,38 +65,26 @@
       <br/>
     </form>
   </md-content>
-</div>
-  
-<!-- <h4> Archive </h4> -->
+    </td>
+  </tr>
+</table>
 
-<div ng-if='error'>
-    <b>ERROR: {{ error }}</b>
-</div>
-
-<div ng-if='data'>
-
-
-  <ul class="tabs z-depth-1" tabs>
-      <li class="tab col s3"><a class="active" href="#simple">Simple</a></li>
-      <li class="tab col s3"><a href="#tree">Tree view</a></li>
-      <li class="tab col s3"><a href="#list">List</a></li>
-  </ul>
-
-  <div id="simple" class="col s12">
-      
+<!-- OLD
   <div class="row" style='padding-top:20px;'>
     <div class="input-field col s2"></div>
     <div class="input-field col s8">
       <i class="material-icons prefix">search</i>
-      <input id="icon_prefix" type="text" class="validate" 
+      <input id="my_search" type="text" class="validate" 
          ng-value="{{selected}}" ng-model="selected" ng-change="search(selected )"
          autofocus>
-      <label for="icon_prefix">Search across the database</label>
+      <label for="my_search">Search across the database</label>
     </div>
     <div class="input-field col s2"></div>
   </div>
+-->
+<!-- SEARCH INPUT -->
 
-
+  <div ng-if='data.length > 0'>
     <table class='bordered highlight responsive-table'>
       <thead>
         <tr>
@@ -130,13 +139,15 @@
       show-prev-next="true" dots=".." hide-if-empty="true"
       adjacent="5" scroll-top="true"
       pagination-action="changePage(page)" />
-    </div>
+  </div> <!-- DIV FOR DATA > 0 -->
 
-    <div id="tree" class="col s12">
+    </div> <!-- DIV FOR simple TAB -->
+
+    <div id="tree" class="col s12 tabtop">
       Tree view
     </div>
 
-    <div id="list" class="col s12">
+    <div id="list" class="col s12 tabtop">
       List
     </div>
 

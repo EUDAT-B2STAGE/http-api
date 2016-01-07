@@ -42,6 +42,10 @@ header, main, footer {
   vertical-align: top;
 }
 
+.tabtop {
+  padding-top:20px;
+}
+
  .autocomplete-custom-template li {
   border-bottom: 1px solid #ccc;
   height: auto;

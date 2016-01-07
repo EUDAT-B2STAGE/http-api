@@ -42,7 +42,9 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
 
 // BASE CONFS
     var framework = 'materialize';
-    var templateDir = '/static/app/templates/' + framework + '/';
+    var templateDirBase = '/static/app/templates/';
+    var templateDir = templateDirBase + framework + '/';
+    var customTemplateDir = templateDirBase + 'custom/' + framework + '/';
 	// Enable log
 	$logProvider.debugEnabled(true); //.hashPrefix('!');
     // HTML5 mode: remove hash bang to let url be parsable
@@ -101,7 +103,7 @@ $stateProvider
         url: "/search",
         views: {
             "loggedview": {
-                templateUrl: templateDir + 'searching.html',
+                templateUrl: customTemplateDir + 'search.html',
                 controller: 'SearchController',
             }
         },
@@ -111,7 +113,7 @@ $stateProvider
         url: "/details/:id",
         views: {
             "loggedview": {
-                templateUrl: templateDir + 'details.html',
+                templateUrl: customTemplateDir + 'details.html',
                 controller: 'DetailsController',
             }
         },
