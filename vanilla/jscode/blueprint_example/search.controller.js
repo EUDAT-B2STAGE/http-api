@@ -102,10 +102,8 @@ function treeProcessData(steps) {
   var tree = [];
 
   forEach(steps, function(single, i){
-    //console.log(i, single);
     var fields = [];
     forEach(single.fields, function(field, j){
-      //console.log(field);
       var infos = {
         'name': field.name,
         'values': field.options,
@@ -116,7 +114,6 @@ function treeProcessData(steps) {
         'type': 'field', 'name': field.name, 'info': infos, 
         "children": []});
     });
-    //console.log(fields);
     tree.push({
       'type': 'step', 'name': single.step.name, 
       "children": fields});
@@ -146,15 +143,22 @@ $scope.data = {}
   self.states = {};
   $scope.results = [];
 
-  function loadAll() {
+  function loadAll(data_steps) {
 
+    // Prepare steps name
+    var steps = [];
+    forEach(data_steps, function(single, i){
+      steps[single.step.num] = single.step.name;
+    });
+
+    // Prepare total array of autocomplete divided by types
     var auto = [];
     forEach($scope.autocomplete, function(data, step){
       forEach(data, function(state, key){
         auto.push({
           value: state.toLowerCase(),
           display: state,
-          type: step,
+          type: steps[step+1],
         })
       });
     });
@@ -190,59 +194,68 @@ $scope.data = {}
 /*****************************/
 
   function loadData() {
-      $log.debug("Loading data");
+    $log.debug("Loading data");
 
-      // Load autocomplete for each step
-      $scope.autocomplete = [];
-      var steps = 3;
-      for (var i = 0; i < steps; i++) {
-        var json = {
-          'limit': 0, 
-          'autocomplete': {'step': i+1, 'position': 1}
-        };
-        search.getFromQuery(json).then(function(out_data) {
-          if (out_data.count < 2) {
-            return false;
-          }
-          $scope.autocomplete.push(out_data.data);
-          if ($scope.autocomplete.length == steps) {
-            self.states = loadAll(); 
-          }
-        });
+    ///////////////////////////////////
+    // Load autocomplete for each step
+    $scope.autocomplete = [];
+    var steps = 3;
+    for (var i = 0; i < steps; i++) {
+      var json = {
+        'limit': 0, 
+        'autocomplete': {'step': i+1, 'position': 1}
       };
+      search.getFromQuery(json).then(function(out_data) {
+        if (out_data.count < 2) {
+          return false;
+        }
+        $scope.autocomplete.push(out_data.data);
+        // if ($scope.autocomplete.length == steps) {
+        //   self.states = loadAll(); 
+        // }
+      });
+    };
 
-      // Load real data and filter
 
 /*  RDB QUERY or FILTER
       var json = {'test': 'me'};
       search.getFromQuery(json).then(function(out_data) {
 */
-      search.getData().then(function(out_data){
-        console.log(out_data);
-        if (checkApiResponseTypeError(out_data)) {
-          setScopeError(out_data, $log, $scope);
-        } else {
-          search.getSteps().then(function(out_steps) { 
-            treeProcessData(out_steps.data);
-            return true;
-            $scope.data = preProcessData(out_data.data);
-            forEach($scope.data, function(x,i) {
-              search.getDocs(x.id).then(function(out_docs) { 
-                if (out_docs.count > 0) {
+    ///////////////////////////////////
+    // Load real data and filter
 
-                  $scope.data[i].image = 
-                    out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-                      + '/TileGroup0/0-0-0.jpg';
-                }
-              }); // GET DOCUMENTS
-            }); // FOREACH
-          }); // STEPS
-        } // ELSE
-      }); // GET DATA
-  }
+    search.getData().then(function(out_data){
+      // Check only on first call
+      if (checkApiResponseTypeError(out_data)) {
+        // Set error and break
+        setScopeError(out_data, $log, $scope);
+        return false;
+      } else {
+        search.getSteps().then(function(out_steps) { 
+          //
+          self.states = loadAll(out_steps.data); 
+          // Create the table
+          $scope.data = preProcessData(out_data.data);
+          // Found images for results inside the table
+          // with image lazy loading
+          forEach($scope.data, function(x,i) {
+            search.getDocs(x.id).then(function(out_docs) { 
+              if (out_docs.count > 0) {
 
-  $scope.search = function(input) {
-    $log.info("Search!", input);
+                $scope.data[i].image = 
+                  out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
+                    + '/TileGroup0/0-0-0.jpg';
+              }
+            }); // GET DOCUMENTS
+          }); // FOREACH
+
+          // Make the tree
+          treeProcessData(out_steps.data);
+
+        }); // STEPS
+      } // ELSE
+    }); // GET DATA
+
   }
 
   $scope.changePage = function(page) {
