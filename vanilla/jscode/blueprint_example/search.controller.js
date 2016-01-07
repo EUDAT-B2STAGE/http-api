@@ -8,6 +8,7 @@ function SearchController($scope, $log, $state, search)
 {
   $log.info("Ready to search");
   var self = this;
+  $scope.data = {};
 
   // Template Directories
   var framework = 'materialize';
@@ -124,21 +125,7 @@ function treeProcessData(steps) {
 
 }
 
-/*****************************/
-
-//REMOVEME
-$scope.data = {}
-//REMOVEME
-
-  // https://material.angularjs.org/latest/demo/chips
-  $scope.newChip = function(chip) {
-    $log.info("Requested tag:", chip);
-    if (typeof chip == 'string') {
-      $log.debug("User chip");
-      return {value:chip, display:chip, type:'custom'};
-    }
-  }
-
+  //////////////////////////////////////////////////////////
   // https://material.angularjs.org/latest/demo/autocomplete
   self.states = {};
   $scope.results = [];
@@ -187,10 +174,10 @@ $scope.data = {}
   $scope.searchTextChange = function(text) {
     $log.debug('Text changed to ' + text);
   }
-*/
   $scope.selectedItemChange = function(item) {
     $log.info('Item changed to ' + JSON.stringify(item));
   }
+*/
 /*****************************/
 
   function loadData() {
@@ -206,7 +193,13 @@ $scope.data = {}
         'autocomplete': {'step': i+1, 'position': 1}
       };
       search.getFromQuery(json).then(function(out_data) {
-        if (out_data.count < 2) {
+        // Check only on first call
+        if (checkApiResponseTypeError(out_data)) {
+          // Set error and break
+          setScopeError(out_data, $log, $scope);
+          $scope.data = null;
+          return false;
+        } else if (out_data.count < 2) {
           return false;
         }
         $scope.autocomplete.push(out_data.data);
@@ -214,6 +207,9 @@ $scope.data = {}
         //   self.states = loadAll(); 
         // }
       });
+      if ($scope.data === null){
+        return false;
+      }
     };
 
 
@@ -224,38 +220,50 @@ $scope.data = {}
     ///////////////////////////////////
     // Load real data and filter
 
+    // Get all
     search.getData().then(function(out_data){
-      // Check only on first call
-      if (checkApiResponseTypeError(out_data)) {
-        // Set error and break
-        setScopeError(out_data, $log, $scope);
-        return false;
-      } else {
+        if ($scope.data === null) {
+          return false;
+        }
+        // Get steps info
         search.getSteps().then(function(out_steps) { 
-          //
+          // Autocomplete setup from steps also
           self.states = loadAll(out_steps.data); 
           // Create the table
-          $scope.data = preProcessData(out_data.data);
-          // Found images for results inside the table
-          // with image lazy loading
-          forEach($scope.data, function(x,i) {
-            search.getDocs(x.id).then(function(out_docs) { 
-              if (out_docs.count > 0) {
-
-                $scope.data[i].image = 
-                  out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-                    + '/TileGroup0/0-0-0.jpg';
-              }
-            }); // GET DOCUMENTS
-          }); // FOREACH
+          reloadTable(out_data);
 
           // Make the tree
           treeProcessData(out_steps.data);
 
         }); // STEPS
-      } // ELSE
     }); // GET DATA
 
+  }
+
+  function reloadTable(out_data) {
+
+    $scope.data = preProcessData(out_data.data);
+    // Found images for results inside the table
+    // with image lazy loading
+    forEach($scope.data, function(x,i) {
+      search.getDocs(x.id).then(function(out_docs) { 
+        if (out_docs.count > 0) {
+
+          $scope.data[i].image = 
+            out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
+              + '/TileGroup0/0-0-0.jpg';
+        }
+      }); // GET DOCUMENTS
+    }); // FOREACH
+  }
+
+  // https://material.angularjs.org/latest/demo/chips
+  $scope.newChip = function(chip) {
+    $log.info("Requested tag:", chip);
+    if (typeof chip == 'string') {
+      $log.debug("User chip");
+      return {value:chip, display:chip, type:'custom'};
+    }
   }
 
   $scope.changePage = function(page) {

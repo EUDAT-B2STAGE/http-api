@@ -19,9 +19,10 @@ Object.prototype.hasOwnProperty = function(property) {
 };
 
 function checkApiResponseTypeError(obj) {
-  if (typeof obj == 'string') {
-    return true;
-  } else if (obj.hasOwnProperty('message')) {
+  if ( 
+      (! obj) ||
+      (typeof obj == 'string')  ||
+      (obj.hasOwnProperty('message'))) {
     return true;
   }
 }
