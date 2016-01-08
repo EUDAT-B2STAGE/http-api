@@ -7,10 +7,12 @@
     <md-content layout-padding layout="column">
       <form ng-submit="$event.preventDefault()">
 
-        <md-chips ng-model="results"
-          readonly="false"
+        <md-chips
+          ng-model="chips" readonly="false"
           md-require-match="true"
-          md-transform-chip="newChip($chip)">
+          md-on-add="newChip($chip)"
+          md-on-remove="removeChip($chip, $index)"
+          md-autocomplete-snap>
 
           <md-autocomplete
               md-search-text-change="searchTextChange(searchText)"

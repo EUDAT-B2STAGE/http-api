@@ -4,11 +4,13 @@
 angular.module('web')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $log, $state, search)
+function SearchController($scope, $log, $state, $mdConstant, search)
 {
   $log.info("Ready to search");
   var self = this;
   $scope.data = {};
+  //         md-separator-keys="keys"
+  // $scope.keys = [$mdConstant.KEY_CODE.ENTER, $mdConstant.KEY_CODE.COMMA];
 
   // Template Directories
   var framework = 'materialize';
@@ -66,7 +68,7 @@ function SearchController($scope, $log, $state, search)
       // SINGLE DETAILS
       search.getSingleData(x.record).then(function(out_single){
 
-        $log.debug("Single element", x.record);
+        //$log.debug("Single element", x.record);
         if (checkApiResponseTypeError(out_single)) {
           setScopeError(out_single, $log, $scope);
         } else {
@@ -86,7 +88,6 @@ function SearchController($scope, $log, $state, search)
 
         // skip last step, skip 0 which is not defined
         for (var l = $scope.stepsInfo.length - 2; l > 0; l--) {
-            console.log("STEP NAME", $scope.stepsInfo[l]);
             element[$scope.stepsInfo[l].toLowerCase()] = null;
         };
 
@@ -177,7 +178,7 @@ function treeProcessData(steps) {
       "children": fields});
   });
 
-  console.log("TREE", tree);
+  $log.info("TREE", tree);
   $scope.myTree = tree;
 
 }
@@ -185,7 +186,6 @@ function treeProcessData(steps) {
   //////////////////////////////////////////////////////////
   // https://material.angularjs.org/latest/demo/autocomplete
   self.states = {};
-  $scope.results = [];
 
   function loadAll(data_steps) {
 
@@ -294,16 +294,19 @@ function treeProcessData(steps) {
   }
 
   // https://material.angularjs.org/latest/demo/chips
+
+  $scope.chips = [];
+
   $scope.newChip = function(chip) {
-    $log.info("Requested tag:", chip);
 
-/* I DISABLED UNKNOWN STRINGS. OTHERWISE, TO USE THEM:
+/* INSTRUCTIONS
+one of the following return values:
 
-    if (typeof chip == 'string') {
-      $log.debug("User chip");
-      return {value:chip, display:chip, type:'custom'};
-    }
+an object representing the $chip input string
+undefined to simply add the $chip input string, or
+null to prevent the chip from being appended
 */
+      $log.info("Requested tag:", chip, "total:", $scope.chips);
       var json = {
         //'limit': 0,
         'nested_filter': {'position': 1, 'filter': chip.display}
@@ -320,8 +323,24 @@ function treeProcessData(steps) {
           return false;
         }
         reloadTable(out_data);
-        console.log(out_data);
+        //console.log(out_data);
       });
+  }
+
+  $scope.removeChip = function(chip, index) {
+
+    //console.log("Delete chip, total:", $scope.chips);
+    //console.log(chip, index);
+    search.getData().then(function(out_data){
+        if ($scope.data === null) {
+          return false;
+        }
+        // Get steps info
+        search.getSteps().then(function(out_steps) {
+          // Create the table
+          reloadTable(out_data);
+        }); // STEPS
+    }); // GET DATA
   }
 
   $scope.changePage = function(page) {

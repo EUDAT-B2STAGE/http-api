@@ -10,10 +10,10 @@ function myconfig(
     $stateProvider, $urlRouterProvider
  ) {
     $stateProvider
-        .state('somestate', {
+        .state('logged.somestate', {
             url: "/someurl",
             views: {
-                "main": {
+                "loggedview": {
                     template: 'Home page<br>Go to <a ui-sref="data">link</a>.',
                     //controller: 'SomeController',
                 }

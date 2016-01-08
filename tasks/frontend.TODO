@@ -35,7 +35,6 @@ PROTOTYPE:
     ☐ js -> flask frontend -> api flask
   ☐ change loading bar template
 
-#IMPORTANT
 SEARCH:
     ✔ RDB query @done (16-01-07 16:03)
       ✔ POST with key 'operations' and json data @done (16-01-07 03:18)
@@ -46,25 +45,26 @@ SEARCH:
     ✔ TAB: Tree from steps @treecontrol @done (16-01-07 19:04)
     ✔ convert tabs into official material @done (16-01-08 06:49)
     https://material.angularjs.org/latest/demo/tabs
-    ☐ Some transitions are slow!
-    ☐ md-content size?
 
 PROBLEMS:
   ✔ Images not loading @done (16-01-08 01:46)
-  ☐ Removing chips does not reload page
-  ☐ Chips sums does not work yet
+  ✔ Removing chips does not reload page @done (16-01-08 08:22)
+  ☐ topbar menu for mobile
   ☐ Pagination action?
+  ☐ Chips sums does not work yet
+  ☐ lazy load instead of pagination
+  ☐ Some transitions are slow!
 
 WELCOME:
   ☐ put given images
-  ☐ scrollspy also here
+  ✔ scrollspy also here @done (16-01-08 07:24)
+    ✔ separate scrollspy section: on every field @done (16-01-08 07:24)
   ☐ quick search
-    ☐ separate scrollspy section: on every field
+    ☐ md-search?
   ☐ parallax ng-repeat?
     ☐ based on content and images
 
-#IMPORTANT
-
+DETAILS:
   ☐ Zoomify
     ☐ angular open new tab /page
     ☐ via python request and jinja template
@@ -76,8 +76,8 @@ SUBMIT:
 
 HTTPS:
   ☐ nginx proxy
-  ☐ nginx acme and let's encrypt beta
-  http://steveltn.me/2015/12/18/nginx-acme
+    ☐ nginx acme and let's encrypt beta
+    http://steveltn.me/2015/12/18/nginx-acme
 
 JS LIBS:
   ☐ Am i using sanitize?
