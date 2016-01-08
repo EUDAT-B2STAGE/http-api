@@ -20,10 +20,12 @@
 </div>
 <!-- TOPBAR END -->
 
+<div class="row">
 <!-- SLIDER -->
-<div class="container">
-  <div class="slider" height='350' transition='300' slider>
-    <ul class="slides">
+<div class="col s12 m10 l11">
+  <div id='step1' class="section scrollspy" scrollspy>
+    <div class="slider" height='350' transition='300' slider>
+     <ul class="slides">
         <li>
             <img lazy-img="http://lorempixel.com/800/500/nature/3"> <!-- random image -->
             <div class="caption center-align">
@@ -54,21 +56,26 @@
                 <h5 class="light grey-text text-lighten-3">Here's our small slogan.</h5>
             </div>
         </li>
-    </ul>
+      </ul>
+    </div>
   </div>
-</div>
 <!-- SLIDER END -->
 
 <!-- PARALLAX -->
   <div class="parallax-container">
-    <div parallax><img 
+    <div parallax><img
        lazy-img="http://materializecss.com/images/parallax1.jpg"></div>
   </div>
 
   <div class="section white">
     <div class="row container">
+ <div id='step2' class="section scrollspy" scrollspy>
       <h2 class="header">Welcome!</h2>
       <p class="grey-text text-darken-3 lighten-3">
+      This website holds the application for exploring our data archive.
+      <br>
+      <br>
+
       Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
       tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
@@ -76,6 +83,7 @@
       cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
       proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
+ </div>
     </div>
   </div>
 
@@ -85,8 +93,12 @@
 
   <div class="section white">
     <div class="row container">
-      <h2 class="header">Here to help you</h2>
+ <div id='step3' class="section scrollspy" scrollspy>
+      <h2 class="header">Search any content</h2>
       <p class="grey-text text-darken-3 lighten-3">
+      Begin your journey looking throught the documents.
+      <br>
+      <br>
       Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
       tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
       quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
@@ -94,13 +106,56 @@
       cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
       proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
+ </div>
     </div>
   </div>
 
   <div class="parallax-container">
     <div parallax><img lazy-img="http://materializecss.com/images/parallax1.jpg"></div>
   </div>
+
+  <div class="section white">
+    <div class="row container">
+ <div id='step3' class="section scrollspy" scrollspy>
+      <h2 class="header">About our department</h2>
+      <p class="grey-text text-darken-3 lighten-3">
+      We work endlessy to keep our data updated.
+      <br>
+      <br>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+ </div>
+    </div>
+  </div>
+
+  <div class="parallax-container">
+    <div parallax><img lazy-img="http://materializecss.com/images/parallax2.jpg"></div>
+  </div>
 <!-- PARALLAX END -->
+
+</div>
+<!-- wrapper for scrollspy -->
+
+<!-- Summary -->
+<div class="col hide-on-small-only m2 l1">
+  <div pushpin pushpin-offset="1">
+  <ul class="section table-of-contents">
+    <li> <a href="#step1"> Introduction </a>
+    <li> <a href="#step2"> Welcome </a>
+    <li> <a href="#step3"> Search </a>
+    <li> <a href="#step4"> About </a>
+    </li>
+  </ul>
+ </div>
+</div>
+
+<!-- end of row -->
+</div>
 
 {% endblock %}
 
@@ -109,23 +164,28 @@
   <div class="container">
     <div class="row">
       <div class="col l6 s12">
-        <h5 class="white-text">About us</h5>
-        <p class="grey-text text-lighten-4">There is so much more to say!</p>
+        <h5 class="white-text">Contacts</h5>
+        <p class="grey-text text-lighten-4">
+            <ul>
+                <li>Chief responsible</li>
+                <li>Art director</li>
+                <li>Operators</li>
+            </ul>
+        </p>
       </div>
       <div class="col l4 offset-l2 s12">
-        <h5 class="white-text">Links</h5>
+        <h5 class="white-text">Usefull Links</h5>
         <ul>
           <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
           <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
           <li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
-          <li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
         </ul>
       </div>
     </div>
   </div>
   <div class="footer-copyright">
     <div class="container">
-    © 2014 Copyright Text
+    © 2016 Copyright Text
     <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
     </div>
   </div>
