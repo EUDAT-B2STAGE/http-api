@@ -63,13 +63,19 @@ SEARCH:
 SEARCH:
     ✔ RDB query @done (16-01-07 16:03)
       ✔ POST with key 'operations' and json data @done (16-01-07 03:18)
-      ☐ test with js
-      ☐ Complete chips and typeahead
-      ✔ TAB: View for parties @done (16-01-07 23:28)
+      ✔ test with js @done (16-01-08 01:33)
+      ✔ Complete chips and typeahead @done (16-01-08 01:33)
+      ☐ TAB: View for parties
         ☐ should add the picture file of the first extrait i found
     ✔ TAB: Tree from steps @treecontrol @done (16-01-07 19:04)
     ☐ convert tabs into official material
     https://material.angularjs.org/latest/demo/tabs
+
+PROBLEMS:
+  ✔ Images not loading @done (16-01-08 01:46)
+  ☐ Removing chips does not reload page
+  ☐ Chips sums does not work yet
+  ☐ Pagination action?
 
 WELCOME:
   ☐ put given images
@@ -84,7 +90,6 @@ WELCOME:
   ☐ Zoomify 
     ☐ angular open new tab /page
     ☐ via python request and jinja template
-  ☐ Paging action
 
 SUBMIT:
   ☐ Submission skeleton with collapsible or collections

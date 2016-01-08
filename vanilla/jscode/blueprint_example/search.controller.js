@@ -48,21 +48,70 @@ function SearchController($scope, $log, $state, search)
 ////////////////////////////////////////
 ////////////////////////////////////////
 
-  function preProcessData(data) {
+  function reloadTable(data) {
+
     var elements = [];
+    if (!$scope.stepsInfo) {
+      return {};
+    }
+    $log.debug("preprocess");
+    $scope.data = [];
+
     forEach(data, function (x, i) {
-      elements.push({
-        'id': x.record,
-        'image': null,
-// TO FIX: 
-// Checks on positions?
-// there must better options to get those values with the right names
-        'fête': x.steps[2].data[0].value,
-        'source': x.steps[1].data[0].value,
-        'extrait': x.steps[0].data[0].value,
+
+      console.log("DATA", x);
+
+      // SINGLE DETAILS
+      search.getSingleData(x.record).then(function(out_single){
+
+        $log.debug("Single element", x.record);
+        if (checkApiResponseTypeError(out_single)) {
+          setScopeError(out_single, $log, $scope);
+        } else {
+          if (out_single.count < 1) {
+             setScopeError("No data found", $log, $scope);
+             return;
+          }
+        }
+        //console.log("SINGLE", out_single);
+        var element = {
+          'id': x.record,
+          'image': null,
+          // 'fête': null, //x.steps[2].data[0].value,
+          // 'source': null, //x.steps[1].data[0].value,
+          // 'extrait': null, //x.steps[0].data[0].value,
+        }
+
+/////////////////
+//BAD
+// THIS IS VERY LOW IN PERFORMANCE
+// I SHOULD GET THIS FROM THE QUERY IN ITSELF
+        forEach(out_single.data[0].steps, function(y, j){
+          var key = $scope.stepsInfo[y.step].toLowerCase();
+          var value = null;
+          for (var j = 0; j < y.data.length; j++) {
+            if (y.data[j].position == 1) {
+              element[key] = y.data[j].value;
+              break;
+            }
+            //console.log("Position", j, y);
+          };
+        });
+//BAD
+/////////////////
+
+        search.getDocs(x.record).then(function(out_docs) { 
+          if (out_docs.count > 0) {
+            element.image = 
+              out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
+                + '/TileGroup0/0-0-0.jpg';
+          }
+
+          // FINALLY ADD DATA
+          $scope.data.push(element);
+        }); // GET DOCUMENTS
       });
     });
-    return elements;
   }
 
 
@@ -137,6 +186,7 @@ function treeProcessData(steps) {
     forEach(data_steps, function(single, i){
       steps[single.step.num] = single.step.name;
     });
+    $scope.stepsInfo = steps;
 
     // Prepare total array of autocomplete divided by types
     var auto = [];
@@ -212,11 +262,6 @@ function treeProcessData(steps) {
       }
     };
 
-
-/*  RDB QUERY or FILTER
-      var json = {'test': 'me'};
-      search.getFromQuery(json).then(function(out_data) {
-*/
     ///////////////////////////////////
     // Load real data and filter
 
@@ -230,7 +275,7 @@ function treeProcessData(steps) {
           // Autocomplete setup from steps also
           self.states = loadAll(out_steps.data); 
           // Create the table
-          reloadTable(out_data);
+          reloadTable(out_data.data);
 
           // Make the tree
           treeProcessData(out_steps.data);
@@ -240,30 +285,35 @@ function treeProcessData(steps) {
 
   }
 
-  function reloadTable(out_data) {
-
-    $scope.data = preProcessData(out_data.data);
-    // Found images for results inside the table
-    // with image lazy loading
-    forEach($scope.data, function(x,i) {
-      search.getDocs(x.id).then(function(out_docs) { 
-        if (out_docs.count > 0) {
-
-          $scope.data[i].image = 
-            out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-              + '/TileGroup0/0-0-0.jpg';
-        }
-      }); // GET DOCUMENTS
-    }); // FOREACH
-  }
-
   // https://material.angularjs.org/latest/demo/chips
   $scope.newChip = function(chip) {
     $log.info("Requested tag:", chip);
+
+/* I DISABLED UNKNOWN STRINGS. OTHERWISE, TO USE THEM:
+
     if (typeof chip == 'string') {
       $log.debug("User chip");
       return {value:chip, display:chip, type:'custom'};
     }
+*/
+      var json = {
+        //'limit': 0, 
+        'nested_filter': {'position': 1, 'filter': chip.display}
+      };
+      search.getFromQuery(json).then(function(out_data) {
+        // Check only on first call
+        if (checkApiResponseTypeError(out_data)) {
+          // Set error and break
+          setScopeError(out_data, $log, $scope);
+          $scope.data = null;
+          return false;
+        } 
+        if (out_data.count < 1) {
+          return false;
+        }
+        reloadTable(out_data.data);
+        console.log(out_data);
+      });
   }
 
   $scope.changePage = function(page) {
