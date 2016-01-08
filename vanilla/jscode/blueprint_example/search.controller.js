@@ -59,7 +59,7 @@ function SearchController($scope, $log, $state, search)
 
     forEach(data, function (x, i) {
 
-      console.log("DATA", x);
+      //console.log("DATA", x);
 
       // SINGLE DETAILS
       search.getSingleData(x.record).then(function(out_single){
@@ -82,6 +82,12 @@ function SearchController($scope, $log, $state, search)
           // 'extrait': null, //x.steps[0].data[0].value,
         }
 
+        // skip last step, skip 0 which is not defined
+        for (var l = $scope.stepsInfo.length - 2; l > 0; l--) {
+            console.log("STEP NAME", $scope.stepsInfo[l]);
+            element[$scope.stepsInfo[l].toLowerCase()] = null;
+        };
+
 /////////////////
 //BAD
 // THIS IS VERY LOW IN PERFORMANCE
@@ -100,9 +106,9 @@ function SearchController($scope, $log, $state, search)
 //BAD
 /////////////////
 
-        search.getDocs(x.record).then(function(out_docs) { 
+        search.getDocs(x.record).then(function(out_docs) {
           if (out_docs.count > 0) {
-            element.image = 
+            element.image =
               out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
                 + '/TileGroup0/0-0-0.jpg';
           }
@@ -161,11 +167,11 @@ function treeProcessData(steps) {
         'required': field.required,
       };
       fields.push({
-        'type': 'field', 'name': field.name, 'info': infos, 
+        'type': 'field', 'name': field.name, 'info': infos,
         "children": []});
     });
     tree.push({
-      'type': 'step', 'name': single.step.name, 
+      'type': 'step', 'name': single.step.name,
       "children": fields});
   });
 
@@ -239,7 +245,7 @@ function treeProcessData(steps) {
     var steps = 3;
     for (var i = 0; i < steps; i++) {
       var json = {
-        'limit': 0, 
+        'limit': 0,
         'autocomplete': {'step': i+1, 'position': 1}
       };
       search.getFromQuery(json).then(function(out_data) {
@@ -254,7 +260,7 @@ function treeProcessData(steps) {
         }
         $scope.autocomplete.push(out_data.data);
         // if ($scope.autocomplete.length == steps) {
-        //   self.states = loadAll(); 
+        //   self.states = loadAll();
         // }
       });
       if ($scope.data === null){
@@ -271,9 +277,9 @@ function treeProcessData(steps) {
           return false;
         }
         // Get steps info
-        search.getSteps().then(function(out_steps) { 
+        search.getSteps().then(function(out_steps) {
           // Autocomplete setup from steps also
-          self.states = loadAll(out_steps.data); 
+          self.states = loadAll(out_steps.data);
           // Create the table
           reloadTable(out_data.data);
 
@@ -297,7 +303,7 @@ function treeProcessData(steps) {
     }
 */
       var json = {
-        //'limit': 0, 
+        //'limit': 0,
         'nested_filter': {'position': 1, 'filter': chip.display}
       };
       search.getFromQuery(json).then(function(out_data) {
@@ -307,7 +313,7 @@ function treeProcessData(steps) {
           setScopeError(out_data, $log, $scope);
           $scope.data = null;
           return false;
-        } 
+        }
         if (out_data.count < 1) {
           return false;
         }

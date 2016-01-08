@@ -7,7 +7,8 @@ docker-compose -f docker-compose.yml -f custom.yml up -d customfe
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 
 PROTOTYPE:
-☐ What if API down? 
+☐ What if API down?
+  ☐ API ping  method
   ☐ At boot/login
   ☐ Changing page
 ☐ What if API unauthorized?
@@ -34,31 +35,6 @@ PROTOTYPE:
     ☐ js -> flask frontend -> api flask
   ☐ change loading bar template
 
-SEARCH:
-  ✔ base api @done (16-01-04 11:40)
-    ✔ rethinkdb? @done (16-01-02 23:35)
-    ✔ add code @done (16-01-03 01:04)
-    ✔ put a flag for rethinkdb connection when app startup @done (16-01-03 15:07)
-    ✔ convert old tables into json schemas @done (16-01-03 15:07)
-  ✔ Checks  @done (16-01-04 11:40)
-    ✔ json response @done (16-01-04 01:39)
-    ✔ removed for now @done (16-01-05 09:41)
-  ✔ Details @done (16-01-06 01:08)
-    ✔ pages @done (16-01-06 01:08)
-    ✔ images @done (16-01-06 01:08)
-      ✔ lazy load  @done (16-01-06 01:48)
-      https://github.com/Pentiado/angular-lazy-img
-  ✔ Land page for search @done (16-01-07 16:05)
-    ✔ api call @done (16-01-04 13:56)
-    ✔ table @done (16-01-05 09:40)
-      ✔ TypeAhead autocomplete @done (16-01-07 03:15)
-      https://material.angularjs.org/latest/demo/autocomplete
-      ✔ Chips to add multiple words @done (16-01-07 03:15)
-      http://materializecss.com/chips.html
-      ✔ buttons + single element @done (16-01-05 15:15)
-    ✔ thumbnail @done (16-01-06 02:20)
-    ✔ paging template @done (16-01-07 16:05)
-
 #IMPORTANT
 SEARCH:
     ✔ RDB query @done (16-01-07 16:03)
@@ -80,14 +56,14 @@ PROBLEMS:
 WELCOME:
   ☐ put given images
   ☐ scrollspy also here
-  ☐ quick search 
+  ☐ quick search
     ☐ separate scrollspy section: on every field
   ☐ parallax ng-repeat?
     ☐ based on content and images
 
 #IMPORTANT
 
-  ☐ Zoomify 
+  ☐ Zoomify
     ☐ angular open new tab /page
     ☐ via python request and jinja template
 
@@ -119,7 +95,7 @@ JS LIBS:
   </div>
 </div>
 
-  ☐ controller filters 
+  ☐ controller filters
   https://toddmotto.com/use-controller-filters-to-prevent-digest-performance-issues/
   ✔ foreach implementation @done (15-12-30 16:37)
   https://toddmotto.com/simple-foreach-implementation-for-objects-nodelists-arrays-with-automatic-type-looping/
@@ -149,9 +125,9 @@ JWT apis:
   ☐ Change Feed
     ☐ python?
     https://www.rethinkdb.com/docs/changefeeds/python/
-      ☐ could register an angular timeout to 
+      ☐ could register an angular timeout to
     ☐ or directly js?
-    "Unlike other cursors, the output of changes is infinite: 
+    "Unlike other cursors, the output of changes is infinite:
     the cursor will block until more elements are available. "
     https://github.com/neumino/rethinkdbdash
 
@@ -162,7 +138,7 @@ FROM PREVIOUS 'frontend' angulask:
   ☐ with ease
 - Flask blueprint?
  ☐ auth blueprint (login part)
- 
+
 ☐ Angular blueprint load
 
 ui router pitfall:
@@ -221,6 +197,31 @@ COMPLETED:
      ✘ login button send to app @cancelled (15-12-29 15:42)
      ✔ description, features, about/contacts @done (16-01-02 16:47)
  ✔ root js app @done (16-01-02 16:48)
+
+  ✔ base api @done (16-01-04 11:40)
+    ✔ rethinkdb? @done (16-01-02 23:35)
+    ✔ add code @done (16-01-03 01:04)
+    ✔ put a flag for rethinkdb connection when app startup @done (16-01-03 15:07)
+    ✔ convert old tables into json schemas @done (16-01-03 15:07)
+  ✔ Checks  @done (16-01-04 11:40)
+    ✔ json response @done (16-01-04 01:39)
+    ✔ removed for now @done (16-01-05 09:41)
+  ✔ Details @done (16-01-06 01:08)
+    ✔ pages @done (16-01-06 01:08)
+    ✔ images @done (16-01-06 01:08)
+      ✔ lazy load  @done (16-01-06 01:48)
+      https://github.com/Pentiado/angular-lazy-img
+  ✔ Land page for search @done (16-01-07 16:05)
+    ✔ api call @done (16-01-04 13:56)
+    ✔ table @done (16-01-05 09:40)
+      ✔ TypeAhead autocomplete @done (16-01-07 03:15)
+      https://material.angularjs.org/latest/demo/autocomplete
+      ✔ Chips to add multiple words @done (16-01-07 03:15)
+      http://materializecss.com/chips.html
+      ✔ buttons + single element @done (16-01-05 15:15)
+    ✔ thumbnail @done (16-01-06 02:20)
+    ✔ paging template @done (16-01-07 16:05)
+
 
 --- ✄ -----------------------
  ☐ TextAngular
