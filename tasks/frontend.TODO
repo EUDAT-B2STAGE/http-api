@@ -44,8 +44,10 @@ SEARCH:
       ☐ TAB: View for parties
         ☐ should add the picture file of the first extrait i found
     ✔ TAB: Tree from steps @treecontrol @done (16-01-07 19:04)
-    ☐ convert tabs into official material
+    ✔ convert tabs into official material @done (16-01-08 06:49)
     https://material.angularjs.org/latest/demo/tabs
+    ☐ Some transitions are slow!
+    ☐ md-content size?
 
 PROBLEMS:
   ✔ Images not loading @done (16-01-08 01:46)

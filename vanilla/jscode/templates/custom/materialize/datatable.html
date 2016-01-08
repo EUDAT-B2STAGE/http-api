@@ -1,3 +1,13 @@
+
+<div class='z-depth-1'>
+    <pagination
+      page="1" page-size="10" total="dataCount"
+      show-prev-next="true" hide-if-empty="true"
+      dots=".." adjacent="4"
+      pagination-action="changePage(page)"
+      />
+</div>
+
 <table class='bordered highlight responsive-table'>
   <thead>
     <tr>
@@ -46,11 +56,4 @@
     </tr>
   </tbody>
 </table>
-
-<pagination
-  page="1" page-size="10" total="800"
-  show-prev-next="true" dots=".." hide-if-empty="true"
-  adjacent="5" scroll-top="true"
-  pagination-action="changePage(page)"
-  />
 

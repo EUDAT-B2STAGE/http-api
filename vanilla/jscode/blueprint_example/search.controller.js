@@ -48,7 +48,9 @@ function SearchController($scope, $log, $state, search)
 ////////////////////////////////////////
 ////////////////////////////////////////
 
-  function reloadTable(data) {
+  function reloadTable(response) {
+
+    $scope.dataCount = response.count;
 
     var elements = [];
     if (!$scope.stepsInfo) {
@@ -57,7 +59,7 @@ function SearchController($scope, $log, $state, search)
     $log.debug("preprocess");
     $scope.data = [];
 
-    forEach(data, function (x, i) {
+    forEach(response.data, function (x, i) {
 
       //console.log("DATA", x);
 
@@ -281,7 +283,7 @@ function treeProcessData(steps) {
           // Autocomplete setup from steps also
           self.states = loadAll(out_steps.data);
           // Create the table
-          reloadTable(out_data.data);
+          reloadTable(out_data);
 
           // Make the tree
           treeProcessData(out_steps.data);
@@ -317,7 +319,7 @@ function treeProcessData(steps) {
         if (out_data.count < 1) {
           return false;
         }
-        reloadTable(out_data.data);
+        reloadTable(out_data);
         console.log(out_data);
       });
   }

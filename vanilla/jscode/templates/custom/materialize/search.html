@@ -5,30 +5,59 @@
 
 <div ng-if='data'>
 
+  <md-content class="z-depth-1">
+
   <!-- TABS -->
+    <md-tabs md-dynamic-height md-border-bottom>
+
+      <!-- AUTOCOMPLETE SEARCH -->
+      <md-tab label="Simple">
+        <md-content class="md-padding">
+            <div ng-include="customTemplateDir + 'autocomplete.html'"></div>
+            <div ng-if='data.length > 0'>
+              <div ng-include="customTemplateDir + 'datatable.html'"></div>
+            </div>
+        </md-content>
+      </md-tab>
+
+      <!-- TREE EXPLORER -->
+      <md-tab label="Tree explorer">
+        <md-content class="md-padding">
+            <div ng-include="customTemplateDir + 'tree.html'"
+                style="width: 600px;"></div>
+        </md-content>
+      </md-tab>
+
+      <!-- LIST of another fiedl -->
+      <md-tab label="Step list">
+        <md-content class="md-padding">
+            <div ng-include="customTemplateDir + 'somelist.html'"></div>
+        </md-content>
+      </md-tab>
+
+    </md-tabs>
+  </md-content>
+
+  <!-- TABS
   <ul class="tabs z-depth-1" tabs>
       <li class="tab col s3"><a href="#simple">Simple</a></li>
       <li class="tab col s3"><a href="#tree">Tree view</a></li>
       <li class="tab col s3"><a href="#list">List</a></li>
   </ul>
 
-  <!-- AUTOCOMPLETE SEARCH -->
   <div id="simple" class="col s12 tabtop">
     <div ng-include="customTemplateDir + 'autocomplete.html'"></div>
-    <!-- DIV FOR DATA > 0 -->
     <div ng-if='data.length > 0'>
       <div ng-include="customTemplateDir + 'datatable.html'"></div>
     </div>
   </div>
 
-  <!-- TREE EXPLORER -->
   <div id="tree" class="col s12 tabtop">
     <div ng-include="customTemplateDir + 'tree.html'"></div>
   </div>
 
-  <!-- LIST of another fiedl -->
   <div id="list" class="col s12 tabtop">
     <div ng-include="customTemplateDir + 'somelist.html'"></div>
   </div>
-
+    -->
 </div>
