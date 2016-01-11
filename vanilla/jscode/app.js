@@ -1,11 +1,16 @@
 (function() {
   'use strict';
 
+/* Define another module?
+console.log('PRE');
+angular.module('blueprint', ['ui.router']);
+console.log('POST');
+*/
+
   angular
     .module('web', [
         //'ngAnimate',
         'ngSanitize',
-    	'satellizer',
         'ui.router', //'ngRoute',
 // BOOTSTRAP
         //'mgcrea.ngStrap',
@@ -13,6 +18,9 @@
         'ngMaterial',
 // MATERIAL DESIGN
         'ui.materialize',
+
+//////////////////////////////////////
+        'satellizer',
 // THE LOADING BAR
         //'angular-loading-bar',
         'cfp.loadingBar',
@@ -22,6 +30,7 @@
         'treeControl',
 
 // OTHERS?
+        //'blueprint',
     ]);
 
 })();
