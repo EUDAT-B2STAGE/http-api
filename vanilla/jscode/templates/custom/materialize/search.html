@@ -14,6 +14,9 @@
       <md-tab label="Simple">
         <md-content class="md-padding">
             <div ng-include="customTemplateDir + 'autocomplete.html'"></div>
+            <div ng-if="data.length < 1">
+                <div ng-include="templateDir + 'loader.html'"></div>
+            </div>
             <div ng-if='data.length > 0'>
               <div ng-include="customTemplateDir + 'datatable.html'"></div>
             </div>

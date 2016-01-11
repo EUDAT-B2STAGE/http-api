@@ -9,35 +9,9 @@
   <div class="col s12">
 
     <div ng-if="load">
-
-    <div class="preloader-wrapper big active">
-      <div class="spinner-layer spinner-blue">
-        <div class="circle-clipper left"> <div class="circle"></div> </div>
-        <div class="gap-patch"> <div class="circle"></div> </div>
-        <div class="circle-clipper right"> <div class="circle"></div> </div>
-      </div>
-      <div class="spinner-layer spinner-red">
-        <div class="circle-clipper left"> <div class="circle"></div> </div>
-        <div class="gap-patch"> <div class="circle"></div> </div>
-        <div class="circle-clipper right"> <div class="circle"></div> </div>
-      </div>
-      <div class="spinner-layer spinner-yellow">
-        <div class="circle-clipper left"> <div class="circle"></div> </div>
-        <div class="gap-patch"> <div class="circle"></div> </div>
-        <div class="circle-clipper right"> <div class="circle"></div> </div>
-      </div>
-      <div class="spinner-layer spinner-green">
-        <div class="circle-clipper left"> <div class="circle"></div> </div>
-        <div class="gap-patch"> <div class="circle"></div> </div>
-        <div class="circle-clipper right"> <div class="circle"></div> </div>
-      </div>
+        <div ng-include="templateDir + 'loader.html'"></div>
     </div>
 
-
-      <h4> 
-        loading 
-      </h4>
-    </div>
     <div ng-if="!load">
 
 <!-- My login card -->
@@ -50,8 +24,8 @@
       <div class="row">
         <div class="input-field col s12">
           <i class="material-icons prefix">account_circle</i>
-          <input 
-            ng-model="user.username" id="username" name="username" 
+          <input
+            ng-model="user.username" id="username" name="username"
             id="icon_prefix" type="text" class="validate"
             required autofocus>
           <label for="icon_prefix">Username</label>
@@ -60,8 +34,8 @@
       <div class="row">
         <div class="input-field col s12">
           <i class="material-icons prefix">vpn_key</i>
-          <input 
-            ng-model="user.password" id="password" name="password" 
+          <input
+            ng-model="user.password" id="password" name="password"
             type="password" class="validate"
             required>
           <label for="icon_telephone">Password</label>

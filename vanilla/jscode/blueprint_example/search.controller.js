@@ -15,7 +15,7 @@ function SearchController($scope, $log, $state, $mdConstant, search)
   // Template Directories
   var framework = 'materialize';
   var templateDirBase = '/static/app/templates/';
-  //var templateDir = templateDirBase + framework + '/';
+  $scope.templateDir = templateDirBase + framework + '/';
   $scope.customTemplateDir = templateDirBase + 'custom/' + framework + '/';
 
 ////////////////////////////////////////

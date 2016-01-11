@@ -2,11 +2,9 @@
 // MAIN DIRS
 	"staticdir": "static",
 	"bowerdir": "bower",
-// // CSS files 
+// // CSS files
 // //(starting from bower dir)
 	"css": [
-		"font-awesome/css/font-awesome.min.css",
-		//
 		// ## Choose your framework:
 		//
 		// # BOOTSTRAP
@@ -14,7 +12,9 @@
 		// # MATERIAL
 		"angular-material/angular-material.min.css",	//official
 		"materialize/dist/css/materialize.min.css",
+        // # FOUNDATION?
 		//
+        // # WHAT ELSE?
 		//"animate.css/animate.min.css"
 		"angular-loading-bar/build/loading-bar.min.css",
 		"angular-tree-control/css/tree-control.css"
@@ -30,11 +30,12 @@
 // Cool FONTS
 	"fonts" : [
 		"http://fonts.googleapis.com/icon?family=Material+Icons"
+        //"font-awesome/css/font-awesome.min.css",
 	],
 // Angular framework and app files
 //(starting from bower dir)
 	"js": [
-		// # JQUERY 
+		// # JQUERY
 		"jquery/dist/jquery.min.js",
 		//(needed by material... don't like!)
 		// # ANGULAR

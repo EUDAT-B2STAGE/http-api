@@ -1,3 +1,4 @@
+
 <div class="container">
 
     Home angular page.
@@ -5,5 +6,57 @@
     <h4> Test </h4>
 
     {{ some }}
+
+</div>
+
+<div layout="column" ng-cloak>
+  <md-content class="md-padding" layout="column">
+
+
+    <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum fugit, ex itaque minima. Illo, itaque! Aut dolore eos saepe similique dolorum, corrupti quisquam eaque. Reiciendis architecto, consequuntur temporibus dolorum eos.</div>
+    <br><br>
+    <div>Nobis beatae quisquam enim, laborum vero porro hic sed tempora tenetur, unde, modi necessitatibus consectetur incidunt autem odio possimus eveniet tempore! Deserunt cumque voluptatibus ipsam earum temporibus quae distinctio iure!</div>
+    <br><br>
+    <div>Nobis beatae quisquam enim, laborum vero porro hic sed tempora tenetur, unde, modi necessitatibus consectetur incidunt autem odio possimus eveniet tempore! Deserunt cumque voluptatibus ipsam earum temporibus quae distinctio iure!</div>
+    <br><br>
+    <div>Nobis beatae quisquam enim, laborum vero porro hic sed tempora tenetur, unde, modi necessitatibus consectetur incidunt autem odio possimus eveniet tempore! Deserunt cumque voluptatibus ipsam earum temporibus quae distinctio iure!</div>
+    <br><br>
+    <div>Nobis beatae quisquam enim, laborum vero porro hic sed tempora tenetur, unde, modi necessitatibus consectetur incidunt autem odio possimus eveniet tempore! Deserunt cumque voluptatibus ipsam earum temporibus quae distinctio iure!</div>
+
+  </md-content>
+</div>
+
+<div class="fabbutton" ng-controller="FabButtonController as demo" ng-cloak>
+
+    <md-fab-speed-dial
+        ng-class="demo.selectedMode"
+        ng-class="{ 'md-hover-full': demo.hover }"
+        md-open="demo.isOpen" md-direction="up">
+
+        <md-fab-trigger>
+          <md-tooltip md-direction="left" md-visible="tooltipVisible"
+            >Actions</md-tooltip>
+          <md-button aria-label="menu" class="md-fab md-warn">
+            <i class="material-icons prefix">menu</i>
+          </md-button>
+        </md-fab-trigger>
+
+        <md-fab-actions>
+        <div ng-repeat="item in demo.items">
+          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini"
+                     ng-click="demo.openDialog($event, item)">
+            <md-tooltip md-direction="left"
+                md-visible="demo.tooltipVisible" md-autohide="true">
+              {{item.name}}
+            </md-tooltip>
+            <i class="material-icons prefix" aria-label="{{item.name}}">
+                {{item.icon}}
+            </i>
+          </md-button>
+        </div>
+        </md-fab-actions>
+
+    </md-fab-speed-dial>
+
 
 </div>

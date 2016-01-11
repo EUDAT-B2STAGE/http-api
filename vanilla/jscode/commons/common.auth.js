@@ -40,7 +40,7 @@ http://stackoverflow.com/a/25799503
 there is a quick paragraph in angular docs to make this happen:
 https://docs.angularjs.org/guide/$location
 
-"In cases like the following, links are not rewritten; 
+"In cases like the following, links are not rewritten;
 instead, the browser will perform a full page reload to the original link.
 Links that contain target element
 Example: <a href="/ext/link?a=b" target="_self">link</a>
@@ -49,9 +49,9 @@ Example: <a href="http://angularjs.org/">link</a>
 Links starting with '/' that lead to a different base path
 Example: <a href="/not-my-base/link">link</a>"
 
-So for login i can make the page reload, for instance 
+So for login i can make the page reload, for instance
 (do not like much for now)
-While for logout i made the button "Yes" to let it happen. 
+While for logout i made the button "Yes" to let it happen.
 
 
 */
@@ -93,9 +93,15 @@ function LoginController($scope, $window, $location, $log, $auth, $state, $timeo
     }
 }
 
-function LogoutController($scope, $log, $auth) 
+function LogoutController($scope, $log, $auth)
 {
     $log.debug("Logout Controller");
+
+    // Template Directories
+    var framework = 'materialize';
+    var templateDirBase = '/static/app/templates/';
+    $scope.templateDir = templateDirBase + framework + '/';
+    //$scope.customTemplateDir = templateDirBase + 'custom/' + framework + '/';
 
     $scope.logoutfun = function() {
 

@@ -40,27 +40,42 @@ SEARCH:
       ✔ POST with key 'operations' and json data @done (16-01-07 03:18)
       ✔ test with js @done (16-01-08 01:33)
       ✔ Complete chips and typeahead @done (16-01-08 01:33)
-      ☐ TAB: View for parties
-        ☐ should add the picture file of the first extrait i found
+    ✔ TAB: View for parties @done (16-01-08 16:13)
     ✔ TAB: Tree from steps @treecontrol @done (16-01-07 19:04)
     ✔ convert tabs into official material @done (16-01-08 06:49)
     https://material.angularjs.org/latest/demo/tabs
+    ☐ do not show results if nothing searched
+      ☐ progress angular with template if loading
+    ☐ Autocomplete words from transcription
+      ☐ split and distinct on
+    ☐ Why the hell http requests hang?
+    ☐ Question mark to switch to PDF help
+      ☐ Admin page to add a vocabulary
+        ☐ Excel load
+        ☐ web site insert
+      ☐ step list angular inline filter
 
 PROBLEMS:
   ✔ Images not loading @done (16-01-08 01:46)
   ✔ Removing chips does not reload page @done (16-01-08 08:22)
+  ☐ Chips array = apply filter on cascade
   ☐ topbar menu for mobile
   ☐ Pagination action?
-  ☐ Chips sums does not work yet
-  ☐ lazy load instead of pagination
-  ☐ Some transitions are slow!
+    ☐ lazy load instead of pagination
+  ☐ Some tabs transitions are slow!
 
 WELCOME:
-  ☐ put given images
+  ☐ Not an angular page......
   ✔ scrollspy also here @done (16-01-08 07:24)
     ✔ separate scrollspy section: on every field @done (16-01-08 07:24)
-  ☐ quick search
-    ☐ md-search?
+  ☐ FAB buttons
+    ☐ if not logged
+      ☐ search, login
+    ☐ if logged
+      ☐ insert for normal or exibition
+      ☐ search for normal or exibition
+  ☐ put given images
+  ☐ autocomplete search box?
   ☐ parallax ng-repeat?
     ☐ based on content and images
 
@@ -68,11 +83,24 @@ DETAILS:
   ☐ Zoomify
     ☐ angular open new tab /page
     ☐ via python request and jinja template
+ ☐ select language on transcription
+ ☐ aggiungere lista dettagli (step 4) sotto lo scrollspy
 
 SUBMIT:
   ☐ Submission skeleton with collapsible or collections
   ☐ Submission steps
   http://materializecss.com/collections.html
+  ☐
+  http://psergus.github.io/ngWYSIWYG/
+
+EXPOSITION:
+  ☐ theme list with thumbnail picture, click
+    ☐ dettaglio tema
+      ☐ diversi testi
+        ☐ per ogni testo uno o più immagini
+          ☐ dettaglio immagine (titolo, data, altro)
+  ☐ un mosaico di immagini
+    ☐ click su singola immagini
 
 HTTPS:
   ☐ nginx proxy

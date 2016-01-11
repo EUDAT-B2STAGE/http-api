@@ -18,7 +18,7 @@ function _skipIfAuthenticated($q, $state, $auth) {
         defer.resolve();
     return defer.promise;
 }
- 
+
 function _redirectIfNotAuthenticated($q, $state, $auth, $timeout) {
     var defer = $q.defer();
     if($auth.isAuthenticated()) {
@@ -134,14 +134,14 @@ $stateProvider
 
 //$urlRouterProvider.otherwise('/login');
 
-// Ui router kinda bug fixing 
+// Ui router kinda bug fixing
 // CHECK THIS IN THE NEAR FUTURE
 //https://github.com/angular-ui/ui-router/issues/1022#issuecomment-50628789
     $urlRouterProvider.otherwise(function ($injector) {
         var $state = $injector.get('$state');
         return $state.go('login');
     });
-/* 
+/*
     // In case you want to redirect to external link
     $urlRouterProvider.otherwise(function () {
         window.location.href = '/';
