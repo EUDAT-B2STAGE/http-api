@@ -1,0 +1,26 @@
+
+#######################
+# Define here your services
+
+myservice:
+    image: busybox
+
+#######################
+# Link services inside API
+
+custombe:
+    extends:
+        file: docker-compose.yml
+        service: backend
+    # links:
+    #     - myservice:rdb
+
+#######################
+# Frontend links only API
+
+customfe:
+    extends:
+        file: docker-compose.yml
+        service: frontend
+    links:
+        - custombe:myapi
