@@ -26,6 +26,8 @@ if [ "$1" == "init" ]; then
 # Update repos, packages and images
 elif [ "$1" == "update" ]; then
 
+# TO FIX: add custom compose here too
+
     docker-compose pull
     current=`pwd`
     cd ..
