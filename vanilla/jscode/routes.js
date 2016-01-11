@@ -3,50 +3,19 @@
 
 angular.module('web').config(config);
 
-// Ui Resolve + Satellizer to authenticate
-// source http://j.mp/1VnxlQS
-function _skipIfAuthenticated($q, $state, $auth) {
-    var defer = $q.defer();
-    //console.log("STATE", $state);
-/*
-    if($auth.isAuthenticated()) {
-        defer.reject();
-    } else {
-        defer.resolve();
-    }
-*/
-        defer.resolve();
-    return defer.promise;
-}
-
-function _redirectIfNotAuthenticated($q, $state, $auth, $timeout) {
-    var defer = $q.defer();
-    if($auth.isAuthenticated()) {
-        defer.resolve();
-    } else {
-        //console.log("TEST");
-        $timeout(function () {
-            //console.log("TEST2");
-            $state.go('login');
-        }); //, 100);
-        defer.reject();
-    }
-    return defer.promise;
-}
-
 /*********************************
 * ROUTING
 *********************************/
 function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider, $injector)
 {
-    var tmp = $injector.get(blueprint + 'Routes');
-    console.log("Dynamic inject", blueprint, tmp);
 
-// BASE CONFS
-    var framework = 'materialize';
-    var templateDirBase = '/static/app/templates/';
-    var templateDir = templateDirBase + framework + '/';
-    var customTemplateDir = templateDirBase + 'custom/' + framework + '/';
+    var extraRoutes = $injector.get(blueprint + 'Routes');
+    console.log("Dynamic inject", blueprint, extraRoutes);
+
+    forEach(extraRoutes, function(element, index){
+        console.log(index, element);
+    });
+
 	// Enable log
 	$logProvider.debugEnabled(true); //.hashPrefix('!');
     // HTML5 mode: remove hash bang to let url be parsable
@@ -143,31 +112,6 @@ $stateProvider
         var $state = $injector.get('$state');
         return $state.go('login');
     });
-/*
-    // In case you want to redirect to external link
-    $urlRouterProvider.otherwise(function () {
-        window.location.href = '/';
-        //$location.path('/helloworld');
-        //$location.replace();
-    });
-*/
-/*
-    .state("hello", {
-        url: "/helloworld",
-        resolve: {
-            skipIfAuthenticated: _skipIfAuthenticated
-        },
-        views: {
-            "main": {
-                controller: function($window) {
-                    //Reload python pages
-                    console.log("Reload!");
-                    $window.location.reload();
-                }
-            }
-        }
-    })
-*/
 
 }
 

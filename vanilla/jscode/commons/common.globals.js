@@ -1,3 +1,14 @@
+/*********************************
+*** GLOBAL FUNCTIONS
+**********************************/
+
+// BASE CONFS
+var framework = 'materialize';
+var templateDirBase = '/static/app/templates/';
+var templateDir = templateDirBase + framework + '/';
+var customTemplateDir = templateDirBase + 'custom/' + framework + '/';
+
+/////////////////////////////////
 // FOR EACH AUTO IMPLEMENTATION
  //https://toddmotto.com/simple-foreach-implementation-for-objects-nodelists-arrays-with-automatic-type-looping/
 var forEach = function (collection, callback, scope) {
@@ -14,12 +25,48 @@ var forEach = function (collection, callback, scope) {
   }
 };
 
+
+/////////////////////////////////
+// Ui Resolve + Satellizer to authenticate
+// source http://j.mp/1VnxlQS
+function _skipIfAuthenticated($q, $state, $auth) {
+    var defer = $q.defer();
+    //console.log("STATE", $state);
+/*
+    if($auth.isAuthenticated()) {
+        defer.reject();
+    } else {
+        defer.resolve();
+    }
+*/
+        defer.resolve();
+    return defer.promise;
+}
+
+function _redirectIfNotAuthenticated($q, $state, $auth, $timeout) {
+    var defer = $q.defer();
+    if($auth.isAuthenticated()) {
+        defer.resolve();
+    } else {
+        //console.log("TEST");
+        $timeout(function () {
+            //console.log("TEST2");
+            $state.go('login');
+        }); //, 100);
+        defer.reject();
+    }
+    return defer.promise;
+}
+
+
+/////////////////////////////////
+// OTHERS
 Object.prototype.hasOwnProperty = function(property) {
     return typeof this[property] !== 'undefined';
 };
 
 function checkApiResponseTypeError(obj) {
-  if ( 
+  if (
       (! obj) ||
       (typeof obj == 'string')  ||
       (obj.hasOwnProperty('message'))) {
@@ -35,3 +82,5 @@ function setScopeError(message, log, scope) {
 String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
+
+/////////////////////////////////

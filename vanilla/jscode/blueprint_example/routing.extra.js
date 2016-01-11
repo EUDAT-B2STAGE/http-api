@@ -2,9 +2,24 @@
 'use strict';
 
 angular.module('web')
-    .constant('rethinkRoutes',
-        {'test1': 1, 'test2': 'bis'}
-    );
+ .constant('rethinkRoutes',
+ {
+// JUST A TEST
+    'test': {
+        url: "/test",
+        resolve: {
+            skipIfAuthenticated: true,
+        },
+        views: {
+            "main": {
+                dir: 'base',
+                //dir: 'custom',
+                templateUrl: 'test.html',
+            }
+        }
+    }
+///////////////
+ });
 
 /*
 myApp.provider('unicornLauncher', function UnicornLauncherProvider() {
