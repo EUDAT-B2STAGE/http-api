@@ -7,6 +7,10 @@ docker-compose -f docker-compose.yml -f custom.yml up -d customfe
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 
 PROTOTYPE:
+ ☐ Download material fonts
+ http://fonts.googleapis.com/icon?family=Material+Icons
+ ☐ Somehow dynamic routes
+
 ☐ What if API down?
   ☐ API ping  method
   ☐ At boot/login

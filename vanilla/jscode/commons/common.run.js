@@ -1,3 +1,4 @@
+// I DISABLED THIS CODE BY REMOVING PARENTHESIS AT THE END OF THE FILE
 (function() {
   'use strict';
 
@@ -6,12 +7,6 @@ angular.module('web')
 
 function runBlock($log, $rootScope, $cacheFactory, $templateCache) {
 	$log.debug('The RUN block');
-
-///////////////////////////////
-// AVOID CACHE OF TEMPLATES
-// (for DEBUG reason?)
-
-/*
 
     // SPECIFIC FOR UI ROUTER
     // Execute every time a state change begins
@@ -29,8 +24,7 @@ function runBlock($log, $rootScope, $cacheFactory, $templateCache) {
                 }
             }
         });
-*/
 
 }
-
-})();
+})
+//();

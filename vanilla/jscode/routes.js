@@ -37,8 +37,10 @@ function _redirectIfNotAuthenticated($q, $state, $auth, $timeout) {
 /*********************************
 * ROUTING
 *********************************/
-function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider) //, $interpolateProvider)
+function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider, $injector)
 {
+    var tmp = $injector.get(blueprint + 'Routes');
+    console.log("Dynamic inject", blueprint, tmp);
 
 // BASE CONFS
     var framework = 'materialize';
