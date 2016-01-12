@@ -47,6 +47,8 @@ for sjs in fconfig['customjs']:
 fonts = []
 for sfont in fconfig['fonts']:
     # This should be an external url
+    if 'http' not in sfont:
+        sfont = staticdir + sfont
     fonts.append(sfont)
 # Images
 imgs = []

@@ -22,15 +22,18 @@
 	],
 // USER CUSTOM CSS
 	"customcss" : [
-		// # BOOTSTRAP
+	// # BOOTSTRAP
 		//"css/custom.css"
-		// # MATERIAL
+	// # MATERIAL
 		"css/custom_material.css"
+
 	],
 // Cool FONTS
 	"fonts" : [
-		"http://fonts.googleapis.com/icon?family=Material+Icons"
         //"font-awesome/css/font-awesome.min.css",
+        // # MATERIAL FONTS
+        "css/myfonts.css"
+        //"http://fonts.googleapis.com/icon?family=Material+Icons"
 	],
 // Angular framework and app files
 //(starting from bower dir)

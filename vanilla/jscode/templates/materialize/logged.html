@@ -1,6 +1,19 @@
-<div class="container">
-    <div ui-view='loggedview'>
-        <h3>Well done!</h3> 
-        You are <b>logged</b> now.
-    </div>
-</div>
+<md-content>
+ <div ui-view='loggedview'>
+    <!-- TO BE SUBSTITUED WHEN A CHILD INHERITS THIS VIEW -->
+
+  <div layout="row" layout-align='center'>
+    <h3>Well done!</h3>
+  </div>
+
+  <div layout="row" layout-align='center'>
+    <p>
+        <i class="material-icons">account_circle</i>
+        <span>
+            You are <b>logged</b> now
+        </span>
+    </p>
+  </div>
+
+ </div>
+</md-content>

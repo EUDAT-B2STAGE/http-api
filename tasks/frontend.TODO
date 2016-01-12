@@ -13,16 +13,18 @@ PROTOTYPE:
  https://material.angularjs.org/latest/layout/alignment
  ✔ material progress circular @done (16-01-12 11:23)
    ✔ data == 0 problem in search @done (16-01-12 13:59)
- ☐ Fix login check in root controller
- ☐ Download material fonts
+ ✔ Download material fonts @done (16-01-12 14:37)
  http://fonts.googleapis.com/icon?family=Material+Icons
  vanilla/jslibs/bower_components/materialize/font/material-design-icons/
+ ☐ Fix login check in root controller
+ ☐ test logout
  ☐ search fixed inside the toolbar
  ☐ material sidenav
  ☐ good example for transcription
  https://material.angularjs.org/latest/demo/menuBar
  ☐ one time binding
  <li ng-repeat=“item in ::vastArray”>{{ ::item.velocity }}</li>
+ ☐ Roboto?
 
 ☐ What if API down?
   ☐ API ping  method
