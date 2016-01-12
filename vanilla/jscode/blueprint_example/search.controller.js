@@ -52,8 +52,6 @@ function SearchController($scope, $log, $state, $mdConstant, search)
 
   function reloadTable(response) {
 
-    $scope.dataCount = response.count;
-
     var elements = [];
     if (!$scope.stepsInfo) {
       return {};
@@ -118,6 +116,7 @@ function SearchController($scope, $log, $state, $mdConstant, search)
 
           // FINALLY ADD DATA
           $scope.data.push(element);
+          $scope.dataCount = response.count;
         }); // GET DOCUMENTS
       });
     });
@@ -244,6 +243,7 @@ function treeProcessData(steps) {
     ///////////////////////////////////
     // Load autocomplete for each step
     $scope.autocomplete = [];
+    $scope.dataCount = NaN;
     var steps = 3;
     for (var i = 0; i < steps; i++) {
       var json = {

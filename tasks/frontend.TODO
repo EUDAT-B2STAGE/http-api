@@ -16,7 +16,8 @@ PROTOTYPE:
  ✔ Download material fonts @done (16-01-12 14:37)
  http://fonts.googleapis.com/icon?family=Material+Icons
  vanilla/jslibs/bower_components/materialize/font/material-design-icons/
- ☐ Fix login check in root controller
+ ✔ Fix login check in root controller @done (16-01-12 15:13)
+ ✔ Fix containers in every view @done (16-01-12 15:34)
  ☐ test logout
  ☐ search fixed inside the toolbar
  ☐ material sidenav

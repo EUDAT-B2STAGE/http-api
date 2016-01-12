@@ -7,16 +7,15 @@
 <div class="navbar z-depth-2">
 	<nav>
 	  <div class="nav-wrapper cyan darken-3">
-	  <a href="#" class="brand-logo"
-	  	style='padding-left: 30px;'
-	    data-activates="slide-out" data-sidenav="left"
-	    data-menuwidth="180" data-closeonclick="false">
 		{%- if g.user.is_authenticated -%}
+          <a ui-sref='logged' class="brand-logo brandpad">
 			Inside the app
+          </a>
 		{%- else -%}
+          <a class="brand-logo brandpad">
 			Login form
+          </a>
 		{%- endif -%}
-	  </a>
 		{% if g.user.is_authenticated %}
 		<div ui-view='menu'></div>
 		{% endif %}

@@ -30,7 +30,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, $auth)
         console.log("STATE", $state.current, checkLoggedState($state.current));
 
 // ONLY IF NOT INSIDE LOGGED ALREADY
-        if (token !== null) {
+        if (!checkLoggedState($state.current) && token !== null) {
             $state.go('logged');
         }
         // Show the page content
