@@ -12,6 +12,14 @@ PROTOTYPE:
  ☐ Download material fonts
  http://fonts.googleapis.com/icon?family=Material+Icons
  vanilla/jslibs/bower_components/materialize/font/material-design-icons/
+ ☐ search fixed inside the toolbar
+ ☐ material progress circular
+   ☐ data == 0 problem in search
+ ☐ material sidenav
+ ☐ good example for transcription
+ https://material.angularjs.org/latest/demo/menuBar
+ ☐ one time binding
+ <li ng-repeat=“item in ::vastArray”>{{ ::item.velocity }}</li>
 
 ☐ What if API down?
   ☐ API ping  method

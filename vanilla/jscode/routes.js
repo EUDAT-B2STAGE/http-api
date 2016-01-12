@@ -6,7 +6,7 @@ angular.module('web').config(config);
 /*********************************
 * ROUTING
 *********************************/
-function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider, $injector)
+function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider, $httpProvider, $injector)
 {
 
 // WHERE THE MAGIC HAPPENS
@@ -17,7 +17,7 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
 
     // Build the routes from the blueprint configuration
     forEach(extraRoutes, function(x, stateName){
-        console.log(stateName, x);
+        //console.log(stateName, x);
 
         // Build resolver of this single state
         var myResolve = {};
@@ -26,19 +26,16 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
         } else if (x.resolve.redirectIfNotAuthenticated) {
             myResolve['redirectIfNotAuthenticated'] = _redirectIfNotAuthenticated;
         }
-        //console.log("Test resolve", x.resolve, myResolve);
 
         // Build VIEWS for this single state
         var myViews = {};
         forEach(x.views, function(view, viewName){
-            console.log(viewName, view);
             var dir = templateDir;
             if (view.dir == 'custom') {
                 dir = customTemplateDir;
             }
             myViews[viewName] = {templateUrl: dir + view.templateUrl};
         });
-        console.log("READY", myViews);
 
         // Add provider state to the ui router ROUTES
         $stateProvider.state(stateName, {
@@ -56,6 +53,12 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
     $locationProvider.html5Mode(true);
     // // Change angular variables from {{}} to [[]]
     // $interpolateProvider.startSymbol('[[').endSymbol(']]');
+
+    // Performance:
+    // make all http requests that return in around the same time
+    // resolve in one digest
+    // http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes #9b
+    $httpProvider.useApplyAsync(true);
 
 // ROUTES
 $stateProvider
