@@ -9,12 +9,14 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 PROTOTYPE:
 
  ✔ Somehow dynamic routes @done (16-01-12 08:16)
+ ✔ md-content alignment @done (16-01-12 11:23)
+ https://material.angularjs.org/latest/layout/alignment
+ ✔ material progress circular @done (16-01-12 11:23)
+   ☐ data == 0 problem in search
  ☐ Download material fonts
  http://fonts.googleapis.com/icon?family=Material+Icons
  vanilla/jslibs/bower_components/materialize/font/material-design-icons/
  ☐ search fixed inside the toolbar
- ☐ material progress circular
-   ☐ data == 0 problem in search
  ☐ material sidenav
  ☐ good example for transcription
  https://material.angularjs.org/latest/demo/menuBar

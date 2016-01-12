@@ -72,7 +72,7 @@ $stateProvider
         views: {
             "main": {
                 templateUrl: templateDir + 'login.html',
-                controller: 'LoginController',
+                //controller: 'LoginController',
             }
         }
     })
@@ -139,8 +139,9 @@ $stateProvider
     // Routes definition end
     ;
 
-//$urlRouterProvider.otherwise('/login');
+$urlRouterProvider.otherwise('/login');
 
+/*
 // Ui router kinda bug fixing
 // CHECK THIS IN THE NEAR FUTURE
 //https://github.com/angular-ui/ui-router/issues/1022#issuecomment-50628789
@@ -148,7 +149,8 @@ $stateProvider
         var $state = $injector.get('$state');
         return $state.go('login');
     });
+*/
 
-}
+}   // END CONFIG
 
 })();

@@ -1,18 +1,15 @@
-<div class="container">
-<p></br></p>
 
-<div class="row">
-<!--
-  <div class="col s12 m3 l2">&nbsp;</div>
-  <div class="col s12 m6 l8">
--->
+<div class="container tabtop" ng-controller='LoginController as login'>
+ <div class="row">
   <div class="col s12">
 
-    <div ng-if="load">
-        <div ng-include="templateDir + 'loader.html'"></div>
+    <div ng-if="login.load">
+    <!-- WHILE WAITING -->
+        <div ng-include="login.templateDir + 'loader.html'"></div>
     </div>
 
-    <div ng-if="!load">
+    <div ng-hide="login.load">
+    <!-- WHEN READY -->
 
 <!-- My login card -->
 <div class="card">

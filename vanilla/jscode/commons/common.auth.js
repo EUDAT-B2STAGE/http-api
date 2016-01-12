@@ -60,36 +60,40 @@ While for logout i made the button "Yes" to let it happen.
 function LoginController($scope, $window, $location, $log, $auth, $state, $timeout) {
 
     $log.debug("Login Controller");
-    $scope.load = true;
+    var self = this;
+    self.load = true;
+    // Passing a global variable
+    self.templateDir = templateDir;
+
+    // Let this login load after a little while
     $timeout(function() {
         var token = $auth.getToken();
         $log.debug("Actual token is:", token);
         if (token !== null) {
             $state.go('logged');
         } else {
-            $scope.load = false;
+            // Show the page content
+            self.load = false;
         }
-    }, 1200);
+    }, 1500);
 
+    // LOGIN LOGIC
     $scope.loginfun = function(credentials) {
         $log.debug("Requested with", credentials);
 
         $auth.login(credentials).then(
             function (loginResponse) {
-                console.log(loginResponse);
-                console.log($auth.getToken());
-/////////////////////////////////////////
-// THERE IS NO WAY TO MAKE THIS TWO IN ONE COMMAND...
-                //$state.go('logged');
+                $log.info("Login request", loginResponse);
+                //console.log($auth.getToken());
+
+                // Now we can check again reloading this page
                 $window.location.reload();
-/////////////////////////////////////////
 
             }, function(errorResponse) {
-                $log.warn("Failed");
+                $log.warn("Auth: failed");
                 console.log(errorResponse.data.errors);
-
             }
-            );
+        );
     }
 }
 
