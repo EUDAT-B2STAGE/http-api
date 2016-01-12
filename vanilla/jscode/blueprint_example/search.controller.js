@@ -312,6 +312,7 @@ null to prevent the chip from being appended
         'nested_filter': {'position': 1, 'filter': chip.display}
       };
       search.getFromQuery(json).then(function(out_data) {
+        $scope.dataCount = NaN;
         // Check only on first call
         if (checkApiResponseTypeError(out_data)) {
           // Set error and break
