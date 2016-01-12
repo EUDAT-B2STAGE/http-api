@@ -7,13 +7,33 @@ angular.module('web')
 // JUST A TEST
     'test': {
         url: "/test",
+        ///////////////////////////
+        // This is mandatory for the configuration
         resolve: {
             skipIfAuthenticated: true,
+            redirectIfNotAuthenticated: false,
         },
+        ///////////////////////////
         views: {
             "main": {
-                dir: 'base',
-                //dir: 'custom',
+                dir: 'custom',
+                // OR
+                //dir: 'base',
+                templateUrl: 'test.html',
+            }
+        }
+    },
+///////////////
+// LOGGED TEST
+    'logged.test': {
+        url: "/yes",
+        resolve: {
+            skipIfAuthenticated: false,
+            redirectIfNotAuthenticated: true,
+        },
+        views: {
+            "loggedview": {
+                dir: 'custom',
                 templateUrl: 'test.html',
             }
         }

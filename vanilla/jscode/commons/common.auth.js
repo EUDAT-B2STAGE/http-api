@@ -97,11 +97,11 @@ function LogoutController($scope, $log, $auth)
 {
     $log.debug("Logout Controller");
 
-    // Template Directories
-    var framework = 'materialize';
-    var templateDirBase = '/static/app/templates/';
-    $scope.templateDir = templateDirBase + framework + '/';
-    //$scope.customTemplateDir = templateDirBase + 'custom/' + framework + '/';
+    // // Template Directories
+    // var framework = 'materialize';
+    // var templateDirBase = '/static/app/templates/';
+    // $scope.templateDir = templateDirBase + framework + '/';
+    $scope.customTemplateDir = customTemplateDir;
 
     $scope.logoutfun = function() {
 

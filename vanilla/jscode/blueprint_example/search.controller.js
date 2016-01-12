@@ -9,14 +9,14 @@ function SearchController($scope, $log, $state, $mdConstant, search)
   $log.info("Ready to search");
   var self = this;
   $scope.data = {};
-  //         md-separator-keys="keys"
-  // $scope.keys = [$mdConstant.KEY_CODE.ENTER, $mdConstant.KEY_CODE.COMMA];
 
   // Template Directories
-  var framework = 'materialize';
-  var templateDirBase = '/static/app/templates/';
-  $scope.templateDir = templateDirBase + framework + '/';
-  $scope.customTemplateDir = templateDirBase + 'custom/' + framework + '/';
+  // var framework = 'materialize';
+  // var templateDirBase = '/static/app/templates/';
+  // $scope.templateDir = templateDirBase + framework + '/';
+  // $scope.customTemplateDir = templateDirBase + 'custom/' + framework + '/';
+  $scope.templateDir = templateDir;
+  $scope.customTemplateDir = customTemplateDir;
 
 ////////////////////////////////////////
 ////////////////////////////////////////

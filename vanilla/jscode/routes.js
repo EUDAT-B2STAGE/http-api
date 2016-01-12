@@ -9,19 +9,53 @@ angular.module('web').config(config);
 function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider, $injector)
 {
 
+// WHERE THE MAGIC HAPPENS
+
+    // Dinamically inject the routes from the choosen blueprint
     var extraRoutes = $injector.get(blueprint + 'Routes');
     console.log("Dynamic inject", blueprint, extraRoutes);
 
-    forEach(extraRoutes, function(element, index){
-        console.log(index, element);
+    // Build the routes from the blueprint configuration
+    forEach(extraRoutes, function(x, stateName){
+        console.log(stateName, x);
+
+        // Build resolver of this single state
+        var myResolve = {};
+        if (x.resolve.skipIfAuthenticated) {
+            myResolve['skipIfAuthenticated'] = _skipIfAuthenticated;
+        } else if (x.resolve.redirectIfNotAuthenticated) {
+            myResolve['redirectIfNotAuthenticated'] = _redirectIfNotAuthenticated;
+        }
+        //console.log("Test resolve", x.resolve, myResolve);
+
+        // Build VIEWS for this single state
+        var myViews = {};
+        forEach(x.views, function(view, viewName){
+            console.log(viewName, view);
+            var dir = templateDir;
+            if (view.dir == 'custom') {
+                dir = customTemplateDir;
+            }
+            myViews[viewName] = {templateUrl: dir + view.templateUrl};
+        });
+        console.log("READY", myViews);
+
+        // Add provider state to the ui router ROUTES
+        $stateProvider.state(stateName, {
+            url: x.url,
+            resolve: myResolve,
+            views: myViews,
+        });
     });
+
+// ROUTER CONFIGURATION
 
 	// Enable log
 	$logProvider.debugEnabled(true); //.hashPrefix('!');
     // HTML5 mode: remove hash bang to let url be parsable
     $locationProvider.html5Mode(true);
-    // Change angular variables from {{}} to [[]]
-    //$interpolateProvider.startSymbol('[[').endSymbol(']]');
+    // // Change angular variables from {{}} to [[]]
+    // $interpolateProvider.startSymbol('[[').endSymbol(']]');
 
 // ROUTES
 $stateProvider
@@ -34,7 +68,6 @@ $stateProvider
         },
         views: {
             "main": {
-                //template: '<br><h1>test</h1> [[angular]]',
                 templateUrl: templateDir + 'login.html',
                 controller: 'LoginController',
             }
