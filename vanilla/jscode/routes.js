@@ -21,7 +21,7 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
 
         // Build resolver of this single state
         var myResolve = {};
-        if (x.resolve.skipIfAuthenticated) {
+        if (x.resolve.skipAuhtenticationCheck) {
             myResolve['skipIfAuthenticated'] = _skipIfAuthenticated;
         } else if (x.resolve.redirectIfNotAuthenticated) {
             myResolve['redirectIfNotAuthenticated'] = _redirectIfNotAuthenticated;

@@ -10,7 +10,7 @@ angular.module('web')
         ///////////////////////////
         // This is mandatory for the configuration
         resolve: {
-            skipIfAuthenticated: true,
+            skipAuhtenticationCheck: true,
             redirectIfNotAuthenticated: false,
         },
         ///////////////////////////
@@ -35,6 +35,23 @@ angular.module('web')
             "loggedview": {
                 dir: 'custom',
                 templateUrl: 'test.html',
+            }
+        }
+    },
+    'logged.test.sub': {
+        url: "/:id",
+        resolve: {
+            skipIfAuthenticated: false,
+            redirectIfNotAuthenticated: true,
+        },
+        views: {
+
+// ADD SUBVIEW IN PARENT AND USE IT
+            "sub": {
+// OVERWRITING A PARENT VIEW
+            //"loggedview@logged": {
+                dir: 'custom',
+                templateUrl: 'sub.html',
             }
         }
     }

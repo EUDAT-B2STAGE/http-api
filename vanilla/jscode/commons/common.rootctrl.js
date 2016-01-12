@@ -13,10 +13,13 @@ function AppRootController($scope, $log, $state)
     //console.log(myObj);
 
 	forEach(myObj, function (x, i) {
+
+        $log.debug("Menu element", i , x);
+
 		var key = 'logged.'
         var prefix = x.name.slice(0, key.length);
         var suffix = x.name.slice(key.length);
-        // Skip if: 
+        // Skip if:
             // a - the view is a sub child
             // b - there is a parameter into the url (so direct link won't work)
         if (suffix.indexOf('.') < 0 && x.url.indexOf(':') < 0) {
