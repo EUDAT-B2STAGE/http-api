@@ -9,7 +9,7 @@
 	  <div class="nav-wrapper cyan darken-3">
 		{%- if g.user.is_authenticated -%}
           <a ui-sref='logged' class="brand-logo brandpad">
-			Inside the app
+			{{ project[0].upper() + project[1:].lower() }}
           </a>
 		{%- else -%}
           <a class="brand-logo brandpad">

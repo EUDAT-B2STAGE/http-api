@@ -18,9 +18,10 @@ PROTOTYPE:
  vanilla/jslibs/bower_components/materialize/font/material-design-icons/
  ✔ Fix login check in root controller @done (16-01-12 15:13)
  ✔ Fix containers in every view @done (16-01-12 15:34)
- ☐ test logout
+ ✔ test logout @done (16-01-12 16:36)
  ☐ search fixed inside the toolbar
  ☐ material sidenav
+   ☐ menu positions
  ☐ good example for transcription
  https://material.angularjs.org/latest/demo/menuBar
  ☐ one time binding

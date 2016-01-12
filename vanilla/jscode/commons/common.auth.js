@@ -57,7 +57,8 @@ While for logout i made the button "Yes" to let it happen.
 */
 
 //////////////////////////////
-function LoginController($scope, $log, $window, $auth) {
+function LoginController($scope, $log, $window, $auth)
+{
 
     // Init controller
     $log.debug("Login Controller");
@@ -69,6 +70,12 @@ function LoginController($scope, $log, $window, $auth) {
        password: null,
     };
 
+// // AVOID SHOWING LOADING CIRCLE IF LOGGED ?
+// // yourTimer = $timeout(function() {  ...  }, 5000);
+// if ($auth.getToken()) {
+//     $timeout.flush();
+//     //$timeout.cancel($rootScope.loadTimer);
+// }
 
     // LOGIN LOGIC
     self.check = function() {
