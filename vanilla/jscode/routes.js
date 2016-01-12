@@ -86,7 +86,7 @@ $stateProvider
         views: {
             "menu": {
                 templateUrl: templateDir + 'menu.html',
-                controller: 'AppRootController',
+                //controller: 'AppRootController',
             },
             "main": {
         // and add a child view called 'loggedview' for logged pages
@@ -131,7 +131,7 @@ $stateProvider
         views: {
             "loggedview": {
                 templateUrl: templateDir + 'logout.html',
-                controller: 'LogoutController',
+                //controller: 'LogoutController',
             }
         }
     })

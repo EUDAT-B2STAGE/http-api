@@ -3,10 +3,31 @@
 
 angular.module('web').controller('AppRootController', AppRootController);
 
-function AppRootController($scope, $log, $state)
+function AppRootController($scope, $log, $state, $timeout, $auth)
 {
-    $scope.menu = [];
+
+    // Init controller
+    var self = this;
     $log.debug("Root controller");
+
+    // Init the models
+    self.menu = [];
+    self.load = true;
+    // Passing a global variable
+    self.templateDir = templateDir;
+    self.customTemplateDir = customTemplateDir;
+
+    // Let this login load after a little while
+    $timeout(function() {
+        var token = $auth.getToken();
+        $log.debug("Actual token is:", token);
+        if (token !== null) {
+            $state.go('logged');
+        } else {
+        }
+        // Show the page content
+        self.load = false;
+    }, timeToWait);
 
     // Control states to create the menu
     var myObj = $state.get();
@@ -14,7 +35,7 @@ function AppRootController($scope, $log, $state)
 
 	forEach(myObj, function (x, i) {
 
-        $log.debug("Menu element", i , x);
+        //$log.debug("Menu element", i , x);
 
 		var key = 'logged.'
         var prefix = x.name.slice(0, key.length);
@@ -25,12 +46,12 @@ function AppRootController($scope, $log, $state)
         if (suffix.indexOf('.') < 0 && x.url.indexOf(':') < 0) {
             //console.log(x, i, suffix, suffix.indexOf('.'));
     		if (prefix == key) {
-    			$scope.menu.push(x.name.substr(7).capitalizeFirstLetter());
+    			self.menu.push(x.name.substr(7).capitalizeFirstLetter());
     		}
         }
 	});
 
-	$log.info("Menu", $scope.menu);
+	$log.info("Menu", self.menu);
 
 }
 

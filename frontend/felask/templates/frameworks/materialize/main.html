@@ -11,7 +11,7 @@
 	  	style='padding-left: 30px;'
 	    data-activates="slide-out" data-sidenav="left"
 	    data-menuwidth="180" data-closeonclick="false">
-		{%- if g.user.is_authenticated -%} 
+		{%- if g.user.is_authenticated -%}
 			Inside the app
 		{%- else -%}
 			Login form
@@ -27,7 +27,14 @@
 {% endblock %}
 
 {%- block content %}
-<div ui-view='main'></div>
+<main ng-controller='AppRootController as root' ng-cloak>
+    <div ng-if="root.load" ng-include="root.templateDir + 'loader.html'">
+    <!-- WHILE WAITING -->
+    </div>
+    <div ng-hide="root.load" ui-view='main'>
+    <!-- WHEN READY -->
+    </div>
+</main>
 {% endblock %}
 
 {%- if footer %}{% block footer %}

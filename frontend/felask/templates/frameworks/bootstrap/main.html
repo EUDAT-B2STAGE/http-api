@@ -18,9 +18,11 @@
 </a>
 {% endfor -%}
 <a class="navbar-brand pull-left" href="/"> <i class="fa fa-briefcase"></i> {{ project }} </a>
-{% if g.user.is_authenticated %}
+
+{%- if g.user.is_authenticated -%}
 <div ui-view='menu'></div>
-{% endif %}
+{%- endif -%}
+
 </nav>
 {% endblock %}
 

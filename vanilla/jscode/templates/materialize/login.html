@@ -3,58 +3,46 @@
  <div class="row">
   <div class="col s12">
 
-    <div ng-if="login.load">
-    <!-- WHILE WAITING -->
-        <div ng-include="login.templateDir + 'loader.html'"></div>
+    <!-- My login card -->
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Provide your credentials</span>
+        <p>
+
+        <form>
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">account_circle</i>
+              <input
+                ng-model="login.user.username" id="username" name="username"
+                id="icon_prefix" type="text" class="validate"
+                required autofocus>
+              <label for="icon_prefix">Username</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">vpn_key</i>
+              <input
+                ng-model="login.user.password" id="password" name="password"
+                type="password" class="validate"
+                required>
+              <label for="icon_telephone">Password</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <button ng-click='login.check()'
+                type="submit" class="btn cyan darken-4">Signin</button>
+            </div>
+          </div>
+        </form>
+
+        </p>
+      </div>
     </div>
+    <!-- My login card -->
 
-    <div ng-hide="login.load">
-    <!-- WHEN READY -->
-
-<!-- My login card -->
-<div class="card">
-  <div class="card-content">
-    <span class="card-title">Provide your credentials</span>
-    <p>
-
-    <form>
-      <div class="row">
-        <div class="input-field col s12">
-          <i class="material-icons prefix">account_circle</i>
-          <input
-            ng-model="user.username" id="username" name="username"
-            id="icon_prefix" type="text" class="validate"
-            required autofocus>
-          <label for="icon_prefix">Username</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s12">
-          <i class="material-icons prefix">vpn_key</i>
-          <input
-            ng-model="user.password" id="password" name="password"
-            type="password" class="validate"
-            required>
-          <label for="icon_telephone">Password</label>
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s12">
-          <button ng-click='loginfun(user)'
-            type="submit" class="btn cyan darken-4">Signin</button>
-        </div>
-      </div>
-    </form>
-
-    </p>
   </div>
-</div>
-
-    </div> <!-- end of hidden div -->
-    </div> <!-- end of col for login form -->
-<!--
-    <div class="col s12 m3 l2">&nbsp;</div>
--->
-</div>
-
+ </div>
 </div>

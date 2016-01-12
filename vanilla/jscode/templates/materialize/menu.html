@@ -1,6 +1,8 @@
-<!-- Angular dynamic material menu -->
-<ul id="nav-mobile" class="right hide-on-med-and-down">
-	<li ng-repeat='item in menu'>
-		<a ui-sref="logged.{{item.toLowerCase()}}">{{item}}</a>
-	</li>
-</ul>
+<div ng-controller='AppRootController as myroot'>
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <!-- Angular dynamic material menu -->
+    	<li ng-repeat='item in myroot.menu'>
+    		<a ui-sref="logged.{{item.toLowerCase()}}">{{item}}</a>
+    	</li>
+    </ul>
+</div>
