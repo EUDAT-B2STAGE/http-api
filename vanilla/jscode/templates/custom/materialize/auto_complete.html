@@ -1,0 +1,29 @@
+div
+  <md-autocomplete
+      md-search-text-change="searchTextChange(searchText)"
+      md-search-text="searchText"
+      md-items="item in querySearch(searchText)"
+      md-item-text="item.display"
+      md-menu-class="autocomplete-custom-template"
+      md-min-length="1"
+      placeholder="Write to search"
+      md-autofocus>
+
+    <md-item-template>
+      <span class="item-title">
+        <span md-highlight-text="searchText" md-highlight-flags="^i"
+        >{{item.display}}</span>
+      </span>
+      <span class="item-metadata">
+        <span class="item-metastat">
+          <i>Type: <strong>{{item.type}}</strong></i>
+        </span>
+      </span>
+    </md-item-template>
+<!--
+    <md-not-found>
+      No states matching "{{searchText}}" were found.
+      <a ng-click="newState(searchText)">Create a new one!</a>
+    </md-not-found>
+-->
+      </md-autocomplete>

@@ -1,5 +1,8 @@
 
-> Welcome and goodbye. And thanks for all the fish!
+>  Welcome and goodbye.
+> And thanks for all the fish!
+
+--- ✄ -----------------------
 
 #MAIN COM
 docker-compose -f docker-compose.yml -f custom.yml up -d customfe
@@ -9,32 +12,9 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 https://material.angularjs.org/latest/layout/alignment
 http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
-
+--- ✄ -----------------------
 
 PROTOTYPE:
-
- ✔ Somehow dynamic routes @done (16-01-12 08:16)
- ✔ md-content alignment @done (16-01-12 11:23)
- https://material.angularjs.org/latest/layout/alignment
- ✔ material progress circular @done (16-01-12 11:23)
-   ✔ data == 0 problem in search @done (16-01-12 13:59)
- ✔ Download material fonts @done (16-01-12 14:37)
- http://fonts.googleapis.com/icon?family=Material+Icons
- vanilla/jslibs/bower_components/materialize/font/material-design-icons/
- ✔ Fix login check in root controller @done (16-01-12 15:13)
- ✔ Fix containers in every view @done (16-01-12 15:34)
- ✔ test logout @done (16-01-12 16:36)
- ✔ move angular blueprint rethink @done (16-01-13 08:15)
-   ✔ toast messages @done (16-01-13 11:15)
-   ✔ choose the blueprint inside python @done (16-01-13 11:40)
-   ✔ write blueprint.js in python @done (16-01-13 11:40)
-   ✔ also create blueprint example @done (16-01-13 10:51)
- ✔ move extra routes into rethink extra router @done (16-01-13 12:18)
-   ✔ submit @done (16-01-13 11:45)
-   ✔ search @done (16-01-13 12:14)
-     ✔ search action recheck @done (16-01-13 12:06)
-       ✔ remove loaddata init from search page @done (16-01-13 12:06)
-   ✔ details @done (16-01-13 12:18)
 
  ☐ fix search of chip call
  ☐ search becomes fixed inside the toolbar
@@ -139,8 +119,8 @@ SUBMIT:
   ☐ Submission skeleton with collapsible or collections
   ☐ Submission steps
   http://materializecss.com/collections.html
-  ☐
-  http://psergus.github.io/ngWYSIWYG/
+ ☐ ngWYSIWYG
+ http://psergus.github.io/ngWYSIWYG/
 
 EXPOSITION:
   ☐ theme list with thumbnail picture, click
@@ -259,7 +239,6 @@ COMPLETED:
     ✔ base root / @done (15-12-29 14:29)
   ✔ Test login redirect with ui router resolver @done (15-12-29 14:30)
   https://medium.com/@petehouston/protect-authentication-routes-in-angular-ui-router-and-satellizer-7745257a7e6#.tcuhppb0s
-
   ✔ login with font awesome loading @done (15-12-30 15:27)
   ✔ Cycle through ui routes @done (15-12-30 16:39)
     ✔ logout, search, submit @done (15-12-30 16:39)
@@ -276,7 +255,6 @@ COMPLETED:
      ✘ login button send to app @cancelled (15-12-29 15:42)
      ✔ description, features, about/contacts @done (16-01-02 16:47)
  ✔ root js app @done (16-01-02 16:48)
-
   ✔ base api @done (16-01-04 11:40)
     ✔ rethinkdb? @done (16-01-02 23:35)
     ✔ add code @done (16-01-03 01:04)
@@ -300,6 +278,28 @@ COMPLETED:
       ✔ buttons + single element @done (16-01-05 15:15)
     ✔ thumbnail @done (16-01-06 02:20)
     ✔ paging template @done (16-01-07 16:05)
+ ✔ Somehow dynamic routes @done (16-01-12 08:16)
+ ✔ md-content alignment @done (16-01-12 11:23)
+ https://material.angularjs.org/latest/layout/alignment
+ ✔ material progress circular @done (16-01-12 11:23)
+   ✔ data == 0 problem in search @done (16-01-12 13:59)
+ ✔ Download material fonts @done (16-01-12 14:37)
+ http://fonts.googleapis.com/icon?family=Material+Icons
+ vanilla/jslibs/bower_components/materialize/font/material-design-icons/
+ ✔ Fix login check in root controller @done (16-01-12 15:13)
+ ✔ Fix containers in every view @done (16-01-12 15:34)
+ ✔ test logout @done (16-01-12 16:36)
+ ✔ move angular blueprint rethink @done (16-01-13 08:15)
+   ✔ toast messages @done (16-01-13 11:15)
+   ✔ choose the blueprint inside python @done (16-01-13 11:40)
+   ✔ write blueprint.js in python @done (16-01-13 11:40)
+   ✔ also create blueprint example @done (16-01-13 10:51)
+ ✔ move extra routes into rethink extra router @done (16-01-13 12:18)
+   ✔ submit @done (16-01-13 11:45)
+   ✔ search @done (16-01-13 12:14)
+     ✔ search action recheck @done (16-01-13 12:06)
+       ✔ remove loaddata init from search page @done (16-01-13 12:06)
+   ✔ details @done (16-01-13 12:18)
 
 
 --- ✄ -----------------------

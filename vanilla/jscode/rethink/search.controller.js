@@ -2,14 +2,18 @@
   'use strict';
 
 angular.module('web')
-    .controller('SearchController', SearchController);
+    .controller('SearchController', SearchController)
+    .controller('ChipsController', ChipsController)
+    .controller('TreeController', TreeController)
+    .controller('AutoCompleteController', AutoCompleteController)
+    ;
 
 function SearchController($scope, $log, $state, search)
 {
 
   // INIT controller
-  $log.info("Ready to search");
   var self = this;
+  $log.debug("Main SEARCH controller");
 
   // Template Directories
   self.templateDir = templateDir;
@@ -24,41 +28,6 @@ function SearchController($scope, $log, $state, search)
   self.onTabSelected = function () {
       $log.debug("Selected", self.selectedTab);
   }
-
-
-
-
-////////////////////////////////////////
-////////////////////////////////////////
-  self.types = [
-      {value: 0, text: 'string', desc:
-          'All text is allowed'},
-      {value: 1, text: 'number', desc:
-          'Only integers values'},
-      {value: 2, text: 'email', desc:
-          'Only e-mail address (e.g. name@mailserver.org)'},
-      {value: 3, text: 'url', desc:
-          'Only web URL (e.g. http://website.com)'},
-      {value: 4, text: 'date', desc:
-          'Choose a day from a calendar'},
-      {value: 5, text: 'time', desc:
-          'Choose hour and minutes'},
-      {value: 6, text: 'pattern', desc:
-          'Define a regular expression for a custom type'},
-      {value: 7, text: 'color', desc:
-          'Only colors in hexadecimal value. Choose from color picker.'},
-      {value: 8, text: 'list', desc:
-          'Define a list of possible values (e.g. a dictionary)'},
-  ];
-  function getType(key) {
-      // save type to be sure in the future?
-      var type = self.types[0].text;
-      if (self.types[key])
-          type = self.types[key].text;
-      return type;
-  }
-////////////////////////////////////////
-////////////////////////////////////////
 
   function reloadTable(response) {
 
@@ -127,7 +96,7 @@ function SearchController($scope, $log, $state, search)
 
           // FINALLY ADD DATA
           $scope.data.push(element);
-          $scope.dataCount = response.count;
+          self.dataCount = response.count;
         }); // GET DOCUMENTS
       });
     });
@@ -195,7 +164,7 @@ function treeProcessData(steps) {
 
   //////////////////////////////////////////////////////////
   // https://material.angularjs.org/latest/demo/autocomplete
-  self.states = {};
+  self.states = [];
 
   function loadAll(data_steps) {
 
@@ -228,16 +197,24 @@ function treeProcessData(steps) {
       });
 */
   }
+
   function createFilterFor(query) {
     var lowercaseQuery = angular.lowercase(query);
     return function filterFn(state) {
       return (state.value.indexOf(lowercaseQuery) === 0);
     };
   }
+
   $scope.querySearch = function(query) {
-    //$log.debug("CHECK", self.states);
-    return query ? self.states.filter( createFilterFor(query) ) : self.states;
+    if (self.states.length < 1) {
+        $log.error("No data to search for chips");
+        return [query];
+    }
+    return query ?
+        self.states.filter(createFilterFor(query)) :
+        self.states;
   }
+
 /*
   $scope.searchTextChange = function(text) {
     $log.debug('Text changed to ' + text);
@@ -246,7 +223,119 @@ function treeProcessData(steps) {
     $log.info('Item changed to ' + JSON.stringify(item));
   }
 */
+
 /*****************************/
+
+  self.changePage = function(page) {
+    $log.info("Page", page);
+  }
+
+  ////////////////////////////////////////
+  // move me into a service
+  self.types = [
+      {value: 0, text: 'string', desc:
+          'All text is allowed'},
+      {value: 1, text: 'number', desc:
+          'Only integers values'},
+      {value: 2, text: 'email', desc:
+          'Only e-mail address (e.g. name@mailserver.org)'},
+      {value: 3, text: 'url', desc:
+          'Only web URL (e.g. http://website.com)'},
+      {value: 4, text: 'date', desc:
+          'Choose a day from a calendar'},
+      {value: 5, text: 'time', desc:
+          'Choose hour and minutes'},
+      {value: 6, text: 'pattern', desc:
+          'Define a regular expression for a custom type'},
+      {value: 7, text: 'color', desc:
+          'Only colors in hexadecimal value. Choose from color picker.'},
+      {value: 8, text: 'list', desc:
+          'Define a list of possible values (e.g. a dictionary)'},
+  ];
+  function getType(key) {
+      // save type to be sure in the future?
+      var type = self.types[0].text;
+      if (self.types[key])
+          type = self.types[key].text;
+      return type;
+  }
+  ////////////////////////////////////////
+
+// TO LOAD WHEN SHOWING THE SEARCH PAGE
+  //loadData();
+
+}
+
+////////////////////////////////
+// controller
+////////////////////////////////
+
+function ChipsController($scope, $log, search)
+{
+
+  // Init controller
+  var self = this;
+  $log.debug("Chip controller");
+
+  // https://material.angularjs.org/latest/demo/chips
+  self.chips = [];
+
+  self.newChip = function(chip) {
+
+/* INSTRUCTIONS
+one of the following return values:
+
+an object representing the $chip input string
+undefined to simply add the $chip input string, or
+null to prevent the chip from being appended
+*/
+      $log.info("Requested tag:", chip, "total:", self.chips);
+      var json = {
+        //'limit': 0,
+        'nested_filter': {'position': 1, 'filter': chip.display}
+      };
+      search.getFromQuery(json).then(function(out_data) {
+        self.dataCount = NaN;
+        // Check only on first call
+        if (checkApiResponseTypeError(out_data)) {
+          // Set error and break
+          setScopeError(out_data, $log, $scope);
+          $scope.data = null;
+          return false;
+        }
+        if (out_data.count < 1) {
+          return false;
+        }
+        reloadTable(out_data);
+        //console.log(out_data);
+      });
+  }
+
+  self.removeChip = function(chip, index) {
+
+    //console.log(chip, index);
+    search.getData().then(function(out_data){
+        if ($scope.data === null) {
+          return false;
+        }
+        // Get steps info
+        search.getSteps().then(function(out_steps) {
+          // Create the table
+          reloadTable(out_data);
+        }); // STEPS
+    }); // GET DATA
+  }
+}
+
+////////////////////////////////
+// controller
+////////////////////////////////
+function AutoCompleteController($scope, $log, search)
+{
+
+  // Init controller
+  var self = this;
+  $log.debug("Auto Complete controller");
 
   function loadData() {
     $log.debug("Loading data");
@@ -254,7 +343,7 @@ function treeProcessData(steps) {
     ///////////////////////////////////
     // Load autocomplete for each step
     $scope.autocomplete = [];
-    $scope.dataCount = NaN;
+    self.dataCount = NaN;
     var steps = 3;
     for (var i = 0; i < steps; i++) {
       var json = {
@@ -303,65 +392,17 @@ function treeProcessData(steps) {
     }); // GET DATA
 
   }
+}
 
-  // https://material.angularjs.org/latest/demo/chips
+////////////////////////////////
+// controller
+////////////////////////////////
 
-  $scope.chips = [];
-
-  $scope.newChip = function(chip) {
-
-/* INSTRUCTIONS
-one of the following return values:
-
-an object representing the $chip input string
-undefined to simply add the $chip input string, or
-null to prevent the chip from being appended
-*/
-      $log.info("Requested tag:", chip, "total:", $scope.chips);
-      var json = {
-        //'limit': 0,
-        'nested_filter': {'position': 1, 'filter': chip.display}
-      };
-      search.getFromQuery(json).then(function(out_data) {
-        $scope.dataCount = NaN;
-        // Check only on first call
-        if (checkApiResponseTypeError(out_data)) {
-          // Set error and break
-          setScopeError(out_data, $log, $scope);
-          $scope.data = null;
-          return false;
-        }
-        if (out_data.count < 1) {
-          return false;
-        }
-        reloadTable(out_data);
-        //console.log(out_data);
-      });
-  }
-
-  $scope.removeChip = function(chip, index) {
-
-    //console.log("Delete chip, total:", $scope.chips);
-    //console.log(chip, index);
-    search.getData().then(function(out_data){
-        if ($scope.data === null) {
-          return false;
-        }
-        // Get steps info
-        search.getSteps().then(function(out_steps) {
-          // Create the table
-          reloadTable(out_data);
-        }); // STEPS
-    }); // GET DATA
-  }
-
-  $scope.changePage = function(page) {
-    $log.info("Page", page);
-  }
-
-// TO LOAD WHEN SHOWING THE SEARCH PAGE
-  //loadData();
-
+function TreeController($scope, $log, search)
+{
+  // Init controller
+  var self = this;
+  $log.debug("Tree controller");
 }
 
 })();
