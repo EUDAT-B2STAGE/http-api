@@ -24,16 +24,17 @@ PROTOTYPE:
    ✔ choose the blueprint inside python @done (16-01-13 11:40)
    ✔ write blueprint.js in python @done (16-01-13 11:40)
    ✔ also create blueprint example @done (16-01-13 10:51)
- ☐ move extra routes into rethink extra router
+ ✔ move extra routes into rethink extra router @done (16-01-13 12:18)
    ✔ submit @done (16-01-13 11:45)
-   ☐ search
+   ✔ search @done (16-01-13 12:14)
      ✔ search action recheck @done (16-01-13 12:06)
        ✔ remove loaddata init from search page @done (16-01-13 12:06)
-       ☐ add a button to search all
-   ☐ details
+   ✔ details @done (16-01-13 12:18)
 
+ ☐ fix search of chip call
  ☐ search becomes fixed inside the toolbar
    ☐ general, expecting for a SearchController to exist
+   ☐ add a button to search all inside the search page
 
  ☐ material sidenav
    ☐ menu positions

@@ -38,6 +38,21 @@ angular.module('web')
         },
 
     //////////////////////
+        'logged.details': {
+            url: "/details/:id",
+            resolve: {
+                skipAuhtenticationCheck: false,
+                redirectIfNotAuthenticated: true,
+            },
+            views: {
+                "loggedview": {
+                    dir: 'custom',
+                    templateUrl: 'details.html',
+                }
+            }
+        },
+
+    //////////////////////
 
     }
 
