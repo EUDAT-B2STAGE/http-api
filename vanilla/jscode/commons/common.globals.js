@@ -27,37 +27,52 @@ var forEach = function (collection, callback, scope) {
 
 
 /////////////////////////////////
+// ROUTES AND AUTHENTICATION
+
 // Ui Resolve + Satellizer to authenticate
-// source http://j.mp/1VnxlQS
-function _skipIfAuthenticated($q, $state, $auth) {
-    var defer = $q.defer();
-    //console.log("STATE", $state);
-/*
-    if($auth.isAuthenticated()) {
-        defer.reject();
-    } else {
-        defer.resolve();
-    }
-*/
-    defer.resolve();
-    return defer.promise;
+// original source http://j.mp/1VnxlQS heavily modified
+
+// Check authentication via Token
+function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api) 
+{
+    return api.verify(true).then(function(response){
+      // Token is available and API confirm that is good
+      if (response && $auth.isAuthenticated()) {
+        return true;
+      }
+      var state = 'login';
+      // API not reachable
+      if (response === null) {
+        state = 'offline';
+      }
+      // Not logged or API down
+      $timeout(function () {
+          // redirect
+          $log.error("Failed resolve");
+          $state.go(state);
+          return false;
+      });
+    });
 }
 
-function _redirectIfNotAuthenticated($q, $state, $auth, $timeout) {
-    var defer = $q.defer();
-    if($auth.isAuthenticated()) {
-        defer.resolve();
-    } else {
-        //console.log("TEST");
+// Skip authentication
+// Check for API available
+function _skipAuthenticationCheckApiOnline($state, $timeout, api) 
+{
+    return api.verify()
+      .then(function(response){
+
+        // API available
+        if (response) {
+          return response;
+        }
+        // Not available
         $timeout(function () {
-            //console.log("TEST2");
-            $state.go('login');
-        }); //, 100);
-        defer.reject();
-    }
-    return defer.promise;
+            $state.go('offline');
+            return response;
+        });
+    });
 }
-
 
 /////////////////////////////////
 // OTHERS

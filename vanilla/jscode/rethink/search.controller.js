@@ -303,11 +303,6 @@ function AutoCompleteController($scope, $log, search)
 
   }
 
-// MOVE THIS CHECK INTO UI ROUTER RESOLVE
-  if (search.available) {
-    console.log("API AVAILABLE");
-    initArchiveSearch();
-  }
 }
 
 ////////////////////////////////

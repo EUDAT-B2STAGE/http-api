@@ -25,6 +25,11 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
     // http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes #9b
     $httpProvider.useApplyAsync(true);
 
+    // Faster http requests?
+    //http://stackoverflow.com/a/29126922/2114395
+    $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+
+////////////////////////////
 // WHERE THE MAGIC HAPPENS
 
     // Dinamically inject the routes from the choosen blueprint
@@ -37,13 +42,20 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
         forEach(extraRoutes, function(x, stateName){
             //console.log(stateName, x);
 
+/*
+UNNECESSARY
             // Build resolver of this single state
             var myResolve = {};
-            if (x.resolve.skipAuhtenticationCheck) {
-                myResolve['skipIfAuthenticated'] = _skipIfAuthenticated;
-            } else if (x.resolve.redirectIfNotAuthenticated) {
-                myResolve['redirectIfNotAuthenticated'] = _redirectIfNotAuthenticated;
+            if (x.hasOwnProperty('resolve') && Object.keys(x.resolve).length > 0) 
+            {
+                // if you want to check auth
+                if (x.resolve.redirectIfNotAuthenticated) {
+                    myResolve['checkAuth'] = _redirectIfNotAuthenticated;
+                } else {
+                    myResolve['skip'] = _skipAuthenticationCheckApiOnline;
+                }
             }
+*/
 
             // Build VIEWS for this single state
             var myViews = {};
@@ -58,7 +70,7 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
             // Add provider state to the ui router ROUTES
             $stateProvider.state(stateName, {
                 url: x.url,
-                resolve: myResolve,
+                //resolve: myResolve,
                 views: myViews,
             });
         });
@@ -68,25 +80,29 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
 $stateProvider
     ////////////////////////////
 
+    .state("offline", {
+        url: "/offline",
+        views: {
+            "main": {
+                templateUrl: templateDir + 'offline.html',
+            }
+        }
+    })
+
     .state("login", {
         url: "/login",
         resolve: {
-            skipIfAuthenticated: _skipIfAuthenticated
+            skip: _skipAuthenticationCheckApiOnline,
         },
         views: {
             "main": {
                 templateUrl: templateDir + 'login.html',
-                //controller: 'LoginController',
             }
         }
     })
 
     .state("logged", {
         url: "/app",
-        resolve: {
-            redirectIfNotAuthenticated: _redirectIfNotAuthenticated
-            //logginer: function($auth) {
-        },
         // Implement main route for landing page after login
         views: {
             "menu": {
@@ -99,6 +115,10 @@ $stateProvider
                 //controller: 'AppRootController',
             }
         },
+        // This parent checks for authentication and api online
+        resolve: {
+            redirect: _redirectIfNotAuthenticated
+        },
     })
 
     .state("logged.logout", {
@@ -106,7 +126,6 @@ $stateProvider
         views: {
             "loggedview": {
                 templateUrl: templateDir + 'logout.html',
-                //controller: 'LogoutController',
             }
         }
     })

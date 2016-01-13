@@ -5,15 +5,9 @@ angular.module('web')
  .constant('blueprint_exampleRoutes',
  {
 // JUST A TEST
+// Note: this will automatically check api online as not subchild of 'logged'
     'test': {
         url: "/test",
-        ///////////////////////////
-        // This is mandatory for the configuration
-        resolve: {
-            skipAuhtenticationCheck: true,
-            redirectIfNotAuthenticated: false,
-        },
-        ///////////////////////////
         views: {
             "main": {
                 dir: 'custom',
@@ -25,12 +19,9 @@ angular.module('web')
     },
 ///////////////
 // LOGGED TEST
+// Note: this will automatically check auth since is subchild of 'logged'
     'logged.test': {
         url: "/yes",
-        resolve: {
-            skipIfAuthenticated: false,
-            redirectIfNotAuthenticated: true,
-        },
         views: {
             "loggedview": {
                 dir: 'custom',
@@ -40,10 +31,6 @@ angular.module('web')
     },
     'logged.test.sub': {
         url: "/:id",
-        resolve: {
-            skipIfAuthenticated: false,
-            redirectIfNotAuthenticated: true,
-        },
         views: {
 
 // ADD SUBVIEW IN PARENT AND USE IT

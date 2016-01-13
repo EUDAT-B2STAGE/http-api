@@ -36,7 +36,10 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, $auth, ap
                 // Avoid the user to see the reload of the page
                 moreTime = 500;
             }
+            $state.go('logged');
 
+/*
+// This check should be done inside UI ROUTER resolve
             // Ping api to see if i am still authorized
             api.logged().then(function (check) {
                 console.log("CHECK AUTH ON API", check);
@@ -47,6 +50,9 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, $auth, ap
                     $state.go('login');
                 }
             })
+// This check should be done inside UI ROUTER resolve
+*/
+
         }
         $log.debug("More time", moreTime);
         // Show the page content

@@ -54,14 +54,15 @@ function RestApiService($window, $http, $auth, $log) {
                 'Authentication-Token': token,
             },
             data: data,
+            timeout: 5500,
         }
 
         return $http(req).then(
             function successCallback(response) {
-                $log.debug("API call successful");
+                //$log.debug("API call successful");
                 return response.data;
           }, function errorCallback(response) {
-                $log.error("API failed to call")
+                $log.warn("API failed to call")
                 if (errorCheck) {
                     return response;
                 } else {
@@ -74,10 +75,15 @@ function RestApiService($window, $http, $auth, $log) {
         });
     }
 
-    self.logged = function() {
-        return self.apiCall(self.endpoints.logged, undefined, 'GET', {}, true)
+    self.verify = function(logged) 
+    {
+        var endpoint = self.endpoints.check;
+        if (logged) {
+            endpoint = self.endpoints.logged;
+        }
+        return self.apiCall(endpoint, undefined, 'GET', {}, true)
             .then(function (response) {
-                console.log("Uhm", response);
+                $log.debug("API verify:", response);
                 if (response.status > 250) {
                     // API available
                     return false;

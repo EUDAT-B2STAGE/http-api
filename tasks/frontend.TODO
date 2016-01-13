@@ -16,12 +16,18 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
 PROTOTYPE:
 
- ☐ ui router resolve api ping
-   ☐ and check auth
+ ✔ ui router resolve api ping @done (16-01-13 23:54)
+   ✔ only outside of logged @done (16-01-13 23:15)
+   ✔ _redirectIfApiDown @done (16-01-13 23:15)
+     ✔ call service inside router? @done (16-01-13 23:15)
+ ✔ resolve check auth @done (16-01-13 23:54)
+   ✔ for logged states @done (16-01-13 23:54)
+   ✔ checks both auth and offline? @done (16-01-13 23:54)
  ☐ promise chaining
+   ☐ solves how to get data for search
  http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
 
- ☐ fix search of chip call
+ ☐ fix broken search of chip call
  ☐ search becomes fixed inside the toolbar
    ☐ general, expecting for a SearchController to exist
    ☐ add a button to search all inside the search page
@@ -43,12 +49,6 @@ PROTOTYPE:
  <li ng-repeat=“item in ::vastArray”>{{ ::item.velocity }}</li>
  ☐ Roboto?
 
-☐ What if API down?
-  ✔ API ping  method @done (16-01-13 10:25)
-    ☐ At boot/login: inside root controller
-  ☐ Changing page also check?
-☐ What if API unauthorized?
-  ☐ (token timeout)? Force logout
 ☐ Cleaning frontend python code
   ✔ test login @done (15-12-30 09:59)
   ✔ test logout @done (15-12-30 09:59)
@@ -67,9 +67,20 @@ PROTOTYPE:
    ✔ main page @done (16-01-02 16:47)
      ✔ search @done (16-01-02 16:47)
      ✔ submission @done (16-01-02 16:47)
-  ☐ Logout
+  ☐ Real Logout
     ☐ js -> flask frontend -> api flask
   ☐ change loading bar template
+
+PROBLEMS:
+  ✔ Images not loading @done (16-01-08 01:46)
+  ✔ Removing chips does not reload page @done (16-01-08 08:22)
+  ☐ Chips array = apply filter on cascade
+  ☐ topbar menu for mobile
+  ☐ Pagination action?
+    ☐ lazy load instead of pagination
+    ☐ infinite scrolling is easy
+    https://material.angularjs.org/latest/demo/virtualRepeat
+  ☐ Some tabs transitions are slow!
 
 SEARCH:
     ✔ RDB query @done (16-01-07 16:03)
@@ -88,15 +99,6 @@ SEARCH:
         ☐ Excel load
         ☐ web site insert
       ☐ step list angular inline filter
-
-PROBLEMS:
-  ✔ Images not loading @done (16-01-08 01:46)
-  ✔ Removing chips does not reload page @done (16-01-08 08:22)
-  ☐ Chips array = apply filter on cascade
-  ☐ topbar menu for mobile
-  ☐ Pagination action?
-    ☐ lazy load instead of pagination
-  ☐ Some tabs transitions are slow!
 
 WELCOME:
   ☐ Not an angular page......

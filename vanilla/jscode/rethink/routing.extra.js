@@ -10,10 +10,10 @@ angular.module('web')
     //////////////////////
         'logged.submit': {
             url: "/submit",
-            resolve: {
-                skipAuhtenticationCheck: false,
-                redirectIfNotAuthenticated: true,
-            },
+            // resolve: {
+            //     skipAuhtenticationCheck: false,
+            //     redirectIfNotAuthenticated: true,
+            // },
             views: {
                 "loggedview": {
                     dir: 'base',
@@ -25,10 +25,6 @@ angular.module('web')
     //////////////////////
         'logged.search': {
             url: "/search",
-            resolve: {
-                skipAuhtenticationCheck: false,
-                redirectIfNotAuthenticated: true,
-            },
             views: {
                 "loggedview": {
                     dir: 'custom',
@@ -40,10 +36,6 @@ angular.module('web')
     //////////////////////
         'logged.details': {
             url: "/details/:id",
-            resolve: {
-                skipAuhtenticationCheck: false,
-                redirectIfNotAuthenticated: true,
-            },
             views: {
                 "loggedview": {
                     dir: 'custom',

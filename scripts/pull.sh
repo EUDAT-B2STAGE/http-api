@@ -11,6 +11,7 @@ for service in $services;
 do
     echo "Repo '$service'"
     $pull
+    $com pull
 done
 
 # echo "Submodule sync"

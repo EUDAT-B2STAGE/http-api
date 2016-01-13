@@ -7,12 +7,6 @@ angular.module('web')
 function SearchService($log, api) {
 
     var self = this;
-    self.available = true;
-
-    api.logged().then(function (check) {
-        console.log("CHECK AUTH ON API", check);
-        self.available = false;
-    });
 
     self.endpoints = {
         search: 'datavalues',
