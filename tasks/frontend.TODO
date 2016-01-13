@@ -16,10 +16,18 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
 PROTOTYPE:
 
+ ☐ ui router resolve api ping
+   ☐ and check auth
+ ☐ promise chaining
+ http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
+
  ☐ fix search of chip call
  ☐ search becomes fixed inside the toolbar
    ☐ general, expecting for a SearchController to exist
    ☐ add a button to search all inside the search page
+  ☐ Autocomplete words from transcription @important
+    ☐ split and distinct on
+  ☐ chips are and array of filters applied in order
 
  ☐ material sidenav
  https://material.angularjs.org/latest/demo/sidenav
@@ -74,8 +82,6 @@ SEARCH:
     https://material.angularjs.org/latest/demo/tabs
     ☐ do not show results if nothing searched
       ☐ progress angular with template if loading
-    ☐ Autocomplete words from transcription
-      ☐ split and distinct on
     ☐ Why the hell http requests hang?
     ☐ Question mark to switch to PDF help
       ☐ Admin page to add a vocabulary

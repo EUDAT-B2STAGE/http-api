@@ -231,12 +231,17 @@ function AutoCompleteController($scope, $log, search)
         self.states;
   }
 
+  function initArchiveSearch (argument)
+  {
+    // Get steps info
+    search.getSteps().then(function(out_steps) {
+        console.log("STEPS!");
 /* LOAD
-        // Get steps info
-        search.getSteps().then(function(out_steps) {
-          // Autocomplete setup from steps also
-          self.states = loadAll(out_steps.data);
+      // Autocomplete setup from steps also
+      self.states = loadAll(out_steps.data);
 */
+    });
+  }
 
 // TO SPLIT AND REMOVE
   function loadData() {
@@ -296,6 +301,12 @@ function AutoCompleteController($scope, $log, search)
         }); // STEPS
     }); // GET DATA
 
+  }
+
+// MOVE THIS CHECK INTO UI ROUTER RESOLVE
+  if (search.available) {
+    console.log("API AVAILABLE");
+    initArchiveSearch();
   }
 }
 

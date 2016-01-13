@@ -42,7 +42,7 @@ function RestApiService($window, $http, $auth, $log) {
             data = {};
         } else {
             data = self.getOrDefault(data, {});
-            $log.debug("Sending data", data);
+            //$log.debug("Sending data", data);
         }
 
         var token = $auth.getToken();
@@ -65,7 +65,10 @@ function RestApiService($window, $http, $auth, $log) {
                 if (errorCheck) {
                     return response;
                 } else {
-                    // Default: just the message
+                    // Default: data or null
+                    if (typeof response.count === 'undefined') {
+                        return null;
+                    }
                     return response.data;
                 }
         });
@@ -76,7 +79,11 @@ function RestApiService($window, $http, $auth, $log) {
             .then(function (response) {
                 console.log("Uhm", response);
                 if (response.status > 250) {
+                    // API available
                     return false;
+                } else if (response.status < 0) {
+                    // API offline
+                    return null;
                 }
                 return true;
             });

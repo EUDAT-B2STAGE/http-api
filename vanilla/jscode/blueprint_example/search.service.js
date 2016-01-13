@@ -13,21 +13,34 @@ function SearchService($log, api) {
         users : 'accounts',
     }
 
+    self.handleResponse = function (promise) {
+        return promise.then(function (response) {
+            console.log("RESP", response);
+            return response;
+        });
+    }
 
     // All possible calls
     self.getData = function() {
-        return api.apiCall(api.endpoints.search);
+        return self.handleResponse(
+            api.apiCall(api.endpoints.search)
+            );
     }
 
     // Single call
     self.getSingleData = function(id) {
-        return api.apiCall(api.endpoints.search, id);
+        return self.handleResponse(
+            api.apiCall(api.endpoints.search, id)
+            );
     }
 
     // Using json data in POST
     self.getFromQuery = function(json) {
-        return api.apiCall(api.endpoints.search, 'query', 'POST',
-            {'query':json});
+        return self.handleResponse(
+            api.apiCall(
+                api.endpoints.search,
+                'query', 'POST', {'query':json})
+            );
     }
 
 }
