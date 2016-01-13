@@ -25,14 +25,18 @@ PROTOTYPE:
    ✔ checks both auth and offline? @done (16-01-13 23:54)
  ☐ promise chaining
    ☐ solves how to get data for search
+   ☐ create one function per step call inside search service
+   ☐ also for transcriptions and split of their content
+    ☐ Autocomplete words from transcription @important
+      ☐ split and distinct on
  http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
 
- ☐ fix broken search of chip call
  ☐ search becomes fixed inside the toolbar
+   ☐ md-toolbar?
+   https://material.angularjs.org/latest/demo/toolbar
    ☐ general, expecting for a SearchController to exist
    ☐ add a button to search all inside the search page
-  ☐ Autocomplete words from transcription @important
-    ☐ split and distinct on
+ ☐ fix broken search of chip call
   ☐ chips are and array of filters applied in order
 
  ☐ material sidenav
