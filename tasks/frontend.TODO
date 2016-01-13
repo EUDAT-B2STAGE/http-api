@@ -20,9 +20,10 @@ PROTOTYPE:
  ✔ Fix containers in every view @done (16-01-12 15:34)
  ✔ test logout @done (16-01-12 16:36)
  ✔ move angular blueprint rethink @done (16-01-13 08:15)
+   ✔ toast messages @done (16-01-13 11:15)
    ☐ choose the blueprint inside python
    ☐ write blueprint.js in python
-   ☐ also create blueprint example
+   ✔ also create blueprint example @done (16-01-13 10:51)
  ☐ move extra routes into rethink extra router
  ☐ search check
    ☐ remove loaddata init from search page

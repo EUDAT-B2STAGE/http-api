@@ -57,7 +57,7 @@ While for logout i made the button "Yes" to let it happen.
 */
 
 //////////////////////////////
-function LoginController($scope, $log, $window, $auth)
+function LoginController($scope, $log, $window, $auth, $mdToast, $document)
 {
 
     // Init controller
@@ -69,13 +69,6 @@ function LoginController($scope, $log, $window, $auth)
        username: null,
        password: null,
     };
-
-// // AVOID SHOWING LOADING CIRCLE IF LOGGED ?
-// // yourTimer = $timeout(function() {  ...  }, 5000);
-// if ($auth.getToken()) {
-//     $timeout.flush();
-//     //$timeout.cancel($rootScope.loadTimer);
-// }
 
     // LOGIN LOGIC
     self.check = function() {
@@ -94,6 +87,7 @@ function LoginController($scope, $log, $window, $auth)
             }, function(errorResponse) {
                 $log.warn("Auth: failed");
                 console.log(errorResponse.data.errors);
+                $scope.showSimpleToast(errorResponse.data.errors);
             }
         );
     }
