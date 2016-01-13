@@ -73,15 +73,20 @@ else:
     CURRENT_BLUEPRINT = user_config['options'][BLUEPRINT_KEY]
     logger.info("Adding JS blueprint '%s'" % CURRENT_BLUEPRINT)
     prefix = __package__
+    # JS BLUEPRINT config
+    jfiles = [Path(prefix + '/js/blueprint.js')]
     # JS files in the root directory
     app_path = os.path.join(prefix, staticdir, 'app')
-    jfiles = list(Path(app_path).glob('*.js'))
+    jfiles.extend(Path(app_path).glob('*.js'))
     # JS common files
     common_path = os.path.join(app_path, 'commons')
     jfiles.extend(Path(common_path).glob('*.js'))
     # JS files only inside the blueprint subpath
     blueprint_path = os.path.join(app_path, CURRENT_BLUEPRINT)
     jfiles.extend(Path(blueprint_path).glob('**/*.js'))
+
+    print(jfiles)
+
     # Use all files found
     for pathfile in jfiles:
         strfile = str(pathfile)
@@ -153,6 +158,15 @@ def auth():
 def register():
     return "THIS IS YET TO DO (also 'forgot password')"
 ################################################
+
+
+@cms.route('/js/blueprint.js')
+def jsblueprint():
+    variables = {
+        'name': CURRENT_BLUEPRINT,
+        'time': user_config['options']['load_timeout']
+    }
+    return render_template("blueprint.js", **variables)
 
 
 # ################

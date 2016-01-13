@@ -1,4 +1,5 @@
 {
 	//"options": "some",
-    "blueprint": "rethink"
+    "blueprint": "rethink",
+    "load_timeout": "1500"
 }
