@@ -18,15 +18,22 @@ function RestApiService($window, $http, $auth, $log) {
         '/api/'
         ;
 
+    self.endpoints = {
+        check: 'verify',
+        logged: 'verifylogged',
+        admin: 'verifyadmin',
+    }
+
 
     self.getOrDefault = function (value, mydefault) {
         return typeof value !== 'undefined' ? value : mydefault;
     }
 
-    self.apiCall = function (endpoint, key, method, data) {
+    self.apiCall = function (endpoint, key, method, data, errorCheck) {
 
         //DEFAULTS
-        endpoint = self.getOrDefault(endpoint, self.endpoints.search);
+        errorCheck = self.getOrDefault(errorCheck, false);
+        endpoint = self.getOrDefault(endpoint, self.endpoints.check);
         if (typeof key !== 'undefined' && method != 'POST') {
             endpoint += '/' + key;
         }
@@ -55,8 +62,24 @@ function RestApiService($window, $http, $auth, $log) {
                 return response.data;
           }, function errorCallback(response) {
                 $log.error("API failed to call")
-                return response.data;
+                if (errorCheck) {
+                    return response;
+                } else {
+                    // Default: just the message
+                    return response.data;
+                }
         });
+    }
+
+    self.logged = function() {
+        return self.apiCall(self.endpoints.logged, undefined, 'GET', {}, true)
+            .then(function (response) {
+                console.log("Uhm", response);
+                if (response.status > 250) {
+                    return false;
+                }
+                return true;
+            });
     }
 }
 

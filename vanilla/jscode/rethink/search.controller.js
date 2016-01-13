@@ -4,7 +4,7 @@
 angular.module('web')
     .controller('SearchController', SearchController);
 
-function SearchController($scope, $log, $state, $mdConstant, search)
+function SearchController($scope, $log, $state, search)
 {
   $log.info("Ready to search");
   var self = this;

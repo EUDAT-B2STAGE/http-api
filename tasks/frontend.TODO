@@ -19,7 +19,7 @@ PROTOTYPE:
  ✔ Fix login check in root controller @done (16-01-12 15:13)
  ✔ Fix containers in every view @done (16-01-12 15:34)
  ✔ test logout @done (16-01-12 16:36)
- ☐ move angular blueprint rethink
+ ✔ move angular blueprint rethink @done (16-01-13 08:15)
    ☐ choose the blueprint inside python
    ☐ write blueprint.js in python
    ☐ also create blueprint example
@@ -39,7 +39,7 @@ PROTOTYPE:
  ☐ Roboto?
 
 ☐ What if API down?
-  ☐ API ping  method
+  ✔ API ping  method @done (16-01-13 10:25)
     ☐ At boot/login: inside root controller
   ☐ Changing page also check?
 ☐ What if API unauthorized?
@@ -118,6 +118,7 @@ DETAILS:
  ☐ aggiungere lista dettagli (step 4) sotto lo scrollspy
 
 SUBMIT:
+  ☐ transcriptions size inside db? or post/get method injection?
   ☐ Submission skeleton with collapsible or collections
   ☐ Submission steps
   http://materializecss.com/collections.html

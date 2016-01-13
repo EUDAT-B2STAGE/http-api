@@ -3,7 +3,7 @@
 
 angular.module('web').controller('AppRootController', AppRootController);
 
-function AppRootController($scope, $rootScope, $log, $state, $timeout, $auth)
+function AppRootController($scope, $rootScope, $log, $state, $timeout, $auth, api)
 {
 
     // Init controller
@@ -13,6 +13,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, $auth)
     // Init the models
     $rootScope.menu = [];
     self.load = true;
+
     // Passing a global variable
     self.templateDir = templateDir;
     self.customTemplateDir = customTemplateDir;
@@ -35,8 +36,17 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, $auth)
                 // Avoid the user to see the reload of the page
                 moreTime = 500;
             }
-            // Change route!
-            $state.go('logged');
+
+            // Ping api to see if i am still authorized
+            api.logged().then(function (check) {
+                console.log("CHECK AUTH ON API", check);
+                if (check) {
+                    // Change route!
+                    $state.go('logged');
+                } else {
+                    $state.go('login');
+                }
+            })
         }
         $log.debug("More time", moreTime);
         // Show the page content

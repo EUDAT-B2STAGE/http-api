@@ -60,7 +60,7 @@
 	    "angular-material/angular-material.min.js",
 	    // # OTHER LIBS
 	    "satellizer/satellizer.min.js",
-	    "angular-loading-bar/build/loading-bar.min.js",
+	    //"angular-loading-bar/build/loading-bar.min.js",
 	    "angular-lazy-img/release/angular-lazy-img.min.js",
 	    "angular-tree-control/angular-tree-control.js"
 	// JWT ?

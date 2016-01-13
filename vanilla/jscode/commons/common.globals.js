@@ -39,7 +39,7 @@ function _skipIfAuthenticated($q, $state, $auth) {
         defer.resolve();
     }
 */
-        defer.resolve();
+    defer.resolve();
     return defer.promise;
 }
 
@@ -65,6 +65,7 @@ Object.prototype.hasOwnProperty = function(property) {
     return typeof this[property] !== 'undefined';
 };
 
+// TO FIX
 function checkApiResponseTypeError(obj) {
   if (
       (! obj) ||

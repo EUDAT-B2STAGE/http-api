@@ -38,7 +38,7 @@ function DetailsController($scope, $log, $stateParams, search)
                       if (out_docs.count > 0) {
                           $scope.images = out_docs.data[0].images;
                           $log.debug("Found images", $scope.images);
-                      } 
+                      }
                       $scope.data = out_single.data[0].steps;
                   }
                 });
@@ -59,7 +59,7 @@ function DetailsController($scope, $log, $stateParams, search)
         cfpLoadingBar.complete();
     }, 400);
 */
-
 }
+
 
 })();

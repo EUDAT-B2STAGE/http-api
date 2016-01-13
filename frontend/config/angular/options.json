@@ -1,3 +1,4 @@
 {
-	"options": "some"
+	//"options": "some",
+    "blueprint": "rethink"
 }
