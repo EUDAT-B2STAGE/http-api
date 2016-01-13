@@ -108,7 +108,6 @@ function SearchController($scope, $log, $state, search)
 
   //////////////////////////////////////////////////////////
   // https://material.angularjs.org/latest/demo/autocomplete
-  self.states = [];
 
   function loadAll(data_steps) {
 
@@ -211,7 +210,10 @@ function AutoCompleteController($scope, $log, search)
   // Init controller
   var self = this;
   $log.debug("Auto Complete controller");
-  self.searchText = "";
+
+  // Init scope
+  self.searchText = null;
+  self.states = [];
 
   // Functions to search with autocomplete
   function createFilterFor(query) {
@@ -224,10 +226,6 @@ function AutoCompleteController($scope, $log, search)
   self.querySearch = function() {
     var query = self.searchText;
     $log.debug("Search", self.searchText)
-    if (self.states.length < 1) {
-        $log.error("No data to search for chips");
-        return [query];
-    }
     return query ?
         self.states.filter(createFilterFor(query)) :
         self.states;
