@@ -6,6 +6,8 @@ angular.module('web')
 
 // EXTRA ROUTES
     {
+
+    //////////////////////
         'logged.submit': {
             url: "/submit",
             resolve: {
@@ -18,7 +20,25 @@ angular.module('web')
                     templateUrl: 'home.html',
                 }
             },
-        }
+        },
+
+    //////////////////////
+        'logged.search': {
+            url: "/search",
+            resolve: {
+                skipAuhtenticationCheck: false,
+                redirectIfNotAuthenticated: true,
+            },
+            views: {
+                "loggedview": {
+                    dir: 'custom',
+                    templateUrl: 'search.html',
+                }
+            },
+        },
+
+    //////////////////////
+
     }
 
  ); // END CONSTANT

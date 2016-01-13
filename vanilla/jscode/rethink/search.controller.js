@@ -6,6 +6,8 @@ angular.module('web')
 
 function SearchController($scope, $log, $state, search)
 {
+
+  // INIT controller
   $log.info("Ready to search");
   var self = this;
 
@@ -13,7 +15,18 @@ function SearchController($scope, $log, $state, search)
   self.templateDir = templateDir;
   self.customTemplateDir = customTemplateDir;
 
+  // INIT scope variables
   $scope.data = {};
+  $scope.results = false;
+
+  //TABS
+  self.selectedTab = null;
+  self.onTabSelected = function () {
+      $log.debug("Selected", self.selectedTab);
+  }
+
+
+
 
 ////////////////////////////////////////
 ////////////////////////////////////////
@@ -55,6 +68,7 @@ function SearchController($scope, $log, $state, search)
     }
     $log.debug("preprocess");
     $scope.data = [];
+    $scope.results = true;
 
     forEach(response.data, function (x, i) {
 
@@ -345,16 +359,8 @@ null to prevent the chip from being appended
     $log.info("Page", page);
   }
 
-
-/* LOADING BAR
-    cfpLoadingBar.start();
-    $timeout(function() {
-        console.log("TEST completed timeout");
-        cfpLoadingBar.complete();
-    }, 400);
-*/
-    // INIT
-  loadData();
+// TO LOAD WHEN SHOWING THE SEARCH PAGE
+  //loadData();
 
 }
 

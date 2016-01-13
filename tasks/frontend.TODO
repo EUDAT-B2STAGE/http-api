@@ -27,8 +27,8 @@ PROTOTYPE:
  ☐ move extra routes into rethink extra router
    ✔ submit @done (16-01-13 11:45)
    ☐ search
-     ☐ search action recheck
-       ☐ remove loaddata init from search page
+     ✔ search action recheck @done (16-01-13 12:06)
+       ✔ remove loaddata init from search page @done (16-01-13 12:06)
        ☐ add a button to search all
    ☐ details
 
@@ -37,6 +37,10 @@ PROTOTYPE:
 
  ☐ material sidenav
    ☐ menu positions
+
+ ☐ refactor search tabs
+   ✔ add onselect function @done (16-01-13 12:14)
+   ☐ lazy load when tab is selected?
 
  ☐ good example for transcription
  https://material.angularjs.org/latest/demo/menuBar

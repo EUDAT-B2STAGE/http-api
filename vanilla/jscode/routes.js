@@ -103,16 +103,6 @@ $stateProvider
 
 /*
 
-    .state('logged.search', {
-        url: "/search",
-        views: {
-            "loggedview": {
-                templateUrl: customTemplateDir + 'search.html',
-                //controller: 'SearchController',
-            }
-        },
-    })
-
     .state('logged.details', {
         url: "/details/:id",
         views: {
