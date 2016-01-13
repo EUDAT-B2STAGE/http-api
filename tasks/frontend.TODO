@@ -5,6 +5,11 @@
 docker-compose -f docker-compose.yml -f custom.yml up -d customfe
 # PRIVATE GIT
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
+# ANGULAR and  MATERIAL
+https://material.angularjs.org/latest/layout/alignment
+http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
+
+
 
 PROTOTYPE:
 
@@ -37,6 +42,7 @@ PROTOTYPE:
    ☐ add a button to search all inside the search page
 
  ☐ material sidenav
+ https://material.angularjs.org/latest/demo/sidenav
    ☐ menu positions
 
  ☐ refactor search tabs
