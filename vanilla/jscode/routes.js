@@ -101,15 +101,7 @@ $stateProvider
         },
     })
 
-    .state('logged.submit', {
-        url: "/submit",
-        views: {
-            "loggedview": {
-                templateUrl: templateDir + 'home.html',
-                controller: 'MainController',
-            }
-        },
-    })
+/*
 
     .state('logged.search', {
         url: "/search",
@@ -130,6 +122,8 @@ $stateProvider
             }
         },
     })
+
+*/
 
     .state("logged.logout", {
         url: "/logout",

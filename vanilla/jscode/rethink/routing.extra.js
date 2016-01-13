@@ -3,12 +3,24 @@
 
 angular.module('web')
  .constant('rethinkRoutes',
-// EXTRA ROUTES
-{
-    // Do not leave empty or you may get an error for injection...
-    //"empty": null,
-}
- );
 
+// EXTRA ROUTES
+    {
+        'logged.submit': {
+            url: "/submit",
+            resolve: {
+                skipAuhtenticationCheck: false,
+                redirectIfNotAuthenticated: true,
+            },
+            views: {
+                "loggedview": {
+                    dir: 'base',
+                    templateUrl: 'home.html',
+                }
+            },
+        }
+    }
+
+ ); // END CONSTANT
 
 })();

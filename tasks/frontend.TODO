@@ -25,14 +25,19 @@ PROTOTYPE:
    ✔ write blueprint.js in python @done (16-01-13 11:40)
    ✔ also create blueprint example @done (16-01-13 10:51)
  ☐ move extra routes into rethink extra router
- ☐ search check
-   ☐ remove loaddata init from search page
-   ☐ add a button to search all
- ☐ search fixed inside the toolbar
+   ✔ submit @done (16-01-13 11:45)
+   ☐ search
+     ☐ search action recheck
+       ☐ remove loaddata init from search page
+       ☐ add a button to search all
+   ☐ details
+
+ ☐ search becomes fixed inside the toolbar
    ☐ general, expecting for a SearchController to exist
 
  ☐ material sidenav
    ☐ menu positions
+
  ☐ good example for transcription
  https://material.angularjs.org/latest/demo/menuBar
  ☐ one time binding
