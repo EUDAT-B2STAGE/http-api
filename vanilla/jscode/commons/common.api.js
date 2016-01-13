@@ -10,20 +10,14 @@ function RestApiService($window, $http, $auth, $log) {
 
     // This is for development.
     // In production nginx should provide access to 'api' url
-    var API_PORT = 8081;
+    self.API_PORT = 8081;
 
-    var API_URL =
-        window.location.protocol + "//" + 
-        window.location.host + ':' + API_PORT + 
+    self.API_URL =
+        window.location.protocol + "//" +
+        window.location.host + ':' + self.API_PORT +
         '/api/'
         ;
 
-    self.endpoints = {
-        search: 'datavalues',
-        submit: 'datakeys',
-        documents: 'datadocs',
-        users : 'accounts',
-    }
 
     self.getOrDefault = function (value, mydefault) {
         return typeof value !== 'undefined' ? value : mydefault;
@@ -47,7 +41,7 @@ function RestApiService($window, $http, $auth, $log) {
         var token = $auth.getToken();
         var req = {
             method: method,
-            url: API_URL + endpoint,
+            url: self.API_URL + endpoint,
             headers: {
                 'Content-Type': 'application/json',
                 'Authentication-Token': token,

@@ -111,7 +111,7 @@ $stateProvider
         views: {
             "loggedview": {
                 templateUrl: customTemplateDir + 'search.html',
-                controller: 'SearchController',
+                //controller: 'SearchController',
             }
         },
     })

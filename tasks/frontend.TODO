@@ -19,7 +19,17 @@ PROTOTYPE:
  ✔ Fix login check in root controller @done (16-01-12 15:13)
  ✔ Fix containers in every view @done (16-01-12 15:34)
  ✔ test logout @done (16-01-12 16:36)
+ ☐ move angular blueprint rethink
+   ☐ choose the blueprint inside python
+   ☐ write blueprint.js in python
+   ☐ also create blueprint example
+ ☐ move extra routes into rethink extra router
+ ☐ search check
+   ☐ remove loaddata init from search page
+   ☐ add a button to search all
  ☐ search fixed inside the toolbar
+   ☐ general, expecting for a SearchController to exist
+
  ☐ material sidenav
    ☐ menu positions
  ☐ good example for transcription
@@ -30,11 +40,11 @@ PROTOTYPE:
 
 ☐ What if API down?
   ☐ API ping  method
-  ☐ At boot/login
-  ☐ Changing page
+    ☐ At boot/login: inside root controller
+  ☐ Changing page also check?
 ☐ What if API unauthorized?
   ☐ (token timeout)? Force logout
-☐ Cleaning code
+☐ Cleaning frontend python code
   ✔ test login @done (15-12-30 09:59)
   ✔ test logout @done (15-12-30 09:59)
   ✘ a better reload page for login @cancelled (15-12-30 15:08)

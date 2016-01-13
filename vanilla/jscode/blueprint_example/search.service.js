@@ -8,25 +8,26 @@ function SearchService($log, api) {
 
     var self = this;
 
+    self.endpoints = {
+        search: 'filter',
+        users : 'accounts',
+    }
+
+
     // All possible calls
     self.getData = function() {
         return api.apiCall(api.endpoints.search);
     }
 
+    // Single call
     self.getSingleData = function(id) {
         return api.apiCall(api.endpoints.search, id);
     }
 
-    self.getSteps = function(id) {
-        return api.apiCall(api.endpoints.submit, id);
-    }
-
-    self.getDocs = function(id) {
-        return api.apiCall(api.endpoints.documents, id);
-    }
-
+    // Using json data in POST
     self.getFromQuery = function(json) {
-        return api.apiCall(api.endpoints.search, 'query', 'POST', {'query':json});
+        return api.apiCall(api.endpoints.search, 'query', 'POST',
+            {'query':json});
     }
 
 }

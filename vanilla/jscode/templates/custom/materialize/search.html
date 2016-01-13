@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" ng-controller="SearchController as search">
 
  <div ng-if='error'>
     <b>ERROR: {{ error }}</b>
@@ -14,12 +14,12 @@
             layout='column' layout-align='space-around stretch'>
 
 <!-- search bar -->
-            <div ng-include="customTemplateDir + 'autocomplete.html'">
+            <div ng-include="self.customTemplateDir + 'autocomplete.html'">
             </div>
 
 <!-- results -->
             <div ng-if="dataCount == NaN">
-                <div ng-include="templateDir + 'loader.html'"></div>
+                <div ng-include="self.templateDir + 'loader.html'"></div>
             </div>
             <div ng-if="dataCount == 0"
                 layout='row' layout-align='center'>
@@ -29,7 +29,7 @@
                 </p>
             </div>
             <div ng-if='dataCount > 0'
-                ng-include="customTemplateDir + 'datatable.html'"></div>
+                ng-include="self.customTemplateDir + 'datatable.html'"></div>
 <!-- results -->
 
         </md-content>
@@ -38,7 +38,7 @@
       <!-- TREE EXPLORER -->
       <md-tab label="Tree explorer" ng-if='dataCount > 0'>
         <md-content class="md-padding">
-            <div ng-include="customTemplateDir + 'tree.html'"
+            <div ng-include="self.customTemplateDir + 'tree.html'"
                 style="width: 600px;"></div>
         </md-content>
       </md-tab>
@@ -46,7 +46,7 @@
       <!-- LIST of another field -->
       <md-tab label="Step list" ng-if='dataCount > 0'>
         <md-content class="md-padding">
-            <div ng-include="customTemplateDir + 'somelist.html'"></div>
+            <div ng-include="self.customTemplateDir + 'somelist.html'"></div>
         </md-content>
       </md-tab>
 

@@ -23,7 +23,7 @@ console.log('POST');
         'satellizer',
 // THE LOADING BAR
         //'angular-loading-bar',
-        'cfp.loadingBar',
+        //'cfp.loadingBar',
 // IMAGES LAZ LOAD
         'angularLazyImg',
 // MAKE DATA TREE explorer
