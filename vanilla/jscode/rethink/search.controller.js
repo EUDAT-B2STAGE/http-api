@@ -47,21 +47,10 @@ function SearchController($scope, $log, $state, search)
       search.getSingleData(x.record).then(function(out_single){
 
         //$log.debug("Single element", x.record);
-        if (checkApiResponseTypeError(out_single)) {
-          setScopeError(out_single, $log, $scope);
-        } else {
-          if (out_single.count < 1) {
-             setScopeError("No data found", $log, $scope);
-             return;
-          }
-        }
         //console.log("SINGLE", out_single);
         var element = {
           'id': x.record,
           'image': null,
-          // 'fête': null, //x.steps[2].data[0].value,
-          // 'source': null, //x.steps[1].data[0].value,
-          // 'extrait': null, //x.steps[0].data[0].value,
         }
 
         // skip last step, skip 0 which is not defined
@@ -204,7 +193,7 @@ null to prevent the chip from being appended
 ////////////////////////////////
 // controller
 ////////////////////////////////
-function AutoCompleteController($scope, $log, search)
+function AutoCompleteController($scope, $log, $q, search)
 {
 
   // Init controller
@@ -231,17 +220,54 @@ function AutoCompleteController($scope, $log, search)
         self.states;
   }
 
-  function initArchiveSearch (argument)
-  {
-    // Get steps info
-    search.getSteps().then(function(out_steps) {
-        console.log("STEPS!");
-/* LOAD
-      // Autocomplete setup from steps also
-      self.states = loadAll(out_steps.data);
-*/
+////////////////////////////////////////
+//http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
+  var
+    initSearchComplete = function (argument) {
+        return search.getSteps()
+    },
+    parallelLoad = function (steps) {
+
+        console.log("STEPS", steps);
+        var promises = {
+            extrait: search.getDistinctValuesFromStep(1),
+            source: search.getDistinctValuesFromStep(2),
+        }
+        return $q.all(promises).then((values) =>
+        {
+            console.log(values);
+            // console.log(values[0]); // value alpha
+            // console.log(values[1]); // value beta
+            //throw( new Error("Just to prove catch() works! ") );
+        });
+    },
+    reportProblems = function( fault )
+    {
+        $log.error( String(fault) );
+    };
+
+    initSearchComplete()
+        .then( parallelLoad )
+        .catch( reportProblems );
+
+/* MIX STEPS AND AUTOCOMPLETE
+    // Prepare total array of autocomplete divided by types
+    var auto = [];
+    forEach($scope.autocomplete, function(data, step){
+      forEach(data, function(state, key){
+        auto.push({
+          value: state.toLowerCase(),
+          display: state,
+          type: steps[step+1],
+        })
+      });
     });
-  }
+    return auto;
+*/
+
+    //self.states
+// CHAINING PROMISES
+////////////////////////////////////////
 
 // TO SPLIT AND REMOVE
   function loadData() {
