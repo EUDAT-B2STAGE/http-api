@@ -23,13 +23,13 @@ PROTOTYPE:
  ✔ resolve check auth @done (16-01-13 23:54)
    ✔ for logged states @done (16-01-13 23:54)
    ✔ checks both auth and offline? @done (16-01-13 23:54)
- ☐ promise chaining
-   ☐ solves how to get data for search
-   ☐ create one function per step call inside search service
-   ☐ also for transcriptions and split of their content
-    ☐ Autocomplete words from transcription @important
-      ☐ split and distinct on
+ ✔ promise chaining @done (16-01-14 09:33)
  http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
+   ✔ create one function per step call inside search service @done (16-01-14 09:33)
+ ☐ also for transcriptions and split of their content
+    ☐ Autocomplete words from transcription @important
+    ☐ split and distinct on
+☐ solves how to get data for search
 
  ☐ search becomes fixed inside the toolbar
    ☐ md-toolbar?
@@ -39,19 +39,17 @@ PROTOTYPE:
  ☐ fix broken search of chip call
   ☐ chips are and array of filters applied in order
 
+ ☐ Roboto font?
+ ☐ save last state in root scope?
+
  ☐ material sidenav
  https://material.angularjs.org/latest/demo/sidenav
    ☐ menu positions
-
  ☐ refactor search tabs
    ✔ add onselect function @done (16-01-13 12:14)
    ☐ lazy load when tab is selected?
-
- ☐ good example for transcription
- https://material.angularjs.org/latest/demo/menuBar
  ☐ one time binding
  <li ng-repeat=“item in ::vastArray”>{{ ::item.velocity }}</li>
- ☐ Roboto?
 
 ☐ Cleaning frontend python code
   ✔ test login @done (15-12-30 09:59)
@@ -133,6 +131,8 @@ SUBMIT:
   http://materializecss.com/collections.html
  ☐ ngWYSIWYG
  http://psergus.github.io/ngWYSIWYG/
+ ☐ good example for transcription edit
+ https://material.angularjs.org/latest/demo/menuBar
 
 EXPOSITION:
   ☐ theme list with thumbnail picture, click

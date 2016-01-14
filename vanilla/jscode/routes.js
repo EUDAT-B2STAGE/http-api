@@ -12,7 +12,8 @@ angular.module('web').config(config);
 // Check authentication via Token
 function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api)
 {
-    return api.verify(true).then(function(response){
+    var checkLogged = true;
+    return api.verify(checkLogged).then(function(response){
       // Token is available and API confirm that is good
       if (response && $auth.isAuthenticated()) {
         return true;
@@ -36,7 +37,8 @@ function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api)
 // Check for API available
 function _skipAuthenticationCheckApiOnline($state, $timeout, $auth, api)
 {
-    return api.verify()
+    var checkLogged = false;
+    return api.verify(checkLogged)
       .then(function(response){
 
         // API available

@@ -224,7 +224,7 @@ function AutoCompleteController($scope, $log, $q, search)
 //http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
   var
     initSearchComplete = function (argument) {
-        return search.getSteps()
+        return search.getSteps();
     },
     parallelLoad = function (steps) {
 
@@ -236,8 +236,6 @@ function AutoCompleteController($scope, $log, $q, search)
         return $q.all(promises).then((values) =>
         {
             console.log(values);
-            // console.log(values[0]); // value alpha
-            // console.log(values[1]); // value beta
             //throw( new Error("Just to prove catch() works! ") );
         });
     },
