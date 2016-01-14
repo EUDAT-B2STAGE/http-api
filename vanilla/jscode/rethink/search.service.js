@@ -15,26 +15,25 @@ function SearchService($log, api) {
         users : 'accounts',
     }
 
+//////////////////
 // Base API calls with Rethinkdb
     self.getData = function() {
         return api.apiCall(self.endpoints.search);
     }
 
     self.getSingleData = function(id) {
-        return api.apiCall(self.endpoints.search, id);
+        return api.apiCall(self.endpoints.search, 'GET', undefined, id);
     }
 
     self.getFromQuery = function(json) {
-        return api.apiCall(
-            self.endpoints.search,
-            'query', 'POST', {'query':json});
+        return api.apiCall(self.endpoints.search, 'POST', {'query':json});
     }
 // Base API calls
+//////////////////
 
     self.getSteps = function(id) {
-        return api.apiCall(self.endpoints.submit, id)
+        return api.apiCall(self.endpoints.submit, 'GET', undefined, id)
           .then(function(out_steps) {
-            console.log("STEPS!");
             // Prepare steps name
             var steps = [];
             forEach(out_steps.data, function(single, i){
@@ -54,7 +53,7 @@ function SearchService($log, api) {
     }
 
     self.getDocs = function(id) {
-        return api.apiCall(self.endpoints.documents, id);
+        return api.apiCall(self.endpoints.documents, undefined, undefined, id);
     }
 
 }

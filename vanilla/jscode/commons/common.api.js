@@ -31,6 +31,8 @@ function RestApiService($window, $http, $auth, $log) {
 
     self.apiCall = function (endpoint, method, data, id, errorCheck) {
 
+
+      ////////////////////////
         //DEFAULTS
         errorCheck = self.getOrDefault(errorCheck, false);
         endpoint = self.getOrDefault(endpoint, self.endpoints.check);
@@ -38,17 +40,15 @@ function RestApiService($window, $http, $auth, $log) {
             endpoint += '/' + id;
         }
         method = self.getOrDefault(method, 'GET');
-        var 
-            data = {},
-            params = {};
-
+        var params = {};
         if (method == 'GET') {
             params = self.getOrDefault(data, {});
+            data = {};
         } else if (method == 'POST') {
             data = self.getOrDefault(data, {});
-            //$log.debug("Sending data", data);
         }
- 
+      ////////////////////////
+
         var token = $auth.getToken(),
             timeout = 5500,
             req = {
@@ -81,7 +81,7 @@ function RestApiService($window, $http, $auth, $log) {
         });
     }
 
-    self.verify = function(logged) 
+    self.verify = function(logged)
     {
         var endpoint = self.endpoints.check;
         if (logged) {
