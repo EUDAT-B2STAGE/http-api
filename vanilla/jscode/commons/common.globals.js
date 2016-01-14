@@ -64,8 +64,8 @@ function _skipAuthenticationCheckApiOnline($state, $timeout, $auth, api)
 
         // API available
         if (response) {
-          // Already logged
-          if ($auth.isAuthenticated()) {
+          // Login request but Already logged
+          if ($state.current.name == 'login' && $auth.isAuthenticated()) {
             $timeout(function () {
                 $state.go('logged');
             });

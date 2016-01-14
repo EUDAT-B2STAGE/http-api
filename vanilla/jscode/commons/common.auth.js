@@ -57,7 +57,7 @@ While for logout i made the button "Yes" to let it happen.
 */
 
 //////////////////////////////
-function LoginController($scope, $log, $window, $auth, $mdToast, $document)
+function LoginController($scope, $log, $window, $auth, $mdToast, $document, $timeout, $state)
 {
 
     // Init controller
@@ -69,6 +69,14 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document)
        username: null,
        password: null,
     };
+
+    // In case i am already logged, skip
+    if ($auth.isAuthenticated()) {
+        $timeout(function () {
+            $log.warn("Already logged");
+            $state.go('logged');
+        });
+    }
 
     // LOGIN LOGIC
     self.check = function() {
