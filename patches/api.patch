@@ -1,0 +1,70 @@
+diff --git a/telethon:vanilla/jscode/commons/common.api.js b/master:vanilla/jscode/commons/common.api.js
+index 44db512..387ceaf 100644
+--- a/telethon:vanilla/jscode/commons/common.api.js
++++ b/master:vanilla/jscode/commons/common.api.js
+@@ -29,39 +29,33 @@ function RestApiService($window, $http, $auth, $log) {
+         return typeof value !== 'undefined' ? value : mydefault;
+     }
+ 
+-    self.apiCall = function (endpoint, method, data, id, errorCheck) {
++    self.apiCall = function (endpoint, key, method, data, errorCheck) {
+ 
+         //DEFAULTS
+         errorCheck = self.getOrDefault(errorCheck, false);
+         endpoint = self.getOrDefault(endpoint, self.endpoints.check);
+-        if (typeof id !== 'undefined' && method != 'POST') {
+-            endpoint += '/' + id;
++        if (typeof key !== 'undefined' && method != 'POST') {
++            endpoint += '/' + key;
+         }
+         method = self.getOrDefault(method, 'GET');
+-        var 
+-            data = {},
+-            params = {};
+-
+         if (method == 'GET') {
+-            params = self.getOrDefault(data, {});
+-        } else if (method == 'POST') {
++            data = {};
++        } else {
+             data = self.getOrDefault(data, {});
+             //$log.debug("Sending data", data);
+         }
+- 
+-        var token = $auth.getToken(),
+-            timeout = 5500,
+-            req = {
+-                method: method,
+-                url: self.API_URL + endpoint,
+-                headers: {
+-                    'Content-Type': 'application/json',
+-                    'Authentication-Token': token,
+-                },
+-                data: data,
+-                params: params,
+-                timeout: timeout,
+-            }
++
++        var token = $auth.getToken();
++        var req = {
++            method: method,
++            url: self.API_URL + endpoint,
++            headers: {
++                'Content-Type': 'application/json',
++                'Authentication-Token': token,
++            },
++            data: data,
++            timeout: 5500,
++        }
+ 
+         return $http(req).then(
+             function successCallback(response) {
+@@ -87,7 +81,7 @@ function RestApiService($window, $http, $auth, $log) {
+         if (logged) {
+             endpoint = self.endpoints.logged;
+         }
+-        return self.apiCall(endpoint, 'GET', undefined, undefined, true)
++        return self.apiCall(endpoint, undefined, 'GET', {}, true)
+             .then(function (response) {
+                 $log.debug("API verify:", response);
+                 if (response.status > 250) {

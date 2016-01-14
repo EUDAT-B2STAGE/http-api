@@ -29,33 +29,39 @@ function RestApiService($window, $http, $auth, $log) {
         return typeof value !== 'undefined' ? value : mydefault;
     }
 
-    self.apiCall = function (endpoint, key, method, data, errorCheck) {
+    self.apiCall = function (endpoint, method, data, id, errorCheck) {
 
         //DEFAULTS
         errorCheck = self.getOrDefault(errorCheck, false);
         endpoint = self.getOrDefault(endpoint, self.endpoints.check);
-        if (typeof key !== 'undefined' && method != 'POST') {
-            endpoint += '/' + key;
+        if (typeof id !== 'undefined' && method != 'POST') {
+            endpoint += '/' + id;
         }
         method = self.getOrDefault(method, 'GET');
+        var 
+            data = {},
+            params = {};
+
         if (method == 'GET') {
-            data = {};
-        } else {
+            params = self.getOrDefault(data, {});
+        } else if (method == 'POST') {
             data = self.getOrDefault(data, {});
             //$log.debug("Sending data", data);
         }
-
-        var token = $auth.getToken();
-        var req = {
-            method: method,
-            url: self.API_URL + endpoint,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authentication-Token': token,
-            },
-            data: data,
-            timeout: 5500,
-        }
+ 
+        var token = $auth.getToken(),
+            timeout = 5500,
+            req = {
+                method: method,
+                url: self.API_URL + endpoint,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authentication-Token': token,
+                },
+                data: data,
+                params: params,
+                timeout: timeout,
+            }
 
         return $http(req).then(
             function successCallback(response) {
@@ -81,7 +87,7 @@ function RestApiService($window, $http, $auth, $log) {
         if (logged) {
             endpoint = self.endpoints.logged;
         }
-        return self.apiCall(endpoint, undefined, 'GET', {}, true)
+        return self.apiCall(endpoint, 'GET', undefined, undefined, true)
             .then(function (response) {
                 $log.debug("API verify:", response);
                 if (response.status > 250) {
