@@ -33,7 +33,7 @@ var forEach = function (collection, callback, scope) {
 // original source http://j.mp/1VnxlQS heavily modified
 
 // Check authentication via Token
-function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api) 
+function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api)
 {
     return api.verify(true).then(function(response){
       // Token is available and API confirm that is good
@@ -57,13 +57,19 @@ function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api)
 
 // Skip authentication
 // Check for API available
-function _skipAuthenticationCheckApiOnline($state, $timeout, api) 
+function _skipAuthenticationCheckApiOnline($state, $timeout, $auth, api)
 {
     return api.verify()
       .then(function(response){
 
         // API available
         if (response) {
+          // Already logged
+          if ($auth.isAuthenticated()) {
+            $timeout(function () {
+                $state.go('logged');
+            });
+          }
           return response;
         }
         // Not available
