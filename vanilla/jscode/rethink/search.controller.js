@@ -232,6 +232,9 @@ function AutoCompleteController($scope, $log, $q, search)
         var promises = {
             extrait: search.getDistinctValuesFromStep(1),
             source: search.getDistinctValuesFromStep(2),
+            fete: search.getDistinctValuesFromStep(3),
+            detail: search.getDistinctValuesFromStep(4),
+            transcriptions: search.getDistinctTranscripts(),
         }
         return $q.all(promises).then((values) =>
         {

@@ -25,8 +25,8 @@ function SearchService($log, api) {
         return api.apiCall(self.endpoints.search, 'GET', undefined, id);
     }
 
-    self.getFromQuery = function(json) {
-        return api.apiCall(self.endpoints.search, 'POST', {'query':json});
+    self.getFromQuery = function(endpoint, json) {
+        return api.apiCall(endpoint, 'POST', {'query':json});
     }
 // Base API calls
 //////////////////
@@ -43,11 +43,20 @@ function SearchService($log, api) {
         });
     }
 
-    self.getDistinctValuesFromStep = function (step) {
-      return self.getFromQuery(
+    self.getDistinctValuesFromStep = function(step) {
+      return self.getFromQuery(self.endpoints.search,
             {
                 'limit': 0, //all
                 'autocomplete': {'step': step, 'position': 1}
+            }
+        );
+    }
+
+    self.getDistinctTranscripts = function() {
+      return self.getFromQuery(self.endpoints.documents,
+            {
+                'limit': 0, //all
+                'notes': true,
             }
         );
     }
