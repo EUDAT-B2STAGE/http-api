@@ -28,6 +28,15 @@ function SearchService($log, api) {
     self.getFromQuery = function(endpoint, json) {
         return api.apiCall(endpoint, 'POST', {'query':json});
     }
+
+    self.filterData = function(json) {
+        return self.getFromQuery(self.endpoints.search, json);
+    }
+
+    self.filterDocuments = function(json) {
+        return self.getFromQuery(self.endpoints.documents, json);
+    }
+
 // Base API calls
 //////////////////
 

@@ -143,50 +143,45 @@ function ChipsController($scope, $log, search)
   // https://material.angularjs.org/latest/demo/chips
   self.chips = [];
 
+  self.loadAllRecords = function () {
+    $log.debug("Button to define");
+// ACTION FOR ONLY THE BUTTON TO LOAD ALL ARCHIVE
+    //search.getData().then(function(out_data){
+  }
+
+
   self.newChip = function(chip) {
-
-/* INSTRUCTIONS
-one of the following return values:
-
-an object representing the $chip input string
-undefined to simply add the $chip input string, or
-null to prevent the chip from being appended
-*/
       $log.info("Requested tag:", chip, "total:", self.chips);
       var json = {
         //'limit': 0,
         'nested_filter': {'position': 1, 'filter': chip.display}
       };
-      search.getFromQuery(json).then(function(out_data) {
+
+// FOR EACH CHIPS
+// ADD TO JSON TO MAKE MORE THAN ONE STEP ON RETHINKDB
+// SO THIS WILL BE ONE SINGLE HTTP REQUEST
+      // Choose table to query
+      var promise = null;
+      if (chip.type == 'Transcription') {
+        promise = search.filterDocs(json);
+      } else {
+        promise = search.filterData(json);
+      }
+      // Do query
+      promise.then(function(out_data) {
         self.dataCount = NaN;
-        // Check only on first call
-        if (checkApiResponseTypeError(out_data)) {
-          // Set error and break
-          setScopeError(out_data, $log, $scope);
-          $scope.data = null;
-          return false;
-        }
         if (out_data.count < 1) {
-          return false;
+          return null;
         }
-        reloadTable(out_data);
-        //console.log(out_data);
+        //reloadTable(out_data);
+        console.log(out_data);
       });
   }
 
   self.removeChip = function(chip, index) {
-
+// IF YOU REMOVE YOU SHOULD REBUILD THE QUERY FROM START...
+// JUST USE THE SAME FUNCTION OF NEW CHIP
     //console.log(chip, index);
-    search.getData().then(function(out_data){
-        if ($scope.data === null) {
-          return false;
-        }
-        // Get steps info
-        search.getSteps().then(function(out_steps) {
-          // Create the table
-          reloadTable(out_data);
-        }); // STEPS
-    }); // GET DATA
   }
 }
 
@@ -229,16 +224,33 @@ function AutoCompleteController($scope, $log, $q, search)
     parallelLoad = function (steps) {
 
         console.log("STEPS", steps);
+        steps.push('Transcription')
+// TO FIX
+// should be a foreach on 'steps'
         var promises = {
-            extrait: search.getDistinctValuesFromStep(1),
-            source: search.getDistinctValuesFromStep(2),
-            fete: search.getDistinctValuesFromStep(3),
-            detail: search.getDistinctValuesFromStep(4),
-            transcriptions: search.getDistinctTranscripts(),
+            1: search.getDistinctValuesFromStep(1),
+            2: search.getDistinctValuesFromStep(2),
+            3: search.getDistinctValuesFromStep(3),
+            4: search.getDistinctValuesFromStep(4),
+            5: search.getDistinctTranscripts(),
         }
         return $q.all(promises).then((values) =>
         {
-            console.log(values);
+            forEach(values, function (api_response, step) {
+              if (api_response.count > 1) {
+                $log.debug('Fullfilling step', steps[step]);
+                //console.log(api_response);
+
+                forEach(api_response.data, function(state, key){
+                  self.states.push({
+                    value: state.toLowerCase(),
+                    display: state,
+                    type: steps[step],
+                  })
+                });
+
+              }
+            });
             //throw( new Error("Just to prove catch() works! ") );
         });
     },
