@@ -8,6 +8,7 @@ angular.module('web')
     {
 
     //////////////////////
+/*
         'logged.submit': {
             url: "/submit",
             // resolve: {
@@ -21,6 +22,7 @@ angular.module('web')
                 }
             },
         },
+*/
 
     //////////////////////
         'logged.search': {

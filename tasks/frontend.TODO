@@ -16,44 +16,24 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
 PROTOTYPE:
 
- ✔ ui router resolve api ping @done (16-01-13 23:54)
-   ✔ only outside of logged @done (16-01-13 23:15)
-   ✔ _redirectIfApiDown @done (16-01-13 23:15)
-     ✔ call service inside router? @done (16-01-13 23:15)
- ✔ resolve check auth @done (16-01-13 23:54)
-   ✔ for logged states @done (16-01-13 23:54)
-   ✔ checks both auth and offline? @done (16-01-13 23:54)
- ✔ promise chaining @done (16-01-14 09:33)
- http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
-   ✔ create one function per step call inside search service @done (16-01-14 09:33)
- ✔ also for transcriptions and split of their content @done (16-01-15 07:49)
-    ✔ Autocomplete words from transcription @important @done (16-01-14 12:29)
-     ✔ create api method  @done (16-01-14 12:29)
-     ✔ split and distinct on (rethinkdb query?) @done (16-01-15 07:49)
-✔ solves how to get data for search @done (16-01-15 07:50)
- ☐ check search again
-   ☐ refactor to use all chips
-   ☐ define the list in autocomplete (chip) template size bigger
-
- ☐ search becomes fixed inside the toolbar
+☐ search becomes fixed inside the toolbar
    ☐ md-toolbar?
    https://material.angularjs.org/latest/demo/toolbar
    ☐ general, expecting for a SearchController to exist
    ☐ add a button to search all inside the search page
- ☐ fix broken search of chip call
-  ☐ chips are and array of filters applied in order
-
-☐ Redirects
- ☐ save last state in root scope?
-
- ☐ material sidenav
+ ☐ Autocomplete
+   ☐ refactor to use all chips
+   ☐ define the list in autocomplete (chip) template size bigger
+☐ Material SIDENAV
  https://material.angularjs.org/latest/demo/sidenav
    ☐ menu positions
  ☐ refactor search tabs
    ✔ add onselect function @done (16-01-13 12:14)
    ☐ lazy load when tab is selected?
- ☐ one time binding
+☐ one time binding
  <li ng-repeat=“item in ::vastArray”>{{ ::item.velocity }}</li>
+☐ Redirects
+ ☐ save last state in root scope?
 
 ☐ Cleaning frontend python code
   ✔ test login @done (15-12-30 09:59)
@@ -316,17 +296,18 @@ COMPLETED:
      ✔ search action recheck @done (16-01-13 12:06)
        ✔ remove loaddata init from search page @done (16-01-13 12:06)
    ✔ details @done (16-01-13 12:18)
-
-
---- ✄ -----------------------
- ☐ TextAngular
-http://textangular.com/
- ☐ TinyMCE
-https://www.tinymce.com/
-https://github.com/angular-ui/ui-tinymce
- ☐ ngWYSIWYG
-http://psergus.github.io/ngWYSIWYG/
- ☐ Froala (99$)
-https://www.froala.com/wysiwyg-editor
-
-
+ ✔ ui router resolve api ping @done (16-01-13 23:54)
+   ✔ only outside of logged @done (16-01-13 23:15)
+   ✔ _redirectIfApiDown @done (16-01-13 23:15)
+     ✔ call service inside router? @done (16-01-13 23:15)
+ ✔ resolve check auth @done (16-01-13 23:54)
+   ✔ for logged states @done (16-01-13 23:54)
+   ✔ checks both auth and offline? @done (16-01-13 23:54)
+ ✔ promise chaining @done (16-01-14 09:33)
+ http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
+   ✔ create one function per step call inside search service @done (16-01-14 09:33)
+ ✔ also for transcriptions and split of their content @done (16-01-15 07:49)
+    ✔ Autocomplete words from transcription @important @done (16-01-14 12:29)
+     ✔ create api method  @done (16-01-14 12:29)
+     ✔ split and distinct on (rethinkdb query?) @done (16-01-15 07:49)
+✔ solves how to get data for search @done (16-01-15 07:50)

@@ -3,7 +3,7 @@
 
 angular.module('web').controller('AppRootController', AppRootController);
 
-function AppRootController($scope, $rootScope, $log, $state, $timeout, $auth, api)
+function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
 {
 
     // Init controller
@@ -26,8 +26,6 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, $auth, ap
 
     // Let this login load after a little while
     $rootScope.loadTimer = $timeout(function() {
-        var token = $auth.getToken();
-        $log.debug("Actual token is:", token);
 
         // Do we need extra time to show the page?
         var moreTime = 1;
