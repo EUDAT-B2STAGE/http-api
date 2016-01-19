@@ -29,12 +29,18 @@ function SearchService($log, api) {
         return api.apiCall(endpoint, 'POST', {'query':json});
     }
 
-    self.filterData = function(json) {
-        return self.getFromQuery(self.endpoints.search, json);
+    self.filterData = function(filter) {
+        return self.getFromQuery(
+            self.endpoints.search,
+            {'nested_filter':
+                {'position': 1, 'filter': filter}});
     }
 
-    self.filterDocuments = function(json) {
-        return self.getFromQuery(self.endpoints.documents, json);
+    self.filterDocuments = function(filter) {
+        return self.getFromQuery(
+            self.endpoints.documents,
+            {'notes': {'filter': filter}});
+
     }
 
 // Base API calls
@@ -45,9 +51,12 @@ function SearchService($log, api) {
           .then(function(out_steps) {
             // Prepare steps name
             var steps = [];
-            forEach(out_steps.data, function(single, i){
-              steps[single.step.num] = single.step.name;
-            });
+            if (out_steps && out_steps.hasOwnProperty('data'))
+            {
+                forEach(out_steps.data, function(single, i){
+                  steps[single.step.num] = single.step.name;
+                });
+            }
             return steps;
         });
     }
@@ -65,13 +74,15 @@ function SearchService($log, api) {
       return self.getFromQuery(self.endpoints.documents,
             {
                 'limit': 0, //all
-                'notes': true,
+                'notes': {'nofilter': true},
             }
         );
     }
 
     self.getDocs = function(id) {
-        return api.apiCall(self.endpoints.documents, undefined, undefined, id);
+        return api.apiCall(
+            self.endpoints.documents,
+            undefined, undefined, id);
     }
 
 }

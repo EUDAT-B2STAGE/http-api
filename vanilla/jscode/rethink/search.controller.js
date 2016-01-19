@@ -152,10 +152,6 @@ function ChipsController($scope, $log, search)
 
   self.newChip = function(chip) {
       $log.info("Requested tag:", chip, "total:", self.chips);
-      var json = {
-        //'limit': 0,
-        'nested_filter': {'position': 1, 'filter': chip.display}
-      };
 
 // FOR EACH CHIPS
 // ADD TO JSON TO MAKE MORE THAN ONE STEP ON RETHINKDB
@@ -163,9 +159,9 @@ function ChipsController($scope, $log, search)
       // Choose table to query
       var promise = null;
       if (chip.type == 'Transcription') {
-        promise = search.filterDocs(json);
+        promise = search.filterDocuments(chip.display);
       } else {
-        promise = search.filterData(json);
+        promise = search.filterData(chip.display);
       }
       // Do query
       promise.then(function(out_data) {
@@ -174,7 +170,8 @@ function ChipsController($scope, $log, search)
           return null;
         }
         //reloadTable(out_data);
-        console.log(out_data);
+        $log.info("SUCCESS. BUILD THE TABLE NOW!");
+        //console.log(out_data);
       });
   }
 
@@ -224,6 +221,9 @@ function AutoCompleteController($scope, $log, $q, search)
     parallelLoad = function (steps) {
 
         console.log("STEPS", steps);
+        if (steps.length < 1) {
+           return false;
+        }
         steps.push('Transcription')
 // TO FIX
 // should be a foreach on 'steps'
