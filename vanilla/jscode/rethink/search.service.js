@@ -8,6 +8,7 @@ function SearchService($log, api) {
 
     var self = this;
 
+    self.latestSteps = [];
     self.endpoints = {
         search: 'datavalues',
         submit: 'datakeys',
@@ -57,6 +58,7 @@ function SearchService($log, api) {
                   steps[single.step.num] = single.step.name;
                 });
             }
+            self.latestSteps = steps;
             return steps;
         });
     }

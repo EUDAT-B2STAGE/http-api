@@ -29,67 +29,6 @@ function SearchController($scope, $log, $state, search)
       $log.debug("Selected", self.selectedTab);
   }
 
-  function reloadTable(response) {
-
-    var elements = [];
-    if (!$scope.stepsInfo) {
-      return {};
-    }
-    $log.debug("preprocess");
-    $scope.data = [];
-    $scope.results = true;
-
-    forEach(response.data, function (x, i) {
-
-      //console.log("DATA", x);
-
-      // SINGLE DETAILS
-      search.getSingleData(x.record).then(function(out_single){
-
-        //$log.debug("Single element", x.record);
-        //console.log("SINGLE", out_single);
-        var element = {
-          'id': x.record,
-          'image': null,
-        }
-
-        // skip last step, skip 0 which is not defined
-        for (var l = $scope.stepsInfo.length - 2; l > 0; l--) {
-            element[$scope.stepsInfo[l].toLowerCase()] = null;
-        };
-
-/////////////////
-//BAD
-// THIS IS VERY LOW IN PERFORMANCE
-// I SHOULD GET THIS FROM THE QUERY IN ITSELF
-        forEach(out_single.data[0].steps, function(y, j){
-          var key = $scope.stepsInfo[y.step].toLowerCase();
-          var value = null;
-          for (var j = 0; j < y.data.length; j++) {
-            if (y.data[j].position == 1) {
-              element[key] = y.data[j].value;
-              break;
-            }
-            //console.log("Position", j, y);
-          };
-        });
-//BAD
-/////////////////
-
-        search.getDocs(x.record).then(function(out_docs) {
-          if (out_docs.count > 0) {
-            element.image =
-              out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-                + '/TileGroup0/0-0-0.jpg';
-          }
-
-          // FINALLY ADD DATA
-          $scope.data.push(element);
-          self.dataCount = response.count;
-        }); // GET DOCUMENTS
-      });
-    });
-  }
 
   $scope.ucFirst = function(string) {
     return string.capitalizeFirstLetter();
@@ -166,12 +105,10 @@ function ChipsController($scope, $log, search)
       // Do query
       promise.then(function(out_data) {
         self.dataCount = NaN;
-        if (out_data.count < 1) {
+        if (!out_data || out_data.count < 1) {
           return null;
         }
-        //reloadTable(out_data);
-        $log.info("SUCCESS. BUILD THE TABLE NOW!");
-        //console.log(out_data);
+        self.fillTable(out_data.data);
       });
   }
 
@@ -180,6 +117,68 @@ function ChipsController($scope, $log, search)
 // JUST USE THE SAME FUNCTION OF NEW CHIP
     //console.log(chip, index);
   }
+
+  self.fillTable = function(response)
+  {
+
+    var elements = [];
+    $log.debug("FILLING TABLE");
+    $scope.data = [];
+    $scope.results = true;
+
+    forEach(response, function (x, i) {
+
+      //console.log("DATA", x);
+
+// THIS QUERY NEEDS IMPROVEMENT
+// THIS QUERY NEEDS IMPROVEMENT
+      // SINGLE DETAILS
+      search.getSingleData(x.record).then(function(out_single){
+// THIS QUERY NEEDS IMPROVEMENT
+// THIS QUERY NEEDS IMPROVEMENT
+
+        $log.debug("Single element", x.record, out_single);
+        var element = {'id': x.record, 'image': null};
+
+        // skip last step, skip 0 which is not defined
+        var mySteps = search.latestSteps;
+        for (var l = mySteps.length - 2; l > 0; l--) {
+            element[mySteps[l].toLowerCase()] = null;
+        };
+
+/////////////////
+//BAD
+// THIS IS VERY LOW IN PERFORMANCE
+// I SHOULD GET THIS FROM THE QUERY IN ITSELF
+        forEach(out_single.data[0].steps, function(y, j){
+          var key = mySteps[y.step].toLowerCase();
+          var value = null;
+          for (var j = 0; j < y.data.length; j++) {
+            if (y.data[j].position == 1) {
+              element[key] = y.data[j].value;
+              break;
+            }
+            //console.log("Position", j, y);
+          };
+        });
+//BAD
+/////////////////
+
+        search.getDocs(x.record).then(function(out_docs) {
+          if (out_docs.count > 0) {
+            element.image =
+              out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
+                + '/TileGroup0/0-0-0.jpg';
+          }
+
+          // FINALLY ADD DATA
+          $scope.data.push(element);
+          self.dataCount = response.count;
+        }); // GET DOCUMENTS
+      });
+    });
+  }
+
 }
 
 ////////////////////////////////
@@ -281,66 +280,6 @@ function AutoCompleteController($scope, $log, $q, search)
     //self.states
 // CHAINING PROMISES
 ////////////////////////////////////////
-
-// TO SPLIT AND REMOVE
-  function loadData() {
-    $log.debug("Loading data");
-
-    // Load autocomplete for each step
-    $scope.autocomplete = [];
-    self.dataCount = NaN;
-    var steps = 3;
-    for (var i = 0; i < steps; i++) {
-      var json = {
-        'limit': 0,
-        'autocomplete': {'step': i+1, 'position': 1}
-      };
-      search.getFromQuery(json).then(function(out_data) {
-
-// API CHECK
-// TOFIX
-        // Check only on first call
-        if (checkApiResponseTypeError(out_data)) {
-          // Set error and break
-          setScopeError(out_data, $log, $scope);
-          $scope.data = null;
-          return false;
-        } else if (out_data.count < 2) {
-          return false;
-        }
-// TOFIX
-
-        $scope.autocomplete.push(out_data.data);
-        // if ($scope.autocomplete.length == steps) {
-        //   self.states = loadAll();
-        // }
-      });
-      if ($scope.data === null){
-        return false;
-      }
-    };
-
-    ///////////////////////////////////
-    // Load real data and filter
-
-    // Get all
-    search.getData().then(function(out_data){
-        if ($scope.data === null) {
-          return false;
-        }
-        // Get steps info
-        search.getSteps().then(function(out_steps) {
-          // Autocomplete setup from steps also
-          self.states = loadAll(out_steps.data);
-          // Create the table
-          reloadTable(out_data);
-          // Make the tree
-          treeProcessData(out_steps.data);
-
-        }); // STEPS
-    }); // GET DATA
-
-  }
 
 }
 
