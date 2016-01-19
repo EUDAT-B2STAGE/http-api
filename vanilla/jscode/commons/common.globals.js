@@ -34,10 +34,10 @@ Object.prototype.hasOwnProperty = function(property) {
 
 // TO FIX
 function checkApiResponseTypeError(obj) {
-  if (
-      (! obj) ||
+  if ( (! obj) ||
       (typeof obj == 'string')  ||
-      (obj.hasOwnProperty('message'))) {
+      (obj.hasOwnProperty('message')))
+  {
     return true;
   }
 }

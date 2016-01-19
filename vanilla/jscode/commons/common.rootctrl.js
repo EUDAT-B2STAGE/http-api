@@ -29,7 +29,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
 
         // Do we need extra time to show the page?
         var moreTime = 1;
-        if (!checkLoggedState($state.current) && token !== null) {
+        if (!checkLoggedState($state.current) && api.checkToken() !== null) {
             if ($state.current.name == 'login') {
                 // Avoid the user to see the reload of the page
                 moreTime = 500;

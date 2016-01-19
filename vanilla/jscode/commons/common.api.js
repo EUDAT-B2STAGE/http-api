@@ -28,6 +28,9 @@ function RestApiService($window, $http, $auth, $log) {
     self.getOrDefault = function (value, mydefault) {
         return typeof value !== 'undefined' ? value : mydefault;
     }
+    self.checkToken = function () {
+        return $auth.getToken();
+    }
 
     self.apiCall = function (endpoint, method, data, id, errorCheck) {
 
@@ -49,7 +52,7 @@ function RestApiService($window, $http, $auth, $log) {
         }
       ////////////////////////
 
-        var token = $auth.getToken(),
+        var token = self.checkToken(),
             timeout = 5500,
             req = {
                 method: method,

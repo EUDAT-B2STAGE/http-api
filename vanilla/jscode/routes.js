@@ -15,8 +15,14 @@ function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api)
     var checkLogged = true;
     return api.verify(checkLogged).then(function(response){
       // Token is available and API confirm that is good
-      if (response && $auth.isAuthenticated()) {
-        return true;
+      if ($auth.isAuthenticated()) {
+        if (response) {
+            return true;
+        } else {
+          // Token has expired...
+          $log.info("Removed token, because it seems expired.");
+          $auth.removeToken();
+        }
       }
       var state = 'login';
       // API not reachable
