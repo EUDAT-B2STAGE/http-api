@@ -23,7 +23,29 @@ function SearchService($log, api) {
     }
 
     self.getSingleData = function(id) {
-        return api.apiCall(self.endpoints.search, 'GET', undefined, id);
+        return api.apiCall(self.endpoints.search, 'GET', undefined, id)
+          .then(function(out)
+          {
+            if (!out || out.count < 1) {
+                return false;
+            }
+            var element = {'image': null};
+            forEach(out.data, function(value, key){
+                var stepName = self.latestSteps[key+1];
+                element[stepName] = value;
+            });
+            self.getDocs(id).then(function(out_docs)
+            {
+              if (out_docs.count > 0) {
+                element.image =
+                  out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
+                    + '/TileGroup0/0-0-0.jpg';
+              }
+            }); // GET DOCUMENTS
+            console.log("ELEMENT", element);
+            return element;
+
+          });
     }
 
     self.getFromQuery = function(endpoint, json) {
@@ -81,6 +103,7 @@ function SearchService($log, api) {
         );
     }
 
+// TO FIX
     self.getDocs = function(id) {
         return api.apiCall(
             self.endpoints.documents,

@@ -16,6 +16,10 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
 PROTOTYPE:
 
+✔ Moving compute from controller to search and then to rethinkdb or python @done (16-01-19 19:59)
+☐ Refactor rethink API
+  ☐ no more automatic
+
 ☐ search becomes fixed inside the toolbar
    ☐ md-toolbar?
    https://material.angularjs.org/latest/demo/toolbar

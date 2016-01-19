@@ -109,6 +109,7 @@ function ChipsController($scope, $log, search)
           return null;
         }
         self.fillTable(out_data.data);
+        $scope.dataCount = out_data.count;
       });
   }
 
@@ -120,61 +121,17 @@ function ChipsController($scope, $log, search)
 
   self.fillTable = function(response)
   {
-
-    var elements = [];
     $log.debug("FILLING TABLE");
     $scope.data = [];
     $scope.results = true;
 
-    forEach(response, function (x, i) {
-
-      //console.log("DATA", x);
-
-// THIS QUERY NEEDS IMPROVEMENT
-// THIS QUERY NEEDS IMPROVEMENT
+    forEach(response, function (x, i)
+    {
       // SINGLE DETAILS
-      search.getSingleData(x.record).then(function(out_single){
-// THIS QUERY NEEDS IMPROVEMENT
-// THIS QUERY NEEDS IMPROVEMENT
-
-        $log.debug("Single element", x.record, out_single);
-        var element = {'id': x.record, 'image': null};
-
-        // skip last step, skip 0 which is not defined
-        var mySteps = search.latestSteps;
-        for (var l = mySteps.length - 2; l > 0; l--) {
-            element[mySteps[l].toLowerCase()] = null;
-        };
-
-/////////////////
-//BAD
-// THIS IS VERY LOW IN PERFORMANCE
-// I SHOULD GET THIS FROM THE QUERY IN ITSELF
-        forEach(out_single.data[0].steps, function(y, j){
-          var key = mySteps[y.step].toLowerCase();
-          var value = null;
-          for (var j = 0; j < y.data.length; j++) {
-            if (y.data[j].position == 1) {
-              element[key] = y.data[j].value;
-              break;
-            }
-            //console.log("Position", j, y);
-          };
-        });
-//BAD
-/////////////////
-
-        search.getDocs(x.record).then(function(out_docs) {
-          if (out_docs.count > 0) {
-            element.image =
-              out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-                + '/TileGroup0/0-0-0.jpg';
-          }
-
-          // FINALLY ADD DATA
+      search.getSingleData(x.record).then(function(element)
+      {
           $scope.data.push(element);
-          self.dataCount = response.count;
-        }); // GET DOCUMENTS
+// FIX HTML VIEW?
       });
     });
   }
