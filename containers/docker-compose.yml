@@ -35,7 +35,7 @@ backend:
         # Rest API endpoints
         - ../vanilla/apis:/code/restapi/resources/custom
         # Rest API configuration
-        - ../vanilla/specs/endpoints.ini:/code/confs/endpoints.ini
+        - ../vanilla/specs:/code/confs/endpoints
 
 ###############################
 frontend:
