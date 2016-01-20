@@ -68,13 +68,17 @@ else
     files="-f docker-compose.yml -f custom/${1}.yml"
 
     #############################
-    echo "Cleaning project containers (if any)"
-    $com $files stop $services
-    $com $files rm -f $services
-    echo "Starting up"
-    $com $files up -d $services
+    # Run services if not adding another command
+    if [ -z "$2" ]; then
+        echo "Cleaning project containers (if any)"
+        $com $files stop $services
+        $com $files rm -f $services
+        echo "Starting up"
+        $com $files up -d $services
+    fi
+    # Check up
     if [ "$?" == "0" ]; then
-        echo "Up and running:"
+        echo "'$1' configuration [Up and running]"
         $com $files ps
         # docker volume ls
     fi
