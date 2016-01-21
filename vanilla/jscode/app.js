@@ -30,7 +30,9 @@ console.log('POST');
         'treeControl',
 // KEYBOARD SHORTCUTS        
         'cfp.hotkeys',
-
+// FORMS FROM JSON SCHEMAS
+        'formly',        
+        'formlyMaterial',
 // OTHERS?
         //'blueprint',
     ]);
