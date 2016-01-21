@@ -17,8 +17,9 @@
         // # WHAT ELSE?
 		//"animate.css/animate.min.css"
 		//"angular-loading-bar/build/loading-bar.min.css",
-		"angular-tree-control/css/tree-control.css"
+		"angular-tree-control/css/tree-control.css",
 		//"angular-tree-control/css/tree-control-attribute.css"
+		"angular-hotkeys/build/hotkeys.min.css"
 	],
 // USER CUSTOM CSS
 	"customcss" : [
