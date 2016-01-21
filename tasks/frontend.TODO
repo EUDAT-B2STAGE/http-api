@@ -1,9 +1,6 @@
-
->  Welcome and goodbye.
-> And thanks for all the fish!
+>  Welcome and goodbye. And thanks for all the fish!
 
 --- ✄ -----------------------
-
 #MAIN COM
 docker-compose -f docker-compose.yml -f custom.yml up -d customfe
 # PRIVATE GIT
@@ -11,14 +8,14 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 # ANGULAR and  MATERIAL
 https://material.angularjs.org/latest/layout/alignment
 http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
-
 --- ✄ -----------------------
 
 PROTOTYPE:
 
 ✔ Moving compute from controller to search and then to rethinkdb or python @done (16-01-19 19:59)
-☐ Refactor rethink API
-  ☐ no more automatic
+✔ Refactor rethink API @done (16-01-21 11:37)
+  ✔ no more automatic @done (16-01-21 11:37)
+  ☐ do all of them
 
 ☐ search becomes fixed inside the toolbar
    ☐ md-toolbar?
@@ -28,6 +25,9 @@ PROTOTYPE:
  ☐ Autocomplete
    ☐ refactor to use all chips
    ☐ define the list in autocomplete (chip) template size bigger
+☐ Hotkeys
+ ☐ / is for search
+
 ☐ Material SIDENAV
  https://material.angularjs.org/latest/demo/sidenav
    ☐ menu positions

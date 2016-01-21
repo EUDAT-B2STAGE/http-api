@@ -51,6 +51,8 @@ frontend:
         - ..:/data
         # js/css libraries installed via bower
         - ../vanilla/jslibs/bower_components:/data/frontend/felask/static/bower
+        # custom css files
+        - ../vanilla/templates/customcss:/data/frontend/felask/static/css
         # All the angular blueprints (&& templates)
         - ../vanilla/jscode:/data/frontend/felask/static/app
         # Python pages
