@@ -65,16 +65,42 @@ else
         done
         exit
     fi
-    files="-f docker-compose.yml -f custom/${1}.yml"
+
+    file="custom/${1}.yml"
+    if [ ! -f "$file" ]; then
+        echo "File '$file' not found"
+        exit 1
+    fi
+    files="-f docker-compose.yml -f $file"
 
     #############################
-    echo "Cleaning project containers (if any)"
-    $com $files stop $services
-    $com $files rm -f $services
-    echo "Starting up"
-    $com $files up -d $services
+    # Run services if not adding another command
+    if [ -z "$2" ]; then
+        echo "ACTION: Reboot"
+        echo "Cleaning project containers (if any)"
+        $com $files stop $services
+        $com $files rm -f $services
+        echo "Starting up"
+        $com $files up -d $services
+    else
+        if [ "$2" == "start" ]; then
+            echo "ACTION: Start"
+            $com $files up -d $services
+        fi
+        if [ "$2" == "stop" ]; then
+            echo "ACTION: Stop"
+            echo "Freezing services"
+            $com $files stop $services
+        fi
+        if [ "$2" == "remove" ]; then
+            echo "ACTION: Removal"
+            echo "Destroying services"
+            $com $files rm -f $services
+        fi
+    fi
+    # Check up
     if [ "$?" == "0" ]; then
-        echo "Up and running:"
+        echo "[$1] configuration. Status:"
         $com $files ps
         # docker volume ls
     fi

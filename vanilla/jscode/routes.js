@@ -3,6 +3,63 @@
 
 angular.module('web').config(config);
 
+/////////////////////////////////
+// ROUTES AND AUTHENTICATION
+
+// Ui Resolve + Satellizer to authenticate
+// original source http://j.mp/1VnxlQS heavily modified
+
+// Check authentication via Token
+function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api)
+{
+    var checkLogged = true;
+    return api.verify(checkLogged).then(function(response){
+      // Token is available and API confirm that is good
+      if ($auth.isAuthenticated()) {
+        if (response) {
+            return true;
+        } else {
+          // Token has expired...
+          $log.info("Removed token, because it seems expired.");
+          $auth.removeToken();
+        }
+      }
+      var state = 'login';
+      // API not reachable
+      if (response === null) {
+        state = 'offline';
+      }
+      // Not logged or API down
+      $timeout(function () {
+          // redirect
+          $log.error("Failed resolve");
+          $state.go(state);
+          return false;
+      });
+    });
+}
+
+// Skip authentication
+// Check for API available
+function _skipAuthenticationCheckApiOnline($state, $timeout, $auth, api)
+{
+    var checkLogged = false;
+    return api.verify(checkLogged)
+      .then(function(response){
+
+        // API available
+        if (response) {
+          return response;
+        }
+        // Not available
+        $timeout(function () {
+            $state.go('offline');
+            return response;
+        });
+    });
+}
+
+
 /*********************************
 * ROUTING
 *********************************/
@@ -40,22 +97,6 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
     // Build the routes from the blueprint configuration
     if (extraRoutesSize > 0) {
         forEach(extraRoutes, function(x, stateName){
-            //console.log(stateName, x);
-
-/*
-UNNECESSARY
-            // Build resolver of this single state
-            var myResolve = {};
-            if (x.hasOwnProperty('resolve') && Object.keys(x.resolve).length > 0) 
-            {
-                // if you want to check auth
-                if (x.resolve.redirectIfNotAuthenticated) {
-                    myResolve['checkAuth'] = _redirectIfNotAuthenticated;
-                } else {
-                    myResolve['skip'] = _skipAuthenticationCheckApiOnline;
-                }
-            }
-*/
 
             // Build VIEWS for this single state
             var myViews = {};
@@ -75,17 +116,15 @@ UNNECESSARY
             });
         });
     }
+////////////////////////////
 
 // ROUTES
 $stateProvider
-    ////////////////////////////
 
     .state("offline", {
         url: "/offline",
         views: {
-            "main": {
-                templateUrl: templateDir + 'offline.html',
-            }
+            "main": {templateUrl: templateDir + 'offline.html'}
         }
     })
 
@@ -95,14 +134,16 @@ $stateProvider
             skip: _skipAuthenticationCheckApiOnline,
         },
         views: {
-            "main": {
-                templateUrl: templateDir + 'login.html',
-            }
+            "main": {templateUrl: templateDir + 'login.html'}
         }
     })
 
     .state("logged", {
         url: "/app",
+        // This parent checks for authentication and api online
+        resolve: {
+            redirect: _redirectIfNotAuthenticated
+        },
         // Implement main route for landing page after login
         views: {
             "menu": {
@@ -115,29 +156,23 @@ $stateProvider
                 //controller: 'AppRootController',
             }
         },
-        // This parent checks for authentication and api online
-        resolve: {
-            redirect: _redirectIfNotAuthenticated
-        },
     })
 
     .state("logged.logout", {
         url: "/logout",
         views: {
-            "loggedview": {
-                templateUrl: templateDir + 'logout.html',
-            }
+            "loggedview": {templateUrl: templateDir+'logout.html'}
         }
     })
 
-    // Routes definition end
+    // Routes definition ends here
     ;
 
-// $urlRouterProvider.otherwise('/login');
 
 // Ui router kinda bug fixing
 // CHECK THIS IN THE NEAR FUTURE
 //https://github.com/angular-ui/ui-router/issues/1022#issuecomment-50628789
+    // $urlRouterProvider.otherwise('/login');
     $urlRouterProvider.otherwise(function ($injector) {
         console.log("OTHERWISE");
         var $state = $injector.get('$state');

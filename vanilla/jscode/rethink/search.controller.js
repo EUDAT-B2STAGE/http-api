@@ -29,78 +29,6 @@ function SearchController($scope, $log, $state, search)
       $log.debug("Selected", self.selectedTab);
   }
 
-  function reloadTable(response) {
-
-    var elements = [];
-    if (!$scope.stepsInfo) {
-      return {};
-    }
-    $log.debug("preprocess");
-    $scope.data = [];
-    $scope.results = true;
-
-    forEach(response.data, function (x, i) {
-
-      //console.log("DATA", x);
-
-      // SINGLE DETAILS
-      search.getSingleData(x.record).then(function(out_single){
-
-        //$log.debug("Single element", x.record);
-        if (checkApiResponseTypeError(out_single)) {
-          setScopeError(out_single, $log, $scope);
-        } else {
-          if (out_single.count < 1) {
-             setScopeError("No data found", $log, $scope);
-             return;
-          }
-        }
-        //console.log("SINGLE", out_single);
-        var element = {
-          'id': x.record,
-          'image': null,
-          // 'fête': null, //x.steps[2].data[0].value,
-          // 'source': null, //x.steps[1].data[0].value,
-          // 'extrait': null, //x.steps[0].data[0].value,
-        }
-
-        // skip last step, skip 0 which is not defined
-        for (var l = $scope.stepsInfo.length - 2; l > 0; l--) {
-            element[$scope.stepsInfo[l].toLowerCase()] = null;
-        };
-
-/////////////////
-//BAD
-// THIS IS VERY LOW IN PERFORMANCE
-// I SHOULD GET THIS FROM THE QUERY IN ITSELF
-        forEach(out_single.data[0].steps, function(y, j){
-          var key = $scope.stepsInfo[y.step].toLowerCase();
-          var value = null;
-          for (var j = 0; j < y.data.length; j++) {
-            if (y.data[j].position == 1) {
-              element[key] = y.data[j].value;
-              break;
-            }
-            //console.log("Position", j, y);
-          };
-        });
-//BAD
-/////////////////
-
-        search.getDocs(x.record).then(function(out_docs) {
-          if (out_docs.count > 0) {
-            element.image =
-              out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-                + '/TileGroup0/0-0-0.jpg';
-          }
-
-          // FINALLY ADD DATA
-          $scope.data.push(element);
-          self.dataCount = response.count;
-        }); // GET DOCUMENTS
-      });
-    });
-  }
 
   $scope.ucFirst = function(string) {
     return string.capitalizeFirstLetter();
@@ -154,57 +82,66 @@ function ChipsController($scope, $log, search)
   // https://material.angularjs.org/latest/demo/chips
   self.chips = [];
 
+  self.loadAllRecords = function () {
+    $log.debug("Button to define");
+// ACTION FOR ONLY THE BUTTON TO LOAD ALL ARCHIVE
+    //search.getData().then(function(out_data){
+  }
+
+
   self.newChip = function(chip) {
-
-/* INSTRUCTIONS
-one of the following return values:
-
-an object representing the $chip input string
-undefined to simply add the $chip input string, or
-null to prevent the chip from being appended
-*/
       $log.info("Requested tag:", chip, "total:", self.chips);
-      var json = {
-        //'limit': 0,
-        'nested_filter': {'position': 1, 'filter': chip.display}
-      };
-      search.getFromQuery(json).then(function(out_data) {
+
+// FOR EACH CHIPS
+// ADD TO JSON TO MAKE MORE THAN ONE STEP ON RETHINKDB
+// SO THIS WILL BE ONE SINGLE HTTP REQUEST
+      // Choose table to query
+      var promise = null;
+      if (chip.type == 'Transcription') {
+        promise = search.filterDocuments(chip.display);
+      } else {
+        promise = search.filterData(chip.display);
+      }
+      // Do query
+      promise.then(function(out_data) {
         self.dataCount = NaN;
-        // Check only on first call
-        if (checkApiResponseTypeError(out_data)) {
-          // Set error and break
-          setScopeError(out_data, $log, $scope);
-          $scope.data = null;
-          return false;
+        if (!out_data || out_data.count < 1) {
+          return null;
         }
-        if (out_data.count < 1) {
-          return false;
-        }
-        reloadTable(out_data);
-        //console.log(out_data);
+        self.fillTable(out_data.data);
+        $scope.dataCount = out_data.count;
       });
   }
 
   self.removeChip = function(chip, index) {
-
+// IF YOU REMOVE YOU SHOULD REBUILD THE QUERY FROM START...
+// JUST USE THE SAME FUNCTION OF NEW CHIP
     //console.log(chip, index);
-    search.getData().then(function(out_data){
-        if ($scope.data === null) {
-          return false;
-        }
-        // Get steps info
-        search.getSteps().then(function(out_steps) {
-          // Create the table
-          reloadTable(out_data);
-        }); // STEPS
-    }); // GET DATA
   }
+
+  self.fillTable = function(response)
+  {
+    $log.debug("FILLING TABLE");
+    $scope.data = [];
+    $scope.results = true;
+
+    forEach(response, function (x, i)
+    {
+      // SINGLE DETAILS
+      search.getSingleData(x.record).then(function(element)
+      {
+          $scope.data.push(element);
+// FIX HTML VIEW?
+      });
+    });
+  }
+
 }
 
 ////////////////////////////////
 // controller
 ////////////////////////////////
-function AutoCompleteController($scope, $log, search)
+function AutoCompleteController($scope, $log, $q, search)
 {
 
   // Init controller
@@ -231,77 +168,75 @@ function AutoCompleteController($scope, $log, search)
         self.states;
   }
 
-  function initArchiveSearch (argument)
-  {
-    // Get steps info
-    search.getSteps().then(function(out_steps) {
-        console.log("STEPS!");
-/* LOAD
-      // Autocomplete setup from steps also
-      self.states = loadAll(out_steps.data);
-*/
-    });
-  }
+////////////////////////////////////////
+//http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
+  var
+    initSearchComplete = function (argument) {
+        return search.getSteps();
+    },
+    parallelLoad = function (steps) {
 
-// TO SPLIT AND REMOVE
-  function loadData() {
-    $log.debug("Loading data");
-
-    // Load autocomplete for each step
-    $scope.autocomplete = [];
-    self.dataCount = NaN;
-    var steps = 3;
-    for (var i = 0; i < steps; i++) {
-      var json = {
-        'limit': 0,
-        'autocomplete': {'step': i+1, 'position': 1}
-      };
-      search.getFromQuery(json).then(function(out_data) {
-
-// API CHECK
-// TOFIX
-        // Check only on first call
-        if (checkApiResponseTypeError(out_data)) {
-          // Set error and break
-          setScopeError(out_data, $log, $scope);
-          $scope.data = null;
-          return false;
-        } else if (out_data.count < 2) {
-          return false;
+        console.log("STEPS", steps);
+        if (steps.length < 1) {
+           return false;
         }
-// TOFIX
+        steps.push('Transcription')
+// TO FIX
+// should be a foreach on 'steps'
+        var promises = {
+            1: search.getDistinctValuesFromStep(1),
+            2: search.getDistinctValuesFromStep(2),
+            3: search.getDistinctValuesFromStep(3),
+            4: search.getDistinctValuesFromStep(4),
+            5: search.getDistinctTranscripts(),
+        }
+        return $q.all(promises).then((values) =>
+        {
+            forEach(values, function (api_response, step) {
+              if (api_response.count > 1) {
+                $log.debug('Fullfilling step', steps[step]);
+                //console.log(api_response);
 
-        $scope.autocomplete.push(out_data.data);
-        // if ($scope.autocomplete.length == steps) {
-        //   self.states = loadAll();
-        // }
-      });
-      if ($scope.data === null){
-        return false;
-      }
+                forEach(api_response.data, function(state, key){
+                  self.states.push({
+                    value: state.toLowerCase(),
+                    display: state,
+                    type: steps[step],
+                  })
+                });
+
+              }
+            });
+            //throw( new Error("Just to prove catch() works! ") );
+        });
+    },
+    reportProblems = function( fault )
+    {
+        $log.error( String(fault) );
     };
 
-    ///////////////////////////////////
-    // Load real data and filter
+    initSearchComplete()
+        .then( parallelLoad )
+        .catch( reportProblems );
 
-    // Get all
-    search.getData().then(function(out_data){
-        if ($scope.data === null) {
-          return false;
-        }
-        // Get steps info
-        search.getSteps().then(function(out_steps) {
-          // Autocomplete setup from steps also
-          self.states = loadAll(out_steps.data);
-          // Create the table
-          reloadTable(out_data);
-          // Make the tree
-          treeProcessData(out_steps.data);
+/* MIX STEPS AND AUTOCOMPLETE
+    // Prepare total array of autocomplete divided by types
+    var auto = [];
+    forEach($scope.autocomplete, function(data, step){
+      forEach(data, function(state, key){
+        auto.push({
+          value: state.toLowerCase(),
+          display: state,
+          type: steps[step+1],
+        })
+      });
+    });
+    return auto;
+*/
 
-        }); // STEPS
-    }); // GET DATA
-
-  }
+    //self.states
+// CHAINING PROMISES
+////////////////////////////////////////
 
 }
 

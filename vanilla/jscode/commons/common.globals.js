@@ -27,54 +27,6 @@ var forEach = function (collection, callback, scope) {
 
 
 /////////////////////////////////
-// ROUTES AND AUTHENTICATION
-
-// Ui Resolve + Satellizer to authenticate
-// original source http://j.mp/1VnxlQS heavily modified
-
-// Check authentication via Token
-function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api) 
-{
-    return api.verify(true).then(function(response){
-      // Token is available and API confirm that is good
-      if (response && $auth.isAuthenticated()) {
-        return true;
-      }
-      var state = 'login';
-      // API not reachable
-      if (response === null) {
-        state = 'offline';
-      }
-      // Not logged or API down
-      $timeout(function () {
-          // redirect
-          $log.error("Failed resolve");
-          $state.go(state);
-          return false;
-      });
-    });
-}
-
-// Skip authentication
-// Check for API available
-function _skipAuthenticationCheckApiOnline($state, $timeout, api) 
-{
-    return api.verify()
-      .then(function(response){
-
-        // API available
-        if (response) {
-          return response;
-        }
-        // Not available
-        $timeout(function () {
-            $state.go('offline');
-            return response;
-        });
-    });
-}
-
-/////////////////////////////////
 // OTHERS
 Object.prototype.hasOwnProperty = function(property) {
     return typeof this[property] !== 'undefined';
@@ -82,10 +34,10 @@ Object.prototype.hasOwnProperty = function(property) {
 
 // TO FIX
 function checkApiResponseTypeError(obj) {
-  if (
-      (! obj) ||
+  if ( (! obj) ||
       (typeof obj == 'string')  ||
-      (obj.hasOwnProperty('message'))) {
+      (obj.hasOwnProperty('message')))
+  {
     return true;
   }
 }

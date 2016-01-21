@@ -85,8 +85,6 @@ else:
     blueprint_path = os.path.join(app_path, CURRENT_BLUEPRINT)
     jfiles.extend(Path(blueprint_path).glob('**/*.js'))
 
-    print(jfiles)
-
     # Use all files found
     for pathfile in jfiles:
         strfile = str(pathfile)

@@ -5,6 +5,7 @@ services="backend"
 com="git"
 push="$com push origin master"
 
+###########################################
 for service in $services;
 do
     echo "Repo '$service' push"
@@ -19,6 +20,8 @@ do
     cd ..
 done
 
+###########################################
+# In case something has to be commited yet
 $com add $services
 # $com add *
 if [ "$1" == "quick" ];then
@@ -27,6 +30,7 @@ else
     $com commit
 fi
 
+###########################################
 # Original repo
 $push
 # Private repo
