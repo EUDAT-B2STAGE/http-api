@@ -12,6 +12,8 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
 PROTOTYPE:
 
+  ☐ welcome spy padding?
+
 ✔ Moving compute from controller to search and then to rethinkdb or python @done (16-01-19 19:59)
 ✔ Refactor rethink API @done (16-01-21 11:37)
   ✔ no more automatic @done (16-01-21 11:37)

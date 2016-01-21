@@ -1,5 +1,5 @@
 {
-    //"example": "example.ini",
-    "RethinkDB": "rethink.ini"
+    "example": "example.ini"
+    //"RethinkDB": "rethink.ini"
     //"iRODS": "irods.ini"
 }
