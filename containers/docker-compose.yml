@@ -59,6 +59,8 @@ frontend:
         - ../vanilla/pages:/data/frontend/felask/pypages
         # Python templates
         - ../vanilla/templates/python:/data/frontend/felask/templates/custom
+        # Angular blueprint
+        - ../vanilla/specs/js_init.json:/data/frontend/config/angular/blueprint.json
     ports:
         - 80:5000
     # links:

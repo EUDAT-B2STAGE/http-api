@@ -1,12 +1,15 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" Meta thinking: python introspection """
+"""
+Meta thinking: python objects & introspection
 
-from __future__ import absolute_import
-import pkgutil
+usefull documentation:
+http://python-3-patterns-idioms-test.readthedocs.org/en/latest/Metaprogramming.html
+"""
+
 from importlib import import_module
-from config import get_logger
+import pkgutil
+from . import get_logger
 
 logger = get_logger(__name__)
 
@@ -31,7 +34,7 @@ class Meta(object):
                 in pkgutil.iter_modules(package.__path__):
             if not ispkg:
                 self._submodules.append(modname)
-                logger.info("Found %s submodule inside %s" %
+                logger.debug("Found %s submodule inside %s" %
                              (modname, package.__name__))
         return self._submodules
 
@@ -53,17 +56,15 @@ class Meta(object):
         return self.get_latest_classes()
 
     def get_module_from_string(self, modulestring):
-        """
-        Getting a module import
-        when your module is stored as a string in a variable
-        """
+        """ Getting a module import
+        when your module is stored as a string in a variable """
 
         module = None
         try:
             # Meta language for dinamically import
             module = import_module(modulestring)
         except ImportError as e:
-            logger.warning("Failed to load resource: " + str(e))
+            logger.critical("Failed to load resource: " + str(e))
         return module
 
     def get_class_from_string(self, classname, module):
@@ -74,6 +75,46 @@ class Meta(object):
             # Meta language for dinamically import
             myclass = getattr(module, classname)
         except AttributeError as e:
-            logger.warning("Failed to load resource: " + str(e))
+            logger.critical("Failed to load resource: " + str(e))
 
         return myclass
+
+    @staticmethod
+    def metaclassing(your_class, label=None, attributes={}):
+        """
+        Creating a class using metas.
+        Very usefull for automatic algorithms.
+        """
+        methods = dict(your_class.__dict__)
+        for key, value in attributes.items():
+            methods.update({key: value})
+        return type(label, (your_class,), methods)
+
+
+######################################################
+# ## INTERESTING EXAMPLE OF CREATING META CLASSES ## #
+
+# with open(fileschema) as f:
+#     mytemplate = json.load(f)
+# reference_schema = convert_to_marshal(mytemplate)
+
+# # Name for the class. Remove path and extension (json)
+# label = os.path.splitext(
+#     os.path.basename(fileschema))[0].lower()
+# # Dynamic attributes
+# new_attributes = {
+#     "schema": reference_schema,
+#     "template": mytemplate,
+#     "table": label,
+# }
+# # Generating the new class
+# from ...meta import Meta
+# resource_class = RethinkResource
+# if secured:
+#     resource_class = RethinkSecuredResource
+# newclass = Meta.metaclassing(resource_class, label, new_attributes)
+# # Using the same structure i previously used in resources:
+# # resources[name] = (new_class, data_model.table)
+# json_autoresources[label] = (newclass, label)
+
+######################################################

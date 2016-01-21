@@ -33,7 +33,14 @@ for key in os.environ.keys():
 # Read user config
 def read_files(path):
     """ All user specifications """
-    sections = ['content', 'models', 'options', 'frameworks']
+    sections = [
+        # Basic options
+        'content', 'models', 'options',
+        # Framework specific and user custom files
+        'frameworks',
+        # Choose the blueprint to work with
+        'blueprint',
+        ]
     myjson = {}
     for section in sections:
         filename = os.path.join(CONFIG_PATH, path, section + "." + JSON_EXT)

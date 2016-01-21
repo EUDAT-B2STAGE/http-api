@@ -1,6 +1,12 @@
 #!/bin/bash
 
 #############################
+# Defaults
+apiconf="vanilla/specs/api_init.json"
+jsconf="vanilla/specs/js_init.json"
+
+#############################
+# Other variables
 com="docker-compose"
 #services="backend frontend"
 services="custombe customfe"
@@ -35,7 +41,7 @@ elif [ "$1" == "update" ]; then
     do
         echo "Repo '$service' fetch"
         cd $service
-        git pull origin master
+        git pull
         cd ..
     done
     git submodule sync
@@ -66,12 +72,37 @@ else
         exit
     fi
 
+    #############################
+    # Check compose stack existence
     file="custom/${1}.yml"
     if [ ! -f "$file" ]; then
         echo "File '$file' not found"
         exit 1
     fi
     files="-f docker-compose.yml -f $file"
+
+    #############################
+    # CONF check
+    echo "# ############################################ #"
+    echo "DO NOT FORGET: to change configuration remove:"
+    echo -e "\t$apiconf"
+    echo -e "\t$jsconf"
+    echo "# ############################################ #"
+    echo ""
+
+    # Backend
+    apidefault="{ \"$1\": \"$1.ini\" }"
+    if [ ! -f "../$apiconf" ]; then
+        echo "$apidefault" > ../$apiconf
+        echo "Written a new '$apiconf' file"
+    fi
+
+    # Frontend
+    jsdefault="{ \"blueprint\": \"$1\" }"
+    if [ ! -f "../$jsconf" ]; then
+        echo "$jsdefault" > ../$jsconf
+        echo "Written a new '$jsconf' file"
+    fi
 
     #############################
     # Run services if not adding another command

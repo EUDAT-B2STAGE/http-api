@@ -1,4 +1,9 @@
 
+# user custom configs
+vanilla/specs/api_init.json
+vanilla/specs/js_init.json
+frontend/config/angular/blueprint.json
+
 # data
 uploads
 
