@@ -76,19 +76,26 @@ else
     #############################
     # Run services if not adding another command
     if [ -z "$2" ]; then
+        echo "ACTION: Reboot"
         echo "Cleaning project containers (if any)"
         $com $files stop $services
         $com $files rm -f $services
         echo "Starting up"
         $com $files up -d $services
     else
+        if [ "$2" == "start" ]; then
+            echo "ACTION: Start"
+            $com $files up -d $services
+        fi
         if [ "$2" == "stop" ]; then
+            echo "ACTION: Stop"
             echo "Freezing services"
-            $com $files stop
+            $com $files stop $services
         fi
         if [ "$2" == "remove" ]; then
+            echo "ACTION: Removal"
             echo "Destroying services"
-            $com $files rm -f
+            $com $files rm -f $services
         fi
     fi
     # Check up
