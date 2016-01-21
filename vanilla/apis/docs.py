@@ -59,6 +59,7 @@ class Some(ExtendedApiResource, RDBquery):
             ).pluck('value').distinct()['value']
 
     @deck.add_endpoint_parameter(name='filter', ptype=str)
+    @deck.add_endpoint_parameter(name='step', ptype=int, default=1)
     @deck.apimethod
     #@auth_token_required
     def get(self, data_key=None):
