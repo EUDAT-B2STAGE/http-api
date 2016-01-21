@@ -28,6 +28,8 @@ console.log('POST');
         'angularLazyImg',
 // MAKE DATA TREE explorer
         'treeControl',
+// KEYBOARD SHORTCUTS        
+        'cfp.hotkeys',
 
 // OTHERS?
         //'blueprint',
