@@ -26,7 +26,8 @@
 	// # BOOTSTRAP
 		//"css/custom.css"
 	// # MATERIAL
-		"css/custom_material.css"
+		"css/custom_material.css",
+		"css/style.css"
 
 	],
 // Cool FONTS
