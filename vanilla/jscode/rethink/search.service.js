@@ -4,6 +4,8 @@
 angular.module('web')
     .service('search', SearchService);
 
+// CHANGE POST TO GET
+
 function SearchService($log, api) {
 
     var self = this;

@@ -39,13 +39,14 @@ def read_files(path):
         # Framework specific and user custom files
         'frameworks',
         # Choose the blueprint to work with
-        'blueprint',
+        'blueprints/js_init',
         ]
     myjson = {}
     for section in sections:
         filename = os.path.join(CONFIG_PATH, path, section + "." + JSON_EXT)
         with open(filename) as f:
-            myjson[section] = json.load(f)
+            name = section.split('/')[0]
+            myjson[name] = json.load(f)
         # if section == 'frameworks':
         #     print(myjson[section])
     return myjson

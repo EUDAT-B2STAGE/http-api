@@ -55,7 +55,7 @@ for sfont in fconfig['fonts']:
 imgs = []
 for simg in fconfig['imgs']:
     js.append(staticdir + simg)
-logger.debug("JSON img load: %s" % imgs)
+#logger.debug("JSON img load: %s" % imgs)
 # TO FIX!
 if 'logos' not in user_config['content']:
     user_config['content']['logos'] = [{
@@ -66,11 +66,11 @@ if 'logos' not in user_config['content']:
 # ## JS BLUEPRINTS
 
 # Load only a specified angular blueprint
-if BLUEPRINT_KEY not in user_config or \
-  BLUEPRINT_KEY not in user_config[BLUEPRINT_KEY]:
+if 'blueprints' not in user_config or \
+  BLUEPRINT_KEY not in user_config['blueprints']:
     logger.critical("No blueprint file/key found!")
 else:
-    CURRENT_BLUEPRINT = user_config[BLUEPRINT_KEY][BLUEPRINT_KEY]
+    CURRENT_BLUEPRINT = user_config['blueprints'][BLUEPRINT_KEY]
 
 logger.info("Adding JS blueprint '%s'" % CURRENT_BLUEPRINT)
 prefix = __package__

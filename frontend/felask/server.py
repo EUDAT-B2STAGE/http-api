@@ -87,16 +87,22 @@ def create_app():
     db.init_app(app)
     # Add basic things to this app
     app.register_blueprint(cms)
-    # Dynamically load all custom blueprints from pypages module
-    meta = m()
-    for module_name in meta.get_submodules_from_package(custom_views):
-        module_path = custom_views.__name__ + '.' + module_name
-        module = meta.get_module_from_string(module_path)
-        try:
-            app.register_blueprint(module.bp)
-        except Exception:
-            logger.warning(
-                "OOPS: Could not find 'bp' inside module '%s'" % module_name)
+
+####################################
+# DISABLED FOR NOW
+    logger.info("Skipping python extra views")
+
+    # # Dynamically load all custom blueprints from pypages module
+    # meta = m()
+    # for module_name in meta.get_submodules_from_package(custom_views):
+    #     module_path = custom_views.__name__ + '.' + module_name
+    #     module = meta.get_module_from_string(module_path)
+    #     try:
+    #         app.register_blueprint(module.bp)
+    #     except Exception:
+    #         logger.warning(
+    #             "OOPS: Could not find 'bp' inside module '%s'" % module_name)
+####################################
 
     # Flask LOGIN
     lm.init_app(app)

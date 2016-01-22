@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo "# ############################################ #"
+echo -e "\t\tRestangulask"
+echo "# ############################################ #"
+echo ""
+
 #############################
 # Defaults
 apiconf="vanilla/specs/api_init.json"
@@ -81,52 +86,53 @@ else
     fi
     files="-f docker-compose.yml -f $file"
 
-    #############################
-    # CONF check
-    echo "# ############################################ #"
-    echo "DO NOT FORGET: to change configuration remove:"
-    echo -e "\t$apiconf"
-    echo -e "\t$jsconf"
-    echo "# ############################################ #"
-    echo ""
-
-    # Backend
-    apidefault="{ \"$1\": \"$1.ini\" }"
-    if [ ! -f "../$apiconf" ]; then
-        echo "$apidefault" > ../$apiconf
-        echo "Written a new '$apiconf' file"
+    # Remove previous configuration
+    #echo "Clean configuration files"
+    if [ -f "../$apiconf" ]; then
+        rm ../$apiconf
+    fi
+    if [ -f "../$jsconf" ]; then
+        rm ../$jsconf
     fi
 
-    # Frontend
-    jsdefault="{ \"blueprint\": \"$1\" }"
-    if [ ! -f "../$jsconf" ]; then
-        echo "$jsdefault" > ../$jsconf
-        echo "Written a new '$jsconf' file"
+    #############################
+    # Case you ask for base 'template'
+    if [ "$1" == "template" ]; then
+        touch ../$apiconf
+        echo "{ \"blueprint\": \"blueprint_example\" }" > ../$jsconf
+
+    #############################
+    # DEFAULTS FILES
+    else
+        # Backend
+        echo "{ \"$1\": \"$1.ini\" }" > ../$apiconf
+        # Frontend
+        echo "{ \"blueprint\": \"$1\" }" > ../$jsconf
     fi
 
     #############################
     # Run services if not adding another command
     if [ -z "$2" ]; then
-        echo "ACTION: Reboot"
+        echo -e "ACTION: Reboot\n"
         echo "Cleaning project containers (if any)"
-        $com $files stop $services
-        $com $files rm -f $services
+        $com $files stop
+        $com $files rm -f
         echo "Starting up"
         $com $files up -d $services
     else
         if [ "$2" == "start" ]; then
-            echo "ACTION: Start"
+            echo -e "ACTION: Start\n"
             $com $files up -d $services
         fi
         if [ "$2" == "stop" ]; then
-            echo "ACTION: Stop"
+            echo -e "ACTION: Stop\n"
             echo "Freezing services"
-            $com $files stop $services
+            $com $files stop
         fi
         if [ "$2" == "remove" ]; then
-            echo "ACTION: Removal"
+            echo -e "ACTION: Removal\n"
             echo "Destroying services"
-            $com $files rm -f $services
+            $com $files rm -f
         fi
     fi
     # Check up
