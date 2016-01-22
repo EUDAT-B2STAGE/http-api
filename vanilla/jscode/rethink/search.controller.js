@@ -60,6 +60,23 @@ function SearchController($scope, $log, $state, search)
     return auto;
   }
 
+  $scope.fillTable = function(response)
+  {
+    $log.debug("FILLING TABLE");
+    $scope.data = [];
+    $scope.dataCount = response.elements;
+    $scope.results = true;
+
+    forEach(response.data, function (x, i)
+    {
+      // SINGLE DETAILS
+      search.getSingleData(x.record).then(function(element)
+      {
+          $scope.data.push(element);
+// FIX HTML VIEW?
+      });
+    });
+  }
 
 
   self.changePage = function(page) {
@@ -108,8 +125,7 @@ function ChipsController($scope, $log, search)
         if (!out_data || out_data.elements < 1) {
           return null;
         }
-        self.fillTable(out_data.data);
-        $scope.dataCount = out_data.elements;
+        $scope.fillTable(out_data);
       });
   }
 
@@ -117,23 +133,7 @@ function ChipsController($scope, $log, search)
 // IF YOU REMOVE YOU SHOULD REBUILD THE QUERY FROM START...
 // JUST USE THE SAME FUNCTION OF NEW CHIP
     //console.log(chip, index);
-  }
-
-  self.fillTable = function(response)
-  {
-    $log.debug("FILLING TABLE");
-    $scope.data = [];
-    $scope.results = true;
-
-    forEach(response, function (x, i)
-    {
-      // SINGLE DETAILS
-      search.getSingleData(x.record).then(function(element)
-      {
-          $scope.data.push(element);
-// FIX HTML VIEW?
-      });
-    });
+    $log.error("Not implemented. It should be soon!");
   }
 
 }
@@ -193,7 +193,6 @@ function AutoCompleteController($scope, $log, $q, search)
         return $q.all(promises).then((values) =>
         {
             forEach(values, function (api_response, step) {
-console.debug("API RESPONSE", step, api_response);
               if (api_response.elements > 1) {
                 $log.debug('Fullfilling step', steps[step]);
                 //console.log(api_response);
