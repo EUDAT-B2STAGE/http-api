@@ -13,14 +13,12 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 BUGS:
   ✔ init with create of basic files @done (16-01-21 15:16)
   ☐ welcome spy padding?
-  ☐ update angular to 1.5 rc
 
 PROTOTYPE:
 
 ✔ Moving compute from controller to search and then to rethinkdb or python @done (16-01-19 19:59)
 ✔ Refactor rethink API @done (16-01-21 11:37)
   ✔ no more automatic @done (16-01-21 11:37)
-  ☐ do all of them
 
 ☐ search becomes fixed inside the toolbar
    ☐ md-toolbar?
@@ -32,6 +30,8 @@ PROTOTYPE:
    ☐ define the list in autocomplete (chip) template size bigger
 ☐ Hotkeys
  ☐ / is for search
+
+☐ update angular to 1.5 rc
 
 ☐ Material SIDENAV
  https://material.angularjs.org/latest/demo/sidenav

@@ -81,7 +81,8 @@ else
     # Check compose stack existence
     file="custom/${1}.yml"
     if [ ! -f "$file" ]; then
-        echo "File '$file' not found"
+        echo "File 'containers/$file' not found!"
+        echo "You might start up copying 'template.yml'."
         exit 1
     fi
     files="-f docker-compose.yml -f $file"
@@ -105,8 +106,22 @@ else
     # DEFAULTS FILES
     else
         # Backend
-        echo "{ \"$1\": \"$1.ini\" }" > ../$apiconf
+        file="$1.ini"
+        check="vanilla/specs/$file"
+        if [ ! -s "../$check" ]; then
+            echo "File '$check' not found or empty..."
+            echo "Please create it to define APIs endpoints."
+            exit 1
+        fi
+        echo "{ \"$1\": \"$file\" }" > ../$apiconf
+
         # Frontend
+        check="vanilla/jscode/$1"
+        if [ ! "$(ls -A ../$check 2> /dev/null)" ]; then
+            echo "Directory '$check' not found or empty..."
+            echo "Please create it to define AngularJS code."
+            exit 1
+        fi
         echo "{ \"blueprint\": \"$1\" }" > ../$jsconf
     fi
 
@@ -132,6 +147,7 @@ else
         if [ "$2" == "remove" ]; then
             echo -e "ACTION: Removal\n"
             echo "Destroying services"
+            $com $files stop
             $com $files rm -f
         fi
     fi
