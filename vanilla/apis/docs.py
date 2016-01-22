@@ -261,7 +261,9 @@ class RethinkDocuments(BaseRethinkResource):
                 query = self.get_all_notes(query)
 
         # Execute query
-        count, data = self.execute_query(query, self._args['perpage'])
-        # count, data = super().get(data_key)
+        if data_key is not None:
+            count, data = super().get(data_key)
+        else:
+            count, data = self.execute_query(query, self._args['perpage'])
 
         return self.response(data, elements=count)

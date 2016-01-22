@@ -25,27 +25,34 @@ function SearchService($log, api) {
     }
 
     self.getSingleData = function(id) {
-        return api.apiCall(self.endpoints.search, 'GET', undefined, id)
-          .then(function(out)
+
+      //$log.debug("Single data", id);
+      return api.apiCall(self.endpoints.search, 'GET', undefined, id)
+        .then(function(out)
+        {
+          if (!out || out.elements < 1) {
+              return false;
+          }
+          var element = {id: id, image: null};
+          forEach(out.data, function(value, key){
+              var stepName = self.latestSteps[key+1];
+              element[stepName] = value;
+          });
+          self.getDocs(id).then(function(out_docs)
           {
-            if (!out || out.elements < 1) {
-                return false;
+            if (out_docs.elements > 0) {
+              var images = out_docs.data[0].images;
+// RECOVER ALL IMAGES
+
+// HANDLE ONLY FIRST ONE AS THUMBNAIL IN MAIN SEARCH
+
+              console.log("IMAGES", images);
+              element.image = images[0].filename
+                .replace(/\.[^/.]+$/, "")+'/TileGroup0/0-0-0.jpg';
             }
-            var element = {id: id, image: null};
-            forEach(out.data, function(value, key){
-                var stepName = self.latestSteps[key+1];
-                element[stepName] = value;
-            });
-            self.getDocs(id).then(function(out_docs)
-            {
-              if (out_docs.elements > 0) {
-                element.image =
-                  out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-                    + '/TileGroup0/0-0-0.jpg';
-              }
-            }); // GET DOCUMENTS
-            console.log("ELEMENT", element);
-            return element;
+          }); // GET DOCUMENTS
+          console.log("ELEMENT", element);
+          return element;
 
           });
     }
