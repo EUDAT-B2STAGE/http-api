@@ -3,7 +3,8 @@
 services="backend"
 #services="angulask rest-mock"
 com="git"
-push="$com push origin master"
+push="$com push origin"
+#push="$com push origin master"
 
 ###########################################
 for service in $services;
