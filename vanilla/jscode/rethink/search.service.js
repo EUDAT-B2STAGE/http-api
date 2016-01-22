@@ -65,13 +65,6 @@ function SearchService($log, api) {
                 {'position': 1, 'filter': filter}});
     }
 // TO FIX YET
-    self.filterDocuments = function(filter) {
-        return self.doQuery(
-            self.endpoints.documents,
-            {'notes': {'filter': filter}});
-
-    }
-// TO FIX YET
 // TO FIX YET
 
     self.getSteps = function(id) {
@@ -100,7 +93,11 @@ function SearchService($log, api) {
         );
     }
 
-// TO FIX YET
+    self.getDocs = function(id) {
+        return api.apiCall(
+            self.endpoints.documents,
+            undefined, undefined, id);
+    }
     self.getDistinctTranscripts = function() {
       return self.doQuery(self.endpoints.documents,
             {
@@ -109,11 +106,15 @@ function SearchService($log, api) {
             }
         );
     }
-// TO FIX YET
-    self.getDocs = function(id) {
-        return api.apiCall(
+    self.filterDocuments = function(filter) {
+        return self.doQuery(
             self.endpoints.documents,
-            undefined, undefined, id);
+            {
+                filter: 'notes',
+                key: filter,
+            }
+        );
+
     }
 
 }

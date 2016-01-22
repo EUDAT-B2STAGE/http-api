@@ -12,6 +12,7 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
 BUGS:
   ✔ init with create of basic files @done (16-01-21 15:16)
+  ☐ single row request on datavalues does not work
   ☐ welcome spy padding?
 
 PROTOTYPE:

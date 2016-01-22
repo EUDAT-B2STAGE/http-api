@@ -137,7 +137,7 @@ class RethinkDataValues(BaseRethinkResource):
             if data_key is not None:
                 data = self.single_element(data)
 
-        return self.nomarshal(data, count)
+        return self.response(data, elements=count)
 
 #####################################
 # Keys for templates and submission
@@ -166,7 +166,7 @@ class RethinkDataKeys(BaseRethinkResource):
     @auth_token_required
     def get(self, step=None):
         count, data = super().get(step)
-        return self.marshal(data, count)
+        return self.response(data, elements=count)
 
 #####################################
 # Keys for templates and submission
@@ -193,7 +193,26 @@ class RethinkDocuments(BaseRethinkResource):
                 lambda image: image['transcriptions_split'])) \
             .distinct()
 
-    @deck.add_endpoint_parameter(name='filter', ptype=str)
+    def get_filtered_notes(self, q, filter_value=None):
+        """ Data for autocompletion in js """
+
+        mapped = q.concat_map(
+                lambda doc: doc['images'].has_fields(
+                    {'transcriptions': True}).map(
+                        lambda image: {
+                            'word': image['transcriptions_split'],
+                            'record': doc['record'],
+                        }
+                    )).distinct()
+
+        if filter_value is not None:
+            return mapped.filter(
+                lambda mapped: mapped['word'].contains(filter_value))
+
+        return mapped
+
+    @deck.add_endpoint_parameter(name='filter')
+    @deck.add_endpoint_parameter(name='key')
     @deck.apimethod
     @auth_token_required
     def get(self, data_key=None):
@@ -201,18 +220,18 @@ class RethinkDocuments(BaseRethinkResource):
         count = len(data)
         param = self._args['filter']
 
-        if param is not None:
+        query = self.get_table_query()
+        if param is not None and param == 'notes':
             # Making filtering queries
             logger.debug("Build query '%s'" % param)
-            query = self.get_table_query()
 
-            if param == 'notes':
+            if self._args['key'] is not None:
+                query = self.get_filtered_notes(query, self._args['key'])
+            else:
                 query = self.get_all_notes(query)
 
-            # Execute query
-            count, data = self.execute_query(query, self._args['perpage'])
-        else:
-            # Get all content from db
-            count, data = super().get(data_key)
+        # Execute query
+        count, data = self.execute_query(query, self._args['perpage'])
+        # count, data = super().get(data_key)
 
-        return self.nomarshal(data, count)
+        return self.response(data, elements=count)
