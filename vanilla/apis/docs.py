@@ -35,13 +35,38 @@ def schema_and_tables(fileschema):
 
 
 #####################################
+# Base implementation for methods?
+class BaseRethinkResource(ExtendedApiResource, RDBquery):
+    """ The json endpoint in a rethinkdb base class """
+
+    @auth_token_required
+    def post(self):
+        valid = False
+
+        # Get JSON. The power of having a real object in our hand.
+        json_data = request.get_json(force=True)
+
+        for key, obj in json_data.items():
+            if key in self.schema:
+                valid = True
+        if not valid:
+            return self.template, hcodes.HTTP_BAD_REQUEST
+
+        # marshal_data = marshal(json_data, self.schema, envelope='data')
+        myid = self.insert(json_data)
+
+        # redirect to GET method of this same endpoint, with the id found
+        address = url_for(self.table, data_key=myid)
+        return redirect(address)
+
+#####################################
 # Main resource
 model = 'datavalues'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
-class Some(ExtendedApiResource, RDBquery):
-    """ The json endpoint to rethinkdb class """
+class RethinkDataValues(BaseRethinkResource):
+    """ Data values """
 
     schema = myschema
     template = mytemplate
@@ -96,26 +121,34 @@ class Some(ExtendedApiResource, RDBquery):
 
         return self.nomarshal(data, count)
 
-#############################################
-# Should we move this to a generic resource?
-    @auth_token_required
-    def post(self):
-        valid = False
+#####################################
+# Keys for templates and submission
+model = 'datakeys'
+mylabel, mytemplate, myschema = schema_and_tables(model)
 
-        # Get JSON. The power of having a real object in our hand.
-        json_data = request.get_json(force=True)
 
-        for key, obj in json_data.items():
-            if key in self.schema:
-                valid = True
-        if not valid:
-            return self.template, hcodes.HTTP_BAD_REQUEST
+class RethinkDataKeys(BaseRethinkResource):
+    """ Data keys administrable """
 
-        # marshal_data = marshal(json_data, self.schema, envelope='data')
-        myid = self.insert(json_data)
+    schema = myschema
+    template = mytemplate
+    table = mylabel
 
-        # redirect to GET method of this same endpoint, with the id found
-        address = url_for(self.table, data_key=myid)
-        return redirect(address)
+    def get(self):
+        pass
 
-#############################################
+#####################################
+# Keys for templates and submission
+model = 'datadocs'
+mylabel, mytemplate, myschema = schema_and_tables(model)
+
+
+class RethinkDocuments(BaseRethinkResource):
+    """ Data keys administrable """
+
+    schema = myschema
+    template = mytemplate
+    table = mylabel
+
+    def get(self):
+        pass

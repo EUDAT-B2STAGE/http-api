@@ -4,6 +4,8 @@
 angular.module('web')
     .service('search', SearchService);
 
+// CHANGE POST TO GET
+
 function SearchService($log, api) {
 
     var self = this;
@@ -46,6 +48,10 @@ function SearchService($log, api) {
             return element;
 
           });
+    }
+
+    self.doQuery = function(endpoint, filters) {
+        return api.apiCall(endpoint, 'GET', filters);
     }
 
     self.getFromQuery = function(endpoint, json) {

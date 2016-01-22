@@ -59,10 +59,10 @@ frontend:
         - ../vanilla/pages:/data/frontend/felask/pypages
         # Python templates
         - ../vanilla/templates/python:/data/frontend/felask/templates/custom
+        # # Angular blueprint
+        - ../vanilla/specs:/data/frontend/config/angular/blueprints
     ports:
         - 80:5000
-    # links:
-    #     - backend:myapi
 
 ###############################
 # Make automatic to install libraries

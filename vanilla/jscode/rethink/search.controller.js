@@ -11,6 +11,11 @@ angular.module('web')
 function SearchController($scope, $log, $state, search)
 {
 
+  search.doQuery('datavalues', {filter: 'autocompletion'})
+   .then(function(out){
+    console.log("TEST", out);
+  });
+
   // INIT controller
   var self = this;
   $log.debug("Main SEARCH controller");

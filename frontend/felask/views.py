@@ -35,7 +35,7 @@ def generate_blueprint(module='module.someviews', classes=[]):
     rest = Api(bp)
     # Add resources
     for view in classes:
-        logger.info("Adding class '%s' to blueprint '%s'" % (view, name))
+        logger.info("Adding flask view '%s' to blueprint '%s'" % (view, name))
         view._tpath = path
 # IS THIS ENOUGH?
         rest.add_resource(view, view().endpoint())

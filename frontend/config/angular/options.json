@@ -1,6 +1,6 @@
 {
-	//"options": "some",
-    "blueprint": "blueprint_example",
+    // NO MORE BLUEPRINT HERE
+    //"blueprint": "blueprint_example",
     //"blueprint": "rethink",
     "load_timeout": "1500"
 }

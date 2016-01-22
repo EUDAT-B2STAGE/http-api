@@ -5,8 +5,7 @@
 from __future__ import absolute_import
 import os
 from pathlib import Path
-from flask import Blueprint, render_template, request, \
-    jsonify, redirect, url_for, g
+from flask import Blueprint, render_template, request, jsonify, g
 from flask.ext.login import logout_user, current_user
 from .basemodel import user_config
 from .security import login_point
@@ -16,7 +15,7 @@ from config import get_logger, FRAMEWORKS
 logger = get_logger(__name__)
 CURRENT_FRAMEWORK = None
 BLUEPRINT_KEY = 'blueprint'
-CURRENT_BLUEPRINT = None
+CURRENT_BLUEPRINT = BLUEPRINT_KEY + '_example'
 
 #######################################
 # Blueprint for base pages, if any
@@ -56,7 +55,7 @@ for sfont in fconfig['fonts']:
 imgs = []
 for simg in fconfig['imgs']:
     js.append(staticdir + simg)
-logger.debug("JSON img load: %s" % imgs)
+#logger.debug("JSON img load: %s" % imgs)
 # TO FIX!
 if 'logos' not in user_config['content']:
     user_config['content']['logos'] = [{
@@ -67,30 +66,32 @@ if 'logos' not in user_config['content']:
 # ## JS BLUEPRINTS
 
 # Load only a specified angular blueprint
-if BLUEPRINT_KEY not in user_config['options']:
-    logger.critical("No blueprint found, not loading angular app")
+if 'blueprints' not in user_config or \
+  BLUEPRINT_KEY not in user_config['blueprints']:
+    logger.critical("No blueprint file/key found!")
 else:
-    CURRENT_BLUEPRINT = user_config['options'][BLUEPRINT_KEY]
-    logger.info("Adding JS blueprint '%s'" % CURRENT_BLUEPRINT)
-    prefix = __package__
-    # JS BLUEPRINT config
-    jfiles = [Path(prefix + '/js/blueprint.js')]
-    # JS files in the root directory
-    app_path = os.path.join(prefix, staticdir, 'app')
-    jfiles.extend(Path(app_path).glob('*.js'))
-    # JS common files
-    common_path = os.path.join(app_path, 'commons')
-    jfiles.extend(Path(common_path).glob('*.js'))
-    # JS files only inside the blueprint subpath
-    blueprint_path = os.path.join(app_path, CURRENT_BLUEPRINT)
-    jfiles.extend(Path(blueprint_path).glob('**/*.js'))
+    CURRENT_BLUEPRINT = user_config['blueprints'][BLUEPRINT_KEY]
 
-    # Use all files found
-    for pathfile in jfiles:
-        strfile = str(pathfile)
-        jfile = strfile[len(prefix)+1:]
-        if jfile not in js:
-            js.append(jfile)
+logger.info("Adding JS blueprint '%s'" % CURRENT_BLUEPRINT)
+prefix = __package__
+# JS BLUEPRINT config
+jfiles = [Path(prefix + '/js/blueprint.js')]
+# JS files in the root directory
+app_path = os.path.join(prefix, staticdir, 'app')
+jfiles.extend(Path(app_path).glob('*.js'))
+# JS common files
+common_path = os.path.join(app_path, 'commons')
+jfiles.extend(Path(common_path).glob('*.js'))
+# JS files only inside the blueprint subpath
+blueprint_path = os.path.join(app_path, CURRENT_BLUEPRINT)
+jfiles.extend(Path(blueprint_path).glob('**/*.js'))
+
+# Use all files found
+for pathfile in jfiles:
+    strfile = str(pathfile)
+    jfile = strfile[len(prefix)+1:]
+    if jfile not in js:
+        js.append(jfile)
 
 #######################################
 user_config['content']['stylesheets'] = css
