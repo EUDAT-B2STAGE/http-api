@@ -105,7 +105,7 @@ function SearchService($log, api) {
       return self.doQuery(self.endpoints.documents,
             {
                 perpage: 0, //all
-                'notes': {'nofilter': true},
+                filter: 'notes',
             }
         );
     }

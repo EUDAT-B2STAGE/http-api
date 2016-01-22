@@ -110,23 +110,13 @@ class RethinkDataValues(BaseRethinkResource):
             single.insert(steps['step'], element)
         return single
 
-
     @deck.add_endpoint_parameter(name='filter', ptype=str)
     @deck.add_endpoint_parameter(name='step', ptype=int, default=1)
     @deck.apimethod
     #@auth_token_required
     def get(self, data_key=None):
-        """
-        Obtain main data.
-        Obtain single objects.
-        Filter with predefined queries.
-        """
         data = []
         count = len(data)
-
-        # Check arguments
-        limit = self._args['perpage']
-        #current_page = self._args['currentpage']
         param = self._args['filter']
 
         if param is not None:
@@ -139,18 +129,13 @@ class RethinkDataValues(BaseRethinkResource):
                     query, self._args['step'])
 
             # Execute query
-            count, data = self.execute_query(query, limit)
+            count, data = self.execute_query(query, self._args['perpage'])
         else:
             # Get all content from db
-            count, data = self.get_content(data_key, limit)
+            count, data = super().get(data_key)
             # just one single ID - reshape!
             if data_key is not None:
                 data = self.single_element(data)
-
-        # Wrap response, possibilities:
-        # #return self.marshal(data, count)
-        # #return self.nomarshal(data, count)
-        # #return self.response(self._args)
 
         return self.nomarshal(data, count)
 
@@ -160,6 +145,8 @@ model = 'datakeys'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
+# # // TO FIX
+# // Does this work if it's only one?
 #@deck.enable_endpoint_identifier('step')
 class RethinkDataKeys(BaseRethinkResource):
     """ Data keys administrable """
@@ -169,14 +156,14 @@ class RethinkDataKeys(BaseRethinkResource):
     table = mylabel
     table_index = 'steps'
 
-# // TO FIX
-    def __init__(self):
-        self.set_method_id('step', 'int')
-        super(RethinkDataKeys, self).__init__()
-# // TO FIX
+# # // TO FIX
+#     def __init__(self):
+#         self.set_method_id('step', 'int')
+#         super(RethinkDataKeys, self).__init__()
+# # // TO FIX
 
     @deck.apimethod
-    #@auth_token_required
+    @auth_token_required
     def get(self, step=None):
         count, data = super().get(step)
         return self.marshal(data, count)
@@ -193,6 +180,39 @@ class RethinkDocuments(BaseRethinkResource):
     schema = myschema
     template = mytemplate
     table = mylabel
+    table_index = 'record'
 
-    def get(self):
-        pass
+    def __init__(self):
+        self.set_method_id('data_key')
+        super(RethinkDocuments, self).__init__()
+
+    def get_all_notes(self, q):
+        return q.concat_map(
+            lambda doc: doc['images'].
+            has_fields({'transcriptions': True}).concat_map(
+                lambda image: image['transcriptions_split'])) \
+            .distinct()
+
+    @deck.add_endpoint_parameter(name='filter', ptype=str)
+    @deck.apimethod
+    @auth_token_required
+    def get(self, data_key=None):
+        data = []
+        count = len(data)
+        param = self._args['filter']
+
+        if param is not None:
+            # Making filtering queries
+            logger.debug("Build query '%s'" % param)
+            query = self.get_table_query()
+
+            if param == 'notes':
+                query = self.get_all_notes(query)
+
+            # Execute query
+            count, data = self.execute_query(query, self._args['perpage'])
+        else:
+            # Get all content from db
+            count, data = super().get(data_key)
+
+        return self.nomarshal(data, count)
