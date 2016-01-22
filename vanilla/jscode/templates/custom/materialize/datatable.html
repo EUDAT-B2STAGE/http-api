@@ -1,4 +1,9 @@
 
+<div class='z-depth-1' ng-if='dataCount > 1'>
+    Total: {{ dataCount }}
+</div>
+
+<!--
 <div class='z-depth-1'>
     <pagination
       page="1" page-size="10" total="dataCount"
@@ -7,6 +12,7 @@
       pagination-action="search.changePage(page)"
       />
 </div>
+-->
 
 <table class='bordered highlight responsive-table'>
   <thead>

@@ -56,17 +56,6 @@ function SearchService($log, api) {
 // Base API calls
 //////////////////
 
-// TO FIX YET
-// TO FIX YET
-    self.filterData = function(filter) {
-        return self.doQuery(
-            self.endpoints.search,
-            {'nested_filter':
-                {'position': 1, 'filter': filter}});
-    }
-// TO FIX YET
-// TO FIX YET
-
     self.getSteps = function(id) {
         return api.apiCall(self.endpoints.submit, 'GET', undefined, id)
           .then(function(out_steps) {
@@ -88,7 +77,19 @@ function SearchService($log, api) {
             {
                 perpage: 0, //all
                 filter: 'autocompletion',
-                'step': step, 'position': 1,
+                step: step,
+                position: 1,
+            }
+        );
+    }
+
+    self.filterData = function(filter) {
+        return self.doQuery(
+            self.endpoints.search,
+            {
+                filter: 'nested_filter',
+                position: 1,
+                key: filter,
             }
         );
     }
