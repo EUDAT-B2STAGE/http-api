@@ -39,7 +39,20 @@ def schema_and_tables(fileschema):
 class BaseRethinkResource(ExtendedApiResource, RDBquery):
     """ The json endpoint in a rethinkdb base class """
 
-    @auth_token_required
+    def get(self, data_key=None):
+        """
+        Obtain main data.
+        Obtain single objects.
+        Filter with predefined queries.
+        """
+
+        # Check arguments
+        limit = self._args['perpage']
+# // TO FIX: use it!
+        current_page = self._args['currentpage']
+
+        return self.get_content(data_key, limit)
+
     def post(self):
         valid = False
 
@@ -65,12 +78,14 @@ model = 'datavalues'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
+@deck.enable_endpoint_identifier('data_key')
 class RethinkDataValues(BaseRethinkResource):
     """ Data values """
 
     schema = myschema
     template = mytemplate
     table = mylabel
+    table_index = 'record'
 
     def get_autocomplete_data(self, q, step_number=1, field_number=1):
         """ Data for autocompletion in js """
@@ -82,6 +97,19 @@ class RethinkDataValues(BaseRethinkResource):
             .filter(
                 lambda row: row['position'] == field_number
             ).pluck('value').distinct()['value']
+
+    def single_element(self, data):
+        """ If I request here one single document """
+        single = []
+        for steps in data.pop()['steps']:
+            element = ""
+            for row in steps['data']:
+                if row['position'] != 1:
+                    continue
+                element = row['value']
+            single.insert(steps['step'], element)
+        return single
+
 
     @deck.add_endpoint_parameter(name='filter', ptype=str)
     @deck.add_endpoint_parameter(name='step', ptype=int, default=1)
@@ -114,9 +142,10 @@ class RethinkDataValues(BaseRethinkResource):
             count, data = self.execute_query(query, limit)
         else:
             # Get all content from db
-            # OR
-            # just one single ID
             count, data = self.get_content(data_key, limit)
+            # just one single ID - reshape!
+            if data_key is not None:
+                data = self.single_element(data)
 
         # Wrap response, possibilities:
         # #return self.marshal(data, count)
@@ -131,31 +160,26 @@ model = 'datakeys'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
+#@deck.enable_endpoint_identifier('step')
 class RethinkDataKeys(BaseRethinkResource):
     """ Data keys administrable """
 
     schema = myschema
     template = mytemplate
     table = mylabel
+    table_index = 'steps'
+
+# // TO FIX
+    def __init__(self):
+        self.set_method_id('step', 'int')
+        super(RethinkDataKeys, self).__init__()
+# // TO FIX
 
     @deck.apimethod
-    @auth_token_required
-    def get(self, data_key=None):
-        """
-        Obtain main data.
-        Obtain single objects.
-        Filter with predefined queries.
-        """
-        data = []
-        count = len(data)
-
-        # Check arguments
-        limit = self._args['perpage']
-        current_page = self._args['currentpage']
-
-        # Get all content from db # OR # just one single ID
-        count, data = self.get_content(data_key, limit)
-        return self.nomarshal(data, count)
+    #@auth_token_required
+    def get(self, step=None):
+        count, data = super().get(step)
+        return self.marshal(data, count)
 
 #####################################
 # Keys for templates and submission
