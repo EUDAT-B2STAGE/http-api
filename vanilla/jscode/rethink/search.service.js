@@ -50,6 +50,10 @@ function SearchService($log, api) {
           });
     }
 
+    self.doQuery = function(endpoint, filters) {
+        return api.apiCall(endpoint, 'GET', filters);
+    }
+
     self.getFromQuery = function(endpoint, json) {
         return api.apiCall(endpoint, 'POST', {'query':json});
     }
