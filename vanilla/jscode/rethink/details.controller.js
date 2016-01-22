@@ -31,11 +31,12 @@ function DetailsController($scope, $log, $stateParams, search)
             }
 
             // Set data
-            self.data = angular.copy(out_single);
-            delete out_single.id;
-            delete out_single.thumb;
-            delete out_single.images;
-            self.refinedData = out_single;
+            var tmp = angular.copy(out_single);
+            delete tmp.id;
+            delete tmp.thumb;
+            delete tmp.images;
+            self.refinedData = tmp;
+            self.data = out_single;
 
         }); // single data
       }); // steps

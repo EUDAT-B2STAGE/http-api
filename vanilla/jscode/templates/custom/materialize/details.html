@@ -10,7 +10,7 @@
   </div>
   <div class="row" ng-if="detail.data.id">
 
-   <div class="col s12 m10 l11">
+   <div class="col s12 m11 l10">
   <!-- content -->
 
       <!-- text -->
@@ -33,20 +33,21 @@
       </div>
 
       <!-- pages -->
-      <div ng-hide='images' class="card-panel red darken-4">
+      <div ng-hide='detail.data.images' class="card-panel red darken-4">
         <span class="white-text">
           No images or transcriptions found for this record.
         </span>
       </div>
 
-      <div ng-repeat='image in images' id="image{{image.id}}"
+      <div ng-repeat='image in detail.data.images' id="image{{image.code}}"
         class="section scrollspy" scrollspy>
         <h4> Page {{image.code}} </h4>
         <table class="responsive-table">
           <thead>
             <tr>
               <th>Image</th>
-              <th ng-if="image.transcriptions">Transcription</th>
+              <th
+                ng-if="image.transcriptions.length > 0">Transcription</th>
             </tr>
           </thead>
           <tbody>
@@ -57,7 +58,8 @@
                   data-caption="{{image.code}}"
                   lazy-img="static/uploads/{{ image.filename }}">
               </td>
-              <td width='55%' class="celltop" ng-if="image.transcriptions">
+              <td width='55%' class="celltop"
+                ng-if="image.transcriptions.length > 0">
 
 <ul ng-if="image.transcriptions.length > 1"
   class="collapsible popout" data-collapsible="accordion" watch>
@@ -82,7 +84,7 @@
   <!-- content -->
    </div>
 
-    <div class="col hide-on-small-only m2 l1">
+    <div class="col hide-on-small-only m1 l2">
   <!-- Summary -->
       <div pushpin pushpin-offset="1">
       <ul class="section table-of-contents">
@@ -91,8 +93,8 @@
             {{name}}
           </a>
         </li>
-        <li ng-repeat='image in detail.images'>
-          <a href="#image{{image.id}}">
+        <li ng-repeat='image in detail.data.images'>
+          <a href="#image{{image.code}}">
             Page {{image.code}}
           </a>
         </li>

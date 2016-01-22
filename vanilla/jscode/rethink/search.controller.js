@@ -70,7 +70,8 @@ function SearchController($scope, $log, $state, search)
     forEach(response.data, function (x, i)
     {
       // SINGLE DETAILS
-      search.getSingleData(x.record).then(function(element)
+      search.getSingleData(x.record, false)
+       .then(function(element)
       {
           $scope.data.push(element);
 // FIX HTML VIEW?

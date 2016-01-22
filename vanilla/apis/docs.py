@@ -121,7 +121,6 @@ class RethinkDataValues(BaseRethinkResource):
         """
         Filter a value nested by checking the field name also
         """
-        print("\n\n\nTEST\n\n\n", filter_value)
         mapped = q \
             .concat_map(
                 lambda doc: doc['steps'].concat_map(
