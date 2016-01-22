@@ -31,7 +31,7 @@ function SearchService($log, api) {
             if (!out || out.elements < 1) {
                 return false;
             }
-            var element = {'image': null};
+            var element = {id: id, image: null};
             forEach(out.data, function(value, key){
                 var stepName = self.latestSteps[key+1];
                 element[stepName] = value;
