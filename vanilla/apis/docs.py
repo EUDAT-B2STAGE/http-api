@@ -98,16 +98,22 @@ class RethinkDataValues(BaseRethinkResource):
                 lambda row: row['position'] == field_number
             ).pluck('value').distinct()['value']
 
-    def single_element(self, data):
+    def single_element(self, data, details='full'):
         """ If I request here one single document """
         single = []
         for steps in data.pop()['steps']:
-            element = ""
+            title = ""
+            element = {}
             for row in steps['data']:
-                if row['position'] != 1:
-                    continue
-                element = row['value']
-            single.insert(steps['step'], element)
+                if row['position'] == 1:
+                    title = row['value']
+                    if details != 'full':
+                        break
+                element[row['name']] = row['value']
+            if details == 'full':
+                single.insert(steps['step'], element)
+            else:
+                single.insert(steps['step'], title)
         return single
 
     def filter_nested_field(self, q, filter_value,
@@ -139,6 +145,7 @@ class RethinkDataValues(BaseRethinkResource):
     @deck.add_endpoint_parameter(name='filter', ptype=str)
     @deck.add_endpoint_parameter(name='step', ptype=int, default=1)
     @deck.add_endpoint_parameter(name='key')
+    @deck.add_endpoint_parameter(name='details', default='short')
     @deck.apimethod
     @auth_token_required
     def get(self, data_key=None):
@@ -165,7 +172,7 @@ class RethinkDataValues(BaseRethinkResource):
             count, data = super().get(data_key)
             # just one single ID - reshape!
             if data_key is not None:
-                data = self.single_element(data)
+                data = self.single_element(data, self._args['details'])
 
         return self.response(data, elements=count)
 

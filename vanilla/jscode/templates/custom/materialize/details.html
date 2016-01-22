@@ -1,31 +1,32 @@
 <div ng-controller="DetailsController as detail">
 
- <div ng-if='error'>
-  <!-- NO DATA -->
-  <b>ERROR: {{ error }}</b>
- </div>
-
- <div ng-if='data'>
+ <div ng-if='detail.data'>
   <!-- WITH DATA -->
 
-  <div class="row">
+  <div class="row" ng-hide="detail.data.id">
+   <div class="col s12 m10 l11">
+    No data...
+   </div>
+  </div>
+  <div class="row" ng-if="detail.data.id">
 
    <div class="col s12 m10 l11">
   <!-- content -->
 
       <!-- text -->
-      <div ng-repeat='step in data' id="step{{step.step}}"
+      <div ng-repeat='(name, rows) in detail.refinedData'
+        id="_{{name}}"
         class="section scrollspy" scrollspy>
         <table class='striped responsive-table'>
          <thead>
            <tr>
-             <td colspan="2"> <h4> {{stepnames[step.step]}} </h4> </td>
+             <td colspan="2"> <h4> {{name}} </h4> </td>
            </tr>
          </thead>
           <tbody>
-            <tr ng-if='row.value' ng-repeat='row in step.data'>
-              <th> {{ row.name }} </th>
-              <td> {{ row.value }} </td>
+            <tr ng-if='value' ng-repeat='(key, value) in rows'>
+              <th> {{ key }} </th>
+              <td> {{ value }} </td>
             </tr>
           </tbody>
         </table>
@@ -85,12 +86,12 @@
   <!-- Summary -->
       <div pushpin pushpin-offset="1">
       <ul class="section table-of-contents">
-        <li ng-repeat='step in data'>
-          <a href="#step{{step.step}}">
-            {{stepnames[step.step]}}
+        <li ng-repeat='(name, row) in detail.refinedData'>
+          <a href="#_{{name}}">
+            {{name}}
           </a>
         </li>
-        <li ng-repeat='image in images'>
+        <li ng-repeat='image in detail.images'>
           <a href="#image{{image.id}}">
             Page {{image.code}}
           </a>

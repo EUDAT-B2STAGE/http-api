@@ -7,27 +7,41 @@ angular.module('web')
 function DetailsController($scope, $log, $stateParams, search)
 {
     $log.info("Single view on", $stateParams.id);
+    var self = this;
+    self.data = null;
 
     function loadData() {
 
-      // SINGLE DETAILS
-      search.getSingleData($stateParams.id).then(function(out_single)
+      // STEPS INFO
+      search.getSteps().then(function(steps)
       {
-          if (out_single.element < 1) {
-            $scope.showSimpleToast("No data found for current id!");
-            return false;
-          }
-          console.log("DETAILS1", out_single);
-          // STEPS INFO
-          search.getSteps().then(function(steps)
-          {
-              console.log("DETAILS2", steps);
-              $scope.stepnames = steps;
-              //$scope.data = out_single.data[0].steps;
-          });
-      });
-    } // END FUNCTION
+        // This call is needed inside Search Service
+        // at least once for Controller
 
+        $scope.stepnames = steps;
+
+        // SINGLE DETAILS
+        search.getSingleData($stateParams.id, true)
+         .then(function(out_single)
+        {
+            if (! out_single)
+            {
+              $scope.showSimpleToast("No data found for current id!");
+              return false;
+            }
+
+            // Set data
+            self.data = angular.copy(out_single);
+            delete out_single.id;
+            delete out_single.thumb;
+            delete out_single.images;
+            self.refinedData = out_single;
+
+        }); // single data
+      }); // steps
+    } // END loadData FUNCTION
+
+    // Use it
     loadData();
 }
 

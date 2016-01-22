@@ -24,35 +24,41 @@ function SearchService($log, api) {
         return api.apiCall(self.endpoints.search);
     }
 
-    self.getSingleData = function(id) {
+    self.getSingleData = function(id, details) {
+
+      var detailed = 'short';
+      if (details) {
+        detailed = 'full';
+      }
 
       //$log.debug("Single data", id);
-      return api.apiCall(self.endpoints.search, 'GET', undefined, id)
-        .then(function(out)
-        {
+      return api.apiCall(
+        self.endpoints.search,
+        'GET', {details: detailed}, id)
+       .then(function(out)
+       {
           if (!out || out.elements < 1) {
               return false;
           }
-          var element = {id: id, image: null};
+          var element = {id: id, thumb: null, images: {},};
           forEach(out.data, function(value, key){
               var stepName = self.latestSteps[key+1];
               element[stepName] = value;
           });
-          self.getDocs(id).then(function(out_docs)
+          return self.getDocs(id).then(function(out_docs)
           {
+            //console.log("DOCS", out_docs);
             if (out_docs.elements > 0) {
+              // RECOVER ALL IMAGES
               var images = out_docs.data[0].images;
-// RECOVER ALL IMAGES
-
-// HANDLE ONLY FIRST ONE AS THUMBNAIL IN MAIN SEARCH
-
-              console.log("IMAGES", images);
-              element.image = images[0].filename
+              element.images = images;
+              // HANDLE ONLY FIRST ONE AS THUMBNAIL IN MAIN SEARCH
+              element.thumb = images[0].filename
                 .replace(/\.[^/.]+$/, "")+'/TileGroup0/0-0-0.jpg';
             }
+            $log.debug("Single element", element);
+            return element;
           }); // GET DOCUMENTS
-          console.log("ELEMENT", element);
-          return element;
 
           });
     }
