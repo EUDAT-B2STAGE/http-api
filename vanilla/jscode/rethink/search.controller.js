@@ -11,11 +11,6 @@ angular.module('web')
 function SearchController($scope, $log, $state, search)
 {
 
-  search.doQuery('datavalues', {filter: 'autocompletion'})
-   .then(function(out){
-    console.log("TEST", out);
-  });
-
   // INIT controller
   var self = this;
   $log.debug("Main SEARCH controller");
@@ -110,11 +105,11 @@ function ChipsController($scope, $log, search)
       // Do query
       promise.then(function(out_data) {
         self.dataCount = NaN;
-        if (!out_data || out_data.count < 1) {
+        if (!out_data || out_data.elements < 1) {
           return null;
         }
         self.fillTable(out_data.data);
-        $scope.dataCount = out_data.count;
+        $scope.dataCount = out_data.elements;
       });
   }
 
@@ -198,7 +193,8 @@ function AutoCompleteController($scope, $log, $q, search)
         return $q.all(promises).then((values) =>
         {
             forEach(values, function (api_response, step) {
-              if (api_response.count > 1) {
+console.debug("API RESPONSE", step, api_response);
+              if (api_response.elements > 1) {
                 $log.debug('Fullfilling step', steps[step]);
                 //console.log(api_response);
 

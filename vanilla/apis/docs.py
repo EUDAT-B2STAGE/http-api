@@ -94,11 +94,13 @@ class RethinkDataValues(BaseRethinkResource):
         Filter with predefined queries.
         """
         data = []
-        count = 0
-        limit = 10
+        count = len(data)
 
         # Check arguments
+        limit = self._args['perpage']
+        #current_page = self._args['currentpage']
         param = self._args['filter']
+
         if param is not None:
             # Making filtering queries
             logger.debug("Build query '%s'" % param)
@@ -112,7 +114,9 @@ class RethinkDataValues(BaseRethinkResource):
             count, data = self.execute_query(query, limit)
         else:
             # Get all content from db
-            count, data = self.get_content(data_key)
+            # OR
+            # just one single ID
+            count, data = self.get_content(data_key, limit)
 
         # Wrap response, possibilities:
         # #return self.marshal(data, count)
@@ -134,8 +138,24 @@ class RethinkDataKeys(BaseRethinkResource):
     template = mytemplate
     table = mylabel
 
-    def get(self):
-        pass
+    @deck.apimethod
+    @auth_token_required
+    def get(self, data_key=None):
+        """
+        Obtain main data.
+        Obtain single objects.
+        Filter with predefined queries.
+        """
+        data = []
+        count = len(data)
+
+        # Check arguments
+        limit = self._args['perpage']
+        current_page = self._args['currentpage']
+
+        # Get all content from db # OR # just one single ID
+        count, data = self.get_content(data_key, limit)
+        return self.nomarshal(data, count)
 
 #####################################
 # Keys for templates and submission

@@ -28,7 +28,7 @@ function SearchService($log, api) {
         return api.apiCall(self.endpoints.search, 'GET', undefined, id)
           .then(function(out)
           {
-            if (!out || out.count < 1) {
+            if (!out || out.elements < 1) {
                 return false;
             }
             var element = {'image': null};
@@ -38,7 +38,7 @@ function SearchService($log, api) {
             });
             self.getDocs(id).then(function(out_docs)
             {
-              if (out_docs.count > 0) {
+              if (out_docs.elements > 0) {
                 element.image =
                   out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
                     + '/TileGroup0/0-0-0.jpg';
@@ -53,27 +53,26 @@ function SearchService($log, api) {
     self.doQuery = function(endpoint, filters) {
         return api.apiCall(endpoint, 'GET', filters);
     }
+// Base API calls
+//////////////////
 
-    self.getFromQuery = function(endpoint, json) {
-        return api.apiCall(endpoint, 'POST', {'query':json});
-    }
-
+// TO FIX YET
+// TO FIX YET
     self.filterData = function(filter) {
-        return self.getFromQuery(
+        return self.doQuery(
             self.endpoints.search,
             {'nested_filter':
                 {'position': 1, 'filter': filter}});
     }
-
+// TO FIX YET
     self.filterDocuments = function(filter) {
-        return self.getFromQuery(
+        return self.doQuery(
             self.endpoints.documents,
             {'notes': {'filter': filter}});
 
     }
-
-// Base API calls
-//////////////////
+// TO FIX YET
+// TO FIX YET
 
     self.getSteps = function(id) {
         return api.apiCall(self.endpoints.submit, 'GET', undefined, id)
@@ -92,24 +91,25 @@ function SearchService($log, api) {
     }
 
     self.getDistinctValuesFromStep = function(step) {
-      return self.getFromQuery(self.endpoints.search,
+      return self.doQuery(self.endpoints.search,
             {
-                'limit': 0, //all
-                'autocomplete': {'step': step, 'position': 1}
+                perpage: 0, //all
+                filter: 'autocompletion',
+                'step': step, 'position': 1,
             }
         );
     }
 
+// TO FIX YET
     self.getDistinctTranscripts = function() {
-      return self.getFromQuery(self.endpoints.documents,
+      return self.doQuery(self.endpoints.documents,
             {
-                'limit': 0, //all
+                perpage: 0, //all
                 'notes': {'nofilter': true},
             }
         );
     }
-
-// TO FIX
+// TO FIX YET
     self.getDocs = function(id) {
         return api.apiCall(
             self.endpoints.documents,
