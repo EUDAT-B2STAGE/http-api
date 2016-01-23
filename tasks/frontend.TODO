@@ -11,26 +11,27 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 --- ✄ -----------------------
 
 BUGS:
-  ✔ init with create of basic files @done (16-01-21 15:16)
-  ✔ single row request on datavalues does not work @done (16-01-22 22:07)
   ☐ welcome spy padding?
 
 PROTOTYPE:
 
-✔ Moving compute from controller to search and then to rethinkdb or python @done (16-01-19 19:59)
-✔ Refactor rethink API @done (16-01-21 11:37)
-  ✔ no more automatic @done (16-01-21 11:37)
+SEARCH becomes FIXED inside the toolbar
 
-☐ search becomes fixed inside the toolbar
-   ☐ md-toolbar?
-   https://material.angularjs.org/latest/demo/toolbar
-   ☐ general, expecting for a SearchController to exist
-   ☐ add a button to search all inside the search page
- ☐ Autocomplete
-   ☐ refactor to use all chips
-   ☐ define the list in autocomplete (chip) template size bigger
-☐ Hotkeys
- ☐ / is for search
+ ☐ fake input inside the topbar
+ ☐ on focus (ng-focus) of fake input, switch to state 'search'
+   ☐ or / keyword @hotkeyslib
+   ☐ save old state @later
+   ☐ state search
+     ☐ how to disable the original topbar?
+     ☐ a new topbar (md-topbar)
+     ☐ big (and only) search  autocomplete field inside topbar
+     ☐ results in a md-container inside the body page
+       ☐ lazy load of more than 10 results
+     ☐ add a button to search all inside the search page
+       ☐ or if press enter inside empty search
+ ☐ on blur (ng-blur) of real input
+   ☐ go back to previous state @later
+   ☐ or ESC keyword @hotkeyslib
 
 ☐ update angular to 1.5 rc
 
@@ -321,3 +322,8 @@ COMPLETED:
      ✔ create api method  @done (16-01-14 12:29)
      ✔ split and distinct on (rethinkdb query?) @done (16-01-15 07:49)
 ✔ solves how to get data for search @done (16-01-15 07:50)
+  ✔ init with create of basic files @done (16-01-21 15:16)
+  ✔ single row request on datavalues does not work @done (16-01-22 22:07)
+✔ Moving compute from controller to search and then to rethinkdb or python @done (16-01-19 19:59)
+✔ Refactor rethink API @done (16-01-21 11:37)
+  ✔ no more automatic @done (16-01-21 11:37)
