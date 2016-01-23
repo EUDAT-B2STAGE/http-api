@@ -8,11 +8,12 @@ angular.module('web')
     .controller('AutoCompleteController', AutoCompleteController)
     ;
 
-function SearchController($scope, $log, $state, search)
+function SearchController($scope, $rootScope, $log, $state, search)
 {
 
   // INIT controller
   var self = this;
+  $rootScope.avoidTheToolbar = true;
   $log.debug("Main SEARCH controller");
 
   // Template Directories
@@ -28,11 +29,6 @@ function SearchController($scope, $log, $state, search)
   self.selectedTab = null;
   self.onTabSelected = function () {
       $log.debug("Selected", self.selectedTab);
-  }
-
-
-  $scope.ucFirst = function(string) {
-    return string.capitalizeFirstLetter();
   }
 
   //////////////////////////////////////////////////////////

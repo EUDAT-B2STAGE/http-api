@@ -1,11 +1,11 @@
 (function() {
   'use strict';
 
-angular.module('web').controller('AppRootController', AppRootController);
+angular.module('web')
+    .controller('AppRootController', AppRootController);
 
 function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
 {
-
     // Init controller
     var self = this;
     $log.debug("Root controller");

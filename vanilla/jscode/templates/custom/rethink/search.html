@@ -1,5 +1,18 @@
 
-<div class="container" ng-controller="SearchController as search">
+<div ng-controller="SearchController as search">
+
+    <md-toolbar>
+      <div class="md-toolbar-tools md-whiteframe-9dp">
+        <md-button class="md-raised" aria-label="Learn More">
+            <a ui-sref='logged.explore'> &lt;- Back </a>
+        </md-button>
+        <h2>
+          <span>My toolbar</span>
+        </h2>
+      </div>
+    </md-toolbar>
+
+<div class="container">
  <div ng-if='data' class="row z-depth-2">
 
       <md-content
@@ -26,4 +39,5 @@
       </md-content>
 
  </div>
+</div> <!-- container -->
 </div>

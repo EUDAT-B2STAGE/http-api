@@ -6,12 +6,13 @@ angular.module('web')
     .controller('TreeController', TreeController)
     ;
 
-function ExploreController($scope, $log, $state, search)
+function ExploreController($scope, $rootScope, $log, $state, search)
 {
 
   // INIT controller
   var self = this;
-  $log.debug("Main SEARCH controller");
+  $rootScope.avoidTheToolbar = false;
+  $log.debug("Explore data: controller");
 
   // Template Directories
   self.templateDir = templateDir;
@@ -78,13 +79,7 @@ function ExploreController($scope, $log, $state, search)
     });
   }
 
-
-  self.changePage = function(page) {
-    $log.info("Page", page);
-  }
-
 }
-
 
 ////////////////////////////////
 // controller
@@ -92,6 +87,7 @@ function ExploreController($scope, $log, $state, search)
 
 function TreeController($scope, $log, search)
 {
+
   // Init controller
   var self = this;
   $log.debug("Tree controller");
@@ -102,11 +98,6 @@ function TreeController($scope, $log, search)
     $scope.treeOptions = {
         nodeChildren: "children",
         dirSelectable: false, //true,
-    /*
-        isSelectable: function(node) {
-          return node.label.indexOf("Joe") !== 0;
-        },
-    */
         injectClasses: {
             ul: "a1",
             li: "a2",

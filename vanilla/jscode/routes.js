@@ -115,6 +115,11 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
                 url: x.url,
                 //resolve: myResolve,
                 views: myViews,
+/*
+                onEnter: function ($rootScope) {
+                    $rootScope.avoidTheToolbar = false;
+                },
+*/
             });
         });
     }
