@@ -7,6 +7,7 @@ var framework = 'materialize';
 var templateDirBase = '/static/app/templates/';
 var templateDir = templateDirBase + framework + '/';
 var customTemplateDir = templateDirBase + 'custom/' + framework + '/';
+var blueprintTemplateDir = templateDirBase + 'custom/' + blueprint + '/';
 
 /////////////////////////////////
 // FOR EACH AUTO IMPLEMENTATION

@@ -29,8 +29,19 @@ angular.module('web')
             url: "/search",
             views: {
                 "loggedview": {
-                    dir: 'custom',
+                    dir: 'blueprint',
                     templateUrl: 'search.html',
+                }
+            },
+        },
+
+    //////////////////////
+        'logged.explore': {
+            url: "/explore",
+            views: {
+                "loggedview": {
+                    dir: 'blueprint',
+                    templateUrl: 'explore.html',
                 }
             },
         },
@@ -40,7 +51,7 @@ angular.module('web')
             url: "/details/:id",
             views: {
                 "loggedview": {
-                    dir: 'custom',
+                    dir: 'blueprint',
                     templateUrl: 'details.html',
                 }
             }

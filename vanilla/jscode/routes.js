@@ -104,6 +104,8 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
                 var dir = templateDir;
                 if (view.dir == 'custom') {
                     dir = customTemplateDir;
+                } else if (view.dir == 'blueprint') {
+                    dir = blueprintTemplateDir;
                 }
                 myViews[viewName] = {templateUrl: dir + view.templateUrl};
             });

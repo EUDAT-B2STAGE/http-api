@@ -13,6 +13,7 @@ function SearchController($scope, $log, $state, search)
   // Template Directories
   self.templateDir = templateDir;
   self.customTemplateDir = customTemplateDir;
+  self.blueprintTemplateDir = blueprintTemplateDir;
 
   $scope.data = {};
   $scope.chips = [];

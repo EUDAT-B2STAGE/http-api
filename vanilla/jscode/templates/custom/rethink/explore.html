@@ -1,0 +1,37 @@
+<div class="container" ng-controller="ExploreController as exp">
+
+ <div ng-if='data' class="row z-depth-2">
+  <!-- TABS -->
+  <md-tabs
+    md-dynamic-height md-border-bottom
+    md-swipe-content md-center-tabs
+    md-selected='exp.selectedTab'
+    >
+
+<!--     <md-tab label="Tree explorer" ng-if='exp.dataCount > 0'> -->
+
+    <!-- LIST of another field -->
+    <md-tab label="Step list" md-on-select="exp.onTabSelected()">
+      <md-content class="md-padding">
+        <div ng-include="exp.blueprintTemplateDir + 'steplist.html'"></div>
+      </md-content>
+    </md-tab>
+
+    <!-- EXPOSITION -->
+    <md-tab label="Exposition" md-on-select="exp.onTabSelected()">
+      <md-content class="md-padding">
+        <div ng-include="exp.blueprintTemplateDir + 'exposition.html'" style="width: 600px;"></div>
+      </md-content>
+    </md-tab>
+
+    <!-- TREE EXPLORER -->
+    <md-tab label="Tree explorer" md-on-select="exp.onTabSelected()">
+      <md-content class="md-padding">
+        <div ng-include="exp.blueprintTemplateDir + 'tree.html'" style="width: 600px;"></div>
+      </md-content>
+    </md-tab>
+
+  </md-tabs>
+
+ </div>
+</div>

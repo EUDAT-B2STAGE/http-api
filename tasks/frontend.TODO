@@ -13,6 +13,15 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 BUGS:
   ☐ welcome spy padding?
 
+EXPOSITION:
+  ☐ theme list with thumbnail picture, click
+    ☐ dettaglio tema
+      ☐ diversi testi
+        ☐ per ogni testo uno o più immagini
+          ☐ dettaglio immagine (titolo, data, altro)
+  ☐ un mosaico di immagini
+    ☐ click su singola immagini
+
 PROTOTYPE:
 
 SEARCH becomes FIXED inside the toolbar
@@ -24,7 +33,10 @@ SEARCH becomes FIXED inside the toolbar
    ☐ state search
      ☐ how to disable the original topbar?
      ☐ a new topbar (md-topbar)
-     ☐ big (and only) search  autocomplete field inside topbar
+       ☐ big (and only) search  autocomplete field inside topbar
+       ☐ white color
+       ☐ back button
+       ☐ can i show latest searches? cookies? @havetocheck
      ☐ results in a md-container inside the body page
        ☐ lazy load of more than 10 results
      ☐ add a button to search all inside the search page
@@ -32,6 +44,14 @@ SEARCH becomes FIXED inside the toolbar
  ☐ on blur (ng-blur) of real input
    ☐ go back to previous state @later
    ☐ or ESC keyword @hotkeyslib
+
+EXPLORER
+ ☐ To fix controller.... @bug
+☐ TABS
+ ☐ TAB1 - md-list with steps
+   ☐ on open, lazy load for content
+ ☐ TAB2 - exposition
+ ☐ TAB3 - tree explorer
 
 ☐ update angular to 1.5 rc
 
@@ -128,15 +148,6 @@ SUBMIT:
  http://psergus.github.io/ngWYSIWYG/
  ☐ good example for transcription edit
  https://material.angularjs.org/latest/demo/menuBar
-
-EXPOSITION:
-  ☐ theme list with thumbnail picture, click
-    ☐ dettaglio tema
-      ☐ diversi testi
-        ☐ per ogni testo uno o più immagini
-          ☐ dettaglio immagine (titolo, data, altro)
-  ☐ un mosaico di immagini
-    ☐ click su singola immagini
 
 HTTPS:
   ☐ nginx proxy

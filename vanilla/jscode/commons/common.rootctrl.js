@@ -17,6 +17,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
     // Passing a global variable
     self.templateDir = templateDir;
     self.customTemplateDir = customTemplateDir;
+    self.blueprintTemplateDir = blueprintTemplateDir;
 
     // Handling logged states
     var loggedKey = 'logged.';
