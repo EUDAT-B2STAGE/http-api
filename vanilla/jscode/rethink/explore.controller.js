@@ -68,15 +68,21 @@ function StepsController($scope, $log, $state, search)
 
 function TreeController($scope, $log, search)
 {
-
-  // Init controller
+  // INIT controller
+  $log.debug("Tree of life");
   var self = this;
-  $log.debug("Tree controller");
+
+  // Template Directories
+  self.templateDir = templateDir;
+
+  // Init scope data
+  //self.dataCount = NaN;
+  self.data = [];
 
 // https://github.com/wix/angular-tree-control
 
     // options are found http://wix.github.io/angular-tree-control/
-    $scope.treeOptions = {
+    self.treeOptions = {
         nodeChildren: "children",
         dirSelectable: false, //true,
         injectClasses: {
@@ -90,9 +96,9 @@ function TreeController($scope, $log, search)
             labelSelected: "a8"
         }
     }
-    $scope.showSelected = function(selected) {
+    self.showSelected = function(selected) {
       $log.info("Selected node", selected);
-      $scope.selectedTreeObj = selected.info;
+      self.selectedTreeObj = selected.info;
     };
 
   function treeProcessData(steps) {
@@ -118,7 +124,7 @@ function TreeController($scope, $log, search)
     });
 
     $log.info("TREE", tree);
-    $scope.myTree = tree;
+    self.myTree = tree;
 
   }
 
