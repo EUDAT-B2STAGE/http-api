@@ -12,15 +12,20 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
 New fixed search:
 ✔ onenter and onexit route extra @done (16-01-25 11:10)
-☐ lazy load of more than 10 results
+✔ Parties back @done (16-01-25 12:15)
+ ☐ sub lazy load?
+☐ Tree back
 ☐ chips watch?
+☐ lazy load of more than 10 results
+
+History:
 ☐ save old state
  ☐ json in cookies
  ☐ show a clickable div that change ui router state
 
 BUGS:
 ☐ welcome spy padding?
-☐ spy is probably broken in latest materialize?
+☐ spy is probably broken in latest materialize? @toverifyagain
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
 
 EXPOSITION:

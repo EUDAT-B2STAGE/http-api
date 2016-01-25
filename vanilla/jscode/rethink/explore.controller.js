@@ -3,6 +3,7 @@
 
 angular.module('web')
     .controller('ExploreController', ExploreController)
+    .controller('StepsController', StepsController)
     .controller('TreeController', TreeController)
     ;
 
@@ -32,6 +33,33 @@ function ExploreController($scope, $log, $state, search)
     return string.capitalizeFirstLetter();
   }
 
+}
+
+////////////////////////////////
+// controller
+////////////////////////////////
+
+function StepsController($scope, $log, $state, search)
+{
+  // INIT controller
+  $log.debug("Stepping in pieces");
+  var self = this;
+  self.step = 2;
+
+  // Template Directories
+  self.templateDir = templateDir;
+
+  // Init scope data
+  //self.dataCount = NaN;
+  self.data = [];
+
+  search.getDistinctValuesFromStep(self.step).then(function (out)
+  {
+       console.log("OUT", out);
+       self.dataCount = out.elements;
+       self.data = out.data;
+  })
+  //self.dataCount = 0;
 }
 
 ////////////////////////////////
