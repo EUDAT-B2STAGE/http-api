@@ -154,6 +154,18 @@ function ChipsController($scope, $log, $q, search)
         self.states;
   }
 
+  self.searchAll = function () {
+      $log.debug("Search ALL");
+      // Do query
+      search.getData().then(function(out_data) {
+        self.dataCount = NaN;
+        if (!out_data || out_data.elements < 1) {
+          return null;
+        }
+        $scope.fillTable(out_data);
+      });
+  }
+
 ////////////////////////////////////////
 //http://solutionoptimist.com/2013/12/27/javascript-promise-chains-2/
   var
