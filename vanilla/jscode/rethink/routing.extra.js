@@ -26,7 +26,7 @@ angular.module('web')
 
     //////////////////////
         'logged.specialsearch': {
-            url: "/search",
+            url: "/search/:text",
             views: {
                 "loggedview": {
                     dir: 'blueprint',

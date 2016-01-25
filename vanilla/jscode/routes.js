@@ -175,6 +175,7 @@ $stateProvider
     // Routes definition ends here
     ;
 
+    $urlRouterProvider.when("/app/search", "/app/search/");
 
 // Ui router kinda bug fixing
 // CHECK THIS IN THE NEAR FUTURE

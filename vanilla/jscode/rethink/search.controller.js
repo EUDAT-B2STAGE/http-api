@@ -94,12 +94,12 @@ function SearchController($scope, $rootScope, $log, $state, search, hotkeys, key
 // controller
 ////////////////////////////////
 
-function ChipsController($scope, $log, $q, search)
+function ChipsController($scope, $log, $q, $stateParams, search)
 {
 
   // Init controller
   var self = this;
-  $log.debug("Chip controller");
+  $log.debug("Chip controller", $stateParams.text);
 
   // https://material.angularjs.org/latest/demo/chips
   self.chips = [];
@@ -110,10 +110,9 @@ function ChipsController($scope, $log, $q, search)
     //search.getData().then(function(out_data){
   }
 
-
   self.newChip = function(chip) {
       $log.info("Requested tag:", chip, "total:", self.chips);
-
+// TO FIX
 // FOR EACH CHIPS
 // ADD TO JSON TO MAKE MORE THAN ONE STEP ON RETHINKDB
 // SO THIS WILL BE ONE SINGLE HTTP REQUEST
@@ -135,14 +134,28 @@ function ChipsController($scope, $log, $q, search)
   }
 
   self.removeChip = function(chip, index) {
+// TO FIX
 // IF YOU REMOVE YOU SHOULD REBUILD THE QUERY FROM START...
 // JUST USE THE SAME FUNCTION OF NEW CHIP
     //console.log(chip, index);
     $log.error("Not implemented. It should be soon!");
   }
 
-  // Init controller
+  // AUTOCOMPLETE CODE
   $log.debug("Auto Complete controller");
+  self.parameter = $stateParams.text;
+  if (self.parameter !== null)
+  {
+    // Add value to chips
+    var chip = {
+        display: self.parameter,
+        type: "Custom",
+        value: self.parameter
+    };
+    self.chips.push(chip);
+// TO FIX
+    self.newChip(chip);
+  }
 
   // Init scope
   self.searchText = null;
