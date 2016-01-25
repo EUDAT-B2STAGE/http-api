@@ -1,14 +1,24 @@
 (function() {
   'use strict';
 
-angular.module('web').controller('AppRootController', AppRootController);
+angular.module('web')
+    .controller('AppRootController', AppRootController);
 
-function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
+function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotkeys, keyshortcuts)
 {
-
     // Init controller
     var self = this;
     $log.debug("Root controller");
+
+    // Init keys
+    hotkeys.bindTo($scope)
+        .add({
+            combo: "/",
+            description: "Use quick search form",
+            callback: function() {
+                keyshortcuts.search(event, self);
+            }
+        });
 
     // Init the models
     $rootScope.menu = [];
@@ -17,12 +27,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
     // Passing a global variable
     self.templateDir = templateDir;
     self.customTemplateDir = customTemplateDir;
-
-    // Handling logged states
-    var loggedKey = 'logged.';
-    function checkLoggedState(stateName) {
-        return (stateName.name.slice(0, loggedKey.length) == loggedKey);
-    }
+    self.blueprintTemplateDir = blueprintTemplateDir;
 
     // Let this login load after a little while
     $rootScope.loadTimer = $timeout(function() {
@@ -46,6 +51,13 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
     // Control states to create the menu
     var myObj = $state.get();
 
+    // Handling logged states
+    var loggedKey = 'logged.';
+    function checkLoggedState(stateName) {
+        return (stateName.name.slice(0, loggedKey.length) == loggedKey);
+    }
+
+    // DO THE MENU
 	forEach(myObj, function (x, i) {
         //$log.debug("Menu element", i , x);
 
@@ -57,12 +69,20 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
             // b - there is a parameter into the url (so direct link won't work)
 
     		if (checkLoggedState(x)) {
-    			$rootScope.menu.push(
-                    x.name.substr(loggedKey.length)
-                        .capitalizeFirstLetter());
+                var name = x.name.substr(loggedKey.length);
+                if (name != 'specialsearch') {
+                    $rootScope.menu.push(name.capitalizeFirstLetter());
+                }
     		}
         }
 	});
+
+    // In case of special search available
+    // Redirect to that state
+    $rootScope.activateSearch = function ()
+    {
+        $state.go('logged.specialsearch');
+    }
 
 	$log.info("Menu", $rootScope.menu);
 

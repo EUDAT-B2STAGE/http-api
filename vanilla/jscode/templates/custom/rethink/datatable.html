@@ -1,4 +1,11 @@
 
+<md-content layout-padding layout-wrap>
+    <div class='z-depth-1' ng-if='dataCount > 1'>
+        <b> Found <i> {{ dataCount }} </i> elements </b>
+    </div>
+</md-content>
+
+<!--
 <div class='z-depth-1'>
     <pagination
       page="1" page-size="10" total="dataCount"
@@ -7,6 +14,7 @@
       pagination-action="search.changePage(page)"
       />
 </div>
+-->
 
 <table class='bordered highlight responsive-table'>
   <thead>
@@ -22,19 +30,19 @@
     <tr ng-repeat='row in data'>
       <!-- IMAGE -->
       <td>
-        <div ng-hide='row.image'>
+        <div ng-hide='row.thumb'>
           <a class="waves-effect waves-light btn disabled">
             <i class="material-icons blue-grey-text">
               center_focus_weak
             </i>
           </a>
         </div>
-        <img ng-if='row.image'
-          lazy-img="/static/uploads/{{ row.image }}"
+        <img ng-if='row.thumb'
+          lazy-img="/static/uploads/{{ row.thumb }}"
           class="z-depth-1">
       </td>
       <td ng-repeat='(key, value) in row'
-        ng-if='key != "id" && key !="image"'>
+        ng-if='key != "id" && key !="thumb" && key != "images"'>
         {{ value }}
       </td>
       <td>

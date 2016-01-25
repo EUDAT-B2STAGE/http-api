@@ -1,0 +1,29 @@
+
+<div ng-controller="StepsController as steps">
+
+    <h4>
+        <b> Fêtes </b>
+    </h4>
+
+    <div ng-if="!steps.dataCount">
+        <div ng-include="steps.templateDir + 'loader.html'"></div>
+    </div>
+    <div ng-if="steps.dataCount < 1">
+        No data available
+    </div>
+
+    <div ng-if="steps.dataCount > 0">
+        <ul class="collapsible" data-collapsible="accordion">
+            <li ng-repeat="item in steps.data track by $index">
+                <div class="collapsible-header">
+                    <b>#{{$index+1}}</b>: {{item}}
+                </div>
+                <div class="collapsible-body"><p>
+                    <b>Some content</b>
+                    with <i>lazy load</i>.
+                </p></div>
+            </li>
+        </ul>
+    </div>
+
+</div>

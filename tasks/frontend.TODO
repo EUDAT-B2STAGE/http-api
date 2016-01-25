@@ -10,40 +10,47 @@ https://material.angularjs.org/latest/layout/alignment
 http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 --- ✄ -----------------------
 
+New fixed search:
+✔ onenter and onexit route extra @done (16-01-25 11:10)
+✔ Parties back @done (16-01-25 12:15)
+ ☐ sub lazy load?
+✔ Tree back @done (16-01-25 12:42)
+☐ chips watch?
+☐ lazy load of more than 10 results
+
+History:
+☐ save old state
+ ☐ json in cookies
+ ☐ show a clickable div that change ui router state
+
 BUGS:
-  ✔ init with create of basic files @done (16-01-21 15:16)
-  ☐ welcome spy padding?
+☐ welcome spy padding?
+☐ Some times chips do not see change of text?
+☐ spy is probably broken in latest materialize? @toverifyagain
+ ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
 
-PROTOTYPE:
+EXPOSITION:
+  ☐ theme list with thumbnail picture, click
+    ☐ dettaglio tema
+      ☐ diversi testi
+        ☐ per ogni testo uno o più immagini
+          ☐ dettaglio immagine (titolo, data, altro)
+  ☐ un mosaico di immagini
+    ☐ click su singola immagini
 
-✔ Moving compute from controller to search and then to rethinkdb or python @done (16-01-19 19:59)
-✔ Refactor rethink API @done (16-01-21 11:37)
-  ✔ no more automatic @done (16-01-21 11:37)
+EXPLORER:
+ ✔ To fix controller.... @bug @done (16-01-23 23:34)
+✔ TABS @done (16-01-23 23:34)
+     ☐ lazy load when tab is selected?
+ ☐ TAB1 - md-list with steps
+   ☐ on open, lazy load for content
+ ☐ TAB2 - exposition
+ ☐ TAB3 - tree explorer
 
-☐ search becomes fixed inside the toolbar
-   ☐ md-toolbar?
-   https://material.angularjs.org/latest/demo/toolbar
-   ☐ general, expecting for a SearchController to exist
-   ☐ add a button to search all inside the search page
- ☐ Autocomplete
-   ☐ refactor to use all chips
-   ☐ define the list in autocomplete (chip) template size bigger
-☐ Hotkeys
- ☐ / is for search
-
+OTHER:
 ☐ update angular to 1.5 rc
-
-☐ Material SIDENAV
- https://material.angularjs.org/latest/demo/sidenav
-   ☐ menu positions
- ☐ refactor search tabs
-   ✔ add onselect function @done (16-01-13 12:14)
-   ☐ lazy load when tab is selected?
 ☐ one time binding
  <li ng-repeat=“item in ::vastArray”>{{ ::item.velocity }}</li>
-☐ Redirects
- ☐ save last state in root scope?
-
 ☐ Cleaning frontend python code
   ✔ test login @done (15-12-30 09:59)
   ✔ test logout @done (15-12-30 09:59)
@@ -126,15 +133,6 @@ SUBMIT:
  http://psergus.github.io/ngWYSIWYG/
  ☐ good example for transcription edit
  https://material.angularjs.org/latest/demo/menuBar
-
-EXPOSITION:
-  ☐ theme list with thumbnail picture, click
-    ☐ dettaglio tema
-      ☐ diversi testi
-        ☐ per ogni testo uno o più immagini
-          ☐ dettaglio immagine (titolo, data, altro)
-  ☐ un mosaico di immagini
-    ☐ click su singola immagini
 
 HTTPS:
   ☐ nginx proxy
@@ -320,3 +318,26 @@ COMPLETED:
      ✔ create api method  @done (16-01-14 12:29)
      ✔ split and distinct on (rethinkdb query?) @done (16-01-15 07:49)
 ✔ solves how to get data for search @done (16-01-15 07:50)
+  ✔ init with create of basic files @done (16-01-21 15:16)
+  ✔ single row request on datavalues does not work @done (16-01-22 22:07)
+✔ Moving compute from controller to search and then to rethinkdb or python @done (16-01-19 19:59)
+✔ Refactor rethink API @done (16-01-21 11:37)
+  ✔ no more automatic @done (16-01-21 11:37)
+ ✔ move templates and separate @done (16-01-23 18:53)
+ ✔ fake input inside the topbar @done (16-01-25 07:14)
+   ✔ skip search template inside the main menu? @done (16-01-25 07:14)
+ ✔ on focus (ng-focus) of fake input, switch to state 'search' @done (16-01-25 07:14)
+   ✔ state search @done (16-01-23 18:54)
+   ✔ or / keyword @hotkeys @done (16-01-25 09:36)
+     ✘ how to disable the original topbar? @cancelled (16-01-25 07:14)
+     ✔ a new topbar (md-topbar) @done (16-01-25 07:14)
+       ✔ big (and only) search  autocomplete field inside topbar @done (16-01-25 10:22)
+       ✘ very slim @cancelled (16-01-25 07:15)
+       ✘ white color @cancelled (16-01-25 07:15)
+       ✔ back button @done (16-01-25 07:15)
+     ✔ results in a md-container inside the body page @done (16-01-25 07:32)
+     ✔ SEARCH ALL @done (16-01-25 09:37)
+       ✔ button and function @done (16-01-25 09:37)
+       ✘ or if press enter inside empty search @hotkeys @cancelled (16-01-25 09:37)
+ ✔ Get out of search @done (16-01-25 10:22)
+   ✔ ESC keyword @hotkeys @done (16-01-25 09:36)

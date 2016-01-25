@@ -25,12 +25,29 @@ angular.module('web')
 */
 
     //////////////////////
-        'logged.search': {
-            url: "/search",
+        'logged.specialsearch': {
+            url: "/search/:text",
             views: {
                 "loggedview": {
-                    dir: 'custom',
+                    dir: 'blueprint',
                     templateUrl: 'search.html',
+                }
+            },
+            onEnter: function ($rootScope) {
+                $rootScope.avoidTheToolbar = true;
+            },
+            onExit: function ($rootScope) {
+                $rootScope.avoidTheToolbar = false;
+            },
+        },
+
+    //////////////////////
+        'logged.explore': {
+            url: "/explore",
+            views: {
+                "loggedview": {
+                    dir: 'blueprint',
+                    templateUrl: 'explore.html',
                 }
             },
         },
@@ -40,7 +57,7 @@ angular.module('web')
             url: "/details/:id",
             views: {
                 "loggedview": {
-                    dir: 'custom',
+                    dir: 'blueprint',
                     templateUrl: 'details.html',
                 }
             }

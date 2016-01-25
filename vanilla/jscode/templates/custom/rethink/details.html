@@ -1,51 +1,54 @@
 <div ng-controller="DetailsController as detail">
 
- <div ng-if='error'>
-  <!-- NO DATA -->
-  <b>ERROR: {{ error }}</b>
- </div>
-
- <div ng-if='data'>
+ <div ng-if='detail.data'>
   <!-- WITH DATA -->
 
-  <div class="row">
-
+  <div class="row" ng-hide="detail.data.id">
    <div class="col s12 m10 l11">
+    No data...
+   </div>
+  </div>
+  <div class="row" ng-if="detail.data.id">
+
+   <div class="col s12 m11 l10">
   <!-- content -->
 
       <!-- text -->
-      <div ng-repeat='step in data' id="step{{step.step}}"
+      <div ng-repeat='(name, rows) in detail.refinedData track by $index'
+        id="spy{{$index}}" layout-padding
         class="section scrollspy" scrollspy>
+
         <table class='striped responsive-table'>
          <thead>
            <tr>
-             <td colspan="2"> <h4> {{stepnames[step.step]}} </h4> </td>
+             <td colspan="2"> <h4> {{name}} </h4> </td>
            </tr>
          </thead>
           <tbody>
-            <tr ng-if='row.value' ng-repeat='row in step.data'>
-              <th> {{ row.name }} </th>
-              <td> {{ row.value }} </td>
+            <tr ng-if='value' ng-repeat='(key, value) in rows'>
+              <th> {{ key }} </th>
+              <td> {{ value }} </td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <!-- pages -->
-      <div ng-hide='images' class="card-panel red darken-4">
+      <div ng-hide='detail.data.images' class="card-panel red darken-4">
         <span class="white-text">
           No images or transcriptions found for this record.
         </span>
       </div>
 
-      <div ng-repeat='image in images' id="image{{image.id}}"
+      <div ng-repeat='image in detail.data.images' id="image{{image.code}}"
         class="section scrollspy" scrollspy>
         <h4> Page {{image.code}} </h4>
         <table class="responsive-table">
           <thead>
             <tr>
               <th>Image</th>
-              <th ng-if="image.transcriptions">Transcription</th>
+              <th
+                ng-if="image.transcriptions.length > 0">Transcription</th>
             </tr>
           </thead>
           <tbody>
@@ -56,7 +59,8 @@
                   data-caption="{{image.code}}"
                   lazy-img="static/uploads/{{ image.filename }}">
               </td>
-              <td width='55%' class="celltop" ng-if="image.transcriptions">
+              <td width='55%' class="celltop"
+                ng-if="image.transcriptions.length > 0">
 
 <ul ng-if="image.transcriptions.length > 1"
   class="collapsible popout" data-collapsible="accordion" watch>
@@ -81,17 +85,17 @@
   <!-- content -->
    </div>
 
-    <div class="col hide-on-small-only m2 l1">
+    <div class="col hide-on-small-only m1 l2">
   <!-- Summary -->
       <div pushpin pushpin-offset="1">
       <ul class="section table-of-contents">
-        <li ng-repeat='step in data'>
-          <a href="#step{{step.step}}">
-            {{stepnames[step.step]}}
+        <li ng-repeat='(name, row) in detail.refinedData track by $index'>
+          <a href="#spy{{$index}}">
+            {{name}}
           </a>
         </li>
-        <li ng-repeat='image in images'>
-          <a href="#image{{image.id}}">
+        <li ng-repeat='image in detail.data.images'>
+          <a href="#image{{image.code}}">
             Page {{image.code}}
           </a>
         </li>

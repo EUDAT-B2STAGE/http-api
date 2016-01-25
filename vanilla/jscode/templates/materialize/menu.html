@@ -1,8 +1,16 @@
 <div>
-    <ul id="nav-mobile" class="right hide-on-med-and-down">
+ <ul id="nav-mobile" class="right">
+
+    <li>
+        <div layout="row">
+            <i class="material-icons prefix">search</i>
+            <input placeholder="Search" ng-focus="activateSearch()">
+        </div>
+    </li>
+
     <!-- Angular dynamic material menu -->
-    	<li ng-repeat='item in menu'>
-    		<a ui-sref="logged.{{item.toLowerCase()}}">{{item}}</a>
-    	</li>
-    </ul>
+	<li ng-repeat='item in menu'>
+		<a ui-sref="logged.{{item.toLowerCase()}}">{{item}}</a>
+	</li>
+ </ul>
 </div>

@@ -24,28 +24,41 @@ function SearchService($log, api) {
         return api.apiCall(self.endpoints.search);
     }
 
-    self.getSingleData = function(id) {
-        return api.apiCall(self.endpoints.search, 'GET', undefined, id)
-          .then(function(out)
+    self.getSingleData = function(id, details) {
+
+      var detailed = 'short';
+      if (details) {
+        detailed = 'full';
+      }
+
+      //$log.debug("Single data", id);
+      return api.apiCall(
+        self.endpoints.search,
+        'GET', {details: detailed}, id)
+       .then(function(out)
+       {
+          if (!out || out.elements < 1) {
+              return false;
+          }
+          var element = {id: id, thumb: null, images: {},};
+          forEach(out.data, function(value, key){
+              var stepName = self.latestSteps[key+1];
+              element[stepName] = value;
+          });
+          return self.getDocs(id).then(function(out_docs)
           {
-            if (!out || out.count < 1) {
-                return false;
+            //console.log("DOCS", out_docs);
+            if (out_docs.elements > 0) {
+              // RECOVER ALL IMAGES
+              var images = out_docs.data[0].images;
+              element.images = images;
+              // HANDLE ONLY FIRST ONE AS THUMBNAIL IN MAIN SEARCH
+              element.thumb = images[0].filename
+                .replace(/\.[^/.]+$/, "")+'/TileGroup0/0-0-0.jpg';
             }
-            var element = {'image': null};
-            forEach(out.data, function(value, key){
-                var stepName = self.latestSteps[key+1];
-                element[stepName] = value;
-            });
-            self.getDocs(id).then(function(out_docs)
-            {
-              if (out_docs.count > 0) {
-                element.image =
-                  out_docs.data[0].images[0].filename.replace(/\.[^/.]+$/, "")
-                    + '/TileGroup0/0-0-0.jpg';
-              }
-            }); // GET DOCUMENTS
-            console.log("ELEMENT", element);
+            $log.debug("Single element", element);
             return element;
+          }); // GET DOCUMENTS
 
           });
     }
@@ -53,35 +66,24 @@ function SearchService($log, api) {
     self.doQuery = function(endpoint, filters) {
         return api.apiCall(endpoint, 'GET', filters);
     }
-
-    self.getFromQuery = function(endpoint, json) {
-        return api.apiCall(endpoint, 'POST', {'query':json});
-    }
-
-    self.filterData = function(filter) {
-        return self.getFromQuery(
-            self.endpoints.search,
-            {'nested_filter':
-                {'position': 1, 'filter': filter}});
-    }
-
-    self.filterDocuments = function(filter) {
-        return self.getFromQuery(
-            self.endpoints.documents,
-            {'notes': {'filter': filter}});
-
-    }
-
 // Base API calls
 //////////////////
 
-    self.getSteps = function(id) {
-        return api.apiCall(self.endpoints.submit, 'GET', undefined, id)
+// OLD
+    // self.getSteps = function(id) {
+    //     return api.apiCall(self.endpoints.submit, 'GET', undefined, id)
+// NEW
+    self.getSteps = function(all)
+    {
+        return api.apiCall(self.endpoints.submit)
           .then(function(out_steps) {
             // Prepare steps name
             var steps = [];
             if (out_steps && out_steps.hasOwnProperty('data'))
             {
+                if (all) {
+                    return out_steps.data;
+                }
                 forEach(out_steps.data, function(single, i){
                   steps[single.step.num] = single.step.name;
                 });
@@ -92,28 +94,49 @@ function SearchService($log, api) {
     }
 
     self.getDistinctValuesFromStep = function(step) {
-      return self.getFromQuery(self.endpoints.search,
+      return self.doQuery(self.endpoints.search,
             {
-                'limit': 0, //all
-                'autocomplete': {'step': step, 'position': 1}
+                perpage: 0, //all
+                filter: 'autocompletion',
+                step: step,
+                position: 1,
             }
         );
     }
 
-    self.getDistinctTranscripts = function() {
-      return self.getFromQuery(self.endpoints.documents,
+    self.filterData = function(filter) {
+        return self.doQuery(
+            self.endpoints.search,
             {
-                'limit': 0, //all
-                'notes': {'nofilter': true},
+                filter: 'nested_filter',
+                position: 1,
+                key: filter,
             }
         );
     }
 
-// TO FIX
     self.getDocs = function(id) {
         return api.apiCall(
             self.endpoints.documents,
             undefined, undefined, id);
+    }
+    self.getDistinctTranscripts = function() {
+      return self.doQuery(self.endpoints.documents,
+            {
+                perpage: 0, //all
+                filter: 'notes',
+            }
+        );
+    }
+    self.filterDocuments = function(filter) {
+        return self.doQuery(
+            self.endpoints.documents,
+            {
+                filter: 'notes',
+                key: filter,
+            }
+        );
+
     }
 
 }

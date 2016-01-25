@@ -4,25 +4,29 @@
 angular.module('web')
     .controller('SearchController', SearchController)
     .controller('ChipsController', ChipsController)
-    .controller('TreeController', TreeController)
-    .controller('AutoCompleteController', AutoCompleteController)
     ;
 
-function SearchController($scope, $log, $state, search)
+function SearchController($scope, $log, $state, search, hotkeys, keyshortcuts)
 {
-
-  search.doQuery('datavalues', {filter: 'autocompletion'})
-   .then(function(out){
-    console.log("TEST", out);
-  });
 
   // INIT controller
   var self = this;
   $log.debug("Main SEARCH controller");
 
+    // Init keys
+    hotkeys.bindTo($scope)
+        .add({
+            combo: "esc",
+            description: "Quit from searching",
+            callback: function() {
+                keyshortcuts.exitSearch(event, self);
+            }
+        });
+
   // Template Directories
   self.templateDir = templateDir;
   self.customTemplateDir = customTemplateDir;
+  self.blueprintTemplateDir = blueprintTemplateDir;
 
   // INIT scope variables
   $scope.data = {};
@@ -32,11 +36,6 @@ function SearchController($scope, $log, $state, search)
   self.selectedTab = null;
   self.onTabSelected = function () {
       $log.debug("Selected", self.selectedTab);
-  }
-
-
-  $scope.ucFirst = function(string) {
-    return string.capitalizeFirstLetter();
   }
 
   //////////////////////////////////////////////////////////
@@ -65,7 +64,24 @@ function SearchController($scope, $log, $state, search)
     return auto;
   }
 
+  $scope.fillTable = function(response)
+  {
+    $log.debug("FILLING TABLE");
+    $scope.data = [];
+    $scope.dataCount = response.elements;
+    $scope.results = true;
 
+    forEach(response.data, function (x, i)
+    {
+      // SINGLE DETAILS
+      search.getSingleData(x.record, false)
+       .then(function(element)
+      {
+          $scope.data.push(element);
+// FIX HTML VIEW?
+      });
+    });
+  }
 
   self.changePage = function(page) {
     $log.info("Page", page);
@@ -77,7 +93,7 @@ function SearchController($scope, $log, $state, search)
 // controller
 ////////////////////////////////
 
-function ChipsController($scope, $log, search)
+function ChipsController($scope, $log, $q, $stateParams, search)
 {
 
   // Init controller
@@ -93,10 +109,9 @@ function ChipsController($scope, $log, search)
     //search.getData().then(function(out_data){
   }
 
-
   self.newChip = function(chip) {
       $log.info("Requested tag:", chip, "total:", self.chips);
-
+// TO FIX
 // FOR EACH CHIPS
 // ADD TO JSON TO MAKE MORE THAN ONE STEP ON RETHINKDB
 // SO THIS WILL BE ONE SINGLE HTTP REQUEST
@@ -110,48 +125,37 @@ function ChipsController($scope, $log, search)
       // Do query
       promise.then(function(out_data) {
         self.dataCount = NaN;
-        if (!out_data || out_data.count < 1) {
+        if (!out_data || out_data.elements < 1) {
           return null;
         }
-        self.fillTable(out_data.data);
-        $scope.dataCount = out_data.count;
+        $scope.fillTable(out_data);
       });
   }
 
   self.removeChip = function(chip, index) {
+// TO FIX
 // IF YOU REMOVE YOU SHOULD REBUILD THE QUERY FROM START...
 // JUST USE THE SAME FUNCTION OF NEW CHIP
     //console.log(chip, index);
+    $log.error("Not implemented. It should be soon!");
   }
 
-  self.fillTable = function(response)
-  {
-    $log.debug("FILLING TABLE");
-    $scope.data = [];
-    $scope.results = true;
+  // AUTOCOMPLETE CODE
+  // HANDLE PARAMETER
+  self.parameter = $stateParams.text;
+  $log.debug("Auto Complete controller", self.parameter);
 
-    forEach(response, function (x, i)
-    {
-      // SINGLE DETAILS
-      search.getSingleData(x.record).then(function(element)
-      {
-          $scope.data.push(element);
-// FIX HTML VIEW?
-      });
-    });
+  if (self.parameter) {
+    // Add value to chips
+    var chip = {
+        display: self.parameter,
+        type: "Custom",
+        value: self.parameter
+    };
+    self.chips.push(chip);
+// TO FIX
+    self.newChip(chip);
   }
-
-}
-
-////////////////////////////////
-// controller
-////////////////////////////////
-function AutoCompleteController($scope, $log, $q, search)
-{
-
-  // Init controller
-  var self = this;
-  $log.debug("Auto Complete controller");
 
   // Init scope
   self.searchText = null;
@@ -171,6 +175,17 @@ function AutoCompleteController($scope, $log, $q, search)
     return query ?
         self.states.filter(createFilterFor(query)) :
         self.states;
+  }
+
+  self.searchAll = function () {
+      // Do query
+      search.getData().then(function(out_data) {
+        self.dataCount = NaN;
+        if (!out_data || out_data.elements < 1) {
+          return null;
+        }
+        $scope.fillTable(out_data);
+      });
   }
 
 ////////////////////////////////////////
@@ -198,7 +213,7 @@ function AutoCompleteController($scope, $log, $q, search)
         return $q.all(promises).then((values) =>
         {
             forEach(values, function (api_response, step) {
-              if (api_response.count > 1) {
+              if (api_response.elements > 1) {
                 $log.debug('Fullfilling step', steps[step]);
                 //console.log(api_response);
 
@@ -242,103 +257,6 @@ function AutoCompleteController($scope, $log, $q, search)
     //self.states
 // CHAINING PROMISES
 ////////////////////////////////////////
-
-}
-
-////////////////////////////////
-// controller
-////////////////////////////////
-
-function TreeController($scope, $log, search)
-{
-  // Init controller
-  var self = this;
-  $log.debug("Tree controller");
-
-// https://github.com/wix/angular-tree-control
-
-    // options are found http://wix.github.io/angular-tree-control/
-    $scope.treeOptions = {
-        nodeChildren: "children",
-        dirSelectable: false, //true,
-    /*
-        isSelectable: function(node) {
-          return node.label.indexOf("Joe") !== 0;
-        },
-    */
-        injectClasses: {
-            ul: "a1",
-            li: "a2",
-            liSelected: "a7",
-            iExpanded: "a3",
-            iCollapsed: "a4",
-            iLeaf: "a5",
-            label: "a6",
-            labelSelected: "a8"
-        }
-    }
-    $scope.showSelected = function(selected) {
-      $log.info("Selected node", selected);
-      $scope.selectedTreeObj = selected.info;
-    };
-
-  function treeProcessData(steps) {
-
-    var tree = [];
-
-    forEach(steps, function(single, i){
-    var fields = [];
-    forEach(single.fields, function(field, j){
-      var infos = {
-        'name': field.name,
-        'values': field.options,
-        'type': getType(field.type),
-        'required': field.required,
-      };
-      fields.push({
-        'type': 'field', 'name': field.name, 'info': infos,
-        "children": []});
-    });
-    tree.push({
-      'type': 'step', 'name': single.step.name,
-      "children": fields});
-    });
-
-    $log.info("TREE", tree);
-    $scope.myTree = tree;
-
-  }
-
-  ////////////////////////////////////////
-  // move me into a service
-  self.types = [
-      {value: 0, text: 'string', desc:
-          'All text is allowed'},
-      {value: 1, text: 'number', desc:
-          'Only integers values'},
-      {value: 2, text: 'email', desc:
-          'Only e-mail address (e.g. name@mailserver.org)'},
-      {value: 3, text: 'url', desc:
-          'Only web URL (e.g. http://website.com)'},
-      {value: 4, text: 'date', desc:
-          'Choose a day from a calendar'},
-      {value: 5, text: 'time', desc:
-          'Choose hour and minutes'},
-      {value: 6, text: 'pattern', desc:
-          'Define a regular expression for a custom type'},
-      {value: 7, text: 'color', desc:
-          'Only colors in hexadecimal value. Choose from color picker.'},
-      {value: 8, text: 'list', desc:
-          'Define a list of possible values (e.g. a dictionary)'},
-  ];
-  function getType(key) {
-      // save type to be sure in the future?
-      var type = self.types[0].text;
-      if (self.types[key])
-          type = self.types[key].text;
-      return type;
-  }
-  ////////////////////////////////////////
 
 }
 

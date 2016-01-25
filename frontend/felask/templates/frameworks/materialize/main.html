@@ -4,7 +4,9 @@
 
 {%- block topbar %}
 <!-- TOPBAR -->
-<div class="navbar z-depth-2">
+<div
+    ng-hide="avoidTheToolbar"
+    class="navbar z-depth-2">
 	<nav>
 	  <div class="nav-wrapper cyan darken-3">
 		{%- if g.user.is_authenticated -%}

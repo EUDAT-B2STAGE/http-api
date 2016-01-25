@@ -76,7 +76,7 @@ function RestApiService($window, $http, $auth, $log) {
                     return response;
                 } else {
                     // Default: data or null
-                    if (typeof response.count === 'undefined') {
+                    if (typeof response.elements === 'undefined') {
                         return null;
                     }
                     return response.data;
