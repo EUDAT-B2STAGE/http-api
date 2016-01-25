@@ -7,7 +7,7 @@ angular.module('web')
     .controller('TreeController', TreeController)
     ;
 
-function ExploreController($scope, $log, $state, search)
+function ExploreController($scope, $rootScope, $log, $state, search)
 {
 
   // INIT controller
@@ -27,6 +27,13 @@ function ExploreController($scope, $log, $state, search)
   self.selectedTab = null;
   self.onTabSelected = function () {
       $log.debug("Selected", self.selectedTab);
+      if (self.selectedTab == 2) {
+          //Load data for the tree
+          search.getSteps(true).then(function (out)
+          {
+            $rootScope.treeProcessData(out);
+          })
+      }
   }
 
   $scope.ucFirst = function(string) {
@@ -66,7 +73,7 @@ function StepsController($scope, $log, $state, search)
 // controller
 ////////////////////////////////
 
-function TreeController($scope, $log, search)
+function TreeController($scope, $rootScope, $log, search)
 {
   // INIT controller
   $log.debug("Tree of life");
@@ -101,26 +108,27 @@ function TreeController($scope, $log, search)
       self.selectedTreeObj = selected.info;
     };
 
-  function treeProcessData(steps) {
-
+  $rootScope.treeProcessData = function (steps)
+  {
     var tree = [];
+    self.dataCount = steps.length;
 
     forEach(steps, function(single, i){
-    var fields = [];
-    forEach(single.fields, function(field, j){
-      var infos = {
-        'name': field.name,
-        'values': field.options,
-        'type': getType(field.type),
-        'required': field.required,
-      };
-      fields.push({
-        'type': 'field', 'name': field.name, 'info': infos,
-        "children": []});
-    });
-    tree.push({
-      'type': 'step', 'name': single.step.name,
-      "children": fields});
+        var fields = [];
+        forEach(single.fields, function(field, j){
+          var infos = {
+            'name': field.name,
+            'values': field.options,
+            'type': getType(field.type),
+            'required': field.required,
+          };
+          fields.push({
+            'type': 'field', 'name': field.name, 'info': infos,
+            "children": []});
+        });
+        tree.push({
+          'type': 'step', 'name': single.step.name,
+          "children": fields});
     });
 
     $log.info("TREE", tree);

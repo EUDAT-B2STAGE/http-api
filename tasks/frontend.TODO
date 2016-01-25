@@ -14,7 +14,7 @@ New fixed search:
 ✔ onenter and onexit route extra @done (16-01-25 11:10)
 ✔ Parties back @done (16-01-25 12:15)
  ☐ sub lazy load?
-☐ Tree back
+✔ Tree back @done (16-01-25 12:42)
 ☐ chips watch?
 ☐ lazy load of more than 10 results
 
@@ -25,6 +25,7 @@ History:
 
 BUGS:
 ☐ welcome spy padding?
+☐ Some times chips do not see change of text?
 ☐ spy is probably broken in latest materialize? @toverifyagain
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
 

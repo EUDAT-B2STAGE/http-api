@@ -69,13 +69,21 @@ function SearchService($log, api) {
 // Base API calls
 //////////////////
 
-    self.getSteps = function(id) {
-        return api.apiCall(self.endpoints.submit, 'GET', undefined, id)
+// OLD
+    // self.getSteps = function(id) {
+    //     return api.apiCall(self.endpoints.submit, 'GET', undefined, id)
+// NEW
+    self.getSteps = function(all)
+    {
+        return api.apiCall(self.endpoints.submit)
           .then(function(out_steps) {
             // Prepare steps name
             var steps = [];
             if (out_steps && out_steps.hasOwnProperty('data'))
             {
+                if (all) {
+                    return out_steps.data;
+                }
                 forEach(out_steps.data, function(single, i){
                   steps[single.step.num] = single.step.name;
                 });
