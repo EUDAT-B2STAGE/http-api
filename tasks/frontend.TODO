@@ -28,8 +28,21 @@ BUGS:
 ☐ Some times chips do not see change of text?
 ☐ spy is probably broken in latest materialize? @toverifyagain
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
+ ☐ table are not same size on details
+ ☐ extrait not complete list
+ ☐ mostra nella pagina di ricerca
+ ☐ mostra nella pagina di dettaglio
 
 EXPOSITION:
+
+  ☐ Tre sale
+    ☐ Un testo per sala
+    ☐ Una o più immagini per sala
+    ☐ Scrollspy
+    ☐ materiale sensibile
+    ☐ zoomify
+
+
   ☐ theme list with thumbnail picture, click
     ☐ dettaglio tema
       ☐ diversi testi
@@ -44,6 +57,9 @@ EXPLORER:
      ☐ lazy load when tab is selected?
  ☐ TAB1 - md-list with steps
    ☐ on open, lazy load for content
+   ☐ data, luogo (source)
+   ☐ on open source + first page
+     ☐ on click open page browsing
  ☐ TAB2 - exposition
  ☐ TAB3 - tree explorer
 
@@ -104,6 +120,7 @@ SEARCH:
 
 WELCOME:
   ☐ Not an angular page......
+  ☐ submission amministratore...
   ✔ scrollspy also here @done (16-01-08 07:24)
     ✔ separate scrollspy section: on every field @done (16-01-08 07:24)
   ☐ FAB buttons
