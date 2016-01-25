@@ -1,0 +1,31 @@
+<div class="container" ng-controller="AdminController as adm">
+
+
+ <div class="row z-depth-2">
+  <md-tabs
+    md-dynamic-height md-border-bottom
+    md-swipe-content md-center-tabs
+    md-selected='adm.selectedTab'
+    >
+
+    <md-tab label="Welcome page"
+        md-on-select="adm.onTabSelected()">
+      <md-content class="md-padding">
+        Test 1
+      </md-content>
+    </md-tab>
+
+    <md-tab label="Steps" md-on-select="adm.onTabSelected()">
+      <md-content class="md-padding">
+        Test 2
+<!--
+        <div ng-include="adm.blueprintTemplateDir + 'tmp.html'"></div>
+ -->
+      </md-content>
+    </md-tab>
+
+  </md-tabs>
+
+ </div>
+
+</div>

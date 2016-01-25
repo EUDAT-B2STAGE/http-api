@@ -42,6 +42,17 @@ angular.module('web')
         },
 
     //////////////////////
+        'logged.details': {
+            url: "/details/:id",
+            views: {
+                "loggedview": {
+                    dir: 'blueprint',
+                    templateUrl: 'details.html',
+                }
+            }
+        },
+
+    //////////////////////
         'logged.explore': {
             url: "/explore",
             views: {
@@ -53,14 +64,23 @@ angular.module('web')
         },
 
     //////////////////////
-        'logged.details': {
-            url: "/details/:id",
+        'logged.admin': {
+            url: "/admin",
+// TO FIX:
+// ONLY ADMIN ROLE
             views: {
                 "loggedview": {
                     dir: 'blueprint',
-                    templateUrl: 'details.html',
+                    templateUrl: 'admin.html',
                 }
-            }
+            },
+            onEnter: function ($rootScope) {
+              $rootScope.toolbarColor = 'red darken-4';
+            },
+            onExit: function ($rootScope) {
+              $rootScope.toolbarColor =
+                angular.copy($rootScope.originalColor);
+            },
         },
 
     //////////////////////

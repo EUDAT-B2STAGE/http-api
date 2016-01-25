@@ -2,7 +2,18 @@
   'use strict';
 
 angular.module('web')
-    .controller('AppRootController', AppRootController);
+    .controller('AppRootController', AppRootController)
+    .controller('ToolbarController', ToolbarController);
+
+function ToolbarController($scope, $log, $rootScope)
+{
+    var self = this;
+    $log.debug("Toolbar controller");
+    var color = 'cyan darken-3';
+    $rootScope.originalColor = angular.copy(color);
+    $rootScope.toolbarColor = angular.copy(color);
+    self.shade = 'z-depth-2';
+}
 
 function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotkeys, keyshortcuts)
 {

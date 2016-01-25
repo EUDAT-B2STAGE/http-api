@@ -1,3 +1,4 @@
+
 >  Welcome and goodbye. And thanks for all the fish!
 
 --- ✄ -----------------------
@@ -13,10 +14,15 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 New fixed search:
 ✔ onenter and onexit route extra @done (16-01-25 11:10)
 ✔ Parties back @done (16-01-25 12:15)
- ☐ sub lazy load?
+ ☐ sub piece in lazy load?
 ✔ Tree back @done (16-01-25 12:42)
 ☐ chips watch?
 ☐ lazy load of more than 10 results
+☐ Application name inside the Toolbar should be a hand made font?
+
+Admin page:
+  ✔ Change toolbar color @done (16-01-25 16:03)
+  ☐ Tabs?
 
 History:
 ☐ save old state
@@ -41,15 +47,8 @@ EXPOSITION:
     ☐ Scrollspy
     ☐ materiale sensibile
     ☐ zoomify
-
-
-  ☐ theme list with thumbnail picture, click
-    ☐ dettaglio tema
-      ☐ diversi testi
-        ☐ per ogni testo uno o più immagini
-          ☐ dettaglio immagine (titolo, data, altro)
+  ☐ Design on a piece of paper
   ☐ un mosaico di immagini
-    ☐ click su singola immagini
 
 EXPLORER:
  ✔ To fix controller.... @bug @done (16-01-23 23:34)
