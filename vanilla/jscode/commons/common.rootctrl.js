@@ -19,12 +19,6 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
     self.customTemplateDir = customTemplateDir;
     self.blueprintTemplateDir = blueprintTemplateDir;
 
-    // Handling logged states
-    var loggedKey = 'logged.';
-    function checkLoggedState(stateName) {
-        return (stateName.name.slice(0, loggedKey.length) == loggedKey);
-    }
-
     // Let this login load after a little while
     $rootScope.loadTimer = $timeout(function() {
 
@@ -47,6 +41,13 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
     // Control states to create the menu
     var myObj = $state.get();
 
+    // Handling logged states
+    var loggedKey = 'logged.';
+    function checkLoggedState(stateName) {
+        return (stateName.name.slice(0, loggedKey.length) == loggedKey);
+    }
+
+    // DO THE MENU
 	forEach(myObj, function (x, i) {
         //$log.debug("Menu element", i , x);
 
@@ -58,12 +59,20 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
             // b - there is a parameter into the url (so direct link won't work)
 
     		if (checkLoggedState(x)) {
-    			$rootScope.menu.push(
-                    x.name.substr(loggedKey.length)
-                        .capitalizeFirstLetter());
+                var name = x.name.substr(loggedKey.length);
+                if (name != 'specialsearch') {
+                    $rootScope.menu.push(name.capitalizeFirstLetter());
+                }
     		}
         }
 	});
+
+    // In case of special search available
+    // Redirect to that state
+    $rootScope.activateSearch = function ()
+    {
+        $state.go('logged.specialsearch');
+    }
 
 	$log.info("Menu", $rootScope.menu);
 

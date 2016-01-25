@@ -25,7 +25,7 @@ angular.module('web')
 */
 
     //////////////////////
-        'logged.search': {
+        'logged.specialsearch': {
             url: "/search",
             views: {
                 "loggedview": {

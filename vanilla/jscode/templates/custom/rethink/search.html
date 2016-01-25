@@ -1,25 +1,27 @@
 
 <div ng-controller="SearchController as search">
 
-    <md-toolbar>
-      <div class="md-toolbar-tools md-whiteframe-9dp">
-        <md-button class="md-raised" aria-label="Learn More">
-            <a ui-sref='logged.explore'> &lt;- Back </a>
-        </md-button>
-        <h2>
-          <span>My toolbar</span>
-        </h2>
-      </div>
-    </md-toolbar>
+<!-- TOOLBAR -->
+<form ng-submit="$event.preventDefault()">
+ <md-toolbar>
+  <div class="md-toolbar-tools md-whiteframe-8dp">
+
+    <md-button class="md-raised" aria-label="Learn More">
+        <a ui-sref='logged.explore'> &lt;- Back </a>
+    </md-button>
+
+    <!-- search bar -->
+    <div ng-include="search.blueprintTemplateDir + 'tags.html'"></div>
+    <!-- search bar -->
+
+  </div>
+ </md-toolbar>
+</form>
+<!-- TOOLBAR -->
 
 <div class="container">
  <div ng-if='data' class="row z-depth-2">
-
-      <md-content
-        layout='column' layout-align='space-around stretch'>
-
-<!-- search bar -->
-        <div ng-include="search.blueprintTemplateDir + 'tags.html'"></div>
+  <md-content layout='column' layout-align='space-around stretch'>
 
 <!-- results -->
         <div ng-show="results">
@@ -36,8 +38,9 @@
         </div>
 <!-- results -->
 
-      </md-content>
-
+  </md-content>
  </div>
 </div> <!-- container -->
+
+<!-- Controller -->
 </div>

@@ -27,18 +27,18 @@ PROTOTYPE:
 SEARCH becomes FIXED inside the toolbar
 
  ✔ move templates and separate @done (16-01-23 18:53)
- ☐ fake input inside the topbar
-   ☐ skip search template inside the main menu?
- ☐ on focus (ng-focus) of fake input, switch to state 'search'
+ ✔ fake input inside the topbar @done (16-01-25 07:14)
+   ✔ skip search template inside the main menu? @done (16-01-25 07:14)
+ ✔ on focus (ng-focus) of fake input, switch to state 'search' @done (16-01-25 07:14)
    ✔ state search @done (16-01-23 18:54)
    ☐ or / keyword @hotkeyslib
    ☐ save old state @later
-     ☐ how to disable the original topbar?
-     ☐ a new topbar (md-topbar)
+     ✘ how to disable the original topbar? @cancelled (16-01-25 07:14)
+     ✔ a new topbar (md-topbar) @done (16-01-25 07:14)
        ☐ big (and only) search  autocomplete field inside topbar
-       ☐ very slim
-       ☐ white color
-       ☐ back button
+       ✘ very slim @cancelled (16-01-25 07:15)
+       ✘ white color @cancelled (16-01-25 07:15)
+       ✔ back button @done (16-01-25 07:15)
        ☐ can i show latest searches? cookies? @havetocheck
      ☐ results in a md-container inside the body page
        ☐ lazy load of more than 10 results
