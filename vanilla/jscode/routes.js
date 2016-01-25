@@ -110,17 +110,16 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
                 myViews[viewName] = {templateUrl: dir + view.templateUrl};
             });
 
-            // Add provider state to the ui router ROUTES
-            $stateProvider.state(stateName, {
+            var finalRoute = {
                 url: x.url,
-                //resolve: myResolve,
                 views: myViews,
-/*
-                onEnter: function ($rootScope) {
-                    $rootScope.avoidTheToolbar = false;
-                },
-*/
-            });
+                // ON ENTER AND EXIT
+                onEnter: x.onEnter,
+                onExit: x.onExit,
+            };
+
+            // Add provider state to the ui router ROUTES
+            $stateProvider.state(stateName, finalRoute);
         });
     }
 ////////////////////////////

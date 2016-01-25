@@ -4,10 +4,9 @@
 angular.module('web')
     .controller('DetailsController', DetailsController);
 
-function DetailsController($scope, $rootScope, $log, $stateParams, search)
+function DetailsController($scope, $log, $stateParams, search)
 {
     $log.info("Single view on", $stateParams.id);
-    $rootScope.avoidTheToolbar = false;
     var self = this;
     self.data = null;
 

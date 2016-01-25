@@ -6,12 +6,11 @@ angular.module('web')
     .controller('ChipsController', ChipsController)
     ;
 
-function SearchController($scope, $rootScope, $log, $state, search, hotkeys, keyshortcuts)
+function SearchController($scope, $log, $state, search, hotkeys, keyshortcuts)
 {
 
   // INIT controller
   var self = this;
-  $rootScope.avoidTheToolbar = true;
   $log.debug("Main SEARCH controller");
 
     // Init keys
@@ -99,7 +98,7 @@ function ChipsController($scope, $log, $q, $stateParams, search)
 
   // Init controller
   var self = this;
-  $log.debug("Chip controller", $stateParams.text);
+  $log.debug("Chip controller");
 
   // https://material.angularjs.org/latest/demo/chips
   self.chips = [];
@@ -142,10 +141,11 @@ function ChipsController($scope, $log, $q, $stateParams, search)
   }
 
   // AUTOCOMPLETE CODE
-  $log.debug("Auto Complete controller");
+  // HANDLE PARAMETER
   self.parameter = $stateParams.text;
-  if (self.parameter !== null)
-  {
+  $log.debug("Auto Complete controller", self.parameter);
+
+  if (self.parameter) {
     // Add value to chips
     var chip = {
         display: self.parameter,

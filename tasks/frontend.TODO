@@ -11,7 +11,7 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 --- ✄ -----------------------
 
 New fixed search:
-☐ onenter and onexit route extra
+✔ onenter and onexit route extra @done (16-01-25 11:10)
 ☐ lazy load of more than 10 results
 ☐ chips watch?
 ☐ save old state
@@ -21,6 +21,7 @@ New fixed search:
 BUGS:
 ☐ welcome spy padding?
 ☐ spy is probably broken in latest materialize?
+ ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
 
 EXPOSITION:
   ☐ theme list with thumbnail picture, click

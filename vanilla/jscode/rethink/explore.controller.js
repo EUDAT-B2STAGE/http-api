@@ -6,12 +6,11 @@ angular.module('web')
     .controller('TreeController', TreeController)
     ;
 
-function ExploreController($scope, $rootScope, $log, $state, search)
+function ExploreController($scope, $log, $state, search)
 {
 
   // INIT controller
   var self = this;
-  $rootScope.avoidTheToolbar = false;
   $log.debug("Explore data: controller");
 
   // Template Directories

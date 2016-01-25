@@ -33,6 +33,12 @@ angular.module('web')
                     templateUrl: 'search.html',
                 }
             },
+            onEnter: function ($rootScope) {
+                $rootScope.avoidTheToolbar = true;
+            },
+            onExit: function ($rootScope) {
+                $rootScope.avoidTheToolbar = false;
+            },
         },
 
     //////////////////////

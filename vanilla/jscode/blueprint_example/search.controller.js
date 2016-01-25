@@ -8,7 +8,6 @@ function SearchController($scope, $rootScope, $log, $state, search)
 {
   // Init
   $log.info("Ready to search");
-  //$rootScope.avoidTheToolbar = true;
   var self = this;
 
   // Template Directories
