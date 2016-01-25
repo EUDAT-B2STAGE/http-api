@@ -14,8 +14,8 @@
   <!-- content -->
 
       <!-- text -->
-      <div ng-repeat='(name, rows) in detail.refinedData'
-        id="_{{name}}"
+      <div ng-repeat='(name, rows) in detail.refinedData track by $index'
+        id="spy{{$index}}"
         class="section scrollspy" scrollspy>
         <table class='striped responsive-table'>
          <thead>
@@ -88,8 +88,8 @@
   <!-- Summary -->
       <div pushpin pushpin-offset="1">
       <ul class="section table-of-contents">
-        <li ng-repeat='(name, row) in detail.refinedData'>
-          <a href="#_{{name}}">
+        <li ng-repeat='(name, row) in detail.refinedData track by $index'>
+          <a href="#spy{{$index}}">
             {{name}}
           </a>
         </li>

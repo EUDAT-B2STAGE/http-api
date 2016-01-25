@@ -29,54 +29,8 @@ function ExploreController($scope, $rootScope, $log, $state, search)
       $log.debug("Selected", self.selectedTab);
   }
 
-
   $scope.ucFirst = function(string) {
     return string.capitalizeFirstLetter();
-  }
-
-  //////////////////////////////////////////////////////////
-  // https://material.angularjs.org/latest/demo/autocomplete
-
-  function loadAll(data_steps) {
-
-    // Prepare steps name
-    var steps = [];
-    forEach(data_steps, function(single, i){
-      steps[single.step.num] = single.step.name;
-    });
-    $scope.stepsInfo = steps;
-
-    // Prepare total array of autocomplete divided by types
-    var auto = [];
-    forEach($scope.autocomplete, function(data, step){
-      forEach(data, function(state, key){
-        auto.push({
-          value: state.toLowerCase(),
-          display: state,
-          type: steps[step+1],
-        })
-      });
-    });
-    return auto;
-  }
-
-  $scope.fillTable = function(response)
-  {
-    $log.debug("FILLING TABLE");
-    $scope.data = [];
-    $scope.dataCount = response.elements;
-    $scope.results = true;
-
-    forEach(response.data, function (x, i)
-    {
-      // SINGLE DETAILS
-      search.getSingleData(x.record, false)
-       .then(function(element)
-      {
-          $scope.data.push(element);
-// FIX HTML VIEW?
-      });
-    });
   }
 
 }

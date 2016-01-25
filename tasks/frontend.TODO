@@ -40,13 +40,14 @@ SEARCH becomes FIXED inside the toolbar
        ✘ white color @cancelled (16-01-25 07:15)
        ✔ back button @done (16-01-25 07:15)
        ☐ can i show latest searches? cookies? @havetocheck
-     ☐ results in a md-container inside the body page
+     ✔ results in a md-container inside the body page @done (16-01-25 07:32)
        ☐ lazy load of more than 10 results
      ☐ add a button to search all inside the search page
        ☐ or if press enter inside empty search
- ☐ on blur (ng-blur) of real input
-   ☐ go back to previous state @later
-   ☐ or ESC keyword @hotkeyslib
+ ☐ Get out of search
+   ☐ ESC keyword @hotkeyslib
+   ☐ on blur? how do i apply that to autocomplete input?
+     ☐ go back to previous state @later
 
 EXPLORER
  ✔ To fix controller.... @bug @done (16-01-23 23:34)

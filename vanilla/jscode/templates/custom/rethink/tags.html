@@ -1,7 +1,7 @@
 
 <!-- SEARCH INPUT -->
-<div ng-controller="ChipsController as cchip"
-    class=""
+<div class=""
+    ng-controller="ChipsController as cchip"
     layout="row" layout-align="center center">
 
 <i class="material-icons prefix">search</i>
@@ -14,9 +14,9 @@
   md-autocomplete-snap>
 
 <!-- AUTOCOMPLETE INPUT -->
-  <md-autocomplete
-      md-search-text="auto.searchText"
-      md-items="item in auto.querySearch()"
+   <md-autocomplete
+      md-search-text="cchip.searchText"
+      md-items="item in cchip.querySearch()"
       md-item-text="item.display"
       md-menu-class="autocomplete-custom-template"
       placeholder="Write to search" md-min-length="1"
@@ -24,7 +24,7 @@
 
     <md-item-template>
       <span class="item-title">
-        <span md-highlight-text="auto.searchText" md-highlight-flags="^i"
+        <span md-highlight-text="cchip.searchText" md-highlight-flags="^i"
         >{{item.display}}</span>
       </span>
       <span class="item-metadata">
@@ -34,7 +34,7 @@
       </span>
     </md-item-template>
     <md-not-found> No string matching </md-not-found>
-  </md-autocomplete>
+   </md-autocomplete>
 <!-- AUTOCOMPLETE INPUT -->
 
     <md-chip-template>
