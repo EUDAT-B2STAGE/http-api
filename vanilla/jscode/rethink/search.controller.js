@@ -6,13 +6,23 @@ angular.module('web')
     .controller('ChipsController', ChipsController)
     ;
 
-function SearchController($scope, $rootScope, $log, $state, search)
+function SearchController($scope, $rootScope, $log, $state, search, hotkeys, keyshortcuts)
 {
 
   // INIT controller
   var self = this;
   $rootScope.avoidTheToolbar = true;
   $log.debug("Main SEARCH controller");
+
+    // Init keys
+    hotkeys.bindTo($scope)
+        .add({
+            combo: "esc",
+            description: "Quit from searching",
+            callback: function() {
+                keyshortcuts.exitSearch(event, self);
+            }
+        });
 
   // Template Directories
   self.templateDir = templateDir;
@@ -155,7 +165,6 @@ function ChipsController($scope, $log, $q, search)
   }
 
   self.searchAll = function () {
-      $log.debug("Search ALL");
       // Do query
       search.getData().then(function(out_data) {
         self.dataCount = NaN;

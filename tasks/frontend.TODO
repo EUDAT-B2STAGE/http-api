@@ -32,7 +32,7 @@ SEARCH becomes FIXED inside the toolbar
    ✔ skip search template inside the main menu? @done (16-01-25 07:14)
  ✔ on focus (ng-focus) of fake input, switch to state 'search' @done (16-01-25 07:14)
    ✔ state search @done (16-01-23 18:54)
-   ☐ or / keyword @hotkeys
+   ✔ or / keyword @hotkeys @done (16-01-25 09:36)
    ☐ save old state @later
      ✘ how to disable the original topbar? @cancelled (16-01-25 07:14)
      ✔ a new topbar (md-topbar) @done (16-01-25 07:14)
@@ -43,11 +43,11 @@ SEARCH becomes FIXED inside the toolbar
        ☐ can i show latest searches? cookies? @havetocheck
      ✔ results in a md-container inside the body page @done (16-01-25 07:32)
        ☐ lazy load of more than 10 results
-     ☐ SEARCH ALL
-       ☐ button and function
-       ☐ or if press enter inside empty search @hotkeys
+     ✔ SEARCH ALL @done (16-01-25 09:37)
+       ✔ button and function @done (16-01-25 09:37)
+       ✘ or if press enter inside empty search @hotkeys @cancelled (16-01-25 09:37)
  ☐ Get out of search
-   ☐ ESC keyword @hotkeys
+   ✔ ESC keyword @hotkeys @done (16-01-25 09:36)
    ☐ on blur? how do i apply that to autocomplete input?
      ☐ go back to previous state @later
 

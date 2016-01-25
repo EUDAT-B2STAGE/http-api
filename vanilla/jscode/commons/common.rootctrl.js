@@ -4,11 +4,21 @@
 angular.module('web')
     .controller('AppRootController', AppRootController);
 
-function AppRootController($scope, $rootScope, $log, $state, $timeout,api)
+function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotkeys, keyshortcuts)
 {
     // Init controller
     var self = this;
     $log.debug("Root controller");
+
+    // Init keys
+    hotkeys.bindTo($scope)
+        .add({
+            combo: "/",
+            description: "Use quick search form",
+            callback: function() {
+                keyshortcuts.search(event, self);
+            }
+        });
 
     // Init the models
     $rootScope.menu = [];
