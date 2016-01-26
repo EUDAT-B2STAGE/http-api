@@ -73,8 +73,17 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
     // HTML5 mode: remove hash bang to let url be parsable
     $locationProvider.html5Mode(true);
 
-    // // Change angular variables from {{}} to [[]]
+// Change angular variables from {{}} to [[]] ?
     // $interpolateProvider.startSymbol('[[').endSymbol(']]');
+
+/*
+// Issue of state.current.name empty on refresh:
+// http://stackoverflow.com/a/29943256
+    // Prevent $urlRouter from automatically intercepting URL changes;
+    // this allows you to configure custom behavior in between
+    // location changes and route synchronization:
+    $urlRouterProvider.deferIntercept();
+*/
 
     // Performance:
     // make all http requests that return in around the same time

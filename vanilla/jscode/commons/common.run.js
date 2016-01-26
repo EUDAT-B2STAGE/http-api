@@ -5,8 +5,19 @@
 angular.module('web')
     .run(runBlock);
 
-function runBlock($log, $rootScope, $cacheFactory, $templateCache) {
+function runBlock($log, $rootScope, $cacheFactory, $templateCache,  $urlRouter)
+{
 	$log.debug('The RUN block');
+
+/*
+// Issue of state.current.name empty on refresh:
+// http://stackoverflow.com/a/29943256
+    // Once the user has logged in, sync the current URL
+    // to the router:
+     $urlRouter.sync();
+    // Configures $urlRouter's listener *after* your custom listener
+    $urlRouter.listen();
+*/
 
     // SPECIFIC FOR UI ROUTER
     // Execute every time a state change begins

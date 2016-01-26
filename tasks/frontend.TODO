@@ -23,12 +23,14 @@ New fixed search:
 WELCOME:
   ✔ Make this angular page @done (16-01-26 08:24)
     ✔ move it to internal angular routing @done (16-01-26 08:24)
-  ☐ parallax ng-repeat?
-    ☐ based on content and images
+  ☐ Admin page
     ✔ admin api @done (16-01-26 08:24)
       ☐ post with json
       ☐ input form
-  ☐ upload and save given images
+  ☐ Welcome controller
+    ☐ upload and save given images
+    ☐ parallax ng-repeat?
+      ☐ based on content and images
 
 Admin page:
   ✔ Change toolbar color @done (16-01-25 16:03)
@@ -43,6 +45,7 @@ History:
 
 BUGS:
 ☐ welcome spy padding?
+✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
 ☐ Some times chips do not see change of text?
 ☐ spy is probably broken in latest materialize? @toverifyagain
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
