@@ -1,0 +1,11 @@
+
+#################################
+# Database administration
+
+# This image let you access the postgres db with a 'phpmyadmin' like web page
+sqladmin:
+    image: clue/adminer
+    links:
+        - sql:db
+    ports:
+        - 8080:80

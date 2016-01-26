@@ -1,0 +1,19 @@
+#  The idea is to extend the original composer
+# to add some init command to launch only the first time.
+
+# After init data will be saved as volumes.
+# Note: do not remove volumes from your docker environment!
+
+# Instructions followed to extend the original composer:
+# https://docs.docker.com/compose/extends/#example-use-case
+# Paragraph: Administrative tasks
+
+sql:
+    volumes:
+     - ./confs/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+
+icat:
+    command: /install
+    #command: sleep infinity    ## DEBUG
+    volumes:
+     - ./confs/credentials.conf:/myconfig:ro

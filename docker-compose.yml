@@ -1,0 +1,94 @@
+########################
+# took inspiration from:
+#https://github.com/irods/contrib/blob/master/irods-docker/icat/Dockerfile
+
+#################################
+# Postgres database server
+sql:
+    image: postgres
+    volumes:
+        - sqldata:/var/lib/postgresql/data
+    environment:
+        POSTGRES_USER: irods
+        POSTGRES_PASSWORD: icatserver
+        POSTGRES_DB: ICAT
+
+#################################
+# iRODS iCAT server for EUDAT B2safe
+icat:
+
+    # # Simple irods server
+    # image: cineca/icat
+
+    ## OR
+
+    # B2safe instance on irods
+    image: cineca/b2safe
+
+    # # Open irods port to Outside world
+    # ## CAREFULL: don't uncomment the two lines below if you don't know why
+    # ports:
+    #     - 1247:1247
+
+    hostname: rodserver
+    volumes:
+        - irodsconf:/etc/irods
+        - irodshome:/home/irods
+        - irodsresc:/opt/irods_res
+        - eudathome:/opt/eudat
+    links:
+        - sql:db
+
+#################################
+# GRAPHdb neo4j
+igraph:
+    image: neo4j/neo4j
+    #command: sleep infinity
+    hostname: gdb
+    environment:
+        NEO4J_AUTH: neo4j/eudat
+    # volumes:
+    #     - ./confs/neo4j:/conf
+    ports:
+        - 8000:7474
+
+#################################
+# iRODS iCAT server for EUDAT B2safe
+iclient:
+    image: cineca/ipyclient
+    hostname: api
+    command: sleep infinity
+    #command: python run.py --debug
+    environment:
+        IRODS_USER: rods
+        IRODS_ZONE: tempZone
+    ports:
+        - 80:5000
+    working_dir: /code/rest-mock
+    volumes:
+        # Sql lite database
+        - irodsrestlitedb:/dbs
+        # Base code
+        - ./code:/code
+        # Rest API endpoints
+        - ./vanilla/apis:/code/rest-mock/restapi/resources/custom
+        # Rest API configuration
+        - ./vanilla/specs/endpoints.ini:/code/rest-mock/confs/endpoints.ini
+    links:
+        - icat:rodserver
+        - igraph:gdb
+
+#################################
+
+##NOTES
+
+# May use sqlacodegen to get the sqlalchemy models from irods postegres db
+# http://stackoverflow.com/a/23786811
+# In this way we may easily admin the irods users with flask-admin?
+# Also use flask-security to use irods to get login?
+
+#################################
+
+# $ docker-compose -f docker-compose.yml -f init.yml up -d
+## wait the operations and then press CTRL-c
+# $ docker-compose up
