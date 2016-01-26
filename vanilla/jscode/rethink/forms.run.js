@@ -2,9 +2,9 @@
   'use strict';
 
 // DISABLE THE MAIN RUN
-//angular.module('web').run(runBlock);
+angular.module('web').run(formRun);
 
-function runBlock($log, editableOptions, editableThemes, formlyConfig)
+function formRun($log, editableOptions, editableThemes, formlyConfig)
 {
     $log.debug('Run the app :)');
 
@@ -23,7 +23,8 @@ https://github.com/vitalets/angular-xeditable/issues/232
     errorTpl:     '<div ng-messages="{message: $error}"><div class="editable-error" ng-message="message">{{$error}}</div></div>',
     buttonsTpl:   '<span class="editable-buttons"></span>',
     submitTpl:    '<md-button type="submit" class="md-primary">save</md-button>',
-    cancelTpl:    '<md-button type="button" class="md-warn" ng-click="$form.$cancel()">cancel</md-button>'
+    //submitTpl:    '<button class="btn btn-primary"> UHMsave </button>',
+    cancelTpl:    '<md-button type="button" class="md-warn" ng-click="$form.$cancel()">cancel</md-button>',
   };
 
   editableOptions.theme = 'angular-material';

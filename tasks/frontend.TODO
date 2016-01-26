@@ -19,6 +19,9 @@ New fixed search:
 ☐ chips watch?
 ☐ lazy load of more than 10 results
 ☐ Application name inside the Toolbar should be a hand made font?
+☐ Quick elastic search
+ ☐ Show autocomplete inside search bar after first char
+ ☐ query elastic search
 
 WELCOME:
   ✔ Make this angular page @done (16-01-26 08:24)
@@ -45,15 +48,15 @@ History:
  ☐ show a clickable div that change ui router state
 
 BUGS:
-☐ welcome spy padding?
+✔ welcome spy padding? @done (16-01-26 15:11)
 ✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
-☐ Some times chips do not see change of text?
 ☐ spy is probably broken in latest materialize? @toverifyagain
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
  ☐ table are not same size on details
  ☐ extrait not complete list
  ☐ mostra nella pagina di ricerca
  ☐ mostra nella pagina di dettaglio
+☐ Some times chips do not see change of text?
 
 EXPOSITION:
   DESIGN ON A PIECE OF PAPER
