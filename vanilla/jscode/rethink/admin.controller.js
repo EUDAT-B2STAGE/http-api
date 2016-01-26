@@ -9,7 +9,35 @@ function AdminController($scope, $rootScope, $log, admin)
   // Init controller
   var self = this;
   $log.debug("ADMIN page controller");
-  self.model = {};
+
+  self.model = {
+    name: 'This is editable!'
+  };
+/*
+  self.options = {};
+  self.fields = [
+    {
+      key: 'text',
+      type: 'editableInput',
+      templateOptions: {
+        label: 'Text'
+      }
+    }
+  ];
+  self.originalFields = angular.copy(self.fields);
+*/
+
+  // function definition
+  self.saveForm = function () {
+    console.log("MODEL", self.model);
+  }
+
+/*
+  self.onSubmit = function () {
+    self.options.updateInitialValue();
+    console.log("MODEL", self.model);
+  }
+*/
 
   // Template Directories
   self.templateDir = templateDir;

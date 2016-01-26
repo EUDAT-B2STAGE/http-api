@@ -89,3 +89,13 @@ header, main, footer {
     bottom: 10px;
     right: 30px;
 }
+
+/*
+https://github.com/vitalets/angular-xeditable/issues/232#issuecomment-73084466
+*/
+md-input-container.editable-controls {
+  padding: 0;
+}
+md-input-container.editable-controls [ng-message] {
+  position: static;
+}

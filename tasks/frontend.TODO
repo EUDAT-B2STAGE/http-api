@@ -27,6 +27,7 @@ WELCOME:
     ✔ admin api @done (16-01-26 08:24)
       ☐ post with json
       ☐ input form
+        ✔ xeditable material @done (16-01-26 11:36)
   ☐ Welcome controller
     ☐ upload and save given images
     ☐ parallax ng-repeat?
