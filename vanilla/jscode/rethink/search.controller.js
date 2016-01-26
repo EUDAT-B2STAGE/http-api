@@ -32,12 +32,6 @@ function SearchController($scope, $log, $state, search, hotkeys, keyshortcuts)
   $scope.data = {};
   $scope.results = false;
 
-  //TABS
-  self.selectedTab = null;
-  self.onTabSelected = function () {
-      $log.debug("Selected", self.selectedTab);
-  }
-
   //////////////////////////////////////////////////////////
   // https://material.angularjs.org/latest/demo/autocomplete
 

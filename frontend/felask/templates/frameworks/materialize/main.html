@@ -4,13 +4,13 @@
 
 {%- block topbar %}
 <!-- TOPBAR -->
-<div
-    ng-hide="avoidTheToolbar"
-    class="navbar z-depth-2">
+<div ng-controller="ToolbarController as tool"
+    ng-hide="avoidTheToolbar" class="navbar"
+    ng-class="tool.shade" ng-cloak>
 	<nav>
-	  <div class="nav-wrapper cyan darken-3">
+      <div ng-class="toolbarColor" class="nav-wrapper white">
 		{%- if g.user.is_authenticated -%}
-          <a ui-sref='logged' class="brand-logo brandpad">
+          <a ui-sref='welcome' class="brand-logo brandpad">
 			{{ project[0].upper() + project[1:].lower() }}
           </a>
 		{%- else -%}

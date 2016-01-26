@@ -1,28 +1,7 @@
-{% extends 'frameworks/materialize/base.html' %}
-
-{%- block content %}
-
-<!-- TOPBAR -->
-<div class="navbar">
-	<nav>
-	  <div class="nav-wrapper teal">
-	  <a href="#" class="brand-logo"
-	  	style='padding-left: 30px;'
-	    data-activates="slide-out" data-sidenav="left"
-	    data-menuwidth="180" data-closeonclick="false">
-	    ProjectName
-	  </a>
-	  <ul id="nav-mobile" class="right hide-on-med-and-down">
-	    <li><a href="/login">Login</a></li>
-	  </ul>
-	  </div>
-	</nav>
-</div>
-<!-- TOPBAR END -->
 
 <div class="row">
 <!-- SLIDER -->
-<div class="col s12 m10 l11">
+<div class="col s12 m10 l10">
 
     <!-- SLIDER -->
   <div id='step1' class="section scrollspy" scrollspy>
@@ -162,7 +141,7 @@
 <!-- wrapper for scrollspy -->
 
 <!-- Summary -->
-<div class="col hide-on-small-only m2 l1">
+<div class="col hide-on-small-only m2 l2">
   <div pushpin pushpin-offset="1">
   <ul class="section table-of-contents">
     <li> <a href="#step1"> Welcome </a>
@@ -176,39 +155,3 @@
 
 <!-- end of row -->
 </div>
-
-{% endblock %}
-
-{%- if footer %}{% block footer %}
-<footer class="page-footer teal darken-2">
-  <div class="container">
-    <div class="row">
-      <div class="col l6 s12">
-        <h5 class="white-text">Contacts</h5>
-        <p class="grey-text text-lighten-4">
-            <ul>
-                <li>Chief responsible</li>
-                <li>Art director</li>
-                <li>Operators</li>
-            </ul>
-        </p>
-      </div>
-      <div class="col l4 offset-l2 s12">
-        <h5 class="white-text">Usefull Links</h5>
-        <ul>
-          <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
-          <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
-          <li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="footer-copyright">
-    <div class="container">
-    © 2016 Copyright Text
-    <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
-    </div>
-  </div>
-  {% block extrafootercontent %}{% endblock %}
-</footer>
-{% endblock %}{% endif -%}

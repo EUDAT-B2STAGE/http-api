@@ -19,7 +19,8 @@
 		//"angular-loading-bar/build/loading-bar.min.css",
 		"angular-tree-control/css/tree-control.css",
 		//"angular-tree-control/css/tree-control-attribute.css"
-		"angular-hotkeys/build/hotkeys.min.css"
+		"angular-hotkeys/build/hotkeys.min.css",
+        "angular-xeditable/dist/css/xeditable.css"
 	],
 // USER CUSTOM CSS
 	"customcss" : [
@@ -71,7 +72,8 @@
 		"angular-hotkeys/build/hotkeys.min.js",
 		"api-check/dist/api-check.min.js",
 		"angular-formly/dist/formly.min.js",
-		"angular-formly-material/dist/formly-material.min.js"
+		"angular-formly-material/dist/formly-material.min.js",
+        "angular-xeditable/dist/js/xeditable.min.js"
 	    //"moment/min/moment.min.js",
 	],
 // USER CUSTOM APP

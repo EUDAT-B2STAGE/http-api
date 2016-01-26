@@ -1,13 +1,27 @@
-// I DISABLED THIS CODE BY REMOVING PARENTHESIS AT THE END OF THE FILE
 (function() {
   'use strict';
 
-angular.module('web')
-    .run(runBlock);
+// DISABLE THE MAIN RUN
+//angular.module('web').run(runBlock);
 
-function runBlock($log, $rootScope, $cacheFactory, $templateCache) {
-	$log.debug('The RUN block');
+function runBlock($log,
+    $rootScope, $cacheFactory, $templateCache, $urlRouter,
+    editableOptions, editableThemes, formlyConfig
+    )
+{
+	$log.debug('Run the app :)');
 
+/*
+// Issue of state.current.name empty on refresh:
+// http://stackoverflow.com/a/29943256
+    // Once the user has logged in, sync the current URL
+    // to the router:
+     $urlRouter.sync();
+    // Configures $urlRouter's listener *after* your custom listener
+    $urlRouter.listen();
+*/
+
+/*
     // SPECIFIC FOR UI ROUTER
     // Execute every time a state change begins
     $rootScope.$on('$stateChangeSuccess',
@@ -24,7 +38,7 @@ function runBlock($log, $rootScope, $cacheFactory, $templateCache) {
                 }
             }
         });
-
+*/
 }
-})
-//();
+
+})();

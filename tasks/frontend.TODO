@@ -1,3 +1,4 @@
+
 >  Welcome and goodbye. And thanks for all the fish!
 
 --- ✄ -----------------------
@@ -12,11 +13,31 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
 New fixed search:
 ✔ onenter and onexit route extra @done (16-01-25 11:10)
-✔ Parties back @done (16-01-25 12:15)
- ☐ sub lazy load?
 ✔ Tree back @done (16-01-25 12:42)
+✔ Parties back @done (16-01-25 12:15)
+ ☐ sub piece in lazy load?
 ☐ chips watch?
 ☐ lazy load of more than 10 results
+☐ Application name inside the Toolbar should be a hand made font?
+
+WELCOME:
+  ✔ Make this angular page @done (16-01-26 08:24)
+    ✔ move it to internal angular routing @done (16-01-26 08:24)
+  ☐ Admin page
+    ✔ admin api @done (16-01-26 08:24)
+      ☐ post with json
+      ☐ input form
+        ✔ xeditable material @done (16-01-26 11:36)
+  ☐ Welcome controller
+    ☐ upload and save given images
+    ☐ parallax ng-repeat?
+      ☐ based on content and images
+
+Admin page:
+  ✔ Change toolbar color @done (16-01-25 16:03)
+  ☐ Tabs?
+  ☐ FAB plus button
+  http://codepen.io/kyleledbetter/full/gbQOaV/
 
 History:
 ☐ save old state
@@ -25,18 +46,27 @@ History:
 
 BUGS:
 ☐ welcome spy padding?
+✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
 ☐ Some times chips do not see change of text?
 ☐ spy is probably broken in latest materialize? @toverifyagain
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
+ ☐ table are not same size on details
+ ☐ extrait not complete list
+ ☐ mostra nella pagina di ricerca
+ ☐ mostra nella pagina di dettaglio
 
 EXPOSITION:
-  ☐ theme list with thumbnail picture, click
-    ☐ dettaglio tema
-      ☐ diversi testi
-        ☐ per ogni testo uno o più immagini
-          ☐ dettaglio immagine (titolo, data, altro)
-  ☐ un mosaico di immagini
-    ☐ click su singola immagini
+  DESIGN ON A PIECE OF PAPER
+
+  ☐ Tre sale
+    ☐ Scrollspy
+      ☐ Un testo per sala
+      ☐ Una o più immagini per sala
+    ☐ Sections gallery
+      ☐ un mosaico di immagini
+      http://foundation.zurb.com/sites/docs/v/5.5.3/components/clearing.html
+    ☐ materiale sensibile?
+    ☐ zoomify
 
 EXPLORER:
  ✔ To fix controller.... @bug @done (16-01-23 23:34)
@@ -44,6 +74,9 @@ EXPLORER:
      ☐ lazy load when tab is selected?
  ☐ TAB1 - md-list with steps
    ☐ on open, lazy load for content
+   ☐ data, luogo (source)
+   ☐ on open source + first page
+     ☐ on click open page browsing
  ☐ TAB2 - exposition
  ☐ TAB3 - tree explorer
 
@@ -101,21 +134,6 @@ SEARCH:
         ☐ Excel load
         ☐ web site insert
       ☐ step list angular inline filter
-
-WELCOME:
-  ☐ Not an angular page......
-  ✔ scrollspy also here @done (16-01-08 07:24)
-    ✔ separate scrollspy section: on every field @done (16-01-08 07:24)
-  ☐ FAB buttons
-    ☐ if not logged
-      ☐ search, login
-    ☐ if logged
-      ☐ insert for normal or exibition
-      ☐ search for normal or exibition
-  ☐ put given images
-  ☐ autocomplete search box?
-  ☐ parallax ng-repeat?
-    ☐ based on content and images
 
 DETAILS:
   ☐ Zoomify
@@ -341,3 +359,5 @@ COMPLETED:
        ✘ or if press enter inside empty search @hotkeys @cancelled (16-01-25 09:37)
  ✔ Get out of search @done (16-01-25 10:22)
    ✔ ESC keyword @hotkeys @done (16-01-25 09:36)
+  ✔ scrollspy also here @done (16-01-08 07:24)
+    ✔ separate scrollspy section: on every field @done (16-01-08 07:24)

@@ -2,13 +2,33 @@
   'use strict';
 
 angular.module('web')
-    .controller('AppRootController', AppRootController);
+    .controller('AppRootController', AppRootController)
+    .controller('ToolbarController', ToolbarController);
+
+function ToolbarController($scope, $log, $rootScope)
+{
+    var self = this;
+    $log.debug("Toolbar controller");
+    var color = 'cyan darken-3';
+    $rootScope.originalColor = angular.copy(color);
+    $rootScope.toolbarColor = angular.copy(color);
+    self.shade = 'z-depth-2';
+}
 
 function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotkeys, keyshortcuts)
 {
     // Init controller
     var self = this;
     $log.debug("Root controller");
+
+    // Passing a global variable
+    self.templateDir = templateDir;
+    self.customTemplateDir = customTemplateDir;
+    self.blueprintTemplateDir = blueprintTemplateDir;
+
+    // Init the models
+    $rootScope.menu = [];
+    self.load = true;
 
     // Init keys
     hotkeys.bindTo($scope)
@@ -20,42 +40,51 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
             }
         });
 
-    // Init the models
-    $rootScope.menu = [];
-    self.load = true;
-
-    // Passing a global variable
-    self.templateDir = templateDir;
-    self.customTemplateDir = customTemplateDir;
-    self.blueprintTemplateDir = blueprintTemplateDir;
-
-    // Let this login load after a little while
-    $rootScope.loadTimer = $timeout(function() {
-
-        // Do we need extra time to show the page?
-        var moreTime = 1;
-        if (!checkLoggedState($state.current) && api.checkToken() !== null) {
-            if ($state.current.name == 'login') {
-                // Avoid the user to see the reload of the page
-                moreTime = 500;
-                $log.debug("More time", moreTime);
-            }
-            $state.go('logged');
-        }
-        // Show the page content
-        $timeout(function() {
-            self.load = false;
-        }, moreTime);
-    }, timeToWait);
-
-    // Control states to create the menu
-    var myObj = $state.get();
-
     // Handling logged states
     var loggedKey = 'logged.';
     function checkLoggedState(stateName) {
         return (stateName.name.slice(0, loggedKey.length) == loggedKey);
     }
+
+    self.initTimer = function (current) {
+
+        // Do not wait on intro page
+        self.intro = (current.name == 'welcome');
+        if (self.intro) { timeToWait = 0; }
+
+        // Check if not logged state and not authorized
+        if (!checkLoggedState(current) && api.checkToken() !== null)
+        {
+            // If login page, we need extra time
+            if (current.name == 'login') {
+                // Avoid the user to see the reload of the page
+                timeToWait += 500;
+            }
+            // If welcome page, don't do anything
+            if (!self.intro) {
+                console.log("Going to logged");
+                // Try to force logging
+                $state.go('logged');
+            }
+        }
+
+        // Let this login load after a little while
+        $log.debug("Load page timeout:", timeToWait);
+        $rootScope.loadTimer = $timeout(function() {
+            // Show the page content
+            self.load = false;
+        }, timeToWait);
+    }
+
+    $rootScope.$on('$stateChangeSuccess',
+      function (event, toState, toParams, fromState, fromParams) {
+        console.log("Current is", toState);
+        self.initTimer(toState);
+      }
+    )
+
+    // Control states to create the menu
+    var myObj = $state.get();
 
     // DO THE MENU
 	forEach(myObj, function (x, i) {

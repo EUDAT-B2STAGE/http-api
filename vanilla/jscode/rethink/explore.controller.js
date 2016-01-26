@@ -27,7 +27,7 @@ function ExploreController($scope, $rootScope, $log, $state, search)
   self.selectedTab = null;
   self.onTabSelected = function () {
       $log.debug("Selected", self.selectedTab);
-      if (self.selectedTab == 2) {
+      if (self.selectedTab == 1) {
           //Load data for the tree
           search.getSteps(true).then(function (out)
           {
