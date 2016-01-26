@@ -9,8 +9,10 @@ console.log('POST');
 
   angular
     .module('web', [
+// BASE
         //'ngAnimate',
         'ngSanitize',
+// ROUTING
         'ui.router', //'ngRoute',
 // BOOTSTRAP
         //'mgcrea.ngStrap',
@@ -18,9 +20,12 @@ console.log('POST');
         'ngMaterial',
 // MATERIAL DESIGN
         'ui.materialize',
+// AUTH
+        'satellizer',
 
 //////////////////////////////////////
-        'satellizer',
+/* Custom */
+
 // THE LOADING BAR
         //'angular-loading-bar',
         //'cfp.loadingBar',
@@ -28,13 +33,17 @@ console.log('POST');
         'angularLazyImg',
 // MAKE DATA TREE explorer
         'treeControl',
-// KEYBOARD SHORTCUTS        
+// KEYBOARD SHORTCUTS
         'cfp.hotkeys',
 // FORMS FROM JSON SCHEMAS
-        'formly',        
+        'formly',
         'formlyMaterial',
-// OTHERS?
-        //'blueprint',
+// EDITABLE FORMS
+        'xeditable',
+
+/* Custom end */
+//////////////////////////////////////
+
     ]);
 
 })();

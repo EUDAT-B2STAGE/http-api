@@ -17,7 +17,8 @@
     "angular-hotkeys": "chieffancypants/angular-hotkeys#~1.6.0",
     "angular-formly": "~7.3.9",
     "angular-formly-material": "~0.14.0",
-    "api-check": "~7.5.5"
+    "api-check": "~7.5.5",
+    "angular-xeditable": "~0.1.9"
   },
   "devDependencies": {
     "angular-mocks": "~1.4.8"
