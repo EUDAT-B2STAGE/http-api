@@ -22,12 +22,11 @@ If you need to jump in as soon as possible:
 
 ```bash
 # Clone repo
-git clone https://github.com/cineca-scai/docker-experiments.git
-# Go into this directory
-cd composers/irods
+git clone ...
 # Init services
 docker-compose -f docker-compose.yml -f init.yml up icat
 # When completed press CTRL-c
+
 # Check volumes for persistence
 docker volume ls
 ##DRIVER              VOLUME NAME
