@@ -1,21 +1,33 @@
 
+UPDATES:
+
+☐ Update docker images
+ ☐ use python 3
+ ☐ or check commentjson is installed
+☐ Save graphdb data into a volume
+  ☐ update docs
+  ☐ update run script
+☐ Update docs
+
+DRAFT:
+
+☐ Move rest-mock to base and call it 'backend'
+☐ Resource endpoint
+ ☐ to put object to irods
+
 FIRST STEPS:
 
-  ☐ Update docs
-  ☐ Save graphdb data into a volume
-    ☐ update docs
-    ☐ update run script
-
-
-  ☐ clone (graph) code inside icat server too
-    ✔ copy models inside module @done (15-12-21 23:57)
-  ☐ script to push data
-    ☐ args: DATAOBJ PID [METADATA]
-    ☐ test icat irule with epic handle?
-    ☐ manually insert dataobj + pid with irule
+☐ clone (graph) code inside icat server too
+  ✔ copy models inside module @done (15-12-21 23:57)
+☐ script to push data
+  ☐ args: DATAOBJ PID [METADATA]
+  ☐ test icat irule with epic handle?
+  ☐ manually insert dataobj + pid with irule
   ☐ api: search pid via graphdb models
 
 REST authentication:
 
   ☐ is not @pluggable
     ☐ how can we make it so?
+
+--- ✄ -----------------------

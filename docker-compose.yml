@@ -73,7 +73,8 @@ iclient:
         # Rest API endpoints
         - ./vanilla/apis:/code/rest-mock/restapi/resources/custom
         # Rest API configuration
-        - ./vanilla/specs/endpoints.ini:/code/rest-mock/confs/endpoints.ini
+        - ./vanilla/specs:/code/rest-mock/confs/endpoints
+        #- ./vanilla/specs/endpoints.ini:/code/rest-mock/confs/endpoints.ini
     links:
         - icat:rodserver
         - igraph:gdb
