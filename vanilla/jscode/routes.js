@@ -127,6 +127,20 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
 // ROUTES
 $stateProvider
 
+// Welcome page
+    .state("welcome", {
+        url: "/welcome",
+        views: {
+            "menu": {
+                templateUrl: templateDir + 'intro_menu.html',
+            },
+            "main": {
+                templateUrl: templateDir + 'intro.html',
+            }
+        }
+    })
+
+// If i see API are not available
     .state("offline", {
         url: "/offline",
         views: {
@@ -134,6 +148,7 @@ $stateProvider
         }
     })
 
+// To log the user in
     .state("login", {
         url: "/login",
         resolve: {
@@ -144,6 +159,7 @@ $stateProvider
         }
     })
 
+// Base for the app views
     .state("logged", {
         url: "/app",
         // This parent checks for authentication and api online
@@ -183,7 +199,8 @@ $stateProvider
     $urlRouterProvider.otherwise(function ($injector) {
         console.log("OTHERWISE");
         var $state = $injector.get('$state');
-        return $state.go('login');
+        //return $state.go('login');
+        return $state.go('welcome');
     });
 
 }   // END CONFIG

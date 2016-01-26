@@ -40,24 +40,37 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
     self.customTemplateDir = customTemplateDir;
     self.blueprintTemplateDir = blueprintTemplateDir;
 
-    // Let this login load after a little while
-    $rootScope.loadTimer = $timeout(function() {
+    self.initTimer = function () {
+        // Do not wait on intro page
+        self.intro = ($state.current.name == 'welcome');
+        if (self.intro) { timeToWait = 0; }
 
-        // Do we need extra time to show the page?
-        var moreTime = 1;
-        if (!checkLoggedState($state.current) && api.checkToken() !== null) {
+        // Check if not logged state and not authorized
+        if (!checkLoggedState($state.current) && api.checkToken() !== null)
+        {
+            // If login page, we need extra time
             if ($state.current.name == 'login') {
                 // Avoid the user to see the reload of the page
-                moreTime = 500;
+                timeToWait += 500;
                 $log.debug("More time", moreTime);
             }
-            $state.go('logged');
+            // If welcome page, don't do anything
+            if (!self.intro) {
+                // Try to force logging
+                $state.go('logged');
+            }
         }
-        // Show the page content
-        $timeout(function() {
+
+        $log.debug("Load page timeout:", timeToWait);
+
+        // Let this login load after a little while
+        $rootScope.loadTimer = $timeout(function() {
+            // Show the page content
             self.load = false;
-        }, moreTime);
-    }, timeToWait);
+        }, timeToWait);
+    }
+
+    $timeout(self.initTimer);
 
     // Control states to create the menu
     var myObj = $state.get();

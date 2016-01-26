@@ -228,7 +228,8 @@ def home(mypath=None):
     """
     logger.debug("Using angular route. PATH is '%s'" % mypath)
     if mypath is None:
-        return templating('welcome.html')
+        #return templating('welcome.html')
+        pass
     elif mypath == 'loggedout':
         logout_user()
     return jstemplate()

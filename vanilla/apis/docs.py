@@ -8,14 +8,15 @@ from __future__ import absolute_import
 import os
 import commentjson as json
 import rethinkdb as r
+from flask.ext.security import auth_token_required, roles_required
+from flask import request, url_for, redirect
+from confs import config
 from ..services.rethink import RDBquery, JSONS_PATH, JSONS_EXT
 from ..base import ExtendedApiResource
 from .. import decorators as deck
-from flask.ext.security import auth_token_required  # , roles_required
-from flask import request, url_for, redirect
-from ...marshal import convert_to_marshal
 from ... import htmlcodes as hcodes
 from ... import get_logger
+from ...marshal import convert_to_marshal
 
 logger = get_logger(__name__)
 
@@ -273,3 +274,29 @@ class RethinkDocuments(BaseRethinkResource):
             count, data = self.execute_query(query, self._args['perpage'])
 
         return self.response(data, elements=count)
+
+#####################################
+# Keys for templates and submission
+model = 'datadmins'
+mylabel, mytemplate, myschema = schema_and_tables(model)
+
+
+class RethinkDataForAdministrators(BaseRethinkResource):
+    """ Data admins """
+
+    schema = myschema
+    template = mytemplate
+    table = mylabel
+
+    @deck.apimethod
+    @auth_token_required
+    @roles_required(config.ROLE_ADMIN)
+    def get(self, data_key=None):
+        count, data = super().get(data_key)
+        return self.response(data, elements=count)
+
+    @deck.apimethod
+    @auth_token_required
+    @roles_required(config.ROLE_ADMIN)
+    def post(self):
+        return super().post()

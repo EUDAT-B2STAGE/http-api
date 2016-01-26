@@ -8,23 +8,6 @@ angular.module('web')
     {
 
     //////////////////////
-/*
-        'logged.submit': {
-            url: "/submit",
-            // resolve: {
-            //     skipAuhtenticationCheck: false,
-            //     redirectIfNotAuthenticated: true,
-            // },
-            views: {
-                "loggedview": {
-                    dir: 'base',
-                    templateUrl: 'home.html',
-                }
-            },
-        },
-*/
-
-    //////////////////////
         'logged.specialsearch': {
             url: "/search/:text",
             views: {

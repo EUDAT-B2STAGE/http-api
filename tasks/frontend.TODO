@@ -13,16 +13,28 @@ http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
 
 New fixed search:
 ✔ onenter and onexit route extra @done (16-01-25 11:10)
+✔ Tree back @done (16-01-25 12:42)
 ✔ Parties back @done (16-01-25 12:15)
  ☐ sub piece in lazy load?
-✔ Tree back @done (16-01-25 12:42)
 ☐ chips watch?
 ☐ lazy load of more than 10 results
 ☐ Application name inside the Toolbar should be a hand made font?
 
+WELCOME:
+  ✔ Make this angular page @done (16-01-26 08:24)
+    ✔ move it to internal angular routing @done (16-01-26 08:24)
+  ☐ parallax ng-repeat?
+    ☐ based on content and images
+    ✔ admin api @done (16-01-26 08:24)
+      ☐ post with json
+      ☐ input form
+  ☐ upload and save given images
+
 Admin page:
   ✔ Change toolbar color @done (16-01-25 16:03)
   ☐ Tabs?
+  ☐ FAB plus button
+  http://codepen.io/kyleledbetter/full/gbQOaV/
 
 History:
 ☐ save old state
@@ -40,15 +52,17 @@ BUGS:
  ☐ mostra nella pagina di dettaglio
 
 EXPOSITION:
+  DESIGN ON A PIECE OF PAPER
 
   ☐ Tre sale
-    ☐ Un testo per sala
-    ☐ Una o più immagini per sala
     ☐ Scrollspy
-    ☐ materiale sensibile
+      ☐ Un testo per sala
+      ☐ Una o più immagini per sala
+    ☐ Sections gallery
+      ☐ un mosaico di immagini
+      http://foundation.zurb.com/sites/docs/v/5.5.3/components/clearing.html
+    ☐ materiale sensibile?
     ☐ zoomify
-  ☐ Design on a piece of paper
-  ☐ un mosaico di immagini
 
 EXPLORER:
  ✔ To fix controller.... @bug @done (16-01-23 23:34)
@@ -116,22 +130,6 @@ SEARCH:
         ☐ Excel load
         ☐ web site insert
       ☐ step list angular inline filter
-
-WELCOME:
-  ☐ Not an angular page......
-  ☐ submission amministratore...
-  ✔ scrollspy also here @done (16-01-08 07:24)
-    ✔ separate scrollspy section: on every field @done (16-01-08 07:24)
-  ☐ FAB buttons
-    ☐ if not logged
-      ☐ search, login
-    ☐ if logged
-      ☐ insert for normal or exibition
-      ☐ search for normal or exibition
-  ☐ put given images
-  ☐ autocomplete search box?
-  ☐ parallax ng-repeat?
-    ☐ based on content and images
 
 DETAILS:
   ☐ Zoomify
@@ -357,3 +355,5 @@ COMPLETED:
        ✘ or if press enter inside empty search @hotkeys @cancelled (16-01-25 09:37)
  ✔ Get out of search @done (16-01-25 10:22)
    ✔ ESC keyword @hotkeys @done (16-01-25 09:36)
+  ✔ scrollspy also here @done (16-01-08 07:24)
+    ✔ separate scrollspy section: on every field @done (16-01-08 07:24)
