@@ -32,9 +32,20 @@ WELCOME:
 
 Admin page:
   ✔ Change toolbar color @done (16-01-25 16:03)
-  ☐ Tabs?
+  ✔ Tabs? @done (16-01-27 09:44)
+  ☐ Move tree here for administrating steps
+    ☐ refactor steps
   ☐ FAB plus button
   http://codepen.io/kyleledbetter/full/gbQOaV/
+  ☐ inline wysiwyg + xeditable
+    ☐ use both and hide textarea
+    http://stackoverflow.com/q/30761498
+   ☐ ngWYSIWYG
+   http://psergus.github.io/ngWYSIWYG/
+
+Autocomplete:
+  ☐ elasticsearch
+  ☐ rethinkdb table change feed
 
 History:
 ☐ save old state
@@ -72,8 +83,6 @@ SUBMIT:
   ☐ Submission skeleton with collapsible or collections
   ☐ Submission steps
   http://materializecss.com/collections.html
- ☐ ngWYSIWYG
- http://psergus.github.io/ngWYSIWYG/
  ☐ good example for transcription edit
  https://material.angularjs.org/latest/demo/menuBar
 

@@ -13,6 +13,18 @@ function AdminController($scope, $rootScope, $log, admin)
   self.model = {
     name: 'This is editable!'
   };
+
+  self.models = [
+      {
+        name: 'First',
+        value: 'This is editable!',
+        description: 'Try the incredible emotions of writing',
+      },
+      {
+        name: 'Second',
+        value: 'Agaiin!',
+      },
+  ];
 /*
   self.options = {};
   self.fields = [
