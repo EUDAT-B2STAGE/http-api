@@ -36,59 +36,59 @@ USE THE FORM
 https://vitalets.github.io/angular-xeditable/#editable-form
 -->
 
-<b>xeditable</b> and <i>material design</i>
-<br>
-
-<!--
-<br>
-
-  <span editable-text="adm.model.name"
-    e-form="textBtnForm" onaftersave="adm.saveForm()"
-    e-placeholder="A test"
-    e-aria-label='silent' e-required>
-    {{ adm.model.name || 'empty' }}
-  </span>
-<md-button type="submit" class="md-secondary"
-    ng-click="textBtnForm.$show()" ng-hide="textBtnForm.$visible">
-    edit
-</md-button>
--->
-
 <form editable-form name="editableForm" onaftersave="saveUser()">
- <table class="table">
-  <tr ng-repeat="element in adm.models">
-    <th> {{element.name}}: </th>
-    <td>
-      <span editable-textarea="element.value"
-        e-rows="7" e-cols="40" e-aria-label="{{element.name}}"
-        e-placeholder="{{element.description || 'Insert some value'}}"
+
+ <table class="highlight">
+
+ <thead>
+     <tr>
+        <th ng-repeat="model in adm.sectionModels">
+            {{model.name}}
+        </th>
+     </tr>
+ </thead>
+
+ <tbody>
+  <tr ng-repeat="model in adm.models">
+    <td ng-repeat="(key, value) in model track by $index">
+      <span editable-textarea="value"
+        e-rows="7" e-cols="40" e-aria-label="{{key}}"
+        e-placeholder="{{adm.sectionModels[$index].description || 'Insert some value'}}"
         >
-            <pre>{{ element.value || 'empty' }}</pre>
-      </span>
+            <span ng-bind-html="value||'empty'"></span>
     </td>
   </tr>
+ </tbody>
 
  </table>
 
-     <div class="buttons">
-      <!-- button to show form -->
-      <md-button type="button" class="md-default"
-        ng-click="editableForm.$show()" ng-show="!editableForm.$visible">
-        Edit
-      </md-button>
-      <!-- buttons to submit / cancel form -->
-      <span ng-show="editableForm.$visible">
-        <md-button type="submit" class="md-primary"
-            ng-disabled="editableForm.$waiting">
-          Save
-        </md-button>
-        <md-button type="button" class="md-default"
-            ng-disabled="editableForm.$waiting"
-            ng-click="editableForm.$cancel()">
-          Cancel
-        </md-button>
-      </span>
-    </div>
+ <div class="buttons">
+  <!-- button to show form -->
+  <md-button type="button" class="md-default"
+    ng-click="editableForm.$show()" ng-show="!editableForm.$visible">
+    Edit
+  </md-button>
+  <!-- buttons to submit / cancel form -->
+  <span ng-show="editableForm.$visible">
+    <md-button type="submit" class="md-primary"
+        ng-disabled="editableForm.$waiting">
+      Save
+    </md-button>
+    <md-button type="button" class="md-default"
+        ng-disabled="editableForm.$waiting"
+        ng-click="editableForm.$cancel()">
+      Cancel
+    </md-button>
+  </span>
+</div>
+
+<md-content layout-padding flex='grow'
+    layout='column' layout-align='center right'>
+    <a class="btn-floating waves-effect waves-light red"
+        href="#">
+        <i class="material-icons">add</i>
+    </a>
+</md-content>
 
 </form>
 

@@ -10,7 +10,7 @@ function AdminController($scope, $rootScope, $log, admin)
   var self = this;
   $log.debug("ADMIN page controller");
 
-  self.sectionModel = [
+  self.sectionModels = [
     {
         name: 'Section',
         value: 'New section!',
@@ -22,21 +22,22 @@ function AdminController($scope, $rootScope, $log, admin)
         description: 'Short description of your section. It will appear in the home page.',
     },
     {
-        name: 'Description',
-        value: 'We will talk about a lot of things',
-        description: 'Short description of your section. It will appear in the home page.',
+        name: 'Content',
+        value: 'This explanation is very long',
+        description: 'Explanation of the section. It will appear in a separate page.',
     },
   ];
 
   self.models = [
       {
-        name: 'First',
-        value: 'This is editable!',
-        description: 'Try the incredible emotions of writing',
+        'Section': 'First',
+        'Description': 'This is editable!',
+        'Content': 'This is long editable!!<br>Test',
       },
       {
-        name: 'Second',
-        value: 'Agaiin!',
+        'Section': 'Second',
+        'Description': 'Try',
+        'Content': 'Ehm ... <b>Uhm</b>.',
       },
   ];
 /*

@@ -79,6 +79,10 @@ DETAILS:
  ☐ aggiungere lista dettagli (step 4) sotto lo scrollspy
 
 SUBMIT:
+ ☐ Steps are upside down
+ ☐ Go from the biggest step to the leaf, as a branch
+   ☐ breadcrumbs show the progress
+
   ☐ transcriptions size inside db? or post/get method injection?
   ☐ Submission skeleton with collapsible or collections
   ☐ Submission steps
