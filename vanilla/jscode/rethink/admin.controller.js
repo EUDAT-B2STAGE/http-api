@@ -10,9 +10,18 @@ function AdminController($scope, $rootScope, $log, admin)
   var self = this;
   $log.debug("ADMIN page controller");
 
-  self.model = {
-    name: 'This is editable!'
-  };
+  self.sectionModel = [
+    {
+        name: 'Section',
+        value: 'New section!',
+        description: 'The name for your new welcome section',
+    },
+    {
+        name: 'Description',
+        value: 'We will talk about a lot of things',
+        description: 'Short description of your section. It will appear in the home page.',
+    },
+  ];
 
   self.models = [
       {
