@@ -18,9 +18,12 @@
 			Login form
           </a>
 		{%- endif -%}
+        <div ui-view='menu'></div>
+<!-- HANDLE USER FROM PYTHON ?
 		{% if g.user.is_authenticated %}
 		<div ui-view='menu'></div>
 		{% endif %}
+-->
 	  </div>
 	</nav>
 </div>

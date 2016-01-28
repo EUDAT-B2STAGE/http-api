@@ -56,17 +56,15 @@ function StepsController($scope, $log, $state, search)
   // Template Directories
   self.templateDir = templateDir;
 
-  // Init scope data
-  //self.dataCount = NaN;
-  self.data = [];
-
   search.getDistinctValuesFromStep(self.step).then(function (out)
   {
-       console.log("OUT", out);
-       self.dataCount = out.elements;
-       self.data = out.data;
+        self.data = [];
+        self.dataCount = self.data.length;
+       if (out) {
+           self.dataCount = out.elements;
+           self.data = out.data;
+       }
   })
-  //self.dataCount = 0;
 }
 
 ////////////////////////////////

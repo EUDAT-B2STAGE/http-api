@@ -5,7 +5,7 @@
         <b> Fêtes </b>
     </h4>
 
-    <div ng-if="!steps.dataCount">
+    <div ng-hide="!steps.data.lenght">
         <div ng-include="steps.templateDir + 'loader.html'"></div>
     </div>
     <div ng-if="steps.dataCount < 1">
