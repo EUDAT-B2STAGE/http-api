@@ -21,6 +21,11 @@ function AdminController($scope, $rootScope, $log, admin)
         value: 'We will talk about a lot of things',
         description: 'Short description of your section. It will appear in the home page.',
     },
+    {
+        name: 'Description',
+        value: 'We will talk about a lot of things',
+        description: 'Short description of your section. It will appear in the home page.',
+    },
   ];
 
   self.models = [
