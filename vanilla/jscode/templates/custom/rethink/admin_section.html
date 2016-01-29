@@ -1,0 +1,77 @@
+<md-toolbar layout="column"
+    class="md-tall md-default-theme light-blue darken-1 md-whiteframe-6dp">
+  <div class="md-toolbar-tools">
+    <div layout="row" flex="flex" class="fill-height"
+    layout-align="center center">
+      <div class="md-toolbar-item md-breadcrumb" aria-hidden="false">
+        <span tabindex="0">
+            <br>
+            Custom sections for your <i>Welcome page</i>
+        </span>
+      </div>
+    </div>
+  </div>
+</md-toolbar>
+
+<form editable-form name="editableForm" onaftersave="saveUser()">
+ <table class="highlight">
+
+ <thead>
+     <tr>
+        <th>
+            <a tooltipped href
+               class="btn-floating waves-effect waves-light red"
+               ng-click="showAdvanced($event)"
+               data-position="right" data-delay="50"
+               data-tooltip="Add a new Section"
+               >
+                <i class="material-icons">add</i>
+            </a>
+        </th>
+        <th ng-repeat="model in adm.sectionModels">
+            {{model.name}}
+        </th>
+     </tr>
+ </thead>
+
+ <tbody>
+  <tr ng-repeat="model in adm.models">
+    <td></td>
+    <td ng-repeat="(key, value) in model track by $index">
+      <span editable-textarea="value"
+        e-rows="7" e-cols="40" e-aria-label="{{key}}"
+        e-placeholder="{{adm.sectionModels[$index].description || 'Insert some value'}}"
+        >
+            <span ng-bind-html="value||'empty'"></span>
+      </span>
+    </td>
+  </tr>
+ </tbody>
+
+ </table>
+
+ <div class="buttons">
+  <!-- button to show form -->
+  <md-button type="button" class="md-default"
+    ng-click="editableForm.$show()" ng-show="!editableForm.$visible">
+    Edit
+  </md-button>
+  <!-- buttons to submit / cancel form -->
+  <span ng-show="editableForm.$visible">
+    <md-button type="submit" class="md-primary"
+        ng-disabled="editableForm.$waiting">
+      Save
+    </md-button>
+    <md-button type="button" class="md-default"
+        ng-disabled="editableForm.$waiting"
+        ng-click="editableForm.$cancel()">
+      Cancel
+    </md-button>
+  </span>
+</div>
+
+<b layout="row" layout-align="center center" class="md-padding">
+  Dialog status: {{status}}
+</b>
+
+</form>

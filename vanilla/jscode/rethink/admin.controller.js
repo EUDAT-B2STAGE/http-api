@@ -24,6 +24,9 @@ function AdminController($scope, $rootScope, $log, admin, $mdMedia, $mdDialog)
   var self = this;
   $log.debug("ADMIN page controller");
 
+  // Template Directories
+  self.blueprintTemplateDir = blueprintTemplateDir;
+
   self.sectionModels = [
     {
         name: 'Section',
