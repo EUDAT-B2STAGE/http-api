@@ -121,6 +121,7 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
 
             var finalRoute = {
                 url: x.url,
+                params: x.params,
                 views: myViews,
                 // ON ENTER AND EXIT
                 onEnter: x.onEnter,

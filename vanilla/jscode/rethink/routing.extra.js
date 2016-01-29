@@ -48,7 +48,7 @@ angular.module('web')
 
     //////////////////////
         'logged.admin': {
-            url: "/admin/:tab",
+            url: "/admin/:tab?new",
 // TO FIX:
 // ONLY ADMIN ROLE IS ALLOWED
             views: {

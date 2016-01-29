@@ -3,6 +3,8 @@
 
 # PRIVATE GIT
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
+# UI ROUTER and params
+http://stackoverflow.com/a/25647714/2114395
 --- ✄ -----------------------
 
 FANCY:

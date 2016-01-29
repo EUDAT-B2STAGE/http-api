@@ -21,15 +21,19 @@ function DialogController($scope, $mdDialog) {
 function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia, $mdDialog)
 {
   // Init controller
-  $log.debug("ADMIN page controller");
+  $log.debug("ADMIN page controller", $stateParams);
   var self = this;
+  admin.getData().then(function (out)
+  {
+       console.log("Admin api:", out);
+  });
 
   //TABS
   self.selectedTab = 0;
   self.onTabSelected = function () {
       $log.debug("Selected", self.selectedTab);
   }
-  if ($stateParams.tab) {
+  if ($stateParams.tab && $stateParams.tab != self.selectedTab) {
     console.log("URL TAB is ",$stateParams);
     self.selectedTab = $stateParams.tab;
 
@@ -87,25 +91,11 @@ function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia
     console.log("MODEL", self.model);
   }
 
-/*
-  self.onSubmit = function () {
-    self.options.updateInitialValue();
-    console.log("MODEL", self.model);
-  }
-*/
+  $scope.status = 'Dialog to open';
+  self.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
 
-  // Template Directories
-  self.templateDir = templateDir;
-  self.customTemplateDir = customTemplateDir;
-  self.blueprintTemplateDir = blueprintTemplateDir;
-
-  admin.getData();
-
-  $scope.status = '  ';
-  $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
-
-  $scope.showAdvanced = function(ev) {
-    var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && $scope.customFullscreen;
+  self.showAdvanced = function(ev) {
+    var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && self.customFullscreen;
     $mdDialog.show({
       controller: DialogController,
       templateUrl: blueprintTemplateDir + 'add_section.html',
@@ -122,9 +112,14 @@ function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia
     $scope.$watch(function() {
       return $mdMedia('xs') || $mdMedia('sm');
     }, function(wantsFullScreen) {
-      $scope.customFullscreen = (wantsFullScreen === true);
+      self.customFullscreen = (wantsFullScreen === true);
     });
   };
+
+  // Activate dialog to insert new element if requested by url
+  if ($stateParams.new) {
+    self.showAdvanced();
+  }
 
 }
 

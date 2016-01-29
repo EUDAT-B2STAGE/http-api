@@ -21,7 +21,7 @@
         <th>
             <a tooltipped href
                class="btn-floating waves-effect waves-light red"
-               ng-click="showAdvanced($event)"
+               ng-click="adm.showAdvanced($event)"
                data-position="right" data-delay="50"
                data-tooltip="Add a new Section"
                >
@@ -34,29 +34,29 @@
      </tr>
  </thead>
 
+
  <tbody>
   <tr ng-repeat="model in adm.models">
-    <td></td>
+    <!-- Skip for add button --> <td></td>
     <td ng-repeat="(key, value) in model track by $index">
-      <span editable-textarea="value"
-        e-rows="7" e-cols="40" e-aria-label="{{key}}"
-        e-placeholder="{{adm.sectionModels[$index].description || 'Insert some value'}}"
-        >
+<!-- TO FIX: SIMPLE TABLE -->
+      <span editable-textarea="value" e-rows="7" e-cols="40" e-aria-label="{{key}}"
+        e-placeholder="{{adm.sectionModels[$index].description || 'Insert some value'}}">
             <span ng-bind-html="value||'empty'"></span>
       </span>
+<!-- TO FIX -->
     </td>
   </tr>
  </tbody>
 
  </table>
 
+<!--
  <div class="buttons">
-  <!-- button to show form -->
   <md-button type="button" class="md-default"
     ng-click="editableForm.$show()" ng-show="!editableForm.$visible">
     Edit
   </md-button>
-  <!-- buttons to submit / cancel form -->
   <span ng-show="editableForm.$visible">
     <md-button type="submit" class="md-primary"
         ng-disabled="editableForm.$waiting">
@@ -69,6 +69,7 @@
     </md-button>
   </span>
 </div>
+-->
 
 <b layout="row" layout-align="center center" class="md-padding">
   Dialog status: {{status}}
