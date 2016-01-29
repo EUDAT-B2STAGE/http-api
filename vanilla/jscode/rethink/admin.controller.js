@@ -18,11 +18,22 @@ function DialogController($scope, $mdDialog) {
 }
 
 
-function AdminController($scope, $rootScope, $log, admin, $mdMedia, $mdDialog)
+function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia, $mdDialog)
 {
   // Init controller
-  var self = this;
   $log.debug("ADMIN page controller");
+  var self = this;
+
+  //TABS
+  self.selectedTab = 0;
+  self.onTabSelected = function () {
+      $log.debug("Selected", self.selectedTab);
+  }
+  if ($stateParams.tab) {
+    console.log("URL TAB is ",$stateParams);
+    self.selectedTab = $stateParams.tab;
+
+  }
 
   // Template Directories
   self.blueprintTemplateDir = blueprintTemplateDir;
@@ -89,12 +100,6 @@ function AdminController($scope, $rootScope, $log, admin, $mdMedia, $mdDialog)
   self.blueprintTemplateDir = blueprintTemplateDir;
 
   admin.getData();
-
-  //TABS
-  self.selectedTab = null;
-  self.onTabSelected = function () {
-      $log.debug("Selected", self.selectedTab);
-  }
 
   $scope.status = '  ';
   $scope.customFullscreen = $mdMedia('xs') || $mdMedia('sm');

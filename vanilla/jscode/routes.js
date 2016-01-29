@@ -199,7 +199,10 @@ $stateProvider
     // Routes definition ends here
     ;
 
+// TO FIX: move it to custom routing somehow
+// Missing bar on some routes
     $urlRouterProvider.when("/app/search", "/app/search/");
+    $urlRouterProvider.when("/app/admin", "/app/admin/");
 
 // Ui router kinda bug fixing
 // CHECK THIS IN THE NEAR FUTURE

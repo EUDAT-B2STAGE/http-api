@@ -48,9 +48,9 @@ angular.module('web')
 
     //////////////////////
         'logged.admin': {
-            url: "/admin",
+            url: "/admin/:tab",
 // TO FIX:
-// ONLY ADMIN ROLE
+// ONLY ADMIN ROLE IS ALLOWED
             views: {
                 "loggedview": {
                     dir: 'blueprint',
