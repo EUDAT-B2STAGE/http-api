@@ -8,11 +8,13 @@
         md-on-select="adm.onTabSelected()">
       <md-content layout-padding flex='grow'>
 
-<md-toolbar layout="column" class="md-tall md-default-theme">
+<md-toolbar layout="column"
+    class="md-tall md-default-theme red">
   <div class="md-toolbar-tools">
+
+
     <div layout="row" flex="flex" class="fill-height"
-    layout-align="center center"
-        >
+    layout-align="center center">
       <div class="md-toolbar-item md-breadcrumb" aria-hidden="false">
         <span tabindex="0">
             Custom sections
@@ -29,6 +31,16 @@
 
  <thead>
      <tr>
+        <th>
+            <a tooltipped href
+               class="btn-floating waves-effect waves-light red"
+               ng-click="showAdvanced($event)"
+               data-position="right" data-delay="50"
+               data-tooltip="Add a new Section"
+               >
+                <i class="material-icons">add</i>
+            </a>
+        </th>
         <th ng-repeat="model in adm.sectionModels">
             {{model.name}}
         </th>
@@ -37,6 +49,7 @@
 
  <tbody>
   <tr ng-repeat="model in adm.models">
+    <td></td>
     <td ng-repeat="(key, value) in model track by $index">
       <span editable-textarea="value"
         e-rows="7" e-cols="40" e-aria-label="{{key}}"
@@ -69,24 +82,9 @@
     </md-button>
   </span>
 </div>
-
-<md-content layout-padding flex='grow'
-    layout='row' layout-align='end center'>
-    <a class="btn-floating waves-effect waves-light red"
-        ng-click="showAdvanced($event)" href>
-        <i class="material-icons">add</i>
-    </a>
-
-</md-content>
-
-    <div hide-gt-sm layout="row" layout-align="center center" flex="100">
-        <md-checkbox ng-model="customFullscreen"
-            aria-label="add one section">Test</md-checkbox>
-      </div>
-          <br/>
-    <b layout="row" layout-align="center center" class="md-padding">
-      {{status}}
-    </b>
+<b layout="row" layout-align="center center" class="md-padding">
+  Dialog status: {{status}}
+</b>
 
 
 </form>

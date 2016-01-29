@@ -5,6 +5,10 @@
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 --- ✄ -----------------------
 
+FANCY:
+  ☐ browser notifications
+  https://github.com/sagiegurari/angular-web-notification
+
 New fixed search:
 ✔ onenter and onexit route extra @done (16-01-25 11:10)
 ✔ Tree back @done (16-01-25 12:42)
