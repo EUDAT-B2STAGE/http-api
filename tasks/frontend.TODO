@@ -8,6 +8,7 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 New fixed search:
 ✔ onenter and onexit route extra @done (16-01-25 11:10)
 ✔ Tree back @done (16-01-25 12:42)
+☐ understand md-content?
 ✔ Parties back @done (16-01-25 12:15)
  ☐ sub piece in lazy load?
 ☐ chips watch?
@@ -22,6 +23,7 @@ WELCOME:
     ✔ move it to internal angular routing @done (16-01-26 08:24)
   ☐ Admin page
     ✔ admin api @done (16-01-26 08:24)
+      ☐ dialog for create a new element
       ☐ post with json
       ☐ input form
         ✔ xeditable material @done (16-01-26 11:36)
