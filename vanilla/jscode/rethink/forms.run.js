@@ -1,8 +1,7 @@
 (function() {
   'use strict';
 
-// DISABLE THE MAIN RUN
-angular.module('web').run(formRun);
+//angular.module('web').run(formRun);
 
 function formRun($log, editableOptions, editableThemes, formlyConfig)
 {
@@ -27,6 +26,15 @@ https://github.com/vitalets/angular-xeditable/issues/232
   };
 
   editableOptions.theme = 'angular-material';
+
+/*
+
+      <span editable-textarea="value" e-rows="7" e-cols="40" e-aria-label="{{key}}"
+        e-placeholder="{{adm.sectionModels[$index].description || 'Insert some value'}}">
+            <span ng-bind-html="value||'empty'"></span>
+      </span>
+
+*/
 
 
 /*

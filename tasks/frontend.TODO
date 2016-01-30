@@ -29,14 +29,15 @@ WELCOME:
     ✔ move it to internal angular routing @done (16-01-26 08:24)
   ☐ Admin page
     ✔ admin api @done (16-01-26 08:24)
-      ☐ dialog for create a new element
-      ☐ post with json
-      ☐ input form
+      ✔ dialog for create a new element @done (16-01-30 14:12)
+      ☐ table to show sections
+      ☐ cards into dialog to create new element
         ✔ xeditable material @done (16-01-26 11:36)
-  ☐ Welcome controller
-    ☐ upload and save given images
-    ☐ parallax ng-repeat?
-      ☐ based on content and images
+        ☐ input form
+        ☐ post with json
+        ☐ upload images...
+  ✔ Welcome controller @done (16-01-30 14:12)
+    ☐ parallax ng-repeat
 
 Admin page:
   ✔ Change toolbar color @done (16-01-25 16:03)

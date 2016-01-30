@@ -3,19 +3,9 @@
 
 angular.module('web')
     .controller('DialogController', DialogController)
-    .controller('AdminController', AdminController);
+    .controller('AdminController', AdminController)
+    .controller('AdminWelcomeController', AdminWelcomeController);
 
-function DialogController($scope, $mdDialog) {
-  $scope.hide = function() {
-    $mdDialog.hide();
-  };
-  $scope.cancel = function() {
-    $mdDialog.cancel();
-  };
-  $scope.answer = function(answer) {
-    $mdDialog.hide(answer);
-  };
-}
 
 
 function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia, $mdDialog)
@@ -41,6 +31,12 @@ function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia
 
   // Template Directories
   self.blueprintTemplateDir = blueprintTemplateDir;
+}
+
+function AdminWelcomeController($scope, $rootScope, $log, admin, $stateParams, $mdMedia, $mdDialog)
+{
+  $log.debug("Welcome admin controller", $stateParams);
+  var self = this;
 
   self.sectionModels = [
     {
@@ -100,6 +96,9 @@ function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia
       controller: DialogController,
       templateUrl: blueprintTemplateDir + 'add_section.html',
       parent: angular.element(document.body),
+      locals: {
+        sectionModels: self.sectionModels,
+      },
       targetEvent: ev,
       clickOutsideToClose:true,
       fullscreen: useFullScreen
@@ -121,6 +120,22 @@ function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia
     self.showAdvanced();
   }
 
+}
+
+function DialogController($scope, $mdDialog, sectionModels)
+{
+
+  $scope.sectionModels = sectionModels;
+
+  $scope.hide = function() {
+    $mdDialog.hide();
+  };
+  $scope.cancel = function() {
+    $mdDialog.cancel();
+  };
+  $scope.answer = function(answer) {
+    $mdDialog.hide(answer);
+  };
 }
 
 })();
