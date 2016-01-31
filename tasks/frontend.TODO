@@ -5,24 +5,16 @@
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 # UI ROUTER and params
 http://stackoverflow.com/a/25647714/2114395
+
+updates:
+bower install jquery#~2.1.4
+update angular to 1.5 rc
+update rethinkdb image
 --- ✄ -----------------------
 
 FANCY:
   ☐ browser notifications
   https://github.com/sagiegurari/angular-web-notification
-
-New fixed search:
-✔ onenter and onexit route extra @done (16-01-25 11:10)
-✔ Tree back @done (16-01-25 12:42)
-☐ understand md-content?
-✔ Parties back @done (16-01-25 12:15)
- ☐ sub piece in lazy load?
-☐ chips watch?
-☐ lazy load of more than 10 results
-☐ Application name inside the Toolbar should be a hand made font?
-☐ Quick elastic search
- ☐ Show autocomplete inside search bar after first char
- ☐ query elastic search
 
 WELCOME:
   ✔ Make this angular page @done (16-01-26 08:24)
@@ -30,7 +22,7 @@ WELCOME:
   ☐ Admin page
     ✔ admin api @done (16-01-26 08:24)
       ✔ dialog for create a new element @done (16-01-30 14:12)
-      ☐ table to show sections
+      ✔ table to show sections @done (16-01-31 22:21)
       ☐ cards into dialog to create new element
         ✔ xeditable material @done (16-01-26 11:36)
         ☐ input form
@@ -44,17 +36,29 @@ Admin page:
   ✔ Tabs? @done (16-01-27 09:44)
   ☐ Move tree here for administrating steps
     ☐ refactor steps
-  ☐ FAB plus button
-  http://codepen.io/kyleledbetter/full/gbQOaV/
-  ☐ inline wysiwyg + xeditable
-    ☐ use both and hide textarea
+  ✔ FAB plus button @done (16-01-31 23:37)
+  ✘ inline wysiwyg + xeditable @cancelled (16-01-31 23:37)
+    ✘ use both and hide textarea @cancelled (16-01-31 23:37)
     http://stackoverflow.com/q/30761498
    ☐ ngWYSIWYG
    http://psergus.github.io/ngWYSIWYG/
 
 Autocomplete:
   ☐ elasticsearch
+    ☐ docker server setup
+    ☐ python insert in operations.py
+      https://elasticsearch-py.readthedocs.org/en/master/index.html
   ☐ rethinkdb table change feed
+
+New fixed search:
+✔ onenter and onexit route extra @done (16-01-25 11:10)
+✔ Tree back @done (16-01-25 12:42)
+☐ understand md-content?
+✔ Parties back @done (16-01-25 12:15)
+ ☐ sub piece in lazy load?
+☐ chips watch?
+☐ lazy load of more than 10 results
+☐ Application name inside the Toolbar should be a hand made font?
 
 History:
 ☐ save old state
@@ -100,8 +104,7 @@ SUBMIT:
  https://material.angularjs.org/latest/demo/menuBar
 
 OTHER:
-☐ update angular to 1.5 rc
-☐ one time binding
+  ☐ one time binding
  <li ng-repeat=“item in ::vastArray”>{{ ::item.velocity }}</li>
 ☐ Cleaning frontend python code
   ✔ test login @done (15-12-30 09:59)

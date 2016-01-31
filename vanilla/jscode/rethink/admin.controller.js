@@ -43,16 +43,19 @@ function AdminWelcomeController($scope, $rootScope, $log, admin, $stateParams, $
         name: 'Section',
         value: 'New section!',
         description: 'The name for your new welcome section',
+        chars: 50,
     },
     {
         name: 'Description',
         value: 'We will talk about a lot of things',
         description: 'Short description of your section. It will appear in the home page.',
+        chars: 500,
     },
     {
         name: 'Content',
         value: 'This explanation is very long',
         description: 'Explanation of the section. It will appear in a separate page.',
+        chars: 99999,
     },
   ];
 
@@ -105,6 +108,11 @@ function AdminWelcomeController($scope, $rootScope, $log, admin, $stateParams, $
     })
     .then(function(answer) {
       $scope.status = 'You said the information was "' + answer + '".';
+
+// DO SOMETHING WITH THIS VALUES
+      console.log(self.sectionModels);
+// DO SOMETHING WITH THIS VALUES
+
     }, function() {
       $scope.status = 'You cancelled the dialog.';
     });
@@ -126,6 +134,7 @@ function DialogController($scope, $mdDialog, sectionModels)
 {
 
   $scope.sectionModels = sectionModels;
+  $scope.title = "Add a new element";
 
   $scope.hide = function() {
     $mdDialog.hide();

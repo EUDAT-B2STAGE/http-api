@@ -1,28 +1,24 @@
-
-<md-dialog aria-label="Mango (Fruit)">
-  <form>
+<md-dialog aria-label="Adding/editing new element">
+ <form>
 
     <md-toolbar class="md-primary md-hue-3" >
-      <div class="md-toolbar-tools"> <h2>Add element</h2> </div>
+      <div class="md-toolbar-tools"> <h2>{{ title }}</h2> </div>
     </md-toolbar>
 
-    <md-dialog-content style="max-width:1000px;max-height:810px; ">
+    <md-dialog-content layout-padding 
+      style="min-width:600px; max-width:1000px; max-height:810px; ">
 
-
-    <md-content layout-padding layout-wrap>
-        Lorem ipsum dolor sit amet, ne quod novum mei
-
- <table class="highlight">
-     <thead>
-        <tr>
-            <th ng-repeat="model in sectionModels"> {{model.name}}</th>
-         </tr>
-     </thead>
-
- </table>
-
-    </md-content>
-
+      <div ng-repeat="model in sectionModels">
+        <md-subheader class="md-primary">
+          {{model.name}}
+        </md-subheader>
+        <md-input-container>
+          <label> {{model.description}} </label>
+          <textarea ng-model="model.text" 
+            cols="50" md-maxlength="model.chars"
+            >test</textarea>
+        </md-input-container>
+      </div>
 
     </md-dialog-content>
 
@@ -35,5 +31,6 @@
         cancel
       </md-button>
     </md-dialog-actions>
-  </form>
+
+ </form>
 </md-dialog>
