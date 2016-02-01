@@ -78,8 +78,14 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
   $scope.status = 'Dialog to open';
   self.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
 
-  self.showAdvanced = function(ev) {
+  self.showAdvanced = function(ev, data) {
     var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && self.customFullscreen;
+
+// Clear or insert data in the model
+    for (var j = 0; j < self.sectionModels.length; j++) {
+        self.sectionModels[j].text = ""
+    };
+
 // Open
     $mdDialog.show({
       controller: DialogController,
