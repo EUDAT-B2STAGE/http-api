@@ -70,8 +70,9 @@ class BaseRethinkResource(ExtendedApiResource, RDBquery):
         myid = self.insert(json_data)
 
         # redirect to GET method of this same endpoint, with the id found
-        address = url_for(self.table, data_key=myid)
-        return redirect(address)
+        #address = url_for(self.table, data_key=myid)
+        #return redirect(address)
+        return myid
 
 #####################################
 # Main resource
@@ -291,7 +292,8 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     @deck.apimethod
     @auth_token_required
     @roles_required(config.ROLE_ADMIN)
-    def get(self, data_key=None):
+    def get(self):
+    #def get(self, data_key=None):
         count, data = super().get(data_key)
         return self.response(data, elements=count)
 

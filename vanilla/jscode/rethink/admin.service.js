@@ -18,7 +18,7 @@ function AdminService($log, api) {
     }
 
     self.insert = function(name, data) {
-        return self.doQuery(self.endpoints.admin,
+        return api.apiCall(self.endpoints.admin, 'POST',
             {
                 type: {name: name},
                 data: data,

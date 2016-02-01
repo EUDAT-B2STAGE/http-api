@@ -123,6 +123,7 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
         element[x.name] = x.text;
       });
       console.log("To save", element);
+      admin.insert('test', element).then();
 // DO SOMETHING WITH THIS VALUES
 
     }, function() {
