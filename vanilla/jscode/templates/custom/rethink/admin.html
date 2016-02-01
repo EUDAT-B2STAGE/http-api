@@ -20,30 +20,32 @@
   </md-tab>
 -->
 
-<!-- FIRST TAB -->
-    <md-tab label="Welcome page"
+<!-- TABS -->
+    <md-tab label="Welcoming sections"
         md-on-select="adm.onTabSelected('sections')">
       <md-content layout-padding flex='grow'>
         <div ng-include="adm.blueprintTemplateDir + 'admin_section.html'"></div>
       </md-content>
     </md-tab>
-<!-- FIRST TAB -->
 
-<!-- SECOND TAB -->
+    <md-tab label="Welcoming slider"
+        md-on-select="adm.onTabSelected('slider')">
+      <md-content class="md-padding">
+        Work in progress
+      </md-content>
+    </md-tab>
+
     <md-tab label="Steps" md-on-select="adm.onTabSelected()">
       <md-content class="md-padding">
         <div ng-include="adm.blueprintTemplateDir + 'admin_step.html'"></div>
       </md-content>
     </md-tab>
-<!-- SECOND TAB -->
 
-<!-- THIRD TAB -->
     <md-tab label="Something else" md-on-select="adm.onTabSelected()">
       <md-content class="md-padding">
         Work in progress
       </md-content>
     </md-tab>
-<!-- THIRD TAB -->
 
   </md-tabs>
 </md-content>

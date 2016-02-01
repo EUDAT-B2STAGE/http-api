@@ -183,9 +183,7 @@ model = 'datakeys'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
-# # // TO FIX
-# // Does this work if it's only one?
-#@deck.enable_endpoint_identifier('step')
+@deck.enable_endpoint_identifier('step')
 class RethinkDataKeys(BaseRethinkResource):
     """ Data keys administrable """
 
@@ -193,12 +191,6 @@ class RethinkDataKeys(BaseRethinkResource):
     template = mytemplate
     table = mylabel
     table_index = 'steps'
-
-# # // TO FIX
-#     def __init__(self):
-#         self.set_method_id('step', 'int')
-#         super(RethinkDataKeys, self).__init__()
-# # // TO FIX
 
     @deck.apimethod
     @auth_token_required
@@ -282,6 +274,7 @@ model = 'datadmins'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
+@deck.enable_endpoint_identifier('id')
 class RethinkDataForAdministrators(BaseRethinkResource):
     """ Data admins """
 
@@ -303,3 +296,7 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     @roles_required(config.ROLE_ADMIN)
     def post(self):
         return super().post()
+
+    @deck.apimethod
+    def put(self, id):
+        print("TEST", id)

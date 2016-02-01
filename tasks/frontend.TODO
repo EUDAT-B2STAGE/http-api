@@ -32,6 +32,7 @@ WELCOME:
         ✔ clean the form when new element for second time @done (16-02-01 09:13)
         ✔ edit button and dialog filling @done (16-02-01 09:27)
           ☐ on save update instead of insert...
+            ☐ implement put method
         ☐ upload images...
           ☐ oh boy
   ✔ Welcome controller @done (16-01-30 14:12)
@@ -75,7 +76,8 @@ BUGS:
 ✔ welcome spy padding? @done (16-01-26 15:11)
 ✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
 ☐ spy is probably broken in latest materialize? @toverifyagain
- ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
+ ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
+
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
 ☐ extrait not complete list

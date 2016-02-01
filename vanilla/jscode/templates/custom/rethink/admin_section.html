@@ -36,7 +36,7 @@
             <th ng-repeat="model in wadm.sectionModels">
                 {{model.name}}
             </th>
-            <th>
+            <th width="10%">
                 <a href class="btn-floating waves-effect waves-light red"
                    ng-click="wadm.showAdvanced($event)"
                    tooltipped data-position="right" data-delay="50"
@@ -59,13 +59,18 @@
            data-tooltip="Edit this section" >
               <i class="material-icons">mode_edit</i>
           </a>
+          <a class="waves-effect waves-light btn-floating disabled">
+              <i class="material-icons">delete</i>
+          </a>
         </td>
       </tr>
      </tbody>
     </table>
 
+<!--
     <b layout="row" layout-align="center center" class="md-padding">
       Dialog status: {{status}}
     </b>
+-->
 
 </div>
