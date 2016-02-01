@@ -8,25 +8,37 @@ angular.module('web')
 
 
 
-function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia, $mdDialog)
+function AdminController($scope, $log, admin, $stateParams)
 {
   // Init controller
   $log.debug("ADMIN page controller", $stateParams);
   var self = this;
-  admin.getData().then(function (out)
-  {
-       console.log("Admin api:", out);
-  });
+
+  // Init data for each tab
+  $scope.sections = {};
 
   //TABS
   self.selectedTab = 0;
-  self.onTabSelected = function () {
-      $log.debug("Selected", self.selectedTab);
-  }
-  if ($stateParams.tab && $stateParams.tab != self.selectedTab) {
-    console.log("URL TAB is ",$stateParams);
-    self.selectedTab = $stateParams.tab;
+  self.onTabSelected = function (key) {
+      $log.debug("Selected", self.selectedTab, key);
 
+      // INIT TAB FOR MANAGING SECTIONS
+      if (key == 'sections') {
+        $scope.sections = {};
+        admin.getData().then(function (out)
+        {
+            if (out !== null && out.hasOwnProperty('elements')) {
+              $scope.sections = out.data;
+            } else {
+              $log.warn("No data?", out);
+            }
+        });
+      }
+  }
+
+  if ($stateParams.tab && $stateParams.tab != self.selectedTab) {
+    $log.debug("URL tab is ",$stateParams);
+    self.selectedTab = $stateParams.tab;
   }
 
   // Template Directories
@@ -61,37 +73,6 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
     },
   ];
 
-  self.models = [
-      {
-        'Section': 'First',
-        'Description': 'This is editable!',
-        'Content': 'This is long editable!!<br>Test',
-      },
-      {
-        'Section': 'Second',
-        'Description': 'Try',
-        'Content': 'Ehm ... <b>Uhm</b>.',
-      },
-  ];
-/*
-  self.options = {};
-  self.fields = [
-    {
-      key: 'text',
-      type: 'editableInput',
-      templateOptions: {
-        label: 'Text'
-      }
-    }
-  ];
-  self.originalFields = angular.copy(self.fields);
-*/
-
-  // function definition
-  self.saveForm = function () {
-    console.log("MODEL", self.model);
-  }
-
 //////////////////////////////////////
 // HANDLING THE CREATION OF A DIALOG
   $scope.status = 'Dialog to open';
@@ -124,10 +105,14 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
       forEach(self.sectionModels, function(x, i) {
         element[x.name] = x.text;
       });
-      console.log("To save", element);
+      //console.log("To save", element);
       admin.insert('welcome_section', element).then(function (out) {
         console.log("INSERT", out);
-        $scope.status = 'Created';
+        if (out.elements >= 0) {
+          $scope.status = 'Created';
+        } else {
+          $scope.status = 'Failed to insert';
+      }
       });
 
     }, function() {

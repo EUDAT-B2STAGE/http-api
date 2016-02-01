@@ -46,9 +46,9 @@
          </tr>
      </thead>
      <tbody>
-      <tr ng-repeat="model in wadm.models">
+      <tr ng-repeat="model in sections">
         <!-- Skip for add button --> <td></td>
-        <td ng-repeat="(key, value) in model track by $index">
+        <td ng-repeat="(key, value) in model.data track by $index">
             <span ng-bind-html="value||'empty'"></span>
         </td>
       </tr>

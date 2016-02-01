@@ -28,8 +28,9 @@ WELCOME:
       ✔ Material textarea @done (16-02-01 01:04)
         ✔ input form @done (16-02-01 00:45)
         ✔ post with json @done (16-02-01 01:15)
-          ☐ check post response
+          ✔ check post response @done (16-02-01 09:09)
         ☐ clean the form when new element for second time
+        ☐ edit button and dialog filling
         ☐ upload images...
           ☐ oh boy
   ✔ Welcome controller @done (16-01-30 14:12)
