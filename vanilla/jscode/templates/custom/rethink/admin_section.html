@@ -33,23 +33,32 @@
      <table class="highlight">
      <thead>
          <tr>
-            <th>
-                <a tooltipped href class="btn-floating waves-effect waves-light red"
-                   ng-click="wadm.showAdvanced($event)"
-                   data-position="right" data-delay="50" data-tooltip="Add a new Section">
-                    <i class="material-icons">add</i>
-                </a>
-            </th>
             <th ng-repeat="model in wadm.sectionModels">
                 {{model.name}}
+            </th>
+            <th>
+                <a href class="btn-floating waves-effect waves-light red"
+                   ng-click="wadm.showAdvanced($event)"
+                   tooltipped data-position="right" data-delay="50"
+                   data-tooltip="Add a new Section"
+                   >
+                    <i class="material-icons">add</i>
+                </a>
             </th>
          </tr>
      </thead>
      <tbody>
       <tr ng-repeat="model in sections">
-        <!-- Skip for add button --> <td></td>
         <td ng-repeat="(key, value) in model.data track by $index">
             <span ng-bind-html="value||'empty'"></span>
+        </td>
+        <td>
+          <a class="waves-effect waves-light btn-floating"
+           ng-click="wadm.showAdvanced($event, model)"
+           tooltipped data-position="left" data-delay="50"
+           data-tooltip="Edit this section" >
+              <i class="material-icons">mode_edit</i>
+          </a>
         </td>
       </tr>
      </tbody>

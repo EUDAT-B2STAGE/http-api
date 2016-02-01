@@ -78,12 +78,21 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
   $scope.status = 'Dialog to open';
   self.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
 
-  self.showAdvanced = function(ev, data) {
+  self.showAdvanced = function(ev, model) {
     var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && self.customFullscreen;
+    var id = null;
+    if (model) {
+        id = model.id;
+    }
 
 // Clear or insert data in the model
+console.log("Dialog data", model);
     for (var j = 0; j < self.sectionModels.length; j++) {
-        self.sectionModels[j].text = ""
+        var value = "";
+        if (model) {
+            value = model.data[self.sectionModels[j].name];
+        }
+        self.sectionModels[j].text = value;
     };
 
 // Open
@@ -93,6 +102,7 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
       parent: angular.element(document.body),
       locals: {
         sectionModels: self.sectionModels,
+        modelId: id,
       },
       targetEvent: ev,
       //clickOutsideToClose:true,
@@ -138,11 +148,14 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
 
 }
 
-function DialogController($scope, $rootScope, $mdDialog, sectionModels)
+function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
 {
 
   $scope.sectionModels = sectionModels;
   $scope.title = "Add a new element";
+// DO SOMETHING WITH IT
+  console.log("MODEL ID", modelId);
+// DO SOMETHING WITH IT
 
   $scope.hide = function() {
     $mdDialog.hide();

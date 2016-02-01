@@ -30,7 +30,8 @@ WELCOME:
         ✔ post with json @done (16-02-01 01:15)
           ✔ check post response @done (16-02-01 09:09)
         ✔ clean the form when new element for second time @done (16-02-01 09:13)
-        ☐ edit button and dialog filling
+        ✔ edit button and dialog filling @done (16-02-01 09:27)
+          ☐ on save update instead of insert...
         ☐ upload images...
           ☐ oh boy
   ✔ Welcome controller @done (16-01-30 14:12)
