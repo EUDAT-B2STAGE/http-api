@@ -19,20 +19,26 @@ function AdminController($scope, $log, admin, $stateParams)
 
   //TABS
   self.selectedTab = 0;
+
+  $scope.sectionReload = function () {
+    admin.getData().then(function (out)
+    {
+      if (out !== null && out.hasOwnProperty('elements')) {
+        $scope.sections = out.data;
+      } else {
+        $log.warn("No data?", out);
+      }
+    });
+  }
+
+
   self.onTabSelected = function (key) {
       $log.debug("Selected", self.selectedTab, key);
 
       // INIT TAB FOR MANAGING SECTIONS
       if (key == 'sections') {
         $scope.sections = {};
-        admin.getData().then(function (out)
-        {
-            if (out !== null && out.hasOwnProperty('elements')) {
-              $scope.sections = out.data;
-            } else {
-              $log.warn("No data?", out);
-            }
-        });
+        $scope.sectionReload();
       }
   }
 
@@ -136,9 +142,10 @@ console.log("Dialog data", model);
         console.log("STORED", out);
         if (out.elements >= 0) {
           $scope.status = 'Data saved';
+          $scope.sectionReload();
         } else {
           $scope.status = 'Failed to insert';
-      }
+        }
       });
 
     }, function() {
