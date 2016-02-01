@@ -33,7 +33,7 @@ function AdminController($scope, $rootScope, $log, admin, $stateParams, $mdMedia
   self.blueprintTemplateDir = blueprintTemplateDir;
 }
 
-function AdminWelcomeController($scope, $rootScope, $log, admin, $stateParams, $mdMedia, $mdDialog)
+function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stateParams, $mdMedia, $mdDialog)
 {
   $log.debug("Welcome admin controller", $stateParams);
   var self = this;
@@ -43,19 +43,21 @@ function AdminWelcomeController($scope, $rootScope, $log, admin, $stateParams, $
         name: 'Section',
         value: 'New section!',
         description: 'The name for your new welcome section',
+        required: true,
+        focus: true,
         chars: 50,
     },
     {
         name: 'Description',
         value: 'We will talk about a lot of things',
         description: 'Short description of your section. It will appear in the home page.',
+        required: true,
         chars: 500,
     },
     {
         name: 'Content',
         value: 'This explanation is very long',
         description: 'Explanation of the section. It will appear in a separate page.',
-        chars: 99999,
     },
   ];
 
@@ -103,14 +105,24 @@ function AdminWelcomeController($scope, $rootScope, $log, admin, $stateParams, $
         sectionModels: self.sectionModels,
       },
       targetEvent: ev,
-      clickOutsideToClose:true,
+      //clickOutsideToClose:true,
+      onComplete: function(){
+        // Focus on first textarea
+        $timeout(function(){
+          angular.element("textarea")[0].focus();
+        });
+      },
       fullscreen: useFullScreen
     })
     .then(function(answer) {
       $scope.status = 'You said the information was "' + answer + '".';
 
 // DO SOMETHING WITH THIS VALUES
-      console.log(self.sectionModels);
+      var element = {};
+      forEach(self.sectionModels, function(x, i) {
+        element[x.name] = x.text;
+      });
+      console.log("To save", element);
 // DO SOMETHING WITH THIS VALUES
 
     }, function() {
@@ -130,7 +142,7 @@ function AdminWelcomeController($scope, $rootScope, $log, admin, $stateParams, $
 
 }
 
-function DialogController($scope, $mdDialog, sectionModels)
+function DialogController($scope, $rootScope, $mdDialog, sectionModels)
 {
 
   $scope.sectionModels = sectionModels;
@@ -142,8 +154,16 @@ function DialogController($scope, $mdDialog, sectionModels)
   $scope.cancel = function() {
     $mdDialog.cancel();
   };
-  $scope.answer = function(answer) {
-    $mdDialog.hide(answer);
+  $scope.answer = function(model) {
+    var valid = true;
+    forEach(model, function(x, i) {
+      if (x.required && !x.text) {
+        valid = false;
+      }
+    });
+    if (valid) {
+      $mdDialog.hide("Funziona");
+    }
   };
 }
 

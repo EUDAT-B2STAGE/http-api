@@ -14,9 +14,8 @@
         </md-subheader>
         <md-input-container>
           <label> {{model.description}} </label>
-          <textarea ng-model="model.text" 
-            cols="50" md-maxlength="model.chars"
-            >test</textarea>
+          <textarea name="{{model.name}}" ng-model="model.text" ng-required="model.required"
+            cols="50" md-maxlength="model.chars || 99999" ></textarea>
         </md-input-container>
       </div>
 
@@ -24,7 +23,7 @@
 
     <md-dialog-actions layout="row">
       <span flex></span>
-      <md-button class="md-secondary" ng-click="answer('useful')" md-autofocus>
+      <md-button class="md-secondary" ng-click="answer(sectionModels)">
         save
       </md-button>
       <md-button class="md-warn" ng-click="cancel()" >

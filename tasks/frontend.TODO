@@ -19,15 +19,18 @@ FANCY:
 WELCOME:
   ✔ Make this angular page @done (16-01-26 08:24)
     ✔ move it to internal angular routing @done (16-01-26 08:24)
+    ✔ xeditable material @done (16-02-01 01:04)
   ☐ Admin page
     ✔ admin api @done (16-01-26 08:24)
       ✔ dialog for create a new element @done (16-01-30 14:12)
       ✔ table to show sections @done (16-01-31 22:21)
-      ☐ cards into dialog to create new element
-        ✔ xeditable material @done (16-01-26 11:36)
-        ☐ input form
+      ✘ cards into dialog to create new element @cancelled (16-02-01 01:04)
+      ✔ Material textarea @done (16-02-01 01:04)
+        ✔ input form @done (16-02-01 00:45)
         ☐ post with json
+        ☐ clean the form when new element for second time
         ☐ upload images...
+          ☐ oh boy
   ✔ Welcome controller @done (16-01-30 14:12)
     ☐ parallax ng-repeat
 

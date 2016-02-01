@@ -24,7 +24,17 @@ function AdminService($log, api) {
                 data: data,
             }
         );
-
+/*
+    {
+        "type": {
+            "name": "Welcome page",
+            "description": null
+        },
+        "data": {
+            "whatever": "True"
+        }
+    }
+*/
     }
 
 }
