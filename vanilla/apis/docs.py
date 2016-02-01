@@ -294,6 +294,7 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     @roles_required(config.ROLE_ADMIN)
     def get(self):
     #def get(self, data_key=None):
+        data_key = None
         count, data = super().get(data_key)
         return self.response(data, elements=count)
 

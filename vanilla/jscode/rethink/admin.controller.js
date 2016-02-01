@@ -92,11 +92,14 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
     console.log("MODEL", self.model);
   }
 
+//////////////////////////////////////
+// HANDLING THE CREATION OF A DIALOG
   $scope.status = 'Dialog to open';
   self.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
 
   self.showAdvanced = function(ev) {
     var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && self.customFullscreen;
+// Open
     $mdDialog.show({
       controller: DialogController,
       templateUrl: blueprintTemplateDir + 'add_section.html',
@@ -114,20 +117,21 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
       },
       fullscreen: useFullScreen
     })
+// WHEN COMPLETED
     .then(function(answer) {
-      $scope.status = 'You said the information was "' + answer + '".';
-
-// DO SOMETHING WITH THIS VALUES
+      $scope.status = "Creating the new element";
       var element = {};
       forEach(self.sectionModels, function(x, i) {
         element[x.name] = x.text;
       });
       console.log("To save", element);
-      admin.insert('test', element).then();
-// DO SOMETHING WITH THIS VALUES
+      admin.insert('welcome_section', element).then(function (out) {
+        console.log("INSERT", out);
+        $scope.status = 'Created';
+      });
 
     }, function() {
-      $scope.status = 'You cancelled the dialog.';
+      $scope.status = 'New element creation aborted...';
     });
     $scope.$watch(function() {
       return $mdMedia('xs') || $mdMedia('sm');

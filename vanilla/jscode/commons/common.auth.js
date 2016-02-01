@@ -71,7 +71,8 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
     };
 
     // In case i am already logged, skip
-    if ($auth.isAuthenticated()) {
+    if ($auth.isAuthenticated())
+    {
         $timeout(function () {
             $log.warn("Already logged");
             $state.go('logged');
