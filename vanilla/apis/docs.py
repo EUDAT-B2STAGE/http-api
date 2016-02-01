@@ -5,104 +5,15 @@ Some endpoints implementation
 """
 
 from __future__ import absolute_import
-import os
-import commentjson as json
+
 import rethinkdb as r
 from flask.ext.security import auth_token_required, roles_required
-from flask import request, url_for, redirect
 from confs import config
-from ..services.rethink import RDBquery, JSONS_PATH, JSONS_EXT
-from ..base import ExtendedApiResource
+from ..services.rethink import schema_and_tables, BaseRethinkResource
 from .. import decorators as deck
-from ... import htmlcodes as hcodes
 from ... import get_logger
-from ...marshal import convert_to_marshal
 
 logger = get_logger(__name__)
-
-
-def schema_and_tables(fileschema):
-    """
-    This function can recover basic data for my JSON resources
-    """
-    template = None
-    with open(os.path.join(JSONS_PATH, fileschema + JSONS_EXT)) as f:
-        template = json.load(f)
-    reference_schema = convert_to_marshal(template)
-    label = os.path.splitext(
-        os.path.basename(fileschema))[0].lower()
-
-    return label, template, reference_schema
-
-
-#####################################
-# Base implementation for methods?
-class BaseRethinkResource(ExtendedApiResource, RDBquery):
-    """ The json endpoint in a rethinkdb base class """
-
-    def get(self, data_key=None):
-        """
-        Obtain main data.
-        Obtain single objects.
-        Filter with predefined queries.
-        """
-
-        # Check arguments
-        limit = self._args['perpage']
-# // TO FIX: use it!
-        current_page = self._args['currentpage']
-
-        return self.get_content(data_key, limit)
-
-    def check_valid(self, json_data):
-        """ Verify if the json data follows the schema """
-        # Check if dictionary and not empty
-        if not isinstance(json_data, dict) or len(json_data) < 1:
-            return False
-        # Check template
-        for key, obj in json_data.items():
-            if key not in self.schema:
-                return False
-        # All fine here
-        return True
-
-    def post(self):
-
-        # Get JSON. The power of having a real object in our hand.
-        json_data = request.get_json(force=True)
-
-        if not self.check_valid(json_data):
-            logger.warning("Not a valid template")
-            return self.template, hcodes.HTTP_BAD_REQUEST
-
-        # marshal_data = marshal(json_data, self.schema, envelope='data')
-        myid = self.insert(json_data)
-
-        #####################
-        # redirect to GET method of this same endpoint, with the id found
-        #address = url_for(self.table, data_key=myid)
-        #return redirect(address)
-        # or return the key
-        return myid
-        #####################
-
-    def put(self, id):
-
-        # Get JSON. The power of having a real object in our hand.
-        json_data = request.get_json(force=True)
-
-        if 'id' in json_data:
-            json_data.pop('id')
-        print("\n\n\nDEBUG\n\n\n", json_data)
-
-        if not self.check_valid(json_data):
-            logger.warning("Not a valid template")
-            return self.template, hcodes.HTTP_BAD_REQUEST
-
-        myid = self.update(id, json_data)
-        if myid != id:
-            print("\n\n\nSOMETHING IS BAD\n\n\n", myid, id)
-        return id
 
 #####################################
 # Main resource
@@ -315,10 +226,8 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     @deck.apimethod
     @auth_token_required
     @roles_required(config.ROLE_ADMIN)
-    def get(self):
-    #def get(self, data_key=None):
-        data_key = None
-        count, data = super().get(data_key)
+    def get(self, id=None):
+        count, data = super().get(id)
         return self.response(data, elements=count)
 
     @deck.apimethod
@@ -328,6 +237,7 @@ class RethinkDataForAdministrators(BaseRethinkResource):
         return super().post()
 
     @deck.apimethod
+    @auth_token_required
+    @roles_required(config.ROLE_ADMIN)
     def put(self, id):
-        print("TEST", id)
         return super().put(id)

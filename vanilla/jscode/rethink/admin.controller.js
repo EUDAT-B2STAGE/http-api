@@ -115,17 +115,27 @@ console.log("Dialog data", model);
       fullscreen: useFullScreen
     })
 // WHEN COMPLETED
-    .then(function(answer) {
+    .then(function(update_id) {
+      // Check if id
       $scope.status = "Creating the new element";
       var element = {};
       forEach(self.sectionModels, function(x, i) {
         element[x.name] = x.text;
       });
+
+      var apicall = null;
+      var data_type = 'welcome_section';
+      if (update_id) {
+        apicall = admin.update(data_type, update_id, element);
+      } else {
+        apicall = admin.insert(data_type, element);
+      }
+
       //console.log("To save", element);
-      admin.insert('welcome_section', element).then(function (out) {
-        console.log("INSERT", out);
+      apicall.then(function (out) {
+        console.log("STORED", out);
         if (out.elements >= 0) {
-          $scope.status = 'Created';
+          $scope.status = 'Data saved';
         } else {
           $scope.status = 'Failed to insert';
       }
@@ -153,9 +163,9 @@ function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
 
   $scope.sectionModels = sectionModels;
   $scope.title = "Add a new element";
-// DO SOMETHING WITH IT
-  console.log("MODEL ID", modelId);
-// DO SOMETHING WITH IT
+// // DO SOMETHING WITH IT
+//   console.log("MODEL ID", modelId);
+// // DO SOMETHING WITH IT
 
   $scope.hide = function() {
     $mdDialog.hide();
@@ -171,7 +181,7 @@ function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
       }
     });
     if (valid) {
-      $mdDialog.hide("Funziona");
+      $mdDialog.hide(modelId);
     }
   };
 }

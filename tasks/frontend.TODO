@@ -33,6 +33,8 @@ WELCOME:
         ✔ edit button and dialog filling @done (16-02-01 09:27)
           ☐ on save update instead of insert...
             ☐ implement put method
+          ☐ reload after insert/update
+            ☐ which is when you close the dialog
         ☐ upload images...
           ☐ oh boy
   ✔ Welcome controller @done (16-01-30 14:12)

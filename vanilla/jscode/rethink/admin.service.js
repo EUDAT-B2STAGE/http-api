@@ -24,6 +24,15 @@ function AdminService($log, api) {
                 data: data,
             }
         );
+    }
+
+    self.update = function(name, id, data) {
+        return api.apiCall(self.endpoints.admin, 'PUT',
+            {
+                type: {name: name},
+                data: data,
+            }, id);
+    }
 /*
     {
         "type": {
@@ -35,7 +44,6 @@ function AdminService($log, api) {
         }
     }
 */
-    }
 
 }
 
