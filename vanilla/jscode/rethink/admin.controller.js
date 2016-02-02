@@ -7,28 +7,29 @@ angular.module('web')
     .controller('DialogController', DialogController)
     ;
 
+// General purpose load data function
+// To use only inside controllers
+function getSectionData(admin, $scope)
+{
+    return admin.getData().then(function (out)
+    {
+      if (out !== null && out.hasOwnProperty('elements')) {
+        $scope.sections = out.data;
+      } else {
+        console.log("No data??", out);
+      }
+    });
+}
+
 function AdminController($scope, $log, admin, $stateParams)
 {
   // Init controller
   $log.debug("ADMIN page controller", $stateParams);
   var self = this;
-
-  // Init data for each tab
-  $scope.sections = {};
-
   //TABS
   self.selectedTab = 0;
-
-  $scope.sectionReload = function () {
-    admin.getData().then(function (out)
-    {
-      if (out !== null && out.hasOwnProperty('elements')) {
-        $scope.sections = out.data;
-      } else {
-        $log.warn("No data?", out);
-      }
-    });
-  }
+  // Init data for each tab
+  $scope.sections = {};
 
   self.onTabSelected = function (key) {
       $log.debug("Selected", self.selectedTab, key);
@@ -36,7 +37,7 @@ function AdminController($scope, $log, admin, $stateParams)
       // INIT TAB FOR MANAGING SECTIONS
       if (key == 'sections') {
         $scope.sections = {};
-        $scope.sectionReload();
+        getSectionData(admin, $scope);
       }
   }
 
@@ -50,12 +51,18 @@ function AdminController($scope, $log, admin, $stateParams)
   self.blueprintTemplateDir = blueprintTemplateDir;
 }
 
-function WelcomeController($scope, $rootScope, $timeout, $log, admin, $stateParams, $mdMedia, $mdDialog)
+function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $stateParams, $mdMedia, $mdDialog)
 {
   $rootScope.loaders['admin_sections'] = false;
   $log.debug("Welcome admin controller", $stateParams);
   var self = this;
-  self.init = 'rdb';
+
+  $timeout(function () {
+    if ($state.current.name == 'welcome') {
+       getSectionData(admin, $scope);
+       self.init = 'rdb';
+    }
+  });
 
   self.sectionModels = [
     {
@@ -146,7 +153,7 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $statePara
       apicall.then(function (out) {
         console.log("Admin api call", out);
         if (out.elements >= 0) {
-          $scope.sectionReload();
+          getSectionData(admin, $scope);
         }
         // Activate the view
         $timeout(function() {

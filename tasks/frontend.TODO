@@ -26,7 +26,8 @@ WELCOME:
       ✔ sections: make the loader appear when updating data... @done (16-02-02 18:22)
   ☐ Welcome
     ✔ make it switchable @done (16-02-02 18:48)
-    ☐ parallax ng-repeat
+    ✔ ng-repeat @done (16-02-02 19:11)
+      ☐ more link if extra content available
     ☐ if empty data, go with the base template
   ☐ search form if a 'search' section?
   ☐ Images
@@ -35,6 +36,7 @@ WELCOME:
         ☐ a list of images
         ☐ you show only the path
           ☐ and maybe thumbnail
+      ☐ welcome parallax
       ☐ image cache
      https://github.com/jBenes/angular-imgcache.js/tree/master
 
