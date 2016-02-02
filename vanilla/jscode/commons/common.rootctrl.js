@@ -20,6 +20,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
     // Init controller
     var self = this;
     $log.debug("Root controller");
+    $rootScope.loaders = [];
 
     // Passing a global variable
     self.templateDir = templateDir;

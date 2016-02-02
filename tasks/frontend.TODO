@@ -7,9 +7,9 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 http://stackoverflow.com/a/25647714/2114395
 
 updates:
-bower install jquery#~2.1.4
-update angular to 1.5 rc
-update rethinkdb image
+ ☐ bower install jquery#~2.1.4 @tocheck
+ ☐ update angular to 1.5 rc
+ ☐ update rethinkdb image
 --- ✄ -----------------------
 
 FANCY:
@@ -20,34 +20,21 @@ WELCOME:
   ✔ Make this angular page @done (16-01-26 08:24)
     ✔ move it to internal angular routing @done (16-01-26 08:24)
     ✔ xeditable material @done (16-02-01 01:04)
-  ☐ Admin page
-    ✔ admin api @done (16-01-26 08:24)
-      ✔ dialog for create a new element @done (16-01-30 14:12)
-      ✔ table to show sections @done (16-01-31 22:21)
-      ✘ cards into dialog to create new element @cancelled (16-02-01 01:04)
-      ✔ Material textarea @done (16-02-01 01:04)
-        ✔ input form @done (16-02-01 00:45)
-        ✔ post with json @done (16-02-01 01:15)
-          ✔ check post response @done (16-02-01 09:09)
-        ✔ clean the form when new element for second time @done (16-02-01 09:13)
-        ✔ edit button and dialog filling @done (16-02-01 09:27)
-          ✔ on save update instead of insert... @done (16-02-01 18:39)
-            ✔ implement put method @done (16-02-01 18:39)
-          ✔ reload after insert/update @done (16-02-01 18:45)
-            which is when you close the dialog
-        ✔ delete element @done (16-02-02 09:48)
-          ✔ from inside the dialog @done (16-02-02 07:44)
-          ✔ create DELETE api @done (16-02-02 07:59)
-          ✔ define DELETE in scope @done (16-02-02 09:48)
-          ✔ remove and close the dialog @done (16-02-02 09:48)
-        ☐ sections: make the loader appear when updating data...
-        ☐ upload images... @ohboy
-          ☐ a dedicated button inside the dialog
-          ☐ a list of images
-          ☐ you show only the path
-            ☐ and maybe thumbnail
+  ✔ Admin page @done (16-02-02 18:22)
   ✔ Welcome controller @done (16-01-30 14:12)
-    ☐ parallax ng-repeat
+  ✔ admin api @done (16-01-26 08:24)
+      ✔ sections: make the loader appear when updating data... @done (16-02-02 18:22)
+  ☐ Welcome: parallax ng-repeat
+    ☐ if empty data, go with the base template
+  ☐ search form if a 'search' section?
+  ☐ Images
+      ☐ upload images... @ohboy
+        ☐ a dedicated button inside the dialog
+        ☐ a list of images
+        ☐ you show only the path
+          ☐ and maybe thumbnail
+      ☐ image cache
+     https://github.com/jBenes/angular-imgcache.js/tree/master
 
 Admin page:
   ✔ Change toolbar color @done (16-01-25 16:03)
@@ -111,6 +98,8 @@ DETAILS:
  ☐ aggiungere lista dettagli (step 4) sotto lo scrollspy
 
 SUBMIT:
+  ☐ Guide the submission with breadcrumbs
+  http://materializecss.com/breadcrumbs.html
  ☐ Steps are upside down
  ☐ Go from the biggest step to the leaf, as a branch
    ☐ breadcrumbs show the progress
@@ -376,3 +365,21 @@ COMPLETED:
       ✔ progress angular with template if loading @done (16-01-26 15:32)
     ✔ Why the hell http requests hang? @done (16-01-26 15:32)
       ✔ flask multi thread @done (16-01-26 15:32)
+      ✔ dialog for create a new element @done (16-01-30 14:12)
+      ✔ table to show sections @done (16-01-31 22:21)
+      ✘ cards into dialog to create new element @cancelled (16-02-01 01:04)
+      ✔ Material textarea @done (16-02-01 01:04)
+        ✔ input form @done (16-02-01 00:45)
+        ✔ post with json @done (16-02-01 01:15)
+          ✔ check post response @done (16-02-01 09:09)
+        ✔ clean the form when new element for second time @done (16-02-01 09:13)
+        ✔ edit button and dialog filling @done (16-02-01 09:27)
+          ✔ on save update instead of insert... @done (16-02-01 18:39)
+            ✔ implement put method @done (16-02-01 18:39)
+          ✔ reload after insert/update @done (16-02-01 18:45)
+            which is when you close the dialog
+        ✔ delete element @done (16-02-02 09:48)
+          ✔ from inside the dialog @done (16-02-02 07:44)
+          ✔ create DELETE api @done (16-02-02 07:59)
+          ✔ define DELETE in scope @done (16-02-02 09:48)
+          ✔ remove and close the dialog @done (16-02-02 09:48)

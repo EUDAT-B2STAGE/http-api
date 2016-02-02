@@ -6,8 +6,6 @@ angular.module('web')
     .controller('AdminController', AdminController)
     .controller('AdminWelcomeController', AdminWelcomeController);
 
-
-
 function AdminController($scope, $log, admin, $stateParams)
 {
   // Init controller
@@ -48,6 +46,7 @@ function AdminController($scope, $log, admin, $stateParams)
   }
 
   // Template Directories
+  self.templateDir = templateDir;
   self.blueprintTemplateDir = blueprintTemplateDir;
 }
 
@@ -55,6 +54,7 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
 {
   $log.debug("Welcome admin controller", $stateParams);
   var self = this;
+  $rootScope.loaders['admin_sections'] = false;
 
   self.sectionModels = [
     {
@@ -119,6 +119,7 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
 
 // WHEN COMPLETED
     var afterDialog = function(response) {
+
       var update_id = response[0], remove = response[1];
       $log.debug("After dialog", update_id, remove);
       // Check if id
@@ -140,12 +141,16 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
       }
 
 // MAKE LOADER APPEAR
-      //console.log("To save", element);
+
       apicall.then(function (out) {
         console.log("Admin api call", out);
         if (out.elements >= 0) {
           $scope.sectionReload();
         }
+        // Activate the view
+        $timeout(function() {
+           $rootScope.loaders['admin_sections'] = false;
+        }, timeToWait);
       });
     }
 
@@ -193,10 +198,12 @@ function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
       }
     });
     if (valid) {
+      $rootScope.loaders['admin_sections'] = true;
       $mdDialog.hide([modelId, null]);
     }
   };
   $scope.remove = function() {
+    $rootScope.loaders['admin_sections'] = true;
     $mdDialog.hide([modelId, true]);
   };
 }

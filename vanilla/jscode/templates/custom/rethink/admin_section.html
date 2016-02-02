@@ -47,10 +47,17 @@
             </th>
          </tr>
      </thead>
-     <tbody>
+
+     <tbody ng-if="loaders['admin_sections']">
+       <tr>
+        <td colspan="10" ng-include="adm.templateDir+'loader.html'"></td>
+       </tr>
+     </tbody>
+
+     <tbody ng-hide="loaders['admin_sections']">
       <tr ng-repeat="model in sections">
-        <td ng-repeat="(key, value) in model.data track by $index">
-            <span ng-bind-html="value||'empty'"></span>
+        <td ng-repeat="template in wadm.sectionModels">
+            <span ng-bind-html=" model.data[template.name] ||'empty'"></span>
         </td>
         <td>
           <a class="waves-effect waves-light btn-floating"
@@ -62,6 +69,7 @@
         </td>
       </tr>
      </tbody>
+
     </table>
 
 </div>
