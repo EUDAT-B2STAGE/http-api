@@ -7,7 +7,8 @@
         <span flex="50"></span>
         <a class="waves-effect btn-floating" ng-if="id"
            tooltipped data-position="down" data-delay="50"
-           data-tooltip="Remove this element (BE CAREFUL)" >
+           data-tooltip="Remove this element (BE CAREFUL)"
+           ng-click="remove()">
             <i class="material-icons">delete</i>
         </a>
       </div>
@@ -31,7 +32,7 @@
 
     <md-dialog-actions layout="row">
       <span flex></span>
-      <md-button class="md-secondary" ng-click="answer(sectionModels)">
+      <md-button class="md-secondary" ng-click="validate(sectionModels)">
         save
       </md-button>
       <md-button class="md-warn" ng-click="cancel()" >

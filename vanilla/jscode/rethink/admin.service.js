@@ -17,6 +17,18 @@ function AdminService($log, api) {
         return api.apiCall(self.endpoints.admin);
     }
 
+/* HOW DATA SHOULD LOOK LIKE:
+    {
+        "type": {
+            "name": "Welcome page",
+            "description": null
+        },
+        "data": {
+            "whatever": "True"
+        }
+    }
+*/
+
     self.insert = function(name, data) {
         return api.apiCall(self.endpoints.admin, 'POST',
             {
@@ -33,17 +45,10 @@ function AdminService($log, api) {
                 data: data,
             }, id);
     }
-/*
-    {
-        "type": {
-            "name": "Welcome page",
-            "description": null
-        },
-        "data": {
-            "whatever": "True"
-        }
+
+    self.delete = function(name, id) {
+        return api.apiCall(self.endpoints.admin, 'DELETE', null, id);
     }
-*/
 
 }
 

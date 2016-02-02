@@ -81,7 +81,6 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
 
 //////////////////////////////////////
 // HANDLING THE CREATION OF A DIALOG
-  $scope.status = 'Dialog to open';
   self.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
 
   self.showAdvanced = function(ev, model) {
@@ -92,7 +91,6 @@ function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stat
     }
 
 // Clear or insert data in the model
-console.log("Dialog data", model);
     for (var j = 0; j < self.sectionModels.length; j++) {
         var value = "";
         if (model) {
@@ -100,9 +98,9 @@ console.log("Dialog data", model);
         }
         self.sectionModels[j].text = value;
     };
-
-// Open
-    $mdDialog.show({
+// Options
+    var dialogOptions =
+    {
       controller: DialogController,
       templateUrl: blueprintTemplateDir + 'add_section.html',
       parent: angular.element(document.body),
@@ -114,16 +112,16 @@ console.log("Dialog data", model);
       //clickOutsideToClose:true,
       onComplete: function(){
         // Focus on first textarea
-        $timeout(function(){
-          angular.element("textarea")[0].focus();
-        });
+        $timeout(function(){ angular.element("textarea")[0].focus(); });
       },
       fullscreen: useFullScreen
-    })
+    }
+
 // WHEN COMPLETED
-    .then(function(update_id) {
+    var afterDialog = function(response) {
+      var update_id = response[0], remove = response[1];
+      $log.debug("After dialog", update_id, remove);
       // Check if id
-      $scope.status = "Creating the new element";
       var element = {};
       forEach(self.sectionModels, function(x, i) {
         element[x.name] = x.text;
@@ -132,30 +130,36 @@ console.log("Dialog data", model);
       var apicall = null;
       var data_type = 'welcome_section';
       if (update_id) {
-        apicall = admin.update(data_type, update_id, element);
+        if (remove) {
+            apicall = admin.delete(data_type, update_id);
+        } else {
+            apicall = admin.update(data_type, update_id, element);
+        }
       } else {
         apicall = admin.insert(data_type, element);
       }
 
+// MAKE LOADER APPEAR
       //console.log("To save", element);
       apicall.then(function (out) {
-        console.log("STORED", out);
+        console.log("Admin api call", out);
         if (out.elements >= 0) {
-          $scope.status = 'Data saved';
           $scope.sectionReload();
-        } else {
-          $scope.status = 'Failed to insert';
         }
       });
+    }
 
-    }, function() {
-      $scope.status = 'New element creation aborted...';
-    });
+// Open
+    $mdDialog.show(dialogOptions)
+        .then(afterDialog);
+
+// WATCH FOR FULL SCREEN
     $scope.$watch(function() {
       return $mdMedia('xs') || $mdMedia('sm');
     }, function(wantsFullScreen) {
       self.customFullscreen = (wantsFullScreen === true);
     });
+
   };
 
   // Activate dialog to insert new element if requested by url
@@ -181,7 +185,7 @@ function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
   $scope.cancel = function() {
     $mdDialog.cancel();
   };
-  $scope.answer = function(model) {
+  $scope.validate = function(model) {
     var valid = true;
     forEach(model, function(x, i) {
       if (x.required && !x.text) {
@@ -189,8 +193,11 @@ function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
       }
     });
     if (valid) {
-      $mdDialog.hide(modelId);
+      $mdDialog.hide([modelId, null]);
     }
+  };
+  $scope.remove = function() {
+    $mdDialog.hide([modelId, true]);
   };
 }
 

@@ -241,3 +241,9 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     @roles_required(config.ROLE_ADMIN)
     def put(self, id):
         return super().put(id)
+
+    @deck.apimethod
+    @auth_token_required
+    @roles_required(config.ROLE_ADMIN)
+    def delete(self, id):
+        return super().delete(id)
