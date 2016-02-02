@@ -169,10 +169,11 @@ function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
 {
 
   $scope.sectionModels = sectionModels;
+  $scope.id = modelId;
   $scope.title = "Add a new element";
-// // DO SOMETHING WITH IT
-//   console.log("MODEL ID", modelId);
-// // DO SOMETHING WITH IT
+  if (modelId) {
+      $scope.title = "Edit/Update element";
+  }
 
   $scope.hide = function() {
     $mdDialog.hide();

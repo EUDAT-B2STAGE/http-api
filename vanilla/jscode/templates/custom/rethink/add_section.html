@@ -2,10 +2,18 @@
  <form>
 
     <md-toolbar class="md-primary md-hue-3" >
-      <div class="md-toolbar-tools"> <h2>{{ title }}</h2> </div>
+      <div class="md-toolbar-tools" layout="row">
+        <h2>{{ title }}</h2>
+        <span flex="50"></span>
+        <a class="waves-effect btn-floating" ng-if="id"
+           tooltipped data-position="down" data-delay="50"
+           data-tooltip="Remove this element (BE CAREFUL)" >
+            <i class="material-icons">delete</i>
+        </a>
+      </div>
     </md-toolbar>
 
-    <md-dialog-content layout-padding 
+    <md-dialog-content layout-padding
       style="min-width:600px; max-width:1000px; max-height:810px; ">
 
       <div ng-repeat="model in sectionModels">
