@@ -24,7 +24,9 @@ WELCOME:
   ✔ Welcome controller @done (16-01-30 14:12)
   ✔ admin api @done (16-01-26 08:24)
       ✔ sections: make the loader appear when updating data... @done (16-02-02 18:22)
-  ☐ Welcome: parallax ng-repeat
+  ☐ Welcome
+    ✔ make it switchable @done (16-02-02 18:48)
+    ☐ parallax ng-repeat
     ☐ if empty data, go with the base template
   ☐ search form if a 'search' section?
   ☐ Images

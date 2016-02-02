@@ -2,9 +2,10 @@
   'use strict';
 
 angular.module('web')
-    .controller('DialogController', DialogController)
     .controller('AdminController', AdminController)
-    .controller('AdminWelcomeController', AdminWelcomeController);
+    .controller('WelcomeController', WelcomeController)
+    .controller('DialogController', DialogController)
+    ;
 
 function AdminController($scope, $log, admin, $stateParams)
 {
@@ -29,7 +30,6 @@ function AdminController($scope, $log, admin, $stateParams)
     });
   }
 
-
   self.onTabSelected = function (key) {
       $log.debug("Selected", self.selectedTab, key);
 
@@ -50,11 +50,12 @@ function AdminController($scope, $log, admin, $stateParams)
   self.blueprintTemplateDir = blueprintTemplateDir;
 }
 
-function AdminWelcomeController($scope, $rootScope, $timeout, $log, admin, $stateParams, $mdMedia, $mdDialog)
+function WelcomeController($scope, $rootScope, $timeout, $log, admin, $stateParams, $mdMedia, $mdDialog)
 {
+  $rootScope.loaders['admin_sections'] = false;
   $log.debug("Welcome admin controller", $stateParams);
   var self = this;
-  $rootScope.loaders['admin_sections'] = false;
+  self.init = 'rdb';
 
   self.sectionModels = [
     {
