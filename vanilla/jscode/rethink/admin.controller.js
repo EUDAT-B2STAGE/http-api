@@ -74,6 +74,7 @@ function WelcomeInfoController($scope, $log, $stateParams, admin)
         self.title = section.data['Section'];
         self.moreContent = section.data['Content'];
     });
+
 }
 
 function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $stateParams, $mdMedia, $mdDialog)
@@ -81,6 +82,11 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
   $rootScope.loaders['admin_sections'] = false;
   $log.debug("Welcome admin controller", $stateParams);
   var self = this;
+
+  self.isSearch = function(section) {
+    var key = 'search';
+    return angular.lowercase(section.data['Section']) == key;
+  }
 
   // Activate a dynamic welcome inside the view
   $timeout(function () {

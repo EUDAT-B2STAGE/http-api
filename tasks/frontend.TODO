@@ -17,30 +17,18 @@ FANCY:
   https://github.com/sagiegurari/angular-web-notification
 
 WELCOME:
-  ✔ Make this angular page @done (16-01-26 08:24)
-    ✔ move it to internal angular routing @done (16-01-26 08:24)
-    ✔ xeditable material @done (16-02-01 01:04)
-  ✔ Admin page @done (16-02-02 18:22)
-  ✔ Welcome controller @done (16-01-30 14:12)
-  ✔ admin api @done (16-01-26 08:24)
-      ✔ sections: make the loader appear when updating data... @done (16-02-02 18:22)
-  ☐ Welcome static
-    ✔ make it switchable @done (16-02-02 18:48)
-    ✔ ng-repeat @done (16-02-02 19:11)
-      ✔ more link if extra content available @done (16-02-03 11:06)
-        ☐ section position
-          ☐ drag and drop? @ohboy
-          https://github.com/angular/material/issues/2446
-          http://kamilkp.github.io/angular-sortable-view/#?tab=1
-          http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested
-        ✔ a viewer page @done (16-02-03 11:40)
-          ✔ sub route of welcome? @done (16-02-03 11:40)
-          ✔ overwrite parent view @done (16-02-03 14:25)
-          ✔ back button arrow @done (16-02-03 14:32)
-    ✔ slider draft @done (16-02-03 10:54)
-    ✔ if empty data, go with a failure message @done (16-02-03 19:11)
-  ☐ search form if a 'search' section?
   ☐ project name in angular if exists
+  ☐ app link instead of login on welcome if logged
+  ☐ section position
+    ☐ drag and drop? @ohboy
+  https://github.com/angular/material/issues/2446
+  http://kamilkp.github.io/angular-sortable-view/#?tab=1
+  http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested
+
+History:
+☐ save old state
+ ☐ json in cookies
+ ☐ show a clickable div that change ui router state
 
 IMAGES:
   ☐ upload images... @ohboy
@@ -80,11 +68,6 @@ New fixed search:
 ☐ chips watch?
 ☐ lazy load of more than 10 results
 ☐ Application name inside the Toolbar should be a hand made font?
-
-History:
-☐ save old state
- ☐ json in cookies
- ☐ show a clickable div that change ui router state
 
 BUGS:
 ✔ welcome spy padding? @done (16-01-26 15:11)
@@ -401,3 +384,21 @@ COMPLETED:
           ✔ create DELETE api @done (16-02-02 07:59)
           ✔ define DELETE in scope @done (16-02-02 09:48)
           ✔ remove and close the dialog @done (16-02-02 09:48)
+  ✔ Make this angular page @done (16-01-26 08:24)
+    ✔ move it to internal angular routing @done (16-01-26 08:24)
+    ✔ xeditable material @done (16-02-01 01:04)
+  ✔ Admin page @done (16-02-02 18:22)
+  ✔ Welcome controller @done (16-01-30 14:12)
+  ✔ admin api @done (16-01-26 08:24)
+      ✔ sections: make the loader appear when updating data... @done (16-02-02 18:22)
+  ✔ Welcome static @done (16-02-03 19:28)
+    ✔ make it switchable @done (16-02-02 18:48)
+    ✔ ng-repeat @done (16-02-02 19:11)
+      ✔ more link if extra content available @done (16-02-03 11:06)
+        ✔ a viewer page @done (16-02-03 11:40)
+          ✔ sub route of welcome? @done (16-02-03 11:40)
+          ✔ overwrite parent view @done (16-02-03 14:25)
+          ✔ back button arrow @done (16-02-03 14:32)
+    ✔ slider draft @done (16-02-03 10:54)
+    ✔ if empty data, go with a failure message @done (16-02-03 19:11)
+  ✔ search form if a 'search' section? @done (16-02-03 19:26)

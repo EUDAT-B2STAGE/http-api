@@ -24,10 +24,23 @@
     id='step{{$index}}'
     class="section scrollspy container" scrollspy>
 
-    <h2 class="header"> {{ section.data['Section'] }} </h2>
+    <h2 class="header">
+        {{ section.data['Section'].capitalizeFirstLetter() }} </h2>
     <span ng-bind-html="section.data['Description']"></span>
 
-    <md-content flew="100" ng-if="section.data['Content'] != ''"
+    <md-content
+        ng-show="welcome.isSearch(section)"
+        layout-padding layout-wrap>
+            <div layout="row" layout-align="center center">
+                <input placeholder="{{section.data['Content']}}"
+                    ng-focus="activateSearch()">
+                <i class="material-icons prefix">search</i>
+            </div>
+    </md-content>
+
+    <md-content
+        ng-hide="welcome.isSearch(section)"
+        flew="100" ng-if="section.data['Content'] != ''"
         layout="row" layout-align="end center">
         <md-button class="md-warn">
           <a ui-sref="welcome.more({'section':$index})">more...</a>
@@ -38,8 +51,12 @@
         <div parallax><img lazy-img="http://materializecss.com/images/parallax2.jpg"></div>
       </div>
 -->
+
+<!--
     <br> <br>
     <md-divider md-inset></md-divider>
+-->
+
   </div>
 
  </div>

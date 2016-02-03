@@ -18,7 +18,9 @@ function HotkeysService($timeout, $state) {
   self.exitSearch = function(event, controller) {
     event.preventDefault();
     $timeout(function () {
-        $state.go('logged.explore');
+// YOU NEED A FUNCTION TO REMEMBER POSITION
+        $state.go('welcome');
+        //$state.go('logged.explore');
     }, 10);
   }
 
