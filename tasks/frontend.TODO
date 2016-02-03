@@ -24,21 +24,28 @@ WELCOME:
   ✔ Welcome controller @done (16-01-30 14:12)
   ✔ admin api @done (16-01-26 08:24)
       ✔ sections: make the loader appear when updating data... @done (16-02-02 18:22)
-  ☐ Welcome
+  ☐ Welcome static
     ✔ make it switchable @done (16-02-02 18:48)
     ✔ ng-repeat @done (16-02-02 19:11)
-      ☐ more link if extra content available
+      ✔ more link if extra content available @done (16-02-03 11:06)
+        ☐ section position
+          ☐ drag and drop? @ohboy
+        ☐ a viewer page
+          ☐ sub route of welcome?
+    ✔ slider draft @done (16-02-03 10:54)
     ☐ if empty data, go with the base template
   ☐ search form if a 'search' section?
-  ☐ Images
-      ☐ upload images... @ohboy
-        ☐ a dedicated button inside the dialog
-        ☐ a list of images
-        ☐ you show only the path
-          ☐ and maybe thumbnail
-      ☐ welcome parallax
-      ☐ image cache
-     https://github.com/jBenes/angular-imgcache.js/tree/master
+  ☐ project name in angular if exists
+
+IMAGES:
+  ☐ upload images... @ohboy
+    ☐ a dedicated button inside the dialog
+    ☐ a list of images
+    ☐ you show only the path
+      ☐ and maybe thumbnail
+  ☐ welcome parallax
+  ☐ image cache
+ https://github.com/jBenes/angular-imgcache.js/tree/master
 
 Admin page:
   ✔ Change toolbar color @done (16-01-25 16:03)

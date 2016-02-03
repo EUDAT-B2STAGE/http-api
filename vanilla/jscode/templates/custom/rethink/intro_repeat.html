@@ -1,33 +1,50 @@
 <md-content layout="row" layout-padding layout-wrap>
 
 <!--CONTENT -->
-    <div flex="80">
+ <div flex="85">
 
-      <div>SLIDER</div>
-
-      <div ng-repeat="section in sections track by $index"
-        id='step{{$index}}' class="section scrollspy" scrollspy>
-        <span ng-bind-html="section.data['Description']"></span>
-
-        <br>
-        more...
-<!--
-          <div class="parallax-container">
-            <div parallax><img lazy-img="http://materializecss.com/images/parallax2.jpg"></div>
+    <div style="padding-bottom: 10px;" class="slider"
+        height='350' transition='300' slider>
+     <ul class="slides">
+        <li ng-repeat="x in [0,1,2,3]">
+          <img lazy-img="http://lorempixel.com/800/500/nature/3">
+          <div class="caption center-align">
+            <h3>Our brand new site!</h3>
+            <h5 class="light grey-text text-lighten-3">Here we go.</h5>
           </div>
--->
-      </div>
+        </li>
+    </ul>
+  </div>
 
-    </div>
+  <div ng-repeat="section in sections track by $index"
+    id='step{{$index}}'
+    class="section scrollspy container" scrollspy>
+
+    <h2 class="header"> {{ section.data['Section'] }} </h2>
+    <span ng-bind-html="section.data['Description']"></span>
+
+    <md-content flew="100" ng-if="section.data['Content'] != ''"
+        layout="row" layout-align="end center">
+        <md-button class="md-warn" ng-click="some()"> more... </md-button>
+    </md-content>
+<!--
+      <div class="parallax-container">
+        <div parallax><img lazy-img="http://materializecss.com/images/parallax2.jpg"></div>
+      </div>
+-->
+    <br> <br>
+    <md-divider md-inset></md-divider>
+  </div>
+
+ </div>
 
 <!-- SIDE MENU -->
-    <div flex="20" pushpin pushpin-offset="1">
-      <ul class="section table-of-contents">
-        <li> <a href="#step0"> Welcome </a> </li>
-        <li ng-repeat="section in sections track by $index">
-          <a href="#step{{$index}}"> {{section.data['Section']}} </a>
-        </li>
-      </ul>
-    </div>
+ <div flex="15" pushpin pushpin-offset="1">
+  <ul class="section table-of-contents">
+    <li ng-repeat="section in sections track by $index">
+      <a href="#step{{$index}}"> {{section.data['Section']}} </a>
+    </li>
+  </ul>
+ </div>
 
 </md-content>
