@@ -30,6 +30,9 @@ WELCOME:
       ✔ more link if extra content available @done (16-02-03 11:06)
         ☐ section position
           ☐ drag and drop? @ohboy
+          https://github.com/angular/material/issues/2446
+          http://kamilkp.github.io/angular-sortable-view/#?tab=1
+          http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested
         ✔ a viewer page @done (16-02-03 11:40)
           ✔ sub route of welcome? @done (16-02-03 11:40)
           ✔ overwrite parent view @done (16-02-03 14:25)
