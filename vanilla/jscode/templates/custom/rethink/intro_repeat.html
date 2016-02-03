@@ -1,5 +1,8 @@
 <md-content layout="row" layout-padding layout-wrap>
 
+<!-- TEMPORARY -->
+ <div flex="100" ui-view="temp"></div>
+
 <!--CONTENT -->
  <div flex="85">
 
@@ -25,7 +28,9 @@
 
     <md-content flew="100" ng-if="section.data['Content'] != ''"
         layout="row" layout-align="end center">
-        <md-button class="md-warn" ng-click="some()"> more... </md-button>
+        <md-button class="md-warn">
+          <a ui-sref="welcome.more({'section':$index})">more...</a>
+        </md-button>
     </md-content>
 <!--
       <div class="parallax-container">

@@ -4,6 +4,7 @@
 angular.module('web')
     .controller('AdminController', AdminController)
     .controller('WelcomeController', WelcomeController)
+    .controller('WelcomeInfoController', WelcomeInfoController)
     .controller('DialogController', DialogController)
     ;
 
@@ -51,14 +52,29 @@ function AdminController($scope, $log, admin, $stateParams)
   self.blueprintTemplateDir = blueprintTemplateDir;
 }
 
+function WelcomeInfoController($scope, $log, $stateParams, admin)
+{
+    $log.debug("Welcome info", $stateParams);
+    var self = this;
+    self.title = "None";
+    self.moreContent = "No section selected";
+    getSectionData(admin, $scope).then(function() {
+        var section = $scope.sections[$stateParams.section];
+        self.title = section.data['Section'];
+        self.moreContent = section.data['Content'];
+    });
+}
+
 function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $stateParams, $mdMedia, $mdDialog)
 {
   $rootScope.loaders['admin_sections'] = false;
   $log.debug("Welcome admin controller", $stateParams);
   var self = this;
 
+  // Activate a dynamic welcome inside the view
   $timeout(function () {
-    if ($state.current.name == 'welcome') {
+    var check = 'welcome';
+    if ($state.current.name.slice(0, check.length) == 'welcome') {
        getSectionData(admin, $scope);
        self.init = 'rdb';
     }

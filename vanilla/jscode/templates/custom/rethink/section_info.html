@@ -1,0 +1,16 @@
+<div class="container" ng-controller="WelcomeInfoController as info">
+
+    <md-content flew="100" layout="row" layout-align="end center">
+        <md-button class="md-accent">
+          <a ui-sref="welcome()">
+<!-- TO FIX -->
+            <i class="material-icons">left</i>
+              back
+          </a>
+        </md-button>
+    </md-content>
+
+    <h2>{{info.title}}</h2>
+    <span ng-bind-html="info.moreContent"></span>
+
+</div>

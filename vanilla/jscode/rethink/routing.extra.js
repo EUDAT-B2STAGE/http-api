@@ -6,8 +6,20 @@ angular.module('web')
 
 // EXTRA ROUTES
     {
+    //////////////////////
+        'welcome.more': {
+            url: "/info/:section",
+            views: {
+// rewrite main?
+                "temp": {
+                    dir: 'blueprint',
+                    templateUrl: 'section_info.html',
+                }
+            },
+        },
 
     //////////////////////
+//NOT LOGGED?
         'logged.specialsearch': {
             url: "/search/:text",
             views: {

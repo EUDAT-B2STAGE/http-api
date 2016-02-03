@@ -30,8 +30,10 @@ WELCOME:
       ✔ more link if extra content available @done (16-02-03 11:06)
         ☐ section position
           ☐ drag and drop? @ohboy
-        ☐ a viewer page
-          ☐ sub route of welcome?
+        ✔ a viewer page @done (16-02-03 11:40)
+          ✔ sub route of welcome? @done (16-02-03 11:40)
+          ☐ overwrite parent view
+          ☐ back button arrow
     ✔ slider draft @done (16-02-03 10:54)
     ☐ if empty data, go with the base template
   ☐ search form if a 'search' section?
@@ -87,6 +89,8 @@ BUGS:
 ☐ spy is probably broken in latest materialize? @toverifyagain
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
 
+☐ Fix all template inside the scope, use just root.templateSomething
+☐ fix all one-time-binding
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
 ☐ extrait not complete list
