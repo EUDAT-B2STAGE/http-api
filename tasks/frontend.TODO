@@ -38,9 +38,7 @@ WELCOME:
           ✔ overwrite parent view @done (16-02-03 14:25)
           ✔ back button arrow @done (16-02-03 14:32)
     ✔ slider draft @done (16-02-03 10:54)
-    ☐ if empty data, go with the base template
-  ☐ @bug
-    ☐ sections data should be also provided via endpoint with no authentication at all for welcoming...!
+    ✔ if empty data, go with a failure message @done (16-02-03 19:11)
   ☐ search form if a 'search' section?
   ☐ project name in angular if exists
 

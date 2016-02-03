@@ -1,9 +1,9 @@
 <div ng-controller="WelcomeController as welcome">
 
-    <div ng-if="welcome.init == 'example'"
+    <div ng-if="sections.length < 1"
         ng-include="root.templateDir+'intro_example.html'"></div>
 
-    <div ng-if="welcome.init == 'rdb'"
+    <div ng-if="sections.length > 0"
         ng-include="root.blueprintTemplateDir+'intro_repeat.html'"></div>
 
 </div>

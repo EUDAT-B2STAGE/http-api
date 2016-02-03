@@ -17,7 +17,18 @@ function getSectionData(admin, $scope)
       if (out !== null && out.hasOwnProperty('elements')) {
         $scope.sections = out.data;
       } else {
-        console.log("No data??", out);
+        $scope.sections = [{
+            data: {
+                "Section": "Temporary failure",
+                "Description":
+                    "Dear User,<br>" +
+                    "currently our data server is unreachable." +
+                    "<br><br>Please try again in a few minutes;" +
+                    "<br>We apologize for any inconvenience."
+                    ,
+                "Content": "",
+            }
+        }]
       }
     });
 }

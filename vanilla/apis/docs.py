@@ -224,8 +224,8 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     table = mylabel
 
     @deck.apimethod
-    @auth_token_required
-    @roles_required(config.ROLE_ADMIN)
+    # @auth_token_required
+    # @roles_required(config.ROLE_ADMIN)
     def get(self, id=None):
         count, data = super().get(id)
         return self.response(data, elements=count)
