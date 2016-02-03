@@ -10,8 +10,9 @@ angular.module('web')
         'welcome.more': {
             url: "/info/:section",
             views: {
-// rewrite main?
-                "temp": {
+                "main@": {
+// Did not understood this very well
+                //"main@welcome": {
                     dir: 'blueprint',
                     templateUrl: 'section_info.html',
                 }

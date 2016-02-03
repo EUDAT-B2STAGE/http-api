@@ -32,10 +32,12 @@ WELCOME:
           ☐ drag and drop? @ohboy
         ✔ a viewer page @done (16-02-03 11:40)
           ✔ sub route of welcome? @done (16-02-03 11:40)
-          ☐ overwrite parent view
+          ✔ overwrite parent view @done (16-02-03 14:25)
           ☐ back button arrow
     ✔ slider draft @done (16-02-03 10:54)
     ☐ if empty data, go with the base template
+  ☐ @bug
+    ☐ sections data should be also provided via endpoint with no authentication at all for welcoming...!
   ☐ search form if a 'search' section?
   ☐ project name in angular if exists
 
