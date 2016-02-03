@@ -33,7 +33,7 @@ WELCOME:
         ✔ a viewer page @done (16-02-03 11:40)
           ✔ sub route of welcome? @done (16-02-03 11:40)
           ✔ overwrite parent view @done (16-02-03 14:25)
-          ☐ back button arrow
+          ✔ back button arrow @done (16-02-03 14:32)
     ✔ slider draft @done (16-02-03 10:54)
     ☐ if empty data, go with the base template
   ☐ @bug
