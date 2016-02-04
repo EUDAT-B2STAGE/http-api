@@ -102,10 +102,12 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         }, timeToWait);
     }
 
+    ////////////////////////////
+    // HISTORY GLOBAL OBJECT
     $rootScope.goToLastRoute = function () {
         var last = lastRoute();
-        $log.debug("Going back to", last);
-        $state.go(last);
+        $log.debug("Going back to", last.state.name);
+        $state.go(last.state.name, last.params);
     }
 
     $rootScope.$on('$stateChangeSuccess',
@@ -138,10 +140,10 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         //DEBUG
         $log.debug("History stacks",
             temporaryRoutingHistory, totalRoutingHistory);
-
       }
     )
 
+    ////////////////////////////
     // Control states to create the menu
     var myObj = $state.get();
 

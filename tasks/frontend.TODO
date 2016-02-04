@@ -32,8 +32,9 @@ History:
    ✔ json in cookies or localstorage @done (16-02-04 15:42)
      ✔ fix the lastRoute function inside common.globals @done (16-02-04 15:43)
      ☐ skip a route to save if it's equal to the last one
-   ☐ apply also parameters to going back to state! @ooops
+   ✔ apply also parameters to going back to state! @ooops @done (16-02-04 16:00)
    ☐ sidebar for navigation of the whole history? @notsodifficult
+     ☐ md-sidebar official material
      ☐ limit to latest 10/20 entries?
 
 Autocomplete:

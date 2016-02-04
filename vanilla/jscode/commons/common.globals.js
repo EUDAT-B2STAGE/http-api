@@ -9,6 +9,7 @@ var templateDir = templateDirBase + framework + '/';
 var customTemplateDir = templateDirBase + 'custom/' + framework + '/';
 var blueprintTemplateDir = templateDirBase + 'custom/' + blueprint + '/';
 
+////////////////////////////
 // HISTORY GLOBAL OBJECT
 var temporaryRoutingHistory = [];
 var localStorageKey = 'myOwnHistory';
@@ -30,7 +31,10 @@ var setHistoryOfAllTimes = function (data)
 var lastRoute = function()
 {
     var
-        baseRoute = 'welcome',
+        baseRoute = {
+            state: {name: 'welcome'},
+            params: null,
+        },
         routingHistory = getHistoryOfAllTimes();
 
     // I want to go back.
@@ -40,9 +44,10 @@ var lastRoute = function()
     if (lastIndex < 0 || !routingHistory[lastIndex]) {
         return baseRoute;
     }
-    return routingHistory[lastIndex].state.name;
+    return routingHistory[lastIndex]
 }
 
+/////////////////////////////////
 /*
 var projectInfo = {
     name: "RestAngulask",
