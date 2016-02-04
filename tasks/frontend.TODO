@@ -5,20 +5,11 @@
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 # UI ROUTER and params
 http://stackoverflow.com/a/25647714/2114395
-
-updates:
- ☐ bower install jquery#~2.1.4 @tocheck
- ☐ update angular to 1.5 rc
- ☐ update rethinkdb image
 --- ✄ -----------------------
 
-FANCY:
-  ☐ browser notifications
-  https://github.com/sagiegurari/angular-web-notification
-
-WELCOME:
-  ☐ project name in angular if exists
-  ☐ app link instead of login on welcome if logged
+Welcome:
+  ☐ project name in angular if exists @uhm
+  ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
   ☐ section position
     ☐ drag and drop? @ohboy
   https://github.com/angular/material/issues/2446
@@ -26,11 +17,11 @@ WELCOME:
   http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested
 
 History:
-☐ save old state
- ☐ json in cookies
- ☐ show a clickable div that change ui router state
+  ☐ save old state
+   ☐ json in cookies
+   ☐ show a clickable div that change ui router state
 
-IMAGES:
+Images:
   ☐ upload images... @ohboy
     ☐ a dedicated button inside the dialog
     ☐ a list of images
@@ -39,6 +30,22 @@ IMAGES:
   ☐ welcome parallax
   ☐ image cache
  https://github.com/jBenes/angular-imgcache.js/tree/master
+
+Autocomplete:
+  ☐ elasticsearch
+    ☐ docker server setup
+    ☐ python insert in operations.py
+      https://elasticsearch-py.readthedocs.org/en/master/index.html
+  ☐ rethinkdb table change feed
+
+fancy:
+  ☐ browser notifications
+  https://github.com/sagiegurari/angular-web-notification
+
+Updates:
+ ☐ bower install jquery#~2.1.4 @tocheck
+ ☐ update angular to 1.5 rc
+ ☐ update rethinkdb image
 
 Admin page:
   ✔ Change toolbar color @done (16-01-25 16:03)
@@ -51,13 +58,6 @@ Admin page:
     http://stackoverflow.com/q/30761498
    ☐ ngWYSIWYG
    http://psergus.github.io/ngWYSIWYG/
-
-Autocomplete:
-  ☐ elasticsearch
-    ☐ docker server setup
-    ☐ python insert in operations.py
-      https://elasticsearch-py.readthedocs.org/en/master/index.html
-  ☐ rethinkdb table change feed
 
 New fixed search:
 ✔ onenter and onexit route extra @done (16-01-25 11:10)

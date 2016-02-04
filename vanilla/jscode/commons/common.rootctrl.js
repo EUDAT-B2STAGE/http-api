@@ -3,6 +3,7 @@
 
 angular.module('web')
     .controller('AppRootController', AppRootController)
+    .controller('WelcomeMenuController', WelcomeMenuController)
     .controller('ToolbarController', ToolbarController);
 
 function ToolbarController($scope, $log, $rootScope)
@@ -13,6 +14,30 @@ function ToolbarController($scope, $log, $rootScope)
     $rootScope.originalColor = angular.copy(color);
     $rootScope.toolbarColor = angular.copy(color);
     self.shade = 'z-depth-2';
+}
+
+function WelcomeMenuController($scope, $log, api, $auth)
+{
+    $log.debug("Welcome menu");
+    var self = this;
+    self.buttons = [];
+
+    api.verify(true).then(function(response){
+      if (response && $auth.isAuthenticated()) {
+        //console.log("Logged");
+        self.buttons.push({
+            name: 'app',
+            link: 'logged',
+            icon: 'something',
+        });
+      } else {
+        self.buttons.push({
+            name: 'login',
+            link: 'login',
+            icon: 'profile',
+        });
+      }
+    });
 }
 
 function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotkeys, keyshortcuts)
