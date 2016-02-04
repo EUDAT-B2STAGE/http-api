@@ -21,10 +21,12 @@ History:
    ✔ a function to recover last state @done (16-02-04 09:50)
      ✔ use it for every "go back" button @done (16-02-04 14:53)
        ✔ e.g. search go back @done (16-02-04 14:53)
-         ☐ placeholder for no data searched yet
+         ✔ placeholder for no data searched yet @done (16-02-04 15:01)
+         ☐ search loader...
        ☐ also search exit key
    ☐ json in cookies or localstorage
      ☐ fix the lastRoute function inside common.globals
+     ☐ apply also parameters to going back to state! @ooops
    ☐ show a clickable div that change ui router state
 
 Images:

@@ -15,23 +15,29 @@
 </form>
 <!-- TOOLBAR -->
 
+<md-content ng-hide="results" class='grey lighten-2'
+    layout="row" layout-align="center center"
+    layout-padding layout-wrap>
+    Results will be displayed here after searching a valid key
+</md-content>
+
 <div class="container">
  <div ng-if='data' class="row z-depth-2">
   <md-content layout='column' layout-align='space-around stretch'>
 
 <!-- results -->
-        <div ng-show="results">
-            <div ng-if="dataCount == NaN">
-                <div ng-include="search.templateDir + 'loader.html'"></div>
-            </div>
-            <div ng-if="dataCount == 0"
-                layout='row' layout-align='center'>
-                <p> No data found. </p>
-            </div>
-            <div ng-if='dataCount > 0'
-                ng-include="search.blueprintTemplateDir + 'datatable.html'">
-            </div>
+    <div ng-show="results">
+        <div ng-if="dataCount == NaN">
+            <div ng-include="search.templateDir + 'loader.html'"></div>
         </div>
+        <div ng-if="dataCount == 0"
+            layout='row' layout-align='center'>
+            <p> No data found. </p>
+        </div>
+        <div ng-if='dataCount > 0'
+            ng-include="search.blueprintTemplateDir + 'datatable.html'">
+        </div>
+    </div>
 <!-- results -->
 
   </md-content>
