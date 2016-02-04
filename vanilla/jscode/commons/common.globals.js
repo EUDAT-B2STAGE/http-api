@@ -9,6 +9,26 @@ var templateDir = templateDirBase + framework + '/';
 var customTemplateDir = templateDirBase + 'custom/' + framework + '/';
 var blueprintTemplateDir = templateDirBase + 'custom/' + blueprint + '/';
 
+// HISTORY GLOBAL OBJECT
+var temporaryRoutingHistory = [];
+
+var lastRoute = function() {
+
+    var lastIndex = temporaryRoutingHistory.length - 1;
+    if (lastIndex < 0) {
+// TO FIX
+        return 'welcome';
+    }
+    return temporaryRoutingHistory[lastIndex];
+}
+
+/*
+var projectInfo = {
+    name: "RestAngulask",
+    description: "Angularjs meets Flask",
+}
+*/
+
 /////////////////////////////////
 // FOR EACH AUTO IMPLEMENTATION
  //https://toddmotto.com/simple-foreach-implementation-for-objects-nodelists-arrays-with-automatic-type-looping/

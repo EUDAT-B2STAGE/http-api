@@ -102,7 +102,6 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         }, timeToWait);
     }
 
-    self.routesHistory = [];
     $rootScope.$on('$stateChangeSuccess',
       function (event, toState, toParams, fromState, fromParams) {
 
@@ -111,13 +110,13 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         //console.log("Current is", toState);
 
         // To execute only if we are loading the page
-        if (self.routesHistory.length < 1) {
+        if (temporaryRoutingHistory.length < 1) {
             self.initTimer(toState);
         }
 
         // Push to temporary history
-        self.routesHistory.push(lastRoute);
-        $log.debug("History stack", self.routesHistory);
+        temporaryRoutingHistory.push(lastRoute);
+        $log.debug("History stack", temporaryRoutingHistory);
 
         // Push to cookie?
 // TO FIX

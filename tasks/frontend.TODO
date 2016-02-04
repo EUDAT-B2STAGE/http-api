@@ -18,7 +18,7 @@ Welcome:
 
 History:
   ✔ save old state @done (16-02-04 09:31)
-   ☐ a function to recover last state
+   ✔ a function to recover last state @done (16-02-04 09:50)
      ☐ use it for every "go back" button
        ☐ e.g. search go back
    ☐ json in cookies or localstorage
