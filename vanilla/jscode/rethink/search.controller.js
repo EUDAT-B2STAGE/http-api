@@ -6,11 +6,12 @@ angular.module('web')
     .controller('ChipsController', ChipsController)
     ;
 
-function SearchController($scope, $log, $state, search, hotkeys, keyshortcuts)
+function SearchController($scope, $rootScope, $log, $state, search, hotkeys, keyshortcuts)
 {
 
   // INIT controller
   var self = this;
+  self.goToLastRoute = $rootScope.goToLastRoute;
   $log.debug("Main SEARCH controller");
 
     // Init keys

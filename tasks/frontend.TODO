@@ -23,7 +23,7 @@ History:
        ✔ e.g. search go back @done (16-02-04 14:53)
          ✔ placeholder for no data searched yet @done (16-02-04 15:01)
          ☐ search loader...
-       ☐ also search exit key
+       ✔ also search exit key @done (16-02-04 15:07)
    ☐ json in cookies or localstorage
      ☐ fix the lastRoute function inside common.globals
      ☐ apply also parameters to going back to state! @ooops
