@@ -102,6 +102,12 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         }, timeToWait);
     }
 
+    $rootScope.goToLastRoute = function () {
+        var last = lastRoute();
+        $log.debug("Going back to", last);
+        $state.go(last);
+    }
+
     $rootScope.$on('$stateChangeSuccess',
       function (event, toState, toParams, fromState, fromParams) {
 

@@ -14,12 +14,16 @@ var temporaryRoutingHistory = [];
 
 var lastRoute = function() {
 
-    var lastIndex = temporaryRoutingHistory.length - 1;
-    if (lastIndex < 0) {
-// TO FIX
-        return 'welcome';
+    var baseRoute = 'welcome';
+    // I want to go back.
+    // The last route is the current one,
+    // so i will go 2 routes back in the history.
+    var lastIndex = temporaryRoutingHistory.length - 2;
+    if (lastIndex < 0 || !temporaryRoutingHistory[lastIndex]) {
+        return baseRoute;
     }
-    return temporaryRoutingHistory[lastIndex];
+
+    return temporaryRoutingHistory[lastIndex].state.name;
 }
 
 /*

@@ -19,9 +19,12 @@ Welcome:
 History:
   ✔ save old state @done (16-02-04 09:31)
    ✔ a function to recover last state @done (16-02-04 09:50)
-     ☐ use it for every "go back" button
-       ☐ e.g. search go back
+     ✔ use it for every "go back" button @done (16-02-04 14:53)
+       ✔ e.g. search go back @done (16-02-04 14:53)
+         ☐ placeholder for no data searched yet
+       ☐ also search exit key
    ☐ json in cookies or localstorage
+     ☐ fix the lastRoute function inside common.globals
    ☐ show a clickable div that change ui router state
 
 Images:
