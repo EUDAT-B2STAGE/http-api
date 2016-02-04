@@ -7,28 +7,6 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 http://stackoverflow.com/a/25647714/2114395
 --- ✄ -----------------------
 
-Welcome:
-  ☐ project name in angular if exists @uhm
-  ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
-  ☐ section position
-    ☐ drag and drop? @ohboy
-  https://github.com/angular/material/issues/2446
-  http://kamilkp.github.io/angular-sortable-view/#?tab=1
-  http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested
-
-History:
-  ✔ save old state @done (16-02-04 09:31)
-   ✔ a function to recover last state @done (16-02-04 09:50)
-     ✔ use it for every "go back" button @done (16-02-04 14:53)
-       ✔ e.g. search go back @done (16-02-04 14:53)
-         ✔ placeholder for no data searched yet @done (16-02-04 15:01)
-         ✔ search loader... @done (16-02-04 15:24)
-       ✔ also search exit key @done (16-02-04 15:07)
-   ☐ json in cookies or localstorage
-     ☐ fix the lastRoute function inside common.globals
-     ☐ apply also parameters to going back to state! @ooops
-   ☐ show a clickable div that change ui router state
-
 Images:
   ☐ upload one and use it for all, for now @quickanddirty
   ☐ upload images
@@ -40,6 +18,21 @@ Images:
   ☐ welcome parallax
   ☐ image cache
  https://github.com/jBenes/angular-imgcache.js/tree/master
+
+Welcome:
+  ☐ project name in angular if exists @uhm
+  ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
+  ☐ section positions
+    ☐ drag and drop? @ohboy
+  https://github.com/angular/material/issues/2446
+  http://kamilkp.github.io/angular-sortable-view/#?tab=1
+  http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested
+
+History:
+   ✔ json in cookies or localstorage @done (16-02-04 15:42)
+     ☐ fix the lastRoute function inside common.globals
+   ☐ apply also parameters to going back to state! @ooops
+   ☐ sidebar for navigation of the whole history? @notsodifficult
 
 Autocomplete:
   ☐ elasticsearch
@@ -412,3 +405,10 @@ COMPLETED:
     ✔ slider draft @done (16-02-03 10:54)
     ✔ if empty data, go with a failure message @done (16-02-03 19:11)
   ✔ search form if a 'search' section? @done (16-02-03 19:26)
+  ✔ save old state @done (16-02-04 09:31)
+   ✔ a function to recover last state @done (16-02-04 09:50)
+     ✔ use it for every "go back" button @done (16-02-04 14:53)
+       ✔ e.g. search go back @done (16-02-04 14:53)
+         ✔ placeholder for no data searched yet @done (16-02-04 15:01)
+         ✔ search loader... @done (16-02-04 15:24)
+       ✔ also search exit key @done (16-02-04 15:07)
