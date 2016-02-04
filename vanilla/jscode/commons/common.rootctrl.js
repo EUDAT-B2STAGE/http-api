@@ -102,10 +102,26 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         }, timeToWait);
     }
 
+    self.routesHistory = [];
     $rootScope.$on('$stateChangeSuccess',
       function (event, toState, toParams, fromState, fromParams) {
-        console.log("Current is", toState);
-        self.initTimer(toState);
+
+        // I should save every state change to compile my history.
+        var lastRoute = {state: toState, params: toParams};
+        //console.log("Current is", toState);
+
+        // To execute only if we are loading the page
+        if (self.routesHistory.length < 1) {
+            self.initTimer(toState);
+        }
+
+        // Push to temporary history
+        self.routesHistory.push(lastRoute);
+        $log.debug("History stack", self.routesHistory);
+
+        // Push to cookie?
+// TO FIX
+
       }
     )
 
