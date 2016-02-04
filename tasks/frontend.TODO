@@ -30,9 +30,11 @@ Welcome:
 
 History:
    ✔ json in cookies or localstorage @done (16-02-04 15:42)
-     ☐ fix the lastRoute function inside common.globals
+     ✔ fix the lastRoute function inside common.globals @done (16-02-04 15:43)
+     ☐ skip a route to save if it's equal to the last one
    ☐ apply also parameters to going back to state! @ooops
    ☐ sidebar for navigation of the whole history? @notsodifficult
+     ☐ limit to latest 10/20 entries?
 
 Autocomplete:
   ☐ elasticsearch

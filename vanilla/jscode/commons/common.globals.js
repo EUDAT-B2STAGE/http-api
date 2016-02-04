@@ -11,19 +11,36 @@ var blueprintTemplateDir = templateDirBase + 'custom/' + blueprint + '/';
 
 // HISTORY GLOBAL OBJECT
 var temporaryRoutingHistory = [];
+var localStorageKey = 'myOwnHistory';
 
-var lastRoute = function() {
+var getHistoryOfAllTimes = function ()
+{
+    var history = JSON.parse(localStorage.getItem(localStorageKey));
+    // Note: localStorageKey is defined in common.globals
+    if (history === null)
+        history = [];
+    return history;
+}
 
-    var baseRoute = 'welcome';
+var setHistoryOfAllTimes = function (data)
+{
+    localStorage.setItem(localStorageKey, JSON.stringify(data));
+}
+
+var lastRoute = function()
+{
+    var
+        baseRoute = 'welcome',
+        routingHistory = getHistoryOfAllTimes();
+
     // I want to go back.
     // The last route is the current one,
     // so i will go 2 routes back in the history.
-    var lastIndex = temporaryRoutingHistory.length - 2;
-    if (lastIndex < 0 || !temporaryRoutingHistory[lastIndex]) {
+    var lastIndex = routingHistory.length - 2;
+    if (lastIndex < 0 || !routingHistory[lastIndex]) {
         return baseRoute;
     }
-
-    return temporaryRoutingHistory[lastIndex].state.name;
+    return routingHistory[lastIndex].state.name;
 }
 
 /*

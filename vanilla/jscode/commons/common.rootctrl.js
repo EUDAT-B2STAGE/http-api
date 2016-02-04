@@ -121,22 +121,23 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         }
 
         // Push to temporary history
+        // (all the action you did after the last time you reloaded the page)
         temporaryRoutingHistory.push(lastRoute);
 
         //////////////////////
         // Push to cookie
-        var localStorageKey = 'myOwnHistoryZA';
         // 1. get the old elements
-        var tmp = JSON.parse(localStorage.getItem(localStorageKey));
-        if (tmp === null)
-            tmp = [];
+        var totalRoutingHistory = getHistoryOfAllTimes();
         // 2. push the new element
-        tmp.push(lastRoute);
+        totalRoutingHistory.push(lastRoute);
         // 3. save all data
-        localStorage.setItem(localStorageKey, JSON.stringify(tmp));
+        setHistoryOfAllTimes(totalRoutingHistory);
+            // Note: getHistoryOfAllTimes and setHistoryOfAllTimes
+            // are defined in common.globals
 
         //DEBUG
-        $log.debug("History stacks", temporaryRoutingHistory, tmp);
+        $log.debug("History stacks",
+            temporaryRoutingHistory, totalRoutingHistory);
 
       }
     )
