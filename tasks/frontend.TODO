@@ -22,7 +22,7 @@ History:
      ✔ use it for every "go back" button @done (16-02-04 14:53)
        ✔ e.g. search go back @done (16-02-04 14:53)
          ✔ placeholder for no data searched yet @done (16-02-04 15:01)
-         ☐ search loader...
+         ✔ search loader... @done (16-02-04 15:24)
        ✔ also search exit key @done (16-02-04 15:07)
    ☐ json in cookies or localstorage
      ☐ fix the lastRoute function inside common.globals
@@ -30,7 +30,9 @@ History:
    ☐ show a clickable div that change ui router state
 
 Images:
-  ☐ upload images... @ohboy
+  ☐ upload one and use it for all, for now @quickanddirty
+  ☐ upload images
+    ☐ API endpoint
     ☐ a dedicated button inside the dialog
     ☐ a list of images
     ☐ you show only the path

@@ -18,7 +18,13 @@
 <md-content ng-hide="results" class='grey lighten-2'
     layout="row" layout-align="center center"
     layout-padding layout-wrap>
-    Results will be displayed here after searching a valid key
+    <p>
+        Results will be displayed here after searching a valid key
+        <br>
+        ( or press the right arrow icon above
+        to search <i><b>all</b></i> elements )
+        <br>
+    </p>
 </md-content>
 
 <div class="container">
@@ -27,7 +33,7 @@
 
 <!-- results -->
     <div ng-show="results">
-        <div ng-if="dataCount == NaN">
+        <div ng-if="dataCount === null">
             <div ng-include="search.templateDir + 'loader.html'"></div>
         </div>
         <div ng-if="dataCount == 0"

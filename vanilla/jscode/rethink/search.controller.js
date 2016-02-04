@@ -31,7 +31,12 @@ function SearchController($scope, $rootScope, $log, $state, search, hotkeys, key
 
   // INIT scope variables
   $scope.data = {};
+  $scope.dataCount = null;
   $scope.results = false;
+  $scope.setDataCount = function (value) {
+    $scope.results = true;
+    $scope.dataCount = value;
+  }
 
   //////////////////////////////////////////////////////////
   // https://material.angularjs.org/latest/demo/autocomplete
@@ -63,8 +68,8 @@ function SearchController($scope, $rootScope, $log, $state, search, hotkeys, key
   {
     $log.debug("FILLING TABLE");
     $scope.data = [];
-    $scope.dataCount = response.elements;
     $scope.results = true;
+    $scope.dataCount = response.elements;
 
     forEach(response.data, function (x, i)
     {
@@ -105,6 +110,7 @@ function ChipsController($scope, $log, $q, $stateParams, search)
   }
 
   self.newChip = function(chip) {
+      $scope.setDataCount(null);
       $log.info("Requested tag:", chip, "total:", self.chips);
 // TO FIX
 // FOR EACH CHIPS
@@ -119,8 +125,8 @@ function ChipsController($scope, $log, $q, $stateParams, search)
       }
       // Do query
       promise.then(function(out_data) {
-        self.dataCount = NaN;
         if (!out_data || out_data.elements < 1) {
+          $scope.setDataCount(0);
           return null;
         }
         $scope.fillTable(out_data);
@@ -173,9 +179,9 @@ function ChipsController($scope, $log, $q, $stateParams, search)
   }
 
   self.searchAll = function () {
+      $scope.setDataCount(null);
       // Do query
       search.getData().then(function(out_data) {
-        self.dataCount = NaN;
         if (!out_data || out_data.elements < 1) {
           return null;
         }
