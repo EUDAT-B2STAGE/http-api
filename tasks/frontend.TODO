@@ -37,9 +37,9 @@ History:
    ☐ sidebar for navigation of the whole history? @notsodifficult
      ✔ md-sidebar official material @done (16-02-05 14:50)
      ✔ ng-repeat history @done (16-02-05 15:02)
+       ✔ limit to latest 10 entries @done (16-02-05 15:15)
        ☐ reverse?
-       ☐ limit to latest 10/20 entries?
-     ☐ open with keyboard
+     ✔ open with keyboard @done (16-02-05 15:16)
        ☐ and button?
 
 Autocomplete:

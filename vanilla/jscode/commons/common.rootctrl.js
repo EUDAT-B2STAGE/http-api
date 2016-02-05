@@ -7,22 +7,37 @@ angular.module('web')
     .controller('HistorySidebarController', HistorySidebarController)
     .controller('ToolbarController', ToolbarController);
 
-function HistorySidebarController($scope, $log, $mdSidenav, $mdComponentRegistry)
+function HistorySidebarController($scope, $log, $mdSidenav, $mdComponentRegistry, hotkeys, keyshortcuts, $timeout)
 {
+    // Init controller and variables
+    $log.debug("Sidebar history controller");
     var self = this;
     self.name = "mysnav";
-    $log.debug("Sidebar history controller");
-
-    self.history = getHistoryOfAllTimes();
+    self.history = [];
 
     // SIDEBAR STRANGE BEHAVIOUR
     //http://luxiyalu.com/angular-material-no-instance-found-for-handle-left/
 
-    $scope.open = function () {
+    self.open = function () {
+        // Open the bar
         $mdComponentRegistry.when(self.name).then(function(sidenav){
           sidenav.open();
+            // Load data with little timeout
+            $timeout(function () {
+                self.history = getHistoryOfAllTimes();
+            }, timeToWait);
         });
     };
+
+    // Init keys
+    hotkeys.bindTo($scope)
+        .add({
+            combo: "h",
+            description: "Open a sidebar with the list of the actions you did inside the app",
+            callback: function() {
+                keyshortcuts.openHistorySidebar(event, self);
+            }
+        });
 
     //$mdSidenav(self.name).open().then();
     $scope.close = function () {
@@ -31,9 +46,8 @@ function HistorySidebarController($scope, $log, $mdSidenav, $mdComponentRegistry
         });
     };
 
-// TO FIX
-    $scope.open();
 }
+
 function ToolbarController($scope, $log, $rootScope)
 {
     var self = this;

@@ -20,6 +20,11 @@ function HotkeysService($timeout, $state) {
     controller.goToLastRoute();
   }
 
+  self.openHistorySidebar = function(event, controller) {
+    event.preventDefault();
+    controller.open();
+  }
+
   self.scrollListDown = function(event, controller) {
     event.preventDefault();
     if (isNaN(controller.focusPosition)) controller.focusPosition = 1;
