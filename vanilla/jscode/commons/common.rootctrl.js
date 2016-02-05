@@ -4,8 +4,45 @@
 angular.module('web')
     .controller('AppRootController', AppRootController)
     .controller('WelcomeMenuController', WelcomeMenuController)
+    .controller('HistorySidebarController', HistorySidebarController)
     .controller('ToolbarController', ToolbarController);
 
+function HistorySidebarController($scope, $log, $mdSidenav, $mdComponentRegistry)
+{
+    var self = this;
+    self.name = "right";
+    $log.debug("Sidebar history controller");
+
+/* WORKS
+        //http://luxiyalu.com/angular-material-no-instance-found-for-handle-left/
+        $mdComponentRegistry.when(self.name).then(function(sidenav){
+          sidenav.open();
+        });
+*/
+
+/* WORKS NOT!!!
+    $mdSidenav(self.name).toggle()
+          .then(function () {
+            $log.debug("toggle " + self.name + " is done");
+          });
+    $scope.isOpenRight = function(){
+      return $mdSidenav(self.name).isOpen();
+    };
+*/
+
+    //$mdSidenav(self.name).open().then();
+    $scope.close = function () {
+        $mdComponentRegistry.when(self.name).then(function(sidenav){
+          sidenav.close();
+        });
+/*
+      $mdSidenav(self.name).close()
+        .then(function () {
+          $log.debug("close RIGHT is done");
+        });
+*/
+    };
+}
 function ToolbarController($scope, $log, $rootScope)
 {
     var self = this;

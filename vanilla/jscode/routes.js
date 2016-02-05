@@ -144,6 +144,9 @@ $stateProvider
             "menu": {
                 templateUrl: templateDir + 'intro_menu.html',
             },
+            "sidebar": {
+                templateUrl: templateDir + 'history_sidenav.html',
+            },
             "main": {
                 templateUrl: templateDir + 'intro.html',
             }
@@ -181,6 +184,9 @@ $stateProvider
             "menu": {
                 templateUrl: templateDir + 'menu.html',
                 //controller: 'AppRootController',
+            },
+            "sidebar": {
+                templateUrl: templateDir + 'history_sidenav.html',
             },
             "main": {
         // and add a child view called 'loggedview' for logged pages
