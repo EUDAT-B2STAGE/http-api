@@ -119,6 +119,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
 
         // To execute only if we are loading the page
         if (temporaryRoutingHistory.length < 1) {
+            // Show a circle loader when refreshing the page
             self.initTimer(toState);
         }
 
@@ -130,10 +131,17 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         // Push to cookie
         // 1. get the old elements
         var totalRoutingHistory = getHistoryOfAllTimes();
-        // 2. push the new element
-        totalRoutingHistory.push(lastRoute);
-        // 3. save all data
-        setHistoryOfAllTimes(totalRoutingHistory);
+        // 2. Skip saving this state if it's identical to the previous one
+        var check = totalRoutingHistory[totalRoutingHistory.length-1];
+        console.log("Compare", check, lastRoute);
+        if (check.state.name != lastRoute.state.name ||
+            !angular.equals(check.params, lastRoute.params))
+        {
+            // 3. otherwise push the new element
+            totalRoutingHistory.push(lastRoute);
+            // 4. now save all data
+            setHistoryOfAllTimes(totalRoutingHistory);
+        }
             // Note: getHistoryOfAllTimes and setHistoryOfAllTimes
             // are defined in common.globals
 

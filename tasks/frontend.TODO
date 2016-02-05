@@ -29,20 +29,23 @@ Welcome:
   http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested
 
 History:
+   ✔ apply also parameters to going back to state! @ooops @done (16-02-04 16:00)
    ✔ json in cookies or localstorage @done (16-02-04 15:42)
      ✔ fix the lastRoute function inside common.globals @done (16-02-04 15:43)
-     ☐ skip a route to save if it's equal to the last one
-   ✔ apply also parameters to going back to state! @ooops @done (16-02-04 16:00)
+     ✔ skip a route to save if it's equal to the last one @done (16-02-05 08:10)
+       ✔ compare both state and params @done (16-02-05 08:10)
    ☐ sidebar for navigation of the whole history? @notsodifficult
      ☐ md-sidebar official material
      ☐ limit to latest 10/20 entries?
 
 Autocomplete:
   ☐ elasticsearch
-    ☐ docker server setup
-    ☐ python insert in operations.py
       https://elasticsearch-py.readthedocs.org/en/master/index.html
-  ☐ rethinkdb table change feed
+    ☐ docker server setup
+    ☐ API with GET
+    ☐ rethinkdb table change feed?
+      ☐ if so, populating would also populate elasticsearch
+    ☐ OR python insert in operations.py?
 
 fancy:
   ☐ browser notifications
