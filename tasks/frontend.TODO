@@ -35,8 +35,12 @@ History:
      ✔ skip a route to save if it's equal to the last one @done (16-02-05 08:10)
        ✔ compare both state and params @done (16-02-05 08:10)
    ☐ sidebar for navigation of the whole history? @notsodifficult
-     ☐ md-sidebar official material
-     ☐ limit to latest 10/20 entries?
+     ✔ md-sidebar official material @done (16-02-05 14:50)
+     ✔ ng-repeat history @done (16-02-05 15:02)
+       ☐ reverse?
+       ☐ limit to latest 10/20 entries?
+     ☐ open with keyboard
+       ☐ and button?
 
 Autocomplete:
   ☐ elasticsearch
