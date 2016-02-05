@@ -31,8 +31,10 @@ Welcome:
   ☐ project name in angular if exists @uhm
 
 History:
-  ☐ clickable elements...
-  ☐ Could add time to option
+  ✔ clickable elements... @done (16-02-05 18:08)
+  ☐ a loader while timeout
+  ☐ A label to explain the route
+  ☐ Could add timestamp to each history element
 
 Autocomplete:
   ☐ elasticsearch

@@ -87,7 +87,11 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
     // Init controller
     var self = this;
     $log.debug("Root controller");
-    $rootScope.loaders = [];
+
+    // Utilities
+    $rootScope.goTo = function (element) {
+        $state.go(element.state.name, element.params);
+    };
 
     // Passing a global variable
     self.templateDir = templateDir;
@@ -96,6 +100,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
 
     // Init the models
     $rootScope.menu = [];
+    $rootScope.loaders = [];
     self.load = true;
 
     // Init keys

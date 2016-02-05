@@ -6,24 +6,27 @@
         <h1 class="md-toolbar-tools">App history</h1>
       </md-toolbar>
 
-      <md-content layout-padding>
-        <md-button ng-click="close()" class="md-primary"
-            layout="row" layout-align="center center">
-          <i class="material-icons prefix">arrow_back</i>
-          close
+      <md-content layout-padding layout-wrap>
+        <md-button ng-click="close()" class="md-accent">
+          <a href layout="row" layout-align="center center">
+              <i class="material-icons prefix">arrow_back</i>
+              close
+          </a>
         </md-button>
       </md-content>
 
       <md-content ng-repeat="element in sideb.history.slice().reverse() | limitTo:10"
-        layout-padding layout-wrap
-        >
-          State: {{ element.state.name }}
-          [
-          <span ng-repeat="(key, value) in element.params">
-           {{key}}({{value}})
-          </span>
+        layout-padding layout-wrap>
+            <a class="btn-floating waves-effect waves-light blue"
+                ng-click="goTo(element)">
+              <i class="material-icons prefix">keyboard_arrow_right</i>
+            </a>
+
+          <b>{{ element.state.name }}</b>
+          [ <span ng-repeat="(key, value) in element.params">
+              <span ng-if="value"> <i>{{key}}</i>:{{value}}, </span>
+            </span>
           ]
-          <md-divider md-inset></md-divider>
 
       </md-content>
 </md-sidenav>
