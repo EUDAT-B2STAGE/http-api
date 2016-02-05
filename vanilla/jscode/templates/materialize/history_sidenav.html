@@ -14,7 +14,7 @@
         </md-button>
       </md-content>
 
-      <md-content ng-repeat="element in sideb.history | limitTo:10"
+      <md-content ng-repeat="element in sideb.history.slice().reverse() | limitTo:10"
         layout-padding layout-wrap
         >
           State: {{ element.state.name }}

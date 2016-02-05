@@ -7,6 +7,8 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 http://stackoverflow.com/a/25647714/2114395
 --- ✄ -----------------------
 
+Note to self: Release in the ocean
+
 Images:
   ☐ upload one and use it for all, for now @quickanddirty
   ☐ upload images
@@ -20,36 +22,32 @@ Images:
  https://github.com/jBenes/angular-imgcache.js/tree/master
 
 Welcome:
-  ☐ project name in angular if exists @uhm
   ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
   ☐ section positions
     ☐ drag and drop? @ohboy
   https://github.com/angular/material/issues/2446
   http://kamilkp.github.io/angular-sortable-view/#?tab=1
   http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested
+  ☐ project name in angular if exists @uhm
 
 History:
-   ✔ apply also parameters to going back to state! @ooops @done (16-02-04 16:00)
-   ✔ json in cookies or localstorage @done (16-02-04 15:42)
-     ✔ fix the lastRoute function inside common.globals @done (16-02-04 15:43)
-     ✔ skip a route to save if it's equal to the last one @done (16-02-05 08:10)
-       ✔ compare both state and params @done (16-02-05 08:10)
-   ☐ sidebar for navigation of the whole history? @notsodifficult
-     ✔ md-sidebar official material @done (16-02-05 14:50)
-     ✔ ng-repeat history @done (16-02-05 15:02)
-       ✔ limit to latest 10 entries @done (16-02-05 15:15)
-       ☐ reverse?
-     ✔ open with keyboard @done (16-02-05 15:16)
-       ☐ and button?
+  ☐ clickable elements...
+  ☐ Could add time to option
 
 Autocomplete:
   ☐ elasticsearch
       https://elasticsearch-py.readthedocs.org/en/master/index.html
     ☐ docker server setup
+      ☐ install python library, don't know which
     ☐ API with GET
     ☐ rethinkdb table change feed?
       ☐ if so, populating would also populate elasticsearch
     ☐ OR python insert in operations.py?
+
+dynamic menu:
+  ☐ decided upon a json model
+    ☐ how to overide if existing?
+  ☐ just logout if none provided
 
 fancy:
   ☐ browser notifications
@@ -422,3 +420,15 @@ COMPLETED:
          ✔ placeholder for no data searched yet @done (16-02-04 15:01)
          ✔ search loader... @done (16-02-04 15:24)
        ✔ also search exit key @done (16-02-04 15:07)
+   ✔ apply also parameters to going back to state! @ooops @done (16-02-04 16:00)
+   ✔ json in cookies or localstorage @done (16-02-04 15:42)
+     ✔ fix the lastRoute function inside common.globals @done (16-02-04 15:43)
+     ✔ skip a route to save if it's equal to the last one @done (16-02-05 08:10)
+       ✔ compare both state and params @done (16-02-05 08:10)
+   ✔ sidebar for navigation of the whole history? @notsodifficult @done (16-02-05 15:31)
+     ✔ md-sidebar official material @done (16-02-05 14:50)
+     ✔ ng-repeat history @done (16-02-05 15:02)
+       ✔ limit to latest 10 entries @done (16-02-05 15:15)
+       ✔ reverse? @done (16-02-05 15:31)
+     ✔ open with keyboard @done (16-02-05 15:16)
+       ✘ and button? @cancelled (16-02-05 15:18)
