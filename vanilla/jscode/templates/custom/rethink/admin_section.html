@@ -24,10 +24,17 @@
     </a>
 </div>
 
-<ul sv-root sv-part="sections"
+<div ng-show="loaders['admin_sections']">
+    <span colspan="10" ng-include="adm.templateDir+'loader.html'"></span>
+</div>
+
+<ul sv-root sv-part="sections" ng-hide="loaders['admin_sections']"
+    sv-on-sort="wadm.resort($item, $partFrom, $partTo, $indexFrom, $indexTo)"
     class="collapsible" data-collapsible="accordion" watch>
+
     <li ng-repeat="model in sections track by $index"
         sv-element="opts" class="well" >
+
       <div class="collapsible-header">
       <md-content layout-padding layout-wrap
         layout="row" layout-align="center center">
@@ -42,7 +49,9 @@
         </div>
        </md-content>
        </div>
-       <div class="collapsible-body grey lighten-3">
+
+       <div class="collapsible-body grey lighten-3"
+            style="padding:5px 40px 5px 40px;">
         <md-subheader class="md-primary grey lighten-3">
             A short description:
         </md-subheader>
@@ -59,6 +68,7 @@
         </span>
         <br>
        </div>
+
     </li>
 </ul>
 

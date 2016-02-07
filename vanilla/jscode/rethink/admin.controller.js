@@ -83,6 +83,14 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
   $log.debug("Welcome admin controller", $stateParams);
   var self = this;
 
+  self.resort = function (item, partFrom, partTo, indexFrom, indexTo) {
+// TO FIX
+    console.log("RESORT");
+    // For each section
+    // update position
+    // send to api
+  }
+
   self.isSearch = function(section) {
     var key = 'search';
     return angular.lowercase(section.data['Section']) == key;
@@ -178,6 +186,7 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
             apicall = admin.update(data_type, update_id, element);
         }
       } else {
+        element['Position'] = $scope.sections.length;
         apicall = admin.insert(data_type, element);
       }
 

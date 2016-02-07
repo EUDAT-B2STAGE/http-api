@@ -9,9 +9,23 @@ http://stackoverflow.com/a/25647714/2114395
 
 Note to self:
   Release in the ocean
+  ☐ parallax upload one and use it for all, for now @quickanddirty
+  ☐ copy images
+  ☐ recover a new backup?
+  ☐ project name
+  ☐ username/password set
+
+Welcome:
+  ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
+  ☐ section positions
+      ☐ insert position inside the json model/rethinkdb
+      ☐ after drop, update all sections one by one...
+    ✔ drag and drop @done (16-02-07 23:29)
+      ✔ install @done (16-02-07 12:14)
+      ✔ test @done (16-02-07 23:29)
+    ✔ 'angular-sortable-view' @done (16-02-07 11:14)
 
 Images:
-  ☐ upload one and use it for all, for now @quickanddirty
   ☐ upload images
     ☐ API endpoint
     ☐ a dedicated button inside the dialog
@@ -21,16 +35,6 @@ Images:
   ☐ welcome parallax
   ☐ image cache
  https://github.com/jBenes/angular-imgcache.js/tree/master
-
-Welcome:
-  ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
-  ☐ section positions
-      ☐ insert position inside the json model/rethinkdb
-    ✔ drag and drop @done (16-02-07 23:29)
-      ✔ install @done (16-02-07 12:14)
-      ✔ test @done (16-02-07 23:29)
-    ✔ 'angular-sortable-view' @done (16-02-07 11:14)
-  ☐ js project name in angular if exists?
 
 User ranks:
   ☐ get user info via REST /myself
@@ -72,8 +76,8 @@ fancy:
 
 Updates:
  ☐ bower install jquery#~2.1.4 @tocheck
- ☐ update angular to 1.5 rc
- ☐ update rethinkdb image
+ ☐ update angular to 1.5
+ ☐ update my rethinkdb image?
 
 Admin page:
   ✔ Change toolbar color @done (16-01-25 16:03)
