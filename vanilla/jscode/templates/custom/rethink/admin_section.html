@@ -15,23 +15,58 @@
       </div>
     </md-toolbar>
 
-<!--
-          <div class="card" ng-repeat="model in sectionModels">
-            <div class="card-content">
-              <span class="card-title"> {{ model.name }} </span>
-              <p>I am a very simple card. I am good at containing small bits of information.
-              I am convenient because I require little markup to use effectively.</p>
-            </div>
-            <div class="card-action">
-              <a href="#">This is a link</a>
-              <a href="#">This is a link</a>
-            </div>
-          </div>
--->
+<div style="padding-top:20px;"
+    layout="row" layout-align="center center">
+    <a class="btn waves-effect waves-light red"
+       ng-click="wadm.showAdvanced($event)"
+       >
+        new section
+    </a>
+</div>
 
+<ul sv-root sv-part="sections"
+    class="collapsible" data-collapsible="accordion" watch>
+    <li ng-repeat="model in sections track by $index"
+        sv-element="opts" class="well" >
+      <div class="collapsible-header">
+      <md-content layout-padding layout-wrap
+        layout="row" layout-align="center center">
+        <div flex="90">
+         <b>Section <span style="font-style:italic">{{$index+1}}</span> </b>
+         <br> {{model.data['Section']}}
+        </div>
+        <div flex="10" layout="row" layout-align="center start">
+          <a href class="btn" ng-click="wadm.showAdvanced($event, model)">
+            edit
+          </a>
+        </div>
+       </md-content>
+       </div>
+       <div class="collapsible-body grey lighten-3">
+        <md-subheader class="md-primary grey lighten-3">
+            A short description:
+        </md-subheader>
+        <md-content class="grey lighten-3" style="padding-left: 30px;">
+            <span ng-bind-html="model.data['Description']"></span>
+        </md-content>
+        <span ng-if="model.data['Content']">
+            <md-subheader class="md-primary grey lighten-3">
+                Content for separated page:
+            </md-subheader>
+            <md-content class="grey lighten-3" style="padding-left: 30px;">
+                <span ng-bind-html="model.data['Content']"></span>
+            </md-content>
+        </span>
+        <br>
+       </div>
+    </li>
+</ul>
+
+<!--
      <table class="highlight">
      <thead>
          <tr>
+            <th>Position</th>
             <th ng-repeat="model in wadm.sectionModels">
                 {{model.name}}
             </th>
@@ -54,7 +89,8 @@
      </tbody>
 
      <tbody ng-hide="loaders['admin_sections']">
-      <tr ng-repeat="model in sections">
+      <tr ng-repeat="model in sections track by $index">
+        <td>{{$index+1}}</td>
         <td ng-repeat="template in wadm.sectionModels">
             <span ng-bind-html=" model.data[template.name] || '-'"></span>
         </td>
@@ -70,5 +106,6 @@
      </tbody>
 
     </table>
+-->
 
 </div>

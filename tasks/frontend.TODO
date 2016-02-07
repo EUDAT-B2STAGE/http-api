@@ -25,10 +25,10 @@ Images:
 Welcome:
   ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
   ☐ section positions
-    ☐ drag and drop
-  https://github.com/angular/material/issues/2446
+      ☐ insert position inside the json model/rethinkdb
+    ✔ drag and drop @done (16-02-07 23:29)
       ✔ install @done (16-02-07 12:14)
-      ☐ test
+      ✔ test @done (16-02-07 23:29)
     ✔ 'angular-sortable-view' @done (16-02-07 11:14)
   ☐ js project name in angular if exists?
 
