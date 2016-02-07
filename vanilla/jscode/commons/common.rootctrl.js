@@ -193,8 +193,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
             // are defined in common.globals
 
         //DEBUG
-        $log.debug("History stacks",
-            temporaryRoutingHistory, totalRoutingHistory);
+        //$log.debug("History stacks", temporaryRoutingHistory, totalRoutingHistory);
       }
     )
 

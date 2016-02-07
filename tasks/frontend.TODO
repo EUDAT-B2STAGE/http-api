@@ -39,12 +39,21 @@ History:
 Autocomplete:
   ☐ elasticsearch
       https://elasticsearch-py.readthedocs.org/en/master/index.html
-    ☐ docker server setup
-      ☐ install python library, don't know which
+    ✔ docker server setup @done (16-02-07 01:41)
+      ✔ install python library, don't know which @done (16-02-07 01:41)
+      ☐ how to refresh indexes on startup?
+        ☐ flask before first request i would say
+    ☐ python insert in operations.py
+      ☐ think about a structure
+      ☐ tests
     ☐ API with GET
-    ☐ rethinkdb table change feed?
-      ☐ if so, populating would also populate elasticsearch
-    ☐ OR python insert in operations.py?
+      ☐  separate file for elastic?
+    ☐ Rethinkdb
+    https://www.rethinkdb.com/docs/elasticsearch/
+    https://github.com/rethinkdb/logstash-input-rethinkdb
+    https://hub.docker.com/_/logstash/
+    https://github.com/deviantony/docker-elk/blob/master/docker-compose.yml
+    ☐ OR my rethinkdb table change feed?
 
 dynamic menu:
   ☐ decided upon a json model
