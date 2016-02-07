@@ -7,7 +7,8 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 http://stackoverflow.com/a/25647714/2114395
 --- ✄ -----------------------
 
-Note to self: Release in the ocean
+Note to self:
+  Release in the ocean
 
 Images:
   ☐ upload one and use it for all, for now @quickanddirty
@@ -24,11 +25,16 @@ Images:
 Welcome:
   ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
   ☐ section positions
-    ☐ drag and drop? @ohboy
+    ☐ drag and drop
   https://github.com/angular/material/issues/2446
-  http://kamilkp.github.io/angular-sortable-view/#?tab=1
-  http://marceljuenemann.github.io/angular-drag-and-drop-lists/demo/#/nested
-  ☐ project name in angular if exists @uhm
+      ✔ install @done (16-02-07 12:14)
+      ☐ test
+    ✔ 'angular-sortable-view' @done (16-02-07 11:14)
+  ☐ js project name in angular if exists?
+
+User ranks:
+  ☐ get user info via REST /myself
+  ☐ do routig based on rank check?
 
 History:
   ✔ clickable elements... @done (16-02-05 18:08)
