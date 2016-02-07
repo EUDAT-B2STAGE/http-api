@@ -8,14 +8,31 @@ angular.module('web')
     .controller('DialogController', DialogController)
     ;
 
+var
+    data_type = 'welcome_section',
+    mysection = 'admin_sections';
+
 // General purpose load data function
 // To use only inside controllers
 function getSectionData(admin, $scope)
 {
     return admin.getData().then(function (out)
     {
+
+    // IF DATA IS PRESENT
       if (out !== null && out.hasOwnProperty('elements')) {
-        $scope.sections = out.data;
+        //Preserve order
+        var newdata = [];
+        for (var x = 0; x < out.data.length; x++) {
+            newdata[x] = {};
+        };
+        forEach(out.data, function (element, j) {
+            var index = element.data['Position'];
+            newdata[index] = element;
+        })
+        $scope.sections = angular.copy(newdata); // out.data;
+
+    // IF DATA MISSING!
       } else {
         $scope.sections = [{
             data: {
@@ -77,18 +94,24 @@ function WelcomeInfoController($scope, $log, $stateParams, admin)
 
 }
 
-function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $stateParams, $mdMedia, $mdDialog)
+function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $stateParams, $mdMedia, $mdDialog, $q)
 {
-  $rootScope.loaders['admin_sections'] = false;
   $log.debug("Welcome admin controller", $stateParams);
   var self = this;
 
   self.resort = function (item, partFrom, partTo, indexFrom, indexTo) {
-// TO FIX
-    console.log("RESORT");
+    var promises = [];
     // For each section
-    // update position
-    // send to api
+    forEach($scope.sections, function(element, index) {
+        // update position
+        element.data['Position'] = index;
+        // send to api
+        promises.push(admin.update(data_type, element.id, element.data));
+    });
+
+    $q.all(promises).then((values) => {
+        $log.debug("Pushed updated order");
+    });
   }
 
   self.isSearch = function(section) {
@@ -178,7 +201,6 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
       });
 
       var apicall = null;
-      var data_type = 'welcome_section';
       if (update_id) {
         if (remove) {
             apicall = admin.delete(data_type, update_id);
@@ -190,8 +212,6 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
         apicall = admin.insert(data_type, element);
       }
 
-// MAKE LOADER APPEAR
-
       apicall.then(function (out) {
         console.log("Admin api call", out);
         if (out.elements >= 0) {
@@ -199,7 +219,7 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
         }
         // Activate the view
         $timeout(function() {
-           $rootScope.loaders['admin_sections'] = false;
+           $rootScope.loaders[mysection] = false;
         }, timeToWait);
       });
     }
@@ -248,12 +268,12 @@ function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
       }
     });
     if (valid) {
-      $rootScope.loaders['admin_sections'] = true;
+      $rootScope.loaders[mysection] = true;
       $mdDialog.hide([modelId, null]);
     }
   };
   $scope.remove = function() {
-    $rootScope.loaders['admin_sections'] = true;
+    $rootScope.loaders[mysection] = true;
     $mdDialog.hide([modelId, true]);
   };
 }

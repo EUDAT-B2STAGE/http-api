@@ -17,9 +17,9 @@ Note to self:
 
 Welcome:
   ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
-  ☐ section positions
-      ☐ insert position inside the json model/rethinkdb
-      ☐ after drop, update all sections one by one...
+  ✔ section positions @done (16-02-08 00:57)
+      ✔ insert position inside the json model/rethinkdb @done (16-02-08 00:04)
+      ✔ after drop, update all sections one by one... @done (16-02-08 00:57)
     ✔ drag and drop @done (16-02-07 23:29)
       ✔ install @done (16-02-07 12:14)
       ✔ test @done (16-02-07 23:29)
