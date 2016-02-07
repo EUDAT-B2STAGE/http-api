@@ -44,7 +44,7 @@ Autocomplete:
       ☐ how to refresh indexes on startup?
         ☐ flask before first request i would say
     ☐ python insert in operations.py
-      ☐ think about a structure
+      ✔ think about a structure @done (16-02-07 11:08)
       ☐ tests
     ☐ API with GET
       ☐  separate file for elastic?
