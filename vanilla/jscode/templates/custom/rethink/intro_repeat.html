@@ -1,20 +1,20 @@
-<md-content layout="row" layout-padding layout-wrap>
+<div layout="row">
 
-<!-- TEMPORARY -->
- <div flex="100" ui-view="temp"></div>
-
+ <div flex="5"></div>
 <!--CONTENT -->
- <div flex="85">
+ <div flex="75">
 
     <div ng-if="sections.length > 1"
         style="padding-bottom: 10px;" class="slider"
         height='350' transition='300' slider>
      <ul class="slides">
         <li ng-repeat="x in [0,1,2,3]">
-          <img lazy-img="http://lorempixel.com/800/500/nature/3">
+            <img lazy-img="/static/img/parallax.jpg">
           <div class="caption center-align">
             <h3>Our brand new site!</h3>
-            <h5 class="light grey-text text-lighten-3">Here we go.</h5>
+            <h5 class="light grey-text text-lighten-3">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo repellat dignissimos velit. Voluptatibus quia iure nemo perspiciatis veniam unde rem ducimus. Adipisci recusandae eius laboriosam, commodi in nihil nam saepe.
+            </h5>
           </div>
         </li>
      </ul>
@@ -22,7 +22,8 @@
 
   <div ng-repeat="section in sections track by $index"
     id='step{{$index}}'
-    class="section scrollspy container" scrollspy>
+    layout-padding
+    class="section scrollspy" scrollspy>
 
     <h2 class="header">
         {{ section.data['Section'].capitalizeFirstLetter() }} </h2>
@@ -46,21 +47,18 @@
           <a ui-sref="welcome.more({'section':$index})">more...</a>
         </md-button>
     </md-content>
-<!--
-      <div class="parallax-container">
-        <div parallax><img lazy-img="http://materializecss.com/images/parallax2.jpg"></div>
-      </div>
--->
 
-<!--
-    <br> <br>
-    <md-divider md-inset></md-divider>
--->
+    <div class="parallax-container">
+        <div parallax>
+            <img src="/static/img/parallax.jpg">
+        </div>
+    </div>
 
   </div>
 
  </div>
 
+ <div flex="5"></div>
 <!-- SIDE MENU -->
  <div ng-if="sections.length > 1"
     flex="15" pushpin pushpin-offset="1">
@@ -71,4 +69,4 @@
   </ul>
  </div>
 
-</md-content>
+</div>

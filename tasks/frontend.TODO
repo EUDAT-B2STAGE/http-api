@@ -9,21 +9,12 @@ http://stackoverflow.com/a/25647714/2114395
 
 Note to self:
   Release in the ocean
-  ☐ parallax upload one and use it for all, for now @quickanddirty
+  ✔ parallax upload one and use it for all, for now @quickanddirty @done (16-02-08 01:32)
+    ✔ note: parallax does not work inside an md-content... @done (16-02-08 01:33)
   ☐ copy images
   ☐ recover a new backup?
   ☐ project name
   ☐ username/password set
-
-Welcome:
-  ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
-  ✔ section positions @done (16-02-08 00:57)
-      ✔ insert position inside the json model/rethinkdb @done (16-02-08 00:04)
-      ✔ after drop, update all sections one by one... @done (16-02-08 00:57)
-    ✔ drag and drop @done (16-02-07 23:29)
-      ✔ install @done (16-02-07 12:14)
-      ✔ test @done (16-02-07 23:29)
-    ✔ 'angular-sortable-view' @done (16-02-07 11:14)
 
 Images:
   ☐ upload images
@@ -35,16 +26,6 @@ Images:
   ☐ welcome parallax
   ☐ image cache
  https://github.com/jBenes/angular-imgcache.js/tree/master
-
-User ranks:
-  ☐ get user info via REST /myself
-  ☐ do routig based on rank check?
-
-History:
-  ✔ clickable elements... @done (16-02-05 18:08)
-  ☐ a loader while timeout
-  ☐ A label to explain the route
-  ☐ Could add timestamp to each history element
 
 Autocomplete:
   ☐ elasticsearch
@@ -64,6 +45,16 @@ Autocomplete:
     https://hub.docker.com/_/logstash/
     https://github.com/deviantony/docker-elk/blob/master/docker-compose.yml
     ☐ OR my rethinkdb table change feed?
+
+User ranks:
+  ☐ get user info via REST /myself
+  ☐ do routig based on rank check?
+
+History:
+  ✔ clickable elements... @done (16-02-05 18:08)
+  ☐ a loader while timeout
+  ☐ A label to explain the route
+  ☐ Could add timestamp to each history element
 
 dynamic menu:
   ☐ decided upon a json model
@@ -453,3 +444,11 @@ COMPLETED:
        ✔ reverse? @done (16-02-05 15:31)
      ✔ open with keyboard @done (16-02-05 15:16)
        ✘ and button? @cancelled (16-02-05 15:18)
+  ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
+  ✔ section positions @done (16-02-08 00:57)
+      ✔ insert position inside the json model/rethinkdb @done (16-02-08 00:04)
+      ✔ after drop, update all sections one by one... @done (16-02-08 00:57)
+    ✔ drag and drop @done (16-02-07 23:29)
+      ✔ install @done (16-02-07 12:14)
+      ✔ test @done (16-02-07 23:29)
+    ✔ 'angular-sortable-view' @done (16-02-07 11:14)

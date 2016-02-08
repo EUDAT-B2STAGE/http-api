@@ -122,7 +122,7 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
   // Activate a dynamic welcome inside the view
   $timeout(function () {
     var check = 'welcome';
-    if ($state.current.name.slice(0, check.length) == 'welcome') {
+    if ($state.current.name.slice(0, check.length) == check) {
        getSectionData(admin, $scope);
        self.init = 'rdb';
     }
