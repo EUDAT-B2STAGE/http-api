@@ -6,12 +6,20 @@
 /********************/
 angular
     .module('web')
-    .controller('MainController', MainController)
+    .controller('MenuInAppController', MenuInAppController)
     .controller('FabButtonController', FabController);
 
-function MainController($scope, $log, $location)
+function MenuInAppController($scope, $rootScope, $log)
 {
-    $log.info("Main");
+    $log.info("Force a new menu");
+    var self = this;
+    $rootScope.menu = [];
+    self.buttons = [
+        { name: 'browse', link: 'logged.explore', icon: null, },
+        { name: 'submit', link: 'logged.submission', icon: null, },
+        { name: 'admin', link: 'logged.admin', icon: null, },
+        { name: 'logout', link: 'logged.logout', icon: null, },
+    ];
 }
 
 //https://material.angularjs.org/latest/demo/fabSpeedDial

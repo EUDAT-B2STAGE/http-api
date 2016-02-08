@@ -7,16 +7,27 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 http://stackoverflow.com/a/25647714/2114395
 --- ✄ -----------------------
 
+NEEDED:
+  - WelcomeController
+  - MenuInAppController
+  - NameController?
+
 Note to self:
   Release in the ocean
   ✔ parallax upload one and use it for all, for now @quickanddirty @done (16-02-08 01:32)
     ✔ note: parallax does not work inside an md-content... @done (16-02-08 01:33)
-  ☐ copy images
-  ☐ recover a new backup?
-  ☐ project name
-  ☐ username/password set
+  ☐ apply latest backup
+  ☐ link images in the same host
+  ☐ project name by hand
+  ☐ username/password set by hand
+  ✔ json menu @done (16-02-08 10:40)
+    ☐ move welcome menu in there (main.controller)
+    ☐ remove intro_menu
+    ☐ remove WelcomeMenuController in common rootctrl
 
 Images:
+  ☐ image cache
+ https://github.com/jBenes/angular-imgcache.js/tree/master
   ☐ upload images
     ☐ API endpoint
     ☐ a dedicated button inside the dialog
@@ -24,8 +35,7 @@ Images:
     ☐ you show only the path
       ☐ and maybe thumbnail
   ☐ welcome parallax
-  ☐ image cache
- https://github.com/jBenes/angular-imgcache.js/tree/master
+  ☐ welcome slider?
 
 Autocomplete:
   ☐ elasticsearch

@@ -58,6 +58,16 @@ angular.module('web')
                 }
             },
         },
+    //////////////////////
+        'logged.submission': {
+            url: "/create",
+            views: {
+                "loggedview": {
+                    dir: 'blueprint',
+                    templateUrl: 'submit.html',
+                }
+            },
+        },
 
     //////////////////////
         'logged.admin': {

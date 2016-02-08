@@ -1,4 +1,4 @@
-<div>
+<div ng-controller="MenuInAppController as mymenu">
  <ul id="nav-mobile" class="right">
 
     <li>
@@ -9,8 +9,16 @@
     </li>
 
     <!-- Angular dynamic material menu -->
-	<li ng-repeat='item in menu'>
+    <li ng-if="mymenu.buttons" ng-repeat="button in mymenu.buttons">
+        <a ui-sref="{{button.link}}">
+            {{ button.name.capitalizeFirstLetter() }}
+        </a>
+    </li>
+
+    <!-- Angular menu from route -->
+	<li ng-hide="mymenu.buttons" ng-repeat='item in menu'>
 		<a ui-sref="logged.{{item.toLowerCase()}}">{{item}}</a>
 	</li>
+
  </ul>
 </div>
