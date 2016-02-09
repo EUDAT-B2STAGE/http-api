@@ -16,7 +16,8 @@ Note to self:
   Release in the ocean
   ✔ parallax upload one and use it for all, for now @quickanddirty @done (16-02-08 01:32)
     ✔ note: parallax does not work inside an md-content... @done (16-02-08 01:33)
-  ☐ update docker
+  ✔ update docker @done (16-02-09 09:16)
+    ☐ run
   ☐ apply latest backup
   ☐ link images in the same host
   ☐ project name by hand
@@ -26,11 +27,27 @@ Note to self:
     ☐ remove intro_menu
     ☐ remove WelcomeMenuController in common rootctrl
 
+BUGS:
+✔ welcome spy padding? @done (16-01-26 15:11)
+✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
+☐ spy is probably broken in latest materialize? @toverifyagain
+ ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
+✔ remove port from existing host in js @done (16-02-09 10:54)
+☐ Rdb connection is slow at startup, and API start before it's available
+ ☐ make a cycle to check and sleep
+☐ Fix all template inside the scope, use just root.templateSomething
+☐ chips with bigger div to show results
+☐ table are not same size on details
+☐ extrait not complete list
+☐ mostra nella pagina di ricerca
+☐ mostra nella pagina di dettaglio
+☐ topbar menu for mobile
+
 Images:
   ☐ image cache
  https://github.com/jBenes/angular-imgcache.js/tree/master
   ☐ upload images
-    ☐ API endpoint
+    ✔ API endpoint @done (16-02-09 08:21)
     ☐ a dedicated button inside the dialog
     ☐ a list of images
     ☐ you show only the path
@@ -50,7 +67,7 @@ Autocomplete:
       ☐ tests
     ☐ API with GET
       ☐  separate file for elastic?
-    ☐ Rethinkdb
+    ☐ Mix with Rethinkdb
     https://www.rethinkdb.com/docs/elasticsearch/
     https://github.com/rethinkdb/logstash-input-rethinkdb
     https://hub.docker.com/_/logstash/
@@ -102,21 +119,6 @@ New fixed search:
 ☐ chips watch?
 ☐ lazy load of more than 10 results
 ☐ Application name inside the Toolbar should be a hand made font?
-
-BUGS:
-✔ welcome spy padding? @done (16-01-26 15:11)
-✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
-☐ spy is probably broken in latest materialize? @toverifyagain
- ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
-
-☐ Fix all template inside the scope, use just root.templateSomething
-☐ fix all one-time-binding
-☐ chips with bigger div to show results
-☐ table are not same size on details
-☐ extrait not complete list
-☐ mostra nella pagina di ricerca
-☐ mostra nella pagina di dettaglio
-☐ topbar menu for mobile
 
 SEARCH:
 ☐ Some times chips do not see change of text?
