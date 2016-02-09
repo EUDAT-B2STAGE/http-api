@@ -33,8 +33,8 @@ BUGS:
 ☐ spy is probably broken in latest materialize? @toverifyagain
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
 ✔ remove port from existing host in js @done (16-02-09 10:54)
-☐ Rdb connection is slow at startup, and API start before it's available
- ☐ make a cycle to check and sleep
+✔ Rdb connection is slow at startup, and API start before it's available @done (16-02-09 11:10)
+ ✔ make a cycle to check and sleep @done (16-02-09 11:10)
 ☐ Fix all template inside the scope, use just root.templateSomething
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
