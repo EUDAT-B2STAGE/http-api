@@ -11,6 +11,7 @@ for service in $services;
 do
     echo "Repo '$service'"
     $pull
+    git pull origin master
 done
 
 # echo "Submodule sync"
