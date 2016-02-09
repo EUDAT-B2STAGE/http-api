@@ -179,21 +179,23 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         // 1. get the old elements
         var totalRoutingHistory = getHistoryOfAllTimes();
 
+        var skipAdding = false;
         if (totalRoutingHistory.length > 1) {
             // 2. Skip saving this state if it's identical to the previous one
             var check = totalRoutingHistory[totalRoutingHistory.length-1];
             console.log("Compare", check, lastRoute);
-            if (check.state.name != lastRoute.state.name ||
-                !angular.equals(check.params, lastRoute.params))
-            {
-                // 3. otherwise push the new element
-                totalRoutingHistory.push(lastRoute);
-                // 4. now save all data
-                setHistoryOfAllTimes(totalRoutingHistory);
-            }
-                // Note: getHistoryOfAllTimes and setHistoryOfAllTimes
-                // are defined in common.globals
+            skipAdding = (check.state.name == lastRoute.state.name &&
+                angular.equals(check.params, lastRoute.params))
         }
+
+        if (!skipAdding) {
+            // 3. otherwise push the new element
+            totalRoutingHistory.push(lastRoute);
+            // 4. now save all data
+            setHistoryOfAllTimes(totalRoutingHistory);
+        }
+            // Note: getHistoryOfAllTimes and setHistoryOfAllTimes
+            // are defined in common.globals
 
         //DEBUG
         //$log.debug("History stacks", temporaryRoutingHistory, totalRoutingHistory);
