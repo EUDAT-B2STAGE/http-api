@@ -17,7 +17,7 @@ Note to self:
   ✔ parallax upload one and use it for all, for now @quickanddirty @done (16-02-08 01:32)
     ✔ note: parallax does not work inside an md-content... @done (16-02-08 01:33)
   ✔ update docker @done (16-02-09 09:16)
-    ☐ run
+    ✔ run @done (16-02-09 12:43)
   ☐ apply latest backup
   ☐ link images in the same host
   ☐ project name by hand
@@ -35,6 +35,7 @@ BUGS:
 ✔ remove port from existing host in js @done (16-02-09 10:54)
 ✔ Rdb connection is slow at startup, and API start before it's available @done (16-02-09 11:10)
  ✔ make a cycle to check and sleep @done (16-02-09 11:10)
+☐ HISTORY is broken??
 ☐ Fix all template inside the scope, use just root.templateSomething
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
