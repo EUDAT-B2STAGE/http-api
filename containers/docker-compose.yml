@@ -7,7 +7,7 @@ conf:
     environment:
         ## If you are still developing
         ## (flask wsgi restartable on edit + sqllite dbs + print DEBUG level)
-        # APP_MODE: development
+        APP_MODE: development
 
         ## If you need to get serious
         ## (gunicorn/nginx servers + postgres dbs + print INFO level)
@@ -15,7 +15,7 @@ conf:
 
         ## If you are testing something that does not work
         ## (containers that do not start anything)
-        APP_MODE: debug
+        # APP_MODE: debug
 ###############################
 
 
@@ -62,7 +62,7 @@ frontend:
         # # Angular blueprint
         - ../vanilla/specs:/data/frontend/config/angular/blueprints
     ports:
-        - 80:5000
+        - 90:5000
 
 ###############################
 # Make automatic to install libraries

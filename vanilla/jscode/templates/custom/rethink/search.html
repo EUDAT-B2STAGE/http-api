@@ -7,7 +7,7 @@
   <div class="md-toolbar-tools md-whiteframe-8dp">
 
     <!-- search bar -->
-    <div flex="grow" ng-include="search.blueprintTemplateDir + 'tags.html'"></div>
+    <div flex="grow" ng-include="root.blueprintTemplateDir + 'tags.html'"></div>
     <!-- search bar -->
 
   </div>
@@ -15,23 +15,35 @@
 </form>
 <!-- TOOLBAR -->
 
+<md-content ng-hide="results" class='grey lighten-2'
+    layout="row" layout-align="center center"
+    layout-padding layout-wrap>
+    <p>
+        Results will be displayed here after searching a valid key
+        <br>
+        ( or press the right arrow icon above
+        to search <i><b>all</b></i> elements )
+        <br>
+    </p>
+</md-content>
+
 <div class="container">
  <div ng-if='data' class="row z-depth-2">
   <md-content layout='column' layout-align='space-around stretch'>
 
 <!-- results -->
-        <div ng-show="results">
-            <div ng-if="dataCount == NaN">
-                <div ng-include="search.templateDir + 'loader.html'"></div>
-            </div>
-            <div ng-if="dataCount == 0"
-                layout='row' layout-align='center'>
-                <p> No data found. </p>
-            </div>
-            <div ng-if='dataCount > 0'
-                ng-include="search.blueprintTemplateDir + 'datatable.html'">
-            </div>
+    <div ng-show="results">
+        <div ng-if="dataCount === null">
+            <div ng-include="root.templateDir + 'loader.html'"></div>
         </div>
+        <div ng-if="dataCount == 0"
+            layout='row' layout-align='center'>
+            <p> No data found. </p>
+        </div>
+        <div ng-if='dataCount > 0'
+            ng-include="root.blueprintTemplateDir + 'datatable.html'">
+        </div>
+    </div>
 <!-- results -->
 
   </md-content>

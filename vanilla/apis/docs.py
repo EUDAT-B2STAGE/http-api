@@ -5,73 +5,15 @@ Some endpoints implementation
 """
 
 from __future__ import absolute_import
-import os
-import commentjson as json
+
 import rethinkdb as r
 from flask.ext.security import auth_token_required, roles_required
-from flask import request, url_for, redirect
 from confs import config
-from ..services.rethink import RDBquery, JSONS_PATH, JSONS_EXT
-from ..base import ExtendedApiResource
+from ..services.rethink import schema_and_tables, BaseRethinkResource
 from .. import decorators as deck
-from ... import htmlcodes as hcodes
 from ... import get_logger
-from ...marshal import convert_to_marshal
 
 logger = get_logger(__name__)
-
-
-def schema_and_tables(fileschema):
-    """
-    This function can recover basic data for my JSON resources
-    """
-    template = None
-    with open(os.path.join(JSONS_PATH, fileschema + JSONS_EXT)) as f:
-        template = json.load(f)
-    reference_schema = convert_to_marshal(template)
-    label = os.path.splitext(
-        os.path.basename(fileschema))[0].lower()
-
-    return label, template, reference_schema
-
-
-#####################################
-# Base implementation for methods?
-class BaseRethinkResource(ExtendedApiResource, RDBquery):
-    """ The json endpoint in a rethinkdb base class """
-
-    def get(self, data_key=None):
-        """
-        Obtain main data.
-        Obtain single objects.
-        Filter with predefined queries.
-        """
-
-        # Check arguments
-        limit = self._args['perpage']
-# // TO FIX: use it!
-        current_page = self._args['currentpage']
-
-        return self.get_content(data_key, limit)
-
-    def post(self):
-        valid = False
-
-        # Get JSON. The power of having a real object in our hand.
-        json_data = request.get_json(force=True)
-
-        for key, obj in json_data.items():
-            if key in self.schema:
-                valid = True
-        if not valid:
-            return self.template, hcodes.HTTP_BAD_REQUEST
-
-        # marshal_data = marshal(json_data, self.schema, envelope='data')
-        myid = self.insert(json_data)
-
-        # redirect to GET method of this same endpoint, with the id found
-        address = url_for(self.table, data_key=myid)
-        return redirect(address)
 
 #####################################
 # Main resource
@@ -182,9 +124,7 @@ model = 'datakeys'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
-# # // TO FIX
-# // Does this work if it's only one?
-#@deck.enable_endpoint_identifier('step')
+@deck.enable_endpoint_identifier('step')
 class RethinkDataKeys(BaseRethinkResource):
     """ Data keys administrable """
 
@@ -192,12 +132,6 @@ class RethinkDataKeys(BaseRethinkResource):
     template = mytemplate
     table = mylabel
     table_index = 'steps'
-
-# # // TO FIX
-#     def __init__(self):
-#         self.set_method_id('step', 'int')
-#         super(RethinkDataKeys, self).__init__()
-# # // TO FIX
 
     @deck.apimethod
     @auth_token_required
@@ -281,6 +215,7 @@ model = 'datadmins'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
+@deck.enable_endpoint_identifier('id')
 class RethinkDataForAdministrators(BaseRethinkResource):
     """ Data admins """
 
@@ -289,10 +224,10 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     table = mylabel
 
     @deck.apimethod
-    @auth_token_required
-    @roles_required(config.ROLE_ADMIN)
-    def get(self, data_key=None):
-        count, data = super().get(data_key)
+    # @auth_token_required
+    # @roles_required(config.ROLE_ADMIN)
+    def get(self, id=None):
+        count, data = super().get(id)
         return self.response(data, elements=count)
 
     @deck.apimethod
@@ -300,3 +235,15 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     @roles_required(config.ROLE_ADMIN)
     def post(self):
         return super().post()
+
+    @deck.apimethod
+    @auth_token_required
+    @roles_required(config.ROLE_ADMIN)
+    def put(self, id):
+        return super().put(id)
+
+    @deck.apimethod
+    @auth_token_required
+    @roles_required(config.ROLE_ADMIN)
+    def delete(self, id):
+        return super().delete(id)

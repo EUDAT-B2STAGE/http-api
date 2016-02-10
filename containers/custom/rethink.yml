@@ -8,12 +8,27 @@ rethinkdb:
     volumes:
         - rdbdata:/data
 
+searchindex:
+    image: elasticsearch
+    hostname: elastic
+    volumes:
+        - elasticdata:/usr/share/elasticsearch/data
+
+uploadsdata:
+    image: busybox
+    volumes:
+        # Upload directory
+        - appuploads:/uploads
+
 custombe:
     extends:
         file: docker-compose.yml
         service: backend
     links:
         - rethinkdb:rdb
+        - searchindex:el
+    volumes_from:
+        - uploadsdata
 
 customfe:
     extends:

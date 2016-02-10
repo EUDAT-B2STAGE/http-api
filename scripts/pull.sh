@@ -3,7 +3,7 @@
 services="backend"
 #services="angulask rest-mock"
 com="git"
-pull="$com pull origin master"
+pull="$com pull"
 
 $pull
 
@@ -11,7 +11,7 @@ for service in $services;
 do
     echo "Repo '$service'"
     $pull
-    $com pull
+    git pull origin master
 done
 
 # echo "Submodule sync"

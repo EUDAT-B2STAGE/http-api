@@ -1,0 +1,121 @@
+
+<div ng-controller="WelcomeController as wadm">
+
+    <md-toolbar layout="column"
+        class="md-tall md-default-theme light-blue darken-1 md-whiteframe-6dp">
+      <div class="md-toolbar-tools">
+        <div layout="row" flex="flex" class="fill-height"
+        layout-align="center center">
+          <div class="md-toolbar-item md-breadcrumb" aria-hidden="false">
+            <span tabindex="0"> <br>
+                Custom sections for your <i>Welcome page</i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </md-toolbar>
+
+<div style="padding-top:20px;"
+    layout="row" layout-align="center center">
+    <a class="btn waves-effect waves-light red"
+       ng-click="wadm.showAdvanced($event)"
+       >
+        new section
+    </a>
+</div>
+
+<div ng-show="loaders['admin_sections']">
+    <span colspan="10" ng-include="root.templateDir+'loader.html'"></span>
+</div>
+
+<ul sv-root sv-part="sections" ng-hide="loaders['admin_sections']"
+    sv-on-sort="wadm.resort($item, $partFrom, $partTo, $indexFrom, $indexTo)"
+    class="collapsible" data-collapsible="accordion" watch>
+
+    <li ng-repeat="model in sections track by $index"
+        sv-element="opts" class="well" >
+
+      <div class="collapsible-header">
+      <md-content layout-padding layout-wrap
+        layout="row" layout-align="center center">
+        <div flex="90">
+         <b>Section <span style="font-style:italic">{{$index+1}}</span> </b>
+         <br> {{model.data['Section']}}
+        </div>
+        <div flex="10" layout="row" layout-align="center start">
+          <a href class="btn" ng-click="wadm.showAdvanced($event, model)">
+            edit
+          </a>
+        </div>
+       </md-content>
+       </div>
+
+       <div class="collapsible-body grey lighten-3"
+            style="padding:5px 40px 5px 40px;">
+        <md-subheader class="md-primary grey lighten-3">
+            A short description:
+        </md-subheader>
+        <md-content class="grey lighten-3" style="padding-left: 30px;">
+            <span ng-bind-html="model.data['Description']"></span>
+        </md-content>
+        <span ng-if="model.data['Content']">
+            <md-subheader class="md-primary grey lighten-3">
+                Content for separated page:
+            </md-subheader>
+            <md-content class="grey lighten-3" style="padding-left: 30px;">
+                <span ng-bind-html="model.data['Content']"></span>
+            </md-content>
+        </span>
+        <br>
+       </div>
+
+    </li>
+</ul>
+
+<!--
+     <table class="highlight">
+     <thead>
+         <tr>
+            <th>Position</th>
+            <th ng-repeat="model in wadm.sectionModels">
+                {{model.name}}
+            </th>
+            <th width="10%">
+                <a href class="btn-floating waves-effect waves-light red"
+                   ng-click="wadm.showAdvanced($event)"
+                   tooltipped data-position="top" data-delay="50"
+                   data-tooltip="Add a new Section"
+                   >
+                    <i class="material-icons">add</i>
+                </a>
+            </th>
+         </tr>
+     </thead>
+
+     <tbody ng-if="loaders['admin_sections']">
+       <tr>
+        <td colspan="10" ng-include="root.templateDir+'loader.html'"></td>
+       </tr>
+     </tbody>
+
+     <tbody ng-hide="loaders['admin_sections']">
+      <tr ng-repeat="model in sections track by $index">
+        <td>{{$index+1}}</td>
+        <td ng-repeat="template in wadm.sectionModels">
+            <span ng-bind-html=" model.data[template.name] || '-'"></span>
+        </td>
+        <td>
+          <a class="waves-effect waves-light btn-floating"
+           ng-click="wadm.showAdvanced($event, model)"
+           tooltipped data-position="left" data-delay="50"
+           data-tooltip="Edit this section" >
+              <i class="material-icons">mode_edit</i>
+          </a>
+        </td>
+      </tr>
+     </tbody>
+
+    </table>
+-->
+
+</div>

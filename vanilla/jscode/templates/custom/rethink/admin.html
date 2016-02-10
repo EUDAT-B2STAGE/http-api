@@ -1,99 +1,51 @@
-<div class="container" ng-controller="AdminController as adm">
 
- <div class="row z-depth-2">
-  <md-tabs
-    md-dynamic-height md-border-bottom
+<md-content
+    ng-controller="AdminController as adm">
+ <md-tabs md-dynamic-height md-border-bottom
     md-swipe-content md-center-tabs
-    md-selected='adm.selectedTab'
-    >
+    md-autoselect='false'
+    md-selected='adm.selectedTab'>
 
-    <md-tab label="Welcome page"
-        md-on-select="adm.onTabSelected()">
+<!-- WITH NG REPEAT
+  <md-tab ng-repeat="tab in tabs | orderBy:predicate:reversed"
+    md-on-select="onTabSelected(tab)" md-on-deselect="announceDeselected(tab)"
+    ng-disabled="tab.disabled">
+    <md-tab-label>
+      {{tab.title}}
+      <img src="img/removeTab.png" ng-click="removeTab(tab)" class="delete">
+    </md-tab-label>
+    <md-tab-body>
+      {{tab.content}}
+    </md-tab-body>
+  </md-tab>
+-->
+
+<!-- TABS -->
+    <md-tab label="Welcoming sections"
+        md-on-select="adm.onTabSelected('sections')">
+      <md-content layout-padding flex='grow'>
+        <div ng-include="root.blueprintTemplateDir + 'admin_section.html'"></div>
+      </md-content>
+    </md-tab>
+
+    <md-tab label="Welcoming slider"
+        md-on-select="adm.onTabSelected('slider')">
       <md-content class="md-padding">
-
-<!-- PURE MATERIAL DESIGN
-    <form>
-      <div layout-gt-sm="row">
-        <md-input-container class="md-block" flex-gt-sm>
-          <label>Name</label>
-          <input
-            md-maxlength="30" required
-            name="name" ng-model="adm.model.name" />
-          <div class="hint" ng-if="showHints">Tell us what we should call you!</div>
-          <div ng-messages="userForm.name.$error" ng-if="!showHints">
-            <div ng-message="required">Name is required.</div>
-            <div ng-message="md-maxlength">The name has to be less than 30 characters long.</div>
-          </div>
-        </md-input-container>
-      </div>
-    </form>
--->
-
-<!-- XEDITABLE on MATERIAL DESIGN
-
-https://github.com/vitalets/angular-xeditable/issues/232
-
-FORM?
-https://vitalets.github.io/angular-xeditable/#editable-form
-
--->
-
-Test xeditable on material
-<br>
-<br>
-
-  <span editable-text="adm.model.name"
-    e-form="textBtnForm" onaftersave="adm.saveForm()"
-    e-placeholder="A test"
-    e-aria-label='silent' e-required>
-    {{ adm.model.name || 'empty' }}
-  </span>
-<br>
-  <button class="btn btn-default"
-    ng-click="textBtnForm.$show()" ng-hide="textBtnForm.$visible">
-    edit
-  </button>
-
-
-<!-- XEDITABLE on FORMLY
-  <form novalidate>
-    <formly-form model="adm.model" fields="adm.fields"
-    options="adm.options" form="adm.form"
-    editable-form onaftersave="adm.onSubmit()" root-el="form">
-      <button type="button" class="btn btn-default"
-      ng-click="adm.form.$show()" ng-show="!adm.form.$visible">
-        Edit
-      </button>
-      <span ng-show="adm.form.$visible">
-        <button type="submit" class="btn btn-primary"
-        ng-disabled="adm.form.$waiting">
-          Save
-        </button>
-        <button type="button" class="btn btn-default"
-        ng-disabled="adm.form.$waiting" ng-click="adm.form.$cancel()">
-          Cancel
-        </button>
-      </span>
-    </formly-form>
-  </form>
--->
-
-
-
+        Work in progress
       </md-content>
     </md-tab>
 
     <md-tab label="Steps" md-on-select="adm.onTabSelected()">
       <md-content class="md-padding">
-        Test 2
-<!--
-        <div ng-include="adm.blueprintTemplateDir + 'tmp.html'"></div>
- -->
+        <div ng-include="root.blueprintTemplateDir + 'admin_step.html'"></div>
+      </md-content>
+    </md-tab>
+
+    <md-tab label="Something else" md-on-select="adm.onTabSelected()">
+      <md-content class="md-padding">
+        Work in progress
       </md-content>
     </md-tab>
 
   </md-tabs>
-
- </div>
-
-</div>
+</md-content>

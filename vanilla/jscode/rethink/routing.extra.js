@@ -6,8 +6,21 @@ angular.module('web')
 
 // EXTRA ROUTES
     {
+    //////////////////////
+        'welcome.more': {
+            url: "/info/:section",
+            views: {
+                "main@": {
+// Did not understood this very well
+                //"main@welcome": {
+                    dir: 'blueprint',
+                    templateUrl: 'section_info.html',
+                }
+            },
+        },
 
     //////////////////////
+//NOT LOGGED?
         'logged.specialsearch': {
             url: "/search/:text",
             views: {
@@ -45,12 +58,22 @@ angular.module('web')
                 }
             },
         },
+    //////////////////////
+        'logged.submission': {
+            url: "/create",
+            views: {
+                "loggedview": {
+                    dir: 'blueprint',
+                    templateUrl: 'submit.html',
+                }
+            },
+        },
 
     //////////////////////
         'logged.admin': {
-            url: "/admin",
+            url: "/admin/:tab?new",
 // TO FIX:
-// ONLY ADMIN ROLE
+// ONLY ADMIN ROLE IS ALLOWED
             views: {
                 "loggedview": {
                     dir: 'blueprint',

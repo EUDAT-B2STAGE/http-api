@@ -1,88 +1,148 @@
 
 >  Welcome and goodbye. And thanks for all the fish!
 
---- ✄ -----------------------
-#MAIN COM
-docker-compose -f docker-compose.yml -f custom.yml up -d customfe
 # PRIVATE GIT
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
-# ANGULAR and  MATERIAL
-https://material.angularjs.org/latest/layout/alignment
-http://www.toptal.com/angular-js/top-18-most-common-angularjs-developer-mistakes
+# UI ROUTER and params
+http://stackoverflow.com/a/25647714/2114395
 --- ✄ -----------------------
+
+NEEDED:
+  - WelcomeController
+  - MenuInAppController
+  - NameController?
+
+Menu:
+  ✔ json menu @done (16-02-08 10:40)
+    ☐ move welcome menu in there (main.controller)
+    ☐ remove intro_menu
+    ☐ remove WelcomeMenuController in common rootctrl
+
+BUGS:
+✔ welcome spy padding? @done (16-01-26 15:11)
+✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
+✔ remove port from existing host in js @done (16-02-09 10:54)
+✔ Rdb connection is slow at startup, and API start before it's available @done (16-02-09 11:10)
+ ✔ make a cycle to check and sleep @done (16-02-09 11:10)
+ ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
+✘ HISTORY is broken?? @cancelled (16-02-10 07:59)
+✔ Fix all template inside the scope, use just root.templateSomething @done (16-02-10 08:06)
+☐ spy is probably broken in latest materialize? @toverifyagain
+☐ Register page!
+☐ chips with bigger div to show results
+☐ table are not same size on details
+☐ extrait not complete list inside the details page
+☐ mostra nella pagina di ricerca
+☐ mostra nella pagina di dettaglio
+☐ topbar menu for mobile
+
+Images:
+  ☐ image cache
+ https://github.com/jBenes/angular-imgcache.js/tree/master
+  ☐ upload images
+    ✔ API endpoint @done (16-02-09 08:21)
+    ☐ a dedicated button inside the dialog
+    ☐ a list of images
+    ☐ you show only the path
+      ☐ and maybe thumbnail
+  ☐ welcome parallax
+  ☐ welcome slider?
+
+Autocomplete:
+  ☐ elasticsearch
+      https://elasticsearch-py.readthedocs.org/en/master/index.html
+    ✔ docker server setup @done (16-02-07 01:41)
+      ✔ install python library, don't know which @done (16-02-07 01:41)
+      ☐ how to refresh indexes on startup?
+        ☐ flask before first request i would say
+    ☐ python insert in operations.py
+      ✔ think about a structure @done (16-02-07 11:08)
+      ☐ tests
+    ☐ API with GET
+      ☐  separate file for elastic?
+    ☐ Mix with Rethinkdb
+    https://www.rethinkdb.com/docs/elasticsearch/
+    https://github.com/rethinkdb/logstash-input-rethinkdb
+    https://hub.docker.com/_/logstash/
+    https://github.com/deviantony/docker-elk/blob/master/docker-compose.yml
+    ☐ OR my rethinkdb table change feed?
+
+User ranks:
+  ☐ get user info via REST /myself
+  ☐ do routig based on rank check?
+
+History:
+  ✔ clickable elements... @done (16-02-05 18:08)
+  ☐ a loader while timeout
+  ☐ A label to explain the route
+  ☐ Could add timestamp to each history element
+
+dynamic menu:
+  ☐ decided upon a json model
+    ☐ how to overide if existing?
+  ☐ just logout if none provided
+
+fancy:
+  ☐ browser notifications
+  https://github.com/sagiegurari/angular-web-notification
+
+Updates:
+ ☐ bower install jquery#~2.1.4 @tocheck
+ ✔ update angular to 1.5 @done (16-02-09 19:49)
+ ☐ update my rethinkdb image?
+
+Admin page:
+  ✔ Change toolbar color @done (16-01-25 16:03)
+  ✔ Tabs? @done (16-01-27 09:44)
+  ☐ Move tree here for administrating steps
+    ☐ refactor steps
+  ✔ FAB plus button @done (16-01-31 23:37)
+  ✘ inline wysiwyg + xeditable @cancelled (16-01-31 23:37)
+    ✘ use both and hide textarea @cancelled (16-01-31 23:37)
+    http://stackoverflow.com/q/30761498
+   ☐ ngWYSIWYG
+   http://psergus.github.io/ngWYSIWYG/
 
 New fixed search:
 ✔ onenter and onexit route extra @done (16-01-25 11:10)
 ✔ Tree back @done (16-01-25 12:42)
+☐ understand md-content?
 ✔ Parties back @done (16-01-25 12:15)
  ☐ sub piece in lazy load?
 ☐ chips watch?
 ☐ lazy load of more than 10 results
 ☐ Application name inside the Toolbar should be a hand made font?
 
-WELCOME:
-  ✔ Make this angular page @done (16-01-26 08:24)
-    ✔ move it to internal angular routing @done (16-01-26 08:24)
-  ☐ Admin page
-    ✔ admin api @done (16-01-26 08:24)
-      ☐ post with json
-      ☐ input form
-        ✔ xeditable material @done (16-01-26 11:36)
-  ☐ Welcome controller
-    ☐ upload and save given images
-    ☐ parallax ng-repeat?
-      ☐ based on content and images
-
-Admin page:
-  ✔ Change toolbar color @done (16-01-25 16:03)
-  ☐ Tabs?
-  ☐ FAB plus button
-  http://codepen.io/kyleledbetter/full/gbQOaV/
-
-History:
-☐ save old state
- ☐ json in cookies
- ☐ show a clickable div that change ui router state
-
-BUGS:
-☐ welcome spy padding?
-✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
+SEARCH:
 ☐ Some times chips do not see change of text?
-☐ spy is probably broken in latest materialize? @toverifyagain
- ✔ does not work with jquery 2.2. Only 2.1 @done (16-01-25 11:00)
- ☐ table are not same size on details
- ☐ extrait not complete list
- ☐ mostra nella pagina di ricerca
- ☐ mostra nella pagina di dettaglio
+☐ Chip list is too small. Can i change the template?
+☐ Chips array = apply filter on cascade
+☐ infinite scrolling is easy
+  https://material.angularjs.org/latest/demo/virtualRepeat
 
-EXPOSITION:
-  DESIGN ON A PIECE OF PAPER
+DETAILS:
+  ☐ Zoomify
+    ☐ angular open new tab /page
+    ☐ via python request and jinja template
+ ☐ select language on transcription
+ ☐ aggiungere lista dettagli (step 4) sotto lo scrollspy
 
-  ☐ Tre sale
-    ☐ Scrollspy
-      ☐ Un testo per sala
-      ☐ Una o più immagini per sala
-    ☐ Sections gallery
-      ☐ un mosaico di immagini
-      http://foundation.zurb.com/sites/docs/v/5.5.3/components/clearing.html
-    ☐ materiale sensibile?
-    ☐ zoomify
+SUBMIT:
+  ☐ Guide the submission with breadcrumbs
+  http://materializecss.com/breadcrumbs.html
+ ☐ Steps are upside down
+ ☐ Go from the biggest step to the leaf, as a branch
+   ☐ breadcrumbs show the progress
 
-EXPLORER:
- ✔ To fix controller.... @bug @done (16-01-23 23:34)
-✔ TABS @done (16-01-23 23:34)
-     ☐ lazy load when tab is selected?
- ☐ TAB1 - md-list with steps
-   ☐ on open, lazy load for content
-   ☐ data, luogo (source)
-   ☐ on open source + first page
-     ☐ on click open page browsing
- ☐ TAB2 - exposition
- ☐ TAB3 - tree explorer
+  ☐ transcriptions size inside db? or post/get method injection?
+  ☐ Submission skeleton with collapsible or collections
+  ☐ Submission steps
+  http://materializecss.com/collections.html
+ ☐ good example for transcription edit
+ https://material.angularjs.org/latest/demo/menuBar
 
 OTHER:
-☐ update angular to 1.5 rc
-☐ one time binding
+  ☐ one time binding
  <li ng-repeat=“item in ::vastArray”>{{ ::item.velocity }}</li>
 ☐ Cleaning frontend python code
   ✔ test login @done (15-12-30 09:59)
@@ -106,51 +166,24 @@ OTHER:
     ☐ js -> flask frontend -> api flask
   ☐ change loading bar template
 
-PROBLEMS:
-  ✔ Images not loading @done (16-01-08 01:46)
-  ✔ Removing chips does not reload page @done (16-01-08 08:22)
-  ☐ Chips array = apply filter on cascade
-  ☐ topbar menu for mobile
-  ☐ Pagination action?
-    ☐ lazy load instead of pagination
-    ☐ infinite scrolling is easy
-    https://material.angularjs.org/latest/demo/virtualRepeat
-  ☐ Some tabs transitions are slow!
+EXPOSITION:
+  DESIGN ON A PIECE OF PAPER
+  ☐ Tre sale
+    ☐ Scrollspy
+      ☐ Un testo per sala
+      ☐ Una o più immagini per sala
+    ☐ Sections gallery
+      ☐ un mosaico di immagini
+      http://foundation.zurb.com/sites/docs/v/5.5.3/components/clearing.html
+    ☐ materiale sensibile?
+    ☐ zoomify
 
-SEARCH:
-    ✔ RDB query @done (16-01-07 16:03)
-      ✔ POST with key 'operations' and json data @done (16-01-07 03:18)
-      ✔ test with js @done (16-01-08 01:33)
-      ✔ Complete chips and typeahead @done (16-01-08 01:33)
-    ✔ TAB: View for parties @done (16-01-08 16:13)
-    ✔ TAB: Tree from steps @treecontrol @done (16-01-07 19:04)
-    ✔ convert tabs into official material @done (16-01-08 06:49)
-    https://material.angularjs.org/latest/demo/tabs
-    ☐ do not show results if nothing searched
-      ☐ progress angular with template if loading
-    ☐ Why the hell http requests hang?
+VOCABULARY:
     ☐ Question mark to switch to PDF help
       ☐ Admin page to add a vocabulary
         ☐ Excel load
         ☐ web site insert
       ☐ step list angular inline filter
-
-DETAILS:
-  ☐ Zoomify
-    ☐ angular open new tab /page
-    ☐ via python request and jinja template
- ☐ select language on transcription
- ☐ aggiungere lista dettagli (step 4) sotto lo scrollspy
-
-SUBMIT:
-  ☐ transcriptions size inside db? or post/get method injection?
-  ☐ Submission skeleton with collapsible or collections
-  ☐ Submission steps
-  http://materializecss.com/collections.html
- ☐ ngWYSIWYG
- http://psergus.github.io/ngWYSIWYG/
- ☐ good example for transcription edit
- https://material.angularjs.org/latest/demo/menuBar
 
 HTTPS:
   ☐ nginx proxy
@@ -211,16 +244,6 @@ JWT apis:
     the cursor will block until more elements are available. "
     https://github.com/neumino/rethinkdbdash
 
-FROM PREVIOUS 'frontend' angulask:
-- Rest JWT
-  ☐ informations to pass along? user?
-- Add pages
-  ☐ with ease
-- Flask blueprint?
- ☐ auth blueprint (login part)
-
-☐ Angular blueprint load
-
 ui router pitfall:
   http://www.codelord.net/2015/06/02/angularjs-pitfalls-using-ui-routers-resolve/
 ☐ Api connection retry?
@@ -229,7 +252,6 @@ https://github.com/rholder/retrying
 https://github.com/mitsuhiko/jinja2-htmlcompress
 ☐ How to quickly add a blueprint for a whole new suburl
 http://flask.pocoo.org/snippets/59/
-
 
 One time binding:
     https://www.binpress.com/tutorial/speeding-up-angular-js-with-simple-optimizations/135
@@ -241,11 +263,6 @@ JS  LAZY LOAD:
 PIPELINE STEPS:
   http://devcenter.wercker.com/learn/pipelines/how-it-works.html
 
-# RETHINKDB MYADMIN
-docker-compose run bower bash
-$ npm install chateau
-
---- ✄ -----------------------
 --- ✄ -----------------------
 
 COMPLETED:
@@ -361,3 +378,92 @@ COMPLETED:
    ✔ ESC keyword @hotkeys @done (16-01-25 09:36)
   ✔ scrollspy also here @done (16-01-08 07:24)
     ✔ separate scrollspy section: on every field @done (16-01-08 07:24)
+ ✔ To fix controller.... @bug @done (16-01-23 23:34)
+✔ TABS @done (16-01-23 23:34)
+     ✔ lazy load when tab is selected? @done (16-01-26 15:30)
+  ✔ Images not loading @done (16-01-08 01:46)
+  ✔ Removing chips does not reload page @done (16-01-08 08:22)
+    ✔ RDB query @done (16-01-07 16:03)
+      ✔ POST with key 'operations' and json data @done (16-01-07 03:18)
+      ✔ test with js @done (16-01-08 01:33)
+      ✔ Complete chips and typeahead @done (16-01-08 01:33)
+    ✔ TAB: View for parties @done (16-01-08 16:13)
+    ✔ TAB: Tree from steps @treecontrol @done (16-01-07 19:04)
+    ✔ convert tabs into official material @done (16-01-08 06:49)
+    https://material.angularjs.org/latest/demo/tabs
+    ✔ do not show results if nothing searched @done (16-01-26 15:32)
+      ✔ progress angular with template if loading @done (16-01-26 15:32)
+    ✔ Why the hell http requests hang? @done (16-01-26 15:32)
+      ✔ flask multi thread @done (16-01-26 15:32)
+      ✔ dialog for create a new element @done (16-01-30 14:12)
+      ✔ table to show sections @done (16-01-31 22:21)
+      ✘ cards into dialog to create new element @cancelled (16-02-01 01:04)
+      ✔ Material textarea @done (16-02-01 01:04)
+        ✔ input form @done (16-02-01 00:45)
+        ✔ post with json @done (16-02-01 01:15)
+          ✔ check post response @done (16-02-01 09:09)
+        ✔ clean the form when new element for second time @done (16-02-01 09:13)
+        ✔ edit button and dialog filling @done (16-02-01 09:27)
+          ✔ on save update instead of insert... @done (16-02-01 18:39)
+            ✔ implement put method @done (16-02-01 18:39)
+          ✔ reload after insert/update @done (16-02-01 18:45)
+            which is when you close the dialog
+        ✔ delete element @done (16-02-02 09:48)
+          ✔ from inside the dialog @done (16-02-02 07:44)
+          ✔ create DELETE api @done (16-02-02 07:59)
+          ✔ define DELETE in scope @done (16-02-02 09:48)
+          ✔ remove and close the dialog @done (16-02-02 09:48)
+  ✔ Make this angular page @done (16-01-26 08:24)
+    ✔ move it to internal angular routing @done (16-01-26 08:24)
+    ✔ xeditable material @done (16-02-01 01:04)
+  ✔ Admin page @done (16-02-02 18:22)
+  ✔ Welcome controller @done (16-01-30 14:12)
+  ✔ admin api @done (16-01-26 08:24)
+      ✔ sections: make the loader appear when updating data... @done (16-02-02 18:22)
+  ✔ Welcome static @done (16-02-03 19:28)
+    ✔ make it switchable @done (16-02-02 18:48)
+    ✔ ng-repeat @done (16-02-02 19:11)
+      ✔ more link if extra content available @done (16-02-03 11:06)
+        ✔ a viewer page @done (16-02-03 11:40)
+          ✔ sub route of welcome? @done (16-02-03 11:40)
+          ✔ overwrite parent view @done (16-02-03 14:25)
+          ✔ back button arrow @done (16-02-03 14:32)
+    ✔ slider draft @done (16-02-03 10:54)
+    ✔ if empty data, go with a failure message @done (16-02-03 19:11)
+  ✔ search form if a 'search' section? @done (16-02-03 19:26)
+  ✔ save old state @done (16-02-04 09:31)
+   ✔ a function to recover last state @done (16-02-04 09:50)
+     ✔ use it for every "go back" button @done (16-02-04 14:53)
+       ✔ e.g. search go back @done (16-02-04 14:53)
+         ✔ placeholder for no data searched yet @done (16-02-04 15:01)
+         ✔ search loader... @done (16-02-04 15:24)
+       ✔ also search exit key @done (16-02-04 15:07)
+   ✔ apply also parameters to going back to state! @ooops @done (16-02-04 16:00)
+   ✔ json in cookies or localstorage @done (16-02-04 15:42)
+     ✔ fix the lastRoute function inside common.globals @done (16-02-04 15:43)
+     ✔ skip a route to save if it's equal to the last one @done (16-02-05 08:10)
+       ✔ compare both state and params @done (16-02-05 08:10)
+   ✔ sidebar for navigation of the whole history? @notsodifficult @done (16-02-05 15:31)
+     ✔ md-sidebar official material @done (16-02-05 14:50)
+     ✔ ng-repeat history @done (16-02-05 15:02)
+       ✔ limit to latest 10 entries @done (16-02-05 15:15)
+       ✔ reverse? @done (16-02-05 15:31)
+     ✔ open with keyboard @done (16-02-05 15:16)
+       ✘ and button? @cancelled (16-02-05 15:18)
+  ✔ app link instead of login on welcome if logged @done (16-02-04 08:06)
+  ✔ section positions @done (16-02-08 00:57)
+      ✔ insert position inside the json model/rethinkdb @done (16-02-08 00:04)
+      ✔ after drop, update all sections one by one... @done (16-02-08 00:57)
+    ✔ drag and drop @done (16-02-07 23:29)
+      ✔ install @done (16-02-07 12:14)
+      ✔ test @done (16-02-07 23:29)
+    ✔ 'angular-sortable-view' @done (16-02-07 11:14)
+  Release in the ocean
+  ✔ parallax upload one and use it for all, for now @quickanddirty @done (16-02-08 01:32)
+    ✔ note: parallax does not work inside an md-content... @done (16-02-08 01:33)
+  ✔ update docker @done (16-02-09 09:16)
+    ✔ run @done (16-02-09 12:43)
+  ✔ apply latest backup @done (16-02-10 07:49)
+  ✔ copy images in the same host @done (16-02-10 07:50)
+  ✔ project name by hand @done (16-02-10 07:50)
+  ✔ username/password set by hand @done (16-02-10 07:50)

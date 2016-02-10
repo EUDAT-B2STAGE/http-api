@@ -14,11 +14,6 @@ function ExploreController($scope, $rootScope, $log, $state, search)
   var self = this;
   $log.debug("Explore data: controller");
 
-  // Template Directories
-  self.templateDir = templateDir;
-  self.customTemplateDir = customTemplateDir;
-  self.blueprintTemplateDir = blueprintTemplateDir;
-
   // INIT scope variables
   $scope.data = {};
   $scope.results = false;
@@ -53,20 +48,15 @@ function StepsController($scope, $log, $state, search)
   var self = this;
   self.step = 2;
 
-  // Template Directories
-  self.templateDir = templateDir;
-
-  // Init scope data
-  //self.dataCount = NaN;
-  self.data = [];
-
   search.getDistinctValuesFromStep(self.step).then(function (out)
   {
-       console.log("OUT", out);
-       self.dataCount = out.elements;
-       self.data = out.data;
+        self.data = [];
+        self.dataCount = self.data.length;
+       if (out) {
+           self.dataCount = out.elements;
+           self.data = out.data;
+       }
   })
-  //self.dataCount = 0;
 }
 
 ////////////////////////////////
@@ -78,9 +68,6 @@ function TreeController($scope, $rootScope, $log, search)
   // INIT controller
   $log.debug("Tree of life");
   var self = this;
-
-  // Template Directories
-  self.templateDir = templateDir;
 
   // Init scope data
   //self.dataCount = NaN;

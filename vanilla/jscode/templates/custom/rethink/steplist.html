@@ -5,8 +5,8 @@
         <b> Fêtes </b>
     </h4>
 
-    <div ng-if="!steps.dataCount">
-        <div ng-include="steps.templateDir + 'loader.html'"></div>
+    <div ng-hide="!steps.data.lenght">
+        <div ng-include="root.templateDir + 'loader.html'"></div>
     </div>
     <div ng-if="steps.dataCount < 1">
         No data available

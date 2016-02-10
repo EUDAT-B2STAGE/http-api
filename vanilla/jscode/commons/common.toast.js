@@ -6,6 +6,7 @@ angular.module('web')
 
 function ToastController($scope, $log, $mdToast, $document)
 {
+    $log.debug("Toast is ready");
     //https://material.angularjs.org/latest/demo/toast
 
     var last = {

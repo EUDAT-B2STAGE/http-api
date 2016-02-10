@@ -17,9 +17,12 @@ function HotkeysService($timeout, $state) {
 
   self.exitSearch = function(event, controller) {
     event.preventDefault();
-    $timeout(function () {
-        $state.go('logged.explore');
-    }, 10);
+    controller.goToLastRoute();
+  }
+
+  self.openHistorySidebar = function(event, controller) {
+    event.preventDefault();
+    controller.open();
   }
 
   self.scrollListDown = function(event, controller) {

@@ -10,11 +10,6 @@ function SearchController($scope, $rootScope, $log, $state, search)
   $log.info("Ready to search");
   var self = this;
 
-  // Template Directories
-  self.templateDir = templateDir;
-  self.customTemplateDir = customTemplateDir;
-  self.blueprintTemplateDir = blueprintTemplateDir;
-
   $scope.data = {};
   $scope.chips = [];
 

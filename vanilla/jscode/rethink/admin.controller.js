@@ -2,56 +2,276 @@
   'use strict';
 
 angular.module('web')
-    .controller('AdminController', AdminController);
+    .controller('AdminController', AdminController)
+    .controller('WelcomeController', WelcomeController)
+    .controller('WelcomeInfoController', WelcomeInfoController)
+    .controller('DialogController', DialogController)
+    ;
 
-function AdminController($scope, $rootScope, $log, admin)
+var
+    data_type = 'welcome_section',
+    mysection = 'admin_sections';
+
+// General purpose load data function
+// To use only inside controllers
+function getSectionData(admin, $scope)
+{
+    return admin.getData().then(function (out)
+    {
+
+    // IF DATA IS PRESENT
+      if (out !== null && out.hasOwnProperty('elements')) {
+        //Preserve order
+        var newdata = [];
+        for (var x = 0; x < out.data.length; x++) {
+            newdata[x] = {};
+        };
+        forEach(out.data, function (element, j) {
+            var index = element.data['Position'];
+            newdata[index] = element;
+        })
+        $scope.sections = angular.copy(newdata); // out.data;
+
+    // IF DATA MISSING!
+      } else {
+        $scope.sections = [{
+            data: {
+                "Section": "Temporary failure",
+                "Description":
+                    "Dear User,<br>" +
+                    "currently our data server is unreachable." +
+                    "<br><br>Please try again in a few minutes;" +
+                    "<br>We apologize for any inconvenience."
+                    ,
+                "Content": "",
+            }
+        }]
+      }
+    });
+}
+
+function AdminController($scope, $log, admin, $stateParams)
 {
   // Init controller
+  $log.debug("ADMIN page controller", $stateParams);
   var self = this;
-  $log.debug("ADMIN page controller");
-
-  self.model = {
-    name: 'This is editable!'
-  };
-/*
-  self.options = {};
-  self.fields = [
-    {
-      key: 'text',
-      type: 'editableInput',
-      templateOptions: {
-        label: 'Text'
-      }
-    }
-  ];
-  self.originalFields = angular.copy(self.fields);
-*/
-
-  // function definition
-  self.saveForm = function () {
-    console.log("MODEL", self.model);
-  }
-
-/*
-  self.onSubmit = function () {
-    self.options.updateInitialValue();
-    console.log("MODEL", self.model);
-  }
-*/
-
-  // Template Directories
-  self.templateDir = templateDir;
-  self.customTemplateDir = customTemplateDir;
-  self.blueprintTemplateDir = blueprintTemplateDir;
-
-  admin.getData();
-
   //TABS
-  self.selectedTab = null;
-  self.onTabSelected = function () {
-      $log.debug("Selected", self.selectedTab);
+  self.selectedTab = 0;
+  // Init data for each tab
+  $scope.sections = {};
+
+  self.onTabSelected = function (key) {
+      $log.debug("Selected", self.selectedTab, key);
+
+      // INIT TAB FOR MANAGING SECTIONS
+      if (key == 'sections') {
+        $scope.sections = {};
+        getSectionData(admin, $scope);
+      }
   }
 
+  if ($stateParams.tab && $stateParams.tab != self.selectedTab) {
+    $log.debug("URL tab is ",$stateParams);
+    self.selectedTab = $stateParams.tab;
+  }
+}
+
+function WelcomeInfoController($scope, $log, $stateParams, admin)
+{
+    $log.debug("Welcome info", $stateParams);
+    var self = this;
+    self.title = "None";
+    self.moreContent = "No section selected";
+    getSectionData(admin, $scope).then(function() {
+        var section = $scope.sections[$stateParams.section];
+        self.title = section.data['Section'];
+        self.moreContent = section.data['Content'];
+    });
+
+}
+
+function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $stateParams, $mdMedia, $mdDialog, $q)
+{
+  $log.debug("Welcome admin controller", $stateParams);
+  var self = this;
+
+  self.resort = function (item, partFrom, partTo, indexFrom, indexTo) {
+    var promises = [];
+    // For each section
+    forEach($scope.sections, function(element, index) {
+        // update position
+        element.data['Position'] = index;
+        // send to api
+        promises.push(admin.update(data_type, element.id, element.data));
+    });
+
+    $q.all(promises).then((values) => {
+        $log.debug("Pushed updated order");
+    });
+  }
+
+  self.isSearch = function(section) {
+    var key = 'search';
+    return angular.lowercase(section.data['Section']) == key;
+  }
+
+  // Activate a dynamic welcome inside the view
+  $timeout(function () {
+    var check = 'welcome';
+    if ($state.current.name.slice(0, check.length) == check) {
+       getSectionData(admin, $scope);
+       self.init = 'rdb';
+    }
+  });
+
+  self.sectionModels = [
+    {
+        name: 'Section',
+        value: 'New section!',
+        description: 'The name for your new welcome section',
+        required: true,
+        focus: true,
+        chars: 50,
+    },
+    {
+        name: 'Description',
+        value: 'We will talk about a lot of things',
+        description: 'Short description of your section. It will appear in the home page.',
+        required: true,
+        chars: 500,
+    },
+    {
+        name: 'Content',
+        value: 'This explanation is very long',
+        description: 'Explanation of the section. It will appear in a separate page.',
+    },
+  ];
+
+//////////////////////////////////////
+// HANDLING THE CREATION OF A DIALOG
+  self.customFullscreen = $mdMedia('xs') || $mdMedia('sm');
+
+  self.showAdvanced = function(ev, model) {
+    var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && self.customFullscreen;
+    var id = null;
+    if (model) {
+        id = model.id;
+    }
+
+// Clear or insert data in the model
+    for (var j = 0; j < self.sectionModels.length; j++) {
+        var value = "";
+        if (model) {
+            value = model.data[self.sectionModels[j].name];
+        }
+        self.sectionModels[j].text = value;
+    };
+// Options
+    var dialogOptions =
+    {
+      controller: DialogController,
+      templateUrl: blueprintTemplateDir + 'add_section.html',
+      parent: angular.element(document.body),
+      locals: {
+        sectionModels: self.sectionModels,
+        modelId: id,
+      },
+      targetEvent: ev,
+      //clickOutsideToClose:true,
+      onComplete: function(){
+        // Focus on first textarea
+        $timeout(function(){ angular.element("textarea")[0].focus(); });
+      },
+      fullscreen: useFullScreen
+    }
+
+// WHEN COMPLETED
+    var afterDialog = function(response) {
+
+      var update_id = response[0], remove = response[1];
+      $log.debug("After dialog", update_id, remove);
+      // Check if id
+      var element = {};
+      forEach(self.sectionModels, function(x, i) {
+        element[x.name] = x.text;
+      });
+
+      var apicall = null;
+      if (update_id) {
+        if (remove) {
+            apicall = admin.delete(data_type, update_id);
+        } else {
+            apicall = admin.update(data_type, update_id, element);
+        }
+      } else {
+        element['Position'] = $scope.sections.length;
+        apicall = admin.insert(data_type, element);
+      }
+
+      apicall.then(function (out) {
+        console.log("Admin api call", out);
+        if (out.elements >= 0) {
+          getSectionData(admin, $scope);
+        }
+        // Activate the view
+        $timeout(function() {
+           $rootScope.loaders[mysection] = false;
+        }, timeToWait);
+      });
+    }
+
+// Open
+    $mdDialog.show(dialogOptions)
+        .then(afterDialog);
+
+// WATCH FOR FULL SCREEN
+    $scope.$watch(function() {
+      return $mdMedia('xs') || $mdMedia('sm');
+    }, function(wantsFullScreen) {
+      self.customFullscreen = (wantsFullScreen === true);
+    });
+
+  };
+
+  // Activate dialog to insert new element if requested by url
+  if ($stateParams.new) {
+    self.showAdvanced();
+  }
+
+}
+
+function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
+{
+
+  $scope.sectionModels = sectionModels;
+  $scope.id = modelId;
+  $scope.title = "Add a new element";
+  if (modelId) {
+      $scope.title = "Edit/Update element";
+  }
+
+  $scope.hide = function() {
+    $mdDialog.hide();
+  };
+  $scope.cancel = function() {
+    $mdDialog.cancel();
+  };
+  $scope.validate = function(model) {
+    var valid = true;
+    forEach(model, function(x, i) {
+      if (x.required && !x.text) {
+        valid = false;
+      }
+    });
+    if (valid) {
+      $rootScope.loaders[mysection] = true;
+      $mdDialog.hide([modelId, null]);
+    }
+  };
+  $scope.remove = function() {
+    $rootScope.loaders[mysection] = true;
+    $mdDialog.hide([modelId, true]);
+  };
 }
 
 })();

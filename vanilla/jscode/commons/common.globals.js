@@ -9,6 +9,52 @@ var templateDir = templateDirBase + framework + '/';
 var customTemplateDir = templateDirBase + 'custom/' + framework + '/';
 var blueprintTemplateDir = templateDirBase + 'custom/' + blueprint + '/';
 
+////////////////////////////
+// HISTORY GLOBAL OBJECT
+var temporaryRoutingHistory = [];
+var localStorageKey = 'myOwnHistory';
+
+var getHistoryOfAllTimes = function ()
+{
+    var history = JSON.parse(localStorage.getItem(localStorageKey));
+    // Note: localStorageKey is defined in common.globals
+    if (history === null)
+        history = [];
+    return history;
+}
+
+var setHistoryOfAllTimes = function (data)
+{
+    localStorage.setItem(localStorageKey, JSON.stringify(data));
+}
+
+var lastRoute = function()
+{
+    var
+        baseRoute = {
+            state: {name: 'welcome'},
+            params: null,
+        },
+        routingHistory = getHistoryOfAllTimes();
+
+    // I want to go back.
+    // The last route is the current one,
+    // so i will go 2 routes back in the history.
+    var lastIndex = routingHistory.length - 2;
+    if (lastIndex < 0 || !routingHistory[lastIndex]) {
+        return baseRoute;
+    }
+    return routingHistory[lastIndex]
+}
+
+/////////////////////////////////
+/*
+var projectInfo = {
+    name: "RestAngulask",
+    description: "Angularjs meets Flask",
+}
+*/
+
 /////////////////////////////////
 // FOR EACH AUTO IMPLEMENTATION
  //https://toddmotto.com/simple-foreach-implementation-for-objects-nodelists-arrays-with-automatic-type-looping/
@@ -49,7 +95,7 @@ function setScopeError(message, log, scope) {
 }
 
 String.prototype.capitalizeFirstLetter = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
+    return this.charAt(0).toUpperCase() + angular.lowercase(this.slice(1));
 }
 
 /////////////////////////////////
