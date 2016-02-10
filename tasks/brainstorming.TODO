@@ -1,19 +1,26 @@
 
+IDEAS:
+
+May use sqlacodegen to get the sqlalchemy models from irods postgres db
+http://stackoverflow.com/a/23786811
+In this way we may easily admin the irods users with flask-admin?
+Also use flask-security to use irods to get login?
+
 UPDATES:
 
-☐ Update docker images
- ☐ use python 3
- ☐ or check commentjson is installed
+✔ Update docker images @done (16-02-09 22:15)
+☐ use python 3?
+☐ add commentjson to libraries
 ☐ Save graphdb data into a volume
-  ☐ update docs
-  ☐ update run script
-☐ Update docs
+☐ update documentation
 
 DRAFT:
 
-☐ Move rest-mock to base and call it 'backend'
+☐ Fork rest-mock inside EUDAT team
+  ☐ Move it inside the repo root and call it 'backend'
 ☐ Resource endpoint
- ☐ to put object to irods
+☐ to put object to irods
+☐ Swagger automatization
 
 FIRST STEPS:
 
@@ -27,7 +34,5 @@ FIRST STEPS:
 
 REST authentication:
 
-  ☐ is not @pluggable
+  ☐ Not yet pluggable into rest-mock
     ☐ how can we make it so?
-
---- ✄ -----------------------

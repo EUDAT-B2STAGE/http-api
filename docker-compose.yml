@@ -74,22 +74,16 @@ iclient:
         - ./vanilla/apis:/code/rest-mock/restapi/resources/custom
         # Rest API configuration
         - ./vanilla/specs:/code/rest-mock/confs/endpoints
-        #- ./vanilla/specs/endpoints.ini:/code/rest-mock/confs/endpoints.ini
     links:
         - icat:rodserver
         - igraph:gdb
 
 #################################
 
-##NOTES
+## NOTES
 
-# May use sqlacodegen to get the sqlalchemy models from irods postegres db
-# http://stackoverflow.com/a/23786811
-# In this way we may easily admin the irods users with flask-admin?
-# Also use flask-security to use irods to get login?
+### RUN THE STACK
 
-#################################
+# Use the script inside the repo:
+# scripts/run.sh
 
-# $ docker-compose -f docker-compose.yml -f init.yml up -d
-## wait the operations and then press CTRL-c
-# $ docker-compose up
