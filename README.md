@@ -2,7 +2,7 @@
 # REST API development for EUDAT project
 
 This is an attempt to have a multi-container micro-services environment
-to simulate some REST API service on top of an iCAT iRODS server.
+to develop REST API service on top of an iCAT iRODS server.
 
 *WARNING*: this environemnt is in an early stage of development.
 You should expect things not to work.
@@ -24,24 +24,13 @@ If you need to jump in as soon as possible:
 # Clone repo
 git clone ...
 # Init services
-docker-compose -f docker-compose.yml -f init.yml up icat
-# When completed press CTRL-c
-
-# Check volumes for persistence
-docker volume ls
-##DRIVER              VOLUME NAME
-##local               sqldata
-##local               irodsconf
-##local               irodshome
-##local               irodsresc
-##local               eudathome
-
-# ...and run the final services
-docker-compose up -d iclient
+scripts/run.sh init
+# Then run the final services
+scripts/run.sh
+# Open the client to test code or run the API server
 docker exec -it irods_iclient_1 bash
 root@icl:/code#
-
-# Develop from here
+### Develop from here!
 ```
 
 ## Documentation
@@ -59,5 +48,5 @@ For a more detailed explanation and some deep understanding:
 irods@rodserver:~$ apt-cache showpkg irods-icat
 Package: irods-icat
 Versions:
-4.1.6
+4.1.7
 ```

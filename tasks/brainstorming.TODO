@@ -13,6 +13,7 @@ UPDATES:
 ☐ add commentjson to libraries
 ☐ Save graphdb data into a volume
 ☐ update documentation
+☐ docker 1.10 and docker-compose 1.6 (new syntax: services and networks)
 
 DRAFT:
 

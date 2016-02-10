@@ -1,6 +1,3 @@
-########################
-# I took some inspiration from:
-#https://github.com/irods/contrib/blob/master/irods-docker/icat/Dockerfile
 
 #################################
 # Postgres database server
