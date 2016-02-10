@@ -24,7 +24,7 @@
     <md-tab label="Welcoming sections"
         md-on-select="adm.onTabSelected('sections')">
       <md-content layout-padding flex='grow'>
-        <div ng-include="adm.blueprintTemplateDir + 'admin_section.html'"></div>
+        <div ng-include="root.blueprintTemplateDir + 'admin_section.html'"></div>
       </md-content>
     </md-tab>
 
@@ -37,7 +37,7 @@
 
     <md-tab label="Steps" md-on-select="adm.onTabSelected()">
       <md-content class="md-padding">
-        <div ng-include="adm.blueprintTemplateDir + 'admin_step.html'"></div>
+        <div ng-include="root.blueprintTemplateDir + 'admin_step.html'"></div>
       </md-content>
     </md-tab>
 

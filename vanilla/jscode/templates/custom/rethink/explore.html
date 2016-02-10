@@ -10,18 +10,18 @@
 
     <md-tab label="Step list" md-on-select="exp.onTabSelected()">
       <md-content class="md-padding">
-        <div ng-include="exp.blueprintTemplateDir + 'steplist.html'"></div>
+        <div ng-include="root.blueprintTemplateDir + 'steplist.html'"></div>
       </md-content>
     </md-tab>
 
     <md-tab label="Tree explorer" md-on-select="exp.onTabSelected()">
-        <div ng-include="exp.blueprintTemplateDir + 'tree.html'"></div>
+        <div ng-include="root.blueprintTemplateDir + 'tree.html'"></div>
     </md-tab>
 
     <md-tab label="Exposition" md-on-select="exp.onTabSelected()">
       <md-content class="md-padding">
 <!--
-        <div ng-include="exp.blueprintTemplateDir + 'exposition.html'" style="width: 600px;"></div>
+        <div ng-include="root.blueprintTemplateDir + 'exposition.html'" style="width: 600px;"></div>
 -->
         Work in progress
       </md-content>

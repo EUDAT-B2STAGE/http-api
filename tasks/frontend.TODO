@@ -12,16 +12,7 @@ NEEDED:
   - MenuInAppController
   - NameController?
 
-Note to self:
-  Release in the ocean
-  ✔ parallax upload one and use it for all, for now @quickanddirty @done (16-02-08 01:32)
-    ✔ note: parallax does not work inside an md-content... @done (16-02-08 01:33)
-  ✔ update docker @done (16-02-09 09:16)
-    ✔ run @done (16-02-09 12:43)
-  ☐ apply latest backup
-  ☐ link images in the same host
-  ☐ project name by hand
-  ☐ username/password set by hand
+Menu:
   ✔ json menu @done (16-02-08 10:40)
     ☐ move welcome menu in there (main.controller)
     ☐ remove intro_menu
@@ -30,16 +21,17 @@ Note to self:
 BUGS:
 ✔ welcome spy padding? @done (16-01-26 15:11)
 ✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
-☐ spy is probably broken in latest materialize? @toverifyagain
- ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
 ✔ remove port from existing host in js @done (16-02-09 10:54)
 ✔ Rdb connection is slow at startup, and API start before it's available @done (16-02-09 11:10)
  ✔ make a cycle to check and sleep @done (16-02-09 11:10)
-☐ HISTORY is broken??
-☐ Fix all template inside the scope, use just root.templateSomething
+ ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
+✘ HISTORY is broken?? @cancelled (16-02-10 07:59)
+✔ Fix all template inside the scope, use just root.templateSomething @done (16-02-10 08:06)
+☐ spy is probably broken in latest materialize? @toverifyagain
+☐ Register page!
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
-☐ extrait not complete list
+☐ extrait not complete list inside the details page
 ☐ mostra nella pagina di ricerca
 ☐ mostra nella pagina di dettaglio
 ☐ topbar menu for mobile
@@ -96,7 +88,7 @@ fancy:
 
 Updates:
  ☐ bower install jquery#~2.1.4 @tocheck
- ☐ update angular to 1.5
+ ✔ update angular to 1.5 @done (16-02-09 19:49)
  ☐ update my rethinkdb image?
 
 Admin page:
@@ -466,3 +458,12 @@ COMPLETED:
       ✔ install @done (16-02-07 12:14)
       ✔ test @done (16-02-07 23:29)
     ✔ 'angular-sortable-view' @done (16-02-07 11:14)
+  Release in the ocean
+  ✔ parallax upload one and use it for all, for now @quickanddirty @done (16-02-08 01:32)
+    ✔ note: parallax does not work inside an md-content... @done (16-02-08 01:33)
+  ✔ update docker @done (16-02-09 09:16)
+    ✔ run @done (16-02-09 12:43)
+  ✔ apply latest backup @done (16-02-10 07:49)
+  ✔ copy images in the same host @done (16-02-10 07:50)
+  ✔ project name by hand @done (16-02-10 07:50)
+  ✔ username/password set by hand @done (16-02-10 07:50)

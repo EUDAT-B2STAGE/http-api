@@ -74,10 +74,6 @@ function AdminController($scope, $log, admin, $stateParams)
     $log.debug("URL tab is ",$stateParams);
     self.selectedTab = $stateParams.tab;
   }
-
-  // Template Directories
-  self.templateDir = templateDir;
-  self.blueprintTemplateDir = blueprintTemplateDir;
 }
 
 function WelcomeInfoController($scope, $log, $stateParams, admin)

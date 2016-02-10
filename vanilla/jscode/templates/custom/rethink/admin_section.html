@@ -25,7 +25,7 @@
 </div>
 
 <div ng-show="loaders['admin_sections']">
-    <span colspan="10" ng-include="adm.templateDir+'loader.html'"></span>
+    <span colspan="10" ng-include="root.templateDir+'loader.html'"></span>
 </div>
 
 <ul sv-root sv-part="sections" ng-hide="loaders['admin_sections']"
@@ -94,7 +94,7 @@
 
      <tbody ng-if="loaders['admin_sections']">
        <tr>
-        <td colspan="10" ng-include="adm.templateDir+'loader.html'"></td>
+        <td colspan="10" ng-include="root.templateDir+'loader.html'"></td>
        </tr>
      </tbody>
 

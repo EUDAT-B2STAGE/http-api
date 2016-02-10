@@ -24,11 +24,6 @@ function SearchController($scope, $rootScope, $log, $state, search, hotkeys, key
             }
         });
 
-  // Template Directories
-  self.templateDir = templateDir;
-  self.customTemplateDir = customTemplateDir;
-  self.blueprintTemplateDir = blueprintTemplateDir;
-
   // INIT scope variables
   $scope.data = {};
   $scope.dataCount = null;

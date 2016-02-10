@@ -2,7 +2,7 @@
 <div ng-controller="TreeController as tree">
 
     <div ng-if="!tree.dataCount">
-        <div ng-include="tree.templateDir + 'loader.html'"></div>
+        <div ng-include="root.templateDir + 'loader.html'"></div>
     </div>
     <div ng-if="tree.dataCount < 1">
         No data available
