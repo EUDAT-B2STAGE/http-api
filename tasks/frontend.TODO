@@ -27,8 +27,16 @@ BUGS:
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
 ✘ HISTORY is broken?? @cancelled (16-02-10 07:59)
 ✔ Fix all template inside the scope, use just root.templateSomething @done (16-02-10 08:06)
-☐ spy is probably broken in latest materialize? @toverifyagain
 ☐ Register page!
+☐ Welcome broken for other services
+ ☐ More button does not work
+ ☐ repeat html is not inside the common part
+☐ History broken for other services
+   ☐ Split hotkeys service in two pieces:
+    ☐ common
+    ☐ custom
+      ☐ fix the typo
+☐ spy is probably broken in latest materialize? @toverifyagain
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
 ☐ extrait not complete list inside the details page
