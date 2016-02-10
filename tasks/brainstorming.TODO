@@ -1,26 +1,28 @@
 
-IDEAS:
+Guidelines
+- PEP
+- Test driven: nose
+- Python 3?
+- Swagger
 
-May use sqlacodegen to get the sqlalchemy models from irods postgres db
-http://stackoverflow.com/a/23786811
-In this way we may easily admin the irods users with flask-admin?
-Also use flask-security to use irods to get login?
+DATA MODELS:
+  schema -> https://www.dropbox.com/s/01582z9avmnllzo/EUDAT_datamodel.png?dl=0
+  ☐ Nested collections in B2safe?
 
 UPDATES:
 
 ✔ Update docker images @done (16-02-09 22:15)
-☐ use python 3?
 ☐ add commentjson to libraries
+☐ Fork rest-mock inside EUDAT team
+  ☐ Move it inside the repo root and call it 'backend'
+
+LATER ON:
+
 ☐ Save graphdb data into a volume
 ☐ update documentation
 ☐ docker 1.10 and docker-compose 1.6 (new syntax: services and networks)
-
-DRAFT:
-
-☐ Fork rest-mock inside EUDAT team
-  ☐ Move it inside the repo root and call it 'backend'
 ☐ Resource endpoint
-☐ to put object to irods
+  ☐ to put object to irods
 ☐ Swagger automatization
 
 FIRST STEPS:
@@ -28,6 +30,8 @@ FIRST STEPS:
 ☐ clone (graph) code inside icat server too
   ✔ copy models inside module @done (15-12-21 23:57)
 ☐ script to push data
+example in
+https://github.com/EUDAT-B2SAFE/B2SAFE-core/blob/master/cmd/metadataManager.py
   ☐ args: DATAOBJ PID [METADATA]
   ☐ test icat irule with epic handle?
   ☐ manually insert dataobj + pid with irule
@@ -37,3 +41,11 @@ REST authentication:
 
   ☐ Not yet pluggable into rest-mock
     ☐ how can we make it so?
+
+--- ✄ -----------------------
+IDEAS:
+ ☐ May use sqlacodegen to get the sqlalchemy models from irods postgres db
+http://stackoverflow.com/a/23786811
+ ☐ In this way we may easily admin the irods users with flask-admin?
+   ☐ Also use flask-security to use irods to get login?
+--- ✄ -----------------------

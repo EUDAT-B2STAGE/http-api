@@ -1,3 +1,0 @@
-[submodule "rest-api"]
-	path = code/rest-mock
-	url = https://github.com/pdonorio/rest-mock
