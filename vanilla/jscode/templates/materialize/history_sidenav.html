@@ -15,7 +15,12 @@
         </md-button>
       </md-content>
 
-      <md-content ng-repeat="element in sideb.history.slice().reverse() | limitTo:10"
+      <div ng-show="loaders[sideb.loader]">
+        <div ng-include="root.templateDir + 'loader.html'"></div>
+      </div>
+
+      <md-content ng-hide="loaders[sideb.loader]"
+        ng-repeat="element in sideb.history.slice().reverse() | limitTo:10"
         layout-padding layout-wrap>
             <a class="btn-floating waves-effect waves-light blue"
                 ng-click="goTo(element)">

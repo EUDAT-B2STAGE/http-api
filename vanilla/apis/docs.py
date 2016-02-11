@@ -21,7 +21,6 @@ model = 'datavalues'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
-@deck.enable_endpoint_identifier('data_key')
 class RethinkDataValues(BaseRethinkResource):
     """ Data values """
 
@@ -124,7 +123,6 @@ model = 'datakeys'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
-@deck.enable_endpoint_identifier('step')
 class RethinkDataKeys(BaseRethinkResource):
     """ Data keys administrable """
 
@@ -152,10 +150,6 @@ class RethinkDocuments(BaseRethinkResource):
     template = mytemplate
     table = mylabel
     table_index = 'record'
-
-    def __init__(self):
-        self.set_method_id('data_key')
-        super(RethinkDocuments, self).__init__()
 
     def get_all_notes(self, q):
         return q.concat_map(
@@ -215,7 +209,6 @@ model = 'datadmins'
 mylabel, mytemplate, myschema = schema_and_tables(model)
 
 
-@deck.enable_endpoint_identifier('id')
 class RethinkDataForAdministrators(BaseRethinkResource):
     """ Data admins """
 

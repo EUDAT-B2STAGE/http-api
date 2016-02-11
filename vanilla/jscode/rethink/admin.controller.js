@@ -57,8 +57,6 @@ function AdminController($scope, $log, admin, $stateParams)
   var self = this;
   //TABS
   self.selectedTab = 0;
-  // Init data for each tab
-  $scope.sections = {};
 
   self.onTabSelected = function (key) {
       $log.debug("Selected", self.selectedTab, key);
@@ -97,6 +95,7 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
 
   self.resort = function (item, partFrom, partTo, indexFrom, indexTo) {
     var promises = [];
+    //console.log("TEST SECTIONS", $scope.sections);
     // For each section
     forEach($scope.sections, function(element, index) {
         // update position

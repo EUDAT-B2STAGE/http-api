@@ -6,18 +6,6 @@ angular.module('web')
 
 // EXTRA ROUTES
     {
-    //////////////////////
-        'welcome.more': {
-            url: "/info/:section",
-            views: {
-                "main@": {
-// Did not understood this very well
-                //"main@welcome": {
-                    dir: 'blueprint',
-                    templateUrl: 'section_info.html',
-                }
-            },
-        },
 
     //////////////////////
 //NOT LOGGED?

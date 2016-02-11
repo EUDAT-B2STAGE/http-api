@@ -2,12 +2,15 @@
   'use strict';
 
 angular.module('web')
-    .service('keyshortcuts', HotkeysService);
+    .service('extrakeyshortcuts', ExtraKeysService);
 
-function HotkeysService($timeout, $state) {
+function ExtraKeysService($timeout, $state) {
 
   var self = this;
 
+// NO EXTRA KEYS AT THE MOMENT :/
+
+/*
   self.search = function(event, controller) {
     event.preventDefault();
     $timeout(function () {
@@ -24,7 +27,10 @@ function HotkeysService($timeout, $state) {
     event.preventDefault();
     controller.open();
   }
+*/
 
+
+/*
   self.scrollListDown = function(event, controller) {
     event.preventDefault();
     if (isNaN(controller.focusPosition)) controller.focusPosition = 1;
@@ -52,6 +58,7 @@ function HotkeysService($timeout, $state) {
       $state.go(newstateName, newstateParameters);
     }
   }
+*/
 
 }
 

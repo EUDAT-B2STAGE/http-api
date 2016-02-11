@@ -12,11 +12,14 @@ NEEDED:
   - MenuInAppController
   - NameController?
 
-Menu:
+Common functionalities:
+  ☐ A list of required extra routes
+    ☐ check if they exist
+    ☐ if not create them with template "yet to implement"
   ✔ json menu @done (16-02-08 10:40)
-    ☐ move welcome menu in there (main.controller)
-    ☐ remove intro_menu
-    ☐ remove WelcomeMenuController in common rootctrl
+      ☐ move welcome menu in there (main.controller)
+      ☐ remove intro_menu
+      ☐ remove WelcomeMenuController in common rootctrl
 
 BUGS:
 ✔ welcome spy padding? @done (16-01-26 15:11)
@@ -27,8 +30,17 @@ BUGS:
  ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
 ✘ HISTORY is broken?? @cancelled (16-02-10 07:59)
 ✔ Fix all template inside the scope, use just root.templateSomething @done (16-02-10 08:06)
-☐ spy is probably broken in latest materialize? @toverifyagain
 ☐ Register page!
+✔ History broken for other services @done (16-02-11 11:00)
+   ✔ Split hotkeys service in two pieces: @done (16-02-11 08:17)
+    ✔ common @done (16-02-11 08:17)
+    ✔ custom @done (16-02-11 08:17)
+      ✔ fix the typo @done (16-02-11 08:10)
+    ✘ Search problem? @cancelled (16-02-11 11:00)
+✔ Welcome broken for other services @done (16-02-11 11:00)
+ ✔ More button does not work @done (16-02-11 11:00)
+ ✔ repeat html is not inside the common part @done (16-02-11 11:00)
+☐ spy is probably broken in latest materialize? @toverifyagain
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
 ☐ extrait not complete list inside the details page
