@@ -153,6 +153,15 @@ $stateProvider
         }
     })
 
+    .state("welcome.more", {
+        url: "/info/:section",
+        views: {
+            "main@": {
+                templateUrl: templateDir + 'section_info.html',
+            }
+        },
+    })
+
 // If i see API are not available
     .state("offline", {
         url: "/offline",
