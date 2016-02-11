@@ -17,3 +17,8 @@ icat:
     #command: sleep infinity    ## DEBUG
     volumes:
      - ./confs/credentials.conf:/myconfig:ro
+
+# SMALL COMMENT:
+# To restart the icat installation you just need to remove one volume:
+
+# $ docker volume rm irodsconf

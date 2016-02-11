@@ -15,7 +15,7 @@ do
     fi
 done
 
-# Check init
+# Check if init has been executed
 vcom="docker volume"
 out=`$vcom ls | grep eudathome`
 if [ "$out" == "" ]; then
@@ -27,30 +27,55 @@ if [ "$out" == "" ]; then
     fi
 fi
 
-# Launch data
+################################
+# EXECUTE OPTIONS
+
+# Init your stack
 if [ "$1" == "init" ]; then
-    echo "INIT"
+    echo "Updating docker images to latest release"
+    $initcom pull
+    echo "WARNING: Removing old containers/volumes if any"
+    echo "(Sleeping some seconds to let you stop in case you made a mistake)"
+    sleep 7
+    $initcom stop
+    $initcom rm -f
+    docker volume rm irodsconf
+    echo "READY TO INIT"
     $initcom up icat
+
+# Freeze containers
 elif [ "$1" == "stop" ]; then
     echo "Freezing the stack"
     $initcom stop
+
+# Remove all containers
 elif [ "$1" == "remove" ]; then
     echo "REMOVE CONTAINERS"
     $initcom stop
     $initcom rm -f
+
+# Destroy everything: containers and data saved so far
 elif [ "$1" == "clean" ]; then
     echo "REMOVE DATA"
     echo "are you really sure?"
-    #sleep 5
+    sleep 5
+    $initcom stop
+    $initcom rm -f
     for volume in $volumes;
     do
         echo "Remove $volume volume"
         $vcom rm $volume
         sleep 1
     done
+
+# Normal boot
 else
     echo "(re)Boot Docker stack"
     $initcom stop
     $initcom rm -f
     docker-compose up -d iclient
+    echo "Stack is up:"
+    docker-compose ps
+    echo "If you need to access the python client container, please run:"
+    echo "$ docker exec -it eudatapi_iclient_1 bash"
 fi

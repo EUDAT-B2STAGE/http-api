@@ -15,7 +15,7 @@ sql:
 icat:
 
     # # Simple irods server
-    # image: cineca/icat
+    #image: cineca/icat
 
     ## OR
 
@@ -39,15 +39,15 @@ icat:
 #################################
 # GRAPHdb neo4j
 igraph:
-    image: neo4j/neo4j
+    image: neo4j
     #command: sleep infinity
     hostname: gdb
     environment:
-        NEO4J_AUTH: neo4j/eudat
+        NEO4J_AUTH: neo4j/eudatapi
     # volumes:
     #     - ./confs/neo4j:/conf
     ports:
-        - 8000:7474
+        - 9090:7474
 
 #################################
 # iRODS iCAT server for EUDAT B2safe
@@ -60,17 +60,17 @@ iclient:
         IRODS_USER: rods
         IRODS_ZONE: tempZone
     ports:
-        - 80:5000
-    working_dir: /code/rest-mock
+        - 8080:5000
+    working_dir: /code/project
     volumes:
         # Sql lite database
         - irodsrestlitedb:/dbs
         # Base code
-        - ./code:/code
+        - ./backend:/code/project
         # Rest API endpoints
-        - ./vanilla/apis:/code/rest-mock/restapi/resources/custom
+        - ./vanilla/apis:/code/project/restapi/resources/custom
         # Rest API configuration
-        - ./vanilla/specs:/code/rest-mock/confs/endpoints
+        - ./vanilla/specs:/code/project/confs/endpoints
     links:
         - icat:rodserver
         - igraph:gdb

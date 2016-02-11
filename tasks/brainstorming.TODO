@@ -12,9 +12,10 @@ DATA MODELS:
 UPDATES:
 
 ✔ Update docker images @done (16-02-09 22:15)
-☐ add commentjson to libraries
-☐ Fork rest-mock inside EUDAT team
-  ☐ Move it inside the repo root and call it 'backend'
+✔ add commentjson to libraries @done (16-02-11 13:02)
+✔ Improve init script @done (16-02-11 13:02)
+✔ Fork rest-mock inside EUDAT team @done (16-02-11 13:02)
+  ✔ Move it inside the repo root and call it 'backend' @done (16-02-11 13:02)
 
 LATER ON:
 
