@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """ SQLalchemy sanity checks """
@@ -64,7 +63,7 @@ def is_sane_database(Base, session):
                             errors = True
                         else:
                             # Check types
-                            dbcol = str(column.type) 
+                            dbcol = str(column.type)
                             schemacol = str(coltypes[column.key])
 
                             # Skip case of enums with specific name is an exception
