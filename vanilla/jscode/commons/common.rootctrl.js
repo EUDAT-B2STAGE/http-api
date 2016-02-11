@@ -107,6 +107,8 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
     $rootScope.menu = [];
     $rootScope.loaders = {};
     self.load = true;
+    // Init data for welcoming page
+    $scope.sections = {};
 
     // Init keys
     hotkeys.bindTo($scope)

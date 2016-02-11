@@ -11,8 +11,6 @@ angular.module('web')
             url: "/info/:section",
             views: {
                 "main@": {
-// Did not understood this very well
-                //"main@welcome": {
                     dir: 'blueprint',
                     templateUrl: 'section_info.html',
                 }

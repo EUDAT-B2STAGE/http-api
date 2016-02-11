@@ -57,8 +57,6 @@ function AdminController($scope, $log, admin, $stateParams)
   var self = this;
   //TABS
   self.selectedTab = 0;
-  // Init data for each tab
-  $scope.sections = {};
 
   self.onTabSelected = function (key) {
       $log.debug("Selected", self.selectedTab, key);
