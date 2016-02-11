@@ -16,30 +16,13 @@ Common functionalities:
   ☐ A list of required extra routes
     ☐ check if they exist
     ☐ if not create them with template "yet to implement"
-  ✔ json menu @done (16-02-08 10:40)
-      ☐ move welcome menu in there (main.controller)
-      ☐ remove intro_menu
-      ☐ remove WelcomeMenuController in common rootctrl
+✔ json menu @done (16-02-08 10:40)
+    ☐ move welcome menu in there (main.controller)
+    ☐ remove intro_menu
+    ☐ remove WelcomeMenuController in common rootctrl
 
 BUGS:
-✔ welcome spy padding? @done (16-01-26 15:11)
-✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
-✔ remove port from existing host in js @done (16-02-09 10:54)
-✔ Rdb connection is slow at startup, and API start before it's available @done (16-02-09 11:10)
- ✔ make a cycle to check and sleep @done (16-02-09 11:10)
- ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
-✘ HISTORY is broken?? @cancelled (16-02-10 07:59)
-✔ Fix all template inside the scope, use just root.templateSomething @done (16-02-10 08:06)
 ☐ Register page!
-✔ History broken for other services @done (16-02-11 11:00)
-   ✔ Split hotkeys service in two pieces: @done (16-02-11 08:17)
-    ✔ common @done (16-02-11 08:17)
-    ✔ custom @done (16-02-11 08:17)
-      ✔ fix the typo @done (16-02-11 08:10)
-    ✘ Search problem? @cancelled (16-02-11 11:00)
-✔ Welcome broken for other services @done (16-02-11 11:00)
- ✔ More button does not work @done (16-02-11 11:00)
- ✔ repeat html is not inside the common part @done (16-02-11 11:00)
 ☐ spy is probably broken in latest materialize? @toverifyagain
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
@@ -53,12 +36,12 @@ Images:
  https://github.com/jBenes/angular-imgcache.js/tree/master
   ☐ upload images
     ✔ API endpoint @done (16-02-09 08:21)
-    ☐ a dedicated button inside the dialog
+    ☐ a dedicated dialog inside common js code
     ☐ a list of images
-    ☐ you show only the path
-      ☐ and maybe thumbnail
+      ☐ you show only the path
+        ☐ and maybe thumbnail
   ☐ welcome parallax
-  ☐ welcome slider?
+  ☐ welcome slider
 
 Autocomplete:
   ☐ elasticsearch
@@ -479,3 +462,20 @@ COMPLETED:
   ✔ copy images in the same host @done (16-02-10 07:50)
   ✔ project name by hand @done (16-02-10 07:50)
   ✔ username/password set by hand @done (16-02-10 07:50)
+✔ welcome spy padding? @done (16-01-26 15:11)
+✔ ui router checks in root controller need to be done on statechangesuccess... @done (16-01-26 09:40)
+✔ remove port from existing host in js @done (16-02-09 10:54)
+✔ Rdb connection is slow at startup, and API start before it's available @done (16-02-09 11:10)
+ ✔ make a cycle to check and sleep @done (16-02-09 11:10)
+ ✔ does not work with jquery 2.2. Only 2.1 @done (16-02-01 14:59)
+✘ HISTORY is broken?? @cancelled (16-02-10 07:59)
+✔ Fix all template inside the scope, use just root.templateSomething @done (16-02-10 08:06)
+✔ History broken for other services @done (16-02-11 11:00)
+   ✔ Split hotkeys service in two pieces: @done (16-02-11 08:17)
+    ✔ common @done (16-02-11 08:17)
+    ✔ custom @done (16-02-11 08:17)
+      ✔ fix the typo @done (16-02-11 08:10)
+    ✘ Search problem? @cancelled (16-02-11 11:00)
+✔ Welcome broken for other services @done (16-02-11 11:00)
+ ✔ More button does not work @done (16-02-11 11:00)
+ ✔ repeat html is not inside the common part @done (16-02-11 11:00)
