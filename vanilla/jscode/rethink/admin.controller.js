@@ -97,6 +97,7 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
 
   self.resort = function (item, partFrom, partTo, indexFrom, indexTo) {
     var promises = [];
+    //console.log("TEST SECTIONS", $scope.sections);
     // For each section
     forEach($scope.sections, function(element, index) {
         // update position
