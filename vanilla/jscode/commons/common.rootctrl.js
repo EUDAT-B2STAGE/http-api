@@ -7,7 +7,7 @@ angular.module('web')
     .controller('HistorySidebarController', HistorySidebarController)
     .controller('ToolbarController', ToolbarController);
 
-function HistorySidebarController($scope, $log, $mdSidenav, $mdComponentRegistry, hotkeys, keyshortcuts, $timeout)
+function HistorySidebarController($scope, $rootScope, $log, $mdSidenav, $mdComponentRegistry, hotkeys, keyshortcuts, $timeout)
 {
     // Init controller and variables
     $log.debug("Sidebar history controller");
@@ -15,16 +15,21 @@ function HistorySidebarController($scope, $log, $mdSidenav, $mdComponentRegistry
     self.name = "mysnav";
     self.history = [];
 
+    self.loader = 'hside';
+
     // SIDEBAR STRANGE BEHAVIOUR
     //http://luxiyalu.com/angular-material-no-instance-found-for-handle-left/
+    // so it requires mdComponentRegistry
 
     self.open = function () {
+        $rootScope.loaders[self.loader] = true;
         // Open the bar
         $mdComponentRegistry.when(self.name).then(function(sidenav){
-          sidenav.open();
+            sidenav.open();
             // Load data with little timeout
             $timeout(function () {
                 self.history = getHistoryOfAllTimes();
+                $rootScope.loaders[self.loader] = false;
             }, timeToWait);
         });
     };
@@ -100,7 +105,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
 
     // Init the models
     $rootScope.menu = [];
-    $rootScope.loaders = [];
+    $rootScope.loaders = {};
     self.load = true;
 
     // Init keys
@@ -183,7 +188,7 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
         if (totalRoutingHistory.length > 1) {
             // 2. Skip saving this state if it's identical to the previous one
             var check = totalRoutingHistory[totalRoutingHistory.length-1];
-            console.log("Compare", check, lastRoute);
+            //console.log("Compare", check, lastRoute);
             skipAdding = (check.state.name == lastRoute.state.name &&
                 angular.equals(check.params, lastRoute.params))
         }
