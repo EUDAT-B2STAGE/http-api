@@ -29,13 +29,15 @@ BUGS:
 ✔ Fix all template inside the scope, use just root.templateSomething @done (16-02-10 08:06)
 ☐ Register page!
 ☐ History broken for other services
-   ☐ Split hotkeys service in two pieces:
-    ☐ common
-    ☐ custom
-      ☐ fix the typo
+   ✔ Split hotkeys service in two pieces: @done (16-02-11 08:17)
+    ✔ common @done (16-02-11 08:17)
+    ✔ custom @done (16-02-11 08:17)
+      ✔ fix the typo @done (16-02-11 08:10)
+    ☐ Search problem?
 ☐ Welcome broken for other services
  ☐ More button does not work
  ☐ repeat html is not inside the common part
+
 ☐ spy is probably broken in latest materialize? @toverifyagain
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
