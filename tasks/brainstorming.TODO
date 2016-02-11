@@ -19,12 +19,13 @@ UPDATES:
 
 LATER ON:
 
+☐ How to skip irods validation at startup? It needs internet connection...
 ☐ Save graphdb data into a volume
 ☐ update documentation
-☐ docker 1.10 and docker-compose 1.6 (new syntax: services and networks)
 ☐ Resource endpoint
   ☐ to put object to irods
 ☐ Swagger automatization
+☐ docker 1.10 and docker-compose 1.6 (new syntax: services and networks)
 
 FIRST STEPS:
 
