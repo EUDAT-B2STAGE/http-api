@@ -5,49 +5,35 @@ Guidelines
 - Python 3?
 - Swagger
 
-DATA MODELS:
+--- ✄ -----------------------
+
+FIRST STEPS:
+
+☐ First clone test
+  ☐ update documentation
+☐ How to skip irods validation at startup? It needs internet connection...
+☐ DATA MODELS
   schema -> https://www.dropbox.com/s/01582z9avmnllzo/EUDAT_datamodel.png?dl=0
   ☐ Nested collections in B2safe?
+  ☐ Save graphdb data into a volume
+    ☐ push graph data
+      https://github.com/EUDAT-B2SAFE/B2SAFE-core/blob/master/cmd/metadataManager.py
+☐ Swagger automatization
+☐ docker 1.10 and docker-compose 1.6 (new syntax: services and networks)
 
-UPDATES:
+IDEAS:
 
+ ☐ May use sqlacodegen to get the sqlalchemy models from irods postgres db
+http://stackoverflow.com/a/23786811
+ ☐ In this way we may easily admin the irods users with flask-admin?
+   ☐ Also use flask-security to use irods to get login?
+
+--- ✄ -----------------------
+
+Completed:
 ✔ Update docker images @done (16-02-09 22:15)
 ✔ add commentjson to libraries @done (16-02-11 13:02)
 ✔ Improve init script @done (16-02-11 13:02)
 ✔ Fork rest-mock inside EUDAT team @done (16-02-11 13:02)
   ✔ Move it inside the repo root and call it 'backend' @done (16-02-11 13:02)
-
-LATER ON:
-
-☐ How to skip irods validation at startup? It needs internet connection...
-☐ Save graphdb data into a volume
-☐ update documentation
-☐ Resource endpoint
-  ☐ to put object to irods
-☐ Swagger automatization
-☐ docker 1.10 and docker-compose 1.6 (new syntax: services and networks)
-
-FIRST STEPS:
-
-☐ clone (graph) code inside icat server too
-  ✔ copy models inside module @done (15-12-21 23:57)
-☐ script to push data
-example in
-https://github.com/EUDAT-B2SAFE/B2SAFE-core/blob/master/cmd/metadataManager.py
-  ☐ args: DATAOBJ PID [METADATA]
-  ☐ test icat irule with epic handle?
-  ☐ manually insert dataobj + pid with irule
-  ☐ api: search pid via graphdb models
-
-REST authentication:
-
-  ☐ Not yet pluggable into rest-mock
-    ☐ how can we make it so?
-
---- ✄ -----------------------
-IDEAS:
- ☐ May use sqlacodegen to get the sqlalchemy models from irods postgres db
-http://stackoverflow.com/a/23786811
- ☐ In this way we may easily admin the irods users with flask-admin?
-   ☐ Also use flask-security to use irods to get login?
---- ✄ -----------------------
+✔ Add submodule init check @done (16-02-12 08:19)

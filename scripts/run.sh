@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Confs
+subdir="backend"
 initcom="docker-compose -f docker-compose.yml -f init.yml"
 volumes="irodsconf irodshome irodsresc eudathome irodsrestlitedb sqldata"
 
@@ -14,6 +15,11 @@ do
         exit 1
     fi
 done
+if [ ! -d "backend" ]; then
+    echo "Inizialitazion for the http-api-base submodule"
+    git submodule init
+    git submodule update
+fi
 
 # Check if init has been executed
 vcom="docker volume"
@@ -70,9 +76,12 @@ elif [ "$1" == "clean" ]; then
 
 # Normal boot
 else
+    if [ "$1" != "graceful" ]; then
+        echo "Clean previous containers"
+        $initcom stop
+        $initcom rm -f
+    fi
     echo "(re)Boot Docker stack"
-    $initcom stop
-    $initcom rm -f
     docker-compose up -d iclient
     echo "Stack is up:"
     docker-compose ps
