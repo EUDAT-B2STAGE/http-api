@@ -1,9 +1,16 @@
 #!/bin/bash
 
+echo "# ############################################ #"
+echo -e "\t\tEUDAT HTTP API development"
+echo "# ############################################ #"
+echo ""
+
+#####################
 # Confs
 subdir="backend"
 initcom="docker-compose -f docker-compose.yml -f init.yml"
 volumes="irodsconf irodshome irodsresc eudathome irodsrestlitedb sqldata"
+#####################
 
 # Check prerequisites
 coms="docker docker-compose"
@@ -15,7 +22,9 @@ do
         exit 1
     fi
 done
-if [ ! -d "backend" ]; then
+if [ "$(ls -A backend)" ]; then
+    echo "Submodule already exists"
+else
     echo "Inizialitazion for the http-api-base submodule"
     git submodule init
     git submodule update
@@ -48,6 +57,23 @@ if [ "$1" == "init" ]; then
     docker volume rm irodsconf
     echo "READY TO INIT"
     $initcom up icat
+    if [ "$?" == "0" ]; then
+        echo ""
+        echo "Your project is ready to be used."
+        echo "Everytime you need to start just run:"
+        echo "\$ $0"
+    fi
+
+# Update your code
+elif [ "$1" == "update" ]; then
+    echo "Updating docker images to latest release"
+    $initcom pull
+    echo "Pulling main repo"
+    git pull
+    echo "Pulling submodule"
+    cd backend
+    git pull origin master
+    echo "Done"
 
 # Freeze containers
 elif [ "$1" == "stop" ]; then
@@ -86,5 +112,5 @@ else
     echo "Stack is up:"
     docker-compose ps
     echo "If you need to access the python client container, please run:"
-    echo "$ docker exec -it eudatapi_iclient_1 bash"
+    echo "$ docker exec -it httpapi_iclient_1 bash"
 fi

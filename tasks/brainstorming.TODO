@@ -7,6 +7,10 @@ Guidelines
 
 --- ✄ -----------------------
 
+Run script:
+  ✔ verify empty dir for backend @done (16-02-12 12:13)
+  ✔ update action @done (16-02-12 12:13)
+
 FIRST STEPS:
 
 ☐ First clone test
@@ -20,6 +24,10 @@ FIRST STEPS:
       https://github.com/EUDAT-B2SAFE/B2SAFE-core/blob/master/cmd/metadataManager.py
 ☐ Swagger automatization
 ☐ docker 1.10 and docker-compose 1.6 (new syntax: services and networks)
+
+UNITTEST:
+  https://talkpython.fm/episodes/show/45/the-python-testing-column-now-a-thing
+  http://pythontesting.net/podcast/coverage-ned-batchelder/
 
 IDEAS:
 
