@@ -109,8 +109,12 @@ else
     fi
     echo "(re)Boot Docker stack"
     docker-compose up -d iclient
-    echo "Stack is up:"
+    status="$?"
+    echo "Stack status:"
     docker-compose ps
-    echo "If you need to access the python client container, please run:"
-    echo "$ docker exec -it httpapi_iclient_1 bash"
+    if [ "$status" == "0" ]; then
+        echo "If you need to access the python client container, please run:"
+        container_name=`docker ps | grep iclient | awk '{print \$NF}'`
+        echo "$ docker exec -it $container_name bash"
+    fi
 fi
