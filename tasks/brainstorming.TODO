@@ -7,14 +7,13 @@ Guidelines
 
 --- ✄ -----------------------
 
-Run script:
-  ✔ verify empty dir for backend @done (16-02-12 12:13)
-  ✔ update action @done (16-02-12 12:13)
-
 FIRST STEPS:
 
-✔ First clone test @done (16-02-15 14:39)
-  ☐ update documentation
+  ☐ irods icommands test
+    ☐ keep an irodsenv for the rods user via os env variables
+    ☐ iadmin
+    https://docs.irods.org/master/icommands/administrator/
+☐ update documentation
 ☐ How to skip irods validation at startup? It needs internet connection...
 ☐ DATA MODELS
   schema -> https://www.dropbox.com/s/01582z9avmnllzo/EUDAT_datamodel.png?dl=0
@@ -45,3 +44,5 @@ Completed:
 ✔ Fork rest-mock inside EUDAT team @done (16-02-11 13:02)
   ✔ Move it inside the repo root and call it 'backend' @done (16-02-11 13:02)
 ✔ Add submodule init check @done (16-02-12 08:19)
+✔ verify empty dir for backend @done (16-02-12 12:13)
+✔ update action @done (16-02-12 12:13)
