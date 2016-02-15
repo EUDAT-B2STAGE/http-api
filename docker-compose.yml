@@ -44,6 +44,8 @@ igraph:
     hostname: gdb
     environment:
         NEO4J_AUTH: neo4j/eudatapi
+      #NEO4J_HEAP_MEMORY
+      #NEO4J_CACHE_MEMORY
     # volumes:
     #     - ./confs/neo4j:/conf
     ports:
@@ -52,10 +54,15 @@ igraph:
 #################################
 # iRODS iCAT server for EUDAT B2safe
 iclient:
-    image: cineca/ipyclient
     hostname: api
+    #image: cineca/ipyclient
+    #image: minipy
+    image: pdonorio/pyservs
+
     command: sleep infinity
+    #command: sleep 1234567890
     #command: python run.py --debug
+
     environment:
         IRODS_USER: rods
         IRODS_ZONE: tempZone
