@@ -12,10 +12,23 @@ function SubmissionController($scope, $log)
   var self = this;
   $log.debug("Submission controller");
 
-  self.images = [];
+  self.images = [
+    "image1",
+    "image2",
+    "image3",
+    "image4",
+  ];
+  $scope.selectedStep = 'fixed';
+  self.steps = {
+    "fixed" : {
+        "some": "text",
+        "other": 1,
+        "images": [],
+    }
+  };
 
-  self.addImage = function () {
-    self.images.push("new select" + self.images.length);
+  self.addImage = function (index) {
+    self.steps[index].images.push("new select" + self.images.length);
   }
 
 }

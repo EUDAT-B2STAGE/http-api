@@ -8,9 +8,35 @@
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">Single step</span>
-          <span class="md-subhead">Step description: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea incidunt nulla est nobis nesciunt. Alias, quasi! Temporibus reiciendis, provident sunt vero quibusdam fuga excepturi. Consectetur sit dolor dolorum facere dignissimos.</span>
+          <span class="md-subhead">Step description:
+          <i>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea incidunt nulla est nobis nesciunt. Alias, quasi! Temporibus reiciendis, provident sunt vero quibusdam fuga excepturi. Consectetur sit dolor dolorum facere dignissimos.
+          </i>
+          </span>
         </md-card-title-text>
       </md-card-title>
+
+      <md-card-content> <p>
+<!-- CONTENT -->
+
+<a class="btn-floating waves-effect waves-light red"
+   ng-click="sub.addImage(selectedStep)">
+   <i class="material-icons">add</i>
+</a>
+
+<ul>
+    <li ng-repeat="image in sub.steps[selectedStep].images">
+        Image: {{image}}
+        <md-input-container>
+          <md-select ng-model="sub.nomodel" placeholder="Select a state">
+            <md-option ng-value="opt" ng-repeat="opt in sub.images">{{ opt }}</md-option>
+          </md-select>
+        </md-input-container>
+    </li>
+</ul>
+
+<!-- CONTENT -->
+      </p> </md-card-content>
 
       <md-card-actions layout="row" layout-align="start center">
         <md-button class="md-primary">Edit</md-button>
@@ -21,28 +47,6 @@
           </md-button>
         </md-card-icon-actions>
       </md-card-actions>
-
-      <md-card-content>
-
-<p>
-
-FORM
-Card content
-
-<a class="btn-floating waves-effect waves-light red"
-   ng-click="sub.addImage()">
-   <i class="material-icons">add</i>
-</a>
-
-<ul>
-    <li ng-repeat="image in sub.images">
-        Image: {{image}}
-    </li>
-</ul>
-
-</p>
-
-      </md-card-content>
 
     </md-card>
 </div>
