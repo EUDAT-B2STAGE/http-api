@@ -171,6 +171,7 @@ function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $s
       controller: DialogController,
       templateUrl: blueprintTemplateDir + 'add_section.html',
       parent: angular.element(document.body),
+      // How to pass data to the dialog
       locals: {
         sectionModels: self.sectionModels,
         modelId: id,

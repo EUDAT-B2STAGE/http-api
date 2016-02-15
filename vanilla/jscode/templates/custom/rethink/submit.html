@@ -1,3 +1,63 @@
-<div class="container">
-Work in progress :)
+<div class="container"
+    ng-controller="SubmissionController as sub">
+
+<div class="row">
+  <nav>
+    <div ng-class="toolbarColor + 'lighten-1'" class="nav-wrapper" >
+      <div class="col s12">
+        <a href="#!" class="breadcrumb">First</a>
+        <a href="#!" class="breadcrumb">Second</a>
+        <a href="#!" class="breadcrumb">Third</a>
+      </div>
+    </div>
+  </nav>
+</div>
+
+    <md-card>
+
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">Single step</span>
+          <span class="md-subhead">Step description:
+          <i>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea incidunt nulla est nobis nesciunt. Alias, quasi! Temporibus reiciendis, provident sunt vero quibusdam fuga excepturi. Consectetur sit dolor dolorum facere dignissimos.
+          </i>
+          </span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content> <p>
+<!-- CONTENT -->
+
+<a class="btn-floating waves-effect waves-light red"
+   ng-click="sub.addImage(selectedStep)">
+   <i class="material-icons">add</i>
+</a>
+
+<ul>
+    <li ng-repeat="image in sub.steps[selectedStep].images">
+        Image: {{image}}
+        <md-input-container>
+          <md-select md-on-close="sub.selectImage()"
+            ng-model="sub.nomodel" placeholder="Select a state">
+            <md-option ng-value="opt" ng-repeat="opt in sub.images">{{ opt }}</md-option>
+          </md-select>
+        </md-input-container>
+    </li>
+</ul>
+
+<!-- CONTENT -->
+      </p> </md-card-content>
+
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button class="md-primary">Edit</md-button>
+        <md-button class="md-accent">Delete</md-button>
+        <md-card-icon-actions>
+          <md-button class="md-icon-button" aria-label="icon">
+            <md-icon md-svg-icon="icon"></md-icon>
+          </md-button>
+        </md-card-icon-actions>
+      </md-card-actions>
+
+    </md-card>
 </div>
