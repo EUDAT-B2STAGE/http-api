@@ -1,14 +1,17 @@
-<div class="container">
+<div class="container"
+    ng-controller="SubmissionController as sub">
 
-BREADCRUMB?
+<h3> BREADCRUMB here </h3>
 
     <md-card>
+
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">Single step</span>
           <span class="md-subhead">Step description: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea incidunt nulla est nobis nesciunt. Alias, quasi! Temporibus reiciendis, provident sunt vero quibusdam fuga excepturi. Consectetur sit dolor dolorum facere dignissimos.</span>
         </md-card-title-text>
       </md-card-title>
+
       <md-card-actions layout="row" layout-align="start center">
         <md-button class="md-primary">Edit</md-button>
         <md-button class="md-accent">Delete</md-button>
@@ -18,12 +21,28 @@ BREADCRUMB?
           </md-button>
         </md-card-icon-actions>
       </md-card-actions>
-      <md-card-content>
-        <p>
-         FORM
-         Card content
-        </p>
-      </md-card-content>
-    </md-card>
 
+      <md-card-content>
+
+<p>
+
+FORM
+Card content
+
+<a class="btn-floating waves-effect waves-light red"
+   ng-click="sub.addImage()">
+   <i class="material-icons">add</i>
+</a>
+
+<ul>
+    <li ng-repeat="image in sub.images">
+        Image: {{image}}
+    </li>
+</ul>
+
+</p>
+
+      </md-card-content>
+
+    </md-card>
 </div>
