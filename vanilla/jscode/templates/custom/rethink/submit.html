@@ -38,7 +38,8 @@
     <li ng-repeat="image in sub.steps[selectedStep].images">
         Image: {{image}}
         <md-input-container>
-          <md-select ng-model="sub.nomodel" placeholder="Select a state">
+          <md-select md-on-close="sub.selectImage()"
+            ng-model="sub.nomodel" placeholder="Select a state">
             <md-option ng-value="opt" ng-repeat="opt in sub.images">{{ opt }}</md-option>
           </md-select>
         </md-input-container>
