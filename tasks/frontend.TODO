@@ -20,9 +20,9 @@ Common functionalities:
     ☐ move welcome menu in there (main.controller)
     ☐ remove intro_menu
     ☐ remove WelcomeMenuController in common rootctrl
+☐ Register page
 
 BUGS:
-☐ Register page!
 ☐ spy is probably broken in latest materialize? @toverifyagain
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
@@ -32,14 +32,14 @@ BUGS:
 ☐ topbar menu for mobile
 
 Images:
-  ☐ image cache
- https://github.com/jBenes/angular-imgcache.js/tree/master
   ☐ upload images
     ✔ API endpoint @done (16-02-09 08:21)
     ☐ a dedicated dialog inside common js code
     ☐ a list of images
       ☐ you show only the path
         ☐ and maybe thumbnail
+  ☐ image cache
+ https://github.com/jBenes/angular-imgcache.js/tree/master
   ☐ welcome parallax
   ☐ welcome slider
 
