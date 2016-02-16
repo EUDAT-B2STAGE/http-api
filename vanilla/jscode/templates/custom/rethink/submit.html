@@ -30,10 +30,12 @@
       <md-card-content> <p>
 <!-- CONTENT -->
 
-<a class="btn-floating waves-effect waves-light red"
+<md-button class="red white-text"
    ng-click="sub.addImage(selectedStep)">
-   <i class="material-icons">add</i>
-</a>
+   <span layout="row" layout-align="center center">
+       Add image <i class="material-icons">add</i>
+   </span>
+</md-button>
 
 <ul>
     <li ng-repeat="image in sub.steps[selectedStep].images track by $index">

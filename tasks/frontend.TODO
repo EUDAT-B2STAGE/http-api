@@ -7,10 +7,41 @@ git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
 http://stackoverflow.com/a/25647714/2114395
 --- ✄ -----------------------
 
-NEEDED:
-  - WelcomeController
-  - MenuInAppController
-  - NameController?
+BUGS:
+☐ spy is probably broken in latest materialize? @toverifyagain
+☐ chips with bigger div to show results
+☐ table are not same size on details
+☐ extrait not complete list inside the details page
+☐ topbar menu for mobile
+
+Images:
+  ☐ upload images
+    ✔ API endpoint @done (16-02-09 08:21)
+    ☐ a dedicated dialog inside common js code
+  ☐ associate image
+    ☐ a card
+      ☐ list of images (not associated)
+        ☐ list files on fs
+        ☐ list images with one rethinkdb query
+      ☐ path/name + thumbnail
+  ☐ welcome parallax
+  ☐ welcome slider
+  ☐ image cache
+ https://github.com/jBenes/angular-imgcache.js/tree/master
+
+SUBMIT:
+ ☐ Steps are upside down
+  ✔ Guide the submission with breadcrumbs @done (16-02-16 15:14)
+  ☐ the document is a draft until the last step is completed (estratto)
+  ☐ draft is a separated rethinkdb resource, related to the user
+    ☐ automatically relate the user from the token to its drafts
+      ☐ how to get user from token inside the API?
+  ☐ transcriptions size inside db? or post/get method injection?
+  ☐ Submission skeleton with collapsible or collections
+  ☐ Submission steps
+  http://materializecss.com/collections.html
+ ☐ good example for transcription edit
+ https://material.angularjs.org/latest/demo/menuBar
 
 Common functionalities:
   ☐ A list of required extra routes
@@ -21,27 +52,6 @@ Common functionalities:
     ☐ remove intro_menu
     ☐ remove WelcomeMenuController in common rootctrl
 ☐ Register page
-
-BUGS:
-☐ spy is probably broken in latest materialize? @toverifyagain
-☐ chips with bigger div to show results
-☐ table are not same size on details
-☐ extrait not complete list inside the details page
-☐ mostra nella pagina di ricerca
-☐ mostra nella pagina di dettaglio
-☐ topbar menu for mobile
-
-Images:
-  ☐ upload images
-    ✔ API endpoint @done (16-02-09 08:21)
-    ☐ a dedicated dialog inside common js code
-    ☐ a list of images
-      ☐ you show only the path
-        ☐ and maybe thumbnail
-  ☐ image cache
- https://github.com/jBenes/angular-imgcache.js/tree/master
-  ☐ welcome parallax
-  ☐ welcome slider
 
 Autocomplete:
   ☐ elasticsearch
@@ -122,20 +132,6 @@ DETAILS:
  ☐ select language on transcription
  ☐ aggiungere lista dettagli (step 4) sotto lo scrollspy
 
-SUBMIT:
-  ☐ Guide the submission with breadcrumbs
-  http://materializecss.com/breadcrumbs.html
- ☐ Steps are upside down
- ☐ Go from the biggest step to the leaf, as a branch
-   ☐ breadcrumbs show the progress
-
-  ☐ transcriptions size inside db? or post/get method injection?
-  ☐ Submission skeleton with collapsible or collections
-  ☐ Submission steps
-  http://materializecss.com/collections.html
- ☐ good example for transcription edit
- https://material.angularjs.org/latest/demo/menuBar
-
 OTHER:
   ☐ one time binding
  <li ng-repeat=“item in ::vastArray”>{{ ::item.velocity }}</li>
@@ -179,6 +175,8 @@ VOCABULARY:
         ☐ Excel load
         ☐ web site insert
       ☐ step list angular inline filter
+
+ https://github.com/graphql-python/graphene
 
 HTTPS:
   ☐ nginx proxy
