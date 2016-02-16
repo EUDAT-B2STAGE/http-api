@@ -30,12 +30,9 @@
       </md-card-title>
 
       <md-card-content layout="column" "start start">
-
-  <md-list-item
-    ng-repeat="image in sub.steps[selectedStep].images track by $index"
-    > {{image}}
-    </md-list-item>
-
+        <md-list-item ng-repeat="image in sub.steps[selectedStep].images">
+            {{image}}
+        </md-list-item>
         <md-button class="red white-text" ng-hide="sub.imageCard"
            ng-click="sub.addImage(selectedStep)">
            <span layout="row" layout-align="center center">
@@ -54,11 +51,6 @@
         <md-button class="md-primary">Edit</md-button>
         <md-button class="md-warn">Save</md-button>
         <md-button class="md-accent">Delete</md-button>
-        <md-card-icon-actions>
-          <md-button class="md-icon-button" aria-label="icon">
-            <md-icon md-svg-icon="icon"></md-icon>
-          </md-button>
-        </md-card-icon-actions>
       </md-card-actions>
 
     </md-card>
@@ -81,7 +73,14 @@
           </md-list-item>
         </md-list>
       </md-card-content>
-      <md-card-actions> </md-card-actions>
+      <md-card-actions layout="row" layout-align="center center">
+        <md-button class="orange white-text" ng-click="">
+           <span layout="row" layout-align="center center">
+               <i class="material-icons">add</i>
+               upload a new file
+           </span>
+        </md-button>
+      </md-card-actions>
     </md-card>
 
    </div>
