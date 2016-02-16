@@ -1,17 +1,18 @@
-<div class="container"
+<div
     ng-controller="SubmissionController as sub">
 
-<div class="row">
   <nav>
-    <div ng-class="toolbarColor + 'lighten-1'" class="nav-wrapper" >
-      <div class="col s12">
+    <div ng-class="toolbarColor + 'lighten-1'"
+        class="nav-wrapper" layout="row" layout-align="center center" >
+
+        <a href="#!" class="breadcrumb">Submission</a>
         <a href="#!" class="breadcrumb">First</a>
         <a href="#!" class="breadcrumb">Second</a>
         <a href="#!" class="breadcrumb">Third</a>
-      </div>
     </div>
   </nav>
-</div>
+
+  <div class="container" style="padding-top: 20px;">
 
     <md-card>
 
@@ -35,12 +36,14 @@
 </a>
 
 <ul>
-    <li ng-repeat="image in sub.steps[selectedStep].images">
+    <li ng-repeat="image in sub.steps[selectedStep].images track by $index">
         Image: {{image}}
         <md-input-container>
           <md-select md-on-close="sub.selectImage()"
-            ng-model="sub.nomodel" placeholder="Select a state">
-            <md-option ng-value="opt" ng-repeat="opt in sub.images">{{ opt }}</md-option>
+            ng-model="sub.steps[selectedStep].images[$index]"
+            placeholder="Select your image">
+            <md-option ng-value="opt" ng-repeat="opt in sub.images"
+                >{{ opt }}</md-option>
           </md-select>
         </md-input-container>
     </li>
@@ -60,4 +63,5 @@
       </md-card-actions>
 
     </md-card>
+  </div>
 </div>

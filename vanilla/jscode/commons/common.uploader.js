@@ -6,10 +6,10 @@ angular.module('web')
 
 function UploadController($scope, $log, $mdDialog)
 {
+
     // Init controller
     $log.debug("Uploader controller", $stateParams);
     var self = this;
-
 
     // Options
     var dialogOptions =

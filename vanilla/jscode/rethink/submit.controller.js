@@ -28,11 +28,11 @@ function SubmissionController($scope, $log)
   };
 
   self.addImage = function (index) {
-    self.steps[index].images.push("new select" + self.images.length);
+    self.steps[index].images.push("Unknown");
   }
 
   self.selectImage = function () {
-        console.log("TEST");
+        console.log("TEST", self.steps[$scope.selectedStep].images);
   }
 
 }
