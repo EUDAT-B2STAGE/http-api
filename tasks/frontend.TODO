@@ -15,15 +15,15 @@ BUGS:
 ☐ topbar menu for mobile
 
 Images:
-  ☐ upload images
-    ✔ API endpoint @done (16-02-09 08:21)
-    ☐ a dedicated dialog inside common js code
   ☐ associate image
-    ☐ a card
+    ☐ a card that appears only when pressing the add button
       ☐ list of images (not associated)
         ☐ list files on fs
         ☐ list images with one rethinkdb query
       ☐ path/name + thumbnail
+  ☐ upload images
+    ✔ API endpoint @done (16-02-09 08:21)
+    ☐ a dedicated dialog inside common js code
   ☐ welcome parallax
   ☐ welcome slider
   ☐ image cache

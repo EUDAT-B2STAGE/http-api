@@ -12,30 +12,59 @@
     </div>
   </nav>
 
-  <div class="container" style="padding-top: 20px;">
+<div layout-padding layout-wrap
+  style="padding-top: 20px;"
+    layout="row">
 
+   <div flex-xs flex-gt-xs="50" layout="column">
     <md-card>
-
       <md-card-title>
         <md-card-title-text>
           <span class="md-headline">Single step</span>
-          <span class="md-subhead">Step description:
+          <span class="md-subhead">
+          Step description:
           <i>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea incidunt nulla est nobis nesciunt. Alias, quasi! Temporibus reiciendis, provident sunt vero quibusdam fuga excepturi. Consectetur sit dolor dolorum facere dignissimos.
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          Ea incidunt nulla est nobis nesciunt. Alias, quasi!
           </i>
           </span>
         </md-card-title-text>
       </md-card-title>
 
-      <md-card-content> <p>
-<!-- CONTENT -->
+      <md-card-content layout="column" "start start">
+        <md-button class="red white-text"
+           ng-click="sub.addImage(selectedStep)">
+           <span layout="row" layout-align="center center">
+               Add image <i class="material-icons">add</i>
+           </span>
+        </md-button>
+      </md-card-content>
 
-<md-button class="red white-text"
-   ng-click="sub.addImage(selectedStep)">
-   <span layout="row" layout-align="center center">
-       Add image <i class="material-icons">add</i>
-   </span>
-</md-button>
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button class="md-primary">Edit</md-button>
+        <md-button class="md-warn">Save</md-button>
+        <md-button class="md-accent">Delete</md-button>
+        <md-card-icon-actions>
+          <md-button class="md-icon-button" aria-label="icon">
+            <md-icon md-svg-icon="icon"></md-icon>
+          </md-button>
+        </md-card-icon-actions>
+      </md-card-actions>
+
+    </md-card>
+   </div>
+
+   <div flex-xs flex-gt-xs="45" layout="column">
+    <md-card>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">Associate pages</span>
+          <span class="md-subhead">Select the image(s)</span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content>
+<!-- CONTENT -->
 
 <ul>
     <li ng-repeat="image in sub.steps[selectedStep].images track by $index">
@@ -50,20 +79,12 @@
         </md-input-container>
     </li>
 </ul>
-
 <!-- CONTENT -->
-      </p> </md-card-content>
-
-      <md-card-actions layout="row" layout-align="start center">
-        <md-button class="md-primary">Edit</md-button>
-        <md-button class="md-accent">Delete</md-button>
-        <md-card-icon-actions>
-          <md-button class="md-icon-button" aria-label="icon">
-            <md-icon md-svg-icon="icon"></md-icon>
-          </md-button>
-        </md-card-icon-actions>
-      </md-card-actions>
-
+      </md-card-content>
+      <md-card-actions> </md-card-actions>
     </md-card>
-  </div>
+   </div>
+
+</div>
+
 </div>
