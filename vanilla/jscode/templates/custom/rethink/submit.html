@@ -1,5 +1,4 @@
-<div
-    ng-controller="SubmissionController as sub">
+<div ng-controller="SubmissionController as sub">
 
   <nav>
     <div ng-class="toolbarColor + 'lighten-1'"
@@ -12,11 +11,10 @@
     </div>
   </nav>
 
-<div layout-padding layout-wrap
-  style="padding-top: 20px;"
-    layout="row">
+ <div layout-padding layout-wrap style="padding-top: 20px;"
+    layout="row" layout-align="center start">
 
-   <div flex-xs flex-gt-xs="50" layout="column">
+   <div flex-xs flex-gt-xs="60" layout="column">
     <md-card>
       <md-card-title>
         <md-card-title-text>
@@ -32,10 +30,22 @@
       </md-card-title>
 
       <md-card-content layout="column" "start start">
-        <md-button class="red white-text"
+
+  <md-list-item
+    ng-repeat="image in sub.steps[selectedStep].images track by $index"
+    > {{image}}
+    </md-list-item>
+
+        <md-button class="red white-text" ng-hide="sub.imageCard"
            ng-click="sub.addImage(selectedStep)">
            <span layout="row" layout-align="center center">
-               Add image <i class="material-icons">add</i>
+               Add image from available files
+               <i class="material-icons">add</i>
+           </span>
+        </md-button>
+        <md-button class="blue white-text" ng-show="sub.imageCard">
+           <span layout="row" layout-align="center center">
+               Select your image from the side card
            </span>
         </md-button>
       </md-card-content>
@@ -54,7 +64,7 @@
     </md-card>
    </div>
 
-   <div flex-xs flex-gt-xs="45" layout="column">
+   <div flex-xs flex-gt-xs="35" layout="column" ng-if="sub.imageCard">
     <md-card>
       <md-card-title>
         <md-card-title-text>
@@ -64,27 +74,17 @@
       </md-card-title>
 
       <md-card-content>
-<!-- CONTENT -->
-
-<ul>
-    <li ng-repeat="image in sub.steps[selectedStep].images track by $index">
-        Image: {{image}}
-        <md-input-container>
-          <md-select md-on-close="sub.selectImage()"
-            ng-model="sub.steps[selectedStep].images[$index]"
-            placeholder="Select your image">
-            <md-option ng-value="opt" ng-repeat="opt in sub.images"
-                >{{ opt }}</md-option>
-          </md-select>
-        </md-input-container>
-    </li>
-</ul>
-<!-- CONTENT -->
+        <md-list ng-cloak>
+          <md-list-item ng-repeat="image in sub.images"
+            class="secondary-button-padding" ng-click="sub.selectImage(image)">
+                {{image}}
+          </md-list-item>
+        </md-list>
       </md-card-content>
       <md-card-actions> </md-card-actions>
     </md-card>
+
    </div>
 
-</div>
-
+ </div>
 </div>
