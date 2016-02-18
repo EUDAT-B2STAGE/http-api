@@ -8,7 +8,7 @@ from ..base import ExtendedApiResource
 from .. import decorators as decorate
 
 from ..services.neo4j import migraph
-from ..services.irodsclient import ICommands
+from ..services.irodsclient import icom
 
 # AUTH
 # from confs import config
@@ -24,7 +24,6 @@ class PidHandle(ExtendedApiResource):
     @decorate.apimethod
     def get(self):
         """ Get pid """
-        icom = ICommands()
         logger.warning("irods call %s", icom.list())
         logger.warning("graph call %s", migraph.other())
         query = "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"

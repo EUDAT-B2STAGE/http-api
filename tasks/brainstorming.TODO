@@ -9,22 +9,23 @@ Guidelines
 
 FIRST STEPS:
 
+  ☐ irods admin iinit at api startup
   ☐ irods icommands test
-    ☐ keep an irodsenv for the rods user via os env variables
     ☐ iadmin
     https://docs.irods.org/master/icommands/administrator/
 ☐ update documentation
-☐ How to skip irods validation at startup? It needs internet connection...
 ☐ DATA MODELS
   schema -> https://www.dropbox.com/s/01582z9avmnllzo/EUDAT_datamodel.png?dl=0
   ☐ Nested collections in B2safe?
   ☐ Save graphdb data into a volume
     ☐ push graph data
       https://github.com/EUDAT-B2SAFE/B2SAFE-core/blob/master/cmd/metadataManager.py
+☐ How to skip irods validation at startup? It needs internet connection...
 ☐ Swagger automatization
 ☐ docker 1.10 and docker-compose 1.6 (new syntax: services and networks)
 
 UNITTEST:
+
   https://talkpython.fm/episodes/show/45/the-python-testing-column-now-a-thing
   http://pythontesting.net/podcast/coverage-ned-batchelder/
 
