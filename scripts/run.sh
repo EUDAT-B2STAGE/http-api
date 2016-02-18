@@ -8,6 +8,7 @@ echo ""
 #####################
 # Confs
 subdir="backend"
+restcontainer="rest"
 initcom="docker-compose -f docker-compose.yml -f init.yml"
 volumes="irodsconf irodshome irodsresc eudathome irodsrestlitedb sqldata"
 #####################
@@ -108,13 +109,13 @@ else
         $initcom rm -f
     fi
     echo "(re)Boot Docker stack"
-    docker-compose up -d iclient
+    docker-compose up -d $restcontainer
     status="$?"
     echo "Stack status:"
     docker-compose ps
     if [ "$status" == "0" ]; then
         echo "If you need to access the python client container, please run:"
-        container_name=`docker ps | grep iclient | awk '{print \$NF}'`
+        container_name=`docker ps | grep $restcontainer | awk '{print \$NF}'`
         echo "$ docker exec -it $container_name bash"
     fi
 fi

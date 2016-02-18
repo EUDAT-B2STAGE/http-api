@@ -38,7 +38,7 @@ icat:
 
 #################################
 # GRAPHdb neo4j
-igraph:
+graphdb:
     image: neo4j
     #command: sleep infinity
     hostname: gdb
@@ -53,7 +53,7 @@ igraph:
 
 #################################
 # iRODS iCAT server for EUDAT B2safe
-iclient:
+rest:
     hostname: api
     #image: cineca/ipyclient
     #image: minipy
@@ -80,7 +80,7 @@ iclient:
         - ./vanilla/specs:/code/project/confs/endpoints
     links:
         - icat:rodserver
-        - igraph:gdb
+        - graphdb:gdb
 
 #################################
 
