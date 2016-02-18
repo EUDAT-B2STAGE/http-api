@@ -16,8 +16,12 @@ BUGS:
 ☐ table are not same size on details
 ☐ extrait not complete list inside the details page
 ☐ topbar menu for mobile
+☐ configurations
+http://rochacbruno.github.io/dynaconf/
 
 Images:
+ ☐ nginx
+  http://charlesleifer.com/blog/nginx-a-caching-thumbnailing-reverse-proxying-image-server-/
   ☐ associate image
     ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
       ☐ list of images (not associated)
