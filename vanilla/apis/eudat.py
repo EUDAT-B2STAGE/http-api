@@ -24,8 +24,8 @@ class PidHandle(ExtendedApiResource):
     @decorate.apimethod
     def get(self):
         """ Get pid """
-        logger.warning("irods call %s", icom.list())
-        logger.warning("graph call %s", migraph.other())
+        logger.info("graph call %s", migraph.other())
+        logger.info("irods call %s", icom.list())
         query = "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
         migraph.cypher(query)
         return self.response('Hello PID!')
