@@ -9,10 +9,14 @@ Guidelines
 
 FIRST STEPS:
 
-  ☐ irods admin iinit at api startup
+  ✔ irods admin iinit at api startup @done (16-02-18 23:56)
   ☐ irods icommands test
     ☐ iadmin
     https://docs.irods.org/master/icommands/administrator/
+    iadmin mkuser guest rodsuser
+    export clientUserName=guest
+    certificates:
+     iadmin aua newuser '/DC=org/DC=example/O=Example/OU=People/CN=New User/CN=UID:drexample'
 ☐ update documentation
 ☐ DATA MODELS
   schema -> https://www.dropbox.com/s/01582z9avmnllzo/EUDAT_datamodel.png?dl=0
