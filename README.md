@@ -33,6 +33,22 @@ root@icl:/code#
 ### Develop from here!
 ```
 
+## Enable only irods server
+
+Note: if you want to use normal irods instead of B2safe service,
+change the image name inside `docker-compose.yml`.
+
+Then:
+
+```bash
+# Clone repo
+git clone ...
+# Init services
+scripts/run.sh init
+# Bring up only irods and postgres
+docker-compose up -d icat
+```
+
 ## Documentation
 
 For a more detailed explanation and some deep understanding:
