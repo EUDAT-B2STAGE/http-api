@@ -23,6 +23,8 @@ FIRST STEPS:
     certificates:
      iadmin aua newuser '/DC=org/DC=example/O=Example/OU=People/CN=New User/CN=UID:drexample'
 ☐ update documentation
+ ☐ profiling
+ https://github.com/muatik/flask-profiler
 ☐ DATA MODELS
   schema -> https://www.dropbox.com/s/01582z9avmnllzo/EUDAT_datamodel.png?dl=0
   ☐ Nested collections in B2safe?
