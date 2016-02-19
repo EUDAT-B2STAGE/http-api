@@ -29,11 +29,29 @@ from restapi import get_logger
 logger = get_logger(__name__)
 
 
-#####################################
+class CollectionEndpoint(ExtendedApiResource):
+
+    @decorate.apimethod
+    def get(self, path=None):
+        """
+        Return list of elements inside a collection.
+        If path is not specified we list the home directory.
+        """
+
+        return self.response(icom.list(path))
+
+    @decorate.apimethod
+    def post(self):
+        """ Create one collection/directory """
+
+        # handle parameters
+        return self.response("Not implemented yet")
+
+
 class DataObjectEndpoint(ExtendedApiResource):
 
     @decorate.apimethod
-    def get(self, id=None):
+    def get(self, location=None):
         """ Get pid """
 
         # GraphDB
