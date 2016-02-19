@@ -7,6 +7,11 @@ Guidelines
 
 --- ✄ -----------------------
 
+http --form POST http://192.168.64.7:8080/api/dataobject file@~/Downloads/pics/tweet.jpg
+
+--- ✄ -----------------------
+
+
 FIRST STEPS:
 
   ✔ irods admin iinit at api startup @done (16-02-18 23:56)

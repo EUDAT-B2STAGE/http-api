@@ -6,6 +6,7 @@ A EUDAT endpoint example.
 To discuss:
 - sqlite db for users and administration
     * pluggable authentication
+        (Flask security and UDStore)
 - upload
     * progress
     * streaming
@@ -49,7 +50,9 @@ class DataObjectEndpoint(ExtendedApiResource):
 
     @decorate.apimethod
     def post(self):
-        """ Upload a file """
+        """
+        Handle file upload
+        """
 
         if 'file' not in request.files:
             return "No files specified"
