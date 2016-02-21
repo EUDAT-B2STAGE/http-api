@@ -240,3 +240,36 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     @roles_required(config.ROLE_ADMIN)
     def delete(self, id):
         return super().delete(id)
+
+
+class RethinkImagesAssociations(BaseRethinkResource):
+
+    template = None
+
+    @deck.apimethod
+    #@auth_token_required
+    def get(self, id=None):
+
+        # Get the record value and the party name associated
+        first = self.get_query().table('datavalues') \
+            .concat_map(lambda doc: doc['steps'].concat_map(
+                    lambda step: step['data'].concat_map(
+                        lambda data: [{
+                            'record': doc['record'], 'step': step['step'],
+                            'pos': data['position'], 'party': data['value'],
+                        }])
+                )) \
+            .filter({'step': 3, 'pos': 1}) \
+            .pluck('record', 'party')
+
+        # Join the records with the uploaded files
+        second = first.eq_join(
+            "record", r.table('datadocs'), index="record").zip()
+        # Group everything by party name
+        cursor = second.group('party').run()
+
+        for (element, data) in cursor.items():
+            data
+            # return self.response(data)
+        return self.response("Just a test")
+        #count, data = super().get(id)

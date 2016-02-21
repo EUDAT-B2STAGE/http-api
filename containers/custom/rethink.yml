@@ -1,38 +1,42 @@
 
 rethinkdb:
-    image: pdonorio/myrethinkdb
-    hostname: rdbmaster
-    # Web admin
-    ports:
-        - 7778:8080
-    volumes:
-        - rdbdata:/data
+  image: pdonorio/myrethinkdb
+  hostname: rdbmaster
+  # Web admin
+  ports:
+      - 7778:8080
+  volumes:
+      - rdbdata:/data
 
 searchindex:
-    image: elasticsearch
-    hostname: elastic
-    volumes:
-        - elasticdata:/usr/share/elasticsearch/data
+  image: elasticsearch
+  hostname: elastic
+  volumes:
+      - elasticdata:/usr/share/elasticsearch/data
 
 uploadsdata:
-    image: busybox
-    volumes:
-        # Upload directory
-        - appuploads:/uploads
+  image: busybox
+  volumes:
+      # Upload directory
+      - ../uploads:/uploads
 
 custombe:
-    extends:
-        file: docker-compose.yml
-        service: backend
-    links:
-        - rethinkdb:rdb
-        - searchindex:el
-    volumes_from:
-        - uploadsdata
+  extends:
+      file: docker-compose.yml
+      service: backend
+  links:
+      - rethinkdb:rdb
+      - searchindex:el
+  volumes_from:
+      - uploadsdata
 
 customfe:
-    extends:
-        file: docker-compose.yml
-        service: frontend
-    links:
-        - custombe:myapi
+  extends:
+      file: docker-compose.yml
+      service: frontend
+  links:
+      - custombe:myapi
+# TO FIX
+  volumes_from:
+      - uploadsdata
+# TO FIX
