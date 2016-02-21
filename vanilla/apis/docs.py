@@ -243,11 +243,12 @@ class RethinkDataForAdministrators(BaseRethinkResource):
 
 
 class RethinkImagesAssociations(BaseRethinkResource):
-
-    template = None
+    """
+    Fixing problems in images associations?
+    """
 
     @deck.apimethod
-    #@auth_token_required
+    @auth_token_required
     def get(self, id=None):
 
         # Get the record value and the party name associated
@@ -266,10 +267,5 @@ class RethinkImagesAssociations(BaseRethinkResource):
         second = first.eq_join(
             "record", r.table('datadocs'), index="record").zip()
         # Group everything by party name
-        cursor = second.group('party').run()
-
-        for (element, data) in cursor.items():
-            data
-            # return self.response(data)
-        return self.response("Just a test")
-        #count, data = super().get(id)
+        cursor = second.group('party').run(time_format="raw")
+        return self.response(cursor)

@@ -1,0 +1,17 @@
+<div ng-controller="FixImagesController as fix">
+ <md-content layout-padding layout-wrap>
+
+    <md-list>
+      <div ng-repeat="(party, data) in parties track by $index">
+          <md-divider></md-divider>
+          <md-list-item class="md-2-line"
+              ng-click="fix.noImageList($event, data)">
+            <div class="md-list-item-text" layout="column">
+              <h3>{{party}}</h3>
+              <p> Elements: <b>{{data.length}}</b> </p>
+            </div>
+          </md-list-item>
+      </div>
+
+ </md-content>
+</div>

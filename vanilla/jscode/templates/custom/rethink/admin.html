@@ -2,9 +2,8 @@
 <md-content
     ng-controller="AdminController as adm">
  <md-tabs md-dynamic-height md-border-bottom
-    md-swipe-content md-center-tabs
-    md-autoselect='false'
-    md-selected='adm.selectedTab'>
+    md-swipe-content md-center-tabs md-enable-disconnect
+    md-autoselect='false' md-selected='selectedTab'>
 
 <!-- WITH NG REPEAT
   <md-tab ng-repeat="tab in tabs | orderBy:predicate:reversed"
@@ -21,6 +20,13 @@
 -->
 
 <!-- TABS -->
+
+    <md-tab label="Missing images" md-on-select="adm.onTabSelected('imagefix')">
+      <md-content class="md-padding">
+        <div ng-include="root.blueprintTemplateDir + 'fiximages.html'"></div>
+      </md-content>
+    </md-tab>
+
     <md-tab label="Welcoming sections"
         md-on-select="adm.onTabSelected('sections')">
       <md-content layout-padding flex='grow'>
@@ -38,18 +44,6 @@
     <md-tab label="Steps" md-on-select="adm.onTabSelected()">
       <md-content class="md-padding">
         <div ng-include="root.blueprintTemplateDir + 'admin_step.html'"></div>
-      </md-content>
-    </md-tab>
-
-    <md-tab label="Missing images" md-on-select="adm.onTabSelected('imagefix')">
-      <md-content class="md-padding">
-        There are image missing
-      </md-content>
-    </md-tab>
-
-    <md-tab label="Something else" md-on-select="adm.onTabSelected()">
-      <md-content class="md-padding">
-        Work in progress
       </md-content>
     </md-tab>
 

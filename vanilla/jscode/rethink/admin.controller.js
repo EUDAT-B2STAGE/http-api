@@ -3,6 +3,7 @@
 
 angular.module('web')
     .controller('AdminController', AdminController)
+    .controller('FixImagesController', FixImagesController)
     .controller('WelcomeController', WelcomeController)
     .controller('WelcomeInfoController', WelcomeInfoController)
     .controller('DialogController', DialogController)
@@ -20,16 +21,20 @@ function getSectionData(admin, $scope)
     {
 
     // IF DATA IS PRESENT
-      if (out !== null && out.hasOwnProperty('elements')) {
+      if (out !== null
+        && out.hasOwnProperty('elements'))
+      {
         //Preserve order
         var newdata = [];
-        for (var x = 0; x < out.data.length; x++) {
-            newdata[x] = {};
-        };
-        forEach(out.data, function (element, j) {
-            var index = element.data['Position'];
-            newdata[index] = element;
-        })
+        if (out.elements > 0) {
+            for (var x = 0; x < out.data.length; x++) {
+                newdata[x] = {};
+            };
+            forEach(out.data, function (element, j) {
+                var index = element.data['Position'];
+                newdata[index] = element;
+            })
+        }
         $scope.sections = angular.copy(newdata); // out.data;
 
     // IF DATA MISSING!
@@ -48,7 +53,17 @@ function getSectionData(admin, $scope)
         }]
       }
     });
-}
+};
+
+function getMissingImagesData(admin, $scope) {
+    return admin.getDocumentsWithNoImages()
+      .then(function (out)
+      {
+        console.log("DATA", out);
+        $scope.parties = out.data;
+    });
+
+};
 
 function AdminController($scope, $log, admin, $stateParams)
 {
@@ -56,23 +71,41 @@ function AdminController($scope, $log, admin, $stateParams)
   $log.debug("ADMIN page controller", $stateParams);
   var self = this;
   //TABS
-  self.selectedTab = 0;
+  $scope.selectedTab = $stateParams.tab || 0;
+  self.latestTab = -1;
 
   self.onTabSelected = function (key) {
-      $log.debug("Selected", self.selectedTab, key);
+      $log.debug("Selected", $scope.selectedTab, key);
+      // Avoid to call more than once
+      if ($scope.selectedTab == self.latestTab) {
+        return false;
+      }
+      self.latestTab = angular.copy($scope.selectedTab);
 
       // INIT TAB FOR MANAGING SECTIONS
       if (key == 'sections') {
         $scope.sections = {};
         getSectionData(admin, $scope);
       }
+      // INIT TAB FOR MISSING IMAGES
+      else if (key == 'imagefix') {
+        $scope.parties = {};
+        getMissingImagesData(admin, $scope);
+      }
+
   }
 
-  if ($stateParams.tab && $stateParams.tab != self.selectedTab) {
-    $log.debug("URL tab is ",$stateParams);
-    self.selectedTab = $stateParams.tab;
-  }
-}
+};
+
+function FixImagesController($scope, $log)
+{
+    $log.debug("Fix Controller");
+    var self = this;
+    self.noImageList = function (ev, data) {
+      console.log("Selected", data);
+    }
+};
+
 
 function WelcomeInfoController($scope, $log, $stateParams, admin)
 {
@@ -86,7 +119,7 @@ function WelcomeInfoController($scope, $log, $stateParams, admin)
         self.moreContent = section.data['Content'];
     });
 
-}
+};
 
 function WelcomeController($scope, $rootScope, $timeout, $log, admin, $state, $stateParams, $mdMedia, $mdDialog, $q)
 {

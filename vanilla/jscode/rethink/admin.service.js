@@ -9,6 +9,13 @@ function AdminService($log, api) {
     var self = this;
     self.endpoints = {
         admin: 'datadmins',
+        imissing: 'dataimagemissing',
+    }
+
+    //////////////////
+    // Admin fix on normal parts
+    self.getDocumentsWithNoImages = function() {
+        return api.apiCall(self.endpoints.imissing);
     }
 
     //////////////////
