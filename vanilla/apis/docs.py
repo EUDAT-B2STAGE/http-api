@@ -272,7 +272,11 @@ class RethinkImagesAssociations(BaseRethinkResource):
             elements = set(records) - set(records_with_docs)
             if len(elements) > 0:
                 # Remove the records containing the images
-                final[party] = list(set(records) - set(records_with_docs))
+                ids = list(set(records) - set(records_with_docs))
+                cursor = self.get_query().table('datavalues') \
+                    .filter(lambda doc: r.expr(ids).contains(doc['record'])) \
+                    .run()
+                final[party] = list(cursor)
         return self.response(final)
 
         # # Join the records with the uploaded files
