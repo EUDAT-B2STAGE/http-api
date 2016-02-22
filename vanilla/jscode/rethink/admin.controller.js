@@ -101,8 +101,9 @@ function FixImagesController($scope, $log)
 {
     $log.debug("Fix Controller");
     var self = this;
-    self.noImageList = function (ev, data) {
-      console.log("Selected", data);
+    self.noImageList = function (name, data) {
+      self.elements = data;
+      self.currentParty = name;
     }
 };
 

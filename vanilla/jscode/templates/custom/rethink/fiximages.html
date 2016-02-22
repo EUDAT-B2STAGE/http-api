@@ -5,12 +5,12 @@
     >
 
 <!-- LIST -->
-    <div flex-xs flex-gt-xs="65" layout="column">
+    <div flex-xs flex-gt-xs="55" layout="column">
      <md-list>
       <div ng-repeat="(party, data) in parties track by $index">
           <md-divider></md-divider>
           <md-list-item class="md-2-line"
-              ng-click="fix.noImageList($event, data)">
+              ng-click="fix.noImageList(party, data)">
             <div class="md-list-item-text" layout="column">
               <h3>{{party}}</h3>
               <p> Elements: <b>{{data.length}}</b> </p>
@@ -21,12 +21,21 @@
     </div>
 
 <!-- CARD -->
-    <div flex-xs flex-gt-xs="35" layout="column">
+    <div flex-xs flex-gt-xs="45" layout="column"
+        ng-show="fix.elements">
      <md-card>
       <md-card-title>
-        <md-card-title-text> Just a test </md-card-title-text>
+        <md-card-title-text>
+            <h5>{{fix.currentParty}}</h5>
+        </md-card-title-text>
       </md-card-title>
-      <md-card-content> Just a test </md-card-content>
+      <md-card-content>
+        <ul>
+            <li ng-repeat="element in fix.elements">
+                {{element.record}}
+            </li>
+        </ul>
+      </md-card-content>
       <md-card-actions layout="row" layout-align="start center">
         <md-button> Test </md-button>
       </md-card-actions>
