@@ -1,0 +1,9 @@
+
+#################################
+# REST API testing
+
+apitests:
+    image: pdonorio/apitesting
+    command: sleep 999999999
+    links:
+        - rest:api
