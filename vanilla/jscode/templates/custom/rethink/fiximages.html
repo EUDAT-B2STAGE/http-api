@@ -1,7 +1,12 @@
-<div ng-controller="FixImagesController as fix">
- <md-content layout-padding layout-wrap>
+<div
+    ng-controller="FixImagesController as fix"
+    style="padding-top: 20px;"
+    layout="row" layout-align="center start"
+    >
 
-    <md-list>
+<!-- LIST -->
+    <div flex-xs flex-gt-xs="65" layout="column">
+     <md-list>
       <div ng-repeat="(party, data) in parties track by $index">
           <md-divider></md-divider>
           <md-list-item class="md-2-line"
@@ -12,6 +17,20 @@
             </div>
           </md-list-item>
       </div>
+     </md-list>
+    </div>
 
- </md-content>
+<!-- CARD -->
+    <div flex-xs flex-gt-xs="35" layout="column">
+     <md-card>
+      <md-card-title>
+        <md-card-title-text> Just a test </md-card-title-text>
+      </md-card-title>
+      <md-card-content> Just a test </md-card-content>
+      <md-card-actions layout="row" layout-align="start center">
+        <md-button> Test </md-button>
+      </md-card-actions>
+     </md-card>
+    </div>
+
 </div>
