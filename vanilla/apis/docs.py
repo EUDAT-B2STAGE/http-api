@@ -248,7 +248,7 @@ class RethinkImagesAssociations(BaseRethinkResource):
     """
 
     @deck.apimethod
-    #@auth_token_required
+    @auth_token_required
     def get(self, id=None):
 
         # Get the record value and the party name associated
@@ -280,5 +280,4 @@ class RethinkImagesAssociations(BaseRethinkResource):
         #     "record", r.table('datadocs'), index="record").zip()
         # # Group everything by party name
         # cursor = second.group('party').run(time_format="raw")
-
-        return self.response(cursor)
+        # return self.response(cursor)
