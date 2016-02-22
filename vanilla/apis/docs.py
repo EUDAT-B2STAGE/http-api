@@ -248,7 +248,7 @@ class RethinkImagesAssociations(BaseRethinkResource):
     """
 
     @deck.apimethod
-    @auth_token_required
+    #@auth_token_required
     def get(self, id=None):
 
         # Get the record value and the party name associated
@@ -261,11 +261,24 @@ class RethinkImagesAssociations(BaseRethinkResource):
                         }])
                 )) \
             .filter({'step': 3, 'pos': 1}) \
-            .pluck('record', 'party')
+            .pluck('record', 'party') \
+            .group('party')['record'] \
 
-        # Join the records with the uploaded files
-        second = first.eq_join(
-            "record", r.table('datadocs'), index="record").zip()
-        # Group everything by party name
-        cursor = second.group('party').run(time_format="raw")
+        records_with_docs = list(
+            self.get_query().table('datadocs')['record'].run())
+
+        final = {}
+        for party, records in first.run().items():
+            elements = set(records) - set(records_with_docs)
+            if len(elements) > 0:
+                # Remove the records containing the images
+                final[party] = list(set(records) - set(records_with_docs))
+        return self.response(final)
+
+        # # Join the records with the uploaded files
+        # second = first.eq_join(
+        #     "record", r.table('datadocs'), index="record").zip()
+        # # Group everything by party name
+        # cursor = second.group('party').run(time_format="raw")
+
         return self.response(cursor)
