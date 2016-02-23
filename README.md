@@ -28,9 +28,14 @@ scripts/run.sh init
 # Then run the final services
 scripts/run.sh
 # Open the client to test code or run the API server
-docker exec -it irods_iclient_1 bash
-root@icl:/code#
+scripts/run.sh server_shell
+root@api:/code/project# ./boot devel
 ### Develop from here!
+
+# You may also create another shell to mimic the API client
+scripts/run.sh client_shell
+/ # http GET http://api:5000/api/verify
+
 ```
 
 ## Enable only irods server
@@ -52,6 +57,8 @@ docker-compose up -d icat
 ## Documentation
 
 For a more detailed explanation and some deep understanding:
+
+** WARNING: the following links must be updated **
 
 * [Preparing the environment](docs/preparation.md)
 * [Running the services](docs/running.md)
