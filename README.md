@@ -68,6 +68,8 @@ For a more detailed explanation and some deep understanding:
 ## Versions
 
 ```
+$ docker exec -it httpapi_icat_1 bash
+
 irods@rodserver:~$ apt-cache showpkg irods-icat
 Package: irods-icat
 Versions:
