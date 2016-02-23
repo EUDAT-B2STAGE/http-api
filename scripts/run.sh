@@ -9,7 +9,10 @@ echo ""
 # Confs
 subdir="backend"
 restcontainer="rest"
-initcom="docker-compose -f docker-compose.yml -f init.yml"
+clientcontainer="apitests"
+compose="docker-compose"
+initcom="$compose -f $compose.yml -f init.yml"
+allcompose="$compose -f $compose.yml -f $compose.test.yml -f init.yml"
 volumes="irodsconf irodshome irodsresc eudathome irodsrestlitedb sqldata"
 #####################
 
@@ -24,7 +27,7 @@ do
     fi
 done
 if [ "$(ls -A backend)" ]; then
-    echo "Submodule already exists"
+    echo "Submodule already exists" > /dev/null
 else
     echo "Inizialitazion for the http-api-base submodule"
     git submodule init
@@ -49,12 +52,12 @@ fi
 # Init your stack
 if [ "$1" == "init" ]; then
     echo "Updating docker images to latest release"
-    $initcom pull
+    $allcompose pull
     echo "WARNING: Removing old containers/volumes if any"
     echo "(Sleeping some seconds to let you stop in case you made a mistake)"
     sleep 7
-    $initcom stop
-    $initcom rm -f
+    $allcompose stop
+    $allcompose rm -f
     docker volume rm irodsconf
     echo "READY TO INIT"
     $initcom up icat
@@ -68,7 +71,7 @@ if [ "$1" == "init" ]; then
 # Update your code
 elif [ "$1" == "update" ]; then
     echo "Updating docker images to latest release"
-    $initcom pull
+    $allcompose pull
     echo "Pulling main repo"
     git pull
     echo "Pulling submodule"
@@ -79,21 +82,21 @@ elif [ "$1" == "update" ]; then
 # Freeze containers
 elif [ "$1" == "stop" ]; then
     echo "Freezing the stack"
-    $initcom stop
+    $allcompose stop
 
 # Remove all containers
 elif [ "$1" == "remove" ]; then
     echo "REMOVE CONTAINERS"
-    $initcom stop
-    $initcom rm -f
+    $allcompose stop
+    $allcompose rm -f
 
 # Destroy everything: containers and data saved so far
 elif [ "$1" == "clean" ]; then
     echo "REMOVE DATA"
     echo "are you really sure?"
     sleep 5
-    $initcom stop
-    $initcom rm -f
+    $allcompose stop
+    $allcompose rm -f
     for volume in $volumes;
     do
         echo "Remove $volume volume"
@@ -101,12 +104,28 @@ elif [ "$1" == "clean" ]; then
         sleep 1
     done
 
+elif [ "$1" == "server_shell" ]; then
+    container_name=`docker ps | grep $restcontainer | awk '{print \$NF}'`
+    docker exec -it $container_name bash
+
+elif [ "$1" == "client_shell" ]; then
+    echo "Opening a client shell"
+    echo "You may use the 'httpie' library (http command), e.g.:"
+    echo ""
+    echo "$ http GET http://api:5000/api/verify"
+    echo ""
+    compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
+    $compose up --no-deps -d apitests
+    container_name=`docker ps | grep $clientcontainer | awk '{print \$NF}'`
+    docker exec -it $container_name sh
+
+
 # Normal boot
 else
     if [ "$1" != "graceful" ]; then
         echo "Clean previous containers"
-        $initcom stop
-        $initcom rm -f
+        $allcompose stop
+        $allcompose rm -f
     fi
     echo "(re)Boot Docker stack"
     docker-compose up -d $restcontainer
@@ -114,8 +133,8 @@ else
     echo "Stack status:"
     docker-compose ps
     if [ "$status" == "0" ]; then
-        echo "If you need to access the python client container, please run:"
-        container_name=`docker ps | grep $restcontainer | awk '{print \$NF}'`
-        echo "$ docker exec -it $container_name bash"
+        echo ""
+        echo "To access the flask api container, please run:"
+        echo "scripts/run.sh server_shell"
     fi
 fi
