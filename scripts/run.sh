@@ -5,6 +5,25 @@ echo -e "\t\tEUDAT HTTP API development"
 echo "# ############################################ #"
 echo ""
 
+if [ "$1" == "help" ]; then
+    echo "Available commands:"
+    echo ""
+    echo -e "init:\tStartup your repository code, containers and volumes"
+    echo -e "NO_COMMAND:\tLaunch the Docker stack"
+    echo -e "graceful:\tTry to bring up only missing containers"
+    echo ""
+    echo -e "stop:\tFreeze your containers stack"
+    echo -e "remove:\tRemove all containers"
+    echo -e "clean:\tRemove containers and volumes (BE CAREFUL!)"
+    echo ""
+    echo -e "server_shell:\tOpen a shell inside the Flask server container"
+    echo -e "client_shell:\tOpen a shell to test API endpoints"
+    echo ""
+    echo -e "push:\tPush code to github"
+    echo -e "update:\tPull updated code and images"
+    exit 0
+fi
+
 #####################
 # Confs
 subdir="backend"
