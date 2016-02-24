@@ -15,15 +15,15 @@ To discuss:
 
 from ..base import ExtendedApiResource
 from flask.ext.restful import request
-#from werkzeug import secure_filename
 from .. import decorators as decorate
-
-from ..services.neo4j import migraph
-from ..services.irodsclient import icom
+# from werkzeug import secure_filename
 
 # AUTH
 # from confs import config
 # from flask.ext.security import roles_required, auth_token_required
+
+from ..services.neo4j import migraph
+from ..services.irodsclient import icom
 
 from restapi import get_logger
 logger = get_logger(__name__)
@@ -52,7 +52,12 @@ class DataObjectEndpoint(ExtendedApiResource):
 
     @decorate.apimethod
     def get(self, location=None):
-        """ Get pid """
+        """
+        Get object from ID
+
+        Note to self:
+        we need to get the username from the token
+        """
 
         # GraphDB
         logger.info("graph call %s", migraph.other())
@@ -60,8 +65,8 @@ class DataObjectEndpoint(ExtendedApiResource):
         migraph.cypher(query)
 
         # iRODS
-        # #logger.info("irods call %s", icom.list())
         logger.info("irods call %s", icom.change_user('guest'))
+        # #logger.info("irods call %s", icom.list())
 
         return self.response(
             'There should be one or more data object here in response')
@@ -76,9 +81,11 @@ class DataObjectEndpoint(ExtendedApiResource):
             return "No files specified"
 
         myfile = request.files['file']
-        #filename = secure_filename(myfile.filename)
-        #destination = MYDIR + filename
-        #myfile.save(destination)
+
+        # # Save the file?
+        # filename = secure_filename(myfile.filename)
+        # destination = MYDIR + filename
+        # myfile.save(destination)
 
         return self.response(
             "The file to be uploaded is '%s'" % myfile)
