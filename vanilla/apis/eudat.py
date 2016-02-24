@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """
-A EUDAT endpoint example.
+Prototyping!
 
-To discuss:
-- sqlite db for users and administration
-    * pluggable authentication
-        (Flask security and UDStore)
-- upload
-    * progress
-    * streaming
--
+B2SAFE HTTP REST API endpoints.
 """
 
 from ..base import ExtendedApiResource
