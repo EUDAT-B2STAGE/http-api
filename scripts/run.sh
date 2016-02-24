@@ -66,6 +66,7 @@ if [ "$1" == "init" ]; then
         echo "Your project is ready to be used."
         echo "Everytime you need to start just run:"
         echo "\$ $0"
+        echo ""
     fi
 
 # Update your code
@@ -123,10 +124,16 @@ elif [ "$1" == "client_shell" ]; then
 # Normal boot
 else
     if [ "$1" != "graceful" ]; then
+        if [ "$1" != "" ]; then
+            echo "Unknown command '$1'!"
+            exit 1
+        fi
+
         echo "Clean previous containers"
         $allcompose stop
         $allcompose rm -f
     fi
+
     echo "(re)Boot Docker stack"
     docker-compose up -d $restcontainer
     status="$?"
