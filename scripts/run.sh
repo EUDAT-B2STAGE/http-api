@@ -94,6 +94,7 @@ elif [ "$1" == "push" ]; then
     cd backend
     git push origin master
     echo "Pushing main repo"
+    cd ..
     git push
     echo "Completed"
 
