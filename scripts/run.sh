@@ -69,6 +69,15 @@ if [ "$1" == "init" ]; then
         echo ""
     fi
 
+# Update the remote github repos
+elif [ "$1" == "push" ]; then
+    echo "Pushing submodule"
+    cd backend
+    git push origin master
+    echo "Pushing main repo"
+    git push
+    echo "Completed"
+
 # Update your code
 elif [ "$1" == "update" ]; then
     echo "Updating docker images to latest release"
