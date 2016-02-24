@@ -153,7 +153,8 @@ elif [ "$1" == "client_shell" ]; then
 else
     if [ "$1" != "graceful" ]; then
         if [ "$1" != "" ]; then
-            echo "Unknown command '$1'!"
+            echo "Unknown operation '$1'!"
+            echo "Use \"$0 help\" to see available commands "
             exit 1
         fi
 
