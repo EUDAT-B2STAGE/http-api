@@ -1,11 +1,21 @@
+
 <div
     ng-controller="FixImagesController as fix"
     style="padding-top: 20px;"
     layout="row" layout-align="center start"
     >
 
+<!-- LOADER OR NO DATA -->
+    <div ng-if="!parties">
+        <div ng-include="root.templateDir + 'loader.html'"></div>
+    </div>
+
 <!-- LIST -->
-    <div flex-xs flex-gt-xs="55" layout="column">
+    <div ng-if="parties"
+        flex-xs flex-gt-xs="55" layout="column">
+     <div ng-if="Object.keys(parties).length == 0">
+        No data available
+     </div>
      <md-list>
       <div ng-repeat="(party, data) in parties track by $index">
           <md-divider></md-divider>

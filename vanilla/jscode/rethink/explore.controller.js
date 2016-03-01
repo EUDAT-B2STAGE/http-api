@@ -41,7 +41,6 @@ function ExploreController($scope, $rootScope, $log, $state, search, admin)
 */
 
       if (key == 'imagefix') {
-        $scope.parties = {};
         getMissingImagesData(admin, $scope);
       }
   }

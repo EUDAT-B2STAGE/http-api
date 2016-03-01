@@ -25,11 +25,12 @@ BUGS:
 http://rochacbruno.github.io/dynaconf/
 
 Images:
+  ☐ Move tree controller/stuff
   ☐ associate image
     ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
       ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)
         ✔ rethinkdb eqjoin @done (16-02-22 10:59)
-      ☐ move to browse from admin... @argh
+      ✔ move to browse from admin... @argh @done (16-03-01 19:08)
       ☐ path/name + thumbnail
   ☐ upload images
     ✔ API endpoint @done (16-02-09 08:21)
