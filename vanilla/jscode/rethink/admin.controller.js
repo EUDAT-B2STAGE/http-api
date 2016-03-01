@@ -3,7 +3,6 @@
 
 angular.module('web')
     .controller('AdminController', AdminController)
-    .controller('FixImagesController', FixImagesController)
     .controller('WelcomeController', WelcomeController)
     .controller('WelcomeInfoController', WelcomeInfoController)
     .controller('DialogController', DialogController)
@@ -55,16 +54,6 @@ function getSectionData(admin, $scope)
     });
 };
 
-function getMissingImagesData(admin, $scope) {
-    return admin.getDocumentsWithNoImages()
-      .then(function (out)
-      {
-        console.log("DATA", out);
-        $scope.parties = out.data;
-    });
-
-};
-
 function AdminController($scope, $log, admin, $stateParams)
 {
   // Init controller
@@ -88,23 +77,11 @@ function AdminController($scope, $log, admin, $stateParams)
         getSectionData(admin, $scope);
       }
       // INIT TAB FOR MISSING IMAGES
-      else if (key == 'imagefix') {
-        $scope.parties = {};
-        getMissingImagesData(admin, $scope);
+      else if (key == 'OTHER') {
       }
 
   }
 
-};
-
-function FixImagesController($scope, $log)
-{
-    $log.debug("Fix Controller");
-    var self = this;
-    self.noImageList = function (name, data) {
-      self.elements = data;
-      self.currentParty = name;
-    }
 };
 
 

@@ -3,11 +3,17 @@
 
 angular.module('web')
     .controller('ExploreController', ExploreController)
+    .controller('FixImagesController', FixImagesController)
     .controller('StepsController', StepsController)
+// Move this away
     .controller('TreeController', TreeController)
     ;
 
-function ExploreController($scope, $rootScope, $log, $state, search)
+////////////////////////////////
+// controller
+////////////////////////////////
+
+function ExploreController($scope, $rootScope, $log, $state, search, admin)
 {
 
   // INIT controller
@@ -20,14 +26,23 @@ function ExploreController($scope, $rootScope, $log, $state, search)
 
   //TABS
   self.selectedTab = null;
-  self.onTabSelected = function () {
-      $log.debug("Selected", self.selectedTab);
-      if (self.selectedTab == 1) {
+  self.onTabSelected = function (key)
+  {
+      $log.debug("Selected", key, self.selectedTab);
+
+/* MOVE TO ADMIN
+      if (self.selectedTab == 3) {
           //Load data for the tree
           search.getSteps(true).then(function (out)
           {
             $rootScope.treeProcessData(out);
           })
+      } else
+*/
+
+      if (key == 'imagefix') {
+        $scope.parties = {};
+        getMissingImagesData(admin, $scope);
       }
   }
 
@@ -36,6 +51,30 @@ function ExploreController($scope, $rootScope, $log, $state, search)
   }
 
 }
+
+////////////////////////////////
+// Fix images
+////////////////////////////////
+
+function getMissingImagesData(admin, $scope) {
+    return admin.getDocumentsWithNoImages()
+      .then(function (out)
+      {
+        console.log("DATA", out);
+        $scope.parties = out.data;
+    });
+
+};
+
+function FixImagesController($scope, $log)
+{
+    $log.debug("Fix Controller");
+    var self = this;
+    self.noImageList = function (name, data) {
+      self.elements = data;
+      self.currentParty = name;
+    }
+};
 
 ////////////////////////////////
 // controller

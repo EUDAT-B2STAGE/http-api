@@ -14,8 +14,10 @@
       </md-content>
     </md-tab>
 
-    <md-tab label="Tree explorer" md-on-select="exp.onTabSelected()">
-        <div ng-include="root.blueprintTemplateDir + 'tree.html'"></div>
+    <md-tab label="Missing images" md-on-select="exp.onTabSelected('imagefix')">
+      <md-content class="md-padding">
+        <div ng-include="root.blueprintTemplateDir + 'fiximages.html'"></div>
+      </md-content>
     </md-tab>
 
     <md-tab label="Exposition" md-on-select="exp.onTabSelected()">
