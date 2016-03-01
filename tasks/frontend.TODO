@@ -3,6 +3,8 @@
 
 # PRIVATE GIT
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
+# GOOD API DESIGN
+should be profoundly discussed
 # UI ROUTER and params
 http://stackoverflow.com/a/25647714/2114395
 # HTML5 validator
@@ -14,7 +16,7 @@ BUGS:
 ☐ after login go to latest requested url
   ☐ seek in history
   ☐ if from welcome, go to simple 'app'
-☐ spy is probably broken in latest materialize? @toverifyagain
+☐ materialize spy is probably broken in latest materialize? @toverifyagain
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
 ☐ extrait not complete list inside the details page
@@ -23,12 +25,11 @@ BUGS:
 http://rochacbruno.github.io/dynaconf/
 
 Images:
- ☐ nginx
-  http://charlesleifer.com/blog/nginx-a-caching-thumbnailing-reverse-proxying-image-server-/
   ☐ associate image
     ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
-      ☐ From party: list of images (not associated) for each
-        ☐ rethinkdb eqjoin
+      ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)
+        ✔ rethinkdb eqjoin @done (16-02-22 10:59)
+      ☐ move to browse from admin... @argh
       ☐ path/name + thumbnail
   ☐ upload images
     ✔ API endpoint @done (16-02-09 08:21)
@@ -38,8 +39,11 @@ Images:
       http://nervgh.github.io/pages/angular-file-upload/examples/image-preview/
   ☐ welcome parallax
   ☐ welcome slider
-  ☐ image cache
+
+☐ image cache
  https://github.com/jBenes/angular-imgcache.js/tree/master
+ ☐ nginx
+  http://charlesleifer.com/blog/nginx-a-caching-thumbnailing-reverse-proxying-image-server-/
 
 SUBMIT:
  ☐ Steps are upside down
