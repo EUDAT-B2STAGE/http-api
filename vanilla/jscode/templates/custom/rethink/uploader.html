@@ -1,0 +1,30 @@
+
+<md-dialog ng-controller="UploadController as up"
+    aria-label="Uploading a file">
+  <form>
+
+    <md-toolbar class="md-primary md-hue-3" >
+      <div class="md-toolbar-tools" layout="row">
+        <h2> Test </h2>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content layout-padding
+      style="min-width:600px; max-width:1000px; max-height:810px; ">
+
+      CONTENT
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button class="md-secondary" ng-click="up.validate()">
+        save
+      </md-button>
+      <md-button class="md-warn" ng-click="up.cancel()" >
+        cancel
+      </md-button>
+    </md-dialog-actions>
+
+ </form>
+</md-dialog>

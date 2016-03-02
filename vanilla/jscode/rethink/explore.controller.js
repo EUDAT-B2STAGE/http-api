@@ -68,21 +68,22 @@ function FixImagesController($scope, $log, $mdDialog)
       self.currentParty = name;
     }
 
+
 /////////////////////////////////////
     self.uploaderDialog = function()
     {
       var dialogOptions = {
-          template: "This will be the uploader dialog",
-          //controller: DialogController,
-          parent: angular.element(document.body),
-          //locals: { id: null, },
-          //targetEvent: ev,
-          clickOutsideToClose:true,
-          //onComplete: function() { $log.debug("complete"); },
+        templateUrl: blueprintTemplateDir + 'uploader.html',
+        //controller: UploadController,
+        parent: angular.element(document.body),
+        //locals: { id: null, },
+        //targetEvent: ev,
+        clickOutsideToClose:true,
+        //onComplete: function() { $log.debug("complete"); },
         }
 
       var afterDialog = function(response) {
-            $log.info("Dialog response", response);
+        $log.info("Dialog response", response);
       }
 
       // Open
