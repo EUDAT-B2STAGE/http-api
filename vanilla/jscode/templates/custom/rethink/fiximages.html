@@ -43,7 +43,9 @@
       {{elements}}
         <ul>
             <li ng-repeat="element in fix.elements">
-                {{element.value}}
+                <a href ng-click="fix.uploaderDialog()">
+                    {{element.value}}
+                </a>
             </li>
         </ul>
       </md-card-content>
