@@ -13,27 +13,22 @@
   </div>
 </md-toolbar>
 
-NOTE: WORK IN PROGRESS
-
 <div ng-controller="TreeController as tree">
 
-    <div ng-if="!tree.dataCount">
+    <div ng-if="dataCount < 1">
         <div ng-include="root.templateDir + 'loader.html'"></div>
     </div>
-    <div ng-if="tree.dataCount < 1">
+    <div ng-if="dataCount == 0">
         No data available
     </div>
 
-    <div ng-if="tree.dataCount > 0">
-        <div class="card-panel blue lighten-3">
-            <span class="white-text"> Select a component to display info </span>
-        </div>
+    <div ng-if="dataCount > 0">
 
         <table>
             <tr>
                 <td width='60%'>
                     <treecontrol class="tree-classic"
-                       tree-model="tree.myTree"
+                       tree-model="myTree"
                        options="tree.treeOptions"
                        on-selection="tree.showSelected(node)"
                        selected-node="node1">
@@ -46,13 +41,18 @@ NOTE: WORK IN PROGRESS
                         <ul>
                             <li ng-repeat='(key,value) in tree.selectedTreeObj'
                                 ng-if='value'>
-                                <i>{{ucFirst(key)}}</i>: {{value}}
+                                <i>{{tree.ucFirst(key)}}:</i> {{value}}
                             </li>
                         </ul>
                     </div>
                 </td>
             </tr>
         </table>
+<!--
+        <div class="card-panel blue lighten-3">
+            <span class="white-text"> Select a component to display info </span>
+        </div>
+-->
 
     </div>
 </div>

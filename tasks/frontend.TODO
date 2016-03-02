@@ -25,9 +25,9 @@ BUGS:
 ☐ topbar menu for mobile
 ☐ configurations
 http://rochacbruno.github.io/dynaconf/
+✔ Move tree controller/stuff @done (16-03-02 07:59)
 
 Images:
-  ☐ Move tree controller/stuff
   ☐ associate image
     ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
       ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)
@@ -47,6 +47,9 @@ Images:
  https://github.com/jBenes/angular-imgcache.js/tree/master
  ☐ nginx
   http://charlesleifer.com/blog/nginx-a-caching-thumbnailing-reverse-proxying-image-server-/
+
+Configuration:
+  http://www.jvandemo.com/how-to-configure-your-angularjs-application-using-environment-variables/
 
 SUBMIT:
  ☐ Steps are upside down

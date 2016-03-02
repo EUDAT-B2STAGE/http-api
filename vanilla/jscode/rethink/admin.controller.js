@@ -6,6 +6,7 @@ angular.module('web')
     .controller('WelcomeController', WelcomeController)
     .controller('WelcomeInfoController', WelcomeInfoController)
     .controller('DialogController', DialogController)
+    .controller('TreeController', TreeController)
     ;
 
 var
@@ -52,36 +53,6 @@ function getSectionData(admin, $scope)
         }]
       }
     });
-};
-
-function AdminController($scope, $log, admin, $stateParams)
-{
-  // Init controller
-  $log.debug("ADMIN page controller", $stateParams);
-  var self = this;
-  //TABS
-  $scope.selectedTab = $stateParams.tab || 0;
-  self.latestTab = -1;
-
-  self.onTabSelected = function (key) {
-      $log.debug("Selected", $scope.selectedTab, key);
-      // Avoid to call more than once
-      if ($scope.selectedTab == self.latestTab) {
-        return false;
-      }
-      self.latestTab = angular.copy($scope.selectedTab);
-
-      // INIT TAB FOR MANAGING SECTIONS
-      if (key == 'sections') {
-        $scope.sections = {};
-        getSectionData(admin, $scope);
-      }
-      // INIT TAB FOR MISSING IMAGES
-      else if (key == 'OTHER') {
-      }
-
-  }
-
 };
 
 
@@ -284,5 +255,146 @@ function DialogController($scope, $rootScope, $mdDialog, sectionModels, modelId)
     $mdDialog.hide([modelId, true]);
   };
 }
+
+////////////////////////////////
+// controller
+////////////////////////////////
+
+function TreeController($scope, $rootScope, $log, search)
+{
+  // INIT controller
+  $log.debug("Tree of life");
+  var self = this;
+
+  // Init scope data
+  //self.dataCount = NaN;
+  self.data = [];
+
+// https://github.com/wix/angular-tree-control
+
+    // options are found http://wix.github.io/angular-tree-control/
+    self.treeOptions = {
+        nodeChildren: "children",
+        dirSelectable: false, //true,
+        injectClasses: {
+            ul: "a1",
+            li: "a2",
+            liSelected: "a7",
+            iExpanded: "a3",
+            iCollapsed: "a4",
+            iLeaf: "a5",
+            label: "a6",
+            labelSelected: "a8"
+        }
+    }
+    self.showSelected = function(selected) {
+      $log.info("Selected node", selected);
+      self.selectedTreeObj = selected.info;
+    };
+
+  self.ucFirst = function(string) {
+    return string.capitalizeFirstLetter();
+  }
+
+
+  ////////////////////////////////////////
+  // move me into a service
+}
+////////////////////////////////////////
+
+function getType(key) {
+
+  var types = [
+      {value: 0, text: 'string', desc:
+          'All text is allowed'},
+      {value: 1, text: 'number', desc:
+          'Only integers values'},
+      {value: 2, text: 'email', desc:
+          'Only e-mail address (e.g. name@mailserver.org)'},
+      {value: 3, text: 'url', desc:
+          'Only web URL (e.g. http://website.com)'},
+      {value: 4, text: 'date', desc:
+          'Choose a day from a calendar'},
+      {value: 5, text: 'time', desc:
+          'Choose hour and minutes'},
+      {value: 6, text: 'pattern', desc:
+          'Define a regular expression for a custom type'},
+      {value: 7, text: 'color', desc:
+          'Only colors in hexadecimal value. Choose from color picker.'},
+      {value: 8, text: 'list', desc:
+          'Define a list of possible values (e.g. a dictionary)'},
+  ];
+  // save type to be sure in the future?
+  var type = types[0].text;
+  if (types[key])
+      type = types[key].text;
+  return type;
+}
+
+function treeProcessData(search, $scope) {
+
+    var tree = [];
+    search.getSteps(true).then(function (steps)
+    {
+        forEach(steps, function(single, i){
+            var fields = [];
+            forEach(single.fields, function(field, j){
+              var infos = {
+                'name': field.name,
+                'values': field.options,
+                'type': getType(field.type),
+                'required': field.required,
+              };
+              fields.push({
+                'type': 'field', 'name': field.name, 'info': infos,
+                "children": []});
+            });
+            tree.push({
+              'type': 'step', 'name': single.step.name,
+              "children": fields});
+    });
+
+    console.log("TREE", tree);
+    $scope.myTree = tree;
+    $scope.dataCount = tree.length;
+});
+
+  }
+
+////////////////////////////////
+// MAIN ADMIN controller
+////////////////////////////////
+
+function AdminController($scope, $rootScope, $log, admin, search, $stateParams)
+{
+  // Init controller
+  $log.debug("ADMIN page controller", $stateParams);
+  var self = this;
+  //TABS
+  $scope.selectedTab = $stateParams.tab || 0;
+  self.latestTab = -1;
+
+  self.onTabSelected = function (key) {
+      $log.debug("Selected", $scope.selectedTab, key);
+      // Avoid to call more than once
+      if ($scope.selectedTab == self.latestTab) {
+        return false;
+      }
+      self.latestTab = angular.copy($scope.selectedTab);
+
+      // INIT TAB FOR MANAGING SECTIONS
+      if (key == 'sections') {
+        $scope.sections = {};
+        getSectionData(admin, $scope);
+      }
+      // INIT TAB FOR TREE STEPS
+      else if (key == 'tree') {
+        $scope.dataCount = -1;
+        treeProcessData(search, $scope);
+      }
+
+  }
+
+};
 
 })();
