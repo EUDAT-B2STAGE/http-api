@@ -15,10 +15,10 @@ https://github.com/svenkreiss/html5validator
 --- ✄ -----------------------
 
 BUGS:
+☐ materialize spy is probably broken in latest materialize? @toverifyagain
 ☐ after login go to latest requested url
   ☐ seek in history
   ☐ if from welcome, go to simple 'app'
-☐ materialize spy is probably broken in latest materialize? @toverifyagain
 ☐ chips with bigger div to show results
 ☐ table are not same size on details
 ☐ extrait not complete list inside the details page

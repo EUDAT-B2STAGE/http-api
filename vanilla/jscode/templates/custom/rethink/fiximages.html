@@ -40,9 +40,10 @@
         </md-card-title-text>
       </md-card-title>
       <md-card-content>
+      {{elements}}
         <ul>
             <li ng-repeat="element in fix.elements">
-                {{element.steps[0].data[0].value}}
+                {{element.value}}
             </li>
         </ul>
       </md-card-content>

@@ -268,6 +268,8 @@ class RethinkImagesAssociations(BaseRethinkResource):
             self.get_query().table('datadocs')['record'].run())
 
         final = {}
+        from operator import itemgetter
+
         for party, records in first.run().items():
             elements = set(records) - set(records_with_docs)
             if len(elements) > 0:
@@ -276,7 +278,22 @@ class RethinkImagesAssociations(BaseRethinkResource):
                 cursor = self.get_query().table('datavalues') \
                     .filter(lambda doc: r.expr(ids).contains(doc['record'])) \
                     .run()
-                final[party] = list(cursor)
+                newrecord = []
+                for obj in cursor:
+                    val = obj['steps'][0]['data'][0]['value']
+                    tmp = val.split('_')
+                    sort = tmp[len(tmp)-1]
+                    try:
+                        sortme = int(sort)
+                    except:
+                        sortme = -1
+                    newrecord.append({
+                        'sortme': sortme,
+                        'value': val,
+                        'record': obj['record']
+                    })
+                final[party] = sorted(newrecord, key=itemgetter('sortme'))
+                # final[party] = list(cursor)
         return self.response(final)
 
         # # Join the records with the uploaded files
