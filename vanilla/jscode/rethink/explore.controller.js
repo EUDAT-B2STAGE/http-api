@@ -28,16 +28,7 @@ function ExploreController($scope, $rootScope, $log, $state, search, admin)
   {
       $log.debug("Selected", key, self.selectedTab);
 
-/* MOVE TO ADMIN
-      if (self.selectedTab == 3) {
-          //Load data for the tree
-          search.getSteps(true).then(function (out)
-          {
-            $rootScope.treeProcessData(out);
-          })
-      } else
-*/
-
+// THIS IS WHERE YOU ADD THE DATA LOAD LOGIC FOR TABS
       if (key == 'imagefix') {
         getMissingImagesData(admin, $scope);
       }
