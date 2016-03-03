@@ -1,7 +1,8 @@
 (function() {
   'use strict';
 
-angular.module('web').config(config);
+angular.module('web')
+    .config(routeConfig);
 
 /////////////////////////////////
 // ROUTES AND AUTHENTICATION
@@ -63,7 +64,7 @@ function _skipAuthenticationCheckApiOnline($state, $timeout, $auth, api)
 /*********************************
 * ROUTING
 *********************************/
-function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider, $httpProvider, $injector)
+function routeConfig($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider, $httpProvider, $injector)
 {
 
 // ROUTER CONFIGURATION
@@ -93,7 +94,8 @@ function config($stateProvider, $urlRouterProvider, $authProvider, $logProvider,
 
     // Faster http requests?
     //http://stackoverflow.com/a/29126922/2114395
-    $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+    $httpProvider.defaults.headers.common["X-Requested-With"]
+        = 'XMLHttpRequest';
 
 ////////////////////////////
 // WHERE THE MAGIC HAPPENS

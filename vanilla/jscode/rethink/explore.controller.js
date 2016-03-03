@@ -78,7 +78,7 @@ function FixImagesController($scope, $log, $mdDialog)
         parent: angular.element(document.body),
         //locals: { id: null, },
         //targetEvent: ev,
-        clickOutsideToClose:true,
+        //clickOutsideToClose:true,
         //onComplete: function() { $log.debug("complete"); },
         }
 

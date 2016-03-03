@@ -18,6 +18,10 @@ function UploadController($scope, $log, $mdDialog)
       $mdDialog.hide('FAIL');
     };
 
+    self.uploaded = function() {
+      $log.info("File uploaded");
+    };
+
 };
 
 })();
