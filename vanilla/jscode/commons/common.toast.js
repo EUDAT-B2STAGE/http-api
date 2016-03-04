@@ -30,25 +30,33 @@ function ToastController($scope, $log, $mdToast, $document)
         if ( current.left && last.right ) current.right = false;
         last = angular.extend({},current);
     }
-    $scope.showSimpleToast = function(messages) {
+    $scope.showSimpleToast = function(messages, delay) {
 
         var message = "";
+// CHECK IF IT'S JUST A STRING INSTEAD OF ARRAY
+
         if (messages) {
             forEach(messages, function (value, key) {
-                message += key + ': ' + value;
+                //console.log("MESSAGE", key, value);
+                message += key + ': ' + value + '\r\n';
             })
         }
-
+        // Skip empty message
         if (message == "") {
             return false;
         }
-
+        // Choose the delay
+        if (typeof(delay) === 'undefined') {
+            delay = 3000;
+        }
+        // Show the dialog
         $mdToast.show(
             $mdToast.simple()
                 .textContent(message)
                 .position($scope.getToastPosition())
-                .hideDelay(3000)
+                .hideDelay(delay)
         );
+
         return true;
     };
 }

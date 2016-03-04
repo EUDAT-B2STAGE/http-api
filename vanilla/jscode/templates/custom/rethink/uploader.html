@@ -1,5 +1,6 @@
+<div ng-controller='ToastController as toasting'>
 
-<md-dialog ng-controller="UploadController as up"
+ <md-dialog ng-controller="UploadController as up"
     aria-label="Uploading a file">
   <form>
 
@@ -16,10 +17,34 @@
 <!-- CONTENT -->
 <div flow-init
      flow-files-submitted="$flow.upload()"
-     flow-file-success="up.uploaded()"
-     >
+     flow-file-success="up.uploaded($file)"
+     flow-file-added="up.adding($file)"
+     flow-file-error="up.fileError($file, $message)"
+     flow-progress="up.progressing"
+    >
+
+<!-- All of the ng-flow options
+
+REMOVED:
+     flow-error="up.otherError($file, $message)"
+
+LIST:
+        flow-file-success="someHandlerMethod( $file, $message, $flow )"
+        flow-file-progress="someHandlerMethod( $file, $flow )"
+        flow-file-added="someHandlerMethod( $file, $event, $flow )"
+        flow-files-added="someHandlerMethod( $files, $event, $flow )"
+        flow-files-submitted="someHandlerMethod( $files, $event, $flow )"
+        flow-file-retry="someHandlerMethod( $file, $flow )"
+        flow-file-error="someHandlerMethod( $file, $message, $flow )"
+        flow-error="someHandlerMethod( $file, $message, $flow )"
+        flow-complete=" ... "
+        flow-upload-started=" ... "
+        flow-progress=" ... "
+-->
 
   <span class="btn" flow-btn>Upload File</span>
+
+  <div flow-file-progress="up.progressing"></div>
 
   <table>
     <tr ng-repeat="file in $flow.files">
@@ -44,5 +69,6 @@
       </md-button>
     </md-dialog-actions>
 
- </form>
-</md-dialog>
+  </form>
+ </md-dialog>
+</div>
