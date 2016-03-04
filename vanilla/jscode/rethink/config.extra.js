@@ -14,18 +14,13 @@ function hotkeysConfig(hotkeysProvider) {
 function uploaderConfig(flowFactoryProvider) {
 
     flowFactoryProvider.defaults = {
-        target: 'http://local.docker:8081/upload',
-        permanentErrors:[404, 500, 501]
-    };
+/* THIS HAS TO BE FIXED */
+        // CHECK WHAT WE DO IN COMMON.API.JS
+        target: 'http://local.docker:8081/api/upload',
+/* THIS HAS TO BE FIXED */
 
-/*
-    // You can also set default events:
-    flowFactoryProvider.on('catchAll', function (event) {
-      ...
-    });
-    // Can be used with different implementations of Flow.js
-    // flowFactoryProvider.factory = fustyFlowFactory;
-*/
+        //permanentErrors:[404, 500, 501]
+    };
 
 }
 

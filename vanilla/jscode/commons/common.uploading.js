@@ -26,6 +26,7 @@ function UploadController($scope, $log, $mdDialog)
 // Functions for uploading
     self.uploaded = function(file) {
       $log.info("File uploaded", file);
+// DO SOMETHING
     };
 
     self.adding = function(file) {
