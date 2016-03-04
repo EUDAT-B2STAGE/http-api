@@ -32,14 +32,24 @@ Images:
     ✔ API endpoint @done (16-02-09 08:21)
     ✔ a dedicated dialog inside common js code @done (16-03-02 15:26)
       ✔ angular library to upload: flow @done (16-03-03 08:29)
-  ☐ associate image
+  ☐ frontend
+    ✔ upload status @done (16-03-04 08:16)
+      ✔ progress @done (16-03-04 08:16)
+      ✔ failed @done (16-03-04 08:16)
+      ✔ completed @done (16-03-04 08:16)
+      ☐ icons
+    ☐ switch from GET to chunked POST?
+    ☐ limit file size?
+  ☐ Backend: associate image
     ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
       ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)
         ✔ rethinkdb eqjoin @done (16-02-22 10:59)
       ✔ move to browse from admin... @argh @done (16-03-01 19:08)
     ☐ API
-      ☐ respond to flow
+      ✔ respond to flow @done (16-03-04 08:03)
       ☐ saves info the same model i already have for datadocs....?
+      ☐ chunked flow POST method?
+        ☐ REST plugin to accept all parameters
   ☐ Provide example in production
   ☐ welcome parallax
   ☐ welcome slider

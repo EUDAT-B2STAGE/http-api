@@ -18,7 +18,7 @@
 <div flow-init
      flow-files-submitted="$flow.upload()"
      flow-file-success="up.uploaded($file)"
-     flow-file-added="up.adding($file)"
+     flow-file-added="up.adding($file, $event, $flow)"
      flow-file-error="up.fileError($file, $message)"
      flow-progress="up.progressing"
     >
@@ -44,13 +44,20 @@ LIST:
 
   <span class="btn" flow-btn>Upload File</span>
 
+<!--
   <div flow-file-progress="up.progressing"></div>
+-->
 
   <table>
     <tr ng-repeat="file in $flow.files">
-        <td>{{$index+1}}</td>
+        <td>Request {{$index+1}}</td>
         <td>{{file.name}}</td>
-        <td> <img flow-img="$flow.files[0]"/ width="100"> </td>
+        <td>
+            {{file.status}}
+        </td>
+        <td width="50%">
+            <img flow-img="file" width="150">
+        </td>
     </tr>
   </table>
 </div>

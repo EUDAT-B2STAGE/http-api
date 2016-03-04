@@ -25,16 +25,19 @@ function UploadController($scope, $log, $mdDialog)
 
 // Functions for uploading
     self.uploaded = function(file) {
+      file.status = 'uploaded';
       $log.info("File uploaded", file);
 // DO SOMETHING
     };
 
-    self.adding = function(file) {
-      //$log.debug("File adding", file);
+    self.adding = function(file, ev, flow) {
+      file.status = 'progress';
+      $log.debug("File adding", file, ev, flow);
       $scope.showSimpleToast( {"Uploading the file": file.name} );
     };
 
     self.fileError = function(file, message_json) {
+      file.status = 'fail';
       $log.warn("File error", file, message_json);
       $scope.showSimpleToast({
         "Test": 'test me',
