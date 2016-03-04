@@ -38,6 +38,7 @@ Images:
       ✔ failed @done (16-03-04 08:16)
       ✔ completed @done (16-03-04 08:16)
       ☐ icons
+    ✔ handle 'already exist' error @done (16-03-04 08:23)
     ☐ switch from GET to chunked POST?
     ☐ limit file size?
   ☐ Backend: associate image

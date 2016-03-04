@@ -36,13 +36,13 @@ function UploadController($scope, $log, $mdDialog)
       $scope.showSimpleToast( {"Uploading the file": file.name} );
     };
 
-    self.fileError = function(file, message_json) {
+    self.fileError = function(file, message) {
       file.status = 'fail';
-      $log.warn("File error", file, message_json);
+      file.errorMessage = message;
+      $log.warn("File error", file, message);
       $scope.showSimpleToast({
-        "Test": 'test me',
         "Failed to upload": file.name,
-        "Error message": message_json,
+        //"Error message": message,
       }, 9000);
     };
 

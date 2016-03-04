@@ -52,12 +52,11 @@ LIST:
     <tr ng-repeat="file in $flow.files">
         <td>Request {{$index+1}}</td>
         <td>{{file.name}}</td>
-        <td>
-            {{file.status}}
-        </td>
+        <td> {{file.status}} </td>
         <td width="50%">
             <img flow-img="file" width="150">
         </td>
+        <td> <b>{{file.errorMessage}}</b> </td>
     </tr>
   </table>
 </div>
@@ -69,11 +68,13 @@ LIST:
     <md-dialog-actions layout="row">
       <span flex></span>
       <md-button class="md-secondary" ng-click="up.validate()">
-        save
+        close
       </md-button>
+<!--
       <md-button class="md-warn" ng-click="up.cancel()" >
         cancel
       </md-button>
+-->
     </md-dialog-actions>
 
   </form>
