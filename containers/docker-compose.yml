@@ -36,6 +36,8 @@ backend:
         - ../vanilla/apis:/code/restapi/resources/custom
         # Rest API configuration
         - ../vanilla/specs:/code/confs/endpoints
+        # Other libs
+        - ../vanilla/libs:/code/libs
 
 ###############################
 frontend:
@@ -50,7 +52,7 @@ frontend:
         # Main dir. It has to be the root directory, to make links work
         - ..:/data
         # js/css libraries installed via bower
-        - ../vanilla/jslibs/bower_components:/data/frontend/felask/static/bower
+        - ../vanilla/libs/bower_components:/data/frontend/felask/static/bower
         # custom css files
         - ../vanilla/templates/customcss:/data/frontend/felask/static/css
         # All the angular blueprints (&& templates)
@@ -68,7 +70,7 @@ frontend:
 # Make automatic to install libraries
 bower:
     image: pdonorio/jsdev
-    working_dir: /tmp/vanilla/jslibs
+    working_dir: /tmp/vanilla/libs
     volumes:
         - ..:/tmp
 

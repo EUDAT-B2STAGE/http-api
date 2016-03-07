@@ -39,8 +39,10 @@ Images:
       ✔ completed @done (16-03-04 08:16)
       ☐ icons
     ✔ handle 'already exist' error @done (16-03-04 08:23)
-    ☐ switch from GET to chunked POST?
-    ☐ limit file size?
+    ☐ FLOW lib
+      ☐ switch from GET to chunked POST?
+      ☐ limit file size?
+      ☐ authentication?
   ☐ Backend: associate image
     ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
       ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)
@@ -51,6 +53,8 @@ Images:
       ☐ saves info the same model i already have for datadocs....?
       ☐ chunked flow POST method?
         ☐ REST plugin to accept all parameters
+      ☐ Zoomify
+        ☐ how to integrate? probably hidden inside vanilla/jslibs
   ☐ Provide example in production
   ☐ welcome parallax
   ☐ welcome slider

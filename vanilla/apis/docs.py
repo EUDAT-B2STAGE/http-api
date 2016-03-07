@@ -10,6 +10,7 @@ import rethinkdb as r
 from flask.ext.security import auth_token_required, roles_required
 from confs import config
 from ..services.rethink import schema_and_tables, BaseRethinkResource
+from ..services.uploader import Uploader
 from .. import decorators as deck
 from ... import get_logger
 
@@ -242,6 +243,8 @@ class RethinkDataForAdministrators(BaseRethinkResource):
         return super().delete(id)
 
 
+#####################################
+# A good tests for uploading images
 class RethinkImagesAssociations(BaseRethinkResource):
     """
     Fixing problems in images associations?
@@ -302,3 +305,30 @@ class RethinkImagesAssociations(BaseRethinkResource):
         # # Group everything by party name
         # cursor = second.group('party').run(time_format="raw")
         # return self.response(cursor)
+
+
+##########################################
+# Upload
+##########################################
+class RethinkUploader(Uploader):
+    """
+    Uploading data and save it inside db
+
+    Note:
+    it does not work if we append the decorator @deck.apimethod to GET :/
+
+    Still to check if we can hide the upload behind authorization
+    #@auth_token_required
+    """
+
+    @deck.apimethod
+    def get(self, filename=None):
+        return super(RethinkUploader, self).get(filename)
+
+    @deck.apimethod
+    def post(self):
+
+        # Just a debug (on flow) test. Failed..
+        # print("JSON IS\n\n\n", self.get_input(False))
+
+        return super(RethinkUploader, self).post()

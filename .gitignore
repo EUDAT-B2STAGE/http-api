@@ -8,7 +8,7 @@ frontend/config/angular/blueprint.json
 uploads
 
 # bower
-vanilla/jslibs/bower_components
+vanilla/libs/bower_components
 
 # Sublime text
 *.sublime-*
