@@ -39,8 +39,9 @@ Images:
       ✔ completed @done (16-03-04 08:16)
       ☐ icons
     ✔ handle 'already exist' error @done (16-03-04 08:23)
+    ☐ add file name in the dialog title
     ☐ FLOW lib
-      ☐ switch from GET to chunked POST?
+      ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
       ☐ limit file size?
       ☐ authentication?
   ☐ Backend: associate image
@@ -51,10 +52,10 @@ Images:
     ☐ API
       ✔ respond to flow @done (16-03-04 08:03)
       ☐ saves info the same model i already have for datadocs....?
-      ☐ chunked flow POST method?
-        ☐ REST plugin to accept all parameters
       ☐ Zoomify
         ☐ how to integrate? probably hidden inside vanilla/jslibs
+      ☐ chunked flow POST method?
+        ☐ REST plugin to accept all parameters
   ☐ Provide example in production
   ☐ welcome parallax
   ☐ welcome slider

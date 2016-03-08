@@ -12,7 +12,7 @@ from confs import config
 from ..services.rethink import schema_and_tables, BaseRethinkResource
 from ..services.uploader import Uploader
 from .. import decorators as deck
-from ... import get_logger
+from ... import get_logger, htmlcodes as hcodes
 
 logger = get_logger(__name__)
 
@@ -310,7 +310,7 @@ class RethinkImagesAssociations(BaseRethinkResource):
 ##########################################
 # Upload
 ##########################################
-class RethinkUploader(Uploader):
+class RethinkUploader(Uploader, BaseRethinkResource):
     """
     Uploading data and save it inside db
 
@@ -321,6 +321,8 @@ class RethinkUploader(Uploader):
     #@auth_token_required
     """
 
+    table = 'datadocs'
+
     @deck.apimethod
     def get(self, filename=None):
         return super(RethinkUploader, self).get(filename)
@@ -329,6 +331,53 @@ class RethinkUploader(Uploader):
     def post(self):
 
         # Just a debug (on flow) test. Failed..
-        # print("JSON IS\n\n\n", self.get_input(False))
+        print("JSON IS\n\n\n", self.get_input(False))
 
-        return super(RethinkUploader, self).post()
+        # Original upload
+        obj, status = super(RethinkUploader, self).post()
+
+        if isinstance(obj, dict) and 'filename' in obj['data']:
+            myfile = obj['data']['filename']
+            abs_file = self.absolute_upload_file(myfile)
+
+            import os
+            import re
+
+            # Check exists
+            if not os.path.exists(abs_file):
+                return self.response(
+                    "Failed to find the uploaded file",
+                    fail=True, code=hcodes.HTTP_DEFAULT_SERVICE_FAIL)
+
+            ftype = None
+            fcharset = None
+            try:
+                # Check the type
+                from plumbum.cmd import file
+                out = file["-ib", abs_file]()
+                tmp = out.split(';')
+                ftype = tmp[0].strip()
+                fcharset = tmp[1].split('=')[1].strip()
+            except Exception:
+                logger.warning("Unknown type for '%s'" % abs_file)
+
+            # Handle the file info insertion inside rethinkdb
+            record = {
+# There should already be a record name!
+# RECOVER IT FROM JSON??
+                #"record": None,
+                "images": [{
+                    "code": re.sub(r"\.[^\.]+$", '', myfile),
+                    "filename": myfile,
+                    "filetype": ftype,
+                    "filecharset": fcharset,
+                }]
+            }
+
+            try:
+                obj = self.insert(record)
+            except BaseException as e:
+                return self.response(
+                    str(e), fail=True, code=hcodes.HTTP_BAD_CONFLICT)
+
+        return self.response({'id': obj}, code=status)
