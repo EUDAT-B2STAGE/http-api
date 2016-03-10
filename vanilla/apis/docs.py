@@ -364,7 +364,7 @@ class RethinkUploader(Uploader, BaseRethinkResource):
             # Handle the file info insertion inside rethinkdb
             record = {
 # There should already be a record name!
-# RECOVER IT FROM JSON??
+# RECOVER IT FROM JSON?
                 #"record": None,
                 "images": [{
                     "code": re.sub(r"\.[^\.]+$", '', myfile),
@@ -375,9 +375,9 @@ class RethinkUploader(Uploader, BaseRethinkResource):
             }
 
             try:
-                obj = self.insert(record)
+                obj = {'id': self.insert(record)}
             except BaseException as e:
                 return self.response(
                     str(e), fail=True, code=hcodes.HTTP_BAD_CONFLICT)
 
-        return self.response({'id': obj}, code=status)
+        return self.response(obj, code=status)

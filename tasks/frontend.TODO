@@ -39,11 +39,13 @@ Images:
       ✔ completed @done (16-03-04 08:16)
       ☐ icons
     ✔ handle 'already exist' error @done (16-03-04 08:23)
-    ☐ add file name in the dialog title
-    ☐ FLOW lib
-      ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
-      ☐ limit file size?
-      ☐ authentication?
+      ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
+      ☐ recover record of the file @recordid
+        ☐ add file name in the dialog title
+      ☐ FLOW lib
+        ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
+        ☐ limit file size?
+        ☐ decide if authenticate
   ☐ Backend: associate image
     ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
       ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)
@@ -51,7 +53,9 @@ Images:
       ✔ move to browse from admin... @argh @done (16-03-01 19:08)
     ☐ API
       ✔ respond to flow @done (16-03-04 08:03)
-      ☐ saves info the same model i already have for datadocs....?
+      ✔ saves info the same model i already have for datadocs @done (16-03-10 15:06)
+      ☐ recover record of the file @recordid
+      ☐ code and test for multiple images
       ☐ Zoomify
         ☐ how to integrate? probably hidden inside vanilla/jslibs
       ☐ chunked flow POST method?
