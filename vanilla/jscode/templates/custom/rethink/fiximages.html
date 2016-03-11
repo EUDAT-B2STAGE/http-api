@@ -40,10 +40,10 @@
         </md-card-title-text>
       </md-card-title>
       <md-card-content>
-      {{elements}}
         <ul>
             <li ng-repeat="element in fix.elements">
-                <a href ng-click="fix.uploaderDialog()">
+                <a href
+                ng-click="fix.uploaderDialog(element.record, element.value)">
                     {{element.value}}
                 </a>
             </li>

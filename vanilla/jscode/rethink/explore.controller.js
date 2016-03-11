@@ -61,24 +61,25 @@ function FixImagesController($scope, $log, $mdDialog)
 
 
 /////////////////////////////////////
-    self.uploaderDialog = function()
+    self.uploaderDialog = function(record, name)
     {
+      $scope.currentRecord = record;
+      $scope.currentName = name;
       var dialogOptions = {
         templateUrl: blueprintTemplateDir + 'uploader.html',
         //controller: UploadController,
+// Not working if controller is declared inside the dialog HTML
+        //bindToController: true,
         parent: angular.element(document.body),
-        //locals: { id: null, },
-        //targetEvent: ev,
+// But I can pass my scope...
+// https://github.com/angular/material/issues/455#issuecomment-114017738
+        scope: $scope,
         //clickOutsideToClose:true,
-        //onComplete: function() { $log.debug("complete"); },
-        }
-
-      var afterDialog = function(response) {
-        $log.info("Dialog response", response);
+        //onComplete: function
       }
 
       // Open
-      $mdDialog.show(dialogOptions).then(afterDialog);
+      $mdDialog.show(dialogOptions).then();
     }
 /////////////////////////////////////
 

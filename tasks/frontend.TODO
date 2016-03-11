@@ -40,10 +40,13 @@ Images:
       ☐ icons
     ✔ handle 'already exist' error @done (16-03-04 08:23)
       ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
-      ☐ recover record of the file @recordid
-        ☐ add file name in the dialog title
+      ✔ recover record of the file @recordid @done (16-03-11 08:20)
+        ✔ add file name in the dialog title @done (16-03-11 08:20)
       ☐ FLOW lib
         ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
+        ☐ angular config
+          ☐ bug in "target" for passing variables?
+          ☐ fix how to get the API URL @important
         ☐ limit file size?
         ☐ decide if authenticate
   ☐ Backend: associate image

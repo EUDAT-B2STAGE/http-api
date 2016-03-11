@@ -5,10 +5,10 @@ angular.module('web')
     .controller('UploadController', UploadController);
 
 
-function UploadController($scope, $log, $mdDialog)
+function UploadController($scope, $log, $mdDialog) //, record)
 {
     var self = this;
-    $log.debug("Uploader");
+    $log.debug("Uploader", $scope.currentRecord);
 
 // Buttons actions in the dialog
     self.validate = function() {
@@ -23,23 +23,30 @@ function UploadController($scope, $log, $mdDialog)
 // IMAGES filter?
 //////////////////////////////
 
-// Functions for uploading
     self.uploaded = function(file) {
       file.status = 'uploaded';
       $log.info("File uploaded", file);
-// DO SOMETHING
+
+/*
+// REFRESH SHOULD BE DONE AFTER DIALOG CLOSING
+// (another js file)
+// BUT ONLY IF SOMETHING HAS BEEN UPLOADED
+*/
     };
 
     self.adding = function(file, ev, flow) {
       file.status = 'progress';
+      file.record = $scope.currentRecord;
       $log.debug("File adding", file, ev, flow);
       $scope.showSimpleToast( {"Uploading the file": file.name} );
     };
 
     self.fileError = function(file, message) {
       file.status = 'fail';
-      file.errorMessage = message;
-      $log.warn("File error", file, message);
+      var json_message = angular.fromJson(message);
+      //console.log(message, json_message);
+      file.errorMessage = json_message.data['error'];
+      $log.warn("File error", file, file.errorMessage);
       $scope.showSimpleToast({
         "Failed to upload": file.name,
         //"Error message": message,
