@@ -46,6 +46,7 @@ def read_files(path):
         with open(filename) as f:
             name = section.split('/')[0]
             myjson[name] = json.load(f)
+
         # if section == 'frameworks':
         #     print(myjson[section])
     return myjson

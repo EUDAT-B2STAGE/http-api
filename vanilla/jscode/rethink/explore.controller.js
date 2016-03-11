@@ -61,6 +61,7 @@ function FixImagesController($scope, $log, $mdDialog)
 
 
 /////////////////////////////////////
+
     self.uploaderDialog = function(record, name)
     {
       $scope.currentRecord = record;
@@ -69,6 +70,7 @@ function FixImagesController($scope, $log, $mdDialog)
         templateUrl: blueprintTemplateDir + 'uploader.html',
         //controller: UploadController,
 // Not working if controller is declared inside the dialog HTML
+// http://blog.thoughtram.io/angularjs/2015/01/02/exploring-angular-1.3-bindToController.html
         //bindToController: true,
         parent: angular.element(document.body),
 // But I can pass my scope...

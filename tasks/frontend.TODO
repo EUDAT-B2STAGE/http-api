@@ -49,6 +49,7 @@ Images:
           ☐ fix how to get the API URL @important
         ☐ limit file size?
         ☐ decide if authenticate
+        https://github.com/flowjs/ng-flow/issues/33#issuecomment-42127718
   ☐ Backend: associate image
     ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
       ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)

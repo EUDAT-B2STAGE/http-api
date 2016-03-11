@@ -163,7 +163,9 @@ def register():
 def jsblueprint():
     variables = {
         'name': CURRENT_BLUEPRINT,
-        'time': user_config['options']['load_timeout']
+        'time': user_config['options']['load_timeout'],
+# IF JS_INIT, add API_URL if not exists
+        'api_url': 42
     }
     return render_template("blueprint.js", **variables)
 

@@ -18,8 +18,13 @@ function uploaderConfig(flowFactoryProvider) {
         // CHECK WHAT WE DO IN COMMON.API.JS
         //target: 'http://local.docker:8081/api/upload',
 
+// Found out about in:
+//https://github.com/flowjs/flow.js/issues/57#issuecomment-62300498
         target: function (FlowFile, FlowChunk, isTest) {
             console.log("FLow file is ", FlowFile);
+
+// Digging with
+//https://github.com/flowjs/ng-flow/issues/33#issuecomment-42127718
             return
                 'http://' +
                 'local.docker:8081/api' +

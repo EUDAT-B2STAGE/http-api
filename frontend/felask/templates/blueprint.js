@@ -1,3 +1,4 @@
+// JINJA TEMPLATE (not AngularJs syntax)
 
 // Choose your blueprint
 var blueprint = '{{name}}';
@@ -5,3 +6,6 @@ var blueprint = '{{name}}';
 
 // Time to wait before initial page load
 var timeToWait = {{time}}; // measured in ms
+
+// Time to wait before initial page load
+var apiUrl = '{{api_url}}'; // measured in ms
