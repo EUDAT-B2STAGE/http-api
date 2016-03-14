@@ -65,8 +65,10 @@ Images:
       ☐ chunked flow POST method?
         ☐ REST plugin to accept all parameters
   ☐ Provide example in production
-  ☐ welcome parallax
-  ☐ welcome slider
+  ☐ Welcome
+    ☐ fixed template to choose
+    ☐ welcome parallax
+    ☐ welcome slider
 
 ☐ image cache
  https://github.com/jBenes/angular-imgcache.js/tree/master
