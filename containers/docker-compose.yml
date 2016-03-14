@@ -29,7 +29,7 @@ backend:
         - 8081:5000
     volumes:
         # Sql lite database
-        - apilitedb:/dbs
+        - restangulask_apilitedb:/dbs
         # Base code
         - ../backend:/code
         # Rest API endpoints
@@ -48,7 +48,7 @@ frontend:
     working_dir: /data/frontend
     volumes:
         # Sql lite database & common models
-        - apilitedb:/dbs
+        - restangulask_apilitedb:/dbs
         # Main dir. It has to be the root directory, to make links work
         - ..:/data
         # js/css libraries installed via bower
@@ -82,7 +82,7 @@ sqladmin:
     image: clue/adminer
     # Sql lite database & common models
     volumes:
-        - apilitedb:/dbs
+        - restangulask_apilitedb:/dbs
     # links:
     #     - sql:db
     ports:
