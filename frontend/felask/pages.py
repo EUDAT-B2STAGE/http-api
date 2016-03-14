@@ -164,8 +164,7 @@ def jsblueprint():
     variables = {
         'name': CURRENT_BLUEPRINT,
         'time': user_config['options']['load_timeout'],
-# IF JS_INIT, add API_URL if not exists
-        'api_url': 42
+        'api_url': request.url_root
     }
     return render_template("blueprint.js", **variables)
 
@@ -230,36 +229,8 @@ def home(mypath=None):
     """
     logger.debug("Using angular route. PATH is '%s'" % mypath)
     if mypath is None:
-        #return templating('welcome.html')
+        # return templating('welcome.html')
         pass
     elif mypath == 'loggedout':
         logout_user()
     return jstemplate()
-
-# ############################
-# # Dirty fix for URL BASE in angular HTML5mode
-
-#     if request.url_root not in user_config['content']['stylesheets'][0]:
-#         # FIX CSS
-#         new = []
-#         tmp = user_config['content']['stylesheets']
-#         for x in tmp:
-#             new.append(request.url_root + x)
-#         user_config['content']['stylesheets'] = new
-#         # FIX JS
-#         new = []
-#         tmp = user_config['content']['jsfiles']
-#         for x in tmp:
-#             new.append(request.url_root + x)
-#         user_config['content']['jsfiles'] = new
-#         # FIX IMAGES
-#         new = []
-#         tmp = user_config['content']['logos']
-#         for x in tmp:
-#             new.append({
-#                 'src': request.url_root + x['src'],
-#                 'width': x['width']})
-#         user_config['content']['logos'] = new
-
-# # Dirty fix for URL BASE in angular HTML5mode
-# ############################

@@ -14,25 +14,15 @@ function hotkeysConfig(hotkeysProvider) {
 function uploaderConfig(flowFactoryProvider) {
 
     flowFactoryProvider.defaults = {
-/* THIS HAS TO BE FIXED */
-        // CHECK WHAT WE DO IN COMMON.API.JS
-        //target: 'http://local.docker:8081/api/upload',
-
-// Found out about in:
-//https://github.com/flowjs/flow.js/issues/57#issuecomment-62300498
+        // Found out about in:
+        //https://github.com/flowjs/flow.js/issues/57#issuecomment-62300498
         target: function (FlowFile, FlowChunk, isTest) {
-            console.log("FLow file is ", FlowFile);
-
-// Digging with
-//https://github.com/flowjs/ng-flow/issues/33#issuecomment-42127718
+            //console.log("FLow file is ", FlowFile);
             return
-                'http://' +
-                'local.docker:8081/api' +
+                apiUrl +
                 '/upload';
                 //+ FlowFile.record;
         }
-
-/* THIS HAS TO BE FIXED */
 
         //permanentErrors:[404, 500, 501]
     };

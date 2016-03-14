@@ -46,7 +46,7 @@ Images:
         ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
         ☐ angular config
           ☐ bug in "target" for passing variables?
-          ☐ fix how to get the API URL @important
+          ✔ fix how to get the API URL @important @done (16-03-14 21:04)
         ☐ limit file size?
         ☐ decide if authenticate
         https://github.com/flowjs/ng-flow/issues/33#issuecomment-42127718

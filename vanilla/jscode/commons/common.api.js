@@ -4,9 +4,11 @@
 angular.module('web')
     .service('api', RestApiService);
 
-function RestApiService($window, $http, $auth, $log) {
+function RestApiService($http, $auth, $log) {
 
     var self = this;
+
+/*
     var myhost = window.location.host;
 
     // This is for development.
@@ -25,6 +27,8 @@ function RestApiService($window, $http, $auth, $log) {
         + ':' + self.API_PORT +
         '/api/'
         ;
+*/
+    self.API_URL = apiUrl + '/';
 
     self.endpoints = {
         check: 'verify',

@@ -7,5 +7,6 @@ var blueprint = '{{name}}';
 // Time to wait before initial page load
 var timeToWait = {{time}}; // measured in ms
 
-// Time to wait before initial page load
-var apiUrl = '{{api_url}}'; // measured in ms
+// Api URI
+var apiPort = 8081;
+var apiUrl = '{{api_url}}'.slice(0, -1) + ':' + apiPort + '/api';
