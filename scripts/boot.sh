@@ -16,6 +16,7 @@ com="docker-compose"
 #services="backend frontend"
 services="custombe customfe"
 webbuild="bower"
+volume_prefix="restangulask_"
 
 #############################
 cd containers
@@ -155,6 +156,8 @@ else
     if [ "$?" == "0" ]; then
         echo "[$1] configuration. Status:"
         $com $files ps
-        # docker volume ls
+        echo ""
+        echo "Available volumes"
+        docker volume ls | grep $volume_prefix
     fi
 fi

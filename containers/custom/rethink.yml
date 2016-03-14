@@ -6,7 +6,7 @@ rethinkdb:
   ports:
       - 7778:8080
   volumes:
-      - rdbdata:/data
+      - restangulask_rdbdata:/data
 
 searchindex:
   image: elasticsearch
