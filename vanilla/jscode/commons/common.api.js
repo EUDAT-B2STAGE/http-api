@@ -7,27 +7,7 @@ angular.module('web')
 function RestApiService($http, $auth, $log) {
 
     var self = this;
-
-/*
-    var myhost = window.location.host;
-
-    // This is for development.
-    // In production nginx should provide access to 'api' url
-    self.API_PORT = 8081;
-
-    var position = myhost.indexOf(':');
-    var cleanHost = "";
-    if (position < 0) cleanHost = myhost;
-    else cleanHost = myhost.slice(0, position);
-
-    self.API_URL =
-        window.location.protocol
-        + "//" +
-        cleanHost
-        + ':' + self.API_PORT +
-        '/api/'
-        ;
-*/
+    // Api URI
     self.API_URL = apiUrl + '/';
 
     self.endpoints = {
@@ -44,8 +24,8 @@ function RestApiService($http, $auth, $log) {
         return $auth.getToken();
     }
 
-    self.apiCall = function (endpoint, method, data, id, errorCheck) {
-
+    self.apiCall = function (endpoint, method, data, id, errorCheck)
+    {
 
       ////////////////////////
         //DEFAULTS

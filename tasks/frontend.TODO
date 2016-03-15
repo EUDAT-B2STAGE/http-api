@@ -59,6 +59,7 @@ Images:
       ✔ respond to flow @done (16-03-04 08:03)
       ✔ saves info the same model i already have for datadocs @done (16-03-10 15:06)
       ☐ recover record of the file @recordid
+        ☐ remove that record from the list of fiximage
       ☐ code and test for multiple images
       ☐ Zoomify
         ☐ how to integrate? probably hidden inside vanilla/jslibs
