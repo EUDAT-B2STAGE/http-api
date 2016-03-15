@@ -10,6 +10,23 @@ function UploadController($scope, $log, $mdDialog) //, record)
     var self = this;
     $log.debug("Uploader", $scope.currentRecord);
 
+    //////////////////////////////
+    // Flow library configuration
+    //////////////////////////////
+    self.config = {
+        // Passing data to the flow HTTP API call
+        query: function (flowFile, flowChunk) {
+          return {
+            record: $scope.currentRecord,
+            //source: 'flow_query'
+          };
+        }
+    }
+
+    //////////////////////////////
+    // Other functions
+    //////////////////////////////
+
 // Buttons actions in the dialog
     self.validate = function() {
       $mdDialog.hide('OK');

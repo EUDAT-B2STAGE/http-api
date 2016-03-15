@@ -16,18 +16,7 @@ function uploaderConfig(flowFactoryProvider) {
     flowFactoryProvider.defaults = {
         // Found out about in:
         //https://github.com/flowjs/flow.js/issues/57#issuecomment-62300498
-        target:
-/*
-        function (FlowFile, FlowChunk)
-        {
-            //console.log("FLow file is ", FlowFile);
-            return
-                apiUrl +
-                '/upload';
-                //+ FlowFile.record;
-        }
-*/
-            apiUrl + '/upload',
+        target: apiUrl + '/upload',
         permanentErrors:[404, 500, 501]
     };
 
