@@ -38,6 +38,9 @@ Images:
       ✔ failed @done (16-03-04 08:16)
       ✔ completed @done (16-03-04 08:16)
       ☐ icons
+    ☐ UI FIX
+      ☐ scroll bars and fixed width
+      ☐ show the card close to where you click?
     ✔ handle 'already exist' error @done (16-03-04 08:23)
       ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
       ✔ recover record of the file @recordid @done (16-03-11 08:20)

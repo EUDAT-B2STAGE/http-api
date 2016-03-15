@@ -8,7 +8,10 @@ from __future__ import absolute_import
 
 import rethinkdb as r
 from flask.ext.security import auth_token_required, roles_required
+
+from flask import request
 from flask.ext.restful import reqparse
+
 from confs import config
 from ..services.rethink import schema_and_tables, BaseRethinkResource
 from ..services.uploader import Uploader
@@ -337,7 +340,11 @@ class RethinkUploader(Uploader, BaseRethinkResource):
 
 # record=e0f7f651-b09a-4d0e-8b09-5f75dad7989e&flowChunkNumber=1&flowChunkSize=1048576&flowCurrentChunkSize=1367129&flowTotalSize=1367129&flowIdentifier=1367129-IMG_4364CR2jpg&flowFilename=IMG_4364.CR2.jpg&flowRelativePath=IMG_4364.CR2.jpg&flowTotalChunks=1
 
-        print("PARAMS\n\n\n", request_params)
+# // FEATURE REQUEST
+# Try to create a decorator to parse arguments from the function args list
+# // FEATURE REQUEST
+
+        print("PARAMS\n\n\n", request_params, request)
 
         # Original upload
         obj, status = super(RethinkUploader, self).post()

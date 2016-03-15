@@ -50,15 +50,19 @@ function getMissingImagesData(admin, $scope) {
 
 };
 
-function FixImagesController($scope, $log, $mdDialog)
+function FixImagesController($scope, $log, $mdDialog, $window)
 {
     $log.debug("Fix Controller");
     var self = this;
     self.noImageList = function (name, data) {
       self.elements = data;
       self.currentParty = name;
+      $window.scrollTo(0, 0);
     }
 
+    self.closeCard = function() {
+      delete self.elements;
+    }
 
 /////////////////////////////////////
 
@@ -75,7 +79,9 @@ function FixImagesController($scope, $log, $mdDialog)
         parent: angular.element(document.body),
 // But I can pass my scope...
 // https://github.com/angular/material/issues/455#issuecomment-114017738
-        scope: $scope,
+        scope: $scope.$new(),
+// Note: THE $new() FUNCTION IS NECESSARY to duplicate the scope inside the modal.
+// Otherwise, closing the modal would destroy the parent's scope
         //clickOutsideToClose:true,
         //onComplete: function
       }
