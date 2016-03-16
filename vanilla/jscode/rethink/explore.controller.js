@@ -91,11 +91,12 @@ function FixImagesController($scope, $log, $mdDialog, $window, admin)
         .then(function (response) {
             $log.debug("Closed dialog with", response);
             if (response) {
-
-// Make the loader appear ?
+                // Make the loader appear
                 $scope.parties = null;
-
+                $scope.showSimpleToast({"Reloading data": null}, 1200);
+                // Close the card
                 self.closeCard();
+                // Reload data
                 getMissingImagesData(admin, $scope);
             }
         });

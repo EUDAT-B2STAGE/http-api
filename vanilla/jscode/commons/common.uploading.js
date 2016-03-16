@@ -45,7 +45,7 @@ function UploadController($scope, $log, $mdDialog)
       file.status = 'progress';
       file.record = $scope.currentRecord;
       $log.debug("File adding", file, ev, flow);
-      $scope.showSimpleToast( {"Uploading the file": file.name} );
+      $scope.showSimpleToast( {"Uploading the file": file.name}, 1800);
     };
 
     self.fileError = function(file, message) {

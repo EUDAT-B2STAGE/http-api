@@ -38,7 +38,11 @@ function ToastController($scope, $log, $mdToast, $document)
         if (messages) {
             forEach(messages, function (value, key) {
                 //console.log("MESSAGE", key, value);
-                message += key + ': ' + value + '\r\n';
+                var line = key;
+                if (value) {
+                    line += value;
+                }
+                message += line + '\r\n';
             })
         }
         // Skip empty message
