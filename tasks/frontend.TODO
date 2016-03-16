@@ -38,9 +38,6 @@ Images:
       ✔ failed @done (16-03-04 08:16)
       ✔ completed @done (16-03-04 08:16)
       ☐ icons
-    ☐ UI FIX
-      ☐ scroll bars and fixed width
-      ☐ show the card close to where you click?
     ✔ handle 'already exist' error @done (16-03-04 08:23)
       ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
       ✔ recover record of the file @recordid @done (16-03-11 08:20)
@@ -49,8 +46,8 @@ Images:
         ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
         ✔ angular config @done (16-03-15 08:32)
           ✔ fix how to get the API URL @important @done (16-03-14 21:04)
+        ☐ remove that record from the list of fiximage
         ☐ limit file size?
-        ☐ decide if authenticate (header config)
         https://github.com/flowjs/ng-flow/issues/33#issuecomment-42127718
   ☐ Backend: associate image
     ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
@@ -61,22 +58,27 @@ Images:
       ✔ respond to flow @done (16-03-04 08:03)
       ✔ saves info the same model i already have for datadocs @done (16-03-10 15:06)
       ✔ recover record of the file @recordid @done (16-03-15 08:32)
-        ☐ remove that record from the list of fiximage
+        ✔ set the record when posting into API @done (16-03-16 07:56)
       ☐ code and test for multiple images
       ☐ Zoomify
-        ☐ how to integrate? probably hidden inside vanilla/jslibs
-      ☐ chunked flow POST method?
-        ☐ REST plugin to accept all parameters
+        ☐ how to integrate? probably inside dir of vanilla/jslibs (not saved to git)
   ☐ Provide example in production
   ☐ Welcome
     ☐ fixed template to choose
     ☐ welcome parallax
     ☐ welcome slider
 
-☐ image cache
- https://github.com/jBenes/angular-imgcache.js/tree/master
- ☐ nginx
-  http://charlesleifer.com/blog/nginx-a-caching-thumbnailing-reverse-proxying-image-server-/
+ Image optimization:
+  ☐ UI FIX
+    ☐ scroll bars and fixed width
+    ☐ show the card close to where you click?
+  ☐ decide if authenticate (header config)
+  ☐ chunked flow POST method?
+    ☐ REST plugin to accept all parameters
+  ☐ IMAGE CACHE
+   https://github.com/jBenes/angular-imgcache.js/tree/master
+   ☐ nginx
+    http://charlesleifer.com/blog/nginx-a-caching-thumbnailing-reverse-proxying-image-server-/
 
 Configuration:
   http://www.jvandemo.com/how-to-configure-your-angularjs-application-using-environment-variables/

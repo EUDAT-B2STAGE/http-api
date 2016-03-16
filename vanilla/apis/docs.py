@@ -337,14 +337,16 @@ class RethinkUploader(Uploader, BaseRethinkResource):
         parser = reqparse.RequestParser()
         parser.add_argument('record', type=str)
         request_params = parser.parse_args()
+        if 'record' not in request_params:
+            return self.response(
+                "No record to associate the image with",
+                fail=True, code=hcodes.HTTP_DEFAULT_SERVICE_FAIL)
 
 # record=e0f7f651-b09a-4d0e-8b09-5f75dad7989e&flowChunkNumber=1&flowChunkSize=1048576&flowCurrentChunkSize=1367129&flowTotalSize=1367129&flowIdentifier=1367129-IMG_4364CR2jpg&flowFilename=IMG_4364.CR2.jpg&flowRelativePath=IMG_4364.CR2.jpg&flowTotalChunks=1
 
 # // FEATURE REQUEST
 # Try to create a decorator to parse arguments from the function args list
 # // FEATURE REQUEST
-
-        print("PARAMS\n\n\n", request_params, request)
 
         # Original upload
         obj, status = super(RethinkUploader, self).post()
@@ -376,9 +378,7 @@ class RethinkUploader(Uploader, BaseRethinkResource):
 
             # Handle the file info insertion inside rethinkdb
             record = {
-# There should already be a record name!
-# RECOVER IT FROM JSON?
-                #"record": None,
+                "record": request_params['record'],
                 "images": [{
                     "code": re.sub(r"\.[^\.]+$", '', myfile),
                     "filename": myfile,
