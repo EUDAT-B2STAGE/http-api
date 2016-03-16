@@ -38,6 +38,7 @@ Images:
       ✔ failed @done (16-03-04 08:16)
       ✔ completed @done (16-03-04 08:16)
       ☐ icons
+        ☐ progress = small circular loading?
     ✔ handle 'already exist' error @done (16-03-04 08:23)
       ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
       ✔ recover record of the file @recordid @done (16-03-11 08:20)
@@ -59,7 +60,7 @@ Images:
       ✔ saves info the same model i already have for datadocs @done (16-03-10 15:06)
       ✔ recover record of the file @recordid @done (16-03-15 08:32)
         ✔ set the record when posting into API @done (16-03-16 07:56)
-      ☐ code and test for multiple images @uhm
+      ✔ code and test for multiple images @uhm @done (16-03-16 22:30)
       ☐ Zoomify
         ✔ how to integrate? probably inside dir of vanilla/jslibs (not saved to git) @done (16-03-16 20:42)
         ☐ install python2 and the other necessary libraries

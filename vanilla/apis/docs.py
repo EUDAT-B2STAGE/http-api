@@ -7,6 +7,7 @@ Some endpoints implementation
 from __future__ import absolute_import
 
 import rethinkdb as r
+from rethinkdb.net import DefaultCursorEmpty
 from flask.ext.security import auth_token_required, roles_required
 from flask.ext.restful import reqparse
 from confs import config
@@ -312,18 +313,10 @@ class RethinkImagesAssociations(BaseRethinkResource):
 # Upload
 ##########################################
 class RethinkUploader(Uploader, BaseRethinkResource):
-    """
-    Uploading data and save it inside db
-
-    Note:
-    it does not work if we append the decorator @deck.apimethod to GET :/
-
-    Still to check if we can hide the upload behind authorization
-    #@auth_token_required
-    """
+    """ Uploading data and save it inside db """
 
     table = 'datadocs'
-    ZOOMIFY_ENABLE = True
+    #ZOOMIFY_ENABLE = True
 
     @deck.apimethod
     def get(self, filename=None):
@@ -333,14 +326,19 @@ class RethinkUploader(Uploader, BaseRethinkResource):
     def post(self):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('record', type=str)
+# record=e0f7f651-b09a-4d0e-8b09-5f75dad7989e&flowChunkNumber=1&flowChunkSize=1048576&flowCurrentChunkSize=1367129&flowTotalSize=1367129&flowIdentifier=1367129-IMG_4364CR2jpg&flowFilename=IMG_4364.CR2.jpg&flowRelativePath=IMG_4364.CR2.jpg&flowTotalChunks=1
+
+        # Handle record id, which is mandatory
+        key = 'record'
+        parser.add_argument(key, type=str)
         request_params = parser.parse_args()
-        if 'record' not in request_params:
+        print("\n\n\nPARAMS\n\n\n", request_params)
+
+        if key not in request_params or request_params[key] is None:
             return self.response(
                 "No record to associate the image with",
                 fail=True, code=hcodes.HTTP_DEFAULT_SERVICE_FAIL)
-
-# record=e0f7f651-b09a-4d0e-8b09-5f75dad7989e&flowChunkNumber=1&flowChunkSize=1048576&flowCurrentChunkSize=1367129&flowTotalSize=1367129&flowIdentifier=1367129-IMG_4364CR2jpg&flowFilename=IMG_4364.CR2.jpg&flowRelativePath=IMG_4364.CR2.jpg&flowTotalChunks=1
+        id = request_params[key]
 
 # // FEATURE REQUEST
 # Try to create a decorator to parse arguments from the function args list
@@ -374,19 +372,36 @@ class RethinkUploader(Uploader, BaseRethinkResource):
             except Exception:
                 logger.warning("Unknown type for '%s'" % abs_file)
 
+            # RethinkDB
+            query = self.get_table_query()
+            images = []
+
+            # I should query the database to see if this record already exists
+            # And has some images
+            cursor = query.filter({'record': id})['images'].run()
+            try:
+                images = next(cursor)
+            except DefaultCursorEmpty:
+                pass
+
+            # I could check if the filename is already there. But why? :)
+
+            # Add the image to this record
+            images.append({
+                "code": re.sub(r"\.[^\.]+$", '', myfile),
+                "filename": myfile,
+                "filetype": ftype,
+                "filecharset": fcharset})
+
             # Handle the file info insertion inside rethinkdb
             record = {
-                "record": request_params['record'],
-                "images": [{
-                    "code": re.sub(r"\.[^\.]+$", '', myfile),
-                    "filename": myfile,
-                    "filetype": ftype,
-                    "filecharset": fcharset,
-                }]
+                "record": id,
+                "images": images,
             }
 
             try:
-                obj = {'id': self.insert(record)}
+                query.replace(record).run()
+                obj = {'id': id}
             except BaseException as e:
                 return self.response(
                     str(e), fail=True, code=hcodes.HTTP_BAD_CONFLICT)
