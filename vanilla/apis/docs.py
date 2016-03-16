@@ -8,10 +8,7 @@ from __future__ import absolute_import
 
 import rethinkdb as r
 from flask.ext.security import auth_token_required, roles_required
-
-from flask import request
 from flask.ext.restful import reqparse
-
 from confs import config
 from ..services.rethink import schema_and_tables, BaseRethinkResource
 from ..services.uploader import Uploader
@@ -326,6 +323,7 @@ class RethinkUploader(Uploader, BaseRethinkResource):
     """
 
     table = 'datadocs'
+    ZOOMIFY_ENABLE = True
 
     @deck.apimethod
     def get(self, filename=None):

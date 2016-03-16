@@ -61,8 +61,10 @@ Images:
         ✔ set the record when posting into API @done (16-03-16 07:56)
       ☐ code and test for multiple images @uhm
       ☐ Zoomify
-        ☐ how to integrate? probably inside dir of vanilla/jslibs (not saved to git)
+        ✔ how to integrate? probably inside dir of vanilla/jslibs (not saved to git) @done (16-03-16 20:42)
+        ☐ install python2 and the other necessary libraries
   ☐ Provide example in production
+    ☐ Show zoomification inside detail page @important
   ☐ Welcome
     ☐ fixed template to choose
     ☐ welcome parallax
