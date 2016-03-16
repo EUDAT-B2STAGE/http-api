@@ -44,13 +44,13 @@ function getMissingImagesData(admin, $scope) {
     return admin.getDocumentsWithNoImages()
       .then(function (out)
       {
-        console.log("DATA", out);
+        //console.log("DATA", out);
         $scope.parties = out.data;
     });
 
 };
 
-function FixImagesController($scope, $log, $mdDialog, $window)
+function FixImagesController($scope, $log, $mdDialog, $window, admin)
 {
     $log.debug("Fix Controller");
     var self = this;
@@ -87,7 +87,18 @@ function FixImagesController($scope, $log, $mdDialog, $window)
       }
 
       // Open
-      $mdDialog.show(dialogOptions).then();
+      $mdDialog.show(dialogOptions)
+        .then(function (response) {
+            $log.debug("Closed dialog with", response);
+            if (response) {
+
+// Make the loader appear ?
+                $scope.parties = null;
+
+                self.closeCard();
+                getMissingImagesData(admin, $scope);
+            }
+        });
     }
 /////////////////////////////////////
 

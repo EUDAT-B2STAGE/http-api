@@ -46,7 +46,7 @@ Images:
         ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
         ✔ angular config @done (16-03-15 08:32)
           ✔ fix how to get the API URL @important @done (16-03-14 21:04)
-        ☐ remove that record from the list of fiximage
+        ✔ remove that record from the list of fiximage @done (16-03-16 08:31)
         ☐ limit file size?
         https://github.com/flowjs/ng-flow/issues/33#issuecomment-42127718
   ☐ Backend: associate image

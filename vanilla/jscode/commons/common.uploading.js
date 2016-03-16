@@ -5,10 +5,12 @@ angular.module('web')
     .controller('UploadController', UploadController);
 
 
-function UploadController($scope, $log, $mdDialog) //, record)
+function UploadController($scope, $log, $mdDialog)
 {
     var self = this;
     $log.debug("Uploader", $scope.currentRecord);
+
+    self.response = false;
 
     //////////////////////////////
     // Flow library configuration
@@ -29,26 +31,14 @@ function UploadController($scope, $log, $mdDialog) //, record)
 
 // Buttons actions in the dialog
     self.validate = function() {
-      $mdDialog.hide('OK');
+      // Tell the parent if we uploaded something
+      $mdDialog.hide(self.response);
     };
-
-    self.cancel = function() {
-      $mdDialog.hide('FAIL');
-    };
-
-//////////////////////////////
-// IMAGES filter?
-//////////////////////////////
 
     self.uploaded = function(file) {
       file.status = 'uploaded';
+      self.response = true;
       $log.info("File uploaded", file);
-
-/*
-// REFRESH SHOULD BE DONE AFTER DIALOG CLOSING
-// (another js file)
-// BUT ONLY IF SOMETHING HAS BEEN UPLOADED
-*/
     };
 
     self.adding = function(file, ev, flow) {
