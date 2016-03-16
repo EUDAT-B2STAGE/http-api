@@ -71,6 +71,10 @@ Images:
     ☐ welcome parallax
     ☐ welcome slider
 
+ Rethinkdb logs:
+   ☐ problem with the second...
+     ☐ rethinkdb append?
+
  Image optimization:
   ☐ UI FIX
     ☐ scroll bars and fixed width
@@ -85,6 +89,14 @@ Images:
 
 Configuration:
   http://www.jvandemo.com/how-to-configure-your-angularjs-application-using-environment-variables/
+
+2016-03-16 21:35:52,119 restapi.resources.decorators INFO     [Class: RethinkDataValues] GET request
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'key', type <class 'str'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'currentpage', type <class 'int'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'perpage', type <class 'int'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'step', type <class 'int'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'filter', type <class 'str'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'details', type <class 'str'>
 
 SUBMIT:
  ☐ Steps are upside down

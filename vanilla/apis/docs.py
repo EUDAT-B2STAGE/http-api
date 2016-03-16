@@ -332,7 +332,6 @@ class RethinkUploader(Uploader, BaseRethinkResource):
         key = 'record'
         parser.add_argument(key, type=str)
         request_params = parser.parse_args()
-        print("\n\n\nPARAMS\n\n\n", request_params)
 
         if key not in request_params or request_params[key] is None:
             return self.response(
@@ -375,12 +374,14 @@ class RethinkUploader(Uploader, BaseRethinkResource):
             # RethinkDB
             query = self.get_table_query()
             images = []
+            action = self.insert
 
             # I should query the database to see if this record already exists
             # And has some images
             cursor = query.filter({'record': id})['images'].run()
             try:
                 images = next(cursor)
+                action = self.replace
             except DefaultCursorEmpty:
                 pass
 
@@ -400,8 +401,9 @@ class RethinkUploader(Uploader, BaseRethinkResource):
             }
 
             try:
-                query.replace(record).run()
+                action(record)
                 obj = {'id': id}
+                logger.debug("Updated record '%s'" % id)
             except BaseException as e:
                 return self.response(
                     str(e), fail=True, code=hcodes.HTTP_BAD_CONFLICT)
