@@ -52,7 +52,19 @@ LIST:
     <tr ng-repeat="file in $flow.files">
         <td>Request {{$index+1}}</td>
         <td>{{file.name}}</td>
-        <td> {{file.status}} </td>
+        <td>
+            <span ng-if="file.status == 'fail'">
+                <i class="material-icons">clear</i>
+            </span>
+            <span ng-if="file.status == 'uploaded'">
+                <i class="material-icons">done</i>
+            </span>
+            <span ng-if="file.status == 'progress'">
+                <md-progress-circular
+                    class="md-hue-2" md-diameter="40px"
+                    ></md-progress-circular>
+            </span>
+        </td>
         <td width="45%">
             <img flow-img="file" width="200">
         </td>

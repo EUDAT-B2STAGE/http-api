@@ -29,13 +29,12 @@ Images:
     ✔ API endpoint @done (16-02-09 08:21)
     ✔ a dedicated dialog inside common js code @done (16-03-02 15:26)
       ✔ angular library to upload: flow @done (16-03-03 08:29)
-  ☐ frontend
+  ✔ frontend @done (16-03-17 19:48)
     ✔ upload status @done (16-03-04 08:16)
       ✔ progress @done (16-03-04 08:16)
       ✔ failed @done (16-03-04 08:16)
       ✔ completed @done (16-03-04 08:16)
-      ☐ icons
-        ☐ progress = small circular loading?
+      ✔ icons @done (16-03-17 19:48)
     ✔ handle 'already exist' error @done (16-03-04 08:23)
       ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
       ✔ recover record of the file @recordid @done (16-03-11 08:20)
