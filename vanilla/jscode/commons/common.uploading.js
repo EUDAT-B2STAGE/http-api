@@ -42,6 +42,14 @@ function UploadController($scope, $log, $mdDialog)
     };
 
     self.adding = function(file, ev, flow) {
+
+// LIMIT FILE SIZE?
+// There should be no limit if you don't put any. To avoid:
+// flow-file-added="$file.size < 1024"
+
+// LIMIT FILE TYPE?
+//!!{png:1,gif:1,jpg:1,jpeg:1}[$file.getExtension()]
+
       file.status = 'progress';
       file.record = $scope.currentRecord;
       $log.debug("File adding", file, ev, flow);

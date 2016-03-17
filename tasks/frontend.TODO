@@ -23,9 +23,6 @@ bugs & ideas:
 ☐ table are not same size on details
 ☐ extrait not complete list inside the details page
 ☐ topbar menu for mobile
-☐ configurations
-http://rochacbruno.github.io/dynaconf/
-✔ Move tree controller/stuff @done (16-03-02 07:59)
 
 Images:
   ✔ upload images @done (16-03-03 08:29)
@@ -43,27 +40,12 @@ Images:
       ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
       ✔ recover record of the file @recordid @done (16-03-11 08:20)
         ✔ add file name in the dialog title @done (16-03-11 08:20)
-      ☐ FLOW lib
+      ✔ FLOW lib @done (16-03-17 19:08)
         ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
         ✔ angular config @done (16-03-15 08:32)
           ✔ fix how to get the API URL @important @done (16-03-14 21:04)
         ✔ remove that record from the list of fiximage @done (16-03-16 08:31)
-        ☐ limit file size?
-        https://github.com/flowjs/ng-flow/issues/33#issuecomment-42127718
-  ✔ Backend: associate image @done (16-03-17 14:10)
-    ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
-      ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)
-        ✔ rethinkdb eqjoin @done (16-02-22 10:59)
-      ✔ move to browse from admin... @argh @done (16-03-01 19:08)
-    ✔ API @done (16-03-17 14:10)
-      ✔ respond to flow @done (16-03-04 08:03)
-      ✔ saves info the same model i already have for datadocs @done (16-03-10 15:06)
-      ✔ recover record of the file @recordid @done (16-03-15 08:32)
-        ✔ set the record when posting into API @done (16-03-16 07:56)
-      ✔ code and test for multiple images @uhm @done (16-03-16 22:30)
-      ✔ Zoomify @done (16-03-17 14:10)
-        ✔ how to integrate? probably inside dir of vanilla/jslibs (not saved to git) @done (16-03-16 20:42)
-        ✔ install python2 and the other necessary libraries @done (16-03-17 14:10)
+        ✔ limit file size? @done (16-03-17 19:08)
   ☐ Provide example in production
     ☐ Show zoomification inside detail page @important
   ☐ Welcome
@@ -88,8 +70,9 @@ Images:
     http://charlesleifer.com/blog/nginx-a-caching-thumbnailing-reverse-proxying-image-server-/
     https://developer.atlassian.com/blog/2016/01/docker-cluster-reverse-proxy-1/
 
-Configuration:
+Configurations:
   http://www.jvandemo.com/how-to-configure-your-angularjs-application-using-environment-variables/
+  http://rochacbruno.github.io/dynaconf/
 
 2016-03-16 21:35:52,119 restapi.resources.decorators INFO     [Class: RethinkDataValues] GET request
 2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'key', type <class 'str'>
@@ -547,3 +530,18 @@ COMPLETED:
 ✔ Welcome broken for other services @done (16-02-11 11:00)
  ✔ More button does not work @done (16-02-11 11:00)
  ✔ repeat html is not inside the common part @done (16-02-11 11:00)
+  ✔ Backend: associate image @done (16-03-17 14:10)
+    ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
+      ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)
+        ✔ rethinkdb eqjoin @done (16-02-22 10:59)
+      ✔ move to browse from admin... @argh @done (16-03-01 19:08)
+    ✔ API @done (16-03-17 14:10)
+      ✔ respond to flow @done (16-03-04 08:03)
+      ✔ saves info the same model i already have for datadocs @done (16-03-10 15:06)
+      ✔ recover record of the file @recordid @done (16-03-15 08:32)
+        ✔ set the record when posting into API @done (16-03-16 07:56)
+      ✔ code and test for multiple images @uhm @done (16-03-16 22:30)
+      ✔ Zoomify @done (16-03-17 14:10)
+        ✔ how to integrate? probably inside dir of vanilla/jslibs (not saved to git) @done (16-03-16 20:42)
+        ✔ install python2 and the other necessary libraries @done (16-03-17 14:10)
+✔ Move tree controller/stuff @done (16-03-02 07:59)
