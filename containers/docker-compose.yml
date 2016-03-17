@@ -23,7 +23,7 @@ conf:
 backend:
     extends:
         service: conf
-    image: pdonorio/py3api
+    image: pdonorio/py3apil
     hostname: restapi
     ports:
         - 8081:5000

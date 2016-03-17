@@ -316,7 +316,7 @@ class RethinkUploader(Uploader, BaseRethinkResource):
     """ Uploading data and save it inside db """
 
     table = 'datadocs'
-    #ZOOMIFY_ENABLE = True
+    ZOOMIFY_ENABLE = True
 
     @deck.apimethod
     def get(self, filename=None):
