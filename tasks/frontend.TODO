@@ -14,43 +14,14 @@ https://github.com/svenkreiss/html5validator
 
 --- ✄ -----------------------
 
-bugs & ideas:
-☐ materialize spy is probably broken in latest materialize? @toverifyagain
-☐ after login go to latest requested url
-  ☐ seek in history
-  ☐ if from welcome, go to simple 'app'
-☐ chips with bigger div to show results
-☐ table are not same size on details
-☐ extrait not complete list inside the details page
-☐ topbar menu for mobile
-
 Images:
-  ✔ upload images @done (16-03-03 08:29)
-    ✔ API endpoint @done (16-02-09 08:21)
-    ✔ a dedicated dialog inside common js code @done (16-03-02 15:26)
-      ✔ angular library to upload: flow @done (16-03-03 08:29)
-  ✔ frontend @done (16-03-17 19:48)
-    ✔ upload status @done (16-03-04 08:16)
-      ✔ progress @done (16-03-04 08:16)
-      ✔ failed @done (16-03-04 08:16)
-      ✔ completed @done (16-03-04 08:16)
-      ✔ icons @done (16-03-17 19:48)
-    ✔ handle 'already exist' error @done (16-03-04 08:23)
-      ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
-      ✔ recover record of the file @recordid @done (16-03-11 08:20)
-        ✔ add file name in the dialog title @done (16-03-11 08:20)
-      ✔ FLOW lib @done (16-03-17 19:08)
-        ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
-        ✔ angular config @done (16-03-15 08:32)
-          ✔ fix how to get the API URL @important @done (16-03-14 21:04)
-        ✔ remove that record from the list of fiximage @done (16-03-16 08:31)
-        ✔ limit file size? @done (16-03-17 19:08)
-  ☐ Provide example in production
-    ☐ Show zoomification inside detail page @important
-  ☐ Welcome
-    ☐ fixed template to choose
+  ☐ Show zoomification inside detail page
+  ☐ register page
+  ☐ otherimages endpoint
+    ☐ upload with a separated POST option = subfolder
     ☐ welcome parallax
     ☐ welcome slider
+  ☐ transcription
 
  Rethinkdb logs:
    ☐ problem with the second...
@@ -81,6 +52,16 @@ Configurations:
 2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'filter', type <class 'str'>
 2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'details', type <class 'str'>
 
+bugs & ideas:
+☐ materialize spy is probably broken in latest materialize? @toverifyagain
+☐ after login go to latest requested url
+  ☐ seek in history
+  ☐ if from welcome, go to simple 'app'
+☐ chips with bigger div to show results
+☐ table are not same size on details
+☐ extrait not complete list inside the details page
+☐ topbar menu for mobile
+
 SUBMIT:
  ☐ Steps are upside down
   ✔ Guide the submission with breadcrumbs @done (16-02-16 15:14)
@@ -106,23 +87,26 @@ Common functionalities:
 ☐ Register page
 
 Autocomplete:
-  ☐ elasticsearch
-      https://elasticsearch-py.readthedocs.org/en/master/index.html
-    ✔ docker server setup @done (16-02-07 01:41)
-      ✔ install python library, don't know which @done (16-02-07 01:41)
-      ☐ how to refresh indexes on startup?
-        ☐ flask before first request i would say
-    ☐ python insert in operations.py
-      ✔ think about a structure @done (16-02-07 11:08)
-      ☐ tests
-    ☐ API with GET
-      ☐  separate file for elastic?
-    ☐ Mix with Rethinkdb
-    https://www.rethinkdb.com/docs/elasticsearch/
-    https://github.com/rethinkdb/logstash-input-rethinkdb
-    https://hub.docker.com/_/logstash/
-    https://github.com/deviantony/docker-elk/blob/master/docker-compose.yml
-    ☐ OR my rethinkdb table change feed?
+☐ elasticsearch
+    https://elasticsearch-py.readthedocs.org/en/master/index.html
+ ☐ extra
+http://blog.sandeepchivukula.com/posts/2016/03/06/photo-search/
+https://github.com/appbaseio/dejaVu
+✔ docker server setup @done (16-02-07 01:41)
+  ✔ install python library, don't know which @done (16-02-07 01:41)
+  ☐ how to refresh indexes on startup?
+    ☐ flask before first request i would say
+☐ python insert in operations.py
+  ✔ think about a structure @done (16-02-07 11:08)
+  ☐ tests
+☐ API with GET
+  ☐  separate file for elastic?
+☐ Mix with Rethinkdb
+https://www.rethinkdb.com/docs/elasticsearch/
+https://github.com/rethinkdb/logstash-input-rethinkdb
+https://hub.docker.com/_/logstash/
+https://github.com/deviantony/docker-elk/blob/master/docker-compose.yml
+☐ OR my rethinkdb table change feed?
 
 User ranks:
   ☐ get user info via REST /myself
@@ -136,6 +120,7 @@ History:
 
 dynamic menu:
   ☐ decided upon a json model
+  https://pythonadventures.wordpress.com/2016/03/15/pretty-json-output-with-flask-restful/
     ☐ how to overide if existing?
   ☐ just logout if none provided
 
@@ -166,6 +151,7 @@ New fixed search:
 ☐ understand md-content?
 ✔ Parties back @done (16-01-25 12:15)
  ☐ sub piece in lazy load?
+ http://www.cloudcity.io/blog/2016/03/03/angular-loading-annoyances/
 ☐ chips watch?
 ☐ lazy load of more than 10 results
 ☐ Application name inside the Toolbar should be a hand made font?
@@ -297,6 +283,9 @@ https://github.com/rholder/retrying
 https://github.com/mitsuhiko/jinja2-htmlcompress
 ☐ How to quickly add a blueprint for a whole new suburl
 http://flask.pocoo.org/snippets/59/
+
+Database cluster:
+  http://thenewstack.io/crate-addresses-database-speed-scaling-standard-sql/
 
 One time binding:
     https://www.binpress.com/tutorial/speeding-up-angular-js-with-simple-optimizations/135
@@ -544,3 +533,23 @@ COMPLETED:
         ✔ how to integrate? probably inside dir of vanilla/jslibs (not saved to git) @done (16-03-16 20:42)
         ✔ install python2 and the other necessary libraries @done (16-03-17 14:10)
 ✔ Move tree controller/stuff @done (16-03-02 07:59)
+  ✔ upload images @done (16-03-03 08:29)
+    ✔ API endpoint @done (16-02-09 08:21)
+    ✔ a dedicated dialog inside common js code @done (16-03-02 15:26)
+      ✔ angular library to upload: flow @done (16-03-03 08:29)
+  ✔ frontend @done (16-03-17 19:48)
+    ✔ upload status @done (16-03-04 08:16)
+      ✔ progress @done (16-03-04 08:16)
+      ✔ failed @done (16-03-04 08:16)
+      ✔ completed @done (16-03-04 08:16)
+      ✔ icons @done (16-03-17 19:48)
+    ✔ handle 'already exist' error @done (16-03-04 08:23)
+      ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
+      ✔ recover record of the file @recordid @done (16-03-11 08:20)
+        ✔ add file name in the dialog title @done (16-03-11 08:20)
+      ✔ FLOW lib @done (16-03-17 19:08)
+        ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
+        ✔ angular config @done (16-03-15 08:32)
+          ✔ fix how to get the API URL @important @done (16-03-14 21:04)
+        ✔ remove that record from the list of fiximage @done (16-03-16 08:31)
+        ✔ limit file size? @done (16-03-17 19:08)
