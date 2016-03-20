@@ -8,7 +8,7 @@ from pathlib import Path
 from flask import Blueprint, render_template, request, jsonify, g
 from flask.ext.login import logout_user, current_user
 from .basemodel import user_config
-from .security import login_point
+from .security import login_point, register_api
 from . import htmlcodes as hcodes
 from config import get_logger, FRAMEWORKS
 
@@ -142,23 +142,16 @@ def auth():
     return jsonify(**resp), code
 
 
-# @cms.route('/loggedout')
-# def logout():
-#     """
-#     A route for logout with both JS and Python.
-#     Note: JS has to take the responsibility of logging out Python too, here.
-#     """
-#     logout_user()
-#     return jstemplate()
-#     # return redirect(url_for('.home'))
-
-
-@cms.route('/register')
+@cms.route('/doregistration', methods=['POST'])
 def register():
-    return "THIS IS YET TO DO (also 'forgot password')"
+
+    resp = register_api(request.json)
+    # Forward response
+    return jsonify(**resp)
+
+
 ################################################
-
-
+# Create a configuration file for angular from python variables
 @cms.route('/js/blueprint.js')
 def jsblueprint():
     variables = {
@@ -169,57 +162,9 @@ def jsblueprint():
     return render_template("blueprint.js", **variables)
 
 
-# ################
-# # UPLOADs
-# ################
-
-# # For a given file, return whether it's an allowed type or not
-# def allowed_file(filename):
-#     return '.' in filename and \
-#            filename.rsplit('.', 1)[1] in \
-#            current_app.config['ALLOWED_EXTENSIONS']
-
-# # Only needed for separate debug
-
-# # # Route that will process the file upload
-# # @cms.route('/uploader/<int:id>', methods=['GET'])
-# # def uploader(id):
-# #     flash("Id is %d" % id)
-# #     return render_template('forms/upload.html', **user_config['content'])
-
-# # # Expecting a parameter containing the name of a file.
-# # # It will locate that file on the upload directory and show it
-# # @cms.route('/uploads/<filename>')
-# # def uploaded_file(filename):
-# #     return send_from_directory(current_app.config['UPLOAD_FOLDER'],
-# #                                filename)
-
-
-# # Route that will process the file upload
-# @cms.route('/upload/<int:id>', methods=['POST'])
-# def upload(id):
-#     # Get the name of the uploaded file
-#     file = request.files['file']
-#     # Check if the file is one of the allowed types/extensions
-#     if file and allowed_file(file.filename):
-#         # Make the filename safe, remove unsupported chars
-#         filename = secure_filename(file.filename)
-#         # Build the directory and make if if not exists
-#         mydir = os.path.join(
-#             current_app.config['UPLOAD_FOLDER'], str(id))
-#         if not os.path.exists(mydir):
-#             os.mkdir(mydir)
-#         abs_filepath = os.path.join(mydir, filename)
-#         # Move the file from the temporal folder
-#         file.save(abs_filepath)
-#         # Redirect
-#         # return redirect(url_for('.uploaded_file', filename=filename))
-# # // TO FIX:
-# # Change this to view of single id
-#         return redirect('/view/' + str(id) + '?uploaded=' + filename)
-
-
 ######################################################
+# MAIN ROUTE: give angular the power
+
 @cms.route('/', methods=["GET"])
 @cms.route('/<path:mypath>', methods=["GET"])
 def home(mypath=None):

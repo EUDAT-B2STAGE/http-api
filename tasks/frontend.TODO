@@ -17,8 +17,17 @@ https://github.com/svenkreiss/html5validator
 Images:
   ☐ Show zoomification inside detail page
   ☐ register page
+    ☐ make a call to frontend endpoint (like login)
+    /doregistration
+     ☐ wrap a call to original api /register
+     ☐ add a call to a new api /initprofile (only for admin)
+       ☐ make the user not active
+       ☐ give the basic role
+       ☐ add name/surname
+     ☐ add the view like login for angular ui
   ☐ otherimages endpoint
     ☐ upload with a separated POST option = subfolder
+  ☐ Welcome page complention
     ☐ welcome parallax
     ☐ welcome slider
   ☐ transcription
@@ -26,6 +35,9 @@ Images:
  Rethinkdb logs:
    ☐ problem with the second...
      ☐ rethinkdb append?
+
+ Dlite update:
+   ☐ release 2 beta?
 
  Image optimization:
   ☐ UI FIX
@@ -43,6 +55,9 @@ Images:
 Configurations:
   http://www.jvandemo.com/how-to-configure-your-angularjs-application-using-environment-variables/
   http://rochacbruno.github.io/dynaconf/
+  Mail:
+    https://pythonhosted.org/Flask-Security/quickstart.html#mail-configuration
+    and https://pythonhosted.org/Flask-Security/configuration.html
 
 2016-03-16 21:35:52,119 restapi.resources.decorators INFO     [Class: RethinkDataValues] GET request
 2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'key', type <class 'str'>

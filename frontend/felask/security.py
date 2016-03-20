@@ -20,7 +20,9 @@ if BACKEND:
     NODE = 'myapi'
     PORT = 5000
     URL = 'http://%s:%s' % (NODE, PORT)
-    LOGIN_URL = URL + '/api/login'
+    API_URL = URL + '/api/'
+    LOGIN_URL = API_URL + 'login'
+    REGISTER_URL = API_URL + 'register'
     HEADERS = {'content-type': 'application/json'}
 
     @lm.user_loader
@@ -52,6 +54,25 @@ else:
 
 
 # lm.login_view = "users.login"
+
+##################################
+def register_api(request):
+    """ Login requesting token to our API and also store the token """
+
+    try:
+        r = requests.post(REGISTER_URL,
+                          stream=True, data=json.dumps(request),
+                          headers=HEADERS, timeout=5)
+    except requests.exceptions.ConnectionError:
+        return {'errors':
+                {'API unavailable': "Cannot connect to APIs server"}}, \
+                hcodes.HTTP_DEFAULT_SERVICE_FAIL
+    out = r.json()
+
+ # {'meta': {'code': 200}, 'response': {'user': {'id': '2', 'authentication_token': 'WyIyIiwiMTZhYTYzOTVmOWQ0OWI5MmJkODk1MTViNzNkODE2M2UiXQ.Cc95-A.0NUAHTEcvUbn9lknBDUZDNZPJrM'}}}
+
+    return out
+
 
 ##################################
 def login_api(username, password):
