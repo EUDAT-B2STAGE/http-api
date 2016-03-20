@@ -9,4 +9,5 @@ var timeToWait = {{time}}; // measured in ms
 
 // Api URI
 var apiPort = 8081;
-var apiUrl = '{{api_url}}'.slice(0, -1) + ':' + apiPort + '/api';
+var serverUrl = '{{api_url}}'.slice(0, -1)
+var apiUrl = serverUrl + ':' + apiPort + '/api';

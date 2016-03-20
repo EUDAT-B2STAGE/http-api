@@ -9,10 +9,7 @@ angular.module('web')
 
 .config(function($authProvider) {
 
-	$authProvider.loginUrl =
-        window.location.protocol + "//"
-        + window.location.host
-        + "/auth";
+	$authProvider.loginUrl = serverUrl + "/auth";
 	$authProvider.tokenName = 'authentication_token';
 
 	$authProvider.oauth1({
@@ -132,7 +129,22 @@ function RegisterController($scope, $log, $auth)
     {
         var credentials = self.user;
         $log.debug("Requested registration:", credentials);
-        //$auth.login(credentials).then();
+/*
+        $auth.login(credentials).then(
+            function (loginResponse) {
+                $log.info("Login request", loginResponse);
+                //console.log($auth.getToken());
+
+                // Now we can check again reloading this page
+                $window.location.reload();
+
+            }, function(errorResponse) {
+                $log.warn("Auth: failed");
+                console.log(errorResponse.data.errors);
+                $scope.showSimpleToast(errorResponse.data.errors);
+            }
+        );
+*/
     }
 }
 
