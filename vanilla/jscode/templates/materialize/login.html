@@ -34,6 +34,12 @@
             </div>
           </div>
 
+          <div class="row" ng-if='login.userMessage'>
+            <div class="col s12">
+                <b> <i> {{login.userMessage}} </i> </b>
+            </div>
+          </div>
+
           <div class="row">
             <div class="input-field col s12">
               <button ng-click='login.check()'

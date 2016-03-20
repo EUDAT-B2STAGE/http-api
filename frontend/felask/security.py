@@ -127,7 +127,20 @@ def login_api(username, password):
     out = r.json()
 
     response = {'errors': {'No autorization': "Invalid credentials"}}
-    if out['meta']['code'] <= hcodes.HTTP_OK_NORESPONSE:
+
+    # If wanting to check errors
+    if 'response' in out and 'errors' in out['response']:
+        errors = out['response']['errors']
+        if 'email' in errors:
+            for error in errors['email']:
+                if 'confirmation' in error:
+                    logger.info(
+                        "Registered user, waiting for approval: %s" % username)
+                    err = {error: 'This account has not yet been approved ...'}
+                    response['errors'] = err
+
+    # Positive response
+    if 'meta' in out and out['meta']['code'] <= hcodes.HTTP_OK_NORESPONSE:
         data = out['response']['user']
         token = data['authentication_token']
 

@@ -61,6 +61,7 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
     // Init controller
     $log.debug("Login Controller");
     var self = this;
+    self.userMessage = null;
 
     // Init the models
     self.user = {
@@ -85,6 +86,7 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
 
         $auth.login(credentials).then(
             function (loginResponse) {
+                self.userMessage = null;
                 $log.info("Login request", loginResponse);
                 //console.log($auth.getToken());
 
@@ -92,9 +94,14 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
                 $window.location.reload();
 
             }, function(errorResponse) {
-                $log.warn("Auth: failed");
-                console.log(errorResponse.data.errors);
-                $scope.showSimpleToast(errorResponse.data.errors);
+                self.userMessage = null;
+                var errors = errorResponse.data.errors;
+                $log.warn("Auth: failed", errors);
+                var key = Object.keys(errors)[0];
+                if (key == "Email requires confirmation.") {
+                    self.userMessage = key;
+                }
+                $scope.showSimpleToast(errors);
             }
         );
     }
