@@ -25,6 +25,9 @@ Meta (data):
     "elements": 1,
     "status": 500
 
+ ☐ How to force the same also on normal flask endpoint?
+   ☐ and on frontend side?
+
 --- ✄ -----------------------
 
 Next release:

@@ -9,9 +9,11 @@ import json
 from datetime import datetime
 # from flask import Response, stream_with_context
 from flask.ext.login import login_user, UserMixin
-from config import BACKEND
+from config import BACKEND, get_logger
 from .basemodel import db, lm, User
 from . import htmlcodes as hcodes
+
+logger = get_logger(__name__)
 
 ##################################
 # If connected to APIs
@@ -69,6 +71,14 @@ def register_api(request):
                 "Passwords provided are not the same"}}, \
                 hcodes.HTTP_DEFAULT_SERVICE_FAIL
 
+    # Info check
+    key1 = 'name'
+    key2 = 'surname'
+    if key1 not in request or key2 not in request:
+        return {'errors': {'information required':
+                "No profile info: name and/or surname"}}, \
+            hcodes.HTTP_DEFAULT_SERVICE_FAIL
+
     # Init
     code = hcodes.HTTP_OK_CREATED
     j = json.dumps(request)
@@ -79,17 +89,16 @@ def register_api(request):
         # Normal registration
         r = requests.post(REGISTER_URL, **opts)
         out = r.json()
-        print("Registration out", out)
-
+        logger.debug("Registration step 1 [%s]" % out)
         if 'errors' in out['response']:
             return out['response'], out['meta']['code']
 
         # Extra profiling
-        opts['data'] = json.dumps({'userid': out['response']['user']['id']})
+        request['userid'] = out['response']['user']['id']
+        opts['data'] = json.dumps(request)
         r = requests.post(PROFILE_URL, **opts)
         out = r.json()
-        print("Profile out", out)
-
+        logger.debug("Registration step 2 [%s]" % out)
         if 'error' in out['data']:
             return out['data'], out['status']
 
