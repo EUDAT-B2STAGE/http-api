@@ -183,6 +183,17 @@ $stateProvider
         }
     })
 
+// To log the user in
+    .state("register", {
+        url: "/register",
+        resolve: {
+            skip: _skipAuthenticationCheckApiOnline,
+        },
+        views: {
+            "main": {templateUrl: templateDir + 'registration.html'}
+        }
+    })
+
 // Base for the app views
     .state("logged", {
         url: "/app",

@@ -4,6 +4,7 @@
 angular.module('web')
 //.service('auth', authService)
 .controller('LoginController', LoginController)
+.controller('RegisterController', RegisterController)
 .controller('LogoutController', LogoutController)
 
 .config(function($authProvider) {
@@ -101,6 +102,40 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
         );
     }
 }
+
+
+function RegisterController($scope, $log, $auth)
+{
+    // Init controller
+    var self = this;
+    $log.debug("Register Controller");
+
+    // In case i am already logged, skip
+    if ($auth.isAuthenticated())
+    {
+        $timeout(function () {
+            $log.warn("Already logged");
+            $state.go('logged');
+        });
+    }
+
+    // Init the models
+    self.user = {
+       username: null,
+       name: null,
+       surname: null,
+       password: null,
+       password_check: null,
+    };
+
+    self.request = function()
+    {
+        var credentials = self.user;
+        $log.debug("Requested registration:", credentials);
+        //$auth.login(credentials).then();
+    }
+}
+
 
 function LogoutController($scope, $log, $auth)
 {

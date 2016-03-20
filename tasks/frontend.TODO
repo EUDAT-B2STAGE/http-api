@@ -33,7 +33,7 @@ Meta (data):
 Next release:
 
   ☐ Show zoomification inside detail page
-  ☐ register page
+  ✔ register page @done (16-03-20 21:00)
     ✔ make a call to frontend endpoint (like login) @done (16-03-20 15:59)
     /doregistration
      ✔ wrap a call to original api /register @done (16-03-20 01:04)
@@ -44,7 +44,7 @@ Next release:
          ✔ use confirmation date instead @done (16-03-20 15:34)
        ✔ give the basic role @done (16-03-20 15:34)
        ✔ add name/surname @done (16-03-20 15:56)
-     ☐ add the view like login for angular ui
+     ✔ add the view like login for angular ui @done (16-03-20 21:00)
 
   ☐ otherimages endpoint
     ☐ upload with a separated POST option = subfolder
