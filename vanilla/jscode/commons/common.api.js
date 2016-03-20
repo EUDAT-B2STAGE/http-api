@@ -9,11 +9,13 @@ function RestApiService($http, $auth, $log) {
     var self = this;
     // Api URI
     self.API_URL = apiUrl + '/';
+    self.FRONTEND_URL = serverUrl + '/';
 
     self.endpoints = {
         check: 'verify',
         logged: 'verifylogged',
         admin: 'verifyadmin',
+        register: 'doregistration',
     }
 
 
@@ -44,11 +46,16 @@ function RestApiService($http, $auth, $log) {
         }
       ////////////////////////
 
+        var currentUrl = self.API_URL + endpoint;
+        if (endpoint == self.endpoints.register) {
+            currentUrl = self.FRONTEND_URL + endpoint;
+        }
+
         var token = self.checkToken(),
             timeout = 5500,
             req = {
                 method: method,
-                url: self.API_URL + endpoint,
+                url: currentUrl,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authentication-Token': token,

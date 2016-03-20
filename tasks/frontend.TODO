@@ -13,18 +13,16 @@ http://stackoverflow.com/a/25647714/2114395
 https://github.com/svenkreiss/html5validator
 
 --- ✄ -----------------------
- ☐  new response standard
-   ☐ should check what to do also on angularjs side...
 
-Response:
+NEW RESPONSE STANDARD:
+   ☐ should check what to do also on angularjs side...
+Response
   data
   errors { 'FIELD': 'message'}
-
-Meta (data):
+Meta (data)
     "data_type": "<class 'dict'>",
     "elements": 1,
     "status": 500
-
  ☐ How to force the same also on normal flask endpoint?
    ☐ and on frontend side?
 
@@ -33,19 +31,6 @@ Meta (data):
 Next release:
 
   ☐ Show zoomification inside detail page
-  ✔ register page @done (16-03-20 21:00)
-    ✔ make a call to frontend endpoint (like login) @done (16-03-20 15:59)
-    /doregistration
-     ✔ wrap a call to original api /register @done (16-03-20 01:04)
-     ✔ add a call to a new api /initprofile (only for admin) @done (16-03-20 01:17)
-     ✔ create the initprofile backend url @uhm @done (16-03-20 01:17)
-       ✔ retrieve the user @done (16-03-20 15:34)
-       ✘ make the user not active @cancelled (16-03-20 15:34)
-         ✔ use confirmation date instead @done (16-03-20 15:34)
-       ✔ give the basic role @done (16-03-20 15:34)
-       ✔ add name/surname @done (16-03-20 15:56)
-     ✔ add the view like login for angular ui @done (16-03-20 21:00)
-
   ☐ otherimages endpoint
     ☐ upload with a separated POST option = subfolder
   ☐ Welcome page complention
@@ -601,3 +586,15 @@ COMPLETED:
           ✔ fix how to get the API URL @important @done (16-03-14 21:04)
         ✔ remove that record from the list of fiximage @done (16-03-16 08:31)
         ✔ limit file size? @done (16-03-17 19:08)
+  ✔ register page @done (16-03-20 21:00)
+    ✔ make a call to frontend endpoint (like login) @done (16-03-20 15:59)
+    /doregistration
+     ✔ wrap a call to original api /register @done (16-03-20 01:04)
+     ✔ add a call to a new api /initprofile (only for admin) @done (16-03-20 01:17)
+     ✔ create the initprofile backend url @uhm @done (16-03-20 01:17)
+       ✔ retrieve the user @done (16-03-20 15:34)
+       ✘ make the user not active @cancelled (16-03-20 15:34)
+         ✔ use confirmation date instead @done (16-03-20 15:34)
+       ✔ give the basic role @done (16-03-20 15:34)
+       ✔ add name/surname @done (16-03-20 15:56)
+     ✔ add the view like login for angular ui @done (16-03-20 21:00)

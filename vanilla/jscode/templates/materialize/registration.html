@@ -13,11 +13,22 @@
 
         <form name="myForm">
 
+          <div class="row" ng-if='reg.errors'>
+            <div class="col s12">
+              <h6 style='color:red;'>ERROR(s)</h6>
+              <ul>
+                <li ng-repeat="(key, value) in reg.errors">
+                    <i>{{key}}</i>: {{value}}
+                </li>
+              </ul>
+            </div>
+          </div>
+
           <div class="row">
             <div class="input-field col s12">
               <i class="material-icons prefix">account_circle</i>
-              <input ng-model="reg.user.username"
-                id="username" name="username"
+              <input ng-model="reg.user.email"
+                id="email" name="email"
                 id="icon_prefix" type="text" class="validate"
                 required autofocus>
               <label for="icon_prefix">E-mail address</label>
@@ -57,10 +68,16 @@
           <div class="row">
             <div class="input-field col s12">
               <i class="material-icons prefix">vpn_key</i>
-              <input ng-model="reg.user.password_check"
-                id="password_check" name="password_check"
+              <input ng-model="reg.user.password_confirm"
+                id="password_confirm" name="password_confirm"
                 type="password" class="validate" required>
               <label for="icon_telephone">Password confirmation</label>
+            </div>
+          </div>
+
+          <div class="row" ng-if='reg.userMessage'>
+            <div class="col s12">
+                <b> <i> {{reg.userMessage}} </i> </b>
             </div>
           </div>
 

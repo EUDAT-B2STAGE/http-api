@@ -101,10 +101,12 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
 }
 
 
-function RegisterController($scope, $log, $auth)
+function RegisterController($scope, $log, $auth, api)
 {
     // Init controller
     var self = this;
+    self.errors = null;
+    self.userMessage = null;
     $log.debug("Register Controller");
 
     // In case i am already logged, skip
@@ -118,33 +120,38 @@ function RegisterController($scope, $log, $auth)
 
     // Init the models
     self.user = {
-       username: null,
+       email: null,
        name: null,
        surname: null,
        password: null,
-       password_check: null,
+       password_confirm: null,
     };
 
     self.request = function()
     {
         var credentials = self.user;
         $log.debug("Requested registration:", credentials);
-/*
-        $auth.login(credentials).then(
-            function (loginResponse) {
-                $log.info("Login request", loginResponse);
-                //console.log($auth.getToken());
 
-                // Now we can check again reloading this page
-                $window.location.reload();
+        api.apiCall(api.endpoints.register, 'POST', credentials, null, true)
+         .then(
+            function(response) {
+                $log.debug("REG Success call", response);
 
-            }, function(errorResponse) {
-                $log.warn("Auth: failed");
-                console.log(errorResponse.data.errors);
-                $scope.showSimpleToast(errorResponse.data.errors);
+                if (response.status > 210) {
+                    var errors = response.data.errors;
+                    $log.warn("Registration: failed", errors);
+                    self.errors = errors;
+                    //$scope.showSimpleToast(errors);
+                    $scope.showSimpleToast({'Invalid':'Failed to register...'});
+                } else {
+                    $scope.showSimpleToast({'Well done':'New user created'});
+                    self.errors = null;
+                    self.userMessage =
+                        "Account registered. Pending admin approval.";
+                }
             }
         );
-*/
+
     }
 }
 
