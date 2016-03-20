@@ -145,9 +145,11 @@ def auth():
 @cms.route('/doregistration', methods=['POST'])
 def register():
 
-    resp = register_api(request.json)
-    # Forward response
-    return jsonify(**resp)
+    response, code = register_api(request.json)
+    # # Forward response
+    # return jsonify(**resp)
+    print("RESP is", response, code)
+    return "OK"
 
 
 ################################################

@@ -19,8 +19,9 @@ Images:
   ☐ register page
     ☐ make a call to frontend endpoint (like login)
     /doregistration
-     ☐ wrap a call to original api /register
-     ☐ add a call to a new api /initprofile (only for admin)
+     ✔ wrap a call to original api /register @done (16-03-20 01:04)
+     ✔ add a call to a new api /initprofile (only for admin) @done (16-03-20 01:17)
+     ✔ create the initprofile backend url @uhm @done (16-03-20 01:17)
        ☐ make the user not active
        ☐ give the basic role
        ☐ add name/surname

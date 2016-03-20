@@ -23,6 +23,7 @@ if BACKEND:
     API_URL = URL + '/api/'
     LOGIN_URL = API_URL + 'login'
     REGISTER_URL = API_URL + 'register'
+    PROFILE_URL = API_URL + 'initprofile'
     HEADERS = {'content-type': 'application/json'}
 
     @lm.user_loader
@@ -59,19 +60,35 @@ else:
 def register_api(request):
     """ Login requesting token to our API and also store the token """
 
+    code = hcodes.HTTP_OK_CREATED
+    j = json.dumps(request)
+    opts = {'stream': True, 'data': j, 'headers': HEADERS, 'timeout': 5}
+
     try:
-        r = requests.post(REGISTER_URL,
-                          stream=True, data=json.dumps(request),
-                          headers=HEADERS, timeout=5)
+        r = requests.post(REGISTER_URL, **opts)
+        out = r.json()
+        print("Registration out", out)
+
+        if 'errors' in out['response']:
+            return out['response'], out['meta']['code']
+
+ # {'meta': {'code': 200}, 'response': {'user': {'id': '2', 'authentication_token': 'WyIyIiwiMTZhYTYzOTVmOWQ0OWI5MmJkODk1MTViNzNkODE2M2UiXQ.Cc95-A.0NUAHTEcvUbn9lknBDUZDNZPJrM'}}}
+
+### Add user id to opts
+
+        r = requests.post(PROFILE_URL, **opts)
+        out = r.json()
+        print("Profile out", out)
+
+        if 'error' in out['data']:
+            return out['data'], out['status']
+
     except requests.exceptions.ConnectionError:
         return {'errors':
                 {'API unavailable': "Cannot connect to APIs server"}}, \
                 hcodes.HTTP_DEFAULT_SERVICE_FAIL
-    out = r.json()
 
- # {'meta': {'code': 200}, 'response': {'user': {'id': '2', 'authentication_token': 'WyIyIiwiMTZhYTYzOTVmOWQ0OWI5MmJkODk1MTViNzNkODE2M2UiXQ.Cc95-A.0NUAHTEcvUbn9lknBDUZDNZPJrM'}}}
-
-    return out
+    return {'message': 'OK'}, code
 
 
 ##################################
