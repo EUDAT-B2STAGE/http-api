@@ -64,6 +64,10 @@ elif [ "$1" == "bower" ]; then
     fi
     $bcom
 
+elif [ "$1" == "sql" ]; then
+    echo "Launch adminer for SQL servers"
+    $com run --service-ports sqladmin
+
 # Launch services
 else
 
