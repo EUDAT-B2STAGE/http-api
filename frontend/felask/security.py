@@ -60,11 +60,23 @@ else:
 def register_api(request):
     """ Login requesting token to our API and also store the token """
 
+    # Passwords check
+    key1 = 'password'
+    key2 = 'password_confirm'
+    if key1 not in request or key2 not in request \
+       or request[key1] != request[key2]:
+        return {'errors': {'passwords mismatch':
+                "Passwords provided are not the same"}}, \
+                hcodes.HTTP_DEFAULT_SERVICE_FAIL
+
+    # Init
     code = hcodes.HTTP_OK_CREATED
     j = json.dumps(request)
     opts = {'stream': True, 'data': j, 'headers': HEADERS, 'timeout': 5}
 
     try:
+
+        # Normal registration
         r = requests.post(REGISTER_URL, **opts)
         out = r.json()
         print("Registration out", out)
@@ -72,10 +84,8 @@ def register_api(request):
         if 'errors' in out['response']:
             return out['response'], out['meta']['code']
 
- # {'meta': {'code': 200}, 'response': {'user': {'id': '2', 'authentication_token': 'WyIyIiwiMTZhYTYzOTVmOWQ0OWI5MmJkODk1MTViNzNkODE2M2UiXQ.Cc95-A.0NUAHTEcvUbn9lknBDUZDNZPJrM'}}}
-
-### Add user id to opts
-
+        # Extra profiling
+        opts['data'] = json.dumps({'userid': out['response']['user']['id']})
         r = requests.post(PROFILE_URL, **opts)
         out = r.json()
         print("Profile out", out)
@@ -88,7 +98,7 @@ def register_api(request):
                 {'API unavailable': "Cannot connect to APIs server"}}, \
                 hcodes.HTTP_DEFAULT_SERVICE_FAIL
 
-    return {'message': 'OK'}, code
+    return {'message': 'Registered'}, code
 
 
 ##################################

@@ -13,12 +13,25 @@ http://stackoverflow.com/a/25647714/2114395
 https://github.com/svenkreiss/html5validator
 
 --- ✄ -----------------------
+ ☐  new response standard
+   ☐ should check what to do also on angularjs side...
+
+Response:
+  data
+  errors { 'FIELD': 'message'}
+
+Meta (data):
+    "data_type": "<class 'dict'>",
+    "elements": 1,
+    "status": 500
+
+--- ✄ -----------------------
 
 Next release:
 
   ☐ Show zoomification inside detail page
   ☐ register page
-    ☐ make a call to frontend endpoint (like login)
+    ✔ make a call to frontend endpoint (like login) @done (16-03-20 15:59)
     /doregistration
      ✔ wrap a call to original api /register @done (16-03-20 01:04)
      ✔ add a call to a new api /initprofile (only for admin) @done (16-03-20 01:17)
@@ -27,7 +40,7 @@ Next release:
        ✘ make the user not active @cancelled (16-03-20 15:34)
          ✔ use confirmation date instead @done (16-03-20 15:34)
        ✔ give the basic role @done (16-03-20 15:34)
-       ☐ add name/surname
+       ✔ add name/surname @done (16-03-20 15:56)
      ☐ add the view like login for angular ui
 
   ☐ otherimages endpoint
@@ -37,9 +50,21 @@ Next release:
     ☐ welcome slider
   ☐ transcription lib
 
+Zoomify preview:
+  http://www.academiabelgica.it.cloud.seeweb.it/archiviocumont/record.php?subdoc=1&record=3&page=1&fullscreen=all
+  <script type="text/javascript" src="./javascript/ZoomifyImageViewer.js"></script><link rel='stylesheet' href='css/style.php?from=record.php'> </head>
+  <body>
+<div class='container'>    <DIV class='base0'> <br></br><DIV class='row textcentering' ><DIV class='large-16 columns' >&nbsp;</DIV>
+</DIV>
+<DIV class='large-16 columns' ><DIV class='row textcentering' ><DIV class='large-16 columns' ><DIV class='panel myshadow' >
+
+<SCRIPT type='text/javascript'>Z.showImage("bigContainer", "files/documents/collocazione_3_page001" , "zToolbarPosition=2&zFullPageInitial=1&zSkinPath=Assets/Skins/Dark"+ "&zNavigatorFit=1&zNavigatorWidth=80&zNavigatorHeight=80&zNavigatorVisible=3&zInitialZoom=0&zLogoVisible=0" + "&zToolbarVisible=1&zLogoVisible=0&zSliderVisible=1&zProgressVisible=0&zTooltipsVisible=0" ); </SCRIPT>
+
  Rethinkdb logs:
    ☐ problem with the second...
      ☐ rethinkdb append?
+   ☐ logs for user login and/or registration/profile?
+     ☐ from frontend calls?
 
  Dlite update:
    ☐ release 2 beta?
