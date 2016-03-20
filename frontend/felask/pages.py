@@ -123,6 +123,20 @@ def before_request():
     g.user = current_user
 
 
+def forward_response(response):
+    """
+    Utility to use a response from requests
+    and forward it with Flask server rules
+    """
+    # Split the duo
+    resp, code = response
+    # Make sure that resp is at least an empty dictionary
+    if resp is None:
+        resp = {}
+    # Now, safely, forward response
+    return jsonify(**resp), code
+
+
 @cms.route('/auth', methods=['POST'])
 def auth():
     """
@@ -134,22 +148,14 @@ def auth():
     if not ('username' in request.json and 'password' in request.json):
         return "No valid (json) data credentials", hcodes.HTTP_BAD_UNAUTHORIZED
     # Request login (with or without API)
-    resp, code = login_point(
-            request.json['username'], request.json['password'])
-    if resp is None:
-        resp = {}
-    # Forward response
-    return jsonify(**resp), code
+    return forward_response(login_point(
+            request.json['username'], request.json['password']))
 
 
 @cms.route('/doregistration', methods=['POST'])
 def register():
-
-    response, code = register_api(request.json)
-    # # Forward response
-    # return jsonify(**resp)
-    print("RESP is", response, code)
-    return "OK"
+    """ Registration endpoint to cover API and other needs """
+    return forward_response(register_api(request.json))
 
 
 ################################################
