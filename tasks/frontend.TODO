@@ -14,7 +14,8 @@ https://github.com/svenkreiss/html5validator
 
 --- ✄ -----------------------
 
-Images:
+Next release:
+
   ☐ Show zoomification inside detail page
   ☐ register page
     ☐ make a call to frontend endpoint (like login)
@@ -22,16 +23,19 @@ Images:
      ✔ wrap a call to original api /register @done (16-03-20 01:04)
      ✔ add a call to a new api /initprofile (only for admin) @done (16-03-20 01:17)
      ✔ create the initprofile backend url @uhm @done (16-03-20 01:17)
-       ☐ make the user not active
-       ☐ give the basic role
+       ✔ retrieve the user @done (16-03-20 15:34)
+       ✘ make the user not active @cancelled (16-03-20 15:34)
+         ✔ use confirmation date instead @done (16-03-20 15:34)
+       ✔ give the basic role @done (16-03-20 15:34)
        ☐ add name/surname
      ☐ add the view like login for angular ui
+
   ☐ otherimages endpoint
     ☐ upload with a separated POST option = subfolder
   ☐ Welcome page complention
     ☐ welcome parallax
     ☐ welcome slider
-  ☐ transcription
+  ☐ transcription lib
 
  Rethinkdb logs:
    ☐ problem with the second...
