@@ -287,7 +287,11 @@ class RethinkImagesAssociations(BaseRethinkResource):
                 for obj in cursor:
                     val = obj['steps'][0]['data'][0]['value']
                     tmp = val.split('_')
-                    sort = tmp[len(tmp)-1]
+                    index = 0
+                    if len(tmp) > 1:
+                        index = 1
+                    sort = tmp[index]
+
                     try:
                         sortme = int(sort)
                     except:
