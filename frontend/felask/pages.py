@@ -4,13 +4,14 @@
 
 from __future__ import absolute_import
 import os
+import requests
 from pathlib import Path
 from flask import Blueprint, render_template, request, jsonify, g
 from flask.ext.login import logout_user, current_user
 from .basemodel import user_config
 from .security import login_point, register_api
 from . import htmlcodes as hcodes
-from config import get_logger, FRAMEWORKS
+from config import get_logger, FRAMEWORKS, API_URL
 
 logger = get_logger(__name__)
 CURRENT_FRAMEWORK = None
@@ -172,13 +173,30 @@ def jsblueprint():
 
 ################################################
 # ZOOM?
-@cms.route('/zoom/<string:id>/<int:page>')
-def zoom(id, page):
+@cms.route('/zoom/<string:document>/<string:code>')
+def zoom(document, code):
+
     template_path = 'custom' + '/' + CURRENT_BLUEPRINT
+    filename = '/empty'
+    HEADERS = {
+        'content-type': 'application/json',
+        'Authentication-Token': g.user.token
+    }
+    opts = {'stream': True, 'headers': HEADERS, 'timeout': 5}
+    r = requests.get(API_URL + 'datadocs/' + document, **opts)
+    out = r.json()
+    print("TEST\n\n", out)
+    if len(out['data']) > 0:
+        data = out['data'].pop()
+        print("TEST2\n\n", data['images'])
+        for image in data['images']:
+            if image['code'] == code:
+                filename = '/static/uploads/' + code
+
     variables = {
-        'record': id,
-        'page': page,
-        'filename': "/static/uploads/2_Reims_np_1",
+        'record': document,
+        'page': code,
+        'filename': filename,
         'name': CURRENT_BLUEPRINT,
     }
     return render_template(template_path + '/' + 'zoom.html', **variables)

@@ -20,9 +20,13 @@ JSON_EXT = 'json'
 FRAMEWORKS = ['bootstrap', 'materialize', 'foundation']
 
 BACKEND = False
+BACKEND_NAME = 'myapi'
 for key in os.environ.keys():
-    if 'myapi' == key.lower()[0:5]:
+    if BACKEND_NAME == key.lower()[0:5]:
         BACKEND = True
+PORT = 5000
+URL = 'http://%s:%s' % (BACKEND_NAME, PORT)
+API_URL = URL + '/api/'
 
 
 ########################################

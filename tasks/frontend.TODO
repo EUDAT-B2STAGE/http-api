@@ -14,6 +14,19 @@ https://github.com/svenkreiss/html5validator
 
 --- ✄ -----------------------
 
+TAR.BZ2
+
+This format has the best level of compression among all of the formats I’ve mentioned here.
+But this comes at a cost – in time and in CPU. Here’s how you compress a directory using tar.bz2
+
+# tar -jcvf archive_name.tar.bz2 directory_to_compress
+
+This will extract the files in the archive_name.tar.bz2 archive in the current directory. To extract the files to a different directory use
+
+# tar -jxvf archive_name.tar.bz2 -C /tmp/extract_here/
+
+--- ✄ -----------------------
+
 NEW RESPONSE STANDARD:
 
    ☐ @todiscuss
@@ -32,13 +45,15 @@ Meta (data)
 
 Next release:
 
-  ☐ Show zoomification
+  ✔ Show zoomification @done (16-03-22 00:14)
     ✔ a zoom test working page @done (16-03-21 23:01)
       ✘ js @cancelled (16-03-21 23:01)
       ✔ python @done (16-03-21 23:01)
         ✔ passing variables @done (16-03-21 23:23)
-    ☐ a backend api endpoint to query the file name from the record id
-    ☐ popup from details page
+    ✘ a backend api endpoint to query the file name from the record id @cancelled (16-03-21 23:50)
+    ✔ popup from details page @done (16-03-21 23:50)
+    ☐ debug
+  ☐ info endpoint
   ☐ otherimages endpoint
     ☐ upload with a separated POST option = subfolder
   ☐ Welcome page complention
