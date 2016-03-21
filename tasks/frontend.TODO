@@ -86,6 +86,7 @@ Configurations:
 2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'details', type <class 'str'>
 
 bugs & ideas:
+☐ /info for authenticated user. Get id and other informations about the user from the token.
 ☐ materialize spy is probably broken in latest materialize? @toverifyagain
 ☐ after login go to latest requested url
   ☐ seek in history

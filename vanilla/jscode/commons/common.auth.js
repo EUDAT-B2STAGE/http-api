@@ -137,6 +137,9 @@ function RegisterController($scope, $log, $auth, api)
     self.request = function()
     {
         var credentials = self.user;
+        if (credentials.name == null || credentials.surname == null)
+            return false;
+
         $log.debug("Requested registration:", credentials);
 
         api.apiCall(api.endpoints.register, 'POST', credentials, null, true)

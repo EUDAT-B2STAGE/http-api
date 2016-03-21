@@ -74,7 +74,10 @@ def register_api(request):
     # Info check
     key1 = 'name'
     key2 = 'surname'
-    if key1 not in request or key2 not in request:
+    if key1 not in request \
+       or request[key1] is None \
+       or key2 not in request \
+       or request[key2] is None:
         return {'errors': {'information required':
                 "No profile info: name and/or surname"}}, \
             hcodes.HTTP_DEFAULT_SERVICE_FAIL
