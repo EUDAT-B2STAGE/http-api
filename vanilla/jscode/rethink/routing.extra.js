@@ -36,6 +36,7 @@ angular.module('web')
             }
         },
 
+/* Much easier if it's on python template
     //////////////////////
         'logged.zoom': {
             url: "/zoom/:id",
@@ -46,6 +47,7 @@ angular.module('web')
                 }
             }
         },
+*/
 
     //////////////////////
         'logged.explore': {

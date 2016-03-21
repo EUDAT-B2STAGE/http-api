@@ -170,6 +170,14 @@ def jsblueprint():
     return render_template("blueprint.js", **variables)
 
 
+################################################
+# ZOOM?
+@cms.route('/zoom')
+def zoom():
+    template_path = 'custom' + '/' + CURRENT_BLUEPRINT
+    return render_template(template_path + '/' + 'zoom.html')
+
+
 ######################################################
 # MAIN ROUTE: give angular the power
 
