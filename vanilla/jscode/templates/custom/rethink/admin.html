@@ -2,25 +2,17 @@
 <md-content
     ng-controller="AdminController as adm">
  <md-tabs md-dynamic-height md-border-bottom
-    md-swipe-content md-center-tabs
-    md-autoselect='false'
-    md-selected='adm.selectedTab'>
-
-<!-- WITH NG REPEAT
-  <md-tab ng-repeat="tab in tabs | orderBy:predicate:reversed"
-    md-on-select="onTabSelected(tab)" md-on-deselect="announceDeselected(tab)"
-    ng-disabled="tab.disabled">
-    <md-tab-label>
-      {{tab.title}}
-      <img src="img/removeTab.png" ng-click="removeTab(tab)" class="delete">
-    </md-tab-label>
-    <md-tab-body>
-      {{tab.content}}
-    </md-tab-body>
-  </md-tab>
--->
+    md-swipe-content md-center-tabs md-enable-disconnect
+    md-autoselect='false' md-selected='selectedTab'>
 
 <!-- TABS -->
+
+    <md-tab label="Steps" md-on-select="adm.onTabSelected('tree')">
+      <md-content class="md-padding">
+        <div ng-include="root.blueprintTemplateDir + 'admin_step.html'"></div>
+      </md-content>
+    </md-tab>
+
     <md-tab label="Welcoming sections"
         md-on-select="adm.onTabSelected('sections')">
       <md-content layout-padding flex='grow'>
@@ -30,18 +22,6 @@
 
     <md-tab label="Welcoming slider"
         md-on-select="adm.onTabSelected('slider')">
-      <md-content class="md-padding">
-        Work in progress
-      </md-content>
-    </md-tab>
-
-    <md-tab label="Steps" md-on-select="adm.onTabSelected()">
-      <md-content class="md-padding">
-        <div ng-include="root.blueprintTemplateDir + 'admin_step.html'"></div>
-      </md-content>
-    </md-tab>
-
-    <md-tab label="Something else" md-on-select="adm.onTabSelected()">
       <md-content class="md-padding">
         Work in progress
       </md-content>

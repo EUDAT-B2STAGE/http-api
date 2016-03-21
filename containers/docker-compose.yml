@@ -23,19 +23,21 @@ conf:
 backend:
     extends:
         service: conf
-    image: pdonorio/py3api
+    image: pdonorio/py3apil
     hostname: restapi
     ports:
         - 8081:5000
     volumes:
         # Sql lite database
-        - apilitedb:/dbs
+        - restangulask_apilitedb:/dbs
         # Base code
         - ../backend:/code
         # Rest API endpoints
         - ../vanilla/apis:/code/restapi/resources/custom
         # Rest API configuration
         - ../vanilla/specs:/code/confs/endpoints
+        # Other libs
+        - ../vanilla/libs:/code/libs
 
 ###############################
 frontend:
@@ -46,11 +48,11 @@ frontend:
     working_dir: /data/frontend
     volumes:
         # Sql lite database & common models
-        - apilitedb:/dbs
+        - restangulask_apilitedb:/dbs
         # Main dir. It has to be the root directory, to make links work
         - ..:/data
         # js/css libraries installed via bower
-        - ../vanilla/jslibs/bower_components:/data/frontend/felask/static/bower
+        - ../vanilla/libs/bower_components:/data/frontend/felask/static/bower
         # custom css files
         - ../vanilla/templates/customcss:/data/frontend/felask/static/css
         # All the angular blueprints (&& templates)
@@ -68,7 +70,7 @@ frontend:
 # Make automatic to install libraries
 bower:
     image: pdonorio/jsdev
-    working_dir: /tmp/vanilla/jslibs
+    working_dir: /tmp/vanilla/libs
     volumes:
         - ..:/tmp
 
@@ -80,7 +82,7 @@ sqladmin:
     image: clue/adminer
     # Sql lite database & common models
     volumes:
-        - apilitedb:/dbs
+        - restangulask_apilitedb:/dbs
     # links:
     #     - sql:db
     ports:

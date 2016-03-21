@@ -1,0 +1,94 @@
+<div ng-controller='ToastController as toasting'>
+
+ <md-dialog ng-controller="UploadController as up"
+    aria-label="Uploading a file">
+  <form>
+
+    <md-toolbar class="md-primary md-hue-3" >
+      <div class="md-toolbar-tools" layout="row">
+        <h2> <b>{{currentName}}</b>: <i>upload</i> your files </h2>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content layout-padding
+      style="min-width:600px; max-width:1000px; max-height:810px; ">
+
+
+<!-- CONTENT -->
+<div flow-init="up.config"
+     flow-files-submitted="$flow.upload()"
+     flow-file-success="up.uploaded($file)"
+     flow-file-added="up.adding($file, $event, $flow)"
+     flow-file-error="up.fileError($file, $message)"
+     flow-progress="up.progressing"
+    >
+
+<!-- All of the ng-flow options
+
+REMOVED:
+     flow-error="up.otherError($file, $message)"
+
+LIST:
+        flow-file-success="someHandlerMethod( $file, $message, $flow )"
+        flow-file-progress="someHandlerMethod( $file, $flow )"
+        flow-file-added="someHandlerMethod( $file, $event, $flow )"
+        flow-files-added="someHandlerMethod( $files, $event, $flow )"
+        flow-files-submitted="someHandlerMethod( $files, $event, $flow )"
+        flow-file-retry="someHandlerMethod( $file, $flow )"
+        flow-file-error="someHandlerMethod( $file, $message, $flow )"
+        flow-error="someHandlerMethod( $file, $message, $flow )"
+        flow-complete=" ... "
+        flow-upload-started=" ... "
+        flow-progress=" ... "
+-->
+
+  <span class="btn" flow-btn>Upload File</span>
+
+<!--
+  <div flow-file-progress="up.progressing"></div>
+-->
+
+  <table>
+    <tr ng-repeat="file in $flow.files">
+        <td>Request {{$index+1}}</td>
+        <td>{{file.name}}</td>
+        <td>
+            <span ng-if="file.status == 'fail'">
+                <i class="material-icons">clear</i>
+            </span>
+            <span ng-if="file.status == 'uploaded'">
+                <i class="material-icons">done</i>
+            </span>
+            <span ng-if="file.status == 'progress'">
+                <md-progress-circular
+                    class="md-hue-2" md-diameter="40px"
+                    ></md-progress-circular>
+            </span>
+        </td>
+        <td width="45%">
+            <img flow-img="file" width="200">
+        </td>
+        <td width="20%"> <b>{{file.errorMessage}}</b> </td>
+    </tr>
+  </table>
+</div>
+<!-- CONTENT -->
+
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button class="md-secondary" ng-click="up.validate()">
+        close
+      </md-button>
+<!--
+      <md-button class="md-warn" ng-click="up.cancel()" >
+        cancel
+      </md-button>
+-->
+    </md-dialog-actions>
+
+  </form>
+ </md-dialog>
+</div>

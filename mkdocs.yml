@@ -3,4 +3,5 @@ pages:
 - Introduction: index.md
 - Rest: api.md
 - Development: dev.md
+- Breaking compatibility: compat.md
 theme: journal

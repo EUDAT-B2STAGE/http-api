@@ -66,6 +66,7 @@
 	    //"angular-loading-bar/build/loading-bar.min.js",
 	    "angular-lazy-img/release/angular-lazy-img.min.js",
 	    "angular-tree-control/angular-tree-control.js",
+        "ng-flow/dist/ng-flow-standalone.min.js",
 	// JWT ?
 		//
 	// libs on demand
@@ -83,6 +84,6 @@
 	    "app/app.js"
 	],
 	"imgs": [
-		//
+		// if any necessary
 	]
 }

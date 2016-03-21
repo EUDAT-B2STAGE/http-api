@@ -1,5 +1,12 @@
 <div ng-controller="WelcomeController as welcome">
 
+<!-- ADD THE POSSIBILITY TO USE YOUR OWN TEMPLATE
+
+    <div ng-show="welcome.myOwnTemplate"
+        ng-include="root.blueprintTemplateDir + welcome.myOwnTemplate"></div>
+
+-->
+
     <div ng-if="sections.length < 1"
         ng-include="root.templateDir+'intro_example.html'"></div>
 

@@ -9,9 +9,11 @@ import json
 from datetime import datetime
 # from flask import Response, stream_with_context
 from flask.ext.login import login_user, UserMixin
-from config import BACKEND
+from config import BACKEND, get_logger
 from .basemodel import db, lm, User
 from . import htmlcodes as hcodes
+
+logger = get_logger(__name__)
 
 ##################################
 # If connected to APIs
@@ -20,7 +22,10 @@ if BACKEND:
     NODE = 'myapi'
     PORT = 5000
     URL = 'http://%s:%s' % (NODE, PORT)
-    LOGIN_URL = URL + '/api/login'
+    API_URL = URL + '/api/'
+    LOGIN_URL = API_URL + 'login'
+    REGISTER_URL = API_URL + 'register'
+    PROFILE_URL = API_URL + 'initprofile'
     HEADERS = {'content-type': 'application/json'}
 
     @lm.user_loader
@@ -54,6 +59,61 @@ else:
 # lm.login_view = "users.login"
 
 ##################################
+def register_api(request):
+    """ Login requesting token to our API and also store the token """
+
+    # Passwords check
+    key1 = 'password'
+    key2 = 'password_confirm'
+    if key1 not in request or key2 not in request \
+       or request[key1] != request[key2]:
+        return {'errors': {'passwords mismatch':
+                "Passwords provided are not the same"}}, \
+                hcodes.HTTP_DEFAULT_SERVICE_FAIL
+
+    # Info check
+    key1 = 'name'
+    key2 = 'surname'
+    if key1 not in request \
+       or request[key1] is None \
+       or key2 not in request \
+       or request[key2] is None:
+        return {'errors': {'information required':
+                "No profile info: name and/or surname"}}, \
+            hcodes.HTTP_DEFAULT_SERVICE_FAIL
+
+    # Init
+    code = hcodes.HTTP_OK_CREATED
+    j = json.dumps(request)
+    opts = {'stream': True, 'data': j, 'headers': HEADERS, 'timeout': 5}
+
+    try:
+
+        # Normal registration
+        r = requests.post(REGISTER_URL, **opts)
+        out = r.json()
+        logger.debug("Registration step 1 [%s]" % out)
+        if 'errors' in out['response']:
+            return out['response'], out['meta']['code']
+
+        # Extra profiling
+        request['userid'] = out['response']['user']['id']
+        opts['data'] = json.dumps(request)
+        r = requests.post(PROFILE_URL, **opts)
+        out = r.json()
+        logger.debug("Registration step 2 [%s]" % out)
+        if 'error' in out['data']:
+            return out['data'], out['status']
+
+    except requests.exceptions.ConnectionError:
+        return {'errors':
+                {'API unavailable': "Cannot connect to APIs server"}}, \
+                hcodes.HTTP_DEFAULT_SERVICE_FAIL
+
+    return {'message': 'Registered'}, code
+
+
+##################################
 def login_api(username, password):
     """ Login requesting token to our API and also store the token """
 
@@ -70,7 +130,20 @@ def login_api(username, password):
     out = r.json()
 
     response = {'errors': {'No autorization': "Invalid credentials"}}
-    if out['meta']['code'] <= hcodes.HTTP_OK_NORESPONSE:
+
+    # If wanting to check errors
+    if 'response' in out and 'errors' in out['response']:
+        errors = out['response']['errors']
+        if 'email' in errors:
+            for error in errors['email']:
+                if 'confirmation' in error:
+                    logger.info(
+                        "Registered user, waiting for approval: %s" % username)
+                    err = {error: 'This account has not yet been approved ...'}
+                    response['errors'] = err
+
+    # Positive response
+    if 'meta' in out and out['meta']['code'] <= hcodes.HTTP_OK_NORESPONSE:
         data = out['response']['user']
         token = data['authentication_token']
 

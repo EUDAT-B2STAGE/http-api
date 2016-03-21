@@ -3,11 +3,15 @@
 
 angular.module('web')
     .controller('ExploreController', ExploreController)
+    .controller('FixImagesController', FixImagesController)
     .controller('StepsController', StepsController)
-    .controller('TreeController', TreeController)
     ;
 
-function ExploreController($scope, $rootScope, $log, $state, search)
+////////////////////////////////
+// controller
+////////////////////////////////
+
+function ExploreController($scope, $rootScope, $log, $state, search, admin)
 {
 
   // INIT controller
@@ -20,22 +24,86 @@ function ExploreController($scope, $rootScope, $log, $state, search)
 
   //TABS
   self.selectedTab = null;
-  self.onTabSelected = function () {
-      $log.debug("Selected", self.selectedTab);
-      if (self.selectedTab == 1) {
-          //Load data for the tree
-          search.getSteps(true).then(function (out)
-          {
-            $rootScope.treeProcessData(out);
-          })
+  self.onTabSelected = function (key)
+  {
+      $log.debug("Selected", key, self.selectedTab);
+
+// THIS IS WHERE YOU ADD THE DATA LOAD LOGIC FOR TABS
+      if (key == 'imagefix') {
+        getMissingImagesData(admin, $scope);
       }
   }
 
-  $scope.ucFirst = function(string) {
-    return string.capitalizeFirstLetter();
-  }
-
 }
+
+////////////////////////////////
+// Fix images
+////////////////////////////////
+
+function getMissingImagesData(admin, $scope) {
+    return admin.getDocumentsWithNoImages()
+      .then(function (out)
+      {
+        //console.log("DATA", out);
+        $scope.parties = out.data;
+    });
+
+};
+
+function FixImagesController($scope, $log, $mdDialog, $window, admin)
+{
+    $log.debug("Fix Controller");
+    var self = this;
+    self.noImageList = function (name, data) {
+      self.elements = data;
+      self.currentParty = name;
+      $window.scrollTo(0, 0);
+    }
+
+    self.closeCard = function() {
+      delete self.elements;
+    }
+
+/////////////////////////////////////
+
+    self.uploaderDialog = function(record, name)
+    {
+      $scope.currentRecord = record;
+      $scope.currentName = name;
+      var dialogOptions = {
+        templateUrl: blueprintTemplateDir + 'uploader.html',
+        //controller: UploadController,
+// Not working if controller is declared inside the dialog HTML
+// http://blog.thoughtram.io/angularjs/2015/01/02/exploring-angular-1.3-bindToController.html
+        //bindToController: true,
+        parent: angular.element(document.body),
+// But I can pass my scope...
+// https://github.com/angular/material/issues/455#issuecomment-114017738
+        scope: $scope.$new(),
+// Note: THE $new() FUNCTION IS NECESSARY to duplicate the scope inside the modal.
+// Otherwise, closing the modal would destroy the parent's scope
+        //clickOutsideToClose:true,
+        //onComplete: function
+      }
+
+      // Open
+      $mdDialog.show(dialogOptions)
+        .then(function (response) {
+            $log.debug("Closed dialog with", response);
+            if (response) {
+                // Make the loader appear
+                $scope.parties = null;
+                $scope.showSimpleToast({"Reloading data": null}, 1200);
+                // Close the card
+                self.closeCard();
+                // Reload data
+                getMissingImagesData(admin, $scope);
+            }
+        });
+    }
+/////////////////////////////////////
+
+};
 
 ////////////////////////////////
 // controller
@@ -59,101 +127,5 @@ function StepsController($scope, $log, $state, search)
   })
 }
 
-////////////////////////////////
-// controller
-////////////////////////////////
-
-function TreeController($scope, $rootScope, $log, search)
-{
-  // INIT controller
-  $log.debug("Tree of life");
-  var self = this;
-
-  // Init scope data
-  //self.dataCount = NaN;
-  self.data = [];
-
-// https://github.com/wix/angular-tree-control
-
-    // options are found http://wix.github.io/angular-tree-control/
-    self.treeOptions = {
-        nodeChildren: "children",
-        dirSelectable: false, //true,
-        injectClasses: {
-            ul: "a1",
-            li: "a2",
-            liSelected: "a7",
-            iExpanded: "a3",
-            iCollapsed: "a4",
-            iLeaf: "a5",
-            label: "a6",
-            labelSelected: "a8"
-        }
-    }
-    self.showSelected = function(selected) {
-      $log.info("Selected node", selected);
-      self.selectedTreeObj = selected.info;
-    };
-
-  $rootScope.treeProcessData = function (steps)
-  {
-    var tree = [];
-    self.dataCount = steps.length;
-
-    forEach(steps, function(single, i){
-        var fields = [];
-        forEach(single.fields, function(field, j){
-          var infos = {
-            'name': field.name,
-            'values': field.options,
-            'type': getType(field.type),
-            'required': field.required,
-          };
-          fields.push({
-            'type': 'field', 'name': field.name, 'info': infos,
-            "children": []});
-        });
-        tree.push({
-          'type': 'step', 'name': single.step.name,
-          "children": fields});
-    });
-
-    $log.info("TREE", tree);
-    self.myTree = tree;
-
-  }
-
-  ////////////////////////////////////////
-  // move me into a service
-  self.types = [
-      {value: 0, text: 'string', desc:
-          'All text is allowed'},
-      {value: 1, text: 'number', desc:
-          'Only integers values'},
-      {value: 2, text: 'email', desc:
-          'Only e-mail address (e.g. name@mailserver.org)'},
-      {value: 3, text: 'url', desc:
-          'Only web URL (e.g. http://website.com)'},
-      {value: 4, text: 'date', desc:
-          'Choose a day from a calendar'},
-      {value: 5, text: 'time', desc:
-          'Choose hour and minutes'},
-      {value: 6, text: 'pattern', desc:
-          'Define a regular expression for a custom type'},
-      {value: 7, text: 'color', desc:
-          'Only colors in hexadecimal value. Choose from color picker.'},
-      {value: 8, text: 'list', desc:
-          'Define a list of possible values (e.g. a dictionary)'},
-  ];
-  function getType(key) {
-      // save type to be sure in the future?
-      var type = self.types[0].text;
-      if (self.types[key])
-          type = self.types[key].text;
-      return type;
-  }
-  ////////////////////////////////////////
-
-}
 
 })();

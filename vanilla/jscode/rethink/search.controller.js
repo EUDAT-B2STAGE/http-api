@@ -209,7 +209,7 @@ function ChipsController($scope, $log, $q, $stateParams, search)
         return $q.all(promises).then((values) =>
         {
             forEach(values, function (api_response, step) {
-              if (api_response.elements > 1) {
+              if (api_response.elements > 2) {
                 $log.debug('Fullfilling step', steps[step]);
                 //console.log(api_response);
 
@@ -217,7 +217,7 @@ function ChipsController($scope, $log, $q, $stateParams, search)
                   self.states.push({
                     value: state.toLowerCase(),
                     display: state,
-                    type: steps[step],
+                        type: steps[step],
                   })
                 });
 

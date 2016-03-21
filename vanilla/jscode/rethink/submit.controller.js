@@ -27,12 +27,15 @@ function SubmissionController($scope, $log)
     }
   };
 
+  self.imageCard = false;
+
   self.addImage = function (index) {
-    self.steps[index].images.push("new select" + self.images.length);
+    self.imageCard = true;
   }
 
-  self.selectImage = function () {
-        console.log("TEST");
+  self.selectImage = function (image) {
+    self.imageCard = false;
+    self.steps[$scope.selectedStep].images.push(image);
   }
 
 }

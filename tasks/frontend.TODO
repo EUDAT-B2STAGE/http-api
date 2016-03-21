@@ -1,16 +1,115 @@
 
 >  Welcome and goodbye. And thanks for all the fish!
 
+http://codeology.braintreepayments.com/pdonorio/restangulask
+
 # PRIVATE GIT
 git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
+# GOOD API DESIGN
+should be profoundly discussed
 # UI ROUTER and params
 http://stackoverflow.com/a/25647714/2114395
+# HTML5 validator
+https://github.com/svenkreiss/html5validator
+
 --- ✄ -----------------------
 
-NEEDED:
-  - WelcomeController
-  - MenuInAppController
-  - NameController?
+NEW RESPONSE STANDARD:
+   ☐ should check what to do also on angularjs side...
+Response
+  data
+  errors { 'FIELD': 'message'}
+Meta (data)
+    "data_type": "<class 'dict'>",
+    "elements": 1,
+    "status": 500
+ ☐ How to force the same also on normal flask endpoint?
+   ☐ and on frontend side?
+
+--- ✄ -----------------------
+
+Next release:
+
+  ☐ Show zoomification inside detail page
+  ☐ otherimages endpoint
+    ☐ upload with a separated POST option = subfolder
+  ☐ Welcome page complention
+    ☐ welcome parallax
+    ☐ welcome slider
+  ☐ transcription lib
+
+Zoomify preview:
+  http://www.academiabelgica.it.cloud.seeweb.it/archiviocumont/record.php?subdoc=1&record=3&page=1&fullscreen=all
+  <script type="text/javascript" src="./javascript/ZoomifyImageViewer.js"></script><link rel='stylesheet' href='css/style.php?from=record.php'> </head>
+  <body>
+<div class='container'>    <DIV class='base0'> <br></br><DIV class='row textcentering' ><DIV class='large-16 columns' >&nbsp;</DIV>
+</DIV>
+<DIV class='large-16 columns' ><DIV class='row textcentering' ><DIV class='large-16 columns' ><DIV class='panel myshadow' >
+
+<SCRIPT type='text/javascript'>Z.showImage("bigContainer", "files/documents/collocazione_3_page001" , "zToolbarPosition=2&zFullPageInitial=1&zSkinPath=Assets/Skins/Dark"+ "&zNavigatorFit=1&zNavigatorWidth=80&zNavigatorHeight=80&zNavigatorVisible=3&zInitialZoom=0&zLogoVisible=0" + "&zToolbarVisible=1&zLogoVisible=0&zSliderVisible=1&zProgressVisible=0&zTooltipsVisible=0" ); </SCRIPT>
+
+ Rethinkdb logs:
+   ☐ problem with the second...
+     ☐ rethinkdb append?
+   ☐ logs for user login and/or registration/profile?
+     ☐ from frontend calls?
+
+ Dlite update:
+   ☐ release 2 beta?
+
+ Image optimization:
+  ☐ UI FIX
+    ☐ scroll bars and fixed width
+    ☐ show the card close to where you click?
+  ☐ decide if authenticate (header config)
+  ☐ chunked flow POST method?
+    ☐ REST plugin to accept all parameters
+  ☐ IMAGE CACHE
+   https://github.com/jBenes/angular-imgcache.js/tree/master
+   ☐ nginx
+    http://charlesleifer.com/blog/nginx-a-caching-thumbnailing-reverse-proxying-image-server-/
+    https://developer.atlassian.com/blog/2016/01/docker-cluster-reverse-proxy-1/
+
+Configurations:
+  http://www.jvandemo.com/how-to-configure-your-angularjs-application-using-environment-variables/
+  http://rochacbruno.github.io/dynaconf/
+  Mail:
+    https://pythonhosted.org/Flask-Security/quickstart.html#mail-configuration
+    and https://pythonhosted.org/Flask-Security/configuration.html
+
+2016-03-16 21:35:52,119 restapi.resources.decorators INFO     [Class: RethinkDataValues] GET request
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'key', type <class 'str'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'currentpage', type <class 'int'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'perpage', type <class 'int'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'step', type <class 'int'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'filter', type <class 'str'>
+2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'details', type <class 'str'>
+
+bugs & ideas:
+☐ /info for authenticated user. Get id and other informations about the user from the token.
+ ☐ an equivalent for admin to check informations about other users
+☐ materialize spy is probably broken in latest materialize? @toverifyagain
+☐ after login go to latest requested url
+  ☐ seek in history
+  ☐ if from welcome, go to simple 'app'
+☐ chips with bigger div to show results
+☐ table are not same size on details
+☐ extrait not complete list inside the details page
+☐ topbar menu for mobile
+
+SUBMIT:
+ ☐ Steps are upside down
+  ✔ Guide the submission with breadcrumbs @done (16-02-16 15:14)
+  ☐ the document is a draft until the last step is completed (estratto)
+  ☐ draft is a separated rethinkdb resource, related to the user
+    ☐ automatically relate the user from the token to its drafts
+      ☐ how to get user from token inside the API?
+  ☐ transcriptions size inside db? or post/get method injection?
+  ☐ Submission skeleton with collapsible or collections
+  ☐ Submission steps
+  http://materializecss.com/collections.html
+ ☐ good example for transcription edit
+ https://material.angularjs.org/latest/demo/menuBar
 
 Common functionalities:
   ☐ A list of required extra routes
@@ -22,45 +121,27 @@ Common functionalities:
     ☐ remove WelcomeMenuController in common rootctrl
 ☐ Register page
 
-BUGS:
-☐ spy is probably broken in latest materialize? @toverifyagain
-☐ chips with bigger div to show results
-☐ table are not same size on details
-☐ extrait not complete list inside the details page
-☐ mostra nella pagina di ricerca
-☐ mostra nella pagina di dettaglio
-☐ topbar menu for mobile
-
-Images:
-  ☐ upload images
-    ✔ API endpoint @done (16-02-09 08:21)
-    ☐ a dedicated dialog inside common js code
-    ☐ a list of images
-      ☐ you show only the path
-        ☐ and maybe thumbnail
-  ☐ image cache
- https://github.com/jBenes/angular-imgcache.js/tree/master
-  ☐ welcome parallax
-  ☐ welcome slider
-
 Autocomplete:
-  ☐ elasticsearch
-      https://elasticsearch-py.readthedocs.org/en/master/index.html
-    ✔ docker server setup @done (16-02-07 01:41)
-      ✔ install python library, don't know which @done (16-02-07 01:41)
-      ☐ how to refresh indexes on startup?
-        ☐ flask before first request i would say
-    ☐ python insert in operations.py
-      ✔ think about a structure @done (16-02-07 11:08)
-      ☐ tests
-    ☐ API with GET
-      ☐  separate file for elastic?
-    ☐ Mix with Rethinkdb
-    https://www.rethinkdb.com/docs/elasticsearch/
-    https://github.com/rethinkdb/logstash-input-rethinkdb
-    https://hub.docker.com/_/logstash/
-    https://github.com/deviantony/docker-elk/blob/master/docker-compose.yml
-    ☐ OR my rethinkdb table change feed?
+☐ elasticsearch
+    https://elasticsearch-py.readthedocs.org/en/master/index.html
+ ☐ extra
+http://blog.sandeepchivukula.com/posts/2016/03/06/photo-search/
+https://github.com/appbaseio/dejaVu
+✔ docker server setup @done (16-02-07 01:41)
+  ✔ install python library, don't know which @done (16-02-07 01:41)
+  ☐ how to refresh indexes on startup?
+    ☐ flask before first request i would say
+☐ python insert in operations.py
+  ✔ think about a structure @done (16-02-07 11:08)
+  ☐ tests
+☐ API with GET
+  ☐  separate file for elastic?
+☐ Mix with Rethinkdb
+https://www.rethinkdb.com/docs/elasticsearch/
+https://github.com/rethinkdb/logstash-input-rethinkdb
+https://hub.docker.com/_/logstash/
+https://github.com/deviantony/docker-elk/blob/master/docker-compose.yml
+☐ OR my rethinkdb table change feed?
 
 User ranks:
   ☐ get user info via REST /myself
@@ -74,6 +155,7 @@ History:
 
 dynamic menu:
   ☐ decided upon a json model
+  https://pythonadventures.wordpress.com/2016/03/15/pretty-json-output-with-flask-restful/
     ☐ how to overide if existing?
   ☐ just logout if none provided
 
@@ -104,6 +186,7 @@ New fixed search:
 ☐ understand md-content?
 ✔ Parties back @done (16-01-25 12:15)
  ☐ sub piece in lazy load?
+ http://www.cloudcity.io/blog/2016/03/03/angular-loading-annoyances/
 ☐ chips watch?
 ☐ lazy load of more than 10 results
 ☐ Application name inside the Toolbar should be a hand made font?
@@ -121,20 +204,6 @@ DETAILS:
     ☐ via python request and jinja template
  ☐ select language on transcription
  ☐ aggiungere lista dettagli (step 4) sotto lo scrollspy
-
-SUBMIT:
-  ☐ Guide the submission with breadcrumbs
-  http://materializecss.com/breadcrumbs.html
- ☐ Steps are upside down
- ☐ Go from the biggest step to the leaf, as a branch
-   ☐ breadcrumbs show the progress
-
-  ☐ transcriptions size inside db? or post/get method injection?
-  ☐ Submission skeleton with collapsible or collections
-  ☐ Submission steps
-  http://materializecss.com/collections.html
- ☐ good example for transcription edit
- https://material.angularjs.org/latest/demo/menuBar
 
 OTHER:
   ☐ one time binding
@@ -179,6 +248,8 @@ VOCABULARY:
         ☐ Excel load
         ☐ web site insert
       ☐ step list angular inline filter
+
+ https://github.com/graphql-python/graphene
 
 HTTPS:
   ☐ nginx proxy
@@ -247,6 +318,9 @@ https://github.com/rholder/retrying
 https://github.com/mitsuhiko/jinja2-htmlcompress
 ☐ How to quickly add a blueprint for a whole new suburl
 http://flask.pocoo.org/snippets/59/
+
+Database cluster:
+  http://thenewstack.io/crate-addresses-database-speed-scaling-standard-sql/
 
 One time binding:
     https://www.binpress.com/tutorial/speeding-up-angular-js-with-simple-optimizations/135
@@ -479,3 +553,50 @@ COMPLETED:
 ✔ Welcome broken for other services @done (16-02-11 11:00)
  ✔ More button does not work @done (16-02-11 11:00)
  ✔ repeat html is not inside the common part @done (16-02-11 11:00)
+  ✔ Backend: associate image @done (16-03-17 14:10)
+    ✔ a card that appears only when pressing the add button @done (16-02-17 00:34)
+      ✔ From party: list of images (not associated) for each @done (16-02-22 10:59)
+        ✔ rethinkdb eqjoin @done (16-02-22 10:59)
+      ✔ move to browse from admin... @argh @done (16-03-01 19:08)
+    ✔ API @done (16-03-17 14:10)
+      ✔ respond to flow @done (16-03-04 08:03)
+      ✔ saves info the same model i already have for datadocs @done (16-03-10 15:06)
+      ✔ recover record of the file @recordid @done (16-03-15 08:32)
+        ✔ set the record when posting into API @done (16-03-16 07:56)
+      ✔ code and test for multiple images @uhm @done (16-03-16 22:30)
+      ✔ Zoomify @done (16-03-17 14:10)
+        ✔ how to integrate? probably inside dir of vanilla/jslibs (not saved to git) @done (16-03-16 20:42)
+        ✔ install python2 and the other necessary libraries @done (16-03-17 14:10)
+✔ Move tree controller/stuff @done (16-03-02 07:59)
+  ✔ upload images @done (16-03-03 08:29)
+    ✔ API endpoint @done (16-02-09 08:21)
+    ✔ a dedicated dialog inside common js code @done (16-03-02 15:26)
+      ✔ angular library to upload: flow @done (16-03-03 08:29)
+  ✔ frontend @done (16-03-17 19:48)
+    ✔ upload status @done (16-03-04 08:16)
+      ✔ progress @done (16-03-04 08:16)
+      ✔ failed @done (16-03-04 08:16)
+      ✔ completed @done (16-03-04 08:16)
+      ✔ icons @done (16-03-17 19:48)
+    ✔ handle 'already exist' error @done (16-03-04 08:23)
+      ✔ handle error inside the dialog now with the recent model @done (16-03-10 15:05)
+      ✔ recover record of the file @recordid @done (16-03-11 08:20)
+        ✔ add file name in the dialog title @done (16-03-11 08:20)
+      ✔ FLOW lib @done (16-03-17 19:08)
+        ✔ switch from GET to chunked POST? @done (16-03-07 14:42)
+        ✔ angular config @done (16-03-15 08:32)
+          ✔ fix how to get the API URL @important @done (16-03-14 21:04)
+        ✔ remove that record from the list of fiximage @done (16-03-16 08:31)
+        ✔ limit file size? @done (16-03-17 19:08)
+  ✔ register page @done (16-03-20 21:00)
+    ✔ make a call to frontend endpoint (like login) @done (16-03-20 15:59)
+    /doregistration
+     ✔ wrap a call to original api /register @done (16-03-20 01:04)
+     ✔ add a call to a new api /initprofile (only for admin) @done (16-03-20 01:17)
+     ✔ create the initprofile backend url @uhm @done (16-03-20 01:17)
+       ✔ retrieve the user @done (16-03-20 15:34)
+       ✘ make the user not active @cancelled (16-03-20 15:34)
+         ✔ use confirmation date instead @done (16-03-20 15:34)
+       ✔ give the basic role @done (16-03-20 15:34)
+       ✔ add name/surname @done (16-03-20 15:56)
+     ✔ add the view like login for angular ui @done (16-03-20 21:00)

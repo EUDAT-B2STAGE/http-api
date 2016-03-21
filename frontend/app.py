@@ -20,11 +20,11 @@ host = app.config.get("HOST")
 port = app.config.get("PORT")
 debug = app.config.get("DEBUG")
 
-#debug = False
-
 if __name__ == '__main__':
     # if debug:
-        app.run(host=host, port=port, debug=debug, threaded=True)
+        app.run(
+            host=host, port=port,
+            debug=debug, use_reloader=True, threaded=True)
     # else:
     # #     ## GEVENT
     # #     # http_server = WSGIServer(('', port), app)

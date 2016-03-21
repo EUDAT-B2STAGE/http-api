@@ -33,12 +33,27 @@
               <label for="icon_telephone">Password</label>
             </div>
           </div>
+
+          <div class="row" ng-if='login.userMessage'>
+            <div class="col s12">
+                <b> <i> {{login.userMessage}} </i> </b>
+            </div>
+          </div>
+
           <div class="row">
             <div class="input-field col s12">
               <button ng-click='login.check()'
                 type="submit" class="btn cyan darken-4">Signin</button>
             </div>
           </div>
+
+          <div class="row">
+            <div class="col s9">&nbsp;</div>
+            <div class="col s3">
+              or <a ui-sref='register'>register a new account</a>
+            </div>
+          </div>
+
         </form>
 
         </p>

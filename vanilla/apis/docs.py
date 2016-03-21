@@ -7,11 +7,14 @@ Some endpoints implementation
 from __future__ import absolute_import
 
 import rethinkdb as r
+from rethinkdb.net import DefaultCursorEmpty
 from flask.ext.security import auth_token_required, roles_required
+from flask.ext.restful import reqparse
 from confs import config
 from ..services.rethink import schema_and_tables, BaseRethinkResource
+from ..services.uploader import Uploader
 from .. import decorators as deck
-from ... import get_logger
+from ... import get_logger, htmlcodes as hcodes
 
 logger = get_logger(__name__)
 
@@ -240,3 +243,169 @@ class RethinkDataForAdministrators(BaseRethinkResource):
     @roles_required(config.ROLE_ADMIN)
     def delete(self, id):
         return super().delete(id)
+
+
+#####################################
+# A good tests for uploading images
+class RethinkImagesAssociations(BaseRethinkResource):
+    """
+    Fixing problems in images associations?
+    """
+
+    @deck.apimethod
+    @auth_token_required
+    def get(self, id=None):
+
+        # Get the record value and the party name associated
+        first = self.get_query().table('datavalues') \
+            .concat_map(lambda doc: doc['steps'].concat_map(
+                    lambda step: step['data'].concat_map(
+                        lambda data: [{
+                            'record': doc['record'], 'step': step['step'],
+                            'pos': data['position'], 'party': data['value'],
+                        }])
+                )) \
+            .filter({'step': 3, 'pos': 1}) \
+            .pluck('record', 'party') \
+            .group('party')['record'] \
+
+        records_with_docs = list(
+            self.get_query().table('datadocs')['record'].run())
+
+        final = {}
+        from operator import itemgetter
+
+        for party, records in first.run().items():
+            elements = set(records) - set(records_with_docs)
+            if len(elements) > 0:
+                # Remove the records containing the images
+                ids = list(set(records) - set(records_with_docs))
+                cursor = self.get_query().table('datavalues') \
+                    .filter(lambda doc: r.expr(ids).contains(doc['record'])) \
+                    .run()
+                newrecord = []
+                for obj in cursor:
+                    val = obj['steps'][0]['data'][0]['value']
+                    tmp = val.split('_')
+                    sort = tmp[len(tmp)-1]
+                    try:
+                        sortme = int(sort)
+                    except:
+                        sortme = -1
+                    newrecord.append({
+                        'sortme': sortme,
+                        'value': val,
+                        'record': obj['record']
+                    })
+                final[party] = sorted(newrecord, key=itemgetter('sortme'))
+                # final[party] = list(cursor)
+        return self.response(final)
+
+        # # Join the records with the uploaded files
+        # second = first.eq_join(
+        #     "record", r.table('datadocs'), index="record").zip()
+        # # Group everything by party name
+        # cursor = second.group('party').run(time_format="raw")
+        # return self.response(cursor)
+
+
+##########################################
+# Upload
+##########################################
+class RethinkUploader(Uploader, BaseRethinkResource):
+    """ Uploading data and save it inside db """
+
+    table = 'datadocs'
+    ZOOMIFY_ENABLE = True
+
+    @deck.apimethod
+    def get(self, filename=None):
+        return super(RethinkUploader, self).get(filename)
+
+    @deck.apimethod
+    def post(self):
+
+        parser = reqparse.RequestParser()
+# record=e0f7f651-b09a-4d0e-8b09-5f75dad7989e&flowChunkNumber=1&flowChunkSize=1048576&flowCurrentChunkSize=1367129&flowTotalSize=1367129&flowIdentifier=1367129-IMG_4364CR2jpg&flowFilename=IMG_4364.CR2.jpg&flowRelativePath=IMG_4364.CR2.jpg&flowTotalChunks=1
+
+        # Handle record id, which is mandatory
+        key = 'record'
+        parser.add_argument(key, type=str)
+        request_params = parser.parse_args()
+
+        if key not in request_params or request_params[key] is None:
+            return self.response(
+                "No record to associate the image with",
+                fail=True, code=hcodes.HTTP_DEFAULT_SERVICE_FAIL)
+        id = request_params[key]
+
+# // FEATURE REQUEST
+# Try to create a decorator to parse arguments from the function args list
+# // FEATURE REQUEST
+
+        # Original upload
+        obj, status = super(RethinkUploader, self).post()
+
+        if isinstance(obj, dict) and 'filename' in obj['data']:
+            myfile = obj['data']['filename']
+            abs_file = self.absolute_upload_file(myfile)
+
+            import os
+            import re
+
+            # Check exists
+            if not os.path.exists(abs_file):
+                return self.response(
+                    "Failed to find the uploaded file",
+                    fail=True, code=hcodes.HTTP_DEFAULT_SERVICE_FAIL)
+
+            ftype = None
+            fcharset = None
+            try:
+                # Check the type
+                from plumbum.cmd import file
+                out = file["-ib", abs_file]()
+                tmp = out.split(';')
+                ftype = tmp[0].strip()
+                fcharset = tmp[1].split('=')[1].strip()
+            except Exception:
+                logger.warning("Unknown type for '%s'" % abs_file)
+
+            # RethinkDB
+            query = self.get_table_query()
+            images = []
+            action = self.insert
+
+            # I should query the database to see if this record already exists
+            # And has some images
+            cursor = query.filter({'record': id})['images'].run()
+            try:
+                images = next(cursor)
+                action = self.replace
+            except DefaultCursorEmpty:
+                pass
+
+            # I could check if the filename is already there. But why? :)
+
+            # Add the image to this record
+            images.append({
+                "code": re.sub(r"\.[^\.]+$", '', myfile),
+                "filename": myfile,
+                "filetype": ftype,
+                "filecharset": fcharset})
+
+            # Handle the file info insertion inside rethinkdb
+            record = {
+                "record": id,
+                "images": images,
+            }
+
+            try:
+                action(record)
+                obj = {'id': id}
+                logger.debug("Updated record '%s'" % id)
+            except BaseException as e:
+                return self.response(
+                    str(e), fail=True, code=hcodes.HTTP_BAD_CONFLICT)
+
+        return self.response(obj, code=status)

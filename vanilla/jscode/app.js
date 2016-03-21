@@ -42,6 +42,8 @@ console.log('POST');
         'formlyMaterial',
 // EDITABLE FORMS
         'xeditable',
+// RESTARTABLE UPLOAD
+        'flow',
 
 /* Custom end */
 //////////////////////////////////////

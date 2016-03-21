@@ -4,14 +4,12 @@
 angular.module('web')
 //.service('auth', authService)
 .controller('LoginController', LoginController)
+.controller('RegisterController', RegisterController)
 .controller('LogoutController', LogoutController)
 
 .config(function($authProvider) {
 
-	$authProvider.loginUrl =
-        window.location.protocol + "//"
-        + window.location.host
-        + "/auth";
+	$authProvider.loginUrl = serverUrl + "/auth";
 	$authProvider.tokenName = 'authentication_token';
 
 	$authProvider.oauth1({
@@ -63,6 +61,7 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
     // Init controller
     $log.debug("Login Controller");
     var self = this;
+    self.userMessage = null;
 
     // Init the models
     self.user = {
@@ -87,6 +86,7 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
 
         $auth.login(credentials).then(
             function (loginResponse) {
+                self.userMessage = null;
                 $log.info("Login request", loginResponse);
                 //console.log($auth.getToken());
 
@@ -94,13 +94,77 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
                 $window.location.reload();
 
             }, function(errorResponse) {
-                $log.warn("Auth: failed");
-                console.log(errorResponse.data.errors);
-                $scope.showSimpleToast(errorResponse.data.errors);
+                self.userMessage = null;
+                var errors = errorResponse.data.errors;
+                $log.warn("Auth: failed", errors);
+                var key = Object.keys(errors)[0];
+                if (key == "Email requires confirmation.") {
+                    self.userMessage = key;
+                }
+                $scope.showSimpleToast(errors);
             }
         );
     }
 }
+
+
+function RegisterController($scope, $log, $auth, api)
+{
+    // Init controller
+    var self = this;
+    self.errors = null;
+    self.userMessage = null;
+    $log.debug("Register Controller");
+
+    // In case i am already logged, skip
+    if ($auth.isAuthenticated())
+    {
+        $timeout(function () {
+            $log.warn("Already logged");
+            $state.go('logged');
+        });
+    }
+
+    // Init the models
+    self.user = {
+       email: null,
+       name: null,
+       surname: null,
+       password: null,
+       password_confirm: null,
+    };
+
+    self.request = function()
+    {
+        var credentials = self.user;
+        if (credentials.name == null || credentials.surname == null)
+            return false;
+
+        $log.debug("Requested registration:", credentials);
+
+        api.apiCall(api.endpoints.register, 'POST', credentials, null, true)
+         .then(
+            function(response) {
+                $log.debug("REG Success call", response);
+
+                if (response.status > 210) {
+                    var errors = response.data.errors;
+                    $log.warn("Registration: failed", errors);
+                    self.errors = errors;
+                    //$scope.showSimpleToast(errors);
+                    $scope.showSimpleToast({'Invalid':'Failed to register...'});
+                } else {
+                    $scope.showSimpleToast({'Well done':'New user created'});
+                    self.errors = null;
+                    self.userMessage =
+                        "Account registered. Pending admin approval.";
+                }
+            }
+        );
+
+    }
+}
+
 
 function LogoutController($scope, $log, $auth)
 {

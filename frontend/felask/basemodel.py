@@ -7,7 +7,7 @@ from datetime import datetime
 from config import user_config
 from collections import OrderedDict
 from flask import url_for, request
-from flask_table import Table, Col, create_table
+from flask.ext.table import Table, Col, create_table
 from flask.ext.login import LoginManager
 from sqlalchemy import inspect
 from flask.ext.sqlalchemy import SQLAlchemy

@@ -8,7 +8,7 @@ from pathlib import Path
 from flask import Blueprint, render_template, request, jsonify, g
 from flask.ext.login import logout_user, current_user
 from .basemodel import user_config
-from .security import login_point
+from .security import login_point, register_api
 from . import htmlcodes as hcodes
 from config import get_logger, FRAMEWORKS
 
@@ -123,6 +123,20 @@ def before_request():
     g.user = current_user
 
 
+def forward_response(response):
+    """
+    Utility to use a response from requests
+    and forward it with Flask server rules
+    """
+    # Split the duo
+    resp, code = response
+    # Make sure that resp is at least an empty dictionary
+    if resp is None:
+        resp = {}
+    # Now, safely, forward response
+    return jsonify(**resp), code
+
+
 @cms.route('/auth', methods=['POST'])
 def auth():
     """
@@ -134,91 +148,31 @@ def auth():
     if not ('username' in request.json and 'password' in request.json):
         return "No valid (json) data credentials", hcodes.HTTP_BAD_UNAUTHORIZED
     # Request login (with or without API)
-    resp, code = login_point(
-            request.json['username'], request.json['password'])
-    if resp is None:
-        resp = {}
-    # Forward response
-    return jsonify(**resp), code
+    return forward_response(login_point(
+            request.json['username'], request.json['password']))
 
 
-# @cms.route('/loggedout')
-# def logout():
-#     """
-#     A route for logout with both JS and Python.
-#     Note: JS has to take the responsibility of logging out Python too, here.
-#     """
-#     logout_user()
-#     return jstemplate()
-#     # return redirect(url_for('.home'))
-
-
-@cms.route('/register')
+@cms.route('/doregistration', methods=['POST'])
 def register():
-    return "THIS IS YET TO DO (also 'forgot password')"
+    """ Registration endpoint to cover API and other needs """
+    return forward_response(register_api(request.json))
+
+
 ################################################
-
-
+# Create a configuration file for angular from python variables
 @cms.route('/js/blueprint.js')
 def jsblueprint():
     variables = {
         'name': CURRENT_BLUEPRINT,
-        'time': user_config['options']['load_timeout']
+        'time': user_config['options']['load_timeout'],
+        'api_url': request.url_root
     }
     return render_template("blueprint.js", **variables)
 
 
-# ################
-# # UPLOADs
-# ################
-
-# # For a given file, return whether it's an allowed type or not
-# def allowed_file(filename):
-#     return '.' in filename and \
-#            filename.rsplit('.', 1)[1] in \
-#            current_app.config['ALLOWED_EXTENSIONS']
-
-# # Only needed for separate debug
-
-# # # Route that will process the file upload
-# # @cms.route('/uploader/<int:id>', methods=['GET'])
-# # def uploader(id):
-# #     flash("Id is %d" % id)
-# #     return render_template('forms/upload.html', **user_config['content'])
-
-# # # Expecting a parameter containing the name of a file.
-# # # It will locate that file on the upload directory and show it
-# # @cms.route('/uploads/<filename>')
-# # def uploaded_file(filename):
-# #     return send_from_directory(current_app.config['UPLOAD_FOLDER'],
-# #                                filename)
-
-
-# # Route that will process the file upload
-# @cms.route('/upload/<int:id>', methods=['POST'])
-# def upload(id):
-#     # Get the name of the uploaded file
-#     file = request.files['file']
-#     # Check if the file is one of the allowed types/extensions
-#     if file and allowed_file(file.filename):
-#         # Make the filename safe, remove unsupported chars
-#         filename = secure_filename(file.filename)
-#         # Build the directory and make if if not exists
-#         mydir = os.path.join(
-#             current_app.config['UPLOAD_FOLDER'], str(id))
-#         if not os.path.exists(mydir):
-#             os.mkdir(mydir)
-#         abs_filepath = os.path.join(mydir, filename)
-#         # Move the file from the temporal folder
-#         file.save(abs_filepath)
-#         # Redirect
-#         # return redirect(url_for('.uploaded_file', filename=filename))
-# # // TO FIX:
-# # Change this to view of single id
-#         return redirect('/view/' + str(id) + '?uploaded=' + filename)
-
-
 ######################################################
+# MAIN ROUTE: give angular the power
+
 @cms.route('/', methods=["GET"])
 @cms.route('/<path:mypath>', methods=["GET"])
 def home(mypath=None):
@@ -228,36 +182,8 @@ def home(mypath=None):
     """
     logger.debug("Using angular route. PATH is '%s'" % mypath)
     if mypath is None:
-        #return templating('welcome.html')
+        # return templating('welcome.html')
         pass
     elif mypath == 'loggedout':
         logout_user()
     return jstemplate()
-
-# ############################
-# # Dirty fix for URL BASE in angular HTML5mode
-
-#     if request.url_root not in user_config['content']['stylesheets'][0]:
-#         # FIX CSS
-#         new = []
-#         tmp = user_config['content']['stylesheets']
-#         for x in tmp:
-#             new.append(request.url_root + x)
-#         user_config['content']['stylesheets'] = new
-#         # FIX JS
-#         new = []
-#         tmp = user_config['content']['jsfiles']
-#         for x in tmp:
-#             new.append(request.url_root + x)
-#         user_config['content']['jsfiles'] = new
-#         # FIX IMAGES
-#         new = []
-#         tmp = user_config['content']['logos']
-#         for x in tmp:
-#             new.append({
-#                 'src': request.url_root + x['src'],
-#                 'width': x['width']})
-#         user_config['content']['logos'] = new
-
-# # Dirty fix for URL BASE in angular HTML5mode
-# ############################
