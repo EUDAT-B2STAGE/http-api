@@ -69,6 +69,9 @@ class BaseConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'my precious'
 
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    UPLOAD_FOLDER = '/uploads'
+
     HOST = 'localhost'
     PORT = int(os.environ.get('PORT', 5000))
 
