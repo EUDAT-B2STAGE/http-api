@@ -2,7 +2,7 @@
 <html xml:lang="EN" xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
-    <title> Full screen zooming image </title>
+    <title> Record #{{record}}: zooming page {{page}} </title>
     <script type="text/javascript"
         src="/static/uploads/pyimgs/viewer/ZoomifyImageViewer.js"></script>
 <!--
@@ -16,14 +16,14 @@ http://www.zoomify.com/products.htm
   Z.showImage(
     "myContainer",
     // file name
-    "static/uploads/2_Reims_np_1",
+    "{{filename}}",
     // options
     "zToolbarPosition=2&zFullPageInitial=1&" +
     "zSkinPath=/static/uploads/pyimgs/viewer/Assets/Skins/Dark"
-    + "&zNavigatorFit=1&zNavigatorWidth=80&zNavigatorHeight=80"
-    + "&zNavigatorVisible=3&zInitialZoom=0&zLogoVisible=0"
-    + "&zToolbarVisible=1&zLogoVisible=0"
-    + "&zSliderVisible=1&zProgressVisible=0&zTooltipsVisible=0"
+    + "&zNavigatorFit=1&zNavigatorWidth=180&zNavigatorHeight=180"
+    + "&zNavigatorVisible=3&zInitialZoom=0"
+    + "&zToolbarVisible=1&zLogoVisible=1"
+    + "&zSliderVisible=1&zProgressVisible=1&zTooltipsVisible=1"
     )
   ;
 </script>

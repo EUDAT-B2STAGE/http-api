@@ -54,10 +54,15 @@
           <tbody>
             <tr>
               <td class="celltop">
-                <img materialboxed
-                  class="responsive-img z-depth-3 materialboxed"
+<!--
+                <img materialboxed class="responsive-img z-depth-3 materialboxed"
                   data-caption="{{image.code}}"
-                  lazy-img="static/uploads/{{ image.filename }}">
+                  lazy-img="/static/uploads/{{ image.filename }}">
+-->
+                <a href="/zoom/22/3" target="_blank">
+                    <img class="responsive-img z-depth-3"
+                      lazy-img="/static/uploads/{{ image.filename }}">
+                </a>
               </td>
               <td width='55%' class="celltop"
                 ng-if="image.transcriptions.length > 0">

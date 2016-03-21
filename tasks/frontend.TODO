@@ -36,6 +36,7 @@ Next release:
     ✔ a zoom test working page @done (16-03-21 23:01)
       ✘ js @cancelled (16-03-21 23:01)
       ✔ python @done (16-03-21 23:01)
+        ✔ passing variables @done (16-03-21 23:23)
     ☐ a backend api endpoint to query the file name from the record id
     ☐ popup from details page
   ☐ otherimages endpoint

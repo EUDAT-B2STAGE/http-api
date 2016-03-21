@@ -172,10 +172,16 @@ def jsblueprint():
 
 ################################################
 # ZOOM?
-@cms.route('/zoom')
-def zoom():
+@cms.route('/zoom/<string:id>/<int:page>')
+def zoom(id, page):
     template_path = 'custom' + '/' + CURRENT_BLUEPRINT
-    return render_template(template_path + '/' + 'zoom.html')
+    variables = {
+        'record': id,
+        'page': page,
+        'filename': "/static/uploads/2_Reims_np_1",
+        'name': CURRENT_BLUEPRINT,
+    }
+    return render_template(template_path + '/' + 'zoom.html', **variables)
 
 
 ######################################################
