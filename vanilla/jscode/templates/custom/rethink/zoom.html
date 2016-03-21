@@ -1,20 +1,19 @@
 
+    <style type="text/css"> #myContainer {} </style>
+    <script type="text/javascript-lazy"
+        src="/static/uploads/pyimgs/viewer/ZoomifyImageViewer.js"></script>
+
 <!--
 Zoomify preview:
   http://www.academiabelgica.it.cloud.seeweb.it/archiviocumont/record.php?subdoc=1&record=3&page=1&fullscreen=all
 -->
+<div ng-controller="ZoomController as zoom">
 
-<script type="text/javascript" src="./javascript/ZoomifyImageViewer.js"></script>
+    {{zoom.myvar}}
+    <div
+        id="bigContainer"
+        style="width: 900px; height: 550px"
+        ></div>
 
-<SCRIPT type='text/javascript'>
-Z.showImage(
-    "bigContainer",
-    "files/documents/collocazione_3_page001" ,
-    "zToolbarPosition=2&zFullPageInitial=1&zSkinPath=Assets/Skins/Dark"
-    // options
-    + "&zNavigatorFit=1&zNavigatorWidth=80&zNavigatorHeight=80"
-    + "&zNavigatorVisible=3&zInitialZoom=0&zLogoVisible=0"
-    + "&zToolbarVisible=1&zLogoVisible=0"
-    + "&zSliderVisible=1&zProgressVisible=0&zTooltipsVisible=0"
-);
-</SCRIPT>
+
+</div>

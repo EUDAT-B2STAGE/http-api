@@ -192,6 +192,8 @@ SEARCH:
 
 DETAILS:
   ☐ Zoomify
+    ✘ opensource version @cancelled (16-03-21 16:49)
+  http://blog.thematicmapping.org/2013/06/showing-zoomify-images-with-leaflet.html
     ☐ angular open new tab /page
     ☐ via python request and jinja template
  ☐ select language on transcription
