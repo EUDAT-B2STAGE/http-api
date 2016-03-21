@@ -87,6 +87,7 @@ Configurations:
 
 bugs & ideas:
 ☐ /info for authenticated user. Get id and other informations about the user from the token.
+ ☐ an equivalent for admin to check informations about other users
 ☐ materialize spy is probably broken in latest materialize? @toverifyagain
 ☐ after login go to latest requested url
   ☐ seek in history
