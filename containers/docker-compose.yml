@@ -61,8 +61,10 @@ frontend:
         - ../vanilla/pages:/data/frontend/felask/pypages
         # Python templates
         - ../vanilla/templates/python:/data/frontend/felask/templates/custom
-        # # Angular blueprint
+        # Angular blueprint
         - ../vanilla/specs:/data/frontend/config/angular/blueprints
+        # Custom images
+        - ../vanilla/img:/data/frontend/felask/static/img/custom
     ports:
         - 80:5000
 

@@ -163,10 +163,18 @@ def register():
 # Create a configuration file for angular from python variables
 @cms.route('/js/blueprint.js')
 def jsblueprint():
+
+    # Custom static welcome template
+    js_template = 'null'
+    key = 'angular_template'
+    if key in user_config['content']:
+        js_template = "'" + user_config['content'][key] + "'"
+
     variables = {
         'name': CURRENT_BLUEPRINT,
         'time': user_config['options']['load_timeout'],
-        'api_url': request.url_root
+        'api_url': request.url_root,
+        'js_template': js_template
     }
     return render_template("blueprint.js", **variables)
 
