@@ -61,6 +61,18 @@ Next release:
     ☐ welcome slider
   ☐ transcription lib
 
+  ☐ Move frameworks? in specs
+  /Users/projects/restapi/restangulask/frontend/config/angular/frameworks.json
+
+  ☐ stop frapi
+  ☐ remove volumes
+  ☐ clone restangulask
+  ☐ move images
+  ☐ import rdb
+  ☐ check permissions
+  ☐ launch operations.py
+  ☐ let users register
+
  Rethinkdb logs:
    ☐ problem with the second...
      ☐ rethinkdb append?
@@ -99,7 +111,8 @@ Configurations:
 2016-03-16 21:35:52,119 restapi.resources.base DEBUG    Accept param 'details', type <class 'str'>
 
 bugs & ideas:
-☐ /info for authenticated user. Get id and other informations about the user from the token.
+✔ static welcome page from configuration @done (16-03-22 12:14)
+✔ /info for authenticated user. Get id and other informations about the user from the token. @done (16-03-22 12:13)
  ☐ an equivalent for admin to check informations about other users
 ☐ materialize spy is probably broken in latest materialize? @toverifyagain
 ☐ after login go to latest requested url

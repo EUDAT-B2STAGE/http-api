@@ -103,6 +103,9 @@ function AppRootController($scope, $rootScope, $log, $state, $timeout, api, hotk
     self.customTemplateDir = customTemplateDir;
     self.blueprintTemplateDir = blueprintTemplateDir;
 
+    // Decide if Welcome page is a specific static file
+    self.welcomeTemplate = welcomeTemplate;
+
     // Init the models
     $rootScope.menu = [];
     $rootScope.loaders = {};
