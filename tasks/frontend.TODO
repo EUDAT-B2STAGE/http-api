@@ -52,7 +52,7 @@ Next release:
         ✔ passing variables @done (16-03-21 23:23)
     ✘ a backend api endpoint to query the file name from the record id @cancelled (16-03-21 23:50)
     ✔ popup from details page @done (16-03-21 23:50)
-    ☐ debug
+    ✔ debug @done (16-03-22 07:41)
   ☐ info endpoint
   ☐ otherimages endpoint
     ☐ upload with a separated POST option = subfolder

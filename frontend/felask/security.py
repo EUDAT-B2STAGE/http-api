@@ -42,6 +42,7 @@ if BACKEND:
 
         def __repr__(self):
             return '<Tok for user[%r]> %s' % (self.user_id, self.token)
+
 ##################################
 # If standalone db/auth/resources
 else:
