@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 # from flask import Response, stream_with_context
 from flask.ext.login import login_user, UserMixin
-from config import BACKEND, get_logger
+from config import BACKEND, API_URL, get_logger
 from .basemodel import db, lm, User
 from . import htmlcodes as hcodes
 
@@ -18,11 +18,6 @@ logger = get_logger(__name__)
 ##################################
 # If connected to APIs
 if BACKEND:
-
-    NODE = 'myapi'
-    PORT = 5000
-    URL = 'http://%s:%s' % (NODE, PORT)
-    API_URL = URL + '/api/'
     LOGIN_URL = API_URL + 'login'
     REGISTER_URL = API_URL + 'register'
     PROFILE_URL = API_URL + 'initprofile'
@@ -47,6 +42,7 @@ if BACKEND:
 
         def __repr__(self):
             return '<Tok for user[%r]> %s' % (self.user_id, self.token)
+
 ##################################
 # If standalone db/auth/resources
 else:

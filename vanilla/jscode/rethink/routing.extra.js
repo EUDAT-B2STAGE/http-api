@@ -36,6 +36,19 @@ angular.module('web')
             }
         },
 
+/* Much easier if it's on python template
+    //////////////////////
+        'logged.zoom': {
+            url: "/zoom/:id",
+            views: {
+                "loggedview": {
+                    dir: 'blueprint',
+                    templateUrl: 'zoom.html',
+                }
+            }
+        },
+*/
+
     //////////////////////
         'logged.explore': {
             url: "/explore",

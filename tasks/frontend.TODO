@@ -14,7 +14,22 @@ https://github.com/svenkreiss/html5validator
 
 --- ✄ -----------------------
 
+TAR.BZ2
+
+This format has the best level of compression among all of the formats I’ve mentioned here.
+But this comes at a cost – in time and in CPU. Here’s how you compress a directory using tar.bz2
+
+# tar -jcvf archive_name.tar.bz2 directory_to_compress
+
+This will extract the files in the archive_name.tar.bz2 archive in the current directory. To extract the files to a different directory use
+
+# tar -jxvf archive_name.tar.bz2 -C /tmp/extract_here/
+
+--- ✄ -----------------------
+
 NEW RESPONSE STANDARD:
+
+   ☐ @todiscuss
    ☐ should check what to do also on angularjs side...
 Response
   data
@@ -30,23 +45,21 @@ Meta (data)
 
 Next release:
 
-  ☐ Show zoomification inside detail page
+  ✔ Show zoomification @done (16-03-22 00:14)
+    ✔ a zoom test working page @done (16-03-21 23:01)
+      ✘ js @cancelled (16-03-21 23:01)
+      ✔ python @done (16-03-21 23:01)
+        ✔ passing variables @done (16-03-21 23:23)
+    ✘ a backend api endpoint to query the file name from the record id @cancelled (16-03-21 23:50)
+    ✔ popup from details page @done (16-03-21 23:50)
+    ✔ debug @done (16-03-22 07:41)
+  ☐ info endpoint
   ☐ otherimages endpoint
     ☐ upload with a separated POST option = subfolder
   ☐ Welcome page complention
     ☐ welcome parallax
     ☐ welcome slider
   ☐ transcription lib
-
-Zoomify preview:
-  http://www.academiabelgica.it.cloud.seeweb.it/archiviocumont/record.php?subdoc=1&record=3&page=1&fullscreen=all
-  <script type="text/javascript" src="./javascript/ZoomifyImageViewer.js"></script><link rel='stylesheet' href='css/style.php?from=record.php'> </head>
-  <body>
-<div class='container'>    <DIV class='base0'> <br></br><DIV class='row textcentering' ><DIV class='large-16 columns' >&nbsp;</DIV>
-</DIV>
-<DIV class='large-16 columns' ><DIV class='row textcentering' ><DIV class='large-16 columns' ><DIV class='panel myshadow' >
-
-<SCRIPT type='text/javascript'>Z.showImage("bigContainer", "files/documents/collocazione_3_page001" , "zToolbarPosition=2&zFullPageInitial=1&zSkinPath=Assets/Skins/Dark"+ "&zNavigatorFit=1&zNavigatorWidth=80&zNavigatorHeight=80&zNavigatorVisible=3&zInitialZoom=0&zLogoVisible=0" + "&zToolbarVisible=1&zLogoVisible=0&zSliderVisible=1&zProgressVisible=0&zTooltipsVisible=0" ); </SCRIPT>
 
  Rethinkdb logs:
    ☐ problem with the second...
@@ -200,6 +213,8 @@ SEARCH:
 
 DETAILS:
   ☐ Zoomify
+    ✘ opensource version @cancelled (16-03-21 16:49)
+  http://blog.thematicmapping.org/2013/06/showing-zoomify-images-with-leaflet.html
     ☐ angular open new tab /page
     ☐ via python request and jinja template
  ☐ select language on transcription

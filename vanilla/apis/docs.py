@@ -183,7 +183,7 @@ class RethinkDocuments(BaseRethinkResource):
     @deck.add_endpoint_parameter(name='key')
     @deck.apimethod
     @auth_token_required
-    def get(self, data_key=None):
+    def get(self, document_id=None):
         data = []
         count = len(data)
         param = self._args['filter']
@@ -199,8 +199,8 @@ class RethinkDocuments(BaseRethinkResource):
                 query = self.get_all_notes(query)
 
         # Execute query
-        if data_key is not None:
-            count, data = super().get(data_key)
+        if document_id is not None:
+            count, data = super().get(document_id)
         else:
             count, data = self.execute_query(query, self._args['perpage'])
 
@@ -287,7 +287,11 @@ class RethinkImagesAssociations(BaseRethinkResource):
                 for obj in cursor:
                     val = obj['steps'][0]['data'][0]['value']
                     tmp = val.split('_')
-                    sort = tmp[len(tmp)-1]
+                    index = 0
+                    if len(tmp) > 1:
+                        index = 1
+                    sort = tmp[index]
+
                     try:
                         sortme = int(sort)
                     except:

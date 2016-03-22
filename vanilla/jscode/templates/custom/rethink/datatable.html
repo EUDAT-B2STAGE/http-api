@@ -42,8 +42,9 @@
           class="z-depth-1">
       </td>
       <td ng-repeat='(key, value) in row'
-        ng-if='key != "id" && key !="thumb" && key != "images"'>
-        {{ value }}
+        ng-if='key != "id" && key !="thumb"
+            && key != "images" && key != "Détails"'>
+            {{value}}
       </td>
       <td>
           <a ui-sref='logged.details({id: row.id})'
