@@ -4,7 +4,7 @@
 sql:
     image: postgres
     volumes:
-        - sqldata:/var/lib/postgresql/data
+        - httpapi_sqldata:/var/lib/postgresql/data
     environment:
         POSTGRES_USER: irods
         POSTGRES_PASSWORD: icatserver
@@ -20,7 +20,7 @@ icat:
     ## OR
 
     # B2safe instance on irods
-    image: cineca/b2safe
+    image: eudatb2safe/b2safe
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why
@@ -29,10 +29,9 @@ icat:
 
     hostname: rodserver
     volumes:
-        - irodsconf:/etc/irods
-        - irodshome:/home/irods
-        - irodsresc:/opt/irods_res
-        - eudathome:/opt/eudat
+        - httpapi_irodsetc:/etc
+        - httpapi_irodshome:/home/irods
+        - httpapi_eudatopt:/opt
     links:
         - sql:db
 
@@ -46,6 +45,8 @@ graphdb:
       # Other parameters?
       #NEO4J_HEAP_MEMORY
       #NEO4J_CACHE_MEMORY
+    volumes:
+        - httpapi_graphdata:/data
     ports:
         - 9090:7474
 
@@ -53,7 +54,7 @@ graphdb:
 # iRODS iCAT server for EUDAT B2safe
 rest:
     hostname: api
-    image: pdonorio/pyservs
+    image: eudatb2safe/apiserver
     command: sleep infinity
     #command: ./boot
     environment:
@@ -64,7 +65,7 @@ rest:
     working_dir: /code/project
     volumes:
         # Sql lite database
-        - irodsrestlitedb:/dbs
+        - httpapi_restlitedb:/dbs
         # Base code
         - ./backend:/code/project
         # Rest API endpoints

@@ -30,13 +30,14 @@ subdir="backend"
 restcontainer="rest"
 clientcontainer="apitests"
 compose="docker-compose"
+vcom="docker volume"
 initcom="$compose -f $compose.yml -f init.yml"
 allcompose="$compose -f $compose.yml -f $compose.test.yml -f init.yml"
-volumes="irodsconf irodshome irodsresc eudathome irodsrestlitedb sqldata"
+vprefix="httpapi_"
 #####################
 
 # Check prerequisites
-coms="docker docker-compose"
+coms="docker $compose"
 for com in $coms;
 do
     dcheck=`which $com`
@@ -54,9 +55,10 @@ else
 fi
 
 # Check if init has been executed
-vcom="docker volume"
-out=`$vcom ls | grep eudathome`
-if [ "$out" == "" ]; then
+
+volumes=`$vcom ls | awk '{print $NF}' | grep "^$vprefix"`
+#echo -e "VOLUMES are\n*$volumes*"
+if [ "$volumes"  == "" ]; then
     if [ "$1" != "init" ]; then
         echo "Please init this project."
         echo "You may do so by running:"
@@ -70,14 +72,19 @@ fi
 
 # Init your stack
 if [ "$1" == "init" ]; then
-    echo "Updating docker images to latest release"
-    $allcompose pull
+    # echo "Updating docker images to latest release"
+    # $allcompose pull
     echo "WARNING: Removing old containers/volumes if any"
     echo "(Sleeping some seconds to let you stop in case you made a mistake)"
     sleep 7
+    echo "Containers stopping"
     $allcompose stop
+    echo "Containers deletion"
     $allcompose rm -f
-    docker volume rm irodsconf
+    if [ "$volumes"  != "" ]; then
+        echo "Destroy volumes:"
+        docker volume rm $volumes
+    fi
     echo "READY TO INIT"
     $initcom up icat
     if [ "$?" == "0" ]; then
