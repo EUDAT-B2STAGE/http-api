@@ -18,6 +18,12 @@ icat:
     volumes:
      - ./confs/credentials.conf:/myconfig:ro
 
+rest:
+    user: root
+    volumes:
+      - ./confs/fixirodsclient.sh:/fix
+    command: /fix
+
 # SMALL COMMENT:
 # To restart the icat installation you just need to remove one volume:
 

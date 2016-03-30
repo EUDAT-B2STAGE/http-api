@@ -15,13 +15,24 @@ from .. import decorators as decorate
 # from confs import config
 # from flask.ext.security import roles_required, auth_token_required
 
-from ..services.neo4j import migraph
-from ..services.irodsclient import icom
+#from ..services.neo4j import migraph
+from ..services.irodsclient import ICommands, test_irods
+from plumbum.commands.processes import ProcessExecutionError as perror
 
 from restapi import get_logger
 logger = get_logger(__name__)
 
 
+###############################
+# Irods connection check
+try:
+    logger.info("Irods is online: %s" % test_irods)
+except perror as e:
+    logger.critical("Failed to connect to irods:\n%s" % str(e))
+
+
+###############################
+# Classes
 class CollectionEndpoint(ExtendedApiResource):
 
     @decorate.apimethod
@@ -31,6 +42,7 @@ class CollectionEndpoint(ExtendedApiResource):
         If path is not specified we list the home directory.
         """
 
+        icom = ICommands()
         return self.response(icom.list(path))
 
     @decorate.apimethod
@@ -52,17 +64,21 @@ class DataObjectEndpoint(ExtendedApiResource):
         we need to get the username from the token
         """
 
-        # GraphDB
-        logger.info("graph call %s", migraph.other())
-        query = "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
-        migraph.cypher(query)
+        # iRODS user
+# // TO FIX: this should be recovered from the token
+        user = 'guest'
 
         # iRODS
-        logger.info("irods call %s", icom.change_user('guest'))
-        # #logger.info("irods call %s", icom.list())
+        icom = ICommands(user)
+        iout = icom.list()
+        logger.info("irods call %s", iout)
 
-        return self.response(
-            'There should be one or more data object here in response')
+        # # GraphDB
+        # logger.info("graph call %s", migraph.other())
+        # query = "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
+        # migraph.cypher(query)
+
+        return self.response({'irods': iout})
 
     @decorate.apimethod
     def post(self):

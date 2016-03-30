@@ -1,4 +1,25 @@
 
+# ################
+# ################
+
+# ## RUN THE STACK
+
+# Use the script inside the repo.
+# From the repo root directory:
+# scripts/run.sh help
+
+# ################
+# ################
+
+
+#################################
+# Shared volume(s)
+certshare:
+    image: busybox
+    command: echo "Data volume on"
+    volumes:
+      - httpapi_sharedcerts:/opt/certificates
+
 #################################
 # Postgres database server
 sql:
@@ -29,9 +50,12 @@ icat:
 
     hostname: rodserver
     volumes:
-        - httpapi_irodsetc:/etc
+        - httpapi_etcconf:/etc
         - httpapi_irodshome:/home/irods
+        - httpapi_irodsvar:/var/lib/irods
         - httpapi_eudatopt:/opt
+    volumes_from:
+      - certshare
     links:
         - sql:db
 
@@ -56,10 +80,17 @@ rest:
     hostname: api
     image: eudatb2safe/apiserver
     command: sleep infinity
-    #command: ./boot
+    #command: ./boot ##in production?
     environment:
+        ## Connection to irods
         IRODS_USER: rods
         IRODS_ZONE: tempZone
+        ## X509 certificates variables
+        #CA Authority
+        X509_CERT_DIR: /opt/certificates/caauth
+        #USER PEMs: Private (key) and Public (Cert)
+        X509_USER_CERT: /opt/certificates/guest/usercert.pem
+        X509_USER_KEY: /opt/certificates/guest/userkey.pem
     ports:
         - 8080:5000
     working_dir: /code/project
@@ -72,16 +103,11 @@ rest:
         - ./vanilla/apis:/code/project/restapi/resources/custom
         # Rest API configuration
         - ./vanilla/specs:/code/project/confs/endpoints
+    volumes_from:
+      - certshare
     links:
+        # REMOVE GRAPH UNTIL WE REALLY USE IT
+        # - graphdb:gdb
         - icat:rodserver
-        - graphdb:gdb
 
 #################################
-
-## NOTES
-
-### RUN THE STACK
-
-# Use the script inside the repo:
-# scripts/run.sh
-

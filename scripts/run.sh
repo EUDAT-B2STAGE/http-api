@@ -86,12 +86,12 @@ if [ "$1" == "init" ]; then
         docker volume rm $volumes
     fi
     echo "READY TO INIT"
-    $initcom up icat
+    $initcom up icat rest
     if [ "$?" == "0" ]; then
         echo ""
         echo "Your project is ready to be used."
         echo "Everytime you need to start just run:"
-        echo "\$ $0"
+        echo "\$ $0 graceful"
         echo ""
     fi
 
@@ -179,6 +179,6 @@ else
     if [ "$status" == "0" ]; then
         echo ""
         echo "To access the flask api container, please run:"
-        echo "scripts/run.sh server_shell"
+        echo "$0 server_shell"
     fi
 fi

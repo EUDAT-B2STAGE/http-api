@@ -1,27 +1,23 @@
 
-Guidelines
+GUIDELINES
 - PEP
+- Python 3
 - Test driven: nose
-- Python 3?
 - Swagger
 
 --- ✄ -----------------------
+USEFULL COMMANDS
 
-http --form POST http://192.168.64.7:8080/api/dataobject file@~/Downloads/pics/tweet.jpg
+Upload:
+  http --form POST http://192.168.64.7:8080/api/dataobject file@~/Downloads/pics/tweet.jpg
+
+Certificates:
+  iadmin aua newuser '/DC=org/DC=example/O=Example/OU=People/CN=New User/CN=UID:drexample'
 
 --- ✄ -----------------------
 
-
 FIRST STEPS:
-
-  ✔ irods admin iinit at api startup @done (16-02-18 23:56)
-  ☐ irods icommands test
-    ☐ iadmin
-    https://docs.irods.org/master/icommands/administrator/
-    iadmin mkuser guest rodsuser
-    export clientUserName=guest
-    certificates:
-     iadmin aua newuser '/DC=org/DC=example/O=Example/OU=People/CN=New User/CN=UID:drexample'
+☐ set plumbum envs for x509 certificates
 ☐ update documentation
  ☐ profiling
  https://github.com/muatik/flask-profiler
@@ -58,3 +54,9 @@ Completed:
 ✔ Add submodule init check @done (16-02-12 08:19)
 ✔ verify empty dir for backend @done (16-02-12 12:13)
 ✔ update action @done (16-02-12 12:13)
+✔ irods admin iinit at api startup @done (16-02-18 23:56)
+✔ irods icommands test @done (16-03-29 11:41)
+  ✔ iadmin @done (16-03-29 11:41)
+  https://docs.irods.org/master/icommands/administrator/
+  iadmin mkuser guest rodsuser
+  export clientUserName=guest
