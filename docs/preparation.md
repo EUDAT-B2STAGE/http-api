@@ -68,7 +68,6 @@ docker-compose -f docker-compose.yml -f init.yml up icat
 # [...]
 icat_1 | Connected
 irods_icat_1 exited with code 0
-# Press CTRL-c
 ```
 
 If you completed this step with no errors, you may already proceed to the
@@ -81,12 +80,17 @@ Now that you have prepared the services, you should also have all the docker vol
 ```bash
 $ docker volume ls
 DRIVER              VOLUME NAME
-local               sqldata
-local               irodshome
-local               irodsconf
-local               irodsresc
-local               eudathome
+local               httpapi_sqldata
+local               httpapi_restlitedb
+local               httpapi_eudatopt
+local               httpapi_irodshome
+local               httpapi_etcconf
+local               httpapi_irodsvar
+local               httpapi_sharedcerts
 ```
+
+As you may notice, every volume used in this project starts with
+the prefix `httpapi_`, to make easier to find them.
 
 ### Debugging database link
 
@@ -103,4 +107,4 @@ ICAT=#
 # do some other database checks
 ```
 
-Also referr to the [admin chapter](admin.md) to access the database with a web interface.
+Also you can refer to the [admin chapter](admin.md) to access the database with a web interface.

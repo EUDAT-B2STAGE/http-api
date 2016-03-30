@@ -17,8 +17,9 @@ Certificates:
 --- ✄ -----------------------
 
 FIRST STEPS:
-☐ set plumbum envs for x509 certificates
-☐ update documentation
+✔ update documentation @done (16-03-30 21:47)
+  ✔ docs on adding a user with certificate (with the script) @done (16-03-30 21:41)
+☐ set plumbum envs for x509 certificates @important
  ☐ profiling
  https://github.com/muatik/flask-profiler
 ☐ DATA MODELS

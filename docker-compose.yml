@@ -54,6 +54,8 @@ icat:
         - httpapi_irodshome:/home/irods
         - httpapi_irodsvar:/var/lib/irods
         - httpapi_eudatopt:/opt
+        # a script to do operations inside the irods container
+        - ./confs/irestart.sh:/irestart
     volumes_from:
       - certshare
     links:

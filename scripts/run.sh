@@ -11,11 +11,15 @@ if [ "$1" == "help" ]; then
     echo -e "init:\tStartup your repository code, containers and volumes"
     echo -e "NO_COMMAND:\tLaunch the Docker stack"
     echo -e "graceful:\tTry to bring up only missing containers"
+    echo -e "irestart:\tRestart the main iRODS iCAT service"
+    echo -e "addiuser:\tAdd a new certificated user to irods"
     echo ""
+    echo -e "check:\tCheck the stack status"
     echo -e "stop:\tFreeze your containers stack"
     echo -e "remove:\tRemove all containers"
     echo -e "clean:\tRemove containers and volumes (BE CAREFUL!)"
     echo ""
+    echo -e "irods_shell:\tOpen a shell inside the iRODS iCAT server container"
     echo -e "server_shell:\tOpen a shell inside the Flask server container"
     echo -e "client_shell:\tOpen a shell to test API endpoints"
     echo ""
@@ -27,6 +31,7 @@ fi
 #####################
 # Confs
 subdir="backend"
+irodscontainer="icat"
 restcontainer="rest"
 clientcontainer="apitests"
 compose="docker-compose"
@@ -116,6 +121,11 @@ elif [ "$1" == "update" ]; then
     git pull origin master
     echo "Done"
 
+# Verify the status
+elif [ "$1" == "check" ]; then
+    echo "Stack status:"
+    $allcompose ps
+
 # Freeze containers
 elif [ "$1" == "stop" ]; then
     echo "Freezing the stack"
@@ -141,6 +151,19 @@ elif [ "$1" == "clean" ]; then
         sleep 1
     done
 
+elif [ "$1" == "addiuser" ]; then
+    container_name=`docker ps | grep $irodscontainer | awk '{print \$NF}'`
+    echo "Adding a new certificated iRODS user:"
+    docker exec -it $container_name /addusercert $2
+
+elif [ "$1" == "irestart" ]; then
+    container_name=`docker ps | grep $irodscontainer | awk '{print \$NF}'`
+    docker exec -it $container_name /bin/bash /irestart
+
+elif [ "$1" == "irods_shell" ]; then
+    container_name=`docker ps | grep $irodscontainer | awk '{print \$NF}'`
+    docker exec -it $container_name bash
+
 elif [ "$1" == "server_shell" ]; then
     container_name=`docker ps | grep $restcontainer | awk '{print \$NF}'`
     docker exec -it $container_name bash
@@ -155,7 +178,6 @@ elif [ "$1" == "client_shell" ]; then
     $compose up --no-deps -d apitests
     container_name=`docker ps | grep $clientcontainer | awk '{print \$NF}'`
     docker exec -it $container_name sh
-
 
 # Normal boot
 else

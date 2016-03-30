@@ -26,7 +26,7 @@ git clone ...
 # Init services
 scripts/run.sh init
 # Then run the final services
-scripts/run.sh
+scripts/run.sh graceful
 # Open the client to test code or run the API server
 scripts/run.sh server_shell
 root@api:/code/project# ./boot devel
@@ -73,5 +73,5 @@ $ docker exec -it httpapi_icat_1 bash
 irods@rodserver:~$ apt-cache showpkg irods-icat
 Package: irods-icat
 Versions:
-4.1.7
+4.1.8
 ```
