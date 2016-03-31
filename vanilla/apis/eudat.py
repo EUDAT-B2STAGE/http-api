@@ -7,7 +7,7 @@ B2SAFE HTTP REST API endpoints.
 """
 
 from ..base import ExtendedApiResource
-from flask.ext.restful import request
+# from flask.ext.restful import request
 from .. import decorators as decorate
 # from werkzeug import secure_filename
 
@@ -15,8 +15,9 @@ from .. import decorators as decorate
 # from confs import config
 # from flask.ext.security import roles_required, auth_token_required
 
-#from ..services.neo4j import migraph
+# from ..services.neo4j import migraph
 from ..services.irodsclient import ICommands, test_irods
+from ..services.uploader import Uploader
 from plumbum.commands.processes import ProcessExecutionError as perror
 
 from restapi import get_logger
@@ -53,7 +54,7 @@ class CollectionEndpoint(ExtendedApiResource):
         return self.response("Not implemented yet")
 
 
-class DataObjectEndpoint(ExtendedApiResource):
+class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
     @decorate.apimethod
     def get(self, location=None):
@@ -66,7 +67,7 @@ class DataObjectEndpoint(ExtendedApiResource):
 
         # iRODS user
 # // TO FIX: this should be recovered from the token
-        user = 'guest'
+        user = 'betatester'
 
         # iRODS
         icom = ICommands(user)
@@ -90,15 +91,18 @@ class DataObjectEndpoint(ExtendedApiResource):
         Handle file upload
         """
 
-        if 'file' not in request.files:
-            return "No files specified"
+        user = 'guest'
 
-        myfile = request.files['file']
+        # Original upload
+        obj, status = super(DataObjectEndpoint, self).post(user)
 
-        # # Save the file?
-        # filename = secure_filename(myfile.filename)
-        # destination = MYDIR + filename
-        # myfile.save(destination)
+        # Put to irods
 
-        return self.response(
-            "The file to be uploaded is '%s'" % myfile)
+        # # If response is success, save inside the database
+        # key_file = 'filename'
+        # key_data = 'data'
+        # if isinstance(obj, dict) and key_file in obj[key_data]:
+        #     logger.info("File is '%s'" % obj[key_data][key_file])
+
+        # Reply to user
+        return self.response(obj, code=status)
