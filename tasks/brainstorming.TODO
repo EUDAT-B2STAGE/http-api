@@ -17,22 +17,27 @@ Certificates:
 --- ✄ -----------------------
 
 FIRST STEPS:
+
+ ☐ first endpoint: @upload
+
  ☐ profiling
  https://github.com/muatik/flask-profiler
+
+ ☐ unittest
+  https://talkpython.fm/episodes/show/45/the-python-testing-column-now-a-thing
+  http://pythontesting.net/podcast/coverage-ned-batchelder/
+
 ☐ DATA MODELS
   schema -> https://www.dropbox.com/s/01582z9avmnllzo/EUDAT_datamodel.png?dl=0
   ☐ Nested collections in B2safe?
   ☐ Save graphdb data into a volume
     ☐ push graph data
       https://github.com/EUDAT-B2SAFE/B2SAFE-core/blob/master/cmd/metadataManager.py
+
 ☐ How to skip irods validation at startup? It needs internet connection...
 ☐ Swagger automatization
-☐ docker 1.10 and docker-compose 1.6 (new syntax: services and networks)
+✘ docker 1.10 and docker-compose 1.6 (new syntax: services and networks) @cancelled (16-03-31 11:55)
 
-UNITTEST:
-
-  https://talkpython.fm/episodes/show/45/the-python-testing-column-now-a-thing
-  http://pythontesting.net/podcast/coverage-ned-batchelder/
 
 IDEAS:
 
