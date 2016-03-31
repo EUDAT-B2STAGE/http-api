@@ -70,7 +70,11 @@ class DataObjectEndpoint(ExtendedApiResource):
 
         # iRODS
         icom = ICommands(user)
-        iout = icom.list()
+        try:
+            iout = icom.list()
+        except perror as e:
+            return self.response(
+                {'iRODS error': str(e)}, fail=True)
         logger.info("irods call %s", iout)
 
         # # GraphDB

@@ -17,9 +17,6 @@ Certificates:
 --- ✄ -----------------------
 
 FIRST STEPS:
-✔ update documentation @done (16-03-30 21:47)
-  ✔ docs on adding a user with certificate (with the script) @done (16-03-30 21:41)
-☐ set plumbum envs for x509 certificates @important
  ☐ profiling
  https://github.com/muatik/flask-profiler
 ☐ DATA MODELS
@@ -61,3 +58,7 @@ Completed:
   https://docs.irods.org/master/icommands/administrator/
   iadmin mkuser guest rodsuser
   export clientUserName=guest
+✔ update documentation @done (16-03-30 21:47)
+  ✔ docs on adding a user with certificate (with the script) @done (16-03-30 21:41)
+✔ push modifications @done (16-03-31 11:37)
+✔ set plumbum envs for x509 certificates @important @done (16-03-31 11:46)

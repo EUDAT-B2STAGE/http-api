@@ -90,9 +90,9 @@ rest:
         ## X509 certificates variables
         #CA Authority
         X509_CERT_DIR: /opt/certificates/caauth
-        #USER PEMs: Private (key) and Public (Cert)
-        X509_USER_CERT: /opt/certificates/guest/usercert.pem
-        X509_USER_KEY: /opt/certificates/guest/userkey.pem
+        # #USER PEMs: Private (key) and Public (Cert)
+        # X509_USER_CERT: /opt/certificates/guest/usercert.pem
+        # X509_USER_KEY: /opt/certificates/guest/userkey.pem
     ports:
         - 8080:5000
     working_dir: /code/project
