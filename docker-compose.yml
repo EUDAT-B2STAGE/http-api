@@ -97,6 +97,8 @@ rest:
         - 8080:5000
     working_dir: /code/project
     volumes:
+        # Uploads
+        - httpapi_tmpuploads:/uploads
         # Sql lite database
         - httpapi_restlitedb:/dbs
         # Base code

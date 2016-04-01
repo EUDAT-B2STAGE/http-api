@@ -6,6 +6,7 @@ Prototyping!
 B2SAFE HTTP REST API endpoints.
 """
 
+import os
 from ..base import ExtendedApiResource
 # from flask.ext.restful import request
 from .. import decorators as decorate
@@ -30,6 +31,9 @@ try:
     logger.info("Irods is online: %s" % test_irods)
 except perror as e:
     logger.critical("Failed to connect to irods:\n%s" % str(e))
+
+
+MYDEFAULTUSER = 'guest'
 
 
 ###############################
@@ -67,16 +71,16 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
         # iRODS user
 # // TO FIX: this should be recovered from the token
-        user = 'betatester'
+        user = MYDEFAULTUSER
 
         # iRODS
         icom = ICommands(user)
         try:
             iout = icom.list()
+            logger.info("irods call %s", iout)
         except perror as e:
             return self.response(
                 {'iRODS error': str(e)}, fail=True)
-        logger.info("irods call %s", iout)
 
         # # GraphDB
         # logger.info("graph call %s", migraph.other())
@@ -91,18 +95,37 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         Handle file upload
         """
 
-        user = 'guest'
+        user = MYDEFAULTUSER
 
         # Original upload
         obj, status = super(DataObjectEndpoint, self).post(user)
 
-        # Put to irods
+        # If response is success, save inside the database
+        key_file = 'filename'
+        key_data = 'data'
+        filename = None
+        if isinstance(obj, dict) and key_file in obj[key_data]:
+            filename = obj[key_data][key_file]
+            abs_file = self.absolute_upload_file(filename, user)
+            logger.info("File is '%s'" % abs_file)
 
-        # # If response is success, save inside the database
-        # key_file = 'filename'
-        # key_data = 'data'
-        # if isinstance(obj, dict) and key_file in obj[key_data]:
-        #     logger.info("File is '%s'" % obj[key_data][key_file])
+            # Put to iRODS
+            icom = ICommands(user)
+            ipath = icom.get_base_dir()  # Where to put the file in irods
+            try:
+                iout = icom.save(abs_file, destination=ipath)
+                logger.info("irods call %s", iout)
+            except perror as e:
+                # Remove local
+                os.remove(abs_file)
+                error = str(e)
+                if 'OVERWRITE_WITHOUT_FORCE_FLAG' in error:
+                    error = 'File %s already exists in iRODS collection %s' % \
+                        (filename, ipath)
+                return self.response({'iRODS error': error}, fail=True)
+
+            # Remove actual file (if we do not want to cache)
+            os.remove(abs_file)
 
         # Reply to user
         return self.response(obj, code=status)
