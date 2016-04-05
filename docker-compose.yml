@@ -86,10 +86,12 @@ rest:
     environment:
         ## Connection to irods
         IRODS_USER: rods
+        # IRODS_AUTHSCHEME: GSI
+        # IRODS_USER: paolo
         IRODS_ZONE: tempZone
         ## X509 certificates variables
         #CA Authority
-        X509_CERT_DIR: /opt/certificates/caauth
+        # X509_CERT_DIR: /opt/certificates/caauth
         # #USER PEMs: Private (key) and Public (Cert)
         # X509_USER_CERT: /opt/certificates/guest/usercert.pem
         # X509_USER_KEY: /opt/certificates/guest/userkey.pem
@@ -107,6 +109,10 @@ rest:
         - ./vanilla/apis:/code/project/restapi/resources/custom
         # Rest API configuration
         - ./vanilla/specs:/code/project/confs/endpoints
+        # External irods Authority
+        - ./certs/caauth:/opt/certificates/caauth
+        # External irods User
+        - ./certs/user:/opt/certificates/paolo
     volumes_from:
       - certshare
     links:
