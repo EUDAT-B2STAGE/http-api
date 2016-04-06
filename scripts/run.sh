@@ -5,10 +5,10 @@ echo -e "\t\tEUDAT HTTP API development"
 echo "# ############################################ #"
 echo ""
 
-if [ "$1" == "help" ]; then
+if [ "$1" == "help" -o -z "$1" ]; then
     echo "Available commands:"
     echo ""
-    echo -e "init:\tStartup your repository code, containers and volumes"
+    echo -e "init:\t\tStartup your repository code, containers and volumes"
     echo -e "graceful:\tTry to bring up only missing containers"
     echo -e "restart:\t(Re)Launch the Docker stack"
     echo -e "irestart:\tRestart the main iRODS iCAT service instance"
@@ -25,6 +25,7 @@ if [ "$1" == "help" ]; then
     echo ""
     echo -e "push:\tPush code to github"
     echo -e "update:\tPull updated code and images"
+    echo ""
     exit 0
 fi
 
