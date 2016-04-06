@@ -56,7 +56,7 @@ if [ "$(ls -A backend)" ]; then
 else
     echo "Inizialitazion for the http-api-base submodule"
     git submodule init
-    git submodule update
+    git submodule update --remote
     cd $subdir
     git checkout master
     cd ..

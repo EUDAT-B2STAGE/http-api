@@ -22,7 +22,7 @@ If you need to jump in as soon as possible:
 
 ```bash
 # Clone repo
-git clone ...
+git clone https://github.com/EUDAT-B2STAGE/http-api.git
 # Init services
 scripts/run.sh init
 # Then run the final services
