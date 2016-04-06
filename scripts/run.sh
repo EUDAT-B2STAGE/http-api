@@ -9,9 +9,9 @@ if [ "$1" == "help" ]; then
     echo "Available commands:"
     echo ""
     echo -e "init:\tStartup your repository code, containers and volumes"
-    echo -e "NO_COMMAND:\tLaunch the Docker stack"
     echo -e "graceful:\tTry to bring up only missing containers"
-    echo -e "irestart:\tRestart the main iRODS iCAT service"
+    echo -e "restart:\t(Re)Launch the Docker stack"
+    echo -e "irestart:\tRestart the main iRODS iCAT service instance"
     echo -e "addiuser:\tAdd a new certificated user to irods"
     echo ""
     echo -e "check:\tCheck the stack status"
@@ -60,6 +60,18 @@ else
     cd $subdir
     git checkout master
     cd ..
+fi
+
+# Update the remote github repos
+if [ "$1" == "push" ]; then
+    echo "Pushing submodule"
+    cd backend
+    git push origin master
+    echo "Pushing main repo"
+    cd ..
+    git push
+    echo "Completed"
+    exit 0
 fi
 
 # Update your code
@@ -115,16 +127,6 @@ if [ "$1" == "init" ]; then
         echo "\$ $0 graceful"
         echo ""
     fi
-
-# Update the remote github repos
-elif [ "$1" == "push" ]; then
-    echo "Pushing submodule"
-    cd backend
-    git push origin master
-    echo "Pushing main repo"
-    cd ..
-    git push
-    echo "Completed"
 
 # Verify the status
 elif [ "$1" == "check" ]; then
@@ -185,27 +187,37 @@ elif [ "$1" == "client_shell" ]; then
     docker exec -it $container_name sh
 
 # Normal boot
-else
-    if [ "$1" != "graceful" ]; then
-        if [ "$1" != "" ]; then
-            echo "Unknown operation '$1'!"
-            echo "Use \"$0 help\" to see available commands "
-            exit 1
-        fi
-
-        echo "Clean previous containers"
-        $allcompose stop
-        $allcompose rm -f
-    fi
+elif [ "$1" == "graceful" ]; then
 
     echo "(re)Boot Docker stack"
     docker-compose up -d $restcontainer
     status="$?"
-    echo "Stack status:"
+    echo "Stack processes:"
     docker-compose ps
     if [ "$status" == "0" ]; then
         echo ""
         echo "To access the flask api container, please run:"
         echo "$0 server_shell"
     fi
+
+elif [ "$1" == "restart" ]; then
+
+    echo "Clean previous containers"
+    $allcompose stop
+    $allcompose rm -f
+
+    echo "Boot Docker stack"
+    docker-compose up -d $restcontainer
+    status="$?"
+    echo "Stack processes:"
+    docker-compose ps
+    if [ "$status" == "0" ]; then
+        echo ""
+        echo "To access the flask api container, please run:"
+        echo "$0 server_shell"
+    fi
+else
+    echo "Unknown operation '$1'!"
+    echo "Use \"$0 help\" to see available commands "
+    exit 1
 fi
