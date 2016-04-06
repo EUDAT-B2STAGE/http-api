@@ -57,6 +57,9 @@ else
     echo "Inizialitazion for the http-api-base submodule"
     git submodule init
     git submodule update
+    cd $subdir
+    git checkout master
+    cd ..
 fi
 
 # Check if init has been executed
