@@ -1,3 +1,4 @@
 [submodule "backend"]
 	path = backend
 	url = https://github.com/EUDAT-B2STAGE/http-api-base.git
+	branch = master
