@@ -62,6 +62,19 @@ else
     cd ..
 fi
 
+# Update your code
+if [ "$1" == "update" ]; then
+    echo "Updating docker images to latest release"
+    $allcompose pull
+    echo "Pulling main repo"
+    git pull
+    echo "Pulling submodule"
+    cd backend
+    git pull origin master
+    echo "Done"
+    exit 0
+fi
+
 # Check if init has been executed
 
 volumes=`$vcom ls | awk '{print $NF}' | grep "^$vprefix"`
@@ -112,17 +125,6 @@ elif [ "$1" == "push" ]; then
     cd ..
     git push
     echo "Completed"
-
-# Update your code
-elif [ "$1" == "update" ]; then
-    echo "Updating docker images to latest release"
-    $allcompose pull
-    echo "Pulling main repo"
-    git pull
-    echo "Pulling submodule"
-    cd backend
-    git pull origin master
-    echo "Done"
 
 # Verify the status
 elif [ "$1" == "check" ]; then

@@ -19,9 +19,10 @@ Certificates:
 FIRST STEPS:
 
  ✔ first endpoint: @upload @done (16-04-01 11:30)
-  ☐ Try to avoid flask save and put directly the file into irods?
-☐ How to skip irods validation at startup? It needs internet connection...
- ☐ unittest
+  ✘ Try to avoid flask save and put directly the file into irods? @cancelled (16-04-06 23:56)
+☐ How to skip irods validation
+  at startup? It needs internet connection...
+ ☐ unittest / nose
   https://talkpython.fm/episodes/show/45/the-python-testing-column-now-a-thing
   http://pythontesting.net/podcast/coverage-ned-batchelder/
  ☐ profiling
