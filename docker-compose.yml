@@ -109,10 +109,10 @@ rest:
         - ./vanilla/apis:/code/project/restapi/resources/custom
         # Rest API configuration
         - ./vanilla/specs:/code/project/confs/endpoints
-        # # External irods Authority
-        # - ./certs/caauth:/opt/certificates/caauth
-        # # External irods User
-        # - ./certs/user:/opt/certificates/paolo
+        # External irods Authority
+        - ./certs/caauth:/opt/certificates/caauth
+        # External irods User
+        - ./certs/user:/opt/certificates/paolo
     volumes_from:
       - certshare
     links:

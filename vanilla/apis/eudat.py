@@ -89,7 +89,6 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
         return self.response({'irods': iout})
 
-    @decorate.add_endpoint_parameter('path')
     @decorate.apimethod
     def post(self):
         """
@@ -99,7 +98,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         user = MYDEFAULTUSER
 
         # Original upload
-        obj, status = super(DataObjectEndpoint, self).upload(subfolder=user)
+        obj, status = super(DataObjectEndpoint, self).post(user)
 
         # If response is success, save inside the database
         key_file = 'filename'
@@ -110,14 +109,9 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             abs_file = self.absolute_upload_file(filename, user)
             logger.info("File is '%s'" % abs_file)
 
-            ############################
-            # Move file inside irods
-
-            # iRODS istance
+            # Put to iRODS
             icom = ICommands(user)
-            # Where to put the file in irods
-            ipath = self._args.get('path', icom.get_base_dir())
-
+            ipath = icom.get_base_dir()  # Where to put the file in irods
             try:
                 iout = icom.save(abs_file, destination=ipath)
                 logger.info("irods call %s", iout)
