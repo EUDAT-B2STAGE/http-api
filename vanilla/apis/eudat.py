@@ -121,11 +121,10 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             home = icom.get_base_dir()
             # Where to put the file in irods
             ipath = self._args.get('collection')
+            # Should add the base dir if doesn't start with /
             if ipath is None:
                 ipath = home
-            print("TEST PATH", ipath)
-            # Should add the base dir if doesn't start with /
-            if ipath[0] != '/':
+            elif ipath[0] != '/':
                 ipath = home + '/' + ipath
             else:
                 # Add the zone
@@ -146,6 +145,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
                 error = str(e)
                 if 'Stdout:' in error:
                     error = error[error.index('Stdout:')+9:]
+                elif 'ERROR:' in error:
+                    error = error[error.index('ERROR:')+7:]
                 return self.response({'iRODS error': error}, fail=True)
 
             # Remove actual file (if we do not want to cache)
