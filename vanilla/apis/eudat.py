@@ -57,7 +57,7 @@ class IrodsEndpoints(ExtendedApiResource):
         home = icom.get_base_dir()
 
         # Should add the base dir if doesn't start with /
-        if ipath is None:
+        if ipath is None or ipath == '':
             ipath = home
         elif ipath[0] != '/':
             ipath = home + '/' + ipath
@@ -69,6 +69,17 @@ class IrodsEndpoints(ExtendedApiResource):
             ipath += '/'
 
         return ipath
+
+
+class GraphEndpoints(ExtendedApiResource):
+
+    def get_instance(self):
+
+        # # GraphDB connection ?
+        # logger.info("graph call %s", migraph.other())
+        # query = "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
+        # migraph.cypher(query)
+        return False
 
 
 class CollectionEndpoint(IrodsEndpoints):
@@ -109,6 +120,7 @@ class CollectionEndpoint(IrodsEndpoints):
 
 class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
+    @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
     def get(self, name=None):
         """
@@ -118,33 +130,47 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
         we need to get the username from the token
         """
 
+        if name is None or name[-1] == '/':
+            return self.response(
+                {'dataobject': 'No dataobject/file requested'}, fail=True)
+
+        # obj init
+        user = self.get_token_user()
         icom = self.get_instance()
-        if name is None:
-            ERROR
-        filebase, fileext = os.path.splitext(name)
 
-        print("Requested name", name)
+        # paths
+        collection = self.handle_collection_path(
+            icom, self._args.get('collection'))
+        ipath = collection + name
+        abs_file = self.absolute_upload_file(name, user)
 
-        # # GraphDB ?
-        # logger.info("graph call %s", migraph.other())
-        # query = "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
-        # migraph.cypher(query)
+# // TO FIX: use cache?
+        # Remove files in cache for now
+        try:
+            os.remove(abs_file)
+        except:
+            pass
+        # print("Requested name", name, collection, name)
 
-        # # Get the file into local cache
-        # obj, status = super(RethinkUploader, self).download(
-        #     filename,
-        #     subfolder=location,
-        #     get=False)
+        # Move the irods file into local fs
+        try:
+            icom.open(ipath, abs_file)
+        except perror as e:
+            error = str(e)
+            if 'ERROR:' in error:
+                    error = error[error.index('ERROR:')+7:]
+            return self.response(
+                {'iRODS error': error}, fail=True)
 
-# TO REMOVE
-        # try:
-        #     iout = icom.list()
-        #     logger.info("irods call %s", iout)
-        # except perror as e:
-        #     return self.response(
-        #         {'iRODS error': str(e)}, fail=True)
+        # Download the file from local fs
+        filecontent = super().download(
+            name, subfolder=user, get=True)
 
-        return self.response({'file': name})
+        # Remove local file
+        os.remove(abs_file)
+
+        # Stream file content
+        return filecontent
 
     @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
