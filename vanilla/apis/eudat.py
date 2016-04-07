@@ -20,6 +20,7 @@ from .. import decorators as decorate
 from ..services.irodsclient import ICommands, test_irods
 from ..services.uploader import Uploader
 from plumbum.commands.processes import ProcessExecutionError as perror
+from ... import htmlcodes as hcodes
 
 from restapi import get_logger
 logger = get_logger(__name__)
@@ -47,15 +48,37 @@ class CollectionEndpoint(ExtendedApiResource):
         If path is not specified we list the home directory.
         """
 
-        icom = ICommands()
+        user = MYDEFAULTUSER
+
+        # iRODS
+        icom = ICommands(user)
+
         return self.response(icom.list(path))
 
+    @decorate.add_endpoint_parameter('collection', required=True)
     @decorate.apimethod
     def post(self):
         """ Create one collection/directory """
 
-        # handle parameters
-        return self.response("Not implemented yet")
+        user = MYDEFAULTUSER
+
+        # iRODS
+        icom = ICommands(user)
+
+        ipath = self._args.get('collection')
+        try:
+            icom.create_empty(
+                ipath, directory=True, ignore_existing=False)
+            logger.info("irods made collection: %s", ipath)
+        except perror as e:
+            # ##HANDLING ERROR
+# // TO FIX: use a decorator
+            error = str(e)
+            if 'ERROR:' in error:
+                error = error[error.index('ERROR:')+7:]
+            return self.response({'iRODS error': error}, fail=True)
+
+        return self.response(ipath, code=hcodes.HTTP_OK_CREATED)
 
 
 class DataObjectEndpoint(Uploader, ExtendedApiResource):
