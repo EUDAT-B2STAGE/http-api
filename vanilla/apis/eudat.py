@@ -89,6 +89,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
         return self.response({'irods': iout})
 
+    @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
     def post(self):
         """
@@ -98,7 +99,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         user = MYDEFAULTUSER
 
         # Original upload
-        obj, status = super(DataObjectEndpoint, self).post(user)
+        obj, status = super(DataObjectEndpoint, self).upload(subfolder=user)
 
         # If response is success, save inside the database
         key_file = 'filename'
@@ -109,23 +110,47 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             abs_file = self.absolute_upload_file(filename, user)
             logger.info("File is '%s'" % abs_file)
 
-            # Put to iRODS
+            ############################
+            # Move file inside irods
+
+            # iRODS istance
             icom = ICommands(user)
-            ipath = icom.get_base_dir()  # Where to put the file in irods
+
+            # ##HANDLING PATH
+            # The home dir for the current user
+            home = icom.get_base_dir()
+            # Where to put the file in irods
+            ipath = self._args.get('collection')
+            if ipath is None:
+                ipath = home
+            print("TEST PATH", ipath)
+            # Should add the base dir if doesn't start with /
+            if ipath[0] != '/':
+                ipath = home + '/' + ipath
+            else:
+                # Add the zone
+                ipath = '/' + icom._current_environment['IRODS_ZONE'] + ipath
+
+            # Append / if missing in the end
+            if ipath[-1] != '/':
+                ipath += '/'
+
             try:
                 iout = icom.save(abs_file, destination=ipath)
                 logger.info("irods call %s", iout)
             except perror as e:
+                # ##HANDLING ERROR
+# // TO FIX: use a decorator
                 # Remove local
                 os.remove(abs_file)
                 error = str(e)
-                if 'OVERWRITE_WITHOUT_FORCE_FLAG' in error:
-                    error = 'File %s already exists in iRODS collection %s' % \
-                        (filename, ipath)
+                if 'Stdout:' in error:
+                    error = error[error.index('Stdout:')+9:]
                 return self.response({'iRODS error': error}, fail=True)
 
             # Remove actual file (if we do not want to cache)
             os.remove(abs_file)
+            obj['data']['ipath'] = ipath
 
         # Reply to user
         return self.response(obj, code=status)
