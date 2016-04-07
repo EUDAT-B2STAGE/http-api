@@ -34,12 +34,44 @@ except perror as e:
     logger.critical("Failed to connect to irods:\n%s" % str(e))
 
 
-MYDEFAULTUSER = 'guest'
-
-
 ###############################
 # Classes
-class CollectionEndpoint(ExtendedApiResource):
+class IrodsEndpoints(ExtendedApiResource):
+
+    def get_token_user(self):
+        """
+        WARNING: NOT IMPLEMENTED YET!
+
+        This will depend on B2ACCESS authentication
+        """
+# // TO FIX: this should be recovered from the token
+        return 'guest'
+
+    def get_instance(self):
+        user = self.get_token_user()
+        # iRODS object
+        return ICommands(user)
+
+    def handle_collection_path(self, icom, ipath):
+
+        home = icom.get_base_dir()
+
+        # Should add the base dir if doesn't start with /
+        if ipath is None:
+            ipath = home
+        elif ipath[0] != '/':
+            ipath = home + '/' + ipath
+        else:
+            # Add the zone
+            ipath = '/' + icom._current_environment['IRODS_ZONE'] + ipath
+        # Append / if missing in the end
+        if ipath[-1] != '/':
+            ipath += '/'
+
+        return ipath
+
+
+class CollectionEndpoint(IrodsEndpoints):
 
     @decorate.apimethod
     def get(self, path=None):
@@ -48,11 +80,7 @@ class CollectionEndpoint(ExtendedApiResource):
         If path is not specified we list the home directory.
         """
 
-        user = MYDEFAULTUSER
-
-        # iRODS
-        icom = ICommands(user)
-
+        icom = self.get_instance()
         return self.response(icom.list(path))
 
     @decorate.add_endpoint_parameter('collection', required=True)
@@ -61,12 +89,9 @@ class CollectionEndpoint(ExtendedApiResource):
     def post(self):
         """ Create one collection/directory """
 
-        user = MYDEFAULTUSER
-
-        # iRODS
-        icom = ICommands(user)
-
+        icom = self.get_instance()
         ipath = self._args.get('collection')
+
         try:
             icom.create_empty(
                 ipath, directory=True, ignore_existing=self._args.get('force'))
@@ -82,10 +107,10 @@ class CollectionEndpoint(ExtendedApiResource):
         return self.response(ipath, code=hcodes.HTTP_OK_CREATED)
 
 
-class DataObjectEndpoint(Uploader, ExtendedApiResource):
+class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
     @decorate.apimethod
-    def get(self, location=None):
+    def get(self, name=None):
         """
         Get object from ID
 
@@ -93,25 +118,33 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         we need to get the username from the token
         """
 
-        # iRODS user
-# // TO FIX: this should be recovered from the token
-        user = MYDEFAULTUSER
+        icom = self.get_instance()
+        if name is None:
+            ERROR
+        filebase, fileext = os.path.splitext(name)
 
-        # iRODS
-        icom = ICommands(user)
-        try:
-            iout = icom.list()
-            logger.info("irods call %s", iout)
-        except perror as e:
-            return self.response(
-                {'iRODS error': str(e)}, fail=True)
+        print("Requested name", name)
 
-        # # GraphDB
+        # # GraphDB ?
         # logger.info("graph call %s", migraph.other())
         # query = "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
         # migraph.cypher(query)
 
-        return self.response({'irods': iout})
+        # # Get the file into local cache
+        # obj, status = super(RethinkUploader, self).download(
+        #     filename,
+        #     subfolder=location,
+        #     get=False)
+
+# TO REMOVE
+        # try:
+        #     iout = icom.list()
+        #     logger.info("irods call %s", iout)
+        # except perror as e:
+        #     return self.response(
+        #         {'iRODS error': str(e)}, fail=True)
+
+        return self.response({'file': name})
 
     @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
@@ -120,7 +153,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         Handle file upload
         """
 
-        user = MYDEFAULTUSER
+        user = self.get_token_user()
 
         # Original upload
         obj, status = super(DataObjectEndpoint, self).upload(subfolder=user)
@@ -136,34 +169,19 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
             ############################
             # Move file inside irods
-
-            # iRODS istance
-            icom = ICommands(user)
+            icom = self.get_instance()
 
             # ##HANDLING PATH
             # The home dir for the current user
-            home = icom.get_base_dir()
             # Where to put the file in irods
-            ipath = self._args.get('collection')
-            # Should add the base dir if doesn't start with /
-            if ipath is None:
-                ipath = home
-            elif ipath[0] != '/':
-                ipath = home + '/' + ipath
-            else:
-                # Add the zone
-                ipath = '/' + icom._current_environment['IRODS_ZONE'] + ipath
-
-            # Append / if missing in the end
-            if ipath[-1] != '/':
-                ipath += '/'
+            ipath = self.handle_collection_path(
+                icom, self._args.get('collection'))
 
             try:
                 iout = icom.save(abs_file, destination=ipath)
                 logger.info("irods call %s", iout)
             except perror as e:
                 # ##HANDLING ERROR
-# // TO FIX: use a decorator
                 # Remove local
                 os.remove(abs_file)
                 error = str(e)
