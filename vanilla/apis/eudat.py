@@ -56,6 +56,7 @@ class CollectionEndpoint(ExtendedApiResource):
         return self.response(icom.list(path))
 
     @decorate.add_endpoint_parameter('collection', required=True)
+    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
     @decorate.apimethod
     def post(self):
         """ Create one collection/directory """
@@ -68,7 +69,7 @@ class CollectionEndpoint(ExtendedApiResource):
         ipath = self._args.get('collection')
         try:
             icom.create_empty(
-                ipath, directory=True, ignore_existing=False)
+                ipath, directory=True, ignore_existing=self._args.get('force'))
             logger.info("irods made collection: %s", ipath)
         except perror as e:
             # ##HANDLING ERROR
