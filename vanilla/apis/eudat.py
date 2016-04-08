@@ -200,8 +200,9 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
             # ##HANDLING PATH
             # The home dir for the current user
             # Where to put the file in irods
-            ipath = self.handle_collection_path(
+            collection = self.handle_collection_path(
                 icom, self._args.get('collection'))
+            ipath = collection + filename
 
             try:
                 iout = icom.save(abs_file, destination=ipath)
@@ -223,3 +224,24 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
         # Reply to user
         return self.response(obj, code=status)
+
+    @decorate.add_endpoint_parameter('collection')
+    @decorate.apimethod
+    def delete(self, name):
+        """ Remove an object """
+
+        icom = self.get_instance()
+        # paths
+        collection = self.handle_collection_path(
+            icom, self._args.get('collection'))
+        ipath = collection + name
+        try:
+            iout = icom.remove(ipath)
+            logger.info("irods call %s", iout)
+        except perror as e:
+            error = str(e)
+            if 'ERROR:' in error:
+                error = error[error.index('ERROR:')+7:]
+            return self.response({'iRODS error': error}, fail=True)
+
+        return self.response({'deleted': ipath})
