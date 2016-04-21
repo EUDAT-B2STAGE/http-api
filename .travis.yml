@@ -1,0 +1,13 @@
+language: python
+sudo: required
+python:
+  - "3.4"
+services:
+  - docker
+  - docker-compose
+install:
+  # - sudo apt-get update
+  
+script:
+  - scripts/run.sh init
+  - docker exec httpapi_rest_1 nosetests
