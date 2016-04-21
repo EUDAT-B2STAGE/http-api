@@ -4,7 +4,6 @@ python:
   - "3.4"
 services:
   - docker
-  #- docker-compose
 
 env:
   DOCKER_COMPOSE_VERSION: 1.6.2
@@ -12,7 +11,7 @@ env:
 before_install:  
   # update docker
   - sudo apt-get update
-  - yes | sudo apt-get install docker-engine
+  - sudo apt-get -y install docker-engine
   
   # update docker-compose
   - sudo rm /usr/local/bin/docker-compose
