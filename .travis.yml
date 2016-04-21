@@ -9,6 +9,8 @@ install:
   # - sudo apt-get update
   
 script:
-  - scripts/run.sh init
-  - scripts/run.sh graceful
-  - docker exec httpapi_rest_1 nosetests
+  - docker -v
+  - docker-compose -v
+  #- scripts/run.sh init
+  #- scripts/run.sh graceful
+  #- docker exec httpapi_rest_1 nosetests
