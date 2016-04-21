@@ -4,7 +4,7 @@ python:
   - "3.4"
 services:
   - docker
-  - docker-compose
+  #- docker-compose
 install:
   # - sudo apt-get update
   
