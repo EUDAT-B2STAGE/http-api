@@ -10,4 +10,5 @@ install:
   
 script:
   - scripts/run.sh init
+  - scripts/run.sh graceful
   - docker exec httpapi_rest_1 nosetests
