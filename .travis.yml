@@ -12,7 +12,7 @@ env:
 before_install:  
   # update docker
   - sudo apt-get update
-  - sudo apt-get install docker-engine
+  - yes | sudo apt-get install docker-engine
   
   # update docker-compose
   - sudo rm /usr/local/bin/docker-compose
