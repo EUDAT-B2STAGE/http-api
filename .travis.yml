@@ -25,6 +25,6 @@ install:
 script:
   - docker -v
   - docker-compose -v
-  #- scripts/run.sh init
-  #- scripts/run.sh graceful
-  #- docker exec httpapi_rest_1 nosetests
+  - scripts/run.sh init
+  - scripts/run.sh graceful
+  - docker exec httpapi_rest_1 nosetests
