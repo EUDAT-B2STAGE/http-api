@@ -27,4 +27,6 @@ script:
   - docker-compose -v
   - scripts/run.sh init
   - scripts/run.sh graceful
+  - sleep 10
+  - docker logs httpapi_icat_1
   - docker exec httpapi_rest_1 nosetests
