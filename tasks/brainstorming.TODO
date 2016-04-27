@@ -20,11 +20,11 @@ FIRST STEPS:
 
  ✔ first endpoint: @upload @done (16-04-01 11:30)
   ✘ Try to avoid flask save and put directly the file into irods? @cancelled (16-04-06 23:56)
-☐ How to skip irods validation
-  at startup? It needs internet connection...
- ☐ unittest / nose
+ ✔ unittest / nose @done (16-04-27 10:31)
   https://talkpython.fm/episodes/show/45/the-python-testing-column-now-a-thing
   http://pythontesting.net/podcast/coverage-ned-batchelder/
+☐ How to skip irods validation
+  at startup? It needs internet connection...
  ☐ profiling
  https://github.com/muatik/flask-profiler
 
