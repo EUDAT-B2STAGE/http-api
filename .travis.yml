@@ -33,5 +33,5 @@ script:
   #- docker exec httpapi_rest_1 nosetests
   - docker-compose exec rest nosetests --cover-branches --with-coverage --cover-package=restapi
   
-after_success:
-  - coveralls
+#after_success:
+#  - coveralls
