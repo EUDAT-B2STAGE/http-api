@@ -34,7 +34,7 @@ script:
   - sleep 10
   - docker logs httpapi_icat_1
   #- docker exec httpapi_rest_1 nosetests
-  - docker-compose exec rest nosetests --cover-branches --with-coverage --cover-package=restapi
+  - docker-compose exec --user root rest nosetests --cover-branches --with-coverage --cover-package=restapi
   
-#after_success:
-#  - coveralls
+after_success:
+  - coveralls
