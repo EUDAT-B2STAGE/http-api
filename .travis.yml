@@ -22,6 +22,9 @@ before_install:
 install:
   # - sudo apt-get update
   
+before_script:
+  - chmod a+w .coverage
+  
 script:
   - docker -v
   - docker-compose -v
