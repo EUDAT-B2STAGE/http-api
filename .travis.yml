@@ -6,7 +6,7 @@ services:
   - docker
 
 env:
-  DOCKER_COMPOSE_VERSION: 1.6.2
+  DOCKER_COMPOSE_VERSION: 1.7.0
   
 before_install:  
   # update docker
@@ -30,7 +30,7 @@ script:
   - sleep 10
   - docker logs httpapi_icat_1
   #- docker exec httpapi_rest_1 nosetests
-  - docker-compose exec httpapi_rest_1 nosetests --cover-branches --with-coverage --cover-erase --cover-package=restapi --cover-html
+  - docker-compose exec rest nosetests --cover-branches --with-coverage --cover-erase --cover-package=restapi --cover-html
   
 after_success:
   - coveralls
