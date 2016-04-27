@@ -7,21 +7,21 @@ services:
 
 env:
   DOCKER_COMPOSE_VERSION: 1.6.2
-  
-before_install:  
+
+before_install:
   # update docker
   - sudo apt-get update
   - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
-  
+
   # update docker-compose
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-  
+
 install:
   # - sudo apt-get update
-  
+
 script:
   - docker -v
   - docker-compose -v
@@ -29,8 +29,7 @@ script:
   - scripts/run.sh graceful
   - sleep 10
   - docker logs httpapi_icat_1
-  #- docker exec httpapi_rest_1 nosetests
-  - docker-compose exec httpapi_rest_1 nosetests --cover-branches --with-coverage --cover-erase --cover-package=restapi --cover-html
-  
+  - scripts/run.sh api_test
+
 after_success:
   - coveralls
