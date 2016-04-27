@@ -29,4 +29,8 @@ script:
   - scripts/run.sh graceful
   - sleep 10
   - docker logs httpapi_icat_1
-  - docker exec httpapi_rest_1 nosetests
+  #- docker exec httpapi_rest_1 nosetests
+  - docker-compose exec httpapi_rest_1 nosetests --cover-branches --with-coverage --cover-erase --cover-package=restapi --cover-html
+  
+after_success:
+  - coveralls
