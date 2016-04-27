@@ -22,6 +22,7 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo -e "irods_shell:\tOpen a shell inside the iRODS iCAT server container"
     echo -e "server_shell:\tOpen a shell inside the Flask server container"
     echo -e "client_shell:\tOpen a shell to test API endpoints"
+    echo -e "api_test:\tRun tests with nose (+ coverage)"
     echo ""
     echo -e "push:\tPush code to github"
     echo -e "update:\tPull updated code and images"
@@ -175,6 +176,10 @@ elif [ "$1" == "irods_shell" ]; then
 elif [ "$1" == "server_shell" ]; then
     container_name=`docker ps | grep $restcontainer | awk '{print \$NF}'`
     docker exec -it $container_name bash
+
+elif [ "$1" == "api_test" ]; then
+    echo "Opening a shell for nose tests"
+    docker-compose exec rest ./tests.sh
 
 elif [ "$1" == "client_shell" ]; then
     echo "Opening a client shell"
