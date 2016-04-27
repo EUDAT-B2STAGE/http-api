@@ -6,7 +6,7 @@ services:
   - docker
 
 env:
-  DOCKER_COMPOSE_VERSION: 1.6.2
+  DOCKER_COMPOSE_VERSION: 1.7.0
 
 before_install:
   # update docker
@@ -22,11 +22,16 @@ before_install:
 install:
   # - sudo apt-get update
 
+before_script:
+  - chmod a+w .coverage
+
 script:
   - docker -v
   - docker-compose -v
+  - scripts/run.sh update
   - scripts/run.sh init
   - scripts/run.sh graceful
+  # wait for irods to be ready
   - sleep 10
   - docker logs httpapi_icat_1
   - scripts/run.sh api_test
