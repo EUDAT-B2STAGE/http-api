@@ -24,6 +24,7 @@ before_install:
 
 install:
   # - sudo apt-get update
+  pip install coveralls
 
 before_script:
   - chmod o+w backend
