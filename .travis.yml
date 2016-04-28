@@ -41,4 +41,4 @@ script:
   - docker-compose exec rest nosetests --with-coverage --cover-package=restapi
 
 after_success:
-  - coveralls
+  - coveralls debug
