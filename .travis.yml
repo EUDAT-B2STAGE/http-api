@@ -34,7 +34,8 @@ script:
   # wait for irods to be ready
   - sleep 10
   - docker logs httpapi_icat_1
-  - scripts/run.sh api_test
+  #- scripts/run.sh api_test
+  - docker-compose exec rest nosetests --with-coverage --cover-package=restapi
 
 after_success:
-  - coveralls debug
+  - coveralls
