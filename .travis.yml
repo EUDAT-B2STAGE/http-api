@@ -26,7 +26,7 @@ install:
   # - sudo apt-get update
 
 before_script:
-  - chmod a+w .coverage
+  - chmod o+w backend
 
 script:
   - docker -v
