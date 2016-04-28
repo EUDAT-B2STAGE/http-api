@@ -23,7 +23,7 @@ before_install:
   - id -u
 
 install:
-  pip install coveralls
+  - pip install coveralls
 
 before_script:
   - chmod o+w backend
