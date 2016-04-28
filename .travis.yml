@@ -23,7 +23,6 @@ before_install:
   - id -u
 
 install:
-  # - sudo apt-get update
   pip install coveralls
 
 before_script:
