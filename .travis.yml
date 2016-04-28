@@ -30,7 +30,7 @@ script:
   - docker-compose -v
   - scripts/run.sh update
   - scripts/run.sh init
-  - scripts/run.sh graceful
+  - scripts/run.sh graceful
   # wait for irods to be ready
   - sleep 10
   - docker logs httpapi_icat_1
