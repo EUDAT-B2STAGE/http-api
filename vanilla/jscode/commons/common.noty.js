@@ -26,6 +26,7 @@ function NotyService() {
 		    else if (type == self.ERROR) self.showError(m);
 		    else if (type == self.WARNING) self.showWarning(m);
 		    else if (type == self.INFO) self.showInfo(m);
+		    else $log.warn("Unknown message type. NotyService is unable to satisfy this request");
 		}
 	}
 
