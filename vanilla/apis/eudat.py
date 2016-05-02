@@ -187,9 +187,10 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
         # If response is success, save inside the database
         key_file = 'filename'
         key_data = 'data'
+        key_response = 'Response'
         filename = None
-        if isinstance(obj, dict) and key_file in obj[key_data]:
-            filename = obj[key_data][key_file]
+        if isinstance(obj, dict) and key_file in obj[key_response][key_data]:
+            filename = obj[key_response][key_data][key_file]
             abs_file = self.absolute_upload_file(filename, user)
             logger.info("File is '%s'" % abs_file)
 
@@ -220,7 +221,7 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
             # Remove actual file (if we do not want to cache)
             os.remove(abs_file)
-            obj['data']['ipath'] = ipath
+            obj['Response']['data']['collection'] = ipath
 
         # Reply to user
         return self.response(obj, code=status)
