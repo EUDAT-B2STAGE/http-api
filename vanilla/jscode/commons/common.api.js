@@ -4,7 +4,7 @@
 angular.module('web')
     .service('api', RestApiService);
 
-function RestApiService($http, $auth, $log, $mdToast) {
+function RestApiService($http, $q, $auth, $log, $mdToast) {
 
     var self = this;
     // Api URI
@@ -83,15 +83,7 @@ function RestApiService($http, $auth, $log, $mdToast) {
                     return null;
                 }
 
-                if (response.data.Response.errors != null) {
-                    for (var i=0; i<response.data.Response.errors.length; i++) {
-                        var err = response.data.Response.errors[i]
-                        $mdToast.show($mdToast.simple().textContent(err));
-                    }
-                }
-                return response.data.Response;
-                
-                
+                return $q.reject(response.data.Response);
         });
     }
 
