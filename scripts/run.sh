@@ -33,6 +33,7 @@ fi
 #####################
 # Confs
 subdir="backend"
+submodule_tracking="submodules.current.commit"
 irodscontainer="icat"
 restcontainer="rest"
 clientcontainer="apitests"
@@ -53,12 +54,13 @@ do
         exit 1
     fi
 done
-if [ "$(ls -A backend)" ]; then
+if [ "$(ls -A $subdir)" ]; then
     echo "Submodule already exists" > /dev/null
 else
     echo "Inizialitazion for the http-api-base submodule"
-    git submodule init
-    git submodule update --remote
+    git clone https://github.com/EUDAT-B2STAGE/http-api-base.git $subdir
+    # git submodule init
+    # git submodule update --remote
     cd $subdir
     git checkout master
     cd ..
@@ -66,11 +68,18 @@ fi
 
 # Update the remote github repos
 if [ "$1" == "push" ]; then
+
     echo "Pushing submodule"
-    cd backend
-    git push origin master
+    cd $subdir
+    git push
+
+    # Save a snapshot of current submodule
+    echo -e $(git show --pretty=%H)"\n"$(git show-branch --current --no-color) > ../$submodule_tracking
+
     echo "Pushing main repo"
     cd ..
+    git add $submodule_tracking
+    git commit
     git push
     echo "Completed"
     exit 0
@@ -83,8 +92,8 @@ if [ "$1" == "update" ]; then
     echo "Pulling main repo"
     git pull
     echo "Pulling submodule"
-    cd backend
-    git pull origin master
+    cd $subdir
+    git pull
     echo "Done"
     exit 0
 fi
