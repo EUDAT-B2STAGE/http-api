@@ -23,14 +23,16 @@ install:
   - pip install coveralls
   - pip install python-coveralls
 
-before_script:
-  - chmod o+w backend
+# before_script:
+#   - chmod o+w backend
 
 script:
   - docker -v
   - docker-compose -v
   - scripts/run.sh update
   - scripts/run.sh init
+  # needed for creating files with test coverage
+  - chmod o+w backend
   - scripts/run.sh graceful
   # wait for irods to be ready
   - sleep 10
