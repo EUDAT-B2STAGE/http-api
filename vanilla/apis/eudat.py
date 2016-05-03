@@ -112,8 +112,8 @@ class CollectionEndpoint(IrodsEndpoints):
 # // TO FIX: use a decorator
             error = str(e)
             if 'ERROR:' in error:
-                error = error[error.index('ERROR:')+7:]
-            return self.response({'iRODS error': error}, fail=True)
+                error = error[error.index('ERROR:') + 7:]
+            return self.response(errors={'iRODS error': error})
 
         return self.response(ipath, code=hcodes.HTTP_OK_CREATED)
 
@@ -132,7 +132,7 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
         if name is None or name[-1] == '/':
             return self.response(
-                {'dataobject': 'No dataobject/file requested'}, fail=True)
+                errors={'dataobject': 'No dataobject/file requested'})
 
         # obj init
         user = self.get_token_user()
@@ -158,9 +158,8 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
         except perror as e:
             error = str(e)
             if 'ERROR:' in error:
-                    error = error[error.index('ERROR:')+7:]
-            return self.response(
-                {'iRODS error': error}, fail=True)
+                    error = error[error.index('ERROR:') + 7:]
+            return self.response(errors={'iRODS error': error})
 
         # Download the file from local fs
         filecontent = super().download(
@@ -182,15 +181,18 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
         user = self.get_token_user()
 
         # Original upload
-        obj, status = super(DataObjectEndpoint, self).upload(subfolder=user)
+        response = super(DataObjectEndpoint, self).upload(subfolder=user)
 
         # If response is success, save inside the database
         key_file = 'filename'
-        key_data = 'data'
-        key_response = 'Response'
         filename = None
-        if isinstance(obj, dict) and key_file in obj[key_response][key_data]:
-            filename = obj[key_response][key_data][key_file]
+
+        content = self.get_content_from_response(response)
+        errors = self.get_content_from_response(response, get_error=True)
+        status = self.get_content_from_response(response, get_status=True)
+
+        if isinstance(content, dict) and key_file in content:
+            filename = content[key_file]
             abs_file = self.absolute_upload_file(filename, user)
             logger.info("File is '%s'" % abs_file)
 
@@ -209,22 +211,25 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
                 iout = icom.save(abs_file, destination=ipath)
                 logger.info("irods call %s", iout)
             except perror as e:
-                # ##HANDLING ERROR
+# ##HANDLING ERROR
+# TO FIX, use the new parser anytime soon
                 # Remove local
                 os.remove(abs_file)
                 error = str(e)
                 if 'Stdout:' in error:
-                    error = error[error.index('Stdout:')+9:]
+                    error = error[error.index('Stdout:') + 9:]
                 elif 'ERROR:' in error:
-                    error = error[error.index('ERROR:')+7:]
-                return self.response({'iRODS error': error}, fail=True)
+                    error = error[error.index('ERROR:') + 7:]
+                return self.response(errors={'iRODS error': error})
 
             # Remove actual file (if we do not want to cache)
             os.remove(abs_file)
-            obj['Response']['data']['collection'] = ipath
+            content = {
+                'collection': ipath
+            }
 
         # Reply to user
-        return self.response(obj, code=status)
+        return self.response(data=content, errors=errors, code=status)
 
     @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
@@ -242,7 +247,7 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
         except perror as e:
             error = str(e)
             if 'ERROR:' in error:
-                error = error[error.index('ERROR:')+7:]
-            return self.response({'iRODS error': error}, fail=True)
+                error = error[error.index('ERROR:') + 7:]
+            return self.response(errors={'iRODS error': error})
 
         return self.response({'deleted': ipath})
