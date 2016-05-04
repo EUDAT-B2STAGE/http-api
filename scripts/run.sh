@@ -70,16 +70,18 @@ fi
 # Update the remote github repos
 if [ "$1" == "push" ]; then
 
-    testlogs="/tmp/tests.log"
-    echo "Running tests before pushing..."
-    $make_tests > $testlogs
-    if [ "$?" == "0" ]; then
-        echo "Test are fine!"
-    else
-        echo "Failed, to test..."
-        echo "(see $testlogs)"
-        echo "Fix errors before pushing!"
-        exit 1
+    if [ "$2" != "force" ]; then
+        testlogs="/tmp/tests.log"
+        echo "Running tests before pushing..."
+        $make_tests > $testlogs
+        if [ "$?" == "0" ]; then
+            echo "Test are fine!"
+        else
+            echo "Failed, to test... (see $testlogs file)"
+            echo "Fix errors before pushing, or run again with:"
+            echo "$0 $1 force"
+            exit 1
+        fi
     fi
 
     echo "Pushing submodule"
@@ -200,7 +202,7 @@ elif [ "$1" == "server_shell" ]; then
     docker exec -it $container_name bash
 
 elif [ "$1" == "api_test" ]; then
-    echo "Opening a shell for nose tests"
+    echo "Opening a shell for nose2 tests"
     $make_tests
 
 elif [ "$1" == "client_shell" ]; then
