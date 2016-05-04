@@ -17,7 +17,7 @@ from .. import decorators as decorate
 # from flask.ext.security import roles_required, auth_token_required
 
 # from ..services.neo4j import migraph
-from ..services.irodsclient import ICommands, test_irods
+from ..services.irodsclient import ICommands, test_irods, IrodsException
 from ..services.uploader import Uploader
 from plumbum.commands.processes import ProcessExecutionError as perror
 from ... import htmlcodes as hcodes
@@ -122,6 +122,7 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
     @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException)
     def get(self, name=None):
         """
         Get object from ID
@@ -173,6 +174,7 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
     @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def post(self):
         """
         Handle file upload
@@ -210,17 +212,10 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
             try:
                 iout = icom.save(abs_file, destination=ipath)
                 logger.info("irods call %s", iout)
-            except perror as e:
-# ##HANDLING ERROR
-# TO FIX, use the new parser anytime soon
-                # Remove local
+            except IrodsException as e:
+                # Remove local cache if i could not save on irods
                 os.remove(abs_file)
-                error = str(e)
-                if 'Stdout:' in error:
-                    error = error[error.index('Stdout:') + 9:]
-                elif 'ERROR:' in error:
-                    error = error[error.index('ERROR:') + 7:]
-                return self.response(errors={'iRODS error': error})
+                raise e
 
             # Remove actual file (if we do not want to cache)
             os.remove(abs_file)

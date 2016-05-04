@@ -42,6 +42,7 @@ vcom="docker volume"
 initcom="$compose -f $compose.yml -f init.yml"
 allcompose="$compose -f $compose.yml -f $compose.test.yml -f init.yml"
 vprefix="httpapi_"
+make_tests="docker-compose exec rest ./tests.sh"
 #####################
 
 # Check prerequisites
@@ -68,6 +69,18 @@ fi
 
 # Update the remote github repos
 if [ "$1" == "push" ]; then
+
+    testlogs="/tmp/tests.log"
+    echo "Running tests before pushing..."
+    $make_tests > $testlogs
+    if [ "$?" == "0" ]; then
+        echo "Test are fine!"
+    else
+        echo "Failed, to test..."
+        echo "(see $testlogs)"
+        echo "Fix errors before pushing!"
+        exit 1
+    fi
 
     echo "Pushing submodule"
     cd $subdir
@@ -124,7 +137,7 @@ if [ "$1" == "init" ]; then
     echo "Containers stopping"
     $allcompose stop
     echo "Containers deletion"
-    $allcompose rm -f
+    $allcompose rm -f --all
     if [ "$volumes"  != "" ]; then
         echo "Destroy volumes:"
         docker volume rm $volumes
@@ -153,7 +166,7 @@ elif [ "$1" == "stop" ]; then
 elif [ "$1" == "remove" ]; then
     echo "REMOVE CONTAINERS"
     $allcompose stop
-    $allcompose rm -f
+    $allcompose rm -f --all
 
 # Destroy everything: containers and data saved so far
 elif [ "$1" == "clean" ]; then
@@ -161,7 +174,7 @@ elif [ "$1" == "clean" ]; then
     echo "are you really sure?"
     sleep 5
     $allcompose stop
-    $allcompose rm -f
+    $allcompose rm -f --all
     for volume in $volumes;
     do
         echo "Remove $volume volume"
@@ -188,7 +201,7 @@ elif [ "$1" == "server_shell" ]; then
 
 elif [ "$1" == "api_test" ]; then
     echo "Opening a shell for nose tests"
-    docker-compose exec rest ./tests.sh
+    $make_tests
 
 elif [ "$1" == "client_shell" ]; then
     echo "Opening a client shell"
@@ -219,7 +232,7 @@ elif [ "$1" == "restart" ]; then
 
     echo "Clean previous containers"
     $allcompose stop
-    $allcompose rm -f
+    $allcompose rm -f --all
 
     echo "Boot Docker stack"
     docker-compose up -d $restcontainer
