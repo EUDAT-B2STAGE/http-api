@@ -22,9 +22,7 @@ before_install:
 install:
   - pip install coveralls
   - pip install python-coveralls
-  - pip install nose2
-  - pip install cov-core
-
+  
 # before_script:
 #   - chmod o+w backend
 
