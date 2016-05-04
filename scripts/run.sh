@@ -187,7 +187,7 @@ elif [ "$1" == "server_shell" ]; then
     docker exec -it $container_name bash
 
 elif [ "$1" == "api_test" ]; then
-    echo "Opening a shell for nose tests"
+    echo "Opening a shell for nose2 tests"
     docker-compose exec rest ./tests.sh
 
 elif [ "$1" == "client_shell" ]; then
