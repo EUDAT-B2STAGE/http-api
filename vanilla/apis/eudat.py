@@ -122,7 +122,7 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
     @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException)
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self, name=None):
         """
         Get object from ID
@@ -145,22 +145,13 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
         ipath = collection + name
         abs_file = self.absolute_upload_file(name, user)
 
-# // TO FIX: use cache?
-        # Remove files in cache for now
         try:
             os.remove(abs_file)
         except:
             pass
-        # print("Requested name", name, collection, name)
 
-        # Move the irods file into local fs
-        try:
-            icom.open(ipath, abs_file)
-        except perror as e:
-            error = str(e)
-            if 'ERROR:' in error:
-                    error = error[error.index('ERROR:') + 7:]
-            return self.response(errors={'iRODS error': error})
+        # Execute icommand
+        icom.open(ipath, abs_file)
 
         # Download the file from local fs
         filecontent = super().download(
