@@ -26,11 +26,14 @@ bcom="$com run $webbuild bower install"
 # First time install
 if [ "$1" == "init" ]; then
 
+git add private http://130.186.13.81:10080/pdonorio/restangulask.git
+
     echo "Download docker images"
     docker-compose pull
-    echo "Download submodules"
-    git submodule init
-    git submodule update
+    echo "Clone submodules"
+    git clone https://github.com/pdonorio/rest-mock.git backend
+    # git submodule init
+    # git submodule update
     echo "Build bower packages"
     $bcom
     echo "Completed"
@@ -43,6 +46,10 @@ elif [ "$1" == "update" ]; then
     docker-compose pull
     current=`pwd`
     cd ..
+
+    echo "Pulling main repo"
+    git pull
+
     for service in $services;
     do
         echo "Repo '$service' fetch"
@@ -50,8 +57,11 @@ elif [ "$1" == "update" ]; then
         git pull
         cd ..
     done
-    git submodule sync
-    git submodule update
+
+    # git submodule sync
+    # git submodule update
+
+    echo "Updating libs"
     cd $current
     $bcom
 

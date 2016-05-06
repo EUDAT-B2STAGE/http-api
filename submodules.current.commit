@@ -1,0 +1,2 @@
+a080d25d184777ed111461bf5acdfa5ec23a32f1 diff --git a/.gitmodules b/.gitmodules index 68b4293..e69de29 100644 --- a/.gitmodules +++ b/.gitmodules @@ -1,4 +0,0 @@ -[submodule "backend"] - path = backend - url = git@github.com:pdonorio/rest-mock.git - branch = master \ No newline at end of file diff --git a/backend b/backend deleted file mode 160000 index 7ac6a9a..0000000 --- a/backend +++ /dev/null @@ -1 +0,0 @@ -Subproject commit 7ac6a9a27fbc2fff0932bdfee82230d1e441f166
+[master] Removed submodule rest-mock
