@@ -7,6 +7,8 @@ An endpoint example
 from restapi import get_logger
 from ..base import ExtendedApiResource
 from .. import decorators as decorate
+
+from ..services import neo4j
 # from confs import config
 # from flask.ext.security import roles_required, auth_token_required
 

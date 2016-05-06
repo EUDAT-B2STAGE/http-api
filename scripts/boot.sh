@@ -26,14 +26,19 @@ bcom="$com run $webbuild bower install"
 # First time install
 if [ "$1" == "init" ]; then
 
-git add private http://130.186.13.81:10080/pdonorio/restangulask.git
+    # git remote add private git@gitlab.hpc.cineca.it:mdantoni/telethon_repo.git
 
     echo "Download docker images"
     docker-compose pull
     echo "Clone submodules"
-    git clone https://github.com/pdonorio/rest-mock.git backend
+    cd ..
+    # git clone https://github.com/pdonorio/rest-mock.git backend
+    if [ ! -d "backend" ]; then
+        git clone https://github.com/EUDAT-B2STAGE/http-api-base.git backend
+    fi
     # git submodule init
     # git submodule update
+    cd -
     echo "Build bower packages"
     $bcom
     echo "Completed"
