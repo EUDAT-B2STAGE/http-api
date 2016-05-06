@@ -1,4 +1,0 @@
-[submodule "backend"]
-	path = backend
-	url = git@github.com:pdonorio/rest-mock.git
-	branch = master
