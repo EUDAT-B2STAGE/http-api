@@ -4,7 +4,7 @@
 
 from neomodel import StringProperty, \
     StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
-from .. import get_logger
+from .... import get_logger
 
 logger = get_logger(__name__)
 
@@ -96,10 +96,10 @@ class MetaData(StructuredNode):
     resource = RelationshipTo(Resource, 'DESCRIBED_BY')
     collection = RelationshipTo(Collection, 'DESCRIBED_BY')
 
-ALL_GRAPH_MODELS = [
-    Person, Zone, Resource,
-    Collection, Replication, DataObject,
-    PID, MetaData
-]
+# ALL_GRAPH_MODELS = [
+#     Person, Zone, Resource,
+#     Collection, Replication, DataObject,
+#     PID, MetaData
+# ]
 
 # migraph.load_models(ALL_GRAPH_MODELS)
