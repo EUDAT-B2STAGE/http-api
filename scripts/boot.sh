@@ -142,7 +142,7 @@ else
         echo -e "ACTION: Reboot\n"
         echo "Cleaning project containers (if any)"
         $com $files stop
-        $com $files rm -f
+        $com $files rm -f --all
         echo "Starting up"
         $com $files up -d $services
     else
@@ -159,7 +159,7 @@ else
             echo -e "ACTION: Removal\n"
             echo "Destroying services"
             $com $files stop
-            $com $files rm -f
+            $com $files rm -f --all
         fi
         if [ "$2" == "sql" ]; then
             echo "Launch adminer for SQL servers"
