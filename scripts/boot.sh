@@ -93,7 +93,7 @@ else
     file="custom/${1}.yml"
     if [ ! -f "$file" ]; then
         echo "File 'containers/$file' not found!"
-        echo "You might start up copying 'template.yml'."
+        echo "You might start up copying 'demo.yml'."
         exit 1
     fi
     files="-f docker-compose.yml -f $file"
@@ -108,33 +108,26 @@ else
     fi
 
     #############################
-    # Case you ask for base 'template'
-    if [ "$1" == "template" ]; then
-        touch ../$apiconf
-        echo "{ \"blueprint\": \"blueprint_example\" }" > ../$apiconf
-
-    #############################
     # DEFAULTS FILES
-    else
-        # Backend
-        file="$1.ini"
-        check="vanilla/specs/$file"
-        if [ ! -s "../$check" ]; then
-            echo "File '$check' not found or empty..."
-            echo "Please create it to define APIs endpoints."
-            exit 1
-        fi
-        echo "{ \"$1\": \"$file\" }" > ../$apiconf
 
-        # Frontend
-        check="vanilla/jscode/$1"
-        if [ ! "$(ls -A ../$check 2> /dev/null)" ]; then
-            echo "Directory '$check' not found or empty..."
-            echo "Please create it to define AngularJS code."
-            exit 1
-        fi
-        echo "{ \"blueprint\": \"$1\" }" > ../$jsconf
+    # Backend
+    file="$1.json"
+    check="vanilla/specs/$file"
+    if [ ! -s "../$check" ]; then
+        echo "File '$check' not found or empty..."
+        echo "Please create it to define APIs endpoints."
+        exit 1
     fi
+    echo "{ \"$1\": \"$file\" }" > ../$apiconf
+
+    # Frontend
+    check="vanilla/jscode/$1"
+    if [ ! "$(ls -A ../$check 2> /dev/null)" ]; then
+        echo "Directory '$check' not found or empty..."
+        echo "Please create it to define AngularJS code."
+        exit 1
+    fi
+    echo "{ \"blueprint\": \"$1\" }" > ../$jsconf
 
     #############################
     # Run services if not adding another command
