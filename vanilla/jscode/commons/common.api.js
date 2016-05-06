@@ -4,7 +4,7 @@
 angular.module('web')
     .service('api', RestApiService);
 
-function RestApiService($http, $auth, $log) {
+function RestApiService($http, $q, $auth, $log, $mdToast) {
 
     var self = this;
     // Api URI
@@ -26,17 +26,18 @@ function RestApiService($http, $auth, $log) {
         return $auth.getToken();
     }
 
-    self.apiCall = function (endpoint, method, data, id, errorCheck)
+    self.apiCall = function (endpoint, method, data, id, returnRawResponse, skipPromiseResolve=false)
     {
 
       ////////////////////////
         //DEFAULTS
-        errorCheck = self.getOrDefault(errorCheck, false);
+        returnRawResponse = self.getOrDefault(returnRawResponse, false);
         endpoint = self.getOrDefault(endpoint, self.endpoints.check);
         if (typeof id !== 'undefined' && method != 'POST') {
             endpoint += '/' + id;
         }
         method = self.getOrDefault(method, 'GET');
+
         var params = {};
         if (method == 'GET') {
             params = self.getOrDefault(data, {});
@@ -44,7 +45,6 @@ function RestApiService($http, $auth, $log) {
         } else if (method == 'POST') {
             data = self.getOrDefault(data, {});
         }
-      ////////////////////////
 
         var currentUrl = self.API_URL + endpoint;
         if (endpoint == self.endpoints.register) {
@@ -65,21 +65,25 @@ function RestApiService($http, $auth, $log) {
                 timeout: timeout,
             }
 
+        if (skipPromiseResolve) return $http(req);
+
         return $http(req).then(
             function successCallback(response) {
                 //$log.debug("API call successful");
-                return response.data;
+
+                if (returnRawResponse) return response;
+                
+                return response.data.Response;
           }, function errorCallback(response) {
                 $log.warn("API failed to call")
-                if (errorCheck) {
-                    return response;
-                } else {
-                    // Default: data or null
-                    if (typeof response.elements === 'undefined') {
-                        return null;
-                    }
-                    return response.data;
+
+                if (returnRawResponse) return response;
+                 
+                if (typeof response.data.Response === 'undefined') {
+                    return null;
                 }
+
+                return $q.reject(response.data.Response);
         });
     }
 

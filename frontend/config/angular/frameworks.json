@@ -67,6 +67,7 @@
 	    "angular-lazy-img/release/angular-lazy-img.min.js",
 	    "angular-tree-control/angular-tree-control.js",
         "ng-flow/dist/ng-flow-standalone.min.js",
+        "noty/js/noty/packaged/jquery.noty.packaged.js",
 	// JWT ?
 		//
 	// libs on demand
