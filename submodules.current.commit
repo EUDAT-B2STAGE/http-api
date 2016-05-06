@@ -1,2 +1,2 @@
-ae7c35002d768a950c07d88c8522dc5b17982a62 diff --git a/scripts/boot.sh b/scripts/boot.sh index 69153e2..8537338 100755 --- a/scripts/boot.sh +++ b/scripts/boot.sh @@ -111,7 +111,7 @@ else # Case you ask for base 'template' if [ "$1" == "template" ]; then touch ../$apiconf - echo "{ \"blueprint\": \"blueprint_example\" }" > ../$jsconf + echo "{ \"blueprint\": \"blueprint_example\" }" > ../$apiconf ############################# # DEFAULTS FILES
-[master] Bug fixing and changing from rest-mock to http-api-base
+7c7177ae319bad32f0ed346834f55764b542ae16
+[master] Merge branch 'master' of gitlab.hpc.cineca.it:mdantoni/telethon_repo
