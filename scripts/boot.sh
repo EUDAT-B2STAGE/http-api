@@ -111,7 +111,7 @@ else
     # Case you ask for base 'template'
     if [ "$1" == "template" ]; then
         touch ../$apiconf
-        echo "{ \"blueprint\": \"blueprint_example\" }" > ../$jsconf
+        echo "{ \"blueprint\": \"blueprint_example\" }" > ../$apiconf
 
     #############################
     # DEFAULTS FILES
