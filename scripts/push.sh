@@ -21,26 +21,23 @@ done
 
 ###########################################
 # In case something has to be commited yet
-$com add $services
+# $com add $services
 # $com add *
-if [ "$1" == "quick" ];then
-    $com commit -m 'Submodules updates'
-else
 
-    # Save a snapshot of current submodule
-    echo "Save submodule status"
-    echo -e \
-        $(git show --pretty=%H)"\n"$(git show-branch --current --no-color) \
-        > $submodule_tracking
+# Save a snapshot of current submodule
+echo "Save submodule status"
+echo -e \
+    $(git show --pretty=%H)"\n"$(git show-branch --current --no-color) \
+    > $submodule_tracking
 
-    echo "Pushing main repo"
-    git add $submodule_tracking
-    git commit && git push && echo "Completed"
-fi
+echo "Pushing main repo"
+git add $submodule_tracking
+git commit && echo "Commit has been done"
 
 ###########################################
-# Original repo
-$push
+# Push to all repos setted
 
-# Private repo
-$com push private master
+for repo in `git remote`;
+do
+    git push $repo
+done
