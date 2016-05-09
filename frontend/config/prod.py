@@ -3,11 +3,14 @@
 """ Development configuration """
 
 import os
-from . import BaseConfig
 
+from . import BaseConfig, get_logger
+
+logger = get_logger(__name__)
 
 class MyConfig(BaseConfig):
 
+    HOST = '0.0.0.0'
     WTF_CSRF_SECRET_KEY = 'a production random string'
 
     try:
@@ -22,5 +25,4 @@ class MyConfig(BaseConfig):
         SQLALCHEMY_DATABASE_URI = "%s://%s:%s@%s:%d/%s" \
             % (dbdriver, dbuser, dbpw, dbhost, dbport, database)
     except Exception:
-        print("Cannot found a database instance. Switching to sqllite.")
-        pass
+        logger.warning("Cannot found a postgres database instance. Switching to sqllite.")
