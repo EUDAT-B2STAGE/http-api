@@ -26,11 +26,19 @@ bcom="$com run $webbuild bower install"
 # First time install
 if [ "$1" == "init" ]; then
 
+    # git remote add private git@gitlab.hpc.cineca.it:mdantoni/telethon_repo.git
+
     echo "Download docker images"
     docker-compose pull
-    echo "Download submodules"
-    git submodule init
-    git submodule update
+    echo "Clone submodules"
+    cd ..
+    # git clone https://github.com/pdonorio/rest-mock.git backend
+    if [ ! -d "backend" ]; then
+        git clone https://github.com/EUDAT-B2STAGE/http-api-base.git backend
+    fi
+    # git submodule init
+    # git submodule update
+    cd -
     echo "Build bower packages"
     $bcom
     echo "Completed"
@@ -43,6 +51,10 @@ elif [ "$1" == "update" ]; then
     docker-compose pull
     current=`pwd`
     cd ..
+
+    echo "Pulling main repo"
+    git pull
+
     for service in $services;
     do
         echo "Repo '$service' fetch"
@@ -50,8 +62,11 @@ elif [ "$1" == "update" ]; then
         git pull
         cd ..
     done
-    git submodule sync
-    git submodule update
+
+    # git submodule sync
+    # git submodule update
+
+    echo "Updating libs"
     cd $current
     $bcom
 
@@ -83,7 +98,7 @@ else
     file="custom/${1}.yml"
     if [ ! -f "$file" ]; then
         echo "File 'containers/$file' not found!"
-        echo "You might start up copying 'template.yml'."
+        echo "You might start up copying 'demo.yml'."
         exit 1
     fi
     files="-f docker-compose.yml -f $file"
@@ -98,33 +113,26 @@ else
     fi
 
     #############################
-    # Case you ask for base 'template'
-    if [ "$1" == "template" ]; then
-        touch ../$apiconf
-        echo "{ \"blueprint\": \"blueprint_example\" }" > ../$jsconf
-
-    #############################
     # DEFAULTS FILES
-    else
-        # Backend
-        file="$1.ini"
-        check="vanilla/specs/$file"
-        if [ ! -s "../$check" ]; then
-            echo "File '$check' not found or empty..."
-            echo "Please create it to define APIs endpoints."
-            exit 1
-        fi
-        echo "{ \"$1\": \"$file\" }" > ../$apiconf
 
-        # Frontend
-        check="vanilla/jscode/$1"
-        if [ ! "$(ls -A ../$check 2> /dev/null)" ]; then
-            echo "Directory '$check' not found or empty..."
-            echo "Please create it to define AngularJS code."
-            exit 1
-        fi
-        echo "{ \"blueprint\": \"$1\" }" > ../$jsconf
+    # Backend
+    file="$1.json"
+    check="vanilla/specs/$file"
+    if [ ! -s "../$check" ]; then
+        echo "File '$check' not found or empty..."
+        echo "Please create it to define APIs endpoints."
+        exit 1
     fi
+    echo "{ \"$1\": \"$file\" }" > ../$apiconf
+
+    # Frontend
+    check="vanilla/jscode/$1"
+    if [ ! "$(ls -A ../$check 2> /dev/null)" ]; then
+        echo "Directory '$check' not found or empty..."
+        echo "Please create it to define AngularJS code."
+        exit 1
+    fi
+    echo "{ \"blueprint\": \"$1\" }" > ../$jsconf
 
     #############################
     # Run services if not adding another command
@@ -132,7 +140,7 @@ else
         echo -e "ACTION: Reboot\n"
         echo "Cleaning project containers (if any)"
         $com $files stop
-        $com $files rm -f
+        $com $files rm -f --all
         echo "Starting up"
         $com $files up -d $services
     else
@@ -149,7 +157,7 @@ else
             echo -e "ACTION: Removal\n"
             echo "Destroying services"
             $com $files stop
-            $com $files rm -f
+            $com $files rm -f --all
         fi
         if [ "$2" == "sql" ]; then
             echo "Launch adminer for SQL servers"

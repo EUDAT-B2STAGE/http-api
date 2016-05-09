@@ -2,9 +2,7 @@
 
 services="backend"
 #services="angulask rest-mock"
-com="git"
-push="$com push origin"
-#push="$com push origin master"
+submodule_tracking="submodules.current.commit"
 
 ###########################################
 for service in $services;
@@ -12,7 +10,7 @@ do
     echo "Repo '$service' push"
     cd $service
     # Push submodules
-    $push
+    git push
     # Interrupt if problems appear
     if [ $? != "0" ]; then
         echo "Failed"
@@ -23,16 +21,23 @@ done
 
 ###########################################
 # In case something has to be commited yet
-$com add $services
+# $com add $services
 # $com add *
-if [ "$1" == "quick" ];then
-    $com commit -m 'Submodules updates'
-else
-    $com commit
-fi
+
+# Save a snapshot of current submodule
+echo "Save submodule status"
+echo -e \
+    $(git show --pretty=%H)"\n"$(git show-branch --current --no-color) \
+    > $submodule_tracking
+
+echo "Pushing main repo"
+git add $submodule_tracking
+git commit && echo "Commit has been done"
 
 ###########################################
-# Original repo
-$push
-# Private repo
-$com push private master
+# Push to all repos setted
+
+for repo in `git remote`;
+do
+    git push $repo
+done

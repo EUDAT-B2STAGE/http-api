@@ -1,0 +1,33 @@
+
+#######################
+# Define here your services
+
+gdb:
+    image: neo4j
+    ports:
+      - 9090:7474
+    volumes:
+        #GRAPH DB DATA AREA - TO BE CREATED AS DOCKER VOLUME?
+        - restangulask_graphdbd:/data
+    environment:
+        NEO4J_AUTH: neo4j/chooseapassword
+
+#######################
+# Link services inside API
+
+custombe:
+    extends:
+        file: docker-compose.yml
+        service: backend
+    links:
+        - gdb:gdb
+
+# #######################
+# # Frontend links only API
+
+customfe:
+    extends:
+        file: docker-compose.yml
+        service: frontend
+    links:
+        - custombe:myapi

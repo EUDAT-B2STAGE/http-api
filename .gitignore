@@ -1,4 +1,15 @@
 
+################
+# submodules
+
+# rest-mock
+backend
+
+################
+
+# notebooks
+.ipynb_checkpoints
+
 # user custom configs
 vanilla/specs/api_init.json
 vanilla/specs/js_init.json
