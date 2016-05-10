@@ -15,8 +15,8 @@ You should expect things not to work.
 
 Before starting please make sure that you have installed on your system:
 
-* [Docker](http://docs.docker.com/) 1.9+
-* [docker-compose](https://docs.docker.com/compose/) 1.5+
+* [Docker](http://docs.docker.com/) 1.11+
+* [docker-compose](https://docs.docker.com/compose/) 1.7+
 
 ## Quick start
 
