@@ -18,6 +18,6 @@ all_tests:
   - pip install coveralls
   - pip install python-coveralls
 
-   - docker -v
+  - docker -v
 
   - coveralls
