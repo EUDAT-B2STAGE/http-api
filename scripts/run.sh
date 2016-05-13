@@ -185,21 +185,17 @@ elif [ "$1" == "clean" ]; then
     done
 
 elif [ "$1" == "addiuser" ]; then
-    container_name=`docker ps | grep $irodscontainer | awk '{print \$NF}'`
     echo "Adding a new certificated iRODS user:"
-    docker exec -it $container_name /addusercert $2
+    docker-compose exec $irodscontainer /addusercert $2
 
 elif [ "$1" == "irestart" ]; then
-    container_name=`docker ps | grep $irodscontainer | awk '{print \$NF}'`
-    docker exec -it $container_name /bin/bash /irestart
+    docker-compose exec $irodscontainer /bin/bash /irestart
 
 elif [ "$1" == "irods_shell" ]; then
-    container_name=`docker ps | grep $irodscontainer | awk '{print \$NF}'`
-    docker exec -it $container_name bash
+    docker-compose exec $irodscontainer bash
 
 elif [ "$1" == "server_shell" ]; then
-    container_name=`docker ps | grep $restcontainer | awk '{print \$NF}'`
-    docker exec -it $container_name bash
+    docker-compose exec $restcontainer bash
 
 elif [ "$1" == "api_test" ]; then
     echo "Opening a shell for nose2 tests"
@@ -213,8 +209,7 @@ elif [ "$1" == "client_shell" ]; then
     echo ""
     compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
     $compose up --no-deps -d apitests
-    container_name=`docker ps | grep $clientcontainer | awk '{print \$NF}'`
-    docker exec -it $container_name sh
+    docker-compose exec $clientcontainer_name sh
 
 # Normal boot
 elif [ "$1" == "graceful" ]; then
@@ -225,6 +220,7 @@ elif [ "$1" == "graceful" ]; then
     echo "Stack processes:"
     docker-compose ps
     if [ "$status" == "0" ]; then
+        docker-compose exec --user root rest update-ca-certificates
         echo ""
         echo "To access the flask api container, please run:"
         echo "$0 server_shell"
@@ -242,6 +238,7 @@ elif [ "$1" == "restart" ]; then
     echo "Stack processes:"
     docker-compose ps
     if [ "$status" == "0" ]; then
+        docker-compose exec --user root rest update-ca-certificates
         echo ""
         echo "To access the flask api container, please run:"
         echo "$0 server_shell"
