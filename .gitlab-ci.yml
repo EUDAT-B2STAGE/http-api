@@ -6,15 +6,6 @@ services:
  
 all_tests:
   script:
-  # update docker
-  - apt-get update
-  - apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
-
-  # update docker-compose
-  - rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - mv docker-compose /usr/local/bin
 
   - pip install coveralls
   - pip install python-coveralls
