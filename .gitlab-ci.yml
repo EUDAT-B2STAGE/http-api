@@ -2,8 +2,9 @@ image: python:3.4
 
 services:
   - docker
-
-before_install:
+ 
+all_tests:
+  script:
   # update docker
   - sudo apt-get update
   - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
@@ -14,14 +15,9 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 
-install:
   - pip install coveralls
   - pip install python-coveralls
-  
-  
-all_tests:
-  script:
+
    - docker -v
-   
-after_success:
+
   - coveralls
