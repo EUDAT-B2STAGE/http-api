@@ -16,9 +16,7 @@ Choose the `APP_MODE` variable which will be reflected to all containers:
 Note: if you use debug, to start the app inside the container:
 
 ```bash
-$ docker ps
-# see the name of the container you need to debug
-$ docker exec -it CONTAINER_NAME bash
+$ ./do YOUR_BLUEPRINT frontend
 # ./boot devel
 ```
 
@@ -27,7 +25,7 @@ $ docker exec -it CONTAINER_NAME bash
 In case you need to add some angular module, if not provided yet:
 
 ```bash
-./boot.sh bower PACKAGE_NAME
+./do YOUR_BLUEPRINT bower PACKAGE_NAME
 ```
 
 ## Push changes to Git repo
@@ -37,5 +35,5 @@ you need to commit. Then:
 
 ```bash
 # Commit all submodules and also main repo
-./push
+./do YOURT_BLUEPRINT push
 ```

@@ -12,13 +12,13 @@ Requested only the first time, after cloning from github:
 
 ```bash
 # From the root directory of the project
-scripts/boot.sh init
+./do YOUR_BLUEPRINT init
 ```
 
 Subsequently, when you already have a running project
 and you need to update the code, images and libraries:
 ```bash
-scripts/boot.sh update
+./do YOUR_BLUEPRINT update
 ```
 
 Note: all the specific configurations and files that could/should be edited can be found inside the `vanilla/` directory.
@@ -35,7 +35,7 @@ To test you simply need to run:
 
 ```bash
 # Run Forest, run!
-scripts/boot.sh
+./do YOUR_BLUEPRINT restart
 ```
 
 The command will bring up a Flask CMS mixed with Angularjs code,
@@ -43,7 +43,7 @@ and a REST API Flask service with user login.
 
 ## Scaffold
 
-**WARNING: THIS SHOULD BE UPDATED**
+**WARNING: THIS HAS YET TO BE UPDATED**
 
 ```bash
 ├── jscode

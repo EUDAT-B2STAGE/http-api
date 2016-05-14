@@ -7,6 +7,13 @@ FRONTEND(Flask and Angular interface) + BACKEND(Flask Resta API)
 
 ---
 
+The idea is to do everything using the script `./do` inside the root directory
+of the project. To see all available actions just run:
+
+```bash
+./do help
+```
+
 See [documentation](docs/index.md) for getting started.
 
 *Note*:
