@@ -16,6 +16,7 @@ backend_container="custombe"
 submodule_repo="backend"
 submodule_git="https://github.com/EUDAT-B2STAGE/http-api-base.git"
 services="$backend_container $fronted_container"
+submodule_tracking="submodules.current.commit"
 
 #############################
 echo "# ############################################ #"
@@ -152,7 +153,7 @@ if [ "$2" == "init" ]; then
     #git@gitlab.hpc.cineca.it:mdantoni/telethon_repo.git
 
     echo "Download docker images"
-   $compose_com pull
+   $compose_com $files pull
     if [ ! -d "$submodule_repo" ]; then
         echo "Clone submodules"
         cd ..
@@ -219,12 +220,40 @@ elif [ "$2" == "sql" ]; then
     echo "Launch adminer for SQL servers"
     $compose_com run --service-ports sqladmin
 
+elif [ "$2" == "push" ]; then
+
+    cd ..
+    echo "Pushing submodule"
+    cd $submodule_repo
+    git push
+    if [ $? != "0" ]; then
+        echo "Failed to push submodule"
+        exit 1
+    fi
+    cd ..
+
+    # Save a snapshot of current submodule
+    echo "Save submodule status"
+    echo -e \
+        $(git show --pretty=%H)"\n"$(git show-branch --current --no-color) \
+        > $submodule_tracking
+
+    echo "Pushing main repo"
+    git add $submodule_tracking
+    git commit && echo "Commit has been done"
+
+    # Push to all repos setted
+    for repo in `git remote`;
+    do
+        git push $repo
+    done
+
+    exit 0
+
 # Update repos, packages and images
 elif [ "$2" == "update" ]; then
 
-# TO FIX: add custom compose here too
-
-    $compose_com pull
+    $compose_com $files pull
     current=`pwd`
     cd ..
 
@@ -239,6 +268,8 @@ elif [ "$2" == "update" ]; then
     echo "Updating libs"
     cd $current
     $bcom
+
+    exit 0
 
 # Bower install
 elif [ "$2" == "bower" ]; then
