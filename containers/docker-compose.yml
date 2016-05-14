@@ -28,8 +28,8 @@ backend:
     ports:
         - 8081:5000
     volumes:
-        # Sql lite database
-        - restangulask_apilitedb:/dbs
+        # # Sql lite database
+        # - restangulask_apilitedb:/dbs
         # Base code
         - ../backend:/code
         # Rest API endpoints
@@ -47,8 +47,8 @@ frontend:
     hostname: frontend
     working_dir: /data/frontend
     volumes:
-        # Sql lite database & common models
-        - restangulask_apilitedb:/dbs
+        # # Sql lite database & common models
+        # - restangulask_apilitedb:/dbs
         # Main dir. It has to be the root directory, to make links work
         - ..:/data
         # js/css libraries installed via bower
@@ -82,9 +82,9 @@ bower:
 # This image let you access the postgres db with a 'phpmyadmin' like web page
 sqladmin:
     image: clue/adminer
-    # Sql lite database & common models
-    volumes:
-        - restangulask_apilitedb:/dbs
+    # # Sql lite database & common models
+    # volumes:
+    #     - restangulask_apilitedb:/dbs
     # links:
     #     - sql:db
     ports:

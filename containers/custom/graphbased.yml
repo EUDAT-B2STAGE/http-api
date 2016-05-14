@@ -1,0 +1,62 @@
+
+myconf:
+    extends:
+      file: docker-compose.yml
+      service: conf
+    environment:
+      APP_MODE: development
+
+#######################
+# Define here your services
+
+searchindex:
+  image: elasticsearch
+  hostname: elastic
+  volumes:
+      - restangulask_graphbased_elasticdata:/usr/share/elasticsearch/data
+
+gdb:
+    image: neo4j
+    ports:
+      - 9090:7474
+    volumes:
+        #GRAPH DB DATA AREA - TO BE CREATED AS DOCKER VOLUME?
+        - restangulask_graphbased_graphdata:/data
+    environment:
+        NEO4J_AUTH: neo4j/chooseapassword
+
+#######################
+# Link services inside API
+
+custombe:
+    extends:
+        file: docker-compose.yml
+        service: backend
+    volumes:
+        # Sql lite database
+        - restangulask_graphbased_apilitedb:/dbs
+    links:
+        - searchindex:el
+        - gdb:gdb
+
+#######################
+# Frontend links only API
+# Note: THIS IS THE MAIN SERVICE TO START WITH DOCKER COMPOSE
+
+customfe:
+    extends:
+        file: docker-compose.yml
+        service: frontend
+    volumes:
+        # Sql lite database & common models
+        - restangulask_graphbased_apilitedb:/dbs
+    links:
+        - custombe:myapi
+
+#######################
+# EXTRA
+
+sqladmin:
+    image: clue/adminer
+    volumes:
+        - restangulask_graphbased_apilitedb:/dbs
