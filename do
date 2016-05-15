@@ -193,14 +193,16 @@ elif [ "$2" == "remove" ]; then
 elif [ "$2" == "clean" ]; then
 
     echo -e "ACTION: Total removal\n"
-
-    echo "TEST $volume_prefix"
-    exit 1
-
     echo "Destroying (forever) containers & volumes. Are you really sure?"
     sleep 5
     $compose_com $files stop
     $compose_com $files rm -f --all
+    for volume in `docker volume ls -q | grep $volume_prefix`;
+    do
+        docker volume rm $volume
+        echo "Removed volume: $volume"
+    done
+    echo ""
 
 elif [ "$2" == "backend" ]; then
     echo "Opening a shell inside the $2 container"
