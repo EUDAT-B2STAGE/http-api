@@ -64,7 +64,11 @@ function _skipAuthenticationCheckApiOnline($state, $timeout, $auth, api)
 /*********************************
 * ROUTING
 *********************************/
-function routeConfig($stateProvider, $urlRouterProvider, $authProvider, $logProvider, $locationProvider, $httpProvider, $injector)
+function routeConfig(
+    $stateProvider,
+    $logProvider, $locationProvider, $httpProvider, $injector,
+    $urlRouterProvider, $authProvider
+    )
 {
 
 // ROUTER CONFIGURATION
@@ -76,15 +80,6 @@ function routeConfig($stateProvider, $urlRouterProvider, $authProvider, $logProv
 
 // Change angular variables from {{}} to [[]] ?
     // $interpolateProvider.startSymbol('[[').endSymbol(']]');
-
-/*
-// Issue of state.current.name empty on refresh:
-// http://stackoverflow.com/a/29943256
-    // Prevent $urlRouter from automatically intercepting URL changes;
-    // this allows you to configure custom behavior in between
-    // location changes and route synchronization:
-    $urlRouterProvider.deferIntercept();
-*/
 
     // Performance:
     // make all http requests that return in around the same time
@@ -143,18 +138,19 @@ $stateProvider
     .state("welcome", {
         url: "/welcome",
         views: {
-            "menu": {
-                templateUrl: templateDir + 'intro_menu.html',
-            },
-            "sidebar": {
-                templateUrl: templateDir + 'history_sidenav.html',
-            },
+            // "menu": {
+            //     templateUrl: templateDir + 'intro_menu.html',
+            // },
+            // "sidebar": {
+            //     templateUrl: templateDir + 'history_sidenav.html',
+            // },
             "main": {
-                templateUrl: templateDir + 'intro.html',
+                templateUrl: templateDir + 'welcome.html',
             }
         }
     })
 
+/*
     .state("welcome.more", {
         url: "/info/:section",
         views: {
@@ -163,6 +159,7 @@ $stateProvider
             }
         },
     })
+*/
 
 // If i see API are not available
     .state("offline", {
@@ -244,6 +241,6 @@ $stateProvider
         return $state.go('welcome');
     });
 
-}   // END CONFIG
+}   // END ROUTES
 
 })();

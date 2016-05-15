@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('web')
- .constant('blueprint_exampleRoutes',
+ .constant('demoRoutes',
  {
 // JUST A TEST
 // Note: this will automatically check api online as not subchild of 'logged'

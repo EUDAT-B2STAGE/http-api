@@ -4,32 +4,12 @@
 
 {%- block topbar %}
 <!-- TOPBAR -->
-<div ng-controller="ToolbarController as tool"
-    ng-hide="avoidTheToolbar" class="navbar"
-    ng-class="tool.shade" ng-cloak>
+<div ng-hide="main.avoidTheToolbar" ng-class="main.shade" class="navbar">
 	<nav>
-      <div ng-class="toolbarColor" class="nav-wrapper white">
-
-          <a ui-sref='welcome' class="brand-logo brandpad">
-            {{ project[0].upper() + project[1:].lower() }}
-          </a>
-<!--
-		{%- if g.user.is_authenticated -%}
-          <a ui-sref='welcome' class="brand-logo brandpad">
-			{{ project[0].upper() + project[1:].lower() }}
-          </a>
-		{%- else -%}
-          <a class="brand-logo brandpad">
-			Login form
-          </a>
-		{%- endif -%}
--->
-        <div ui-view='menu'></div>
-<!-- HANDLE USER FROM PYTHON ?
-		{% if g.user.is_authenticated %}
-		<div ui-view='menu'></div>
-		{% endif %}
--->
+    <div ng-class="main.toolbarColor" class="nav-wrapper white">
+      <a ui-sref='welcome' class="brand-logo brandpad">
+        {{ project[0].upper() + project[1:].lower() }}
+      </a>
 	  </div>
 	</nav>
 </div>
@@ -37,16 +17,16 @@
 {% endblock %}
 
 {%- block content %}
-<main ng-controller='AppRootController as root' ng-cloak>
+<main >
     <div ng-if="root.load" ng-include="root.templateDir + 'loader.html'">
     <!-- WHILE WAITING -->
     </div>
     <div ng-hide="root.load" ui-view='main'>
     <!-- WHEN READY -->
     </div>
-    <div ui-view='sidebar'>
-    <!-- WHEN READY -->
-    </div>
+<!-- UHM     
+    <div ui-view='sidebar'></div>
+-->
 </main>
 {% endblock %}
 

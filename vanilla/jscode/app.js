@@ -30,20 +30,20 @@ console.log('POST');
         //'angular-loading-bar',
         //'cfp.loadingBar',
 // IMAGES LAZ LOAD
-        'angularLazyImg',
+        // 'angularLazyImg',
 // MAKE DATA TREE explorer
-        'treeControl',
+        // 'treeControl',
 // KEYBOARD SHORTCUTS
-        'cfp.hotkeys',
+        // 'cfp.hotkeys',
 // DRAG AND DROP
-        'angular-sortable-view',
+        // 'angular-sortable-view',
 // FORMS FROM JSON SCHEMAS
-        'formly',
-        'formlyMaterial',
+        // 'formly',
+        // 'formlyMaterial',
 // EDITABLE FORMS
-        'xeditable',
+        // 'xeditable',
 // RESTARTABLE UPLOAD
-        'flow',
+        // 'flow',
 
 /* Custom end */
 //////////////////////////////////////

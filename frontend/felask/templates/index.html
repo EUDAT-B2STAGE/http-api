@@ -27,7 +27,8 @@
     <!-- styles -->
 </head>
 
-<body {%- block bodyclass %}{% endblock -%} {% block ngapp %}{% endblock -%} >
+<body ng-controller='MainController as main' ng-cloak
+  {%- block bodyclass %}{% endblock -%} {% block ngapp %}{% endblock -%} >
 
 {%- block topbar %}{% endblock -%}
 {%- block flashmessages %}{% endblock -%}
