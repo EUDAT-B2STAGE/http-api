@@ -16,17 +16,17 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
         logged: 'verifylogged',
         admin: 'verifyadmin',
         register: 'doregistration',
-    }
+    };
 
 
     self.getOrDefault = function (value, mydefault) {
         return typeof value !== 'undefined' ? value : mydefault;
-    }
+    };
     self.checkToken = function () {
         return $auth.getToken();
-    }
+    };
 
-    self.apiCall = function (endpoint, method, data, id, returnRawResponse, skipPromiseResolve=false)
+    self.apiCall = function (endpoint, method, data, id, returnRawResponse, skipPromiseResolve)
     {
 
       ////////////////////////
@@ -37,6 +37,7 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
             endpoint += '/' + id;
         }
         method = self.getOrDefault(method, 'GET');
+        skipPromiseResolve = self.getOrDefault(skipPromiseResolve, false);
 
         var params = {};
         if (method == 'GET') {
