@@ -1,18 +1,12 @@
 image: python:3.4
 
-services:
-  - docker 
 
 variables:
   DOCKER_COMPOSE_VERSION: 1.7.0
 
 before_script:
+  - curl -fsSL https://get.docker.com/ | sh
   - docker -v
-  - apt-get update
-  - apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine 
-
-  # update docker-compose
-  - rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - mv docker-compose /usr/local/bin
