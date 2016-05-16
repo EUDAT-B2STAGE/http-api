@@ -1,12 +1,14 @@
 
 - [x] Clean up the project (create a bash `do` script to make things easy)
-- [] Add a splash screen
+- [x] Add a splash screen
 - [] Vanilla API tests with nose2
 - [] Vanilla JS tests with whatever (Karma? Jasmine?)
 - [] Set the neo4j graphdb as the main database
 - [] Custom models for the graphdb
-- [] Implement a generic fast search based on elasticsearch. 
-- [] Custom elasticsearch indexes for filtering and suggestions.
+- [] Vanilla of everything else
+- [] API design principles
+- [] Implement a generic fast search based on elasticsearch
+- [] Custom elasticsearch indexes for filtering and suggestions
 
 ---
 
