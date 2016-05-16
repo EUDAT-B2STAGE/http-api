@@ -1,19 +1,12 @@
-<md-content>
- <div ui-view='loggedview'>
-    <!-- BECOMES REPLACED WHEN A CHILD INHERITS THIS VIEW -->
 
-  <div layout="row" layout-align='center'>
-    <h3>Well done!</h3>
-  </div>
-
-  <div layout="row" layout-align='center'>
-    <p>
-        <i class="material-icons">account_circle</i>
-        <span>
-            Now, you are <b>logged</b> inside our app.
-        </span>
-    </p>
-  </div>
-
- </div>
-</md-content>
+<!-- THIS CONTENT
+    WILL BE REPLACED WHEN A CHILD INHERITS THIS VIEW -->
+<div class="themaxsize" ui-view='loggedview'>
+    <md-content class="themaxsize" layout="column" layout-align="center center">
+        <h3>Well done!</h3>
+        <i class="large material-icons">account_circle</i>
+        <div>
+            You are <b>logged</b> inside our app.
+        </div>
+    </md-content>
+</div>

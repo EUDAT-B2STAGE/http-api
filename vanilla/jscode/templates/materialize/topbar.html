@@ -13,10 +13,17 @@
     </h2>
     <!-- SEPARATOR -->
     <span flex></span>
-    <!-- MENU -->
-    <md-button class="md-raised" aria-label="Learn More">
-      Login
-    </md-button>
+    <!-- login/logout buttons -->
+    <a href ui-sref="public.login">
+        <md-button ng-if="!logged" class="md-raised">
+            Login
+        </md-button>
+    </a>
+    <a href ui-sref="logged.logout">
+        <md-button ng-if="logged" class="md-raised">
+        Logout
+        </md-button>
+    </a>
 
   </div>
 </md-toolbar>

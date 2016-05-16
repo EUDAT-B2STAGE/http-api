@@ -48,14 +48,14 @@ Links starting with '/' that lead to a different base path
 Example: <a href="/not-my-base/link">link</a>"
 
 So for login i can make the page reload, for instance
-(do not like much for now)
+(even if I do not like much this, but that's the best for now)
 While for logout i made the button "Yes" to let it happen.
-
 
 */
 
 //////////////////////////////
-function LoginController($scope, $log, $window, $auth, $mdToast, $document, $timeout, $state)
+function LoginController($scope, $log, $window,
+    $auth, $mdToast, $document, $timeout, $state)
 {
 
     // Init controller
@@ -89,6 +89,7 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
                 self.userMessage = null;
                 $log.info("Login request", loginResponse);
                 //console.log($auth.getToken());
+                //$rootScope.logged = true;
 
                 // Now we can check again reloading this page
                 $window.location.reload();
@@ -106,7 +107,6 @@ function LoginController($scope, $log, $window, $auth, $mdToast, $document, $tim
         );
     }
 }
-
 
 function RegisterController($scope, $log, $auth, api)
 {
@@ -166,7 +166,7 @@ function RegisterController($scope, $log, $auth, api)
 }
 
 
-function LogoutController($scope, $log, $auth)
+function LogoutController($scope, $rootScope, $log, $auth)
 {
     // Init controller
     $log.debug("Logout Controller");
@@ -175,11 +175,10 @@ function LogoutController($scope, $log, $auth)
     // Log out satellizer
     self.exit = function() {
         $log.info("Logging out");
-// TO FIX:
-    // missing log out from APIs too
     	$auth.logout().then(function() {
             $log.debug("Token cleaned:", $auth.getToken());
         });
+        $rootScope.logged = false;
     }
 
 }

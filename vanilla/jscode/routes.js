@@ -11,12 +11,16 @@ angular.module('web')
 // original source http://j.mp/1VnxlQS heavily modified
 
 // Check authentication via Token
-function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api)
+function _redirectIfNotAuthenticated($log, $rootScope,
+    $state, $auth, $timeout, api)
 {
     var checkLogged = true;
-    return api.verify(checkLogged).then(function(response){
+    return api.verify(checkLogged).then(function(response)
+    {
       // Token is available and API confirm that is good
       if (response && $auth.isAuthenticated()) {
+        $log.debug("Checked: logged!")
+        $rootScope.logged = true;
         return true;
       }
       var state = 'login';
@@ -26,6 +30,7 @@ function _redirectIfNotAuthenticated($state, $auth, $timeout, $log, api)
       } else {
         // Token has expired...
         $auth.removeToken();
+        $rootScope.logged = false;
         $log.info("Removed token, because it seems expired.");
       }
 
@@ -150,18 +155,7 @@ $stateProvider
         }
     })
 
-/*
-    .state("welcome.more", {
-        url: "/info/:section",
-        views: {
-            "main@": {
-                templateUrl: templateDir + 'section_info.html',
-            }
-        },
-    })
-*/
-
-// If i see API are not available
+// If i find out that APIs are not available...
     .state("offline", {
         url: "/offline",
         views: {
@@ -169,25 +163,39 @@ $stateProvider
         }
     })
 
-// To log the user in
-    .state("login", {
-        url: "/login",
+// A public state
+    .state("public", {
+        url: "/public",
         resolve: {
             skip: _skipAuthenticationCheckApiOnline,
         },
         views: {
-            "main": {templateUrl: templateDir + 'login.html'}
+            // "menu": {
+            //     templateUrl: templateDir + 'menu.html',
+            // },
+            // "sidebar": {
+            //     templateUrl: templateDir + 'history_sidenav.html',
+            // },
+            "main": {
+                template: "<div ui-view='unlogged'></div>",
+            }
+        }
+    })
+
+
+// To log the user in
+    .state("public.login", {
+        url: "/login",
+        views: {
+            "unlogged": {templateUrl: templateDir + 'login.html'}
         }
     })
 
 // To log the user in
-    .state("register", {
+    .state("public.register", {
         url: "/register",
-        resolve: {
-            skip: _skipAuthenticationCheckApiOnline,
-        },
         views: {
-            "main": {templateUrl: templateDir + 'registration.html'}
+            "unlogged": {templateUrl: templateDir + 'registration.html'}
         }
     })
 
@@ -200,13 +208,13 @@ $stateProvider
         },
         // Implement main route for landing page after login
         views: {
-            "menu": {
-                templateUrl: templateDir + 'menu.html',
-                //controller: 'AppRootController',
-            },
-            "sidebar": {
-                templateUrl: templateDir + 'history_sidenav.html',
-            },
+            // "menu": {
+            //     templateUrl: templateDir + 'menu.html',
+            //     //controller: 'AppRootController',
+            // },
+            // "sidebar": {
+            //     templateUrl: templateDir + 'history_sidenav.html',
+            // },
             "main": {
         // and add a child view called 'loggedview' for logged pages
                 templateUrl: templateDir + 'logged.html',

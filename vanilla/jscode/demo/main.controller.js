@@ -5,13 +5,24 @@ angular.module('web')
     .controller('MainController', MainController);
 
 function MainController($scope, $rootScope, $log,
-    $timeout
-    //,$state, api, hotkeys, keyshortcuts
+    $timeout, $auth ,$state, api
+    //, hotkeys, keyshortcuts
     )
 {
     // Init controller
     var self = this;
     $log.debug("This is the main controller");
+
+// GLOBAL LOGGED
+// USE A WATCH ON SOMETHING
+    //$rootScope.logged = false;
+/*
+    // In case i am already logged, skip
+    if ($auth.isAuthenticated())
+    {
+        $rootScope.logged = true;
+    }
+*/
 
     // Passing a global variable
     self.templateDir = templateDir;
@@ -33,15 +44,14 @@ function MainController($scope, $rootScope, $log,
 
     // Init the models
     $rootScope.loaders = {};
-    $rootScope.menu = [];
+
     self.splash = true;
-
-// SET TO LOAD APIs?
-    self.load = false;
-
     $timeout(function () {
         self.splash = false;
     }, 2000);
+
+// SET TO LOAD APIs?
+    self.load = false;
 
 /*
     // Init keys
@@ -53,6 +63,7 @@ function MainController($scope, $rootScope, $log,
                 keyshortcuts.search(event, self);
             }
         });
+*/
 
     // Handling logged states
     var loggedKey = 'logged.';
@@ -105,6 +116,10 @@ function MainController($scope, $rootScope, $log,
         var lastRoute = {state: toState, params: toParams};
         //console.log("Current is", toState);
 
+        if ($rootScope.logged) {
+            console.log("Should check LOGIN!");
+        }
+
         // To execute only if we are loading the page
         if (temporaryRoutingHistory.length < 1) {
             // Show a circle loader when refreshing the page
@@ -143,8 +158,10 @@ function MainController($scope, $rootScope, $log,
       }
     )
 
+/*
     ////////////////////////////
     // Control states to create the menu
+    $rootScope.menu = [];
     var myObj = $state.get();
 
     // DO THE MENU
