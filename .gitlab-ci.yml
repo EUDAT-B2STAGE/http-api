@@ -7,6 +7,7 @@ variables:
   DOCKER_COMPOSE_VERSION: 1.7.0
 
 before_script:
+  - docker -v
   - apt-get update
   - apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine 
 
