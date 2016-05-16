@@ -4,8 +4,9 @@
 angular.module('web')
     .controller('MainController', MainController);
 
-function MainController($scope, $rootScope, $log 
-    //,$state, $timeout, api, hotkeys, keyshortcuts
+function MainController($scope, $rootScope, $log,
+    $timeout
+    //,$state, api, hotkeys, keyshortcuts
     )
 {
     // Init controller
@@ -20,7 +21,8 @@ function MainController($scope, $rootScope, $log
     var color = 'cyan darken-3';
     self.originalColor = angular.copy(color);
     self.toolbarColor = angular.copy(color);
-    self.shade = 'z-depth-2';
+    self.shade = "md-whiteframe-8dp";
+    //self.shade = 'z-depth-2';
 
 /*
     // Utilities
@@ -33,6 +35,11 @@ function MainController($scope, $rootScope, $log
     $rootScope.loaders = {};
     $rootScope.menu = [];
     self.load = true;
+    self.splash = true;
+
+    $timeout(function () {
+        self.splash = false;
+    }, 2000);
 
 /*
     // Init keys

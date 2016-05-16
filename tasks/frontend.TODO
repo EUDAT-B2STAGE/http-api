@@ -1,23 +1,14 @@
 
+
 >  Welcome and goodbye. And thanks for all the fish!
 
 http://codeology.braintreepayments.com/pdonorio/restangulask
 
-# PRIVATE GIT
-git remote add private ssh://git@mygitlab.dev:10022/pdonorio/restangulask.git
-# GOOD API DESIGN
-should be profoundly discussed
-# UI ROUTER and params
-http://stackoverflow.com/a/25647714/2114395
-# HTML5 validator
+--- ✄ -----------------------
+
+HTML5 validator:
 https://github.com/svenkreiss/html5validator
 
---- ✄ -----------------------
-
-Notes:
- <i class="large material-icons">insert_chart</i>
-
---- ✄ -----------------------
  Image optimization:
   ☐ UI FIX
     ☐ scroll bars and fixed width
