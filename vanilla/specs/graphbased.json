@@ -1,0 +1,12 @@
+// Configuration
+{
+    "custom.foo": {
+        "GraphEndPoint": [
+            "graph",
+            "graph/<string:id>"
+        ],
+        "MyGraphLogin": [
+            "logintest"
+        ]
+    }
+}

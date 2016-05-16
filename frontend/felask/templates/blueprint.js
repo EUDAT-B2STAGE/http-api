@@ -2,7 +2,9 @@
 
 // Choose your blueprint
 var blueprint = '{{name}}';
-// Note: remember to define with .constant a 'rethinkRoutes'
+
+// Note: remember to define '{{name}}Routes' or you will get
+// a strange injection error!
 
 // Time to wait before initial page load
 var timeToWait = {{time}}; // measured in ms

@@ -20,7 +20,6 @@ gdb:
     ports:
       - 9090:7474
     volumes:
-        #GRAPH DB DATA AREA - TO BE CREATED AS DOCKER VOLUME?
         - restangulask_graphbased_graphdata:/data
     environment:
         NEO4J_AUTH: neo4j/chooseapassword

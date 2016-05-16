@@ -11,6 +11,7 @@ TO DO:
   ✔ demo @done (16-05-16 16:04)
     ✔ login/logout with sqllite @done (16-05-16 16:04)
   ☐ graphbased
+    ☐ db init?
     ☐ flask login with graphdb
       ☐ check logged at status change
       ☐ check logged with a timer
