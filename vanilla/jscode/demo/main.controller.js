@@ -34,8 +34,10 @@ function MainController($scope, $rootScope, $log,
     // Init the models
     $rootScope.loaders = {};
     $rootScope.menu = [];
-    self.load = true;
     self.splash = true;
+
+// SET TO LOAD APIs?
+    self.load = false;
 
     $timeout(function () {
         self.splash = false;

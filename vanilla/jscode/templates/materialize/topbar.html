@@ -1,0 +1,22 @@
+
+<md-toolbar ng-if="!main.avoidTheToolbar"
+    ng-class="main.toolbarColor + ' ' + main.shade">
+  <div class="md-toolbar-tools">
+    <a href>
+      <i class="material-icons">menu</i>
+    </a>
+
+    <h2 style="padding-left: 1rem;">
+      <a ui-sref='welcome'>
+        {{ myproject }}
+      </a>
+    </h2>
+    <!-- SEPARATOR -->
+    <span flex></span>
+    <!-- MENU -->
+    <md-button class="md-raised" aria-label="Learn More">
+      Login
+    </md-button>
+
+  </div>
+</md-toolbar>

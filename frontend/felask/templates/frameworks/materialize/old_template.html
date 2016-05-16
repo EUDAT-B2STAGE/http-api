@@ -1,0 +1,61 @@
+{% extends 'frameworks/materialize/base.html' %}
+
+{%- block title %} {{ jstitle }} {% endblock %}
+
+{%- block topbar %}
+<!-- TOPBAR -->
+
+<md-toolbar
+    ng-if="!main.avoidTheToolbar && !main.splash"
+    ng-class="main.toolbarColor + ' ' + main.shade"
+    >
+  <div class="md-toolbar-tools">
+    <a href>
+      <i class="material-icons">menu</i>
+    </a>
+
+    <h2 style="padding-left: 1rem;">
+      <a ui-sref='welcome'>
+        {{ project[0].upper() + project[1:].lower() }}
+      </a>
+    </h2>
+    <span flex></span>
+<!-- MENU?
+
+<md-button class="md-raised" aria-label="Learn More">
+  Learn More
+</md-button>
+
+-->
+  </div>
+</md-toolbar>
+
+<!-- TOPBAR END -->
+{% endblock %}
+
+{%- block content %}
+<div ng-if="main.splash"
+    layout="column" layout-align="center center"
+    class="themaxsize cyan white-text">
+    <i class="large material-icons">insert_chart</i>
+    <md-progress-linear md-mode="query"
+        style="width: 4rem;"
+        ></md-progress-linear> loading
+</div>
+
+<main ng-hide="main.splash" class="themaxsize">
+    <div ng-if="root.load" ng-include="root.templateDir + 'loader.html'">
+    <!-- WHILE WAITING -->
+    </div>
+    <div class="themaxsize" ng-hide="root.load" ui-view='main'>
+    <!-- WHEN READY -->
+    </div>
+<!-- UHM
+    <div ui-view='sidebar'></div>
+-->
+</main>
+{% endblock %}
+
+{%- if footer %}{% block footer %}
+{{footer|safe}}
+{% endblock %}{% endif -%}
