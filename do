@@ -237,7 +237,7 @@ elif [ "$2" == "push" ]; then
     # Save a snapshot of current submodule
     echo "Save submodule status"
     echo -e \
-        $(git log -n 1 --oneline --no-color)"\n"$(git branch --no-color) \
+        $(cd $submodule_repo && git log -n 1 --oneline --no-color)"\n"$(cd $submodule_repo && git branch --no-color) \
         > $submodule_tracking
 
     echo "Pushing main repo"
