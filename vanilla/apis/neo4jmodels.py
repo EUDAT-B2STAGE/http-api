@@ -8,6 +8,18 @@ from .... import get_logger
 
 logger = get_logger(__name__)
 
+
+##############################################################################
+# API AUTHENTICATION USER?
+class User(StructuredNode):
+    name = StringProperty(required=True)
+    surname = StringProperty(required=True)
+# #    name_surname = StringProperty(required=True, unique_index=True)
+# #    irods_user = StringProperty()
+    email = StringProperty(required=True, unique_index=True)
+    token = StringProperty()
+
+
 ##############################################################################
 # MODELS
 ##############################################################################

@@ -16,7 +16,8 @@ searchindex:
       - restangulask_graphbased_elasticdata:/usr/share/elasticsearch/data
 
 gdb:
-    image: neo4j
+    # image: neo4j
+    image: neo4j:2.3.3
     ports:
       - 9090:7474
     volumes:
