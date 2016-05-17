@@ -1,13 +1,29 @@
-image: node:4.2.2
+image: python:3.4
+
 
 variables:
-  POSTGRES_USER: testuser
-  POSTGRES_PASSWORD: testpass
+  DOCKER_COMPOSE_VERSION: 1.7.0
 
-services:
-  - postgres:9.5.0
+before_script:
+  - curl -fsSL https://get.docker.com/ | sh
+  - docker -v
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - mv docker-compose /usr/local/bin
+  - pip install coveralls
+  - pip install python-coveralls
 
-all_tests:
+stages:
+  - tests
+  - coverage
+
+script:
+  stage: tests
   script:
-   - npm install
-   - node ./specs/start.js
+   - docker -v
+   - docker-compose -v
+
+cov:
+  stage: coverage
+  script:
+   - coveralls
