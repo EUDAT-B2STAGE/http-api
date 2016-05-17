@@ -44,17 +44,9 @@ class MyGraphLogin(ExtendedApiResource, GraphFarm):
     # @decorate.apimethod
     def post(self):
 
-        self.graph = GraphFarm().get_graph_instance()
-        # print(self.graph.User)
-        # user = self.graph.User()
-        # user.name = 'Paolo2'
-        # print(user)
-        # user.email = 'paulie@nomail.org'
-        # user.surname = 'PIIPPPOOO'
-        # user.save()
-
         from flask.ext.restful import request
         from flask.ext.login import login_user
+        from ..services.accounting.graphbased import GraphUser
 
         j = request.get_json(force=True)
 
@@ -66,17 +58,43 @@ class MyGraphLogin(ExtendedApiResource, GraphFarm):
         auth_user = j['user']
         auth_pwd = j['pwd']
 
-        from ..services.accounting.graphbased import GraphUser
+        self.graph = GraphFarm().get_graph_instance()
+
+##########################
+# To create a user...
+        # print(self.graph.User)
+        # user = self.graph.User()
+        # user.name = 'Paolo'
+        # print(user)
+        # user.email = 'paulie@test.it'
+        # user.surname = 'PIIPPPOOO'
+        # user.password = GraphUser.password_hash("test")
+        # user.save()
+        # return "Created"
+##########################
+
         user = GraphUser.get_graph_user(email=auth_user)
-        if user is None:
+        token = None
+
+        # Check password and create token if fine
+        if user is not None:
+            # Validate password
+            if GraphUser.validate_login(
+               user.hashed_password, auth_pwd):
+
+                logger.info("Validated credentials")
+
+                # Create a new token and save it
+                token = user.get_auth_token()
+                GraphUser.set_graph_user_token(auth_user, token)
+
+        # In case something is wrong
+        if user is None or token is None:
             return self.response(errors={
                 'Invalid credentials': 'wrong username or password'},
                 code=hcodes.HTTP_BAD_UNAUTHORIZED)
-#     #validate user and password, es using:
-        GraphUser.validate_login('PASSWORD_HASH_TO_FIX', auth_pwd)
-        token = user.get_auth_token()
-        GraphUser.set_graph_user_token(auth_user, token)
 
+        # Save the user for flask login sessions
         login_user(user)
 
         return self.response({'Authentication-token': token})

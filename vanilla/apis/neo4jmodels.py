@@ -10,14 +10,13 @@ logger = get_logger(__name__)
 
 
 ##############################################################################
-# API AUTHENTICATION USER?
+# A model for accounting in API login/logout
 class User(StructuredNode):
     name = StringProperty(required=True)
     surname = StringProperty(required=True)
-# #    name_surname = StringProperty(required=True, unique_index=True)
-# #    irods_user = StringProperty()
+    password = StringProperty(required=True)  # A hash produced by Flask login
     email = StringProperty(required=True, unique_index=True)
-    token = StringProperty()
+    token = StringProperty()  # Another hash produced by Flask login
 
 
 ##############################################################################
