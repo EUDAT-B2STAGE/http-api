@@ -101,10 +101,18 @@ function routeConfig(
 // WHERE THE MAGIC HAPPENS
 
     // Dinamically inject the routes from the choosen blueprint
-    console.log("Dynamic inject: extra routes for blueprint", blueprint);
-    var extraRoutes = $injector.get(blueprint + 'Routes');
-    var extraRoutesSize = Object.keys(extraRoutes).length;
-    //console.log("[DEBUG] DynamicInject:", blueprint, extraRoutes);
+
+    var extraRoutes = null;
+    var extraRoutesSize = 0;
+    var blueprintRoutes = blueprint + 'Routes';
+    try {
+        extraRoutes = $injector.get(blueprintRoutes);
+        extraRoutesSize = Object.keys(extraRoutes).length;
+        console.log("Loaded extra routes:", blueprintRoutes);
+    } catch(e) {
+        console.log("Error! Failed to find a JS object to define extra routes." +
+            "\nIt should be called '" + blueprintRoutes + "'");
+    }
 
     // Build the routes from the blueprint configuration
     if (extraRoutesSize > 0) {

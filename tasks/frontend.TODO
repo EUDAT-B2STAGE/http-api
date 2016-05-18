@@ -16,6 +16,7 @@ TO DO:
       ☐ roles
       ✔ create token @done (16-05-17 15:17)
         ✔ use flask login method @done (16-05-17 15:17)
+        ☐ TTL?
       ☐ JS check logged at status change
       ☐ JS check logged with a timer
     ☐ db init
