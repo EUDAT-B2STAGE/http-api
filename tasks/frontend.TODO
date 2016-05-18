@@ -14,14 +14,17 @@ TO DO:
     ✔ flask login with graphdb @done (16-05-17 12:44)
       ✔ verify password and create hash saved @done (16-05-17 15:17)
       ☐ roles
-      ✔ create token @done (16-05-17 15:17)
+      ☐ token
+        ✔ create token @done (16-05-17 15:17)
         ✔ use flask login method @done (16-05-17 15:17)
         ☐ TTL?
+        ☐ JWT?
       ☐ JS check logged at status change
       ☐ JS check logged with a timer
     ☐ db init
       ☐ user if not existing
       ☐ roles if not existing
+    ☐ on frontend: get backend api port from container environment
     ☐ slider alternative welcome
 ☐ oauth2 user
   ☐ should the user be saved if not existing?

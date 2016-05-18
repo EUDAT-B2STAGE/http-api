@@ -224,6 +224,13 @@ elif [ "$2" == "sql" ]; then
 
 elif [ "$2" == "push" ]; then
 
+    echo "Running tests"
+    # Add nohup?
+    $compose_com $files exec $backend_container ./tests.sh
+    if [ "$?" != "0" ]; then
+        echo "Tests are failing. Push was stopped"
+    fi
+
     cd ..
     echo "Pushing submodule"
     cd $submodule_repo

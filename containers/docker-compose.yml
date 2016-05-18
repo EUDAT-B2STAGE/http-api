@@ -38,6 +38,9 @@ backend:
         - ../vanilla/specs:/code/confs/endpoints
         # Other libs
         - ../vanilla/libs:/code/libs
+        # Tests
+        - ../vanilla/tests/backend:/code/test/custom
+
 
 ###############################
 frontend:
