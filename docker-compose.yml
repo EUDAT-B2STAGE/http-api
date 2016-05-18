@@ -111,6 +111,9 @@ rest:
         - ./vanilla/specs:/code/project/confs/endpoints
         # B2ACCESS dev certificates
         - ./certs:/usr/local/share/ca-certificates
+        # Tests
+        - ./vanilla/tests:/code/project/test/custom
+
         # # External irods Authority
         # - ./certs/caauth:/opt/certificates/caauth
         # # External irods User

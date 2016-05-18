@@ -55,6 +55,7 @@ do
         exit 1
     fi
 done
+
 if [ "$(ls -A $subdir)" ]; then
     echo "Submodule already exists" > /dev/null
 else
