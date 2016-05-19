@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 # from flask import Response, stream_with_context
 from flask.ext.login import login_user, UserMixin
-from config import BACKEND, API_URL, get_logger
+from config import API_URL, get_logger
 from .basemodel import db, lm, User
 from . import htmlcodes as hcodes
 
@@ -17,42 +17,43 @@ logger = get_logger(__name__)
 
 ##################################
 # If connected to APIs
-if BACKEND:
-    LOGIN_URL = API_URL + 'login'
-    REGISTER_URL = API_URL + 'register'
-    PROFILE_URL = API_URL + 'initprofile'
-    HEADERS = {'content-type': 'application/json'}
+LOGIN_URL = API_URL + 'login'
+REGISTER_URL = API_URL + 'register'
+PROFILE_URL = API_URL + 'initprofile'
+HEADERS = {'content-type': 'application/json'}
 
-    @lm.user_loader
-    def load_user(id):
-        """ How Flask login can choose the current user. """
-        return Tokenizer.query.get(id)
 
-    class Tokenizer(db.Model, UserMixin):
-        __tablename__ = "tokens"
-        id = db.Column(db.Integer, primary_key=True)
-        token = db.Column(db.String(255), unique=True, index=True)
-        user_id = db.Column(db.Integer)
-        authenticated_at = db.Column(db.DateTime)
+@lm.user_loader
+def load_user(id):
+    """ How Flask login can choose the current user. """
+    return Tokenizer.query.get(id)
 
-        def __init__(self, token, user_id):
-            self.token = token
-            self.user_id = user_id
-            self.authenticated_at = datetime.utcnow()
 
-        def __repr__(self):
-            return '<Tok for user[%r]> %s' % (self.user_id, self.token)
+class Tokenizer(db.Model, UserMixin):
+    __tablename__ = "tokens"
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(255), unique=True, index=True)
+    user_id = db.Column(db.Integer)
+    authenticated_at = db.Column(db.DateTime)
 
-##################################
-# If standalone db/auth/resources
-else:
-    @lm.user_loader
-    def load_user(id):
-        """ How Flask login can choose the current user. """
-        return User.query.get(int(id))
+    def __init__(self, token, user_id):
+        self.token = token
+        self.user_id = user_id
+        self.authenticated_at = datetime.utcnow()
 
+    def __repr__(self):
+        return '<Tok for user[%r]> %s' % (self.user_id, self.token)
+
+# ##################################
+# # If standalone db/auth/resources
+# else:
+#     @lm.user_loader
+#     def load_user(id):
+#         """ How Flask login can choose the current user. """
+#         return User.query.get(int(id))
 
 # lm.login_view = "users.login"
+
 
 ##################################
 def register_api(request):
@@ -65,7 +66,7 @@ def register_api(request):
        or request[key1] != request[key2]:
         return {'errors': {'passwords mismatch':
                 "Passwords provided are not the same"}}, \
-                hcodes.HTTP_DEFAULT_SERVICE_FAIL
+            hcodes.HTTP_DEFAULT_SERVICE_FAIL
 
     # Info check
     key1 = 'name'
@@ -104,7 +105,7 @@ def register_api(request):
     except requests.exceptions.ConnectionError:
         return {'errors':
                 {'API unavailable': "Cannot connect to APIs server"}}, \
-                hcodes.HTTP_DEFAULT_SERVICE_FAIL
+            hcodes.HTTP_DEFAULT_SERVICE_FAIL
 
     return {'message': 'Registered'}, code
 
@@ -122,7 +123,7 @@ def login_api(username, password):
     except requests.exceptions.ConnectionError:
         return {'errors':
                 {'API unavailable': "Cannot connect to APIs server"}}, \
-                hcodes.HTTP_DEFAULT_SERVICE_FAIL, tokobj
+            hcodes.HTTP_DEFAULT_SERVICE_FAIL, tokobj
     out = r.json()
 
     response = {'errors': {'No autorization': "Invalid credentials"}}
@@ -146,9 +147,12 @@ def login_api(username, password):
         if token is None or data is None or 'id' not in data:
             return {'errors':
                     {'Misconfiguration': "Backend user not in sync"}}, \
-                    hcodes.HTTP_DEFAULT_SERVICE_FAIL, tokobj
+                hcodes.HTTP_DEFAULT_SERVICE_FAIL, tokobj
 
-        # # Save token inside frontend db
+        ####################################
+        # Save token inside frontend db ?
+
+        # # OLD AND BAD
         # registered_user = User.query.filter_by(id=data['id']).first()
         # if registered_user is None:
         #     return {'errors':
@@ -156,10 +160,11 @@ def login_api(username, password):
         #             hcodes.HTTP_DEFAULT_SERVICE_FAIL, tokobj
         # tokobj = Tokenizer(token, registered_user.id)
 
-        tokobj = Tokenizer(token, data['id'])
+        # # NEW BUT USELESS NOW
+        # tokobj = Tokenizer(token, data['id'])
+        # db.session.add(tokobj)
+        # db.session.commit()
 
-        db.session.add(tokobj)
-        db.session.commit()
         response = {'authentication_token': token}
 
     return response, out['meta']['code'], tokobj
@@ -185,11 +190,10 @@ def login_point(username, password):
     """ Handle all possible logins """
 
     # API
-    if BACKEND:
-        data, code, obj = login_api(username, password)
-    # Standalone server
-    else:
-        data, code, obj = login_internal(username, password)
+    data, code, obj = login_api(username, password)
+    # # Standalone server
+    # else:
+    #     data, code, obj = login_internal(username, password)
     # Register positive response to Flask Login in both cases
     if obj is not None:
         login_user(obj)

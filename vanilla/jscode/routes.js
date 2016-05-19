@@ -23,7 +23,7 @@ function _redirectIfNotAuthenticated($log, $rootScope,
         $rootScope.logged = true;
         return true;
       }
-      var state = 'login';
+      var state = 'public.login';
       // API not reachable
       if (response === null) {
         state = 'offline';

@@ -24,6 +24,11 @@ BACKEND_NAME = 'myapi'
 for key in os.environ.keys():
     if BACKEND_NAME == key.lower()[0:5]:
         BACKEND = True
+
+if not BACKEND:
+    print("Fatal error: could not find a backend container.")
+    exit(1)
+
 PORT = 5000
 URL = 'http://%s:%s' % (BACKEND_NAME, PORT)
 API_URL = URL + '/api/'

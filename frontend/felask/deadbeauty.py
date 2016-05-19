@@ -11,7 +11,7 @@ logger = get_logger(__name__)
 import os
 import csv
 from sqlalchemy import inspect
-from felask.basemodel import User, MyModel
+from felask.basemodel import User, MyModel, db
 
 
 def init_insert(db, userconfig):
@@ -79,3 +79,11 @@ for module_name in meta.get_submodules_from_package(custom_views):
     except Exception:
         logger.warning(
             "OOPS: Could not find 'bp' inside module '%s'" % module_name)
+
+
+###############################################
+# DB SANITY CHECKS?
+from felask.sanity_checks import is_sane_database
+from felask.models import MyModel
+# Note, this will check all models, not only MyModel...
+is_sane_database(MyModel, db.session)
