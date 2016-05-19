@@ -46,39 +46,16 @@ class MyGraphLogin(ExtendedApiResource, GraphFarm):
 
         from flask.ext.restful import request
         from flask.ext.login import login_user
-        from ..services.accounting.graphbased import GraphUser
+        from ..services.accounting.graphbased import UserModel
 
         j = request.get_json(force=True)
+        if 'username' not in j or 'password' not in j:
+            return self.response(
+                errors={'Missing credentials':
+                        'you need to specify username and password'})
 
-        # user = self.graph.User()
-        if 'user' not in j or 'pwd' not in j:
-            return self.response(errors={
-                'Missing credentials': 'you need to specify user and pwd'})
-
-        auth_user = j['user']
-        auth_pwd = j['pwd']
-
-
-        self.graph = GraphFarm().get_graph_instance()
-
-###################################
-# Should go in a function
-        user = GraphUser.get_graph_user(email=auth_user)
-        token = None
-
-        # Check password and create token if fine
-        if user is not None:
-            # Validate password
-            if GraphUser.validate_login(
-               user.hashed_password, auth_pwd):
-
-                logger.info("Validated credentials")
-
-                # Create a new token and save it
-                token = user.get_auth_token()
-# USE JWT and DO NOT SAVE INSIDE THE DATABASE
-                GraphUser.set_graph_user_token(auth_user, token)
-###################################
+        user, token = \
+            UserModel.emit_token_from_credentials(j['username'], j['password'])
 
         # In case something is wrong
         if user is None or token is None:

@@ -5,29 +5,31 @@
 import requests
 import json
 # import commentjson as json
-# import simplejson as json
-from datetime import datetime
+# from datetime import datetime
 # from flask import Response, stream_with_context
-from flask.ext.login import login_user, UserMixin
-from config import API_URL, get_logger
-from .basemodel import db, lm, User
+# from flask.ext.login import login_user, UserMixin
+# from .basemodel import db, lm, User
 from . import htmlcodes as hcodes
 
+from config import API_URL, get_logger
 logger = get_logger(__name__)
 
 ##################################
 # If connected to APIs
-LOGIN_URL = API_URL + 'login'
+
+##// TO FIX!!
+LOGIN_URL = API_URL + 'logintest'
+# LOGIN_URL = API_URL + 'login'
+
 REGISTER_URL = API_URL + 'register'
 PROFILE_URL = API_URL + 'initprofile'
 HEADERS = {'content-type': 'application/json'}
 
 
-@lm.user_loader
-def load_user(id):
-    """ How Flask login can choose the current user. """
-    return Tokenizer.query.get(id)
-
+"""
+Not going to be called.
+Because we will not use any endpoint on the frontend side
+which will require the user to be logged.
 
 class Tokenizer(db.Model, UserMixin):
     __tablename__ = "tokens"
@@ -44,15 +46,10 @@ class Tokenizer(db.Model, UserMixin):
     def __repr__(self):
         return '<Tok for user[%r]> %s' % (self.user_id, self.token)
 
-# ##################################
-# # If standalone db/auth/resources
-# else:
-#     @lm.user_loader
-#     def load_user(id):
-#         """ How Flask login can choose the current user. """
-#         return User.query.get(int(id))
-
-# lm.login_view = "users.login"
+@lm.user_loader
+def load_user(id):
+    return Tokenizer.query.get(id)
+"""
 
 
 ##################################
@@ -114,8 +111,8 @@ def register_api(request):
 def login_api(username, password):
     """ Login requesting token to our API and also store the token """
 
-    tokobj = None
-    payload = {'email': username, 'password': password}
+    user_object = None
+    payload = {'username': username, 'password': password}
 
     try:
         r = requests.post(LOGIN_URL, stream=True,
@@ -123,79 +120,64 @@ def login_api(username, password):
     except requests.exceptions.ConnectionError:
         return {'errors':
                 {'API unavailable': "Cannot connect to APIs server"}}, \
-            hcodes.HTTP_DEFAULT_SERVICE_FAIL, tokobj
+            hcodes.HTTP_DEFAULT_SERVICE_FAIL, user_object
     out = r.json()
 
     response = {'errors': {'No autorization': "Invalid credentials"}}
 
     # If wanting to check errors
-    if 'response' in out and 'errors' in out['response']:
-        errors = out['response']['errors']
-        if 'email' in errors:
-            for error in errors['email']:
-                if 'confirmation' in error:
-                    logger.info(
-                        "Registered user, waiting for approval: %s" % username)
-                    err = {error: 'This account has not yet been approved ...'}
-                    response['errors'] = err
+    if 'Response' in out and 'errors' in out['Response']:
+        errors = out['Response']['errors']
+
+        # Search for known errors
+        if errors is not None:
+            if 'email' in errors:
+                for error in errors['email']:
+                    if 'confirmation' in error:
+                        logger.info(
+                            "Registered user, waiting for approval: %s"
+                            % username)
+                        err = {error:
+                               'This account has not yet been approved ...'}
+                        response['errors'] = err
+            else:
+                response['errors'] = out['Response']['errors']
 
     # Positive response
-    if 'meta' in out and out['meta']['code'] <= hcodes.HTTP_OK_NORESPONSE:
-        data = out['response']['user']
-        token = data['authentication_token']
+    if 'Meta' in out and out['Meta']['status'] <= hcodes.HTTP_OK_NORESPONSE:
 
-        if token is None or data is None or 'id' not in data:
+        # data = out['Response']['user']
+        # token = data['authentication_token']
+
+        # if token is None or data is None or 'id' not in data:
+        if 'Authentication-token' not in out['Response']['data']:
             return {'errors':
-                    {'Misconfiguration': "Backend user not in sync"}}, \
-                hcodes.HTTP_DEFAULT_SERVICE_FAIL, tokobj
+                    {'Misconfiguration': "Backend token is invalid"}}, \
+                hcodes.HTTP_DEFAULT_SERVICE_FAIL, user_object
+
+        # Get the JWT token
+        token = out['Response']['data']['Authentication-token']
+
+        #########################
+        # JWT STUFF
+        JWT_SECRET = 'secret'
+        JWT_ALGO = 'HS256'
+        import jwt
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGO])
+        print("TOKEN PAYLOAD", payload)
+        #########################
 
         ####################################
         # Save token inside frontend db ?
-
-        # # OLD AND BAD
-        # registered_user = User.query.filter_by(id=data['id']).first()
-        # if registered_user is None:
-        #     return {'errors':
-        #             {'Misconfiguration': "Backend user not in sync"}}, \
-        #             hcodes.HTTP_DEFAULT_SERVICE_FAIL, tokobj
-        # tokobj = Tokenizer(token, registered_user.id)
-
-        # # NEW BUT USELESS NOW
+            # USELESS NOW
         # tokobj = Tokenizer(token, data['id'])
         # db.session.add(tokobj)
         # db.session.commit()
 
+        # Needed by angularjs satellizer
         response = {'authentication_token': token}
 
-    return response, out['meta']['code'], tokobj
+        # Register positive response to Flask Login in both cases
+        #login_user(user_object)
 
-
-def login_internal(username, password):
-    """ Login with internal db """
-    registered_user = \
-        User.query.filter_by(username=username, password=password).first()
-
-    data = {'errors': {'failed': "No such user/password inside DB"}}
-    code = hcodes.HTTP_BAD_UNAUTHORIZED
-
-    if registered_user is not None:
-        data = {'user': {'id': registered_user.id}}
-# This line above may change
-        code = hcodes.HTTP_OK_ACCEPTED
-
-    return data, code, registered_user
-
-
-def login_point(username, password):
-    """ Handle all possible logins """
-
-    # API
-    data, code, obj = login_api(username, password)
-    # # Standalone server
-    # else:
-    #     data, code, obj = login_internal(username, password)
-    # Register positive response to Flask Login in both cases
-    if obj is not None:
-        login_user(obj)
-    # Return (forward) response
-    return data, code
+    return response, out['Meta']['status']

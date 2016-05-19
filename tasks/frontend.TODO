@@ -14,8 +14,14 @@ TO DO:
   ☐ token
     ✔ create token @done (16-05-17 15:17)
     ✔ use flask login method @done (16-05-17 15:17)
-    ☐ JWT
+    ✔ JWT @done (16-05-19 14:51)
+      ✔ encode @done (16-05-19 14:52)
+      ✔ decode  @done (16-05-19 14:52)
+        ✔ backend @done (16-05-19 14:52)
+        ✔ frontend @done (16-05-19 14:52)
     ☐ TTL
+  ☐ new authentication
+    ☐ override Flask-Login /login url on the backend side
   ☐ auth
     ☐ JS check logged at status change
     ☐ JS check logged with a timer

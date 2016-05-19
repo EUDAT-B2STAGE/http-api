@@ -55,7 +55,7 @@ While for logout i made the button "Yes" to let it happen.
 
 //////////////////////////////
 function LoginController($scope, $log, $window,
-    $auth, $mdToast, $document, $timeout, $state)
+    $auth, $mdToast, $document, $timeout, $state, noty)
 {
 
     // Init controller
@@ -93,16 +93,23 @@ function LoginController($scope, $log, $window,
 
                 // Now we can check again reloading this page
                 $window.location.reload();
+                noty.showAll(loginResponse.data.errors, noty.WARNING);
 
             }, function(errorResponse) {
-                self.userMessage = null;
-                var errors = errorResponse.data.errors;
-                $log.warn("Auth: failed", errors);
-                var key = Object.keys(errors)[0];
-                if (key == "Email requires confirmation.") {
-                    self.userMessage = key;
-                }
-                $scope.showSimpleToast(errors);
+
+                $log.warn("Auth: failed", errorResponse);
+                noty.showAll(errorResponse.data.errors, noty.ERROR);
+
+                // self.userMessage = null;
+                // var errors = errorResponse.data.errors;
+                // $log.warn("Auth: failed", errors);
+                // var key = Object.keys(errors)[0];
+                // if (key == "Email requires confirmation.") {
+                //     self.userMessage = key;
+                // }
+                // $scope.showSimpleToast(errors);
+
+
             }
         );
     }

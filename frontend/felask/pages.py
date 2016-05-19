@@ -9,7 +9,7 @@ from pathlib import Path
 from flask import Blueprint, render_template, request, jsonify, g
 from flask.ext.login import logout_user, current_user
 from .basemodel import user_config
-from .security import login_point, register_api
+from .security import login_api, register_api
 from . import htmlcodes as hcodes
 from config import get_logger, FRAMEWORKS, API_URL
 
@@ -149,8 +149,8 @@ def auth():
     if not ('username' in request.json and 'password' in request.json):
         return "No valid (json) data credentials", hcodes.HTTP_BAD_UNAUTHORIZED
     # Request login (with or without API)
-    return forward_response(login_point(
-            request.json['username'], request.json['password']))
+    return forward_response(
+        login_api(request.json['username'], request.json['password']))
 
 
 @cms.route('/doregistration', methods=['POST'])
