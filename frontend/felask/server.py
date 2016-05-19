@@ -19,11 +19,20 @@ from config import get_logger
 from . import htmlcodes as hcodes
 from .pages import cms
 from . import CONFIG_MODULE
-
-# TO FIX?
 from .basemodel import lm  # , db
 
 logger = get_logger(__name__)
+
+
+# # Fixing logging
+# import logging
+# root_logger = logging.getLogger()
+# # root_logger.addHandler(logger)
+# first = True
+# for handler in root_logger.handlers:
+#     print("HANDLER", handler)
+#     # handler.setLevel(logging.WARNING)
+#     root_logger.removeHandler(handler)
 
 
 def create_app():
@@ -67,9 +76,12 @@ def create_app():
     # Logging
     @app.after_request
     def log_response(resp):
-        log = logger.info
+        log = logger.debug
         if resp.status_code == hcodes.HTTP_NOT_MODIFIED:
             log = logger.debug
+
+        if 'static/' not in req.url and '/js/' not in req.url:
+            log = logger.info
         log("{} {} {} {}".format(req.method, req.url, req.data, resp))
         return resp
 

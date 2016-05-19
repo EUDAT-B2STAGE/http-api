@@ -68,6 +68,8 @@ user_config = read_files(PATH)
 class BaseConfig(object):
 
     DEBUG = os.environ.get('APP_DEBUG', DEBUG)
+    # LOG_DEBUG = True
+    LOG_DEBUG = False
     TESTING = False
     MYCONFIG_PATH = os.path.join(CONFIG_PATH, PATH)
     BASE_DB_DIR = '/dbs'
@@ -92,10 +94,9 @@ class BaseConfig(object):
 
 ########################################
 # LOGGING
-if BaseConfig.DEBUG:
+LOG_LEVEL = logging.INFO
+if BaseConfig.LOG_DEBUG:
     LOG_LEVEL = logging.DEBUG
-else:
-    LOG_LEVEL = logging.INFO
 # Set default logging handler to avoid "No handler found" warnings.
 try:  # Python 2.7+
     from logging import NullHandler
