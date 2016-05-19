@@ -109,6 +109,7 @@ def create_app():
 
     # Application context
     with app.app_context():
+# GET THE HELL OUT OF HERE
         db.create_all()
         # OLD & BAD
         #logger.critical("Dropping DB")

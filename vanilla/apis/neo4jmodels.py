@@ -3,7 +3,8 @@
 """ Graph DB abstraction from neo4j server """
 
 from neomodel import StringProperty, \
-    StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
+    StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom, \
+    OneOrMore
 from .... import get_logger
 
 logger = get_logger(__name__)
@@ -17,7 +18,13 @@ class User(StructuredNode):
     password = StringProperty(required=True)  # A hash produced by Flask login
     email = StringProperty(required=True, unique_index=True)
     token = StringProperty()  # Another hash produced by Flask login
+    roles = RelationshipTo('Role', 'ROLE', cardinality=OneOrMore)
 
+
+class Role(StructuredNode):
+    name = StringProperty(required=True)
+    description = StringProperty(default='No description')
+    privileged = RelationshipFrom(User, 'ROLE', cardinality=OneOrMore)
 
 ##############################################################################
 # MODELS

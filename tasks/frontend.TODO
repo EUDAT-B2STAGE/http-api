@@ -1,35 +1,31 @@
 
-
->  Welcome and goodbye. And thanks for all the fish!
-
-http://codeology.braintreepayments.com/pdonorio/restangulask
+REDFAWMNN http://j.mp/2052QAW
+web app on Rest Engineering with Docker, Flask, Angularjs, W, Material design, Nginx, Neo4j
 
 --- ✄ -----------------------
+http://codeology.braintreepayments.com/pdonorio/restangulask
+--- ✄ -----------------------
+
+BUGS:
+  ☐ neomodels are on custom frontend also for base?
+    ☐ missing user/role if someone use graphdb in another project
 
 TO DO:
-
-  ✔ demo @done (16-05-16 16:04)
-    ✔ login/logout with sqllite @done (16-05-16 16:04)
-  ☐ graphbased
-    ✔ flask login with graphdb @done (16-05-17 12:44)
-      ✔ verify password and create hash saved @done (16-05-17 15:17)
-      ☐ roles
-      ☐ token
-        ✔ create token @done (16-05-17 15:17)
-        ✔ use flask login method @done (16-05-17 15:17)
-        ☐ TTL?
-        ☐ JWT?
-      ☐ JS check logged at status change
-      ☐ JS check logged with a timer
-    ☐ db init
-      ☐ user if not existing
-      ☐ roles if not existing
+  ☐ token
+    ✔ create token @done (16-05-17 15:17)
+    ✔ use flask login method @done (16-05-17 15:17)
+    ☐ JWT
+    ☐ TTL
+  ☐ auth
+    ☐ JS check logged at status change
+    ☐ JS check logged with a timer
+ ☐ oauth2 user
+   ☐ profile endpoint
+  ☐ others
     ☐ on frontend: get backend api port from container environment
     ☐ slider alternative welcome
-☐ oauth2 user
-  ☐ should the user be saved if not existing?
  ☐ vanilla
-   ☐ python test
+   ✔ python tests @done (16-05-18 11:44)
    ☐ vanilla/jscode/app.js
    ☐ vanilla/libs/bower.json
    ☐ json python conf
@@ -38,8 +34,9 @@ TO DO:
      ☐ frontend/config/angular/options.json
    ☐ vanilla/jscode/routes.js
      ☐ debug enabler
-   ☐ scripts/boot.sh
+   ☐ scripts/boot.sh / do
      ☐ which services to launch
+   ☐ angularj custom tests
 
 --- ✄ -----------------------
 
@@ -101,3 +98,14 @@ JWT apis:
     ☐ A quick single view
 
 --- ✄ -----------------------
+
+  ✔ demo @done (16-05-16 16:04)
+    ✔ login/logout with sqllite @done (16-05-16 16:04)
+  ✔ graphbased @done (16-05-18 15:07)
+    ✔ flask login with graphdb @done (16-05-17 12:44)
+      ✔ verify password and create hash saved @done (16-05-17 15:17)
+      ✔ roles @done (16-05-18 15:07)
+        ✔ relationship @done (16-05-18 15:07)
+  ✔ db init @done (16-05-18 15:07)
+    ✔ user if not existing @done (16-05-18 15:07)
+    ✔ roles if not existing @done (16-05-18 15:07)

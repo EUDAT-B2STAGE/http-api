@@ -60,19 +60,6 @@ class MyGraphLogin(ExtendedApiResource, GraphFarm):
 
         self.graph = GraphFarm().get_graph_instance()
 
-##########################
-# To create a user...
-        # print(self.graph.User)
-        # user = self.graph.User()
-        # user.name = 'Paolo'
-        # print(user)
-        # user.email = 'paulie@test.it'
-        # user.surname = 'PIIPPPOOO'
-        # user.password = GraphUser.password_hash("test")
-        # user.save()
-        # return "Created"
-##########################
-
         user = GraphUser.get_graph_user(email=auth_user)
         token = None
 
@@ -86,6 +73,7 @@ class MyGraphLogin(ExtendedApiResource, GraphFarm):
 
                 # Create a new token and save it
                 token = user.get_auth_token()
+# USE JWT and DO NOT SAVE INSIDE THE DATABASE
                 GraphUser.set_graph_user_token(auth_user, token)
 
         # In case something is wrong
