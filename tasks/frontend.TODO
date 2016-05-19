@@ -19,12 +19,16 @@ TO DO:
       ✔ decode  @done (16-05-19 14:52)
         ✔ backend @done (16-05-19 14:52)
         ✔ frontend @done (16-05-19 14:52)
-    ☐ TTL
   ☐ new authentication
     ☐ override Flask-Login /login url on the backend side
+    ☐ JWT refactor
+      ☐ content
+      ☐ TTL
+      ☐ use it instead of graphdb calls
   ☐ auth
     ☐ JS check logged at status change
     ☐ JS check logged with a timer
+ ☐ Check back on demo blueprint. Does login still work?
  ☐ oauth2 user
    ☐ profile endpoint
   ☐ others
