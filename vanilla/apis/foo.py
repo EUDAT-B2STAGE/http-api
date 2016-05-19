@@ -58,8 +58,11 @@ class MyGraphLogin(ExtendedApiResource, GraphFarm):
         auth_user = j['user']
         auth_pwd = j['pwd']
 
+
         self.graph = GraphFarm().get_graph_instance()
 
+###################################
+# Should go in a function
         user = GraphUser.get_graph_user(email=auth_user)
         token = None
 
@@ -75,6 +78,7 @@ class MyGraphLogin(ExtendedApiResource, GraphFarm):
                 token = user.get_auth_token()
 # USE JWT and DO NOT SAVE INSIDE THE DATABASE
                 GraphUser.set_graph_user_token(auth_user, token)
+###################################
 
         # In case something is wrong
         if user is None or token is None:
