@@ -4,9 +4,6 @@
         "GraphEndPoint": [
             "graph",
             "graph/<string:id>"
-        ],
-        "MyGraphLogin": [
-            "logintest"
         ]
     }
 }
