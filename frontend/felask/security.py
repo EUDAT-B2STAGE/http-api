@@ -17,9 +17,7 @@ logger = get_logger(__name__)
 ##################################
 # If connected to APIs
 
-##// TO FIX!!
-LOGIN_URL = API_URL + 'logintest'
-# LOGIN_URL = API_URL + 'login'
+LOGIN_URL = API_URL + 'login'
 
 REGISTER_URL = API_URL + 'register'
 PROFILE_URL = API_URL + 'initprofile'
@@ -62,7 +60,7 @@ def register_api(request):
     if key1 not in request or key2 not in request \
        or request[key1] != request[key2]:
         return {'errors': {'passwords mismatch':
-                "Passwords provided are not the same"}}, \
+                           "Passwords provided are not the same"}}, \
             hcodes.HTTP_DEFAULT_SERVICE_FAIL
 
     # Info check
@@ -73,7 +71,7 @@ def register_api(request):
        or key2 not in request \
        or request[key2] is None:
         return {'errors': {'information required':
-                "No profile info: name and/or surname"}}, \
+                           "No profile info: name and/or surname"}}, \
             hcodes.HTTP_DEFAULT_SERVICE_FAIL
 
     # Init
@@ -169,7 +167,7 @@ def login_api(username, password):
 
         ####################################
         # Save token inside frontend db ?
-            # USELESS NOW
+        # USELESS NOW
         # tokobj = Tokenizer(token, data['id'])
         # db.session.add(tokobj)
         # db.session.commit()
@@ -178,6 +176,6 @@ def login_api(username, password):
         response = {'authentication_token': token}
 
         # Register positive response to Flask Login in both cases
-        #login_user(user_object)
+        # login_user(user_object)
 
     return response, out['Meta']['status']
