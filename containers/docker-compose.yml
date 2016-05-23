@@ -5,6 +5,9 @@ conf:
     image: busybox
     command: ./boot
     environment:
+        # Decide which service should handle users inside the backend server
+        BACKEND_AUTH_SERVICE: relational
+
         ## If you are still developing
         ## (flask wsgi restartable on edit + sqllite dbs + print DEBUG level)
         # APP_MODE: development

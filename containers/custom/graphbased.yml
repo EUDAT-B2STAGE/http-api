@@ -1,10 +1,10 @@
 
-myconf:
-    extends:
-      file: docker-compose.yml
-      service: conf
-    environment:
-      APP_MODE: development
+# myconf:
+#     extends:
+#       file: docker-compose.yml
+#       service: conf
+#     environment:
+#       APP_MODE: development
 
 #######################
 # Define here your services
@@ -35,6 +35,8 @@ custombe:
     volumes:
         # Sql lite database
         - restangulask_graphbased_apilitedb:/dbs
+    environment:
+      BACKEND_AUTH_SERVICE: graphdb
     links:
         - searchindex:el
         - gdb:gdb
