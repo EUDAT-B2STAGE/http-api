@@ -64,10 +64,10 @@ icat:
 #################################
 # GRAPHdb neo4j
 graphdb:
-    image: neo4j
+    image: neo4j:2.3.3
     hostname: gdb
     environment:
-        NEO4J_AUTH: neo4j/eudatapi
+      NEO4J_AUTH: neo4j/eudatapi
       # Other parameters?
       #NEO4J_HEAP_MEMORY
       #NEO4J_CACHE_MEMORY
@@ -81,9 +81,15 @@ graphdb:
 rest:
     hostname: api
     image: eudatb2safe/apiserver
-    command: sleep infinity
-    #command: ./boot ##in production?
+    command: ./boot
     environment:
+
+        APP_MODE: debug
+        # APP_MODE: development
+        # APP_MODE: production
+
+        # Base the user/role mechanism on neo4j
+        BACKEND_AUTH_SERVICE: graphdb
         ## Connection to irods
         IRODS_USER: rods
         # IRODS_AUTHSCHEME: GSI
@@ -121,8 +127,7 @@ rest:
     volumes_from:
       - certshare
     links:
-        # REMOVE GRAPH UNTIL WE REALLY USE IT
-        # - graphdb:gdb
         - icat:rodserver
+        - graphdb:gdb
 
 #################################
