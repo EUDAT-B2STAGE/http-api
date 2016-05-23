@@ -94,6 +94,7 @@ if [ "$1" == "help" -o -z "$2" ]; then
     echo -e "clean:\tRemove containers and volumes (BE CAREFUL!)"
     echo ""
     echo -e "backend:\tOpen a shell inside the Flask REST API server container"
+    echo -e "test_backend:\tLaunch python tests with nose2"
     echo -e "frontend:\tOpen a shell inside the Flask REST API server container"
     echo -e "sql:\tLaunch a sqladminer on port 8888"
     echo -e "bower:\tInstall all libraries or only the one specified"
@@ -216,6 +217,17 @@ elif [ "$2" == "frontend" ]; then
     echo "(If in debug mode, run Flask with './boot devel')"
     echo ""
     $compose_com $files exec $fronted_container bash
+    exit 0
+
+elif [ "$2" == "test_backend" ]; then
+
+    echo "Running tests"
+    $compose_com $files exec $backend_container ./tests.sh
+    if [ "$?" != "0" ]; then
+        echo "Tests failed!"
+        exit 1
+    fi
+    echo "Well done"
     exit 0
 
 elif [ "$2" == "sql" ]; then

@@ -6,7 +6,7 @@ conf:
     command: ./boot
     environment:
         # Decide which service should handle users inside the backend server
-        BACKEND_AUTH_SERVICE: relational
+        BACKEND_AUTH_SERVICE: relationaldb
 
         ## If you are still developing
         ## (flask wsgi restartable on edit + sqllite dbs + print DEBUG level)

@@ -17,7 +17,7 @@ class User(StructuredNode):
     surname = StringProperty(required=True)
     password = StringProperty(required=True)  # A hash produced by Flask login
     email = StringProperty(required=True, unique_index=True)
-    token = StringProperty()  # Another hash produced by Flask login
+    # token = StringProperty()  # Another hash produced by Flask login
     roles = RelationshipTo('Role', 'ROLE', cardinality=OneOrMore)
 
 
