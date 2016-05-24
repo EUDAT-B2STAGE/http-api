@@ -8,8 +8,9 @@ http://codeology.braintreepayments.com/pdonorio/restangulask
 
 
 auth:
-  ☐ Fix login
+  ✔ Fix login @done (16-05-24 12:16)
   ☐ Fix logout
+    ☐ use dialog
   ☐ Watch for token valid
     ☐ JS check logged at status change
     ☐ JS check logged with a timer

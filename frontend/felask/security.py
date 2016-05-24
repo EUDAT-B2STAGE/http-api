@@ -4,11 +4,8 @@
 
 import requests
 import json
-# import commentjson as json
 # from datetime import datetime
 # from flask import Response, stream_with_context
-# from flask.ext.login import login_user, UserMixin
-# from .basemodel import db, lm, User
 from . import htmlcodes as hcodes
 
 from config import AUTH_URL, get_logger
@@ -108,7 +105,6 @@ def register_api(request):
 def login_api(username, password):
     """ Login requesting token to our API and also store the token """
 
-    user_object = None
     payload = {'username': username, 'password': password}
 
     try:
@@ -181,7 +177,22 @@ def login_api(username, password):
         # Needed by angularjs satellizer
         response = {'authentication_token': token}
 
-        # Register positive response to Flask Login in both cases
-        # login_user(user_object)
-
     return response, out['Meta']['status']
+
+
+def logout_api():
+
+    # Recover token from request
+    """
+    payload = {'username': username, 'password': password}
+
+    try:
+        r = requests.post(LOGIN_URL, stream=True,
+                          data=json.dumps(payload), headers=HEADERS, timeout=5)
+    except requests.exceptions.ConnectionError:
+        return {'errors':
+                {'API unavailable': "Cannot connect to APIs server"}}, \
+            hcodes.HTTP_DEFAULT_SERVICE_FAIL
+    out = r.json()
+    """
+    pass

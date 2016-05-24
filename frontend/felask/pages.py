@@ -7,9 +7,8 @@ import os
 import requests
 from pathlib import Path
 from flask import Blueprint, render_template, request, jsonify, g
-from flask.ext.login import logout_user, current_user
 from .basemodel import user_config
-from .security import login_api, register_api
+from .security import login_api, register_api, logout_api
 from . import htmlcodes as hcodes
 from config import get_logger, FRAMEWORKS, API_URL
 
@@ -56,7 +55,6 @@ for sfont in fconfig['fonts']:
 imgs = []
 for simg in fconfig['imgs']:
     js.append(staticdir + simg)
-#logger.debug("JSON img load: %s" % imgs)
 # TO FIX!
 if 'logos' not in user_config['content']:
     user_config['content']['logos'] = [{
@@ -68,7 +66,7 @@ if 'logos' not in user_config['content']:
 
 # Load only a specified angular blueprint
 if 'blueprints' not in user_config or \
-  BLUEPRINT_KEY not in user_config['blueprints']:
+   BLUEPRINT_KEY not in user_config['blueprints']:
     logger.critical("No blueprint file/key found!")
 else:
     CURRENT_BLUEPRINT = user_config['blueprints'][BLUEPRINT_KEY]
@@ -118,12 +116,6 @@ def jstemplate(title='App', mydomain='/'):
 
 # #################################
 # # BASIC INTERFACE ROUTES
-@cms.before_request
-def before_request():
-    """ Save the current user as the global user for each request """
-    g.user = current_user
-
-
 def forward_response(response):
     """
     Utility to use a response from requests
@@ -179,35 +171,33 @@ def jsblueprint():
     return render_template("blueprint.js", **variables)
 
 
-################################################
-# ZOOM?
-@cms.route('/zoom/<string:document>/<string:code>')
-def zoom(document, code):
+# ################################################
+# # ZOOM?
+# @cms.route('/zoom/<string:document>/<string:code>')
+# def zoom(document, code):
 
-    template_path = 'custom' + '/' + CURRENT_BLUEPRINT
-    filename = '/empty'
-    HEADERS = {
-        'content-type': 'application/json',
-        'Authentication-Token': g.user.token
-    }
-    opts = {'stream': True, 'headers': HEADERS, 'timeout': 5}
-    r = requests.get(API_URL + 'datadocs/' + document, **opts)
-    out = r.json()
-    print("TEST\n\n", out)
-    if len(out['data']) > 0:
-        data = out['data'].pop()
-        print("TEST2\n\n", data['images'])
-        for image in data['images']:
-            if image['code'] == code:
-                filename = '/static/uploads/' + code
+#     template_path = 'custom' + '/' + CURRENT_BLUEPRINT
+#     filename = '/empty'
+#     HEADERS = {
+#         'content-type': 'application/json',
+#         'Authentication-Token': g.user.token
+#     }
+#     opts = {'stream': True, 'headers': HEADERS, 'timeout': 5}
+#     r = requests.get(API_URL + 'datadocs/' + document, **opts)
+#     out = r.json()
+#     if len(out['data']) > 0:
+#         data = out['data'].pop()
+#         for image in data['images']:
+#             if image['code'] == code:
+#                 filename = '/static/uploads/' + code
 
-    variables = {
-        'record': document,
-        'page': code,
-        'filename': filename,
-        'name': CURRENT_BLUEPRINT,
-    }
-    return render_template(template_path + '/' + 'zoom.html', **variables)
+#     variables = {
+#         'record': document,
+#         'page': code,
+#         'filename': filename,
+#         'name': CURRENT_BLUEPRINT,
+#     }
+#     return render_template(template_path + '/' + 'zoom.html', **variables)
 
 
 ######################################################
@@ -225,5 +215,6 @@ def home(mypath=None):
         # return templating('welcome.html')
         pass
     elif mypath == 'loggedout':
-        logout_user()
+        print("TEST JSON", request.headers)
+        logout_api()
     return jstemplate()

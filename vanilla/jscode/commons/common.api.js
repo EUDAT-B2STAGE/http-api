@@ -15,6 +15,7 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
     self.endpoints = {
         check: 'status',
         logged: 'profile',
+        logout: 'logout',
         admin: 'verifyadmin',
         register: 'doregistration',
     };
@@ -69,7 +70,8 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
                 url: currentUrl,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authentication-Token': token,
+                    // 'Authentication-Token': token,
+                    'Authorization': 'Bearer ' + token,
                 },
                 data: data,
                 params: params,
@@ -88,9 +90,11 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
           }, function errorCallback(response) {
                 $log.warn("API failed to call")
 
-                if (returnRawResponse) return response;
+                if (returnRawResponse) return $q.reject(response);
 
-                if (typeof response.data.Response === 'undefined') {
+                if (!response.data || !response.data.hasOwnProperty('Response')) {
+                    return null;
+                } else if (typeof response.data.Response === 'undefined') {
                     return null;
                 }
 

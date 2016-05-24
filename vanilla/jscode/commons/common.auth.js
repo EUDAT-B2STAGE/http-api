@@ -93,6 +93,7 @@ function LoginController($scope, $log, $window,
 
                 // Now we can check again reloading this page
                 $window.location.reload();
+                console.log("DO YOU SEE ME?")
                 noty.showAll(loginResponse.data.errors, noty.WARNING);
 
             }, function(errorResponse) {
@@ -173,7 +174,7 @@ function RegisterController($scope, $log, $auth, api)
 }
 
 
-function LogoutController($scope, $rootScope, $log, $auth)
+function LogoutController($scope, $rootScope, $log, $auth, $window, $state, api, noty)
 {
     // Init controller
     $log.debug("Logout Controller");
@@ -181,11 +182,20 @@ function LogoutController($scope, $rootScope, $log, $auth)
 
     // Log out satellizer
     self.exit = function() {
-        $log.info("Logging out");
-    	$auth.logout().then(function() {
-            $log.debug("Token cleaned:", $auth.getToken());
-        });
-        $rootScope.logged = false;
+        api.apiCall(api.endpoints.logout, 'GET', undefined, undefined, true).then(
+          function(response) {
+            $log.info("Logging out", response);
+        	$auth.logout().then(function() {
+                $log.debug("Token cleaned:", $auth.getToken());
+            });
+            $rootScope.logged = false;
+            $state.go('welcome');
+            $window.location.reload();
+          }, function(error) {
+            $log.warn("Error for logout", error);
+            noty.showAll([error.data], noty.ERROR);
+          }
+        );
     }
 
 }
