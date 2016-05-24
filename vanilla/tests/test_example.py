@@ -4,9 +4,9 @@
 Test  dataobjects endpoints
 """
 
-import io
-import os
-import json
+# import io
+# import os
+# import json
 import unittest
 from restapi.server import create_app
 
@@ -20,8 +20,8 @@ class TestDataObjects(unittest.TestCase):
     def setUpClass(self):
         "set up test fixtures"
         print('### Setting up flask server ###')
-        app = create_app()
-        app.config['TESTING'] = True
+        app = create_app(testing=True)
+        # app.config['TESTING'] = True
         self.app = app.test_client()
 
     @classmethod
@@ -29,11 +29,10 @@ class TestDataObjects(unittest.TestCase):
         "tear down test fixtures"
         print('### Tearing down the flask server ###')
 
-
-    # def test_01_get_verify(self):
+    # def test_01_get_status(self)
     #     """ Test that the flask server is running and reachable"""
 
-    #     r = self.app.get('http://localhost:8080/api/verify')
+    #     r = self.app.get('http://localhost:8080/api/status')
     #     self.assertEqual(r.status_code, 200)
 
     # def test_02_post_dataobjects(self):
