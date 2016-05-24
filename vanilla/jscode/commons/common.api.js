@@ -9,11 +9,12 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
     var self = this;
     // Api URI
     self.API_URL = apiUrl + '/';
+    self.AUTH_URL = authApiUrl + '/';
     self.FRONTEND_URL = serverUrl + '/';
 
     self.endpoints = {
-        check: 'verify',
-        logged: 'verifylogged',
+        check: 'status',
+        logged: 'profile',
         admin: 'verifyadmin',
         register: 'doregistration',
     };
@@ -47,7 +48,16 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
             data = self.getOrDefault(data, {});
         }
 
+        // # login, logout, profile
         var currentUrl = self.API_URL + endpoint;
+
+//////////////////////////////
+// WARNING PORCATA
+        if (endpoint == 'login' || endpoint == 'logout' || endpoint == 'profile') {
+            currentUrl = self.AUTH_URL + endpoint;
+        }
+//////////////////////////////
+
         if (endpoint == self.endpoints.register) {
             currentUrl = self.FRONTEND_URL + endpoint;
         }
@@ -73,13 +83,13 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
                 //$log.debug("API call successful");
 
                 if (returnRawResponse) return response;
-                
+
                 return response.data.Response;
           }, function errorCallback(response) {
                 $log.warn("API failed to call")
 
                 if (returnRawResponse) return response;
-                 
+
                 if (typeof response.data.Response === 'undefined') {
                     return null;
                 }

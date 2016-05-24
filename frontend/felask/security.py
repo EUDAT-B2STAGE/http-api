@@ -11,16 +11,15 @@ import json
 # from .basemodel import db, lm, User
 from . import htmlcodes as hcodes
 
-from config import API_URL, get_logger
+from config import AUTH_URL, get_logger
 logger = get_logger(__name__)
 
 ##################################
 # If connected to APIs
 
-LOGIN_URL = API_URL + 'login'
-
-REGISTER_URL = API_URL + 'register'
-PROFILE_URL = API_URL + 'initprofile'
+LOGIN_URL = AUTH_URL + 'login'
+REGISTER_URL = AUTH_URL + 'register'
+PROFILE_URL = AUTH_URL + 'profile'
 HEADERS = {'content-type': 'application/json'}
 
 
@@ -118,10 +117,12 @@ def login_api(username, password):
     except requests.exceptions.ConnectionError:
         return {'errors':
                 {'API unavailable': "Cannot connect to APIs server"}}, \
-            hcodes.HTTP_DEFAULT_SERVICE_FAIL, user_object
+            hcodes.HTTP_DEFAULT_SERVICE_FAIL
     out = r.json()
 
     response = {'errors': {'No autorization': "Invalid credentials"}}
+    if 'Response' not in out and 'Meta' not in out:
+        return out, hcodes.HTTP_DEFAULT_SERVICE_FAIL
 
     # If wanting to check errors
     if 'Response' in out and 'errors' in out['Response']:
@@ -148,22 +149,27 @@ def login_api(username, password):
         # token = data['authentication_token']
 
         # if token is None or data is None or 'id' not in data:
-        if 'Authentication-token' not in out['Response']['data']:
+        print(out)
+        if 'token' not in out['Response']['data']:
             return {'errors':
                     {'Misconfiguration': "Backend token is invalid"}}, \
-                hcodes.HTTP_DEFAULT_SERVICE_FAIL, user_object
+                hcodes.HTTP_DEFAULT_SERVICE_FAIL
 
         # Get the JWT token
-        token = out['Response']['data']['Authentication-token']
+        token = out['Response']['data']['token']
 
-        #########################
-        # JWT STUFF
-        JWT_SECRET = 'secret'
-        JWT_ALGO = 'HS256'
-        import jwt
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGO])
-        print("TOKEN PAYLOAD", payload)
-        #########################
+        try:
+            #########################
+            # JWT STUFF
+            from flask import current_app
+            JWT_ALGO = 'HS256'
+            import jwt
+            payload = jwt.decode(
+                token, current_app.config['SECRET_KEY'], algorithms=[JWT_ALGO])
+            print("TOKEN PAYLOAD", payload)
+            #########################
+        except:
+            logger.critical("Cannot decrypt JWT token")
 
         ####################################
         # Save token inside frontend db ?

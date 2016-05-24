@@ -8,9 +8,12 @@ http://codeology.braintreepayments.com/pdonorio/restangulask
 
 
 auth:
+  ☐ Fix login
+  ☐ Fix logout
+  ☐ Watch for token valid
     ☐ JS check logged at status change
-    ☐ JS check logged with a timer 
-    ☐ Check back on demo blueprint. Does login still work?
+    ☐ JS check logged with a timer
+  ☐ Check back on demo blueprint. Does login still work?
 
 others:
     ☐ on frontend: get backend api port from container environment

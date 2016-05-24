@@ -32,8 +32,7 @@ if not BACKEND:
 PORT = 5000
 URL = 'http://%s:%s' % (BACKEND_NAME, PORT)
 API_URL = URL + '/api/'
-
-
+AUTH_URL = URL + '/auth/'
 ########################################
 
 
@@ -47,8 +46,8 @@ def read_files(path):
         # Framework specific and user custom files
         'frameworks',
         # Choose the blueprint to work with
-        'blueprints/js_init',
-        ]
+        'blueprints/js_init'
+    ]
     myjson = {}
     for section in sections:
         filename = os.path.join(CONFIG_PATH, path, section + "." + JSON_EXT)
@@ -75,10 +74,9 @@ class BaseConfig(object):
     BASE_DB_DIR = '/dbs'
     SQLLITE_DBFILE = 'frontend.db'
     dbfile = os.path.join(BASE_DB_DIR, SQLLITE_DBFILE)
-    SECRET_KEY = 'my-super-secret-keyword_referringtofrontendside'
+    SECRET_KEY = 'simplesecret'
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + dbfile
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = 'my precious'
 
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     UPLOAD_FOLDER = '/uploads'
