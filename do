@@ -155,12 +155,12 @@ if [ "$2" == "init" ]; then
 
     echo "Download docker images"
    $compose_com $files pull
+    cd ..
     if [ ! -d "$submodule_repo" ]; then
         echo "Clone submodules"
-        cd ..
         git clone $submodule_git $submodule_repo
-        cd -
     fi
+    cd -
     echo "Build bower packages (Javascript libraries)"
     $bcom
     echo "Completed"
