@@ -82,6 +82,15 @@ bower:
     volumes:
         - ..:/data
 
+###############################
+# Make automatic to install libraries
+karma:
+    image: pdonorio/jsdev
+    working_dir: /data
+    volumes:
+        - ../vanilla/libs/bower_components:/data/bower_components
+        - ../vanilla/jscode:/data
+
 #################################
 # Database administration
 
