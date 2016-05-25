@@ -241,6 +241,7 @@ elif [ "$2" == "push" ]; then
     $compose_com $files exec $backend_container ./tests.sh
     if [ "$?" != "0" ]; then
         echo "Tests are failing. Push was stopped"
+        exit 1
     fi
 
     cd ..
