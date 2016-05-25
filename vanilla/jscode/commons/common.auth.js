@@ -188,9 +188,9 @@ function LogoutController($scope, $rootScope, $log, $auth, $window, $state, api,
         	$auth.logout().then(function() {
                 $log.debug("Token cleaned:", $auth.getToken());
             });
-            $rootScope.logged = false;
-            $state.go('welcome');
             $window.location.reload();
+            $rootScope.logged = false;
+            //$state.go('welcome');
           }, function(error) {
             $log.warn("Error for logout", error);
             noty.showAll([error.data], noty.ERROR);

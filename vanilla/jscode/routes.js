@@ -14,7 +14,7 @@ angular.module('web')
 function _redirectIfNotAuthenticated($log, $rootScope,
     $state, $auth, $timeout, api)
 {
-    console.log("CHECK LOGGED");
+    //console.log("CHECK LOGGED");
     var checkLogged = true;
     return api.verify(checkLogged).then(function(response)
     {
@@ -42,7 +42,14 @@ function _redirectIfNotAuthenticated($log, $rootScope,
           $state.go(state);
           return false;
       });
-    }, function(error) {console.log("ERROR", error);});
+    }, function(error) {
+        $log.error("Failed with", error);
+        $rootScope.logged = false;
+        $timeout(function () {
+            $state.go('public.login');
+            return false;
+        });
+    });
 }
 
 // Skip authentication
