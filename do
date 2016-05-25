@@ -98,6 +98,7 @@ if [ "$1" == "help" -o -z "$2" ]; then
     echo -e "frontend:\tOpen a shell inside the Flask REST API server container"
     echo -e "sql:\tLaunch a sqladminer on port 8888"
     echo -e "bower:\tInstall all libraries or only the one specified"
+    echo -e "karma:\tA shell to test angularjs code"
     echo ""
     echo -e "push:\tPush code to github"
     echo -e "update:\tPull both updated code and docker images"
@@ -155,12 +156,12 @@ if [ "$2" == "init" ]; then
 
     echo "Download docker images"
    $compose_com $files pull
+    cd ..
     if [ ! -d "$submodule_repo" ]; then
         echo "Clone submodules"
-        cd ..
         git clone $submodule_git $submodule_repo
-        cd -
     fi
+    cd -
     echo "Build bower packages (Javascript libraries)"
     $bcom
     echo "Completed"
@@ -301,6 +302,12 @@ elif [ "$2" == "bower" ]; then
         echo "Install package(s): $3"
     fi
     $bcom
+# Angularjs tests
+elif [ "$2" == "karma" ]; then
+
+    echo "Opening shell for nodejs"
+    $compose_com run $2 bash
+    exit 0
 else
     echo "Unknown command '$2'. Ask for help:"
     echo ""

@@ -78,9 +78,18 @@ frontend:
 # Make automatic to install libraries
 bower:
     image: pdonorio/jsdev
-    working_dir: /tmp/vanilla/libs
+    working_dir: /data/vanilla/libs
     volumes:
-        - ..:/tmp
+        - ..:/data
+
+###############################
+# Make automatic to install libraries
+karma:
+    image: pdonorio/jsdev
+    working_dir: /data
+    volumes:
+        - ../vanilla/libs/bower_components:/data/bower_components
+        - ../vanilla/jscode:/data
 
 #################################
 # Database administration
