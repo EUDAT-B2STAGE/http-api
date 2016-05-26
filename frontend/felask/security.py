@@ -14,7 +14,9 @@ logger = get_logger(__name__)
 ##################################
 # If connected to APIs
 
+API_TIMEOUT = 10
 LOGIN_URL = AUTH_URL + 'login'
+LOGOUT_URL = AUTH_URL + 'logout'
 REGISTER_URL = AUTH_URL + 'register'
 PROFILE_URL = AUTH_URL + 'profile'
 HEADERS = {'content-type': 'application/json'}
@@ -73,7 +75,9 @@ def register_api(request):
     # Init
     code = hcodes.HTTP_OK_CREATED
     j = json.dumps(request)
-    opts = {'stream': True, 'data': j, 'headers': HEADERS, 'timeout': 5}
+    opts = {
+        'stream': True, 'data': j,
+        'headers': HEADERS, 'timeout': API_TIMEOUT}
 
     try:
 
@@ -108,8 +112,9 @@ def login_api(username, password):
     payload = {'username': username, 'password': password}
 
     try:
-        r = requests.post(LOGIN_URL, stream=True,
-                          data=json.dumps(payload), headers=HEADERS, timeout=5)
+        r = requests.post(
+            LOGIN_URL, stream=True,
+            data=json.dumps(payload), headers=HEADERS, timeout=API_TIMEOUT)
     except requests.exceptions.ConnectionError:
         return {'errors':
                 {'API unavailable': "Cannot connect to APIs server"}}, \
@@ -180,19 +185,29 @@ def login_api(username, password):
     return response, out['Meta']['status']
 
 
-def logout_api():
+def logout_api(headers):
 
+    token = None
     # Recover token from request
-    """
-    payload = {'username': username, 'password': password}
+    for header, content in headers.items():
+        if header == 'Authorization':
+            try:
+                auth_type, token = content.split(None, 1)
+            except:
+                pass
+            print("HEAD", header, auth_type, token)
 
-    try:
-        r = requests.post(LOGIN_URL, stream=True,
-                          data=json.dumps(payload), headers=HEADERS, timeout=5)
-    except requests.exceptions.ConnectionError:
-        return {'errors':
-                {'API unavailable': "Cannot connect to APIs server"}}, \
-            hcodes.HTTP_DEFAULT_SERVICE_FAIL
-    out = r.json()
-    """
-    pass
+    if token is not None:
+        try:
+            r = requests.get(LOGOUT_URL, stream=True,
+                             headers=headers, timeout=API_TIMEOUT)
+        except requests.exceptions.ConnectionError:
+            return {'errors':
+                    {'API unavailable': "Cannot connect to APIs server"}}, \
+                hcodes.HTTP_DEFAULT_SERVICE_FAIL
+        out = r.json()
+        print(out)
+# CHECK ALSO IF RESPONSE IS NOT POSITIVE
+        return {'token': token}, hcodes.HTTP_OK_NORESPONSE
+    else:
+        return {}, hcodes.HTTP_BAD_FORBIDDEN

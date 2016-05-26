@@ -215,6 +215,5 @@ def home(mypath=None):
         # return templating('welcome.html')
         pass
     elif mypath == 'loggedout':
-        print("TEST JSON", request.headers)
-        logout_api()
+        return forward_response(logout_api(request.headers))
     return jstemplate()

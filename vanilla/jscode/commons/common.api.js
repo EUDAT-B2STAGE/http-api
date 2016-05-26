@@ -15,7 +15,9 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
     self.endpoints = {
         check: 'status',
         logged: 'profile',
-        logout: 'logout',
+        login: 'login',
+        // logout: 'logout',
+        logout: 'loggedout',
         admin: 'verifyadmin',
         register: 'doregistration',
     };
@@ -49,19 +51,21 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
             data = self.getOrDefault(data, {});
         }
 
-        // # login, logout, profile
         var currentUrl = self.API_URL + endpoint;
-
 //////////////////////////////
 // WARNING PORCATA
-        if (endpoint == 'login' || endpoint == 'logout' || endpoint == 'profile') {
+        if (endpoint == 'login'
+            // || endpoint == 'logout'
+            || endpoint == self.endpoints.logged)
+        {
             currentUrl = self.AUTH_URL + endpoint;
         }
-//////////////////////////////
-
-        if (endpoint == self.endpoints.register) {
+        if (endpoint == self.endpoints.register
+            || endpoint == self.endpoints.logout)
+        {
             currentUrl = self.FRONTEND_URL + endpoint;
         }
+//////////////////////////////
 
         var token = self.checkToken(),
             timeout = 5500,
