@@ -10,6 +10,11 @@ http://codeology.braintreepayments.com/pdonorio/restangulask
 auth:
   ✔ Fix login @done (16-05-24 12:16)
   ☐ Fix logout @important
+    checkauth.py:  92
+    generic.py: 152
+    security.py: 210
+    common.auth.js: 196
+    graphdb.py: 43
     ☐ use dialog
   ☐ Watch for token valid
     ☐ JS check logged at status change

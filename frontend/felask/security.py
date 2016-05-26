@@ -207,6 +207,7 @@ def logout_api(headers):
                 hcodes.HTTP_DEFAULT_SERVICE_FAIL
         out = r.json()
         print(out)
+# // TO FIX
 # CHECK ALSO IF RESPONSE IS NOT POSITIVE
         return {'token': token}, hcodes.HTTP_OK_NORESPONSE
     else:
