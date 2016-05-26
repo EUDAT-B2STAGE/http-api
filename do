@@ -145,7 +145,7 @@ echo "{ \"blueprint\": \"$1\" }" > ../$jsconf
 
 #############################
 # Run services
-bcom="$compose_com run $webbuild bower install"
+bcom="$compose_com run --rm $webbuild bower install"
 
 # First time install
 if [ "$2" == "init" ]; then
@@ -233,7 +233,7 @@ elif [ "$2" == "test_backend" ]; then
 
 elif [ "$2" == "sql" ]; then
     echo "Launch adminer for SQL servers"
-    $compose_com run --service-ports sqladmin
+    $compose_com run --rm --service-ports sqladmin
 
 elif [ "$2" == "push" ]; then
 
@@ -306,7 +306,7 @@ elif [ "$2" == "bower" ]; then
 elif [ "$2" == "karma" ]; then
 
     echo "Opening shell for nodejs"
-    $compose_com run $2 bash
+    $compose_com run --rm $2 bash
     exit 0
 else
     echo "Unknown command '$2'. Ask for help:"
