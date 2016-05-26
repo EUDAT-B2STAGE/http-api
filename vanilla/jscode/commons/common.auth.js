@@ -191,15 +191,15 @@ function LogoutController($scope, $rootScope, $log, $auth, $window, $state, api,
           function(response) {
             $log.info("Logging out", response);
 
-            console.log("LOGOUT IS ON PROGRESS AT THE MOMENT");
 /*
+            console.log("LOGOUT IS ON PROGRESS AT THE MOMENT");
+*/
         	$auth.logout().then(function() {
                 $log.debug("Token cleaned:", $auth.getToken());
             });
             $window.location.reload();
             $rootScope.logged = false;
             //$state.go('welcome');
-*/
           }, function(error) {
             $log.warn("Error for logout", error);
             noty.showAll([error.data], noty.ERROR);
