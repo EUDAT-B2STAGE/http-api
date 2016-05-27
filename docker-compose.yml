@@ -15,7 +15,7 @@
 #################################
 # Shared volume(s)
 certshare:
-    image: busybox
+    image: alpine
     command: echo "Data volume on"
     volumes:
       - httpapi_sharedcerts:/opt/certificates
@@ -127,7 +127,9 @@ rest:
     volumes_from:
       - certshare
     links:
+        # IRODS MUST BE CALLED rodserver
         - icat:rodserver
+        # GRAPHDB MUST BE CALLED gdb
         - graphdb:gdb
 
 #################################

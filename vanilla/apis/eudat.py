@@ -8,30 +8,14 @@ B2SAFE HTTP REST API endpoints.
 
 import os
 from ..base import ExtendedApiResource
-# from flask.ext.restful import request
 from .. import decorators as decorate
-# from werkzeug import secure_filename
-
-# AUTH
-# from confs import config
-# from flask.ext.security import roles_required, auth_token_required
-
-# from ..services.neo4j import migraph
-from ..services.irodsclient import ICommands, test_irods, IrodsException
+from ..services.irods.client import ICommands, IrodsException
 from ..services.uploader import Uploader
 from plumbum.commands.processes import ProcessExecutionError as perror
 from ... import htmlcodes as hcodes
 
 from restapi import get_logger
 logger = get_logger(__name__)
-
-
-###############################
-# Irods connection check
-try:
-    logger.info("Irods is online: %s" % test_irods)
-except perror as e:
-    logger.critical("Failed to connect to irods:\n%s" % str(e))
 
 
 ###############################
@@ -69,17 +53,6 @@ class IrodsEndpoints(ExtendedApiResource):
             ipath += '/'
 
         return ipath
-
-
-class GraphEndpoints(ExtendedApiResource):
-
-    def get_instance(self):
-
-        # # GraphDB connection ?
-        # logger.info("graph call %s", migraph.other())
-        # query = "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r"
-        # migraph.cypher(query)
-        return False
 
 
 class CollectionEndpoint(IrodsEndpoints):
