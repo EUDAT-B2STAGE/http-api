@@ -27,9 +27,6 @@ logger = get_logger(__name__)
 #     g.after_request_callbacks.append(f)
 #     return f
 
-# // TO FIX: move it somewhere
-b2access = ExternalServicesLogin().b2access()
-
 
 ###############################
 # Classes
@@ -39,11 +36,15 @@ class OauthLogin(ExtendedApiResource):
 
     base_url = AUTH_URL
 
+    @decorate.load_auth_obj
     def get(self):
-        # b2access = ExternalServicesLogin()._current
-        b2access = ExternalServicesLogin().b2access()
-        out = b2access.authorize(callback=url_for('authorize', _external=True))
-        print(out)
+
+        b2access = self._auth._oauth2['b2access']
+        print("TEST", b2access)
+        out = "Hello"
+        # out = b2access.authorize(
+        #     callback=url_for('authorize', _external=True))
+        print("AUTORIZED?", out)
         return out
 
 
@@ -54,8 +55,8 @@ class Authorize(ExtendedApiResource):
 
     @decorate.apimethod
     def get(self):
-        # b2access = ExternalServicesLogin()._current
-        b2access = ExternalServicesLogin().b2access()
+        b2access = self._auth._oauth2['b2access']
+        # B2ACCESS requires some fixes to make this authorization call
         decorate_http_request(b2access)
 
         resp = None
@@ -99,7 +100,7 @@ class IrodsEndpoints(ExtendedApiResource):
         This will depend on B2ACCESS authentication
         """
 ################
-#// TO FIX: this should be recovered from the token
+#// TO FIX: this should be recovered from the JWT token
 ################
         return 'guest'
 
