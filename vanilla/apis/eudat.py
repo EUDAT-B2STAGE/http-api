@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 """
-Prototyping!
-
 B2SAFE HTTP REST API endpoints.
 """
 
@@ -13,13 +11,85 @@ from ..services.irods.client import ICommands, IrodsException
 from ..services.uploader import Uploader
 from plumbum.commands.processes import ProcessExecutionError as perror
 from ... import htmlcodes as hcodes
+from flask import url_for, request  # , g
+from confs.config import AUTH_URL
+from ...auth import auth
+from ..services.oauth2clients \
+    import ExternalServicesLogin, decorate_http_request
 
-from restapi import get_logger
+from ... import get_logger
 logger = get_logger(__name__)
+
+
+# def after_this_request(f):
+#     if not hasattr(g, 'after_request_callbacks'):
+#         g.after_request_callbacks = []
+#     g.after_request_callbacks.append(f)
+#     return f
+
+# // TO FIX: move it somewhere
+b2access = ExternalServicesLogin().b2access()
 
 
 ###############################
 # Classes
+
+class OauthLogin(ExtendedApiResource):
+    """ API online test """
+
+    base_url = AUTH_URL
+
+    def get(self):
+        # b2access = ExternalServicesLogin()._current
+        b2access = ExternalServicesLogin().b2access()
+        out = b2access.authorize(callback=url_for('authorize', _external=True))
+        print(out)
+        return out
+
+
+class Authorize(ExtendedApiResource):
+    """ API online test """
+
+    base_url = AUTH_URL
+
+    @decorate.apimethod
+    def get(self):
+        # b2access = ExternalServicesLogin()._current
+        b2access = ExternalServicesLogin().b2access()
+        decorate_http_request(b2access)
+
+        resp = None
+        try:
+            resp = b2access.authorized_response()
+        except Exception as e:
+            print("ERROR", str(e))
+
+        if resp is None:
+            return self.response({
+                'errors': "Access denied: reason=%s error=%s" % (
+                    request.args['error'],
+                    request.args['error_description']
+                )})
+
+        token = resp.get('access_token')
+        if token is None:
+            logger.critical("No token received")
+        else:
+            logger.info("Received token: '%s'" % token)
+
+# SAVE THIS INTO DATABASE
+
+        # If you want to save this into a cookie
+        # @after_this_request
+        # def set_cookie(response):
+        #     response.set_cookie('access_token', token)
+        #     print("SET COOKIE", response)
+
+        # me = b2access.get('user')
+        # return self.response(me.data)
+        return self.response({'token': token})
+
+
 class IrodsEndpoints(ExtendedApiResource):
 
     def get_token_user(self):
@@ -28,7 +98,9 @@ class IrodsEndpoints(ExtendedApiResource):
 
         This will depend on B2ACCESS authentication
         """
-# // TO FIX: this should be recovered from the token
+################
+#// TO FIX: this should be recovered from the token
+################
         return 'guest'
 
     def get_instance(self):
@@ -57,6 +129,7 @@ class IrodsEndpoints(ExtendedApiResource):
 
 class CollectionEndpoint(IrodsEndpoints):
 
+    @auth.login_required
     @decorate.apimethod
     def get(self, path=None):
         """
@@ -67,6 +140,7 @@ class CollectionEndpoint(IrodsEndpoints):
         icom = self.get_instance()
         return self.response(icom.list(path))
 
+    @auth.login_required
     @decorate.add_endpoint_parameter('collection', required=True)
     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
     @decorate.apimethod
@@ -93,6 +167,7 @@ class CollectionEndpoint(IrodsEndpoints):
 
 class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
+    @auth.login_required
     @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
@@ -136,6 +211,7 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
         # Stream file content
         return filecontent
 
+    @auth.login_required
     @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
@@ -190,6 +266,7 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
         # Reply to user
         return self.response(data=content, errors=errors, code=status)
 
+    @auth.login_required
     @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
     def delete(self, name):
