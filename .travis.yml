@@ -1,12 +1,12 @@
 language: python
 sudo: required
 python:
-  - "3.4"
+  - "3.5"
 services:
   - docker
 
 env:
-  DOCKER_COMPOSE_VERSION: 1.7.0
+  DOCKER_COMPOSE_VERSION: 1.7.1
 
 before_install:
   # update docker
@@ -22,23 +22,22 @@ before_install:
 install:
   - pip install coveralls
   - pip install python-coveralls
-  
+
 # before_script:
 #   - chmod o+w backend
 
 script:
   - docker -v
   - docker-compose -v
-  - scripts/run.sh update
-  - scripts/run.sh init
+  - ./do.sh update
+  - ./do.sh init
   # needed for creating files with test coverage
   - chmod o+w backend
   - scripts/run.sh graceful
   # wait for irods to be ready
-  - sleep 10
+  - sleep 10   # Maybe this can now be removed. Please Check!
   - docker logs httpapi_icat_1
-  - scripts/run.sh api_test
-  #- docker-compose exec rest nosetests --with-coverage --cover-package=restapi
+  - ./do.sh api_test
 
 after_success:
   - coveralls
