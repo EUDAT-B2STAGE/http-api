@@ -90,7 +90,10 @@ if [ "$1" == "push" ]; then
     git push
 
     # Save a snapshot of current submodule
-    echo -e $(git show --pretty=%H)"\n"$(git show-branch --current --no-color) > ../$submodule_tracking
+    echo "Save submodule status"
+    echo -e \
+        $(cd $submodule_repo && git log -n 1 --oneline --no-color)"\n"$(cd $submodule_repo && git branch --no-color) \
+        > $submodule_tracking
 
     echo "Pushing main repo"
     cd ..
