@@ -29,15 +29,15 @@ install:
 script:
   - docker -v
   - docker-compose -v
-  - ./do.sh update
-  - ./do.sh init
+  - ./do update
+  - ./do init
   # needed for creating files with test coverage
   - chmod o+w backend
   - scripts/run.sh graceful
   # wait for irods to be ready
   - sleep 10   # Maybe this can now be removed. Please Check!
   - docker logs httpapi_icat_1
-  - ./do.sh api_test
+  - ./do api_test
 
 after_success:
   - coveralls

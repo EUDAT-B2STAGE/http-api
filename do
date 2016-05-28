@@ -88,17 +88,18 @@ if [ "$1" == "push" ]; then
     echo "Pushing submodule"
     cd $subdir
     git push
+    cd ..
 
     # Save a snapshot of current submodule
     echo "Save submodule status"
     echo -e \
-        $(cd $submodule_repo && git log -n 1 --oneline --no-color)"\n"$(cd $submodule_repo && git branch --no-color) \
+        $(cd $subdir && git log -n 1 --oneline --no-color)"\n"$(cd $subdir && git branch --no-color) \
         > $submodule_tracking
 
     echo "Pushing main repo"
-    cd ..
     git add $submodule_tracking
     git commit
+    exit 0
     git push
     echo "Completed"
     exit 0
@@ -135,8 +136,6 @@ fi
 
 # Init your stack
 if [ "$1" == "init" ]; then
-    # echo "Updating docker images to latest release"
-    # $allcompose pull
     echo "WARNING: Removing old containers/volumes if any"
     echo "(Sleeping some seconds to let you stop in case you made a mistake)"
     sleep 7
