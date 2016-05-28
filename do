@@ -110,7 +110,6 @@ if [ "$1" == "push" ]; then
     echo "Pushing main repo"
     git add $submodule_tracking
     git commit
-    exit 0
     git push
     echo "Completed"
     exit 0
