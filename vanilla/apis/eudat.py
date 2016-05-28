@@ -5,17 +5,16 @@ B2SAFE HTTP REST API endpoints.
 """
 
 import os
-from ..base import ExtendedApiResource
-from .. import decorators as decorate
-from ..services.irods.client import ICommands, IrodsException
-from ..services.uploader import Uploader
 from plumbum.commands.processes import ProcessExecutionError as perror
-from ... import htmlcodes as hcodes
-from flask import url_for, request  # , g
+from flask import url_for, request
 from confs.config import AUTH_URL
+from ..base import ExtendedApiResource
+from ..services.irods.client import IrodsException
+from ..services.uploader import Uploader
+from ..services.oauth2clients import decorate_http_request
+from ... import htmlcodes as hcodes
 from ...auth import auth
-from ..services.oauth2clients \
-    import ExternalServicesLogin, decorate_http_request
+from .. import decorators as decorate
 
 from ... import get_logger
 logger = get_logger(__name__)
@@ -27,6 +26,27 @@ logger = get_logger(__name__)
 #     g.after_request_callbacks.append(f)
 #     return f
 
+def handle_collection_path(self, icom, ipath):
+    """
+    iRODS specific pattern to handle paths
+    """
+
+    home = icom.get_base_dir()
+
+    # Should add the base dir if doesn't start with /
+    if ipath is None or ipath == '':
+        ipath = home
+    elif ipath[0] != '/':
+        ipath = home + '/' + ipath
+    else:
+        # Add the zone
+        ipath = '/' + icom._current_environment['IRODS_ZONE'] + ipath
+    # Append / if missing in the end
+    if ipath[-1] != '/':
+        ipath += '/'
+
+    return ipath
+
 
 ###############################
 # Classes
@@ -36,16 +56,14 @@ class OauthLogin(ExtendedApiResource):
 
     base_url = AUTH_URL
 
-    @decorate.load_auth_obj
+    @decorate.apimethod
     def get(self):
 
-        b2access = self._auth._oauth2['b2access']
-        print("TEST", b2access)
-        out = "Hello"
-        # out = b2access.authorize(
-        #     callback=url_for('authorize', _external=True))
-        print("AUTORIZED?", out)
-        return out
+        auth = self.global_get('custom_auth')
+        b2access = auth._oauth2.get('b2access')
+        response = b2access.authorize(
+            callback=url_for('authorize', _external=True))
+        return self.response(response)
 
 
 class Authorize(ExtendedApiResource):
@@ -55,8 +73,9 @@ class Authorize(ExtendedApiResource):
 
     @decorate.apimethod
     def get(self):
-        b2access = self._auth._oauth2['b2access']
-        # B2ACCESS requires some fixes to make this authorization call
+        auth = self.global_get('custom_auth')
+        b2access = auth._oauth2.get('b2access')
+        # B2ACCESS requires some fixes to make this authorization call
         decorate_http_request(b2access)
 
         resp = None
@@ -91,44 +110,7 @@ class Authorize(ExtendedApiResource):
         return self.response({'token': token})
 
 
-class IrodsEndpoints(ExtendedApiResource):
-
-    def get_token_user(self):
-        """
-        WARNING: NOT IMPLEMENTED YET!
-
-        This will depend on B2ACCESS authentication
-        """
-################
-#// TO FIX: this should be recovered from the JWT token
-################
-        return 'guest'
-
-    def get_instance(self):
-        user = self.get_token_user()
-        # iRODS object
-        return ICommands(user)
-
-    def handle_collection_path(self, icom, ipath):
-
-        home = icom.get_base_dir()
-
-        # Should add the base dir if doesn't start with /
-        if ipath is None or ipath == '':
-            ipath = home
-        elif ipath[0] != '/':
-            ipath = home + '/' + ipath
-        else:
-            # Add the zone
-            ipath = '/' + icom._current_environment['IRODS_ZONE'] + ipath
-        # Append / if missing in the end
-        if ipath[-1] != '/':
-            ipath += '/'
-
-        return ipath
-
-
-class CollectionEndpoint(IrodsEndpoints):
+class CollectionEndpoint(ExtendedApiResource):
 
     @auth.login_required
     @decorate.apimethod
@@ -138,7 +120,7 @@ class CollectionEndpoint(IrodsEndpoints):
         If path is not specified we list the home directory.
         """
 
-        icom = self.get_instance()
+        icom = self.global_get_service('irods')
         return self.response(icom.list(path))
 
     @auth.login_required
@@ -148,7 +130,7 @@ class CollectionEndpoint(IrodsEndpoints):
     def post(self):
         """ Create one collection/directory """
 
-        icom = self.get_instance()
+        icom = self.global_get_service('irods')
         ipath = self._args.get('collection')
 
         try:
@@ -166,7 +148,7 @@ class CollectionEndpoint(IrodsEndpoints):
         return self.response(ipath, code=hcodes.HTTP_OK_CREATED)
 
 
-class DataObjectEndpoint(Uploader, IrodsEndpoints):
+class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
     @auth.login_required
     @decorate.add_endpoint_parameter('collection')
@@ -186,10 +168,10 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
         # obj init
         user = self.get_token_user()
-        icom = self.get_instance()
+        icom = self.global_get_service('irods')
 
         # paths
-        collection = self.handle_collection_path(
+        collection = handle_collection_path(
             icom, self._args.get('collection'))
         ipath = collection + name
         abs_file = self.absolute_upload_file(name, user)
@@ -241,12 +223,12 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
 
             ############################
             # Move file inside irods
-            icom = self.get_instance()
+            icom = self.global_get_service('irods')
 
             # ##HANDLING PATH
             # The home dir for the current user
             # Where to put the file in irods
-            collection = self.handle_collection_path(
+            collection = handle_collection_path(
                 icom, self._args.get('collection'))
             ipath = collection + filename
 
@@ -273,9 +255,9 @@ class DataObjectEndpoint(Uploader, IrodsEndpoints):
     def delete(self, name):
         """ Remove an object """
 
-        icom = self.get_instance()
+        icom = self.global_get_service('irods')
         # paths
-        collection = self.handle_collection_path(
+        collection = handle_collection_path(
             icom, self._args.get('collection'))
         ipath = collection + name
         try:
