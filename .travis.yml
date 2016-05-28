@@ -31,12 +31,12 @@ script:
   - docker-compose -v
   - ./do update
   - ./do init
-  # needed for creating files with test coverage
+  # needed to let the system create files with test coverage
   - chmod o+w backend
-  - scripts/run.sh graceful
+  - ./do graceful
   # wait for irods to be ready
-  - sleep 10   # Maybe this can now be removed. Please Check!
-  - docker logs httpapi_icat_1
+  # - sleep 10   # Maybe this can now be removed. Please Check!
+  # - docker logs httpapi_icat_1
   - ./do api_test
 
 after_success:
