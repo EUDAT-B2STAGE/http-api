@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Note: i could add a shorter timeout with docker-compose stop -t 5
+
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
 echo "# ############################################ #"
@@ -70,6 +72,15 @@ fi
 
 # Update the remote github repos
 if [ "$1" == "push" ]; then
+
+    check_container=`$allcompose ps rest | grep -i exit`
+    if [ "$check_container" != "" ]; then
+        echo "Please make sure that Flask container server is running"
+        echo "You may try with the command:"
+        echo "$0 graceful"
+        echo ""
+        exit 1
+    fi
 
     if [ "$2" != "force" ]; then
         testlogs="/tmp/tests.log"
