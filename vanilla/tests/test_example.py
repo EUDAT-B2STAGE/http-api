@@ -11,7 +11,7 @@ import unittest
 from restapi.server import create_app
 
 
-__author__ = 'Roberto Mucci (r.mucci@cineca.it)'
+__author__ = "Paolo D'Onorio De Meo (GitHub@pdonorio)"
 
 
 class TestDataObjects(unittest.TestCase):

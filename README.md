@@ -26,16 +26,16 @@ If you need to jump in as soon as possible:
 # Clone repo
 git clone https://github.com/EUDAT-B2STAGE/http-api.git
 # Init services
-scripts/run.sh init
+./do init
 # Then run the final services
-scripts/run.sh graceful
+./do graceful
 # Open the client to test code or run the API server
-scripts/run.sh server_shell
+./do server_shell
 root@api:/code/project# ./boot devel
 ### Develop from here!
 
 # You may also create another shell to mimic the API client
-scripts/run.sh client_shell
+./do client_shell
 / # http GET http://api:5000/api/verify
 
 ```
@@ -51,7 +51,7 @@ Then:
 # Clone repo
 git clone ...
 # Init services
-scripts/run.sh init
+./do init
 # Bring up only irods and postgres
 docker-compose up -d icat
 ```

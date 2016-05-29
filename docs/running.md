@@ -3,24 +3,24 @@
 
 ### The main script
 
-There is a very comprehensive script to manage the docker stack.
+There is a very comprehensive `do` script to manage the docker stack.
 
-You may find it at the path `scripts/run.sh` from the repo root.
+You may find it inside the repository root directory.
 
 To see what you can do with it, ask for help:
 
 ```bash
-$ scripts/run.sh help
+$ ./do help
 # ############################################ #
         EUDAT HTTP API development
 # ############################################ #
 
 Available commands:
 
-NO_COMMAND: Launch the Docker stack
-init:   Startup your repository code, containers and volumes
+init:       Startup your repository code, containers and volumes
 graceful:   Try to bring up only missing containers
-irestart:   Restart the main iRODS iCAT service
+restart:    (Re)Launch the Docker stack
+irestart:   Restart the main iRODS iCAT service instance
 addiuser:   Add a new certificated user to irods
 
 check:  Check the stack status
@@ -31,10 +31,10 @@ clean:  Remove containers and volumes (BE CAREFUL!)
 irods_shell:    Open a shell inside the iRODS iCAT server container
 server_shell:   Open a shell inside the Flask server container
 client_shell:   Open a shell to test API endpoints
+api_test:   Run tests with nose (+ coverage)
 
 push:   Push code to github
-update: Pull updated code and images
-```
+update: Pull updated code and images```
 
 ### Run the final services
 
@@ -42,42 +42,41 @@ Following the previous section everything should be properly configured.
 You can launch postgresql & irods - from now on - with this simple comand:
 
 ```bash
-$ scripts/run.sh graceful
+$ ./do graceful
 
 (re)Boot Docker stack
 Starting eudatapi_certshare_1
+eudatapi_graphdb_1 is up-to-date
 eudatapi_sql_1 is up-to-date
 eudatapi_icat_1 is up-to-date
 eudatapi_rest_1 is up-to-date
-Stack status:
-        Name                      Command               State               Ports
---------------------------------------------------------------------------------------------
+Stack processes:
+---------------------------
 eudatapi_certshare_1   echo Data volume on              Exit 0
+eudatapi_graphdb_1     /docker-entrypoint.sh neo4j      Up       7473/tcp, 0.0.0.0:9090->7474/tcp
 eudatapi_icat_1        /bootup                          Up       1247/tcp
-eudatapi_rest_1        sleep infinity                   Up       192.168.64.7:8080->5000/tcp
+eudatapi_rest_1        ./boot                           Up       0.0.0.0:8080->5000/tcp
 eudatapi_sql_1         /docker-entrypoint.sh postgres   Up       5432/tcp
-```
+Updating certificates in /etc/ssl/certs...```
 
 ### Verify services and ports
 
 Checking processes with compose must say that both containers are up:
 ```bash
-scripts/run.sh check
+./do check
 
 Stack status:
-        Name                      Command               State               Ports
---------------------------------------------------------------------------------------------
-eudatapi_apitests_1    sleep 999999999                  Up
+--------------------
 eudatapi_certshare_1   echo Data volume on              Exit 0
+eudatapi_graphdb_1     /docker-entrypoint.sh neo4j      Up       7473/tcp, 0.0.0.0:9090->7474/tcp
 eudatapi_icat_1        /bootup                          Up       1247/tcp
-eudatapi_rest_1        sleep infinity                   Up       192.168.64.7:8080->5000/tcp
-eudatapi_sql_1         /docker-entrypoint.sh postgres   Up       5432/tcp
-```
+eudatapi_rest_1        ./boot                           Up       0.0.0.0:8080->5000/tcp
+eudatapi_sql_1         /docker-entrypoint.sh postgres   Up       5432/tcp```
 
 ### Opening a shell inside the iRODS iCat server
 
 ```bash
-scripts/run.sh irods_shell
+./do irods_shell
 
 irods@rodserver:~$ ils
 /tempZone/home/rods:
@@ -86,7 +85,7 @@ irods@rodserver:~$ ils
 ### Restarting the irods server
 
 ```bash
-$ scripts/run.sh irestart
+$ ./do irestart
 
 [sudo] password for irods:
 Stopping iRODS server...
@@ -153,4 +152,4 @@ The main password is saved as an environment variable for development purpose.
 
 You may (and should) change it inside the `docker-compose.yml` file.
 
-By the way, security for containers is best reached by avoiding connections/launching containers from outside your net/LAN.
+Note that security for containers is best reached by avoiding connections/launching containers from outside your net/LAN.

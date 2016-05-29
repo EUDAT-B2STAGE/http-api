@@ -10,7 +10,7 @@ Based on the GSI plugin, you may create a new valid X509 certificate
 for a new user, and add it to the irods system with our script:
 
 ```bash
-$ scripts/run.sh addiuser tester
+$ ./do addiuser tester
 
 Created a valid signed certificate: /opt/certificates/tester/usercert.pem
 Check certificate:
@@ -36,9 +36,9 @@ of writing, we are just using icommands wrappers for now...
 
 ```bash
 # Launch the instances
-$ scripts/run.sh graceful
+$ ./do graceful
 # Open the shell
-$ scripts/run.sh server_shell
+$ ./do server_shell
 
 # Execute your code from here. For example:
 
