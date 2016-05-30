@@ -15,8 +15,6 @@
     "angular-material": "~1.0.1",
     "angular-tree-control": "~0.2.23",
     "angular-hotkeys": "chieffancypants/angular-hotkeys#~1.7.0",
-    "angular-formly": "~7.3.9",
-    "angular-formly-material": "~0.14.0",
     "api-check": "~7.5.5",
     "angular-xeditable": "~0.1.9",
     "angular-sortable-view": "^0.0.15",
