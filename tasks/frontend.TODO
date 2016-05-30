@@ -22,7 +22,9 @@ auth:
   ☐ Check back on demo blueprint. Does login still work?
 
 others:
-    ☐ on frontend: get backend api port from container environment
+    ☐ frontend blueprint.js
+      ☐ check how to make a static page from jinja2 for npm
+      ☐ get backend api port from container environment
     ☐ slider alternative welcome
 
 custom/vanilla:
