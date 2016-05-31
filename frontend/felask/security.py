@@ -6,7 +6,7 @@ import requests
 import json
 # from datetime import datetime
 # from flask import Response, stream_with_context
-from . import htmlcodes as hcodes
+from commons import htmlcodes as hcodes
 
 from config import AUTH_URL, get_logger
 logger = get_logger(__name__)

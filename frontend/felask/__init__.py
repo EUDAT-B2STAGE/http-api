@@ -4,7 +4,7 @@
 
 import os
 from config import get_logger
-from .meta import Meta as m
+from commons.meta import Meta as m
 
 logger = get_logger(__name__)
 

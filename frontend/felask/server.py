@@ -16,7 +16,7 @@ passing variables with a Jinja template.
 from __future__ import absolute_import
 from flask import Flask, request as req
 from config import get_logger
-from . import htmlcodes as hcodes
+from commons import htmlcodes as hcodes
 from .pages import cms
 from . import CONFIG_MODULE
 from .basemodel import lm  # , db

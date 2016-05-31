@@ -9,7 +9,7 @@ Test  dataobjects endpoints
 import json
 import unittest
 import logging
-import restapi.htmlcodes as hcodes
+import commons.htmlcodes as hcodes
 from restapi import get_logger
 from restapi.server import create_app
 from confs.config import USER, PWD, \

@@ -6,7 +6,7 @@ Rest view implementation
 
 from __future__ import absolute_import
 import os
-from . import htmlcodes as hc
+from commons import htmlcodes as hc
 from flask import Blueprint, render_template, make_response
 from jinja2 import TemplateNotFound
 from flask.ext.restful import Api, Resource

@@ -4,13 +4,12 @@
 
 from __future__ import absolute_import
 import os
-import requests
 from pathlib import Path
-from flask import Blueprint, render_template, request, jsonify, g
+from flask import Blueprint, render_template, request, jsonify
 from .basemodel import user_config
 from .security import login_api, register_api, logout_api
-from . import htmlcodes as hcodes
-from config import get_logger, FRAMEWORKS, API_URL
+from commons import htmlcodes as hcodes
+from config import get_logger, FRAMEWORKS  # , API_URL
 
 logger = get_logger(__name__)
 CURRENT_FRAMEWORK = None

@@ -4,15 +4,11 @@
 An endpoint example
 """
 
-from ... import get_logger, htmlcodes as hcodes
+from ... import get_logger
 from ..base import ExtendedApiResource
 from .. import decorators as decorate
 from ..services.detect import GRAPHDB_AVAILABLE
-from ..services.neo4j.graph import GraphFarm
-
-# Security
-# from confs import config
-# from flask.ext.security import roles_required, auth_token_required
+from ...auth import auth
 
 logger = get_logger(__name__)
 
@@ -31,6 +27,7 @@ if GRAPHDB_AVAILABLE:
 
     class GraphEndPoint(ExtendedApiResource):
 
+        @auth.login_required
         @decorate.apimethod
         def get(self):
             graph = self.global_get_service('neo4j')

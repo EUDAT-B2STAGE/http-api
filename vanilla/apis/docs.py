@@ -14,7 +14,8 @@ from confs import config
 from ..services.rethink import schema_and_tables, BaseRethinkResource
 from ..services.uploader import Uploader
 from .. import decorators as deck
-from ... import get_logger, htmlcodes as hcodes
+from commons import htmlcodes as hcodes
+from ... import get_logger
 
 logger = get_logger(__name__)
 
