@@ -56,6 +56,12 @@ do
         echo "Please install $com to use this project"
         exit 1
     fi
+
+    dcheck=`$com ps 2>&1 | grep -i "cannot connect"`
+    if [ "$dcheck" != "" ]; then
+        echo "Please check if your Docker daemon is running"
+        exit 1
+    fi
 done
 
 if [ "$(ls -A $subdir)" ]; then

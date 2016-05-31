@@ -66,6 +66,7 @@ class OauthLogin(ExtendedApiResource):
         return self.response(response)
 
 
+
 class Authorize(ExtendedApiResource):
     """ API online test """
 
@@ -73,8 +74,10 @@ class Authorize(ExtendedApiResource):
 
     @decorate.apimethod
     def get(self):
+
         auth = self.global_get('custom_auth')
         b2access = auth._oauth2.get('b2access')
+
         # B2ACCESS requires some fixes to make this authorization call
         decorate_http_request(b2access)
 
@@ -82,31 +85,63 @@ class Authorize(ExtendedApiResource):
         try:
             resp = b2access.authorized_response()
         except Exception as e:
-            print("ERROR", str(e))
+            logger.critical("Failed to get authorized response:\n%s" % str(e))
+            return self.response(
+                {'errors': [{'Access denied': 'B2ACCESS OAUTH2: ' + str(e)}]})
 
         if resp is None:
-            return self.response({
-                'errors': "Access denied: reason=%s error=%s" % (
-                    request.args['error'],
-                    request.args['error_description']
-                )})
+            return self.response(
+                {'errors': [{'Access denied': 'Uknown error'}]})
 
         token = resp.get('access_token')
         if token is None:
             logger.critical("No token received")
         else:
+            from flask import session
+            session['b2access_token'] = (token, '')
             logger.info("Received token: '%s'" % token)
 
-# SAVE THIS INTO DATABASE
+            # ACCESS WITH THIS TOKEN TO GET USER INFOs
+            # ## http://j.mp/b2access_profile_attributes
+            current_user = b2access.get('userinfo')
 
-        # If you want to save this into a cookie
-        # @after_this_request
-        # def set_cookie(response):
-        #     response.set_cookie('access_token', token)
-        #     print("SET COOKIE", response)
+            graph = self.global_get_service('neo4j')
 
-        # me = b2access.get('user')
-        # return self.response(me.data)
+            # A graph node for internal accounts associated to oauth2
+            try:
+                user_node = graph.User.nodes.get(
+                    email=current_user.data.get('email'))
+                if user_node.authmethod != 'b2access_oauth2':
+                    return self.response({'errors': [{
+                        'invalid email':
+                        'Account already exists with other credentials'}]})
+            except graph.User.DoesNotExist:
+                user_node = graph.User(
+                    email=current_user.data.get('email'),
+                    authmethod='b2access_oauth2'
+                )
+
+            # A graph node for external oauth2 account
+            try:
+                b2access_node = graph.ExternalAccounts.nodes.get(
+                    username=current_user.data.get('userName'))
+            except graph.ExternalAccounts.DoesNotExist:
+                b2access_node = graph.ExternalAccounts(
+                    username=current_user.data.get('userName'))
+
+            b2access_node.email = current_user.data.get('email')
+            b2access_node.token = token
+            b2access_node.certificate_cn = current_user.data.get('cn')
+
+            b2access_node.save()
+            user_node.save()
+            user_node.externals.connect(b2access_node)
+
+            # Create a valid token connnected to this new Graphdb user
+            token = auth.create_token(auth.fill_payload(user_node))
+
+# // TO FIX:
+# Create a return_credentials method for Bearer
         return self.response({'token': token})
 
 
@@ -120,7 +155,14 @@ class CollectionEndpoint(ExtendedApiResource):
         If path is not specified we list the home directory.
         """
 
-        icom = self.global_get_service('irods')
+# CHECK IF TOKEN IS AVAILABLE?
+        # if 'b2access_token' in session:
+# CHECK IF TOKEN IS VALID?
+
+        auth = self.global_get('custom_auth')
+        print("DEBUG PROFILE", auth._user, auth._payload)
+
+        icom = self.global_get_service('irods')  # , user='paolo')
         return self.response(icom.list(path))
 
     @auth.login_required

@@ -12,19 +12,42 @@ logger = get_logger(__name__)
 
 ##############################################################################
 # A model for accounting in API login/logout
+
 class User(StructuredNode):
-    name = StringProperty(required=True)
-    surname = StringProperty(required=True)
-    password = StringProperty(required=True)  # A hash produced by Flask login
     email = StringProperty(required=True, unique_index=True)
-    # token = StringProperty()  # Another hash produced by Flask login
+    authmethod = StringProperty(required=True)
+    password = StringProperty()  # A hash produced by Flask login
+#########################################
+# TO BE USED INSIDE THE OVERIDED CLASS
+    name = StringProperty()
+    surname = StringProperty()
+# TO BE USED INSIDE THE OVERIDED CLASS
+#########################################
+    # tokens = RelationshipTo('Tokens', 'EMITTED', cardinality=OneOrMore)
     roles = RelationshipTo('Role', 'ROLE', cardinality=OneOrMore)
+    externals = RelationshipTo(
+        'ExternalAccounts', 'OAUTH', cardinality=OneOrMore)
+
+
+# class Tokens(StructuredNode):
+#     token = StringProperty(required=True)
+#     ttl = StringProperty()
+#     emitted_from = RelationshipFrom(User, 'EMITTED', cardinality=OneOrMore)
 
 
 class Role(StructuredNode):
     name = StringProperty(required=True)
     description = StringProperty(default='No description')
     privileged = RelationshipFrom(User, 'ROLE', cardinality=OneOrMore)
+
+
+class ExternalAccounts(StructuredNode):
+    username = StringProperty(required=True, unique_index=True)
+    token = StringProperty(required=True)
+    email = StringProperty()
+    certificate_cn = StringProperty()
+    description = StringProperty(default='No description')
+    main_user = RelationshipFrom(User, 'OAUTH', cardinality=OneOrMore)
 
 ##############################################################################
 # MODELS
