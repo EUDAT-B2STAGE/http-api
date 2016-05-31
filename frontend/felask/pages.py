@@ -137,9 +137,13 @@ def auth():
     With this we can 'intercept' the request and save extra info on server
     side, such as: ip, user, token
     """
+
     # Verify POST data
+    if request.json is None:
+        return ("", hcodes.HTTP_BAD_UNAUTHORIZED)
     if not ('username' in request.json and 'password' in request.json):
         return "No valid (json) data credentials", hcodes.HTTP_BAD_UNAUTHORIZED
+
     # Request login (with or without API)
     return forward_response(
         login_api(request.json['username'], request.json['password']))

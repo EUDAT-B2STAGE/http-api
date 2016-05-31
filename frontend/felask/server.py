@@ -76,13 +76,18 @@ def create_app():
     # Logging
     @app.after_request
     def log_response(resp):
+
         log = logger.debug
         if resp.status_code == hcodes.HTTP_NOT_MODIFIED:
             log = logger.debug
 
         if 'static/' not in req.url and '/js/' not in req.url:
             log = logger.info
-        log("{} {} {} {}".format(req.method, req.url, req.data, resp))
+
+        from commons.logs import obscure_passwords
+        log("{} {} {} {}".format(
+            req.method, req.url,
+            obscure_passwords(req.data), resp))
         return resp
 
     return app

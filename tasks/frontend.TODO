@@ -28,6 +28,8 @@ others:
     ☐ slider alternative welcome
 
 custom/vanilla:
+  ☐ graphdb (or other service) fill payload
+    ☐ probably fill payload should be a custom function which does not depend on service chosen?
    ☐ vanilla/jscode/app.js
    ☐ vanilla/libs/bower.json
    ☐ json python conf

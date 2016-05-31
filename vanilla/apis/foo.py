@@ -28,11 +28,12 @@ class JustATest(ExtendedApiResource):
 
 #####################################
 if GRAPHDB_AVAILABLE:
-    class GraphEndPoint(ExtendedApiResource, GraphFarm):
+
+    class GraphEndPoint(ExtendedApiResource):
 
         @decorate.apimethod
         def get(self):
-            graph = self.get_graph_instance()
+            graph = self.global_get_service('neo4j')
             print(graph)
             logger.warning("a call")
             return self.response('Hello world!')
