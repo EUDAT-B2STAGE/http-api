@@ -57,6 +57,7 @@ frontend:
         # - restangulask_apilitedb:/dbs
         # Main dir. It has to be the root directory, to make links work
         - ..:/data
+        - ../backend/commons:/data/frontend/commons
         # js/css libraries installed via bower
         - ../vanilla/libs/bower_components:/data/frontend/felask/static/bower
         # custom css files

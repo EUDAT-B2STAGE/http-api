@@ -9,11 +9,11 @@
 #######################
 # Define here your services
 
-searchindex:
-  image: elasticsearch
-  hostname: elastic
-  volumes:
-      - restangulask_graphbased_elasticdata:/usr/share/elasticsearch/data
+# searchindex:
+#   image: elasticsearch
+#   hostname: elastic
+#   volumes:
+#       - restangulask_graphbased_elasticdata:/usr/share/elasticsearch/data
 
 gdb:
     # image: neo4j  # 3.0 has some bugs with neomodel...
