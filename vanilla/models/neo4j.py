@@ -1,64 +1,25 @@
 # -*- coding: utf-8 -*-
 
-""" Graph DB abstraction from neo4j server """
+"""
+Graph DB abstraction from neo4j server.
+These are custom models!
 
+VERY IMPORTANT!
+Imports and models have to be defined/used AFTER normal Graphdb connection.
+"""
+
+from __future__ import absolute_import
 from neomodel import StringProperty, \
-    StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom, \
-    OneOrMore
-from .... import get_logger
+    StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
+import logging
 
-logger = get_logger(__name__)
-
-
-##############################################################################
-# A model for accounting in API login/logout
-
-class User(StructuredNode):
-    email = StringProperty(required=True, unique_index=True)
-    authmethod = StringProperty(required=True)
-    password = StringProperty()  # A hash produced by Flask login
-#########################################
-# TO BE USED INSIDE THE OVERIDED CLASS
-    name = StringProperty()
-    surname = StringProperty()
-# TO BE USED INSIDE THE OVERIDED CLASS
-#########################################
-    # tokens = RelationshipTo('Tokens', 'EMITTED', cardinality=OneOrMore)
-    roles = RelationshipTo('Role', 'ROLE', cardinality=OneOrMore)
-    externals = RelationshipTo(
-        'ExternalAccounts', 'OAUTH', cardinality=OneOrMore)
-
-
-# class Tokens(StructuredNode):
-#     token = StringProperty(required=True)
-#     ttl = StringProperty()
-#     emitted_from = RelationshipFrom(User, 'EMITTED', cardinality=OneOrMore)
-
-
-class Role(StructuredNode):
-    name = StringProperty(required=True)
-    description = StringProperty(default='No description')
-    privileged = RelationshipFrom(User, 'ROLE', cardinality=OneOrMore)
-
-
-class ExternalAccounts(StructuredNode):
-    username = StringProperty(required=True, unique_index=True)
-    token = StringProperty(required=True)
-    email = StringProperty()
-    certificate_cn = StringProperty()
-    description = StringProperty(default='No description')
-    main_user = RelationshipFrom(User, 'OAUTH', cardinality=OneOrMore)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 ##############################################################################
 # MODELS
 ##############################################################################
-
-"""
-VERY IMPORTANT!
-Imports and models have to be defined/used AFTER normal Graphdb connection.
-"""
-
 
 class Person(StructuredNode):
     name = StringProperty(unique_index=True)
@@ -137,11 +98,3 @@ class MetaData(StructuredNode):
     data = RelationshipTo(DataObject, 'DESCRIBED_BY')
     resource = RelationshipTo(Resource, 'DESCRIBED_BY')
     collection = RelationshipTo(Collection, 'DESCRIBED_BY')
-
-# ALL_GRAPH_MODELS = [
-#     Person, Zone, Resource,
-#     Collection, Replication, DataObject,
-#     PID, MetaData
-# ]
-
-# migraph.load_models(ALL_GRAPH_MODELS)

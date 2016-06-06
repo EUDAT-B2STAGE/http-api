@@ -5,6 +5,11 @@
 #       service: conf
 #     environment:
 #       APP_MODE: development
+myconf:
+  image: alpine
+  volumes:
+      # Sql lite database
+      - restangulask_graphbased_apilitedb:/dbs
 
 #######################
 # Define here your services
@@ -32,11 +37,10 @@ custombe:
     extends:
         file: docker-compose.yml
         service: backend
-    volumes:
-        # Sql lite database
-        - restangulask_graphbased_apilitedb:/dbs
     environment:
       BACKEND_AUTH_SERVICE: graphdb
+    volumes-from:
+        - myconf
     links:
         - searchindex:el
         - gdb:gdb
@@ -49,9 +53,8 @@ customfe:
     extends:
         file: docker-compose.yml
         service: frontend
-    volumes:
-        # Sql lite database & common models
-        - restangulask_graphbased_apilitedb:/dbs
+    volumes-from:
+        - myconf
     links:
         - custombe:myapi
 
@@ -60,5 +63,5 @@ customfe:
 
 sqladmin:
     image: clue/adminer
-    volumes:
-        - restangulask_graphbased_apilitedb:/dbs
+    volumes-from:
+        - myconf
