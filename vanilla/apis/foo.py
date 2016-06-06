@@ -18,7 +18,7 @@ class JustATest(ExtendedApiResource):
 
     @decorate.apimethod
     def get(self):
-        logger.warning("a call")
+        logger.warning("Received a test HTTP request")
         return self.response('Hello world!')
 
 

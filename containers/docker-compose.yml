@@ -35,10 +35,12 @@ backend:
         # - restangulask_apilitedb:/dbs
         # Base code
         - ../backend:/code
-        # Rest API endpoints
-        - ../vanilla/apis:/code/restapi/resources/custom
         # Rest API configuration
         - ../vanilla/specs:/code/confs/endpoints
+        # Rest API endpoints
+        - ../vanilla/apis:/code/restapi/resources/custom
+        # Rest API services models
+        - ../vanilla/models:/code/commons/models/custom
         # Other libs
         - ../vanilla/libs:/code/libs
         # Tests
