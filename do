@@ -31,7 +31,7 @@ for com in $coms;
 do
     dcheck=`which $com`
     if [ "$dcheck" == "" ]; then
-        echo "Please install $com to use this project"
+        echo "Please, install $com to use this project."
         exit 1
     fi
     dcheck=`$com ps 2>&1 | grep -i "cannot connect"`
