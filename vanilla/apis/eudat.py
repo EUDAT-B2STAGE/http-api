@@ -6,13 +6,13 @@ B2SAFE HTTP REST API endpoints.
 
 import os
 from plumbum.commands.processes import ProcessExecutionError as perror
-from flask import url_for, request
+from flask import url_for
 from confs.config import AUTH_URL
 from ..base import ExtendedApiResource
 from ..services.irods.client import IrodsException
 from ..services.uploader import Uploader
 from ..services.oauth2clients import decorate_http_request
-from ... import htmlcodes as hcodes
+from commons import htmlcodes as hcodes
 from ...auth import auth
 from .. import decorators as decorate
 
