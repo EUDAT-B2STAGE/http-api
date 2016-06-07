@@ -54,7 +54,7 @@ function NotyService() {
 	        dismissQueue: true,
 	        modal       : false,
 	        maxVisible  : 5,
-	        timeout     : 0,
+	        timeout     : 10000,
 	        layout      : 'bottom',
 	        theme       : 'relax'
 	    });
@@ -68,7 +68,7 @@ function NotyService() {
 	        dismissQueue: true,
 	        modal       : false,
 	        maxVisible  : 3,
-	        timeout     : 3000,
+	        timeout     : 5000,
 	        layout      : 'bottomRight',
 	        theme       : 'relax'
 	    });
@@ -82,7 +82,7 @@ function NotyService() {
 	        dismissQueue: true,
 	        modal       : false,
 	        maxVisible  : 3,
-	        timeout     : 3000,
+	        timeout     : 5000,
 	        layout      : 'bottomRight',
 	        theme       : 'relax'
 	    });
