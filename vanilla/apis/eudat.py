@@ -66,7 +66,6 @@ class OauthLogin(ExtendedApiResource):
         return self.response(response)
 
 
-
 class Authorize(ExtendedApiResource):
     """ API online test """
 
@@ -100,6 +99,17 @@ class Authorize(ExtendedApiResource):
             from flask import session
             session['b2access_token'] = (token, '')
             logger.info("Received token: '%s'" % token)
+
+
+## // TO FIX
+
+# GET A VALID CERTIFICATE TO ACCESS IRODS
+            # To do
+
+# ADD USER (if not exists) IN CASE WE ARE USING A DOCKERIZED VERSION
+            # To do
+            from ..services.detect import IRODS_EXTERNAL
+            print("TEST", IRODS_EXTERNAL)
 
             # ACCESS WITH THIS TOKEN TO GET USER INFOs
             # ## http://j.mp/b2access_profile_attributes
