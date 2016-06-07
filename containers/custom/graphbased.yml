@@ -7,6 +7,7 @@
 #       APP_MODE: development
 myconf:
   image: alpine
+  command: echo datacontainer
   volumes:
       # Sql lite database
       - restangulask_graphbased_apilitedb:/dbs
@@ -39,10 +40,10 @@ custombe:
         service: backend
     environment:
       BACKEND_AUTH_SERVICE: graphdb
-    volumes-from:
+    volumes_from:
         - myconf
     links:
-        - searchindex:el
+        # - searchindex:el
         - gdb:gdb
 
 #######################
@@ -53,7 +54,7 @@ customfe:
     extends:
         file: docker-compose.yml
         service: frontend
-    volumes-from:
+    volumes_from:
         - myconf
     links:
         - custombe:myapi
@@ -63,5 +64,5 @@ customfe:
 
 sqladmin:
     image: clue/adminer
-    volumes-from:
+    volumes_from:
         - myconf
