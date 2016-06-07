@@ -1,2 +1,2 @@
-d3b52a2 Refactoring tests for the new authentication module.
+b96d974 Defined the service name method in irods farm
  graph_based_auth LICENSE README.md backend certs code confs do docker-compose.admin.yml docker-compose.test.yml docker-compose.yml docs init.yml notebooks submodules.current.commit tasks vanilla master oauthtest
