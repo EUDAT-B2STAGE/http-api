@@ -109,22 +109,24 @@ rest:
 
     ports:
         - 8080:5000
-    working_dir: /code/project
+    working_dir: /code
     volumes:
-        # Uploads
+        # Uploads dir
         - httpapi_tmpuploads:/uploads
-        # Sql lite database
+        # Sql lite database (only for this container)
         - httpapi_restlitedb:/dbs
         # Base code
-        - ./backend:/code/project
-        # Rest API endpoints
-        - ./vanilla/apis:/code/project/restapi/resources/custom
+        - ./backend:/code
         # Rest API configuration
-        - ./vanilla/specs:/code/project/confs/endpoints
+        - ./vanilla/specs:/code/confs/endpoints
+        # Rest API services models
+        - ./vanilla/models:/code/commons/models/custom
+        # Rest API endpoints
+        - ./vanilla/apis:/code/restapi/resources/custom
         # B2ACCESS dev certificates
         - ./certs:/usr/local/share/ca-certificates
         # Tests
-        - ./vanilla/tests:/code/project/test/custom
+        - ./vanilla/tests:/code/test/custom
 
         # # External irods Authority
         # - ./certs/caauth:/opt/certificates/caauth
