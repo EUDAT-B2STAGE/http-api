@@ -113,16 +113,15 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
             endpoint = self.endpoints.logged;
         }
         return self.apiCall(endpoint, 'GET', undefined, undefined, true)
-            .then(function (response) {
+            .then(function successCallback(response) {
                 $log.debug("API verify:", response);
-                if (response.status > 250) {
-                    // API available
-                    return false;
-                } else if (response.status < 0) {
+                if (response.status < 0) {
                     // API offline
                     return null;
                 }
                 return true;
+            }, function errorCallback(response) {
+                return false
             });
     }
 }
