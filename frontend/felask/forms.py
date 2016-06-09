@@ -7,7 +7,7 @@
 # http://flask.pocoo.org/snippets/63/
 
 from flask import request, url_for, redirect, flash
-from flask.ext.wtf import Form
+from flask_wtf import Form
 from wtforms import StringField, \
     HiddenField, PasswordField  # , \ validators
 from wtforms.validators import DataRequired, EqualTo, Length

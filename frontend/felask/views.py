@@ -9,7 +9,7 @@ import os
 from commons import htmlcodes as hc
 from flask import Blueprint, render_template, make_response
 from jinja2 import TemplateNotFound
-from flask.ext.restful import Api, Resource
+from flask_restful import Api, Resource
 from config import get_logger
 
 logger = get_logger(__name__)
