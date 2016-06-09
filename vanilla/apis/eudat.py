@@ -4,6 +4,8 @@
 B2SAFE HTTP REST API endpoints.
 """
 
+from __future__ import absolute_import
+
 import os
 import json
 from plumbum.commands.processes import ProcessExecutionError as perror
@@ -104,57 +106,40 @@ class Authorize(ExtendedApiResource):
         if token is None:
             logger.critical("No token received")
         else:
-            from flask import session
-            session['b2access_token'] = (token, '')
             logger.info("Received token: '%s'" % token)
 
-
-            # ACCESS WITH THIS TOKEN TO GET USER INFOs
+            # Use b2access with token to get user info
             # ## http://j.mp/b2access_profile_attributes
+            from flask import session
+            session['b2access_token'] = (token, '')
             current_user = b2access.get('userinfo')
-            print("CURRENT USER", current_user.__dict__)
 
+            # Store b2access information inside the graphdb
             graph = self.global_get_service('neo4j')
-            email = current_user.data.get('email')
+            obj = graph.save_oauth2_info_into_user(
+                graph, current_user, token)
+## // TO FIX:
+# make this a 'check_if_error_obj' inside the ExtendedAPIResource
+            if isinstance(obj, dict) and 'errors' in obj:
+                return self.response(obj)
+            user_node = obj
+            logger.info("Stored access info")
 
-            # A graph node for internal accounts associated to oauth2
-            try:
-                user_node = graph.User.nodes.get(email=email)
-                if user_node.authmethod != 'b2access_oauth2':
-                    return self.response({'errors': [{
-                        'invalid email':
-                        'Account already exists with other credentials'}]})
-            except graph.User.DoesNotExist:
-                user_node = graph.User(
-                    email=email,
-                    authmethod='b2access_oauth2')
-
-            # A graph node for external oauth2 account
-            try:
-                b2access_node = graph.ExternalAccounts.nodes.get(
-                    username=email)
-            except graph.ExternalAccounts.DoesNotExist:
-                b2access_node = graph.ExternalAccounts(
-                    username=email)
-
-            b2access_node.email = current_user.data.get('email')
-            b2access_node.token = token
-            b2access_node.certificate_cn = current_user.data.get('cn')
-
-            b2access_node.save()
-            user_node.save()
-            user_node.externals.connect(b2access_node)
-
-## // TO FIX
-# GET A VALID CERTIFICATE TO ACCESS IRODS
-            # To do
+            # Get a valid certificate to access irods
+            from commons.certificates import Certificates
+            b2accessCA = auth._oauth2.get('b2accessCA')
+            obj = Certificates().make_proxy_from_ca(b2accessCA)
+            if isinstance(obj, dict) and 'errors' in obj:
+                return self.response(obj)
+            logger.info("Created proxy")
 
 # ADD USER (if not exists) IN CASE WE ARE USING A DOCKERIZED VERSION
             # To do
             from ..services.detect import IRODS_EXTERNAL
-            print("TEST", IRODS_EXTERNAL)
+            if IRODS_EXTERNAL:
+                print("ADD/CHECK USER INSIDE IRODS")
 
-            # Create a valid token connnected to this new Graphdb user
+            # Create a valid token for our API
             token = auth.create_token(auth.fill_payload(user_node))
 
 ## // TO FIX:
