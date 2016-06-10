@@ -7,7 +7,17 @@
     		</tr>
     		<tr ng-repeat="(key, value) in profile">
     		<th>{{key}}</th>
-    		<td>{{value}}</td>
+
+    		<td ng-if="key != 'roles'">{{value}}</td>
+
+            <td ng-if="key == 'roles'">
+                <md-chips 
+                    ng-model="value" 
+                    readonly="true"
+                >
+                </md-chips>
+            </td>
+
     		</tr>
     	</table>
     </md-content>
