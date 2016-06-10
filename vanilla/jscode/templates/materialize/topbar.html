@@ -20,7 +20,7 @@
         </md-button>
     </a>
 
-    <a href ui-sref="logged.profile">
+    <a href ui-sref="logged.profile" ng-if="logged">
       <i class="material-icons">people</i>
       <i><small>{{profile.email}}</small></i>
     </a>
