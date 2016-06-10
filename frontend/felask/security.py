@@ -199,14 +199,12 @@ def logout_api(headers):
 
     if token is not None:
         try:
-            r = requests.get(LOGOUT_URL, stream=True,
+            requests.get(LOGOUT_URL, stream=True,
                              headers=headers, timeout=API_TIMEOUT)
         except requests.exceptions.ConnectionError:
             return {'errors':
                     {'API unavailable': "Cannot connect to APIs server"}}, \
                 hcodes.HTTP_DEFAULT_SERVICE_FAIL
-        out = r.json()
-        print(out)
 # // TO FIX
 # CHECK ALSO IF RESPONSE IS NOT POSITIVE
         return {'token': token}, hcodes.HTTP_OK_NORESPONSE
