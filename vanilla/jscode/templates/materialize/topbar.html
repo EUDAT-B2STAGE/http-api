@@ -19,6 +19,11 @@
             Login
         </md-button>
     </a>
+
+    <a href ui-sref="logged.profile">
+      <i class="material-icons">people</i>
+      <i><small>{{profile.email}}</small></i>
+    </a>
     <a href ui-sref="logged.logout">
         <md-button ng-if="logged" class="md-raised">
         Logout

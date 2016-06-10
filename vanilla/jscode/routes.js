@@ -22,6 +22,7 @@ function _redirectIfNotAuthenticated($log, $rootScope,
       if (response && $auth.isAuthenticated()) {
         $log.debug("Checked: logged!")
         $rootScope.logged = true;
+        $rootScope.profile = response;
         return true;
       }
       var state = 'public.login';
@@ -87,7 +88,7 @@ function routeConfig(
 // ROUTER CONFIGURATION
 
     // Enable log
-    $logProvider.debugEnabled(true); //.hashPrefix('!');
+    $logProvider.debugEnabled(false); //.hashPrefix('!');
     // HTML5 mode: remove hash bang to let url be parsable
     $locationProvider.html5Mode(true);
 
@@ -247,7 +248,13 @@ $stateProvider
         }
     })
 
-    // Routes definition ends here
+    .state("logged.profile", {
+        url: "/profile",
+        views: {
+            "loggedview": {templateUrl: templateDir+'profile.html'}
+        }
+    })
+        // Routes definition ends here
     ;
 
 // TO FIX: move it to custom routing somehow

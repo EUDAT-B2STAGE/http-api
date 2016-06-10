@@ -54,15 +54,10 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
         var currentUrl = self.API_URL + endpoint;
 //////////////////////////////
 // WARNING PORCATA
-        if (endpoint == 'login'
-            // || endpoint == 'logout'
-            || endpoint == self.endpoints.logged)
-        {
+        if (endpoint == 'login' || endpoint == self.endpoints.logged) {
             currentUrl = self.AUTH_URL + endpoint;
-        }
-        if (endpoint == self.endpoints.register
-            || endpoint == self.endpoints.logout)
-        {
+        } else if (endpoint == self.endpoints.register
+            || endpoint == self.endpoints.logout) {
             currentUrl = self.FRONTEND_URL + endpoint;
         }
 //////////////////////////////
@@ -74,7 +69,6 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
                 url: currentUrl,
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Authentication-Token': token,
                     'Authorization': 'Bearer ' + token,
                 },
                 data: data,
@@ -119,7 +113,8 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
                     // API offline
                     return null;
                 }
-                return true;
+                return response.data.Response.data;
+                //return true;
             }, function errorCallback(response) {
                 return false
             });
