@@ -15,15 +15,9 @@ before_script:
 
 stages:
   - tests
-  - coverage
 
 script:
   stage: tests
   script:
    - docker -v
    - docker-compose -v
-
-cov:
-  stage: coverage
-  script:
-   - coveralls
