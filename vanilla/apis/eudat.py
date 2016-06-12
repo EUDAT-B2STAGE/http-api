@@ -108,6 +108,7 @@ class Authorize(ExtendedApiResource):
         else:
             logger.info("Received token: '%s'" % token)
 
+            ############################################
             # Use b2access with token to get user info
             # ## http://j.mp/b2access_profile_attributes
             from flask import session
@@ -118,6 +119,11 @@ class Authorize(ExtendedApiResource):
             graph = self.global_get_service('neo4j')
             obj = auth.save_oauth2_info_to_user(
                 graph, current_user, token)
+
+## // TO FIX:
+# we must link inside the graph
+# the new external account to at least at the very default Role
+
 ## // TO FIX:
 # make this a 'check_if_error_obj' inside the ExtendedAPIResource
             if isinstance(obj, dict) and 'errors' in obj:
@@ -125,20 +131,20 @@ class Authorize(ExtendedApiResource):
             user_node = obj
             logger.info("Stored access info")
 
+            ############################################
             # Get a valid certificate to access irods
 
-#################################
-# INSECURE SSL CONTEXT
-# TO USE IF NOT IN PRODUCTION
+            # INSECURE SSL CONTEXT. IMPORTANT: to use if not in production
             from flask import current_app
             if current_app.config['DEBUG']:
+                # See more here:
+                # http://stackoverflow.com/a/28052583/2114395
                 import ssl
                 ssl._create_default_https_context = \
                     ssl._create_unverified_context
-
-            # See more here:
-            # http://stackoverflow.com/a/28052583/2114395
-#################################
+            else:
+                raise NotImplementedError(
+                    "Do we have certificates for production?")
 
             from commons.certificates import Certificates
             b2accessCA = auth._oauth2.get('b2accessCA')
@@ -147,6 +153,14 @@ class Authorize(ExtendedApiResource):
                 return self.response(obj)
             logger.info("Created proxy")
 
+## // TO FIX:
+# Save the proxy filename into the graph
+
+## // TO FIX:
+# Check if the proxy works...
+# How??
+
+            ############################################
 # ADD USER (if not exists) IN CASE WE ARE USING A DOCKERIZED VERSION
             # To do
             from ..services.detect import IRODS_EXTERNAL
