@@ -126,6 +126,20 @@ class Authorize(ExtendedApiResource):
             logger.info("Stored access info")
 
             # Get a valid certificate to access irods
+
+#################################
+# INSECURE SSL CONTEXT
+# TO USE IF NOT IN PRODUCTION
+            from flask import current_app
+            if current_app.config['DEBUG']:
+                import ssl
+                ssl._create_default_https_context = \
+                    ssl._create_unverified_context
+
+            # See more here:
+            # http://stackoverflow.com/a/28052583/2114395
+#################################
+
             from commons.certificates import Certificates
             b2accessCA = auth._oauth2.get('b2accessCA')
             obj = Certificates().make_proxy_from_ca(b2accessCA)
