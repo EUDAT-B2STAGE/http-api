@@ -224,11 +224,11 @@ elif [ "$1" == "client_shell" ]; then
     echo "Opening a client shell"
     echo "You may use the 'httpie' library (http command), e.g.:"
     echo ""
-    echo "$ http GET http://api:5000/api/verify"
+    echo "$ http GET http://api:5000/api/status"
     echo ""
     compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
-    $compose up --no-deps -d apitests
-    docker-compose exec $clientcontainer_name sh
+    $compose up --no-deps -d $clientcontainer
+    $compose exec $clientcontainer ash
 
 # Normal boot
 elif [ "$1" == "graceful" ]; then
