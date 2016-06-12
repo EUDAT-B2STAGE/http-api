@@ -116,7 +116,7 @@ class Authorize(ExtendedApiResource):
 
             # Store b2access information inside the graphdb
             graph = self.global_get_service('neo4j')
-            obj = graph.save_oauth2_info_into_user(
+            obj = auth.save_oauth2_info_to_user(
                 graph, current_user, token)
 ## // TO FIX:
 # make this a 'check_if_error_obj' inside the ExtendedAPIResource
