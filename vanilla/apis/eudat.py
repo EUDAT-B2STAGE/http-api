@@ -23,12 +23,7 @@ from ... import get_logger
 logger = get_logger(__name__)
 
 
-# def after_this_request(f):
-#     if not hasattr(g, 'after_request_callbacks'):
-#         g.after_request_callbacks = []
-#     g.after_request_callbacks.append(f)
-#     return f
-
+## // TO FIX: move it inside the irods class
 def handle_collection_path(self, icom, ipath):
     """
     iRODS specific pattern to handle paths
@@ -77,27 +72,28 @@ class Authorize(ExtendedApiResource):
     @decorate.apimethod
     def get(self):
 
+        ############################################
+        # Create the b2access object
         auth = self.global_get('custom_auth')
         b2access = auth._oauth2.get('b2access')
         # B2ACCESS requires some fixes to make this authorization call
         decorate_http_request(b2access)
 
+        ############################################
+        # Use b2access to get authorization
         resp = None
         try:
             resp = b2access.authorized_response()
-
         except json.decoder.JSONDecodeError as e:
             logger.critical("Authorization empty:\n%s\nCheck app credentials"
                             % str(e))
             return self.response({'errors': [{'Server misconfiguration':
                                  'oauth2 failed'}]})
-
         except Exception as e:
             # raise e
             logger.critical("Failed to get authorized response:\n%s" % str(e))
             return self.response(
                 {'errors': [{'Access denied': 'B2ACCESS OAUTH2: ' + str(e)}]})
-
         if resp is None:
             return self.response(
                 {'errors': [{'Access denied': 'Uknown error'}]})
@@ -105,74 +101,86 @@ class Authorize(ExtendedApiResource):
         token = resp.get('access_token')
         if token is None:
             logger.critical("No token received")
-        else:
-            logger.info("Received token: '%s'" % token)
+            return self.response(
+                {'errors': [{'External token': 'Empty token from B2ACCESS'}]})
 
-            ############################################
-            # Use b2access with token to get user info
-            # ## http://j.mp/b2access_profile_attributes
-            from flask import session
-            session['b2access_token'] = (token, '')
-            current_user = b2access.get('userinfo')
+        ############################################
+        # Use b2access with token to get user info
+        logger.info("Received token: '%s'" % token)
+        # ## http://j.mp/b2access_profile_attributes
+        from flask import session
+        session['b2access_token'] = (token, '')
+        current_user = b2access.get('userinfo')
 
-            # Store b2access information inside the graphdb
-            graph = self.global_get_service('neo4j')
-            obj = auth.save_oauth2_info_to_user(
-                graph, current_user, token)
+        # Store b2access information inside the graphdb
+        graph = self.global_get_service('neo4j')
+        obj = auth.save_oauth2_info_to_user(
+            graph, current_user, token)
+
+## // TO FIX:
+# make this a 'check_if_error_obj' inside the ExtendedAPIResource
+        if isinstance(obj, dict) and 'errors' in obj:
+            return self.response(obj)
+
+        user_node = obj
+        logger.info("Stored access info")
 
 ## // TO FIX:
 # we must link inside the graph
 # the new external account to at least at the very default Role
 
-## // TO FIX:
-# make this a 'check_if_error_obj' inside the ExtendedAPIResource
-            if isinstance(obj, dict) and 'errors' in obj:
-                return self.response(obj)
-            user_node = obj
-            logger.info("Stored access info")
+        # Check if user_node has at least one role
 
-            ############################################
-            # Get a valid certificate to access irods
+        # If not add the default one
 
-            # INSECURE SSL CONTEXT. IMPORTANT: to use if not in production
-            from flask import current_app
-            if current_app.config['DEBUG']:
-                # See more here:
-                # http://stackoverflow.com/a/28052583/2114395
-                import ssl
-                ssl._create_default_https_context = \
-                    ssl._create_unverified_context
-            else:
-                raise NotImplementedError(
-                    "Do we have certificates for production?")
-
-            from commons.certificates import Certificates
-            b2accessCA = auth._oauth2.get('b2accessCA')
-            obj = Certificates().make_proxy_from_ca(b2accessCA)
-            if isinstance(obj, dict) and 'errors' in obj:
-                return self.response(obj)
-            logger.info("Created proxy")
-
+        ############################################
 ## // TO FIX:
-# Save the proxy filename into the graph
+# Move this code inside the certificates class
+# as this should be done everytime the proxy expires...!
+        # Get a valid certificate to access irods
 
+        # INSECURE SSL CONTEXT. IMPORTANT: to use if not in production
+        from flask import current_app
+        if current_app.config['DEBUG']:
+            # See more here:
+            # http://stackoverflow.com/a/28052583/2114395
+            import ssl
+            ssl._create_default_https_context = \
+                ssl._create_unverified_context
+        else:
+            raise NotImplementedError(
+                "Do we have certificates for production?")
+
+        from commons.certificates import Certificates
+        b2accessCA = auth._oauth2.get('b2accessCA')
+        obj = Certificates().make_proxy_from_ca(b2accessCA)
+        if isinstance(obj, dict) and 'errors' in obj:
+            return self.response(obj)
+
+        ############################################
+        # Save the proxy filename into the graph
+        proxyfile = obj
+        external_account_node = user_node.externals.all().pop()
+        print("EXT", external_account_node)
+        external_account_node.proxyfile = proxyfile
+        external_account_node.save()
+
+        ############################################
 ## // TO FIX:
-# Check if the proxy works...
-# How??
+# Check if the proxy works... # How??
 
-            ############################################
+        ############################################
 # ADD USER (if not exists) IN CASE WE ARE USING A DOCKERIZED VERSION
-            # To do
-            from ..services.detect import IRODS_EXTERNAL
-            if IRODS_EXTERNAL:
-                print("ADD/CHECK USER INSIDE IRODS")
-
-            # Create a valid token for our API
-            token = auth.create_token(auth.fill_payload(user_node))
+        # To do
+        from ..services.detect import IRODS_EXTERNAL
+        if IRODS_EXTERNAL:
+            raise NotImplementedError("ADD/CHECK USER INSIDE IRODS")
 
 ## // TO FIX:
-# Create a return_credentials method for Bearer ?
-        return self.response({'token': token})
+# Create a 'return_credentials' method to use standard Bearer oauth response
+        return self.response({
+            # Create a valid token for our API
+            'token': auth.create_token(auth.fill_payload(user_node))})
 
 
 class CollectionEndpoint(ExtendedApiResource):
