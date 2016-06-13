@@ -24,7 +24,7 @@ logger = get_logger(__name__)
 
 
 ## // TO FIX: move it inside the irods class
-def handle_collection_path(self, icom, ipath):
+def handle_collection_path(icom, ipath):
     """
     iRODS specific pattern to handle paths
     """
@@ -192,15 +192,9 @@ class CollectionEndpoint(ExtendedApiResource):
         Return list of elements inside a collection.
         If path is not specified we list the home directory.
         """
-
-# CHECK IF TOKEN IS AVAILABLE?
-        # if 'b2access_token' in session:
-# CHECK IF TOKEN IS VALID?
-
-        auth = self.global_get('custom_auth')
-        print("DEBUG PROFILE", auth._user, auth._payload)
-
-        icom = self.global_get_service('irods')  # , user='paolo')
+        icom = self.global_get_service('irods')
+## TO FIX
+        # return self.response(icom.list_as_json(path))
         return self.response(icom.list(path))
 
     @auth.login_required
@@ -247,8 +241,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
                 errors={'dataobject': 'No dataobject/file requested'})
 
         # obj init
-        user = self.get_token_user()
         icom = self.global_get_service('irods')
+        user = icom.get_current_user()
 
         # paths
         collection = handle_collection_path(
@@ -283,7 +277,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         Handle file upload
         """
 
-        user = self.get_token_user()
+        icom = self.global_get_service('irods')
+        user = icom.get_current_user()
 
         # Original upload
         response = super(DataObjectEndpoint, self).upload(subfolder=user)
@@ -303,7 +298,6 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
             ############################
             # Move file inside irods
-            icom = self.global_get_service('irods')
 
             # ##HANDLING PATH
             # The home dir for the current user
@@ -334,6 +328,9 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
     @decorate.apimethod
     def delete(self, name):
         """ Remove an object """
+
+## TO FIX
+## IrodsException: srcPath /tempZone/home/guest/img.jpg does not exist
 
         icom = self.global_get_service('irods')
         # paths

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Test  dataobjects endpoints
+Tests
 """
 
 # import io
@@ -15,13 +15,14 @@ from restapi.server import create_app
 from confs.config import USER, PWD, \
     TEST_HOST, SERVER_PORT, API_URL, AUTH_URL
 
-__author__ = "Paolo D'Onorio De Meo (GitHub@pdonorio)"
+from restapi import get_logger, myself
+
+__author__ = myself
+logger = get_logger(__name__)
+logger.setLevel(logging.DEBUG)
 
 API_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, API_URL)
 AUTH_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, AUTH_URL)
-
-logger = get_logger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class TestDataObjects(unittest.TestCase):
