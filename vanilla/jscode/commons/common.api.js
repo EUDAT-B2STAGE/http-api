@@ -16,6 +16,7 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
         check: 'status',
         logged: 'profile',
         login: 'login',
+        tokens: 'tokens',
         // logout: 'logout',
         logout: 'loggedout',
         admin: 'verifyadmin',
@@ -54,10 +55,15 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
         var currentUrl = self.API_URL + endpoint;
 //////////////////////////////
 // WARNING PORCATA
-        if (endpoint == 'login' || endpoint == self.endpoints.logged) {
+        if (endpoint == self.endpoints.login) 
             currentUrl = self.AUTH_URL + endpoint;
-        } else if (endpoint == self.endpoints.register
-            || endpoint == self.endpoints.logout) {
+        else if (endpoint == self.endpoints.logged) 
+            currentUrl = self.AUTH_URL + endpoint;
+        else if (endpoint == self.endpoints.tokens) 
+            currentUrl = self.AUTH_URL + endpoint;
+        else if (endpoint == self.endpoints.register)
+            currentUrl = self.FRONTEND_URL + endpoint;
+        else if (endpoint == self.endpoints.logout) {
             currentUrl = self.FRONTEND_URL + endpoint;
         }
 //////////////////////////////
@@ -119,6 +125,17 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
                 return false
             });
     }
+    self.getActiveSessions = function() {
+        api.apiCall("tokens", 'GET').then(
+           function(response) {
+               return response.data;
+           }
+           , function(response) {
+                return null
+           }
+        );
+    }
+ 
 }
 
 })();
