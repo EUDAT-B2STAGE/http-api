@@ -106,6 +106,11 @@ class TestDataObjects(unittest.TestCase):
         # error_message = content['Response']['errors']
         # logger.debug(error_message)
 
+## // TO FIX:
+# If tests fails before the next method,
+# you will find your self with data already existing on irods
+# which will lead to errors also when tests are good
+
     def test_07_delete_dataobjects(self):
         """ Test file delete: DELETE """
 
@@ -128,34 +133,38 @@ class TestDataObjects(unittest.TestCase):
                 data=dict(collection=(collection)))
             self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-## SHOULD TEST A DELETE OF AN OBJECT THAT DOES NOT EXIST!
+## // TO FIX:
+# We should test the removal of an object that does not exist
 
-    # def test_09_post_dataobjects_in_non_existing_collection(self):
-    #     """ Test file upload in a non existing collection: POST """
-    #     r = self.app.post(API_URI + '/dataobjects', data=dict(
-    #                      collection=('/home/wrong/guest'),
-    #                      file=(io.BytesIO(b"this is a test"), 'test.pdf')))
-    #     self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 409?
-    #     content = json.loads(r.data.decode('utf-8'))
-    #     error_message = content['Response']['errors'][0]['iRODS']
-    #     self.assertIn('collection does not exist', error_message)
+    def test_08_post_dataobjects_in_non_existing_collection(self):
+        """ Test file upload in a non existing collection: POST """
+        r = self.app.post(
+            API_URI + '/dataobjects', headers=self.auth_header,
+            data=dict(collection=('/home/wrong/guest'),
+                      file=(io.BytesIO(b"this is a test"), 'test.pdf')))
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 409?
+        content = json.loads(r.data.decode('utf-8'))
+        error_message = content['Response']['errors'][0]['iRODS']
+        self.assertIn('collection does not exist', error_message)
 
-    # def test_10_get_non_exising_dataobjects(self):
-    #     """ Test file download of a non existing object: GET """
-    #     deleteURI = os.path.join(API_URI + '/dataobjects',
-    #                              'test.pdf')
-    #     r = self.app.get(deleteURI, data=dict(collection=('/home/guest')))
-    #     self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 404?
-    #     content = json.loads(r.data.decode('utf-8'))
-    #     error_message = content['Response']['errors'][0]['iRODS']
-    #     self.assertIn('does not exist on the specified path', error_message)
+    def test_09_get_non_exising_dataobjects(self):
+        """ Test file download of a non existing object: GET """
+        URI = os.path.join(API_URI + '/dataobjects', 'test.pdf')
+        r = self.app.get(
+            URI, headers=self.auth_header,
+            data=dict(collection=('/home/guest')))
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 404?
+        content = json.loads(r.data.decode('utf-8'))
+        error_message = content['Response']['errors'][0]['iRODS']
+        self.assertIn('does not exist on the specified path', error_message)
 
-    # def test_11_get_dataobjects_in_non_exising_collection(self):
-    #     """ Test file download in a non existing collection: GET """
-    #     delURI = os.path.join(API_URI + '/dataobjects',
-    #                           'test.pdf')
-    #     r = self.app.get(delURI, data=dict(collection=('/home/wrong/guest')))
-    #     self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 404?
-    #     content = json.loads(r.data.decode('utf-8'))
-    #     error_message = content['Response']['errors'][0]['iRODS']
-    #     self.assertIn('does not exist on the specified path', error_message)
+    def test_10_get_dataobjects_in_non_exising_collection(self):
+        """ Test file download in a non existing collection: GET """
+        URI = os.path.join(API_URI + '/dataobjects', 'test.pdf')
+        r = self.app.get(
+            URI, headers=self.auth_header,
+            data=dict(collection=('/home/wrong/guest')))
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 404?
+        content = json.loads(r.data.decode('utf-8'))
+        error_message = content['Response']['errors'][0]['iRODS']
+        self.assertIn('does not exist on the specified path', error_message)
