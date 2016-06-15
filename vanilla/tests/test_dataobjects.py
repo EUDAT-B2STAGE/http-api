@@ -116,40 +116,28 @@ class TestDataObjects(unittest.TestCase):
 # Maybe we could add a method which finds data and removes it
 # at 'init time' of the class.
 
-    @staticmethod
-    def get_first_collection_from_many(data):
-        """ Parse API response to get a single element collection """
-
-        # element = data[list(data.keys()).pop()]
-        element = data.pop()['attributes']
-        attributes = element.get(list(element.keys()).pop())
-        path = attributes['path']
-        return path.strip('/')[path.find('/', 1) - 1:]
-
     def test_07_delete_dataobjects(self):
         """ Test file delete: DELETE """
 
-        # Obatin the list of objects end delete
-        r = self.app.get(API_URI + '/collections', headers=self.auth_header)
+        URI = os.path.join(API_URI + '/dataobjects')
+
+        # Obtain the list of objects end delete
+        r = self.app.get(URI, headers=self.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
-        # is the following correct?
+    # is the following correct?
         content = json.loads(r.data.decode('utf-8'))
 
         # Find the path
         data = content['Response']['data']['content']
-        collection = None
-        try:
-            collection = self.get_first_collection_from_many(data.copy())
-        except Exception as e:
-            logger.critical("Unknown response content format")
-            raise e
 
-        print("TEST", data)
-        for _, obj in data[0]['attributes'].items():
-            deleteURI = os.path.join(API_URI + '/dataobjects', obj['name'])
+        for obj in data:
+            name = obj['attributes']['filename']
+            collection = obj['relationships'].pop()
+            collection_path = collection['attributes']['path']
+            deleteURI = os.path.join(URI, name)
             r = self.app.delete(
                 deleteURI, headers=self.auth_header,
-                data=dict(collection=(collection)))
+                data=dict(collection=(collection_path)))
             self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
 ## // TO FIX:

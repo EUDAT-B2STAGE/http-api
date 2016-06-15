@@ -10,16 +10,17 @@ import os
 import json
 from plumbum.commands.processes import ProcessExecutionError as perror
 from flask import url_for
+from commons import htmlcodes as hcodes
+from commons.logs import get_logger
 from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
 from ..services.irods.client import IrodsException
 from ..services.uploader import Uploader
 from ..services.oauth2clients import decorate_http_request
-from commons import htmlcodes as hcodes
 from ...auth import auth
 from .. import decorators as decorate
+from ..services.irods.translations import DataObjectToGraph
 
-from commons.logs import get_logger
 logger = get_logger(__name__)
 
 
@@ -333,12 +334,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             ######################
             # Save into graphdb
             graph = self.global_get_service('neo4j')
-            from ..services.irods.translations import DataObjectToGraph
             translate = DataObjectToGraph(graph=graph, icom=icom)
-            # irods_out = icom.list_as_json(collection)
-            # print("TEST", ipath, irods_out[filename])
-            # print(help(graph.Zone.get_or_create))
-            print(translate.ifile2nodes(ipath))
+            translate.ifile2nodes(ipath)
 
             # Create response
             content = {
