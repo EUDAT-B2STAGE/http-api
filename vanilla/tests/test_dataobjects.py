@@ -114,12 +114,16 @@ class TestDataObjects(unittest.TestCase):
 # which will lead to errors also when tests are good
 
 # Maybe we could add a method which finds data and removes it
-# at init time of the class.
+# at 'init time' of the class.
 
     @staticmethod
     def get_first_collection_from_many(data):
-        element = data[list(data.keys()).pop()]
-        path = element['path']
+        """ Parse API response to get a single element collection """
+
+        # element = data[list(data.keys()).pop()]
+        element = data.pop()['attributes']
+        attributes = element.get(list(element.keys()).pop())
+        path = attributes['path']
         return path.strip('/')[path.find('/', 1) - 1:]
 
     def test_07_delete_dataobjects(self):
@@ -131,18 +135,17 @@ class TestDataObjects(unittest.TestCase):
         # is the following correct?
         content = json.loads(r.data.decode('utf-8'))
 
-        # collection = content['Response']['data'][0][0][:-1]
-
         # Find the path
-        data = content['Response']['data']
+        data = content['Response']['data']['content']
         collection = None
         try:
-            collection = self.get_first_collection_from_many(data)
+            collection = self.get_first_collection_from_many(data.copy())
         except Exception as e:
             logger.critical("Unknown response content format")
             raise e
 
-        for _, obj in data.items():
+        print("TEST", data)
+        for _, obj in data[0]['attributes'].items():
             deleteURI = os.path.join(API_URI + '/dataobjects', obj['name'])
             r = self.app.delete(
                 deleteURI, headers=self.auth_header,
@@ -150,7 +153,7 @@ class TestDataObjects(unittest.TestCase):
             self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
 ## // TO FIX:
-# We should test the removal of an object that does not exist
+# We should also test the removal of an object that does not exist
 
     def test_08_post_dataobjects_in_non_existing_collection(self):
         """ Test file upload in a non existing collection: POST """
