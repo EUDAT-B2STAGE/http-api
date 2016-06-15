@@ -258,7 +258,7 @@ $stateProvider
     .state("logged.profile.sessions", {
         url: "/sessions",
         views: {
-            "loggedview@logged": {templateUrl: templateDir+'active_sessions.html'}
+            "loggedview@logged": {templateUrl: templateDir+'token_sessions.html'}
         }
     })
         // Routes definition ends here
