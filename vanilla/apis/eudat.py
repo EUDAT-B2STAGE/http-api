@@ -243,11 +243,17 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         we need to get the username from the token
         """
 
-        if name is None or name[-1] == '/':
+        # Getting the list
+        if name is None:
+            graph = self.global_get_service('neo4j')
+            data = self.formatJsonResponse(graph.DataObject.nodes.all())
+            return self.response(data)
+        # If trying to use a path as file
+        elif name[-1] == '/':
             return self.response(
                 errors={'dataobject': 'No dataobject/file requested'})
 
-        # obj init
+        # Do irods things
         icom = self.global_get_service('irods')
         user = icom.get_current_user()
 

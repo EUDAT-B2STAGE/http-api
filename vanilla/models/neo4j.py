@@ -93,7 +93,7 @@ class DataObject(StructuredNode):
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     identity = RelationshipFrom('PID', 'UNIQUELY_IDENTIFIED_BY')
     _fields_to_show = ['filename', 'path']
-    _relationships_to_follow = []
+    _relationships_to_follow = ['belonging']
 
 
 class PID(StructuredNode):
