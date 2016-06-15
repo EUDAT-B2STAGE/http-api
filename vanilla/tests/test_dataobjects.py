@@ -103,15 +103,24 @@ class TestDataObjects(unittest.TestCase):
             API_URI + '/dataobjects',
             headers=self.auth_header,
             data=dict(file=(io.BytesIO(b"this is a test"), 'test.pdf')))
-        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 409?
         # content = json.loads(r.data.decode('utf-8'))
         # error_message = content['Response']['errors']
         # logger.debug(error_message)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 409?
 
 ## // TO FIX:
 # If tests fails before the next method,
 # you will find your self with data already existing on irods
 # which will lead to errors also when tests are good
+
+# Maybe we could add a method which finds data and removes it
+# at init time of the class.
+
+    @staticmethod
+    def get_first_collection_from_many(data):
+        element = data[list(data.keys()).pop()]
+        path = element['path']
+        return path.strip('/')[path.find('/', 1) - 1:]
 
     def test_07_delete_dataobjects(self):
         """ Test file delete: DELETE """
@@ -126,9 +135,12 @@ class TestDataObjects(unittest.TestCase):
 
         # Find the path
         data = content['Response']['data']
-        element = data[list(data.keys()).pop()]
-        path = element['path']
-        collection = path.strip('/')[path.find('/', 1) - 1:]
+        collection = None
+        try:
+            collection = self.get_first_collection_from_many(data)
+        except Exception as e:
+            logger.critical("Unknown response content format")
+            raise e
 
         for _, obj in data.items():
             deleteURI = os.path.join(API_URI + '/dataobjects', obj['name'])
