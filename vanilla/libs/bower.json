@@ -14,6 +14,8 @@
     "angular-lazy-img": "~1.2.2",
     "angular-material": "~1.0.1",
     "angular-tree-control": "~0.2.23",
+    "moment": "~2.11.1",
+    "angular-moment": "~0.10.3",
     "angular-hotkeys": "chieffancypants/angular-hotkeys#~1.7.0",
     "api-check": "~7.5.5",
     "angular-xeditable": "~0.1.9",
