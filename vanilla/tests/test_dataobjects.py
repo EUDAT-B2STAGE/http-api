@@ -2,6 +2,10 @@
 
 """
 Test dataobjects endpoints
+
+Run single test:
+nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
+
 """
 
 from __future__ import absolute_import
@@ -117,15 +121,17 @@ class TestDataObjects(unittest.TestCase):
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
         # is the following correct?
         content = json.loads(r.data.decode('utf-8'))
-        # why each element inside data is a list with only 1 element?
-        collection = content['Response']['data'][0][0][:-1]
-        # I have to remove the zone part.. this should probably be discussed
-        collection = '/' + collection.split('/', 2)[2]
-        for idx, obj in enumerate(content['Response']['data']):
-            if idx == 0:
-                continue
-            deleteURI = os.path.join(API_URI + '/dataobjects',
-                                     obj[0])
+
+        # collection = content['Response']['data'][0][0][:-1]
+
+        # Find the path
+        data = content['Response']['data']
+        element = data[list(data.keys()).pop()]
+        path = element['path']
+        collection = path.strip('/')[path.find('/', 1) - 1:]
+
+        for _, obj in data.items():
+            deleteURI = os.path.join(API_URI + '/dataobjects', obj['name'])
             r = self.app.delete(
                 deleteURI, headers=self.auth_header,
                 data=dict(collection=(collection)))
