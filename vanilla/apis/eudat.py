@@ -194,8 +194,8 @@ class CollectionEndpoint(ExtendedApiResource):
         """
         icom = self.global_get_service('irods')
 ## TO FIX
-        # return self.response(icom.list_as_json(path))
-        return self.response(icom.list(path))
+        return self.response(icom.list_as_json(path))
+        # return self.response(icom.list(path))
 
     @auth.login_required
     @decorate.add_endpoint_parameter('collection', required=True)
@@ -275,6 +275,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
     def post(self):
         """
         Handle file upload
+        http --form POST localhost:8080/api/dataobjects \
+            file@docker-compose.test.yml
         """
 
         icom = self.global_get_service('irods')
