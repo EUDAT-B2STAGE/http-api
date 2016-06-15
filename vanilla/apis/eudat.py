@@ -192,14 +192,17 @@ class CollectionEndpoint(ExtendedApiResource):
         Return list of elements inside a collection.
         If path is not specified we list the home directory.
         """
-        icom = self.global_get_service('irods')
-        # return self.response(icom.list(path))
-        mylist = []
-        out = icom.list_as_json(path)
-        if len(out) > 0:
-            mylist.append(out)
-        return self.response(
-            self.formatJsonResponse(mylist, out.keys()))
+
+    # WITH IRODS
+        # icom = self.global_get_service('irods')
+        # # return self.response(icom.list(path))
+        # mylist = []
+        # out = icom.list_as_json(path)
+
+    # WITH GRAPH
+        graph = self.global_get_service('neo4j')
+        data = self.formatJsonResponse(graph.Collection.nodes.all())
+        return self.response(data)
 
     @auth.login_required
     @decorate.add_endpoint_parameter('collection', required=True)

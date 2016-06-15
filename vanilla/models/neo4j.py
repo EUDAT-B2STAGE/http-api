@@ -11,15 +11,23 @@ Imports and models have to be defined/used AFTER normal Graphdb connection.
 from __future__ import absolute_import
 from neomodel import StringProperty, \
     StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
-import logging
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+from ..neo4j import User
+
+# from common.logs import get_logger
+# logger = logging.get_logger(__name__)
+
+# Override existing
+setattr(User, 'name', StringProperty())
+setattr(User, 'surname', StringProperty())
 
 
 ##############################################################################
 # MODELS
 ##############################################################################
+
+
+## // TO FIX: connect Person to Authenticated user ?
 
 class Person(StructuredNode):
     name = StringProperty(unique_index=True)
@@ -42,14 +50,18 @@ class Resource(StructuredNode):
 
 class Collection(StructuredNode):
     """ iRODS collection of data objects [Directory] """
+    id = StringProperty(required=True, unique_index=True)   # UUID
     path = StringProperty(unique_index=True)
     name = StringProperty()
     belongs = RelationshipFrom('DataObject', 'BELONGS_TO')
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     hosted = RelationshipTo(Zone, 'IS_PLACED_IN')
-    # Also Related to itself: a collection may be inside a collection.
+    # A very strange relationship:
+    # Related to itself! A collection may be inside a collection.
     matrioska_from = RelationshipFrom('Collection', 'INSIDE')
     matrioska_to = RelationshipTo('Collection', 'INSIDE')
+    _fields_to_show = ['path', 'name']
+    _relationships_to_follow = ['belongs']
 
 
 class Replication(StructuredRel):
@@ -68,6 +80,7 @@ class DataObject(StructuredNode):
     iRODS data object [File]
     """
     id = StringProperty(required=True, unique_index=True)   # UUID
+## // TO FIX:
     #location = StringProperty(unique_index=True)
     # PID = StringProperty(index=True)    # May not exist
     filename = StringProperty(index=True)
@@ -79,6 +92,8 @@ class DataObject(StructuredNode):
     replica = RelationshipTo('DataObject', 'IS_REPLICA_OF', model=Replication)
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     identity = RelationshipFrom('PID', 'UNIQUELY_IDENTIFIED_BY')
+    _fields_to_show = ['filename', 'path']
+    _relationships_to_follow = []
 
 
 class PID(StructuredNode):

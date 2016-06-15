@@ -3,17 +3,11 @@
 """ CUSTOM Models for the relational database """
 
 from __future__ import absolute_import
-from ..sql import db, \
-    User as UserBase  # , roles_users
+from ..sql import db, User
 
-import logging
+# from common.logs import get_logger
+# logger = logging.get_logger(__name__)
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-
-class User(UserBase):
-    """ Adding attributes to the original class """
-
-    name = db.Column(db.String(255))
-    surname = db.Column(db.String(255))
+# Add (inject) attributes to User
+setattr(User, 'name', db.Column(db.String(255)))
+setattr(User, 'surname', db.Column(db.String(255)))
