@@ -274,6 +274,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
     @auth.login_required
     @decorate.add_endpoint_parameter('collection')
+    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def post(self):
@@ -320,6 +321,17 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
                 # Remove local cache in any case
                 os.remove(abs_file)
 
+            ######################
+            # Save into graphdb
+            graph = self.global_get_service('neo4j')
+            from ..services.irods.translations import DataObjectToGraph
+            translate = DataObjectToGraph(graph=graph, icom=icom)
+            # irods_out = icom.list_as_json(collection)
+            # print("TEST", ipath, irods_out[filename])
+            # print(help(graph.Zone.get_or_create))
+            print(translate.ifile2nodes(ipath))
+
+            # Create response
             content = {
                 'collection': ipath
             }

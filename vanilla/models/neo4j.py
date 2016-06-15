@@ -64,8 +64,11 @@ class Replication(StructuredRel):
 
 
 class DataObject(StructuredNode):
-    """ iRODS data object [File] """
-    location = StringProperty(unique_index=True)
+    """
+    iRODS data object [File]
+    """
+    id = StringProperty(required=True, unique_index=True)   # UUID
+    #location = StringProperty(unique_index=True)
     # PID = StringProperty(index=True)    # May not exist
     filename = StringProperty(index=True)
     path = StringProperty()
