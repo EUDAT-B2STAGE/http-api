@@ -125,15 +125,15 @@ function RestApiService($http, $q, $auth, $log, $mdToast) {
                 return false
             });
     }
-    self.getActiveSessions = function() {
-        api.apiCall("tokens", 'GET').then(
-           function(response) {
-               return response.data;
-           }
-           , function(response) {
-                return null
-           }
-        );
+    self.getActiveSessions = function()
+    {
+        return self.apiCall("tokens", 'GET').then(
+            function(response) {
+                return response.data
+            }, function(response) {
+                return response
+            }
+            );
     }
  
 }

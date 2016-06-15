@@ -1,0 +1,63 @@
+<div ng-controller='SessionsController as ctrl'>
+
+<div class="themaxsize" layout="column" layout-align="center center">
+
+    <md-content ng-if='ctrl.tokens'>
+        <table>
+            <tr>
+                <th colspan=2>Active Sessions</th>
+            </tr>
+
+            <tr>
+                <th>ID</th>
+                <th>IP</th>
+                <th>host</th>
+                <th>Emitted</th>
+                <th>Last access</th>
+                <th>Expiration</th>
+                <th>Token</th>
+            </tr>
+            <tr ng-repeat="(key, values) in ctrl.tokens">
+
+            <td>{{values.id}}</td>
+            <td>{{values.IP}}</td>
+            <td>{{values.hostname}}</td>
+            <td>
+                <span 
+                    data-toggle="tooltip" 
+                    title="{{1000*values.emitted | date : 'yyyy MMM dd HH:mm:ss'}}"
+                    >
+                    {{values.emitted | moment_unix: 'fromNow' }}
+                </span>
+            </td>
+
+            <td>
+                <span 
+                    data-toggle="tooltip" 
+                    title="{{1000*values.last_access | date : 'yyyy MMM dd HH:mm:ss'}}"
+                    >
+                    {{values.last_access | moment_unix: 'fromNow' }}
+                </span>
+            </td>
+
+            <td>
+                <span 
+                    data-toggle="tooltip" 
+                    title="{{1000*values.expiration | date : 'yyyy MMM dd HH:mm:ss'}}"
+                    >
+                    {{values.expiration | moment_unix: 'fromNow' }}
+                </span>
+            </td>
+
+            <td style='max-width:300px;font-size: 6px; word-break: break-all;'>
+                {{values.token}}
+            </td>
+
+            </tr>
+        </table>
+    </md-content>
+
+</div>
+
+</div>
+
