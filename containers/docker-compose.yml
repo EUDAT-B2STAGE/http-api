@@ -36,7 +36,7 @@ backend:
         # Base code
         - ../backend:/code
         # Rest API configuration
-        - ../vanilla/specs:/code/confs/endpoints
+        - ../vanilla/specs:/code/restapi/confs/endpoints
         # Rest API endpoints
         - ../vanilla/apis:/code/restapi/resources/custom
         # Rest API services models
