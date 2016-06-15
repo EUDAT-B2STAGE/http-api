@@ -15,7 +15,7 @@ passing variables with a Jinja template.
 
 from __future__ import absolute_import
 from flask import Flask, request as req
-from config import get_logger
+from commons.logs import get_logger
 from commons import htmlcodes as hcodes
 from .pages import cms
 from . import CONFIG_MODULE
@@ -47,6 +47,7 @@ def create_app():
     ###############################
     # Apply configuration
     app.config.from_object(CONFIG_MODULE + '.MyConfig')
+    logger = get_logger(__name__, False)  # app.config['DEBUG'])
 
     ###############################
     # # Cache

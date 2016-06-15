@@ -8,7 +8,8 @@ import json
 # from flask import Response, stream_with_context
 from commons import htmlcodes as hcodes
 
-from config import AUTH_URL, get_logger
+from commons.logs import get_logger
+from config import AUTH_URL
 logger = get_logger(__name__)
 
 ##################################

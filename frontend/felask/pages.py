@@ -9,7 +9,8 @@ from flask import Blueprint, render_template, request, jsonify
 from .basemodel import user_config
 from .security import login_api, register_api, logout_api
 from commons import htmlcodes as hcodes
-from config import get_logger, FRAMEWORKS  # , API_URL
+from commons.logs import get_logger
+from config import FRAMEWORKS  # , API_URL
 
 logger = get_logger(__name__)
 CURRENT_FRAMEWORK = None

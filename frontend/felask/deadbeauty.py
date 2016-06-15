@@ -4,7 +4,7 @@
 Useless code which has some beauty and/or techincal difficulties.
 """
 
-from felask import get_logger
+from commons.logs import get_logger
 logger = get_logger(__name__)
 
 ###############################################

@@ -3,7 +3,7 @@
 """ Factory and blueprints patterns """
 
 import os
-from config import get_logger
+from commons.logs import get_logger
 from commons.meta import Meta as m
 
 logger = get_logger(__name__)

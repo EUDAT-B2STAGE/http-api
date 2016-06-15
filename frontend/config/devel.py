@@ -2,7 +2,8 @@
 
 """ Development configuration """
 
-from . import BaseConfig, get_logger
+from . import BaseConfig
+from commons.logs import get_logger
 
 logger = get_logger(__name__)
 

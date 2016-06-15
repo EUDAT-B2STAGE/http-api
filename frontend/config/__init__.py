@@ -3,9 +3,6 @@
 """ Configurations """
 
 import os
-import logging
-from logging.config import fileConfig
-# import json
 import commentjson as json
 
 #######################
@@ -89,40 +86,3 @@ class BaseConfig(object):
         'password': user_config['content'].get('password', 'test'),
         'email': user_config['content'].get('email', 'idonotexist@test.com')
     }
-
-########################################
-# LOGGING
-LOG_LEVEL = logging.INFO
-if BaseConfig.LOG_DEBUG:
-    LOG_LEVEL = logging.DEBUG
-# Set default logging handler to avoid "No handler found" warnings.
-try:  # Python 2.7+
-    from logging import NullHandler
-except ImportError:
-    class NullHandler(logging.Handler):
-        def emit(self, record):
-            pass
-
-# Start with null handler
-logging.getLogger(__name__).addHandler(NullHandler())
-# Read format and other things from file configuration
-CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
-fileConfig(os.path.join(CURRENT_DIR, 'logging.ini'))
-
-
-def get_logger(name):
-    """ Recover the right logger + set a proper specific level """
-    logger = logging.getLogger(name)
-    logger.setLevel(LOG_LEVEL)
-    return logger
-
-
-def silence_loggers():
-    root_logger = logging.getLogger()
-    first = True
-    for handler in root_logger.handlers:
-        print("HANDLER", handler)
-        if first:
-            first = False
-            continue
-        root_logger.removeHandler(handler)

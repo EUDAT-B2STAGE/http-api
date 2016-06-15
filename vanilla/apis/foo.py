@@ -4,7 +4,7 @@
 An endpoint example
 """
 
-from ... import get_logger
+from commons.logs import get_logger
 from ..base import ExtendedApiResource
 from .. import decorators as decorate
 from ..services.detect import SQL_AVAILABLE, GRAPHDB_AVAILABLE

@@ -15,7 +15,7 @@ from ..services.rethink import schema_and_tables, BaseRethinkResource
 from ..services.uploader import Uploader
 from .. import decorators as deck
 from commons import htmlcodes as hcodes
-from ... import get_logger
+from commons.logs import get_logger
 
 logger = get_logger(__name__)
 
