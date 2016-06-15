@@ -193,9 +193,13 @@ class CollectionEndpoint(ExtendedApiResource):
         If path is not specified we list the home directory.
         """
         icom = self.global_get_service('irods')
-## TO FIX
-        return self.response(icom.list_as_json(path))
         # return self.response(icom.list(path))
+        mylist = []
+        out = icom.list_as_json(path)
+        if len(out) > 0:
+            mylist.append(out)
+        return self.response(
+            self.formatJsonResponse(mylist, out.keys()))
 
     @auth.login_required
     @decorate.add_endpoint_parameter('collection', required=True)
@@ -309,15 +313,13 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             ipath = collection + filename
 
             try:
-                iout = icom.save(abs_file, destination=ipath)
+                iout = icom.save(
+                    abs_file, destination=ipath, force=self._args.get('force'))
                 logger.info("irods call %s", iout)
-            except IrodsException as e:
-                # Remove local cache if i could not save on irods
+            finally:
+                # Remove local cache in any case
                 os.remove(abs_file)
-                raise e
 
-            # Remove actual file (if we do not want to cache)
-            os.remove(abs_file)
             content = {
                 'collection': ipath
             }
