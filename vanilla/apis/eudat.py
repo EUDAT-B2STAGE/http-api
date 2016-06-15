@@ -10,7 +10,7 @@ import os
 import json
 from plumbum.commands.processes import ProcessExecutionError as perror
 from flask import url_for
-from confs.config import AUTH_URL
+from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
 from ..services.irods.client import IrodsException
 from ..services.uploader import Uploader
@@ -19,7 +19,7 @@ from commons import htmlcodes as hcodes
 from ...auth import auth
 from .. import decorators as decorate
 
-from ... import get_logger
+from commons.logs import get_logger
 logger = get_logger(__name__)
 
 
@@ -329,8 +329,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
     def delete(self, name):
         """ Remove an object """
 
-## TO FIX
-## IrodsException: srcPath /tempZone/home/guest/img.jpg does not exist
+## // TO FIX
+# IrodsException: srcPath /tempZone/home/guest/img.jpg does not exist
 
         icom = self.global_get_service('irods')
         # paths

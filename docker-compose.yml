@@ -118,7 +118,7 @@ rest:
         # Base code
         - ./backend:/code
         # Rest API configuration
-        - ./vanilla/specs:/code/confs/endpoints
+        - ./vanilla/specs:/code/restapi/confs/endpoints
         # Rest API services models
         - ./vanilla/models:/code/commons/models/custom
         # Rest API endpoints

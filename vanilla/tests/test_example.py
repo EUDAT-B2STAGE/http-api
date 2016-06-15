@@ -8,18 +8,16 @@ Tests
 # import os
 import json
 import unittest
-import logging
-import commons.htmlcodes as hcodes
-from restapi import get_logger
+# import commons.htmlcodes as hcodes
+from commons.logs import get_logger
 from restapi.server import create_app
-from confs.config import USER, PWD, \
+from restapi.confs.config import USER, PWD, \
     TEST_HOST, SERVER_PORT, API_URL, AUTH_URL
 
-from restapi import get_logger, myself
+from commons import myself
 
 __author__ = myself
-logger = get_logger(__name__)
-logger.setLevel(logging.DEBUG)
+logger = get_logger(__name__, True)
 
 API_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, API_URL)
 AUTH_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, AUTH_URL)

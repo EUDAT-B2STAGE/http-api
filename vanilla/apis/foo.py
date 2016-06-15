@@ -4,12 +4,13 @@
 An endpoint example
 """
 
-from restapi import get_logger
+from __future__ import absolute_import
+from commons.logs import get_logger
 from ..base import ExtendedApiResource
 from .. import decorators as decorate
 
 # AUTH
-# from confs import config
+# from ...confs import config
 # from flask.ext.security import roles_required, auth_token_required
 
 logger = get_logger(__name__)
