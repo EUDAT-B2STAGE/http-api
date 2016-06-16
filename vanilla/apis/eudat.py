@@ -168,47 +168,57 @@ class CollectionEndpoint(ExtendedApiResource):
     def get(self, uuid=None):
         """
         Return list of elements inside a collection.
-        If path is not specified we list the home directory.
+        If uuid is added, get the single element.
         """
 
-## // TO FIX:
-# Get from id
-
-    # WITH IRODS
-        # icom = self.global_get_service('irods')
-        # # return self.response(icom.list(path))
-        # mylist = []
-        # out = icom.list_as_json(path)
-
-    # WITH GRAPH
         graph = self.global_get_service('neo4j')
-        data = self.formatJsonResponse(graph.Collection.nodes.all())
+
+        content = []
+
+        # Get ALL elements
+        if uuid is None:
+            content = graph.Collection.nodes.all()
+        # Get SINGLE element
+        else:
+            try:
+                content.append(graph.Collection.nodes.get(id=uuid))
+            except graph.DataObject.DoesNotExist:
+                return self.response(errors={uuid: 'Not found.'})
+
+        # Build jsonapi.org compliant response
+        data = self.formatJsonResponse(content)
         return self.response(data)
+
+###############
+## // TO FIX:
+# This is such a standard 'get' method that
+# we could make it general for the graphdb use case
+###############
 
     @auth.login_required
     @decorate.add_endpoint_parameter('collection', required=True)
     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
     @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def post(self):
         """ Create one collection/directory """
 
         icom = self.global_get_service('irods')
-        ipath = self._args.get('collection')
+        collection = self._args.get('collection')
+        ipath = icom.create_empty(
+            collection,
+            directory=True, ignore_existing=self._args.get('force'))
+        logger.info("Created irods collection: %s", ipath)
 
-        try:
-            icom.create_empty(
-                ipath, directory=True, ignore_existing=self._args.get('force'))
-            logger.info("irods made collection: %s", ipath)
-        except perror as e:
-            # ##HANDLING ERROR
-            error = str(e)
-## // TO FIX:
-# use a decorator
-            if 'ERROR:' in error:
-                error = error[error.index('ERROR:') + 7:]
-            return self.response(errors={'iRODS error': error})
+        # Save inside the graph and give back the uuid
+        translate = DataObjectToGraph(
+            icom=icom,
+            graph=self.global_get_service('neo4j'))
+        node = translate.collection2node(collection, ipath)
 
-        return self.response(ipath, code=hcodes.HTTP_OK_CREATED)
+        return self.response(
+            {'id': node.id, 'collection': ipath},
+            code=hcodes.HTTP_OK_CREATED)
 
 
 class DataObjectEndpoint(Uploader, ExtendedApiResource):
