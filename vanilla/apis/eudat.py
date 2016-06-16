@@ -164,6 +164,10 @@ class Authorize(ExtendedApiResource):
 class CollectionEndpoint(ExtendedApiResource):
 
     @auth.login_required
+## // TO FIX:
+# BUG; collection persists as required if specified in the POST method
+# when getting back to GET calls?
+    @decorate.add_endpoint_parameter('collection', required=False)
     @decorate.apimethod
     def get(self, uuid=None):
         """
