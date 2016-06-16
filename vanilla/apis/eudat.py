@@ -239,7 +239,10 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         user = icom.get_current_user()
 
         # Get filename and ipath from uuid using the graph
-        dataobj_node = graph.DataObject.nodes.get(id=uuid)
+        try:
+            dataobj_node = graph.DataObject.nodes.get(id=uuid)
+        except graph.DataObject.DoesNotExist:
+            return self.response(errors={uuid: 'Not found.'})
         collection_node = dataobj_node.belonging.all().pop()
 
         # irods paths
@@ -318,11 +321,12 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             # Save into graphdb
             graph = self.global_get_service('neo4j')
             translate = DataObjectToGraph(graph=graph, icom=icom)
-            translate.ifile2nodes(ipath)
+            uuid = translate.ifile2nodes(ipath)
 
             # Create response
             content = {
-                'collection': ipath
+                'collection': ipath,
+                'id': uuid
             }
 
         # Reply to user
