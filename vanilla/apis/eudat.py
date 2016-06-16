@@ -8,7 +8,6 @@ from __future__ import absolute_import
 
 import os
 import json
-from plumbum.commands.processes import ProcessExecutionError as perror
 from flask import url_for
 from commons import htmlcodes as hcodes
 from commons.logs import get_logger
@@ -22,7 +21,6 @@ from .. import decorators as decorate
 from ..services.irods.translations import DataObjectToGraph
 
 logger = get_logger(__name__)
-
 
 
 ###############################

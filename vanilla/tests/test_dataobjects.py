@@ -61,10 +61,29 @@ class TestDataObjects(unittest.TestCase):
 
     def test_02_post_dataobjects_in_specific_collection(self):
         """ Test file upload: POST """
-        r = self.app.post(API_URI + '/dataobjects', data=dict(
-                          file=(io.BytesIO(b"this is a test"), 'test1.pdf'),
-                          collection='/home/guest'),
-                          headers=self.auth_header)
+
+        URI = API_URI + '/collections'
+        # Create the collection
+        r = self.app.post(URI, headers=self.auth_header,
+                          data=dict(collection='test', force='True'))
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_CREATED)
+
+        URI = API_URI + '/dataobjects'
+
+        # Absolute path
+        r = self.app.post(
+            URI, headers=self.auth_header,
+            data=dict(
+                file=(io.BytesIO(b"this is a test"), 'test1.pdf'),
+                collection='/home/guest/test'))
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+        # Relative path
+        r = self.app.post(
+            URI, headers=self.auth_header,
+            data=dict(
+                file=(io.BytesIO(b"this is a test"), 'test2.pdf'),
+                collection='test', force='True'))
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
     def test_03_post_large_dataobjects(self):
@@ -77,27 +96,41 @@ class TestDataObjects(unittest.TestCase):
                           file=(open(path, 'rb'), 'img.JPG')),
                           headers=self.auth_header)
         os.remove(path)
+    ## maybe 201 is more appropriate?
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
-        # maybe 201 is more appropriate
 
-    def test_04_get_dataobjects(self):
+        content = json.loads(r.data.decode('utf-8'))
+        self.__class__.large = content['Response']['data']['id']
+
+    def test_04_post_overwrite_dataobjects(self):
+        """ Test file upload: POST """
+
+        # POST dataobject
+        endpoint = API_URI + '/dataobjects'
+        r = self.app.post(endpoint, data=dict(force='True',
+                          file=(io.BytesIO(b"a test again"), 'test.pdf')),
+                          headers=self.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+        content = json.loads(r.data.decode('utf-8'))
+        self.__class__.small = content['Response']['data']['id']
+
+    def test_05_get_dataobjects(self):
         """ Test file download: GET """
-        objURI = os.path.join(API_URI + '/dataobjects', 'test.pdf')
-        r = self.app.get(
-            objURI, headers=self.auth_header,
-            data=dict(collection=('/home/guest')))
-        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
-        self.assertEqual(r.data, b'this is a test')
 
-    def test_05_get_large_dataobjects(self):
+        objURI = os.path.join(API_URI, 'dataobjects', self.__class__.small)
+        r = self.app.get(objURI, headers=self.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+        # Verify file content
+        self.assertEqual(r.data, b'a test again')
+
+    def test_06_get_large_dataobjects(self):
         """ Test file download: GET """
-        objURI = os.path.join(API_URI + '/dataobjects', 'img.JPG')
-        r = self.app.get(
-            objURI, headers=self.auth_header,
-            data=dict(collection=('/home/guest')))
+        objURI = os.path.join(API_URI, 'dataobjects', self.__class__.large)
+        r = self.app.get(objURI, headers=self.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-    def test_06_post_already_existing_dataobjects(self):
+    def test_07_post_already_existing_dataobjects(self):
         """ Test file upload with already existsing object: POST """
         r = self.app.post(
             API_URI + '/dataobjects',
@@ -116,63 +149,54 @@ class TestDataObjects(unittest.TestCase):
 # Maybe we could add a method which finds data and removes it
 # at 'init time' of the class.
 
-    def test_07_delete_dataobjects(self):
+    def test_08_delete_dataobjects(self):
         """ Test file delete: DELETE """
 
-        URI = os.path.join(API_URI + '/dataobjects')
+        URI = os.path.join(API_URI, 'dataobjects')
 
         # Obtain the list of objects end delete
         r = self.app.get(URI, headers=self.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
-    # is the following correct?
         content = json.loads(r.data.decode('utf-8'))
 
         # Find the path
         data = content['Response']['data']['content']
-
         for obj in data:
-            name = obj['attributes']['filename']
-            print(obj)
-            collection = obj['relationships']['belonging'].pop()
-            collection_path = collection['attributes']['path']
-            deleteURI = os.path.join(URI, name)
-            r = self.app.delete(
-                deleteURI, headers=self.auth_header,
-                data=dict(collection=(collection_path)))
+            deleteURI = os.path.join(URI, obj['id'])
+            r = self.app.delete(deleteURI, headers=self.auth_header)
             self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-## // TO FIX:
-# We should also test the removal of an object that does not exist
+    def test_09_delete_nonexisting_dataobjects(self):
+        """ Test fake file delete: DELETE """
 
-    def test_08_post_dataobjects_in_non_existing_collection(self):
+        URI = os.path.join(API_URI, 'dataobjects', 'NonExistingUUID')
+        r = self.app.get(URI, headers=self.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
+
+    def test_10_post_dataobjects_in_non_existing_collection(self):
         """ Test file upload in a non existing collection: POST """
+
+        URI = os.path.join(API_URI, 'dataobjects')
         r = self.app.post(
-            API_URI + '/dataobjects', headers=self.auth_header,
-            data=dict(collection=('/home/wrong/guest'),
+            URI, headers=self.auth_header,
+            data=dict(collection=('/home/wrong/path'),
                       file=(io.BytesIO(b"this is a test"), 'test.pdf')))
         self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 409?
         content = json.loads(r.data.decode('utf-8'))
         error_message = content['Response']['errors'][0]['iRODS']
         self.assertIn('collection does not exist', error_message)
 
-    def test_09_get_non_exising_dataobjects(self):
+    def test_11_get_non_exising_dataobjects(self):
         """ Test file download of a non existing object: GET """
-        URI = os.path.join(API_URI + '/dataobjects', 'test.pdf')
+
+        filename = 'test.pdf'
+        URI = os.path.join(API_URI, 'dataobjects', filename)
+
         r = self.app.get(
             URI, headers=self.auth_header,
             data=dict(collection=('/home/guest')))
         self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 404?
-        content = json.loads(r.data.decode('utf-8'))
-        error_message = content['Response']['errors'][0]['iRODS']
-        self.assertIn('does not exist on the specified path', error_message)
 
-    def test_10_get_dataobjects_in_non_exising_collection(self):
-        """ Test file download in a non existing collection: GET """
-        URI = os.path.join(API_URI + '/dataobjects', 'test.pdf')
-        r = self.app.get(
-            URI, headers=self.auth_header,
-            data=dict(collection=('/home/wrong/guest')))
-        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 404?
         content = json.loads(r.data.decode('utf-8'))
-        error_message = content['Response']['errors'][0]['iRODS']
-        self.assertIn('does not exist on the specified path', error_message)
+        error_messages = content['Response']['errors'].pop()
+        self.assertIn('Not found.', error_messages[filename])
