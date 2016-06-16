@@ -21,6 +21,7 @@ from ..neo4j import User as UserBase
 class User(UserBase):
     name = StringProperty()
     surname = StringProperty()
+    associated = RelationshipTo('IrodsUser', 'IS_ASSOCIATED_TO')
 
 # OR ?
 # # Override existing
@@ -32,11 +33,12 @@ class User(UserBase):
 ##############################################################################
 
 
-## // TO FIX: connect Person to Authenticated user ?
+## // TO FIX: connect IrodsUser to Authenticated user ?
 
-class Person(StructuredNode):
-    name = StringProperty(unique_index=True)
+class IrodsUser(StructuredNode):
+    username = StringProperty(unique_index=True)
     ownership = RelationshipFrom('DataObject', 'IS_OWNED_BY')
+    associated = RelationshipFrom(User, 'IS_ASSOCIATED_TO')
 
 
 class Zone(StructuredNode):
@@ -98,7 +100,7 @@ class DataObject(StructuredNode):
     # PID = StringProperty(index=True)    # May not exist
     filename = StringProperty(index=True)
     path = StringProperty()
-    owned = RelationshipTo(Person, 'IS_OWNED_BY')
+    owned = RelationshipTo(IrodsUser, 'IS_OWNED_BY')
     located = RelationshipTo(Zone, 'IS_LOCATED_IN')
     stored = RelationshipTo(Resource, 'STORED_IN')
     belonging = RelationshipTo(Collection, 'BELONGS_TO')

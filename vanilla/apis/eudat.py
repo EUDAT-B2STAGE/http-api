@@ -140,7 +140,6 @@ class Authorize(ExtendedApiResource):
         # Save the proxy filename into the graph
         proxyfile = obj
         external_account_node = user_node.externals.all().pop()
-        print("EXT", external_account_node)
         external_account_node.proxyfile = proxyfile
         external_account_node.save()
 
@@ -202,8 +201,9 @@ class CollectionEndpoint(ExtendedApiResource):
             logger.info("irods made collection: %s", ipath)
         except perror as e:
             # ##HANDLING ERROR
-# // TO FIX: use a decorator
             error = str(e)
+## // TO FIX:
+# use a decorator
             if 'ERROR:' in error:
                 error = error[error.index('ERROR:') + 7:]
             return self.response(errors={'iRODS error': error})
@@ -320,8 +320,10 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             ######################
             # Save into graphdb
             graph = self.global_get_service('neo4j')
+
             translate = DataObjectToGraph(graph=graph, icom=icom)
-            uuid = translate.ifile2nodes(ipath)
+            uuid = translate.ifile2nodes(
+                ipath, service_user=self.global_get('custom_auth')._user)
 
             # Create response
             content = {
