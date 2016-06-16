@@ -162,10 +162,6 @@ class Authorize(ExtendedApiResource):
 class CollectionEndpoint(ExtendedApiResource):
 
     @auth.login_required
-## // TO FIX:
-# BUG; collection persists as required if specified in the POST method
-# when getting back to GET calls?
-    @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self, uuid=None):
@@ -254,7 +250,6 @@ class CollectionEndpoint(ExtendedApiResource):
 class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
     @auth.login_required
-    # @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self, uuid=None):
@@ -376,6 +371,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
     @auth.login_required
     @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def delete(self, uuid):
         """ Remove an object """
 
