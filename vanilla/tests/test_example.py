@@ -31,16 +31,21 @@ class TestDataObjects(unittest.TestCase):
         app = create_app(testing=True)
         cls.app = app.test_client()
 
-        r = cls.app.post(
-            AUTH_URI + '/login',
-            data=json.dumps({'username': USER, 'password': PWD}))
+        loginURI = os.path.join(AUTH_URI, 'login')
+        r = cls.app.post(loginURI,
+                         data=json.dumps({'username': USER, 'password': PWD}))
         content = json.loads(r.data.decode('utf-8'))
+        cls.token = content['Response']['data']['token']
         cls.auth_header = {
-            'Authorization': 'Bearer ' + content['Response']['data']['token']}
+            'Authorization': 'Bearer %s' % cls.token}
 
     @classmethod
     def tearDownClass(cls):
         logger.info('### Tearing down the flask server ###')
+
+        # Tokens clean up
+        from restapi.resources.services.neo4j.graph import MyGraph
+        MyGraph().clean_pending_tokens()
 
     # def test_01_get_someendpoint(self):
 
