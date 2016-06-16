@@ -132,7 +132,8 @@ class TestDataObjects(unittest.TestCase):
 
         for obj in data:
             name = obj['attributes']['filename']
-            collection = obj['relationships'].pop()
+            print(obj)
+            collection = obj['relationships']['belonging'].pop()
             collection_path = collection['attributes']['path']
             deleteURI = os.path.join(URI, name)
             r = self.app.delete(

@@ -230,7 +230,7 @@ elif [ "$1" == "client_shell" ]; then
     echo ""
     echo "$ http GET http://api:5000/api/status"
     echo ""
-    compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
+    compose="docker-compose -f docker-compose.yml"
     $compose up --no-deps -d $clientcontainer
     $compose exec $clientcontainer ash
 

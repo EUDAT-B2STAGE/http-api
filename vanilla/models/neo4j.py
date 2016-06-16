@@ -12,15 +12,20 @@ from __future__ import absolute_import
 from neomodel import StringProperty, \
     StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
 
-from ..neo4j import User
+from ..neo4j import User as UserBase
 
 # from common.logs import get_logger
 # logger = logging.get_logger(__name__)
 
-# Override existing
-setattr(User, 'name', StringProperty())
-setattr(User, 'surname', StringProperty())
 
+class User(UserBase):
+    name = StringProperty()
+    surname = StringProperty()
+
+# OR ?
+# # Override existing
+# setattr(User, 'name', StringProperty())
+# setattr(User, 'surname', StringProperty())
 
 ##############################################################################
 # MODELS
@@ -39,6 +44,14 @@ class Zone(StructuredNode):
     hosting = RelationshipFrom('DataObject', 'IS_LOCATED_IN')
     hosting_res = RelationshipFrom('Resource', 'IS_AVAILABLE_IN')
     hosting_col = RelationshipFrom('Collection', 'IS_PLACED_IN')
+    _fields_to_show = ['name']
+
+## // TO FIX:
+# should we consider roles?
+    # _fields_to_show = {
+    #     'role_1': ['name'],
+    #     'role_2': ['name'],
+    # }
 
 
 class Resource(StructuredNode):
@@ -46,6 +59,7 @@ class Resource(StructuredNode):
     store = RelationshipFrom('DataObject', 'STORED_IN')
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     hosted = RelationshipTo(Zone, 'IS_AVAILABLE_IN')
+    _fields_to_show = ['name']
 
 
 class Collection(StructuredNode):
@@ -61,7 +75,7 @@ class Collection(StructuredNode):
     matrioska_from = RelationshipFrom('Collection', 'INSIDE')
     matrioska_to = RelationshipTo('Collection', 'INSIDE')
     _fields_to_show = ['path', 'name']
-    _relationships_to_follow = ['belongs']
+    _relationships_to_follow = ['belongs', 'hosted']
 
 
 class Replication(StructuredRel):
@@ -80,8 +94,7 @@ class DataObject(StructuredNode):
     iRODS data object [File]
     """
     id = StringProperty(required=True, unique_index=True)   # UUID
-## // TO FIX:
-    #location = StringProperty(unique_index=True)
+    location = StringProperty(unique_index=True)
     # PID = StringProperty(index=True)    # May not exist
     filename = StringProperty(index=True)
     path = StringProperty()
@@ -93,7 +106,7 @@ class DataObject(StructuredNode):
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     identity = RelationshipFrom('PID', 'UNIQUELY_IDENTIFIED_BY')
     _fields_to_show = ['filename', 'path']
-    _relationships_to_follow = ['belonging']
+    _relationships_to_follow = ['belonging', 'located', 'stored']
 
 
 class PID(StructuredNode):

@@ -194,6 +194,9 @@ class CollectionEndpoint(ExtendedApiResource):
         If path is not specified we list the home directory.
         """
 
+## // TO FIX:
+# Get from id
+
     # WITH IRODS
         # icom = self.global_get_service('irods')
         # # return self.response(icom.list(path))
@@ -367,5 +370,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             if 'ERROR:' in error:
                 error = error[error.index('ERROR:') + 7:]
             return self.response(errors={'iRODS error': error})
+
+## // TO FIX
+# Remove from graph
 
         return self.response({'deleted': ipath})
