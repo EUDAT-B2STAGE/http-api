@@ -19,7 +19,7 @@
             </tr>
             <tr ng-repeat="(key, values) in ctrl.tokens">
 
-            <td>{{values.id}}</td>
+            <td ng-class="{'green-text': values.inuse}">{{values.id}}</td>
             <td>{{values.IP}}</td>
             <td>{{values.hostname}}</td>
             <td>
