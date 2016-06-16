@@ -24,28 +24,6 @@ from ..services.irods.translations import DataObjectToGraph
 logger = get_logger(__name__)
 
 
-## // TO FIX: move it inside the irods class
-def handle_collection_path(icom, ipath):
-    """
-    iRODS specific pattern to handle paths
-    """
-
-    home = icom.get_base_dir()
-
-    # Should add the base dir if doesn't start with /
-    if ipath is None or ipath == '':
-        ipath = home
-    elif ipath[0] != '/':
-        ipath = home + '/' + ipath
-    else:
-        # Add the zone
-        ipath = '/' + icom._current_environment['IRODS_ZONE'] + ipath
-    # Append / if missing in the end
-    if ipath[-1] != '/':
-        ipath += '/'
-
-    return ipath
-
 
 ###############################
 # Classes
@@ -188,7 +166,7 @@ class CollectionEndpoint(ExtendedApiResource):
 
     @auth.login_required
     @decorate.apimethod
-    def get(self, path=None):
+    def get(self, uuid=None):
         """
         Return list of elements inside a collection.
         If path is not specified we list the home directory.
@@ -236,48 +214,51 @@ class CollectionEndpoint(ExtendedApiResource):
 class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
     @auth.login_required
-    @decorate.add_endpoint_parameter('collection')
+    # @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def get(self, name=None):
+    def get(self, uuid=None):
         """
         Get object from ID
-
-        Note to self:
-        we need to get the username from the token
         """
 
+        graph = self.global_get_service('neo4j')
+
         # Getting the list
-        if name is None:
-            graph = self.global_get_service('neo4j')
+        if uuid is None:
             data = self.formatJsonResponse(graph.DataObject.nodes.all())
             return self.response(data)
-        # If trying to use a path as file
-        elif name[-1] == '/':
-            return self.response(
-                errors={'dataobject': 'No dataobject/file requested'})
+
+        # # If trying to use a path as file
+        # elif name[-1] == '/':
+        #     return self.response(
+        #         errors={'dataobject': 'No dataobject/file requested'})
 
         # Do irods things
         icom = self.global_get_service('irods')
         user = icom.get_current_user()
 
-        # paths
-        collection = handle_collection_path(
-            icom, self._args.get('collection'))
-        ipath = collection + name
-        abs_file = self.absolute_upload_file(name, user)
+        # Get filename and ipath from uuid using the graph
+        dataobj_node = graph.DataObject.nodes.get(id=uuid)
+        collection_node = dataobj_node.belonging.all().pop()
 
+        # irods paths
+        ipath = icom.get_irods_path(
+            collection_node.path, dataobj_node.filename)
+
+        abs_file = self.absolute_upload_file(dataobj_node.filename, user)
+        # Make sure you remove any cached version to get a fresh obj
         try:
             os.remove(abs_file)
         except:
             pass
 
-        # Execute icommand
+        # Execute icommand (transfer data to cache)
         icom.open(ipath, abs_file)
 
         # Download the file from local fs
         filecontent = super().download(
-            name, subfolder=user, get=True)
+            dataobj_node.filename, subfolder=user, get=True)
 
         # Remove local file
         os.remove(abs_file)
@@ -322,9 +303,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             # ##HANDLING PATH
             # The home dir for the current user
             # Where to put the file in irods
-            collection = handle_collection_path(
-                icom, self._args.get('collection'))
-            ipath = collection + filename
+            ipath = icom.get_irods_path(
+                self._args.get('collection'), filename)
 
             try:
                 iout = icom.save(
@@ -349,29 +329,37 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         return self.response(data=content, errors=errors, code=status)
 
     @auth.login_required
-    @decorate.add_endpoint_parameter('collection')
+    # @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
-    def delete(self, name):
+    def delete(self, uuid):
         """ Remove an object """
 
-## // TO FIX
-# IrodsException: srcPath /tempZone/home/guest/img.jpg does not exist
+        # Get the dataobject from the graph
+        graph = self.global_get_service('neo4j')
+        dataobj_node = graph.DataObject.nodes.get(id=uuid)
+        collection_node = dataobj_node.belonging.all().pop()
 
         icom = self.global_get_service('irods')
-        # paths
-        collection = handle_collection_path(
-            icom, self._args.get('collection'))
-        ipath = collection + name
+        ipath = icom.get_irods_path(
+            collection_node.path, dataobj_node.filename)
+
+        # Remove from graph:
+        # Delete with neomodel the dataobject
+        dataobj_node.delete()
+
+        # # Delete collection if not linked to any dataobject anymore?
+        # if len(collection_node.belongs.all()) < 1:
+        #     collection_node.delete()
+
         try:
             iout = icom.remove(ipath)
             logger.info("irods call %s", iout)
+## // TO FIX
+# IrodsException: srcPath /tempZone/home/guest/img.jpg does not exist
         except perror as e:
             error = str(e)
             if 'ERROR:' in error:
                 error = error[error.index('ERROR:') + 7:]
             return self.response(errors={'iRODS error': error})
-
-## // TO FIX
-# Remove from graph
 
         return self.response({'deleted': ipath})

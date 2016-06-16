@@ -105,7 +105,7 @@ class DataObject(StructuredNode):
     replica = RelationshipTo('DataObject', 'IS_REPLICA_OF', model=Replication)
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     identity = RelationshipFrom('PID', 'UNIQUELY_IDENTIFIED_BY')
-    _fields_to_show = ['filename', 'path']
+    _fields_to_show = ['location', 'filename', 'path']
     _relationships_to_follow = ['belonging', 'located', 'stored']
 
 
