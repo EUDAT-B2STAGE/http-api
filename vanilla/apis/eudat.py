@@ -167,8 +167,9 @@ class CollectionEndpoint(ExtendedApiResource):
 ## // TO FIX:
 # BUG; collection persists as required if specified in the POST method
 # when getting back to GET calls?
-    @decorate.add_endpoint_parameter('collection', required=False)
+    @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self, uuid=None):
         """
         Return list of elements inside a collection.
@@ -186,7 +187,7 @@ class CollectionEndpoint(ExtendedApiResource):
         else:
             try:
                 content.append(graph.Collection.nodes.get(id=uuid))
-            except graph.DataObject.DoesNotExist:
+            except graph.Collection.DoesNotExist:
                 return self.response(errors={uuid: 'Not found.'})
 
         # Build jsonapi.org compliant response
@@ -208,21 +209,48 @@ class CollectionEndpoint(ExtendedApiResource):
         """ Create one collection/directory """
 
         icom = self.global_get_service('irods')
-        collection = self._args.get('collection')
+        collection_input = self._args.get('collection')
         ipath = icom.create_empty(
-            collection,
+            collection_input,
             directory=True, ignore_existing=self._args.get('force'))
         logger.info("Created irods collection: %s", ipath)
 
         # Save inside the graph and give back the uuid
         translate = DataObjectToGraph(
-            icom=icom,
-            graph=self.global_get_service('neo4j'))
-        node = translate.collection2node(collection, ipath)
+            icom=icom, graph=self.global_get_service('neo4j'))
+        _, collections, zone = translate.split_ipath(ipath, with_file=False)
+        node = translate.recursive_collection2node(
+            collections, current_zone=zone)
 
         return self.response(
             {'id': node.id, 'collection': ipath},
             code=hcodes.HTTP_OK_CREATED)
+
+    @auth.login_required
+    @decorate.add_endpoint_parameter('collection', required=False)
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def delete(self, uuid):
+        """ Remove an object """
+
+        # Get the dataobject from the graph
+        graph = self.global_get_service('neo4j')
+        node = None
+        try:
+            node = graph.Collection.nodes.get(id=uuid)
+        except graph.Collection.DoesNotExist:
+            return self.response(errors={uuid: 'Not found.'})
+
+        icom = self.global_get_service('irods')
+        ipath = icom.handle_collection_path(node.path)
+
+        # Remove from graph:
+        node.delete()
+        # Remove from irods
+        icom.remove(ipath, recursive=True)
+        logger.info("Removed collection %s", ipath)
+
+        return self.response({'deleted': ipath})
 
 
 class DataObjectEndpoint(Uploader, ExtendedApiResource):
@@ -349,7 +377,6 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         return self.response(data=content, errors=errors, code=status)
 
     @auth.login_required
-    # @decorate.add_endpoint_parameter('collection')
     @decorate.apimethod
     def delete(self, uuid):
         """ Remove an object """
@@ -365,21 +392,17 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
         # Remove from graph:
         # Delete with neomodel the dataobject
-        dataobj_node.delete()
+        try:
+            dataobj_node.delete()
+        except graph.DataObject.DoesNotExist:
+            return self.response(errors={uuid: 'Not found.'})
 
         # # Delete collection if not linked to any dataobject anymore?
         # if len(collection_node.belongs.all()) < 1:
         #     collection_node.delete()
 
-        try:
-            iout = icom.remove(ipath)
-            logger.info("irods call %s", iout)
-## // TO FIX
-# IrodsException: srcPath /tempZone/home/guest/img.jpg does not exist
-        except perror as e:
-            error = str(e)
-            if 'ERROR:' in error:
-                error = error[error.index('ERROR:') + 7:]
-            return self.response(errors={'iRODS error': error})
+        # Remove from irods
+        icom.remove(ipath)
+        logger.info("Removed %s", ipath)
 
         return self.response({'deleted': ipath})
