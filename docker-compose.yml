@@ -165,7 +165,12 @@ apitests:
 # Nginx proxy
 proxy:
     image: nginx
-    hostname: proxy
+    hostname: myproxy
+    volumes:
+        # Proxy configuration
+        - ./confs/proxy.conf:/etc/nginx/sites-enabled/production
+        - ./confs/nginx.conf:/etc/nginx/nginx.conf
+## Certificates to be added
     links:
         - rest:restapi
 

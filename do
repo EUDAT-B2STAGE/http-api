@@ -268,14 +268,13 @@ elif [ "$1" == "run_prod" ]; then
     echo "Launching server in '$current' mode"
     docker-compose run -d \
         --rm --name $current \
-        -p 80:5000 -T -e APP_MODE=$current \
+        -p 80:80 -T -e APP_MODE=$current \
         proxy
 
-    echo "TO DO"
-    exit 1
-
-# Production mode
+# Handle the right logs
 elif [ "$1" == "server_logs" ]; then
+
+    echo "TO FIX"
 
 # IF PRODUCTION
 
