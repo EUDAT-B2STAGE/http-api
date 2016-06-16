@@ -16,6 +16,10 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo -e "irestart:\tRestart the main iRODS iCAT service instance"
     echo -e "addiuser:\tAdd a new certificated user to irods"
     echo ""
+    echo -e "run_dev:\tStart REST API server in debug mode"
+    echo -e "run_prod:\tStart REST API server in production mode"
+    echo -e "server_logs:\tSee current logs"
+    echo ""
     echo -e "check:\tCheck the stack status"
     echo -e "stop:\tFreeze your containers stack"
     echo -e "remove:\tRemove all containers"
@@ -42,7 +46,7 @@ clientcontainer="apitests"
 compose="docker-compose"
 vcom="docker volume"
 initcom="$compose -f $compose.yml -f init.yml"
-allcompose="$compose -f $compose.yml -f $compose.test.yml -f init.yml"
+allcompose="$compose -f docker-compose.yml -f init.yml"
 vprefix="httpapi_"
 make_tests="docker-compose exec rest ./tests.sh"
 #####################
@@ -229,6 +233,58 @@ elif [ "$1" == "client_shell" ]; then
     compose="docker-compose -f docker-compose.yml -f docker-compose.test.yml"
     $compose up --no-deps -d $clientcontainer
     $compose exec $clientcontainer ash
+
+# Development mode
+elif [ "$1" == "run_dev" ]; then
+
+    current='development'
+
+    echo "Cleaning debug instances if any"
+    docker-compose stop -t 3 $restcontainer \
+        && docker-compose rm --all -f $restcontainer
+    echo "Cleaning development instances if any"
+    docker stop -t 3 $current && docker rm $current
+
+    echo "Launching server in '$current' mode"
+    docker-compose run -d \
+        --rm --name $current \
+        -p 80:5000 -T -e APP_MODE=$current \
+        rest
+
+# Production mode
+elif [ "$1" == "run_prod" ]; then
+
+    current='production'
+
+    echo "Cleaning debug instances if any"
+    docker-compose stop -t 3 $restcontainer \
+        && docker-compose rm --all -f $restcontainer
+    echo "Cleaning production instances if any"
+    docker stop -t 3 $current && docker rm $current
+
+## // TO FIX:
+# Make a bash function to clean debug, development, production
+
+    echo "Launching server in '$current' mode"
+    docker-compose run -d \
+        --rm --name $current \
+        -p 80:5000 -T -e APP_MODE=$current \
+        proxy
+
+    echo "TO DO"
+    exit 1
+
+# Production mode
+elif [ "$1" == "server_logs" ]; then
+
+# IF PRODUCTION
+
+# ELIF DEVELOPMENT
+
+# ELIF NORMAL COMPOSE
+
+    # docker-compose logs -f $restcontainer
+    docker-compose logs -f -t --tail="10"
 
 # Normal boot
 elif [ "$1" == "graceful" ]; then

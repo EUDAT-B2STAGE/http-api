@@ -24,7 +24,5 @@ rest:
       - ./confs/fixirodsclient.sh:/fix
     command: /fix
 
-# SMALL COMMENT:
-# To restart the icat installation you just need to remove one volume:
-
-# $ docker volume rm irodsconf
+# To clean like there was no init:
+# ./do clean

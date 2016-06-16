@@ -1,9 +1,0 @@
-
-#################################
-# REST API testing
-
-apitests:
-    image: eudatb2safe/apiclient
-    command: sleep 999999999
-    links:
-        - rest:api

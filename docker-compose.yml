@@ -4,8 +4,7 @@
 
 # ## RUN THE STACK
 
-# Use the script inside the repo.
-# From the repo root directory:
+# Please use the bash script at the repo root directory:
 # ./do help
 
 # ################
@@ -139,5 +138,35 @@ rest:
         - icat:rodserver
         # GRAPHDB MUST BE CALLED gdb
         - graphdb:gdb
+
+#################################
+# REST API client
+# (wget, curl, httpie, http-prompt)
+
+apitests:
+    image: eudatb2safe/apiclient
+    command: sleep 1234567890
+    links:
+        - rest:api
+
+# #################################
+# # Database administration
+
+# # This image let you access the postgres db
+# # with a 'phpmyadmin' like web page
+# sqladmin:
+#     image: clue/adminer
+#     links:
+#         - sql:db
+#     ports:
+#         - 8080:80
+
+#################################
+# Nginx proxy
+proxy:
+    image: nginx
+    hostname: proxy
+    links:
+        - rest:restapi
 
 #################################
