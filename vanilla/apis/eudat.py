@@ -166,14 +166,10 @@ class Certificates(ExtendedApiResource):
         Try to use the correct irods user obtained from the token
         """
 
-        icom = self.global_get_service('irods')
-
-## // TO FIX:
-        # token = self.get_latest_token()
         token = self.get_current_token()
-
-        icom = self.global_get_service('irods', token=token)
-        print(icom)
+## // TO FIX:
+# Get user from token
+        self.global_get_service('irods', token=token)
         return self.response("Hello")
 
 
