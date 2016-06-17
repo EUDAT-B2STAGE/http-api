@@ -28,19 +28,16 @@ git clone https://github.com/EUDAT-B2STAGE/http-api.git
 # Init services
 ./do init
 # Then run the final services
-./do graceful
-# Open the client to test code or run the API server
-./do server_shell
-root@api:/code/project# ./boot devel
+./do DEVELOPMENT
 ### Develop from here!
 
 # You may also create another shell to mimic the API client
 ./do client_shell
-/ # http GET http://api:5000/api/verify
+/ # http GET http://apiserver/api/status
 
 ```
 
-## Enable only irods server
+## Enable only the iRODS server
 
 Note: if you want to use normal irods instead of B2safe service,
 change the image name inside `docker-compose.yml`.
@@ -60,7 +57,7 @@ docker-compose up -d icat
 
 For a more detailed explanation and some deep understanding:
 
-** WARNING: the following links must be updated **
+** WARNING: the following pages are not yet updated **
 
 * [Preparing the environment](docs/preparation.md)
 * [Running the services](docs/running.md)
@@ -70,10 +67,9 @@ For a more detailed explanation and some deep understanding:
 ## Versions
 
 ```
-$ docker exec -it httpapi_icat_1 bash
+$ ./do irods_shell
 
-irods@rodserver:~$ apt-cache showpkg irods-icat
-Package: irods-icat
+irods@rodserver:~$ apt-cache showpkg irods-icat | grep -i versions -A 1
 Versions:
-4.1.8
+4.1.8 (/var/lib/dpkg/status)
 ```
