@@ -8,3 +8,7 @@ rest:
 graphdb:
   ports:
     - 9090:7474
+
+apitests:
+  links:
+    - rest:apiserver

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Where to store key and cert files
-key="/etc/ssl/private/nginx-selfsigned.key"
-cert="/etc/ssl/certs/nginx-selfsigned.crt"
+key="./certs/nginx-selfsigned.key"
+cert="./certs/nginx-selfsigned.crt"
 
 command="openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $key -out $cert"
 
@@ -24,10 +24,10 @@ state='Rome'
 locality='Rome'
 organization='CINECA'
 organization_unit='SCAI'
-common_name='my-server-ip-or-domain-name'
+common_name='awesome.docker'
 email='user@nomail.org'
 
-$command << EOF
+$command 2> /dev/null << EOF
 $country
 $state
 $locality
@@ -37,7 +37,11 @@ $common_name
 $email
 EOF
 
+if [ "$?" == "0" ]; then
+    echo "Created"
+else
+    echo "Failed..."
+fi
 
-
-# to read the cert file 
+# to read the cert file
 # openssl x509 -in /etc/ssl/certs/nginx-selfsigned.crt -text

@@ -4,8 +4,14 @@ rest:
     APP_MODE: development
 
 proxy:
+  volumes:
+    - ./confs/dev_proxy.conf:/etc/nginx/sites-enabled/development
   ports:
     - 80:80
+
+apitests:
+  links:
+    - proxy:apiserver
 
 graphdb:
   ports:

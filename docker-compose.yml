@@ -81,7 +81,8 @@ rest:
     command: ./boot
     environment:
 
-      APP_MODE: debug
+      ## MODES
+      # APP_MODE: debug
       # APP_MODE: development
       # APP_MODE: production
 
@@ -142,8 +143,6 @@ rest:
 apitests:
     image: eudatb2safe/apiclient
     command: sleep 1234567890
-    links:
-        - rest:api
 
 #################################
 # Database administration
@@ -164,7 +163,6 @@ proxy:
     hostname: myproxy
     volumes:
         # Proxy configuration
-        - ./confs/proxy.conf:/etc/nginx/sites-enabled/production
         - ./confs/nginx.conf:/etc/nginx/nginx.conf
 ## Certificates to be added
     links:

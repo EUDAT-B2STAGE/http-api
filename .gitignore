@@ -2,6 +2,9 @@
 # Skip submodules
 backend
 
+# Skip self-signed certificates
+certs/nginx-selfsigned*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

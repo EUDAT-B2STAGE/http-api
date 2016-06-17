@@ -31,7 +31,7 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo -e "PRODUCTION:\tREST API server with Gunicorn behind nginx proxy"
     echo ""
     echo -e "[Mode] restart:\t(Re)Launch the Docker stack"
-    echo -e "[Mode] server_logs:\tSee current logs"
+    echo -e "[Mode] logs:\tAttach to all container logs"
     exit 0
 fi
 
@@ -41,6 +41,7 @@ subdir="backend"
 submodule_tracking="submodules.current.commit"
 irodscontainer="icat"
 restcontainer="rest"
+proxycontainer="proxy"
 clientcontainer="apitests"
 vcom="docker volume"
 vprefix="httpapi_"
@@ -55,8 +56,11 @@ if [ "$1" == "init" ]; then
 elif [ "$1" == "PRODUCTION" ]; then
     compose_run="$compose_base -f composers/production.yml"
 
+## // TO FIX:
+    # Check for certificates
+
 # Development mode
-elif [ "$1" == "DEVEOPMENT" ]; then
+elif [ "$1" == "DEVELOPMENT" ]; then
     compose_run="$compose_base -f composers/development.yml"
 
 # Normal / debug mode
@@ -253,16 +257,12 @@ elif [ "$1" == "api_test" ]; then
 
 elif [ "$1" == "client_shell" ]; then
     echo "Opening a client shell"
-    echo "You may use the 'httpie' library (http command), e.g.:"
-    echo ""
-    echo "$ http GET http://api:5000/api/status"
-    echo ""
-    $compose_run up --no-deps -d $clientcontainer
+    # $compose_run up --no-deps -d $clientcontainer
     $compose_run exec $clientcontainer ash
     exit 0
 
 # Handle the right logs
-elif [ "$1" == "server_logs" ]; then
+elif [ "$1" == "logs" ]; then
     $compose_run logs -f -t --tail="10"
     exit 0
 fi
@@ -279,7 +279,19 @@ then
         $compose_run rm -f --all
     fi
 
-    $compose_run up -d $restcontainer
+    # Check certificates
+    if [ "$1" == "PRODUCTION" ]; then
+        if [ ! -f "./certs/nginx-selfsigned.key" -o ! -f "./certs/nginx-selfsigned.crt" ];
+        then
+            echo "Missing certificates."
+            echo "To create self_signed files you may use:"
+            echo "./confs/create_self_signed_ssl.sh"
+            exit 1
+        fi
+    fi
+
+    # The client container always has the best link to access the server
+    $compose_run up -d $clientcontainer
     status="$?"
 
     echo "Stack processes:"
@@ -288,8 +300,22 @@ then
     if [ "$status" == "0" ]; then
         $compose_run exec --user root rest update-ca-certificates
         echo ""
-        echo "To access the flask api container, please run:"
+        echo "To access the flask api container:"
         echo "$0 server_shell"
+        echo ""
+        echo "To query the api server (if running) use the client container:"
+        echo "$0 client_shell"
+
+        path="/api/status"
+
+        if [ "$1" == "PRODUCTION" ]; then
+            echo "/ # http --follow --verify /tmp/cert.crt awesome.docker$path"
+        elif [ "$1" == "DEVELOPMENT" ]; then
+            echo "/ # http GET http://apiserver$path"
+        else
+            echo "/ # http GET apiserver:5000$path"
+        fi
+        echo ""
     fi
 
     echo "Boot completed"
