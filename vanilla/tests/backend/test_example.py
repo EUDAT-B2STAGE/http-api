@@ -12,7 +12,7 @@ import logging
 import commons.htmlcodes as hcodes
 from commons.logs import get_logger
 from restapi.server import create_app
-from confs.config import USER, PWD, \
+from restapi.confs.config import USER, PWD, \
     TEST_HOST, SERVER_PORT, API_URL, AUTH_URL
 
 __author__ = "Paolo D'Onorio De Meo (GitHub@pdonorio)"
