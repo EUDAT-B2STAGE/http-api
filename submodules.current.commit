@@ -1,2 +1,2 @@
-513a351 Refactoring the collection usage inside irods translations into graph
- graph_based_auth LICENSE README.md backend certs confs do docker-compose.yml docs init.yml notebooks submodules.current.commit tasks vanilla master oauthtest
+bc8bb9b A cleaner for tokens
+ graph_based_auth LICENSE README.md backend certs composers confs do docker-compose.yml docs notebooks submodules.current.commit tasks vanilla master oauthtest
