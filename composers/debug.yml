@@ -1,0 +1,10 @@
+
+rest:
+  environment:
+    APP_MODE: debug
+  ports:
+    - 8080:5000
+
+graphdb:
+  ports:
+    - 9090:7474

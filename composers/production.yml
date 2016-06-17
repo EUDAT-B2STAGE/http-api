@@ -1,0 +1,12 @@
+
+rest:
+  environment:
+    APP_MODE: production
+  # ports:
+  #   - 80:5000
+
+# SSL / HTTPS
+proxy:
+  ports:
+    - 80:80
+    - 443:443

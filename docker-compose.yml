@@ -72,8 +72,6 @@ graphdb:
       #NEO4J_CACHE_MEMORY
     volumes:
         - httpapi_graphdata:/data
-    ports:
-        - 9090:7474
 
 #################################
 # iRODS iCAT server for EUDAT B2safe
@@ -106,8 +104,6 @@ rest:
       # X509_USER_CERT: /opt/certificates/guest/usercert.pem
       # X509_USER_KEY: /opt/certificates/guest/userkey.pem
 
-    ports:
-        - 8080:5000
     working_dir: /code
     volumes:
         # Uploads dir
@@ -149,17 +145,17 @@ apitests:
     links:
         - rest:api
 
-# #################################
-# # Database administration
+#################################
+# Database administration
 
-# # This image let you access the postgres db
-# # with a 'phpmyadmin' like web page
-# sqladmin:
-#     image: clue/adminer
-#     links:
-#         - sql:db
-#     ports:
-#         - 8080:80
+# This docker image let you access sqllite/postgres/mysql
+# with a phpmyadmin-like web page
+sqladmin:
+    image: clue/adminer
+    links:
+        - sql:db
+    ports:
+        - 8888:80
 
 #################################
 # Nginx proxy

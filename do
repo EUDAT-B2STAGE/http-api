@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Note: i could add a shorter timeout with docker-compose stop -t 5
-
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
 echo "# ############################################ #"
@@ -11,14 +9,8 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo "Available commands:"
     echo ""
     echo -e "init:\t\tStartup your repository code, containers and volumes"
-    echo -e "graceful:\tTry to bring up only missing containers"
-    echo -e "restart:\t(Re)Launch the Docker stack"
     echo -e "irestart:\tRestart the main iRODS iCAT service instance"
     echo -e "addiuser:\tAdd a new certificated user to irods"
-    echo ""
-    echo -e "run_dev:\tStart REST API server in debug mode"
-    echo -e "run_prod:\tStart REST API server in production mode"
-    echo -e "server_logs:\tSee current logs"
     echo ""
     echo -e "check:\tCheck the stack status"
     echo -e "stop:\tFreeze your containers stack"
@@ -33,6 +25,13 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo -e "push:\tPush code to github"
     echo -e "update:\tPull updated code and images"
     echo ""
+    echo -e "***Modes***:"
+    echo -e "DEBUG:\tREST API server should be launched using container shell"
+    echo -e "DEVELOPMENT:\tREST API server with Flask WSGI and Debug"
+    echo -e "PRODUCTION:\tREST API server with Gunicorn behind nginx proxy"
+    echo ""
+    echo -e "[Mode] restart:\t(Re)Launch the Docker stack"
+    echo -e "[Mode] server_logs:\tSee current logs"
     exit 0
 fi
 
@@ -43,12 +42,30 @@ submodule_tracking="submodules.current.commit"
 irodscontainer="icat"
 restcontainer="rest"
 clientcontainer="apitests"
-compose="docker-compose"
 vcom="docker volume"
-initcom="$compose -f $compose.yml -f init.yml"
-allcompose="$compose -f docker-compose.yml -f init.yml"
 vprefix="httpapi_"
-make_tests="docker-compose exec rest ./tests.sh"
+
+compose_base="docker-compose -f docker-compose.yml"
+
+# Init mode
+if [ "$1" == "init" ]; then
+    compose_run="$compose_base -f composers/init.yml"
+
+# Production mode
+elif [ "$1" == "PRODUCTION" ]; then
+    compose_run="$compose_base -f composers/production.yml"
+
+# Development mode
+elif [ "$1" == "DEVEOPMENT" ]; then
+    compose_run="$compose_base -f composers/development.yml"
+
+# Normal / debug mode
+else
+    compose_run="$compose_base -f composers/debug.yml"
+
+fi
+
+make_tests="$compose_run exec rest ./tests.sh"
 #####################
 
 # Check prerequisites
@@ -83,11 +100,11 @@ fi
 # Update the remote github repos
 if [ "$1" == "push" ]; then
 
-    check_container=`$allcompose ps rest | grep -i exit`
+    check_container=`$compose_run ps rest | grep -i exit`
     if [ "$check_container" != "" ]; then
         echo "Please make sure that Flask container server is running"
         echo "You may try with the command:"
-        echo "$0 graceful"
+        echo "$0 DEBUG"
         echo ""
         exit 1
     fi
@@ -128,7 +145,7 @@ fi
 # Update your code
 if [ "$1" == "update" ]; then
     echo "Updating docker images to latest release"
-    $allcompose pull
+    $compose_run pull
     echo "Pulling main repo"
     git pull
     echo "Pulling submodule"
@@ -160,69 +177,79 @@ if [ "$1" == "init" ]; then
     echo "(Sleeping some seconds to let you stop in case you made a mistake)"
     sleep 7
     echo "Containers stopping"
-    $allcompose stop
+    $compose_run stop
     echo "Containers deletion"
-    $allcompose rm -f --all
+    $compose_run rm -f --all
     if [ "$volumes"  != "" ]; then
         echo "Destroy volumes:"
         docker volume rm $volumes
     fi
     echo "READY TO INIT"
-    $initcom up icat rest
+    $compose_run up icat rest
     if [ "$?" == "0" ]; then
         echo ""
         echo "Your project is ready to be used."
         echo "Everytime you need to start just run:"
-        echo "\$ $0 graceful"
+        echo "\$ $0 DEBUG"
         echo ""
     fi
+    exit 0
 
 # Verify the status
 elif [ "$1" == "check" ]; then
     echo "Stack status:"
-    $allcompose ps
+    $compose_run ps
+    exit 0
 
 # Freeze containers
 elif [ "$1" == "stop" ]; then
     echo "Freezing the stack"
-    $allcompose stop
+    $compose_run stop
+    exit 0
 
 # Remove all containers
 elif [ "$1" == "remove" ]; then
     echo "REMOVE CONTAINERS"
-    $allcompose stop
-    $allcompose rm -f --all
+    $compose_run stop
+    $compose_run rm -f --all
+    exit 0
 
 # Destroy everything: containers and data saved so far
 elif [ "$1" == "clean" ]; then
     echo "REMOVE DATA"
     echo "are you really sure?"
     sleep 5
-    $allcompose stop
-    $allcompose rm -f --all
+    $compose_run stop
+    $compose_run rm -f --all
     for volume in $volumes;
     do
         echo "Remove $volume volume"
         $vcom rm $volume
         sleep 1
     done
+    exit 0
 
 elif [ "$1" == "addiuser" ]; then
     echo "Adding a new certificated iRODS user:"
-    docker-compose exec $irodscontainer /addusercert $2
+    $compose_run exec $irodscontainer /addusercert $2
+    exit 0
 
 elif [ "$1" == "irestart" ]; then
-    docker-compose exec $irodscontainer /bin/bash /irestart
+    $compose_run exec $irodscontainer /bin/bash /irestart
+    exit 0
 
 elif [ "$1" == "irods_shell" ]; then
-    docker-compose exec $irodscontainer bash
+    $compose_run exec $irodscontainer bash
+    exit 0
 
 elif [ "$1" == "server_shell" ]; then
-    docker-compose exec $restcontainer bash
+    $compose_run exec $restcontainer bash
+    exit 0
 
 elif [ "$1" == "api_test" ]; then
     echo "Opening a shell for nose2 tests"
     $make_tests
+    exit 0
 
 elif [ "$1" == "client_shell" ]; then
     echo "Opening a client shell"
@@ -230,95 +257,46 @@ elif [ "$1" == "client_shell" ]; then
     echo ""
     echo "$ http GET http://api:5000/api/status"
     echo ""
-    compose="docker-compose -f docker-compose.yml"
-    $compose up --no-deps -d $clientcontainer
-    $compose exec $clientcontainer ash
-
-# Development mode
-elif [ "$1" == "run_dev" ]; then
-
-    current='development'
-
-    echo "Cleaning debug instances if any"
-    docker-compose stop -t 3 $restcontainer \
-        && docker-compose rm --all -f $restcontainer
-    echo "Cleaning development instances if any"
-    docker stop -t 3 $current && docker rm $current
-
-    echo "Launching server in '$current' mode"
-    docker-compose run -d \
-        --rm --name $current \
-        -p 80:5000 -T -e APP_MODE=$current \
-        rest
-
-# Production mode
-elif [ "$1" == "run_prod" ]; then
-
-    current='production'
-
-    echo "Cleaning debug instances if any"
-    docker-compose stop -t 3 $restcontainer \
-        && docker-compose rm --all -f $restcontainer
-    echo "Cleaning production instances if any"
-    docker stop -t 3 $current && docker rm $current
-
-## // TO FIX:
-# Make a bash function to clean debug, development, production
-
-    echo "Launching server in '$current' mode"
-    docker-compose run -d \
-        --rm --name $current \
-        -p 80:80 -T -e APP_MODE=$current \
-        proxy
+    $compose_run up --no-deps -d $clientcontainer
+    $compose_run exec $clientcontainer ash
+    exit 0
 
 # Handle the right logs
 elif [ "$1" == "server_logs" ]; then
-
-    echo "TO FIX"
-
-# IF PRODUCTION
-
-# ELIF DEVELOPMENT
-
-# ELIF NORMAL COMPOSE
-
-    # docker-compose logs -f $restcontainer
-    docker-compose logs -f -t --tail="10"
-
-# Normal boot
-elif [ "$1" == "graceful" ]; then
-
-    echo "(re)Boot Docker stack"
-    docker-compose up -d $restcontainer
-    status="$?"
-    echo "Stack processes:"
-    docker-compose ps
-    if [ "$status" == "0" ]; then
-        docker-compose exec --user root rest update-ca-certificates
-        echo ""
-        echo "To access the flask api container, please run:"
-        echo "$0 server_shell"
-    fi
-
-elif [ "$1" == "restart" ]; then
-
-    echo "Clean previous containers"
-    $allcompose stop
-    $allcompose rm -f --all
-
-    echo "Boot Docker stack"
-    docker-compose up -d $restcontainer
-    status="$?"
-    echo "Stack processes:"
-    docker-compose ps
-    if [ "$status" == "0" ]; then
-        docker-compose exec --user root rest update-ca-certificates
-        echo ""
-        echo "To access the flask api container, please run:"
-        echo "$0 server_shell"
-    fi
-else
-    echo "Unknown operation '$1'!"
-    echo "Use \"$0 help\" to see available commands "
-    exit 1
+    $compose_run logs -f -t --tail="10"
+    exit 0
 fi
+
+# Boot up
+if [ "$1" == "DEBUG" -o "$1" == "DEVELOPMENT" -o "$1" == "PRODUCTION" ];
+then
+
+    echo "Docker stack: booting"
+
+    if [ "$2" == "restart" ]; then
+        echo "Clean previous containers"
+        $compose_run stop
+        $compose_run rm -f --all
+    fi
+
+    $compose_run up -d $restcontainer
+    status="$?"
+
+    echo "Stack processes:"
+    $compose_run ps
+
+    if [ "$status" == "0" ]; then
+        $compose_run exec --user root rest update-ca-certificates
+        echo ""
+        echo "To access the flask api container, please run:"
+        echo "$0 server_shell"
+    fi
+
+    echo "Boot completed"
+    exit 0
+
+fi
+
+echo "Unknown operation '$1'!"
+echo "Use \"$0 help\" to see available commands "
+exit 1

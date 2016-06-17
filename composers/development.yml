@@ -1,0 +1,12 @@
+
+rest:
+  environment:
+    APP_MODE: development
+
+proxy:
+  ports:
+    - 80:80
+
+graphdb:
+  ports:
+    - 9090:7474
