@@ -31,7 +31,7 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo -e "PRODUCTION:\tREST API server with Gunicorn behind nginx proxy"
     echo ""
     echo -e "[Mode] restart:\t(Re)Launch the Docker stack"
-    echo -e "[Mode] logs:\tAttach to all container logs"
+    echo -e "logs:\tAttach to all container logs"
     exit 0
 fi
 

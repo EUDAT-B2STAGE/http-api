@@ -102,14 +102,6 @@ class Authorize(ExtendedApiResource):
         user_node = obj
         logger.info("Stored access info")
 
-## // TO FIX:
-# we must link inside the graph
-# the new external account to at least at the very default Role
-
-        # Check if user_node has at least one role
-
-        # If not add the default one
-
         ############################################
 ## // TO FIX:
 # Move this code inside the certificates class
@@ -151,12 +143,38 @@ class Authorize(ExtendedApiResource):
         from ..services.detect import IRODS_EXTERNAL
         if IRODS_EXTERNAL:
             raise NotImplementedError("ADD/CHECK USER INSIDE IRODS")
+        else:
+            logger.critical("Creating irods user?")
+
+        # Create a valid token for our API
+        token, jti = auth.create_token(auth.fill_payload(user_node))
+        auth.save_token(auth._user, token, jti)
+        self.set_latest_token(token)
 
 ## // TO FIX:
 # Create a 'return_credentials' method to use standard Bearer oauth response
-        return self.response({
-            # Create a valid token for our API
-            'token': auth.create_token(auth.fill_payload(user_node))})
+        return self.response({'token': token})
+
+
+class Certificates(ExtendedApiResource):
+
+    @auth.login_required
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def get(self):
+        """
+        Try to use the correct irods user obtained from the token
+        """
+
+        icom = self.global_get_service('irods')
+
+## // TO FIX:
+        # token = self.get_latest_token()
+        token = self.get_current_token()
+
+        icom = self.global_get_service('irods', token=token)
+        print(icom)
+        return self.response("Hello")
 
 
 class CollectionEndpoint(ExtendedApiResource):
@@ -171,6 +189,10 @@ class CollectionEndpoint(ExtendedApiResource):
         """
 
         graph = self.global_get_service('neo4j')
+
+## // TO FIX!!
+# List collections and dataobjects only linked to current user :)
+## // TO FIX!!
 
         content = []
 
@@ -190,7 +212,7 @@ class CollectionEndpoint(ExtendedApiResource):
 
 ###############
 ## // TO FIX:
-# This is such a standard 'get' method that
+# The one above is such a standard 'get' method that
 # we could make it general for the graphdb use case
 ###############
 
