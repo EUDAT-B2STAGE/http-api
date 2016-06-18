@@ -22,6 +22,8 @@ from ..services.irods.translations import DataObjectToGraph
 
 logger = get_logger(__name__)
 
+FIXED_IUSER = 'guest'
+
 
 ###############################
 # Classes
@@ -156,7 +158,7 @@ class Authorize(ExtendedApiResource):
         return self.response({'token': token})
 
 
-class Certificates(ExtendedApiResource):
+class Certificate(ExtendedApiResource):
 
     @auth.login_required
     @decorate.apimethod
@@ -166,16 +168,54 @@ class Certificates(ExtendedApiResource):
         Try to use the correct irods user obtained from the token
         """
 
+        # Services
         auth = self.global_get('custom_auth')
-        # auth.verify_token(self.get_current_token())
+        icom = self.global_get_service('irods', user='rodsminer')  # as admin
+        graph = self.global_get_service('neo4j')
+
+        # Two kind of accounts
         graph_user = auth.get_user_object(payload=auth._payload)
+        irods_user = icom.get_translated_user(graph_user.email)
 
-        from ..services.irods.translations import AccountsToIrodsUsers
-        irods_user = AccountsToIrodsUsers.email2iuser(graph_user.email)
-        print("IRODS USER", irods_user)
+        # Create irods user and add CN
+        graph_irods_user = None
+        try:
+            graph_irods_user = graph.IrodsUser.nodes.get(username=irods_user)
+        except graph.IrodsUser.DoesNotExist:
+## // TO FIX:
+# create method for adding a user that that this
+# (and choose if user will be adminer)
+            try:
+                icom.admin('mkuser', irods_user, 'rodsuser')
+            except:
+                logger.info("User %s already exists in iRODS" % irods_user)
 
-        icom = self.global_get_service('irods', user=irods_user)
+            # Get CN from ExternalAccounts
+            user_ext = list(graph_user.externals.all()).pop()
+            icom.admin('aua', irods_user, user_ext.certificate_cn)
+
+            # Save into the graph
+            graph_irods_user = graph.IrodsUser(username=irods_user)
+            graph_irods_user.save()
+
+        # Connect the user to graph If not already
+        if len(graph_user.associated.search(username='username')) < 1:
+            graph_user.associated.connect(graph_irods_user)
+
+# // TO FIX:
+
+        """
+Client side: GSS-API error initializing context: GSS Major Status: Communications Error
+DEBUG: Client side: GSS-API error initializing context: GSS Minor Status Error Chain:
+globus_gsi_gssapi: Error with GSS token
+globus_gsi_gssapi: Error with GSS token: The input token has an invalid length of: 0
+ERROR: [-]  iRODS/lib/core/src/clientLogin.cpp:321:clientLogin :  status [GSI_ERROR_INIT_SECURITY_CONTEXT]  errno [] -- message []
+        """
+
+        # # Test it
+        # icom = self.global_get_service('irods', user=irods_user)
         # icom.list()
+
         return self.response("Hello")
 
 
@@ -226,7 +266,7 @@ class CollectionEndpoint(ExtendedApiResource):
     def post(self):
         """ Create one collection/directory """
 
-        icom = self.global_get_service('irods')
+        icom = self.global_get_service('irods', user=FIXED_IUSER)
         collection_input = self._args.get('collection')
         ipath = icom.create_empty(
             collection_input,
@@ -259,7 +299,7 @@ class CollectionEndpoint(ExtendedApiResource):
         except graph.Collection.DoesNotExist:
             return self.response(errors={uuid: 'Not found.'})
 
-        icom = self.global_get_service('irods')
+        icom = self.global_get_service('irods', user=FIXED_IUSER)
         ipath = icom.handle_collection_path(node.path)
 
         # Remove from graph:
@@ -294,7 +334,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         #         errors={'dataobject': 'No dataobject/file requested'})
 
         # Do irods things
-        icom = self.global_get_service('irods')
+        icom = self.global_get_service('irods', user=FIXED_IUSER)
         user = icom.get_current_user()
 
         # Get filename and ipath from uuid using the graph
@@ -340,7 +380,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             file@docker-compose.test.yml
         """
 
-        icom = self.global_get_service('irods')
+        icom = self.global_get_service('irods', user=FIXED_IUSER)
         user = icom.get_current_user()
 
         # Original upload
@@ -404,7 +444,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         dataobj_node = graph.DataObject.nodes.get(id=uuid)
         collection_node = dataobj_node.belonging.all().pop()
 
-        icom = self.global_get_service('irods')
+        icom = self.global_get_service('irods', user=FIXED_IUSER)
         ipath = icom.get_irods_path(
             collection_node.path, dataobj_node.filename)
 
