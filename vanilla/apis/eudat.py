@@ -13,7 +13,9 @@ from commons import htmlcodes as hcodes
 from commons.logs import get_logger
 from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
-from ..services.irods.client import IrodsException
+from ..services.detect import IRODS_EXTERNAL
+from ..services.irods.client import IrodsException, \
+    IRODS_DEFAULT_USER, IRODS_DEFAULT_ADMIN
 from ..services.uploader import Uploader
 from ..services.oauth2clients import decorate_http_request
 from ...auth import auth
@@ -21,8 +23,6 @@ from .. import decorators as decorate
 from ..services.irods.translations import DataObjectToGraph
 
 logger = get_logger(__name__)
-
-FIXED_IUSER = 'guest'
 
 
 ###############################
@@ -142,7 +142,6 @@ class Authorize(ExtendedApiResource):
         ############################################
 # ADD USER (if not exists) IN CASE WE ARE USING A DOCKERIZED VERSION
         # To do
-        from ..services.detect import IRODS_EXTERNAL
         if IRODS_EXTERNAL:
             raise NotImplementedError("ADD/CHECK USER INSIDE IRODS")
         else:
@@ -152,6 +151,9 @@ class Authorize(ExtendedApiResource):
         token, jti = auth.create_token(auth.fill_payload(user_node))
         auth.save_token(auth._user, token, jti)
         self.set_latest_token(token)
+
+## // TO FIX:
+# I could make this task end with what "Certificate" does
 
 ## // TO FIX:
 # Create a 'return_credentials' method to use standard Bearer oauth response
@@ -170,8 +172,9 @@ class Certificate(ExtendedApiResource):
 
         # Services
         auth = self.global_get('custom_auth')
-        icom = self.global_get_service('irods', user='rodsminer')  # as admin
         graph = self.global_get_service('neo4j')
+        # irods as admin
+        icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
 
         # Two kind of accounts
         graph_user = auth.get_user_object(payload=auth._payload)
@@ -182,17 +185,13 @@ class Certificate(ExtendedApiResource):
         try:
             graph_irods_user = graph.IrodsUser.nodes.get(username=irods_user)
         except graph.IrodsUser.DoesNotExist:
-## // TO FIX:
-# create method for adding a user that that this
-# (and choose if user will be adminer)
-            try:
-                icom.admin('mkuser', irods_user, 'rodsuser')
-            except:
-                logger.info("User %s already exists in iRODS" % irods_user)
 
-            # Get CN from ExternalAccounts
-            user_ext = list(graph_user.externals.all()).pop()
-            icom.admin('aua', irods_user, user_ext.certificate_cn)
+            if not IRODS_EXTERNAL:
+                # Add user inside irods
+                icom.create_user(irods_user)
+                # Get CN from ExternalAccounts
+                user_ext = list(graph_user.externals.all()).pop()
+                icom.admin('aua', irods_user, user_ext.certificate_cn)
 
             # Save into the graph
             graph_irods_user = graph.IrodsUser(username=irods_user)
@@ -212,7 +211,7 @@ globus_gsi_gssapi: Error with GSS token: The input token has an invalid length o
 ERROR: [-]  iRODS/lib/core/src/clientLogin.cpp:321:clientLogin :  status [GSI_ERROR_INIT_SECURITY_CONTEXT]  errno [] -- message []
         """
 
-        # # Test it
+        # # Test GSS-API
         # icom = self.global_get_service('irods', user=irods_user)
         # icom.list()
 
@@ -266,7 +265,7 @@ class CollectionEndpoint(ExtendedApiResource):
     def post(self):
         """ Create one collection/directory """
 
-        icom = self.global_get_service('irods', user=FIXED_IUSER)
+        icom = self.global_get_service('irods', user=IRODS_DEFAULT_USER)
         collection_input = self._args.get('collection')
         ipath = icom.create_empty(
             collection_input,
@@ -299,7 +298,7 @@ class CollectionEndpoint(ExtendedApiResource):
         except graph.Collection.DoesNotExist:
             return self.response(errors={uuid: 'Not found.'})
 
-        icom = self.global_get_service('irods', user=FIXED_IUSER)
+        icom = self.global_get_service('irods', user=IRODS_DEFAULT_USER)
         ipath = icom.handle_collection_path(node.path)
 
         # Remove from graph:
@@ -334,7 +333,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         #         errors={'dataobject': 'No dataobject/file requested'})
 
         # Do irods things
-        icom = self.global_get_service('irods', user=FIXED_IUSER)
+        icom = self.global_get_service('irods', user=IRODS_DEFAULT_USER)
         user = icom.get_current_user()
 
         # Get filename and ipath from uuid using the graph
@@ -380,7 +379,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             file@docker-compose.test.yml
         """
 
-        icom = self.global_get_service('irods', user=FIXED_IUSER)
+        icom = self.global_get_service('irods', user=IRODS_DEFAULT_USER)
         user = icom.get_current_user()
 
         # Original upload
@@ -444,7 +443,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         dataobj_node = graph.DataObject.nodes.get(id=uuid)
         collection_node = dataobj_node.belonging.all().pop()
 
-        icom = self.global_get_service('irods', user=FIXED_IUSER)
+        icom = self.global_get_service('irods', user=IRODS_DEFAULT_USER)
         ipath = icom.get_irods_path(
             collection_node.path, dataobj_node.filename)
 
