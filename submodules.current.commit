@@ -1,2 +1,2 @@
-bc8bb9b A cleaner for tokens
+a7f7acf Updating irods to latest defaults from docker image
  graph_based_auth LICENSE README.md backend certs composers confs do docker-compose.yml docs notebooks submodules.current.commit tasks vanilla master oauthtest
