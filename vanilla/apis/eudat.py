@@ -136,49 +136,13 @@ class Authorize(ExtendedApiResource):
         external_account_node.save()
 
         ############################################
-## // TO FIX:
-# Check if the proxy works... # How??
+        # Graph linking new accounts to an iRODS user
 
-        ############################################
-# ADD USER (if not exists) IN CASE WE ARE USING A DOCKERIZED VERSION
-        # To do
-        if IRODS_EXTERNAL:
-            raise NotImplementedError("ADD/CHECK USER INSIDE IRODS")
-        else:
-            logger.critical("Creating irods user?")
-
-        # Create a valid token for our API
-        token, jti = auth.create_token(auth.fill_payload(user_node))
-        auth.save_token(auth._user, token, jti)
-        self.set_latest_token(token)
-
-## // TO FIX:
-# I could make this task end with what "Certificate" does
-
-## // TO FIX:
-# Create a 'return_credentials' method to use standard Bearer oauth response
-        return self.response({'token': token})
-
-
-class Certificate(ExtendedApiResource):
-
-    @auth.login_required
-    @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def get(self):
-        """
-        Try to use the correct irods user obtained from the token
-        """
-
-        # Services
-        auth = self.global_get('custom_auth')
-        graph = self.global_get_service('neo4j')
         # irods as admin
         icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
 
         # Two kind of accounts
-        graph_user = auth.get_user_object(payload=auth._payload)
-        irods_user = icom.get_translated_user(graph_user.email)
+        irods_user = icom.get_translated_user(user_node.email)
 
         # Create irods user and add CN
         graph_irods_user = None
@@ -190,7 +154,7 @@ class Certificate(ExtendedApiResource):
                 # Add user inside irods
                 icom.create_user(irods_user)
                 # Get CN from ExternalAccounts
-                user_ext = list(graph_user.externals.all()).pop()
+                user_ext = list(user_node.externals.all()).pop()
                 icom.admin('aua', irods_user, user_ext.certificate_cn)
 
             # Save into the graph
@@ -198,12 +162,14 @@ class Certificate(ExtendedApiResource):
             graph_irods_user.save()
 
         # Connect the user to graph If not already
-        if len(graph_user.associated.search(username='username')) < 1:
-            graph_user.associated.connect(graph_irods_user)
+        if len(user_node.associated.search(username=irods_user)) < 1:
+            user_node.associated.connect(graph_irods_user)
 
 # // TO FIX:
 
         """
+        The error we get using the proxy cert with iRODS
+
 Client side: GSS-API error initializing context: GSS Major Status: Communications Error
 DEBUG: Client side: GSS-API error initializing context: GSS Minor Status Error Chain:
 globus_gsi_gssapi: Error with GSS token
@@ -215,7 +181,15 @@ ERROR: [-]  iRODS/lib/core/src/clientLogin.cpp:321:clientLogin :  status [GSI_ER
         # icom = self.global_get_service('irods', user=irods_user)
         # icom.list()
 
-        return self.response("Hello")
+        ###################################
+        # Create a valid token for our API
+        token, jti = auth.create_token(auth.fill_payload(user_node))
+        auth.save_token(auth._user, token, jti)
+        self.set_latest_token(token)
+
+## // TO FIX:
+# Create a 'return_credentials' method to use standard Bearer oauth response
+        return self.response({'token': token})
 
 
 class CollectionEndpoint(ExtendedApiResource):
@@ -231,9 +205,15 @@ class CollectionEndpoint(ExtendedApiResource):
 
         graph = self.global_get_service('neo4j')
 
+    ##########
 ## // TO FIX!!
 # List collections and dataobjects only linked to current user :)
-## // TO FIX!!
+
+        # auth = self.global_get('custom_auth')
+        # graph_user = auth.get_user_object(payload=auth._payload)
+        # # get the irods_user connected to graph_user
+        # icom = self.global_get_service('irods', user=FIND_THE_USER)
+    ##########
 
         content = []
 
@@ -252,7 +232,7 @@ class CollectionEndpoint(ExtendedApiResource):
         return self.response(data)
 
 ###############
-## // TO FIX:
+## // TO DO:
 # The one above is such a standard 'get' method that
 # we could make it general for the graphdb use case
 ###############
