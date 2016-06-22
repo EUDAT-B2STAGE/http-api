@@ -60,7 +60,7 @@ def register_api(request):
        or request[key1] != request[key2]:
         return {'errors': {'passwords mismatch':
                            "Passwords provided are not the same"}}, \
-            hcodes.HTTP_DEFAULT_SERVICE_FAIL
+            hcodes.HTTP_SERVER_ERROR
 
     # Info check
     key1 = 'name'
@@ -71,7 +71,7 @@ def register_api(request):
        or request[key2] is None:
         return {'errors': {'information required':
                            "No profile info: name and/or surname"}}, \
-            hcodes.HTTP_DEFAULT_SERVICE_FAIL
+            hcodes.HTTP_SERVER_ERROR
 
     # Init
     code = hcodes.HTTP_OK_CREATED
@@ -101,7 +101,7 @@ def register_api(request):
     except requests.exceptions.ConnectionError:
         return {'errors':
                 {'API unavailable': "Cannot connect to APIs server"}}, \
-            hcodes.HTTP_DEFAULT_SERVICE_FAIL
+            hcodes.HTTP_SERVER_ERROR
 
     return {'message': 'Registered'}, code
 
@@ -119,12 +119,12 @@ def login_api(username, password):
     except requests.exceptions.ConnectionError:
         return {'errors':
                 {'API unavailable': "Cannot connect to APIs server"}}, \
-            hcodes.HTTP_DEFAULT_SERVICE_FAIL
+            hcodes.HTTP_SERVER_ERROR
     out = r.json()
 
     response = {'errors': {'No autorization': "Invalid credentials"}}
     if 'Response' not in out and 'Meta' not in out:
-        return out, hcodes.HTTP_DEFAULT_SERVICE_FAIL
+        return out, hcodes.HTTP_SERVER_ERROR
 
     # If wanting to check errors
     if 'Response' in out and 'errors' in out['Response']:
@@ -155,7 +155,7 @@ def login_api(username, password):
         if 'token' not in out['Response']['data']:
             return {'errors':
                     {'Misconfiguration': "Backend token is invalid"}}, \
-                hcodes.HTTP_DEFAULT_SERVICE_FAIL
+                hcodes.HTTP_SERVER_ERROR
 
         # Get the JWT token
         token = out['Response']['data']['token']
@@ -205,7 +205,7 @@ def logout_api(headers):
         except requests.exceptions.ConnectionError:
             return {'errors':
                     {'API unavailable': "Cannot connect to APIs server"}}, \
-                hcodes.HTTP_DEFAULT_SERVICE_FAIL
+                hcodes.HTTP_SERVER_ERROR
 # // TO FIX
 # CHECK ALSO IF RESPONSE IS NOT POSITIVE
         return {'token': token}, hcodes.HTTP_OK_NORESPONSE

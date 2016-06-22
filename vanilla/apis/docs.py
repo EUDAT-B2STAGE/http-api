@@ -341,7 +341,7 @@ class RethinkUploader(Uploader, BaseRethinkResource):
         if key not in request_params or request_params[key] is None:
             return self.response(
                 "No record to associate the image with",
-                fail=True, code=hcodes.HTTP_DEFAULT_SERVICE_FAIL)
+                fail=True, code=hcodes.HTTP_SERVER_ERROR)
         id = request_params[key]
 
 # // FEATURE REQUEST
@@ -362,7 +362,7 @@ class RethinkUploader(Uploader, BaseRethinkResource):
             if not os.path.exists(abs_file):
                 return self.response(
                     "Failed to find the uploaded file",
-                    fail=True, code=hcodes.HTTP_DEFAULT_SERVICE_FAIL)
+                    fail=True, code=hcodes.HTTP_SERVER_ERROR)
 
             ftype = None
             fcharset = None
