@@ -6,7 +6,7 @@
   angular.module('web').filter('moment_unix', MomentUnix);
   angular.module('web').filter('unix_date', Unix2Date);
 
-
+  var months = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 
   function Bytes() {
       return function(bytes, precision) {
@@ -31,14 +31,21 @@
         return i;
     }
 
+    function getMonthName(m) {
+      if (m < 0) return m
+      if (m > 11) return m
+
+      return months[m];
+    }
+
     return function(timestamp) {
       var date = new Date(timestamp * 1000);
       var dateObject = 
-                  date.getFullYear() +'-'+ 
-                  ('0' + (date.getMonth() + 1)).slice(-2) +'-'+ 
-                  ('0' + date.getDate()).slice(-2)+" "+
-                  leftPad(date.getHours())+":"+
-                  leftPad(date.getMinutes())+":"+
+                  ('0' + date.getDate()).slice(-2)+ ' ' +
+                  getMonthName(date.getMonth()) + ' ' +
+                  date.getFullYear() +' - '+ 
+                  leftPad(date.getHours()) + ':' +
+                  leftPad(date.getMinutes()) + ':' +
                   leftPad(date.getSeconds());
       return dateObject;
 
