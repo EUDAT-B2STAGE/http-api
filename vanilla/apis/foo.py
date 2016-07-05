@@ -19,7 +19,7 @@ class JustATest(ExtendedApiResource):
     @decorate.apimethod
     def get(self):
         logger.warning("Received a test HTTP request")
-        return self.response('Hello world!')
+        return self.force_response('Hello world!')
 
 
 #####################################
@@ -33,7 +33,7 @@ if SQL_AVAILABLE:
             sql = self.global_get_service('sql')
             print(sql)
             logger.warning("a call")
-            return self.response('Hello world!')
+            return self.force_response('Hello world!')
 
 
 #####################################
@@ -47,4 +47,4 @@ if GRAPHDB_AVAILABLE:
             graph = self.global_get_service('neo4j')
             print(graph)
             logger.warning("a call")
-            return self.response('Hello world!')
+            return self.force_response('Hello world!')
