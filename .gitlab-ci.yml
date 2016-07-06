@@ -19,5 +19,4 @@ stages:
 script:
   stage: tests
   script:
-   - docker -v
-   - docker-compose -v
+   - docker-compose -f containers/docker-compose.yml -f containers/custom/telethon.yml exec custombe ./tests.sh
