@@ -144,8 +144,9 @@ if list_services:
 	sys.exit(0)
 
 if action is None:
-	myprint(ERROR, "You should specify an action. Available action are:")
-	myprint(ERROR, "start, stop, restart, graceful, logs, scale, remove, clean, command, open shell")
+    myprint(ERROR, "You should specify an action. Available action are:")
+    myprint(ERROR, "start, stop, restart, graceful, logs, scale, remove, clean, command, open shell")
+    sys.exit(0)
 
 if service is None and num_workers is not None:
     myprint(
@@ -163,5 +164,22 @@ if service is not None:
     	command = "%s=%s" % (command, service, num_workers)
     else:
         command = "%s %s" % (command, service)
+
+print("\n\n")
+myprint(INFO, "Actions to be implemented:")
+myprint(INFO, "\t- check? [to verify if a blueprint is well-configured]")
+myprint(INFO, "\t- init? [as in old do command]")
+myprint(INFO, "\t- update? [as in old do command, update docker images and bower]")
+myprint(INFO, "\t- bower [to install/update bower libs]")
+myprint(INFO, "\t- start [start of a single service?]")
+myprint(INFO, "\t- stop [stop of a single service?]")
+myprint(INFO, "\t- restart [start/restart the whole stack]")
+myprint(INFO, "\t- graceful [restart as implemented in the old do command]")
+myprint(INFO, "\t- logs [view all logs or logs for a service]")
+myprint(INFO, "\t- scale [to be coupled with num_worker, maybe it could become a single option...]")
+myprint(INFO, "\t- remove")
+myprint(INFO, "\t- clean")
+myprint(INFO, "\t- command [to execute a single command on a container?]")
+myprint(INFO, "\t- shell [open a shell in a container]")
 
 _exec(command)
