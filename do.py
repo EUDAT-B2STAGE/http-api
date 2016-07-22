@@ -147,18 +147,21 @@ if action is None:
 	myprint(ERROR, "You should specify an action. Available action are:")
 	myprint(ERROR, "start, stop, restart, graceful, logs, scale, remove, clean, command, open shell")
 
+if service is None and num_workers is not None:
+    myprint(
+        ERROR,
+        "No service specification found, num worker option cannot be applied"
+    )
+    sys.exit(1)
+
 
 base_yaml_path = os.path.join(CONTAINER_DIR, BASE_YAML)
-
 command = "-f %s -f %s %s" % (base_yaml_path, mode_path, action)
 
 if service is not None:
-	command = "%s %s" % (command, service)
-
-if num_workers is not None:
-	command = "%s %s" % (command, num_workers)
+    if num_workers is not None:
+    	command = "%s=%s" % (command, service, num_workers)
+    else:
+        command = "%s %s" % (command, service)
 
 _exec(command)
-
-print("bye")
-
