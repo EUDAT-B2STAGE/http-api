@@ -4,13 +4,17 @@ import argparse
 import os
 import sys
 
+from do_actions import InvalidArgument, NotImplementedAction
+try:
+    from vanilla.do_actions import CustomActions as ImplementedActions
+    print("\nYou are using a custom implementation for actions")
+except Exception as e:
+    from do_actions import ImplementedActions
+    print("\nYou are using the base implementation for actions")
+
 INFO = "\033[1;32mINFO\033[1;0m"
 WARNING = "\033[1;33mWARNING\033[1;0m"
 ERROR = "\033[1;31mERROR\033[1;0m"
-
-
-def _exec(command):
-    print ("\nCommand to be executed:\n\tdocker-compose %s\n\n" % command)
 
 
 def myprint(level, message):
@@ -18,7 +22,8 @@ def myprint(level, message):
 
 
 def list_all_projects():
-    myprint(INFO, "List of available projects as found in **%s**" % CONTAINER_DIR)
+    myprint(
+        INFO, "List of available projects as found in **%s**" % CONTAINER_DIR)
     projects = os.listdir(CONTAINER_DIR)
     projects.sort()
     num = 0
@@ -54,15 +59,8 @@ def list_all_modes(project, project_path):
 
 
 def list_all_services(yaml_file):
-    myprint(INFO, "Print list of service from %s and exit" % yaml_file)
-
-
-class InvalidArgument(BaseException):
-    pass
-
-
-class NotImplemented(BaseException):
-    pass
+    raise NotImplementedAction(
+        "Print list of service from %s and exit" % yaml_file)
 
 
 # Configuration
@@ -70,11 +68,6 @@ class NotImplemented(BaseException):
 CONTAINER_DIR = "containers/custom"
 BASE_YAML = "containers.yml"
 
-actions = {
-    "check", "init", "update", "bower", "start", "stop",
-    "restart", "graceful", "logs", "remove", "clean",
-    "command", "shell", "scale"
-}
 
 # ############################################ #
 
@@ -117,9 +110,17 @@ extra_arguments = args['extra_arguments']
 if extra_arguments is not None:
     extra_arguments = ' '.join(extra_arguments)
 
+
+# Implemented actions are automatically parsed by the ImplementedActions class
+# all do_something methods are interpreted as 'something' actions
+actions = []
+for x in sorted(dir(ImplementedActions)):
+    if x.startswith("do_"):
+        actions.append(x[3:])
+
 try:
     # List of available projects, when a project is not specified
-    # Projects are directory into the CONTAINER_DIR
+    # Projects are directories into the CONTAINER_DIR
     if project is None:
         list_all_projects()
         sys.exit(0)
@@ -170,123 +171,37 @@ try:
         myprint(INFO, "You selected action: \t%s" % action)
 
     base_yaml_path = os.path.join(CONTAINER_DIR, BASE_YAML)
-    command = "-f %s -f %s" % (base_yaml_path, mode_path)
+    command_prefix = "-f %s -f %s" % (base_yaml_path, mode_path)
 
-    def service_mandatory(service):
-        if service is None:
-            raise InvalidArgument(
-                'Service parameters is mandatory for this action'
-            )
+    try:
+        import inspect
+        func = getattr(ImplementedActions, 'do_%s' % action)
+        argspec = inspect.getargspec(func)
+        func_args = []
+        for a in argspec.args:
+            if a == 'command':
+                func_args.append(command_prefix)
+            if a == 'project':
+                func_args.append(project)
+            if a == 'mode':
+                func_args.append(mode)
+            if a == 'action':
+                func_args.append(action)
+            if a == 'service':
+                func_args.append(service)
+            if a == 'num':
+                func_args.append(num_workers)
+            if a == 'arguments':
+                func_args.append(extra_arguments)
 
-    def service_incompatible(service):
-        if service is not None:
-            raise InvalidArgument(
-                'Service parameter is incompatible with this action'
-            )
+        func(*func_args)
 
-    def do_check(project, action, service):
-        service_incompatible(service)
-        raise NotImplemented(
-            'verify if the %s blueprint is well-configured' % project
-        )
-
-    def do_init(command, action, service):
-        service_incompatible(service)
-        raise NotImplemented(
-            'init the %s blueprint (in old do command)' % project
-        )
-
-    def do_update(command, action, service):
-        service_incompatible(service)
-
-        _exec("%s %s" % (command, action))
-
-    def do_start(command, action, service):
-        service_mandatory(service)
-        _exec("%s %s %s" % (command, action, service))
-
-    def do_stop(command, action, service):
-        service_mandatory(service)
-        _exec("%s %s %s" % (command, action, service))
-
-    def do_restart(command, action, service,):
-        service_mandatory(service)
-        _exec("%s %s %s" % (command, action, service))
-
-    def do_graceful(command, action, service):
-        service_mandatory(service)
-        _exec("%s %s %s" % (command, action, service))
-
-    def do_scale(command, action, service, num):
-        service_mandatory(service)
-        _exec("%s %s %s=%s" % (command, action, service, num))
-
-    def do_logs(command, action, service):
-        if service is None:
-            _exec("%s %s" % (command, action))
-        else:
-            _exec("%s %s %s" % (command, action, service))
-
-    # service is required or not for this action?
-    def do_remove(command, action, service):
-        service_mandatory(service)
-        _exec("%s %s %s" % (command, action, service))
-
-    # service is required or not for this action?
-    def do_clean(command, action, service):
-        service_mandatory(service)
-        _exec("%s %s %s" % (command, action, service))
-
-    def do_command(command, action, service, arguments):
-        service_mandatory(service)
-        if len(arguments) == 0:
-            raise InvalidArgument('Missing arguments for command action')
-
-        _exec("%s exec %s %s" % (command, service, arguments))
-
-    def do_shell(command, action, service):
-        service_mandatory(service)
-        do_command(command, action, service, arguments='bash')
-
-    def do_bower(command, action, service, arguments):
-        service_incompatible(service)
-        if len(arguments) == 0:
-            raise InvalidArgument('Missing arguments for bower action')
-
-        do_command(command, action, service='bower', arguments=arguments)
-
-    if action == 'check':
-        do_check(project, action, service)
-    elif action == 'init':
-        do_init(project, action, service)
-    elif action == 'update':
-        do_update(command, action, service)
-    elif action == 'start':
-        do_start(command, action, service)
-    elif action == 'stop':
-        do_stop(command, action, service)
-    elif action == 'restart':
-        do_restart(command, action, service)
-    elif action == 'graceful':
-        do_graceful(command, action, service)
-    elif action == 'scale':
-        do_scale(command, action, service, num_workers)
-    elif action == 'logs':
-        do_logs(command, action, service)
-    elif action == 'shell':
-        do_shell(command, action, service)
-    elif action == 'remove':
-        do_remove(command, action, service)
-    elif action == 'clean':
-        do_clean(command, action, service)
-    elif action == 'bower':
-        do_bower(command, action, service, extra_arguments)
-    elif action == 'command':
-        do_command(command, action, service, extra_arguments)
+    except AttributeError as e:
+        raise InvalidArgument('Method do_%s() not found' % action)
 
 except InvalidArgument as e:
     myprint(ERROR, str(e))
     sys.exit(1)
-except NotImplemented as e:
+except NotImplementedAction as e:
     myprint(WARNING, "NOT IMPLEMENTED: %s " % e)
     sys.exit(1)
