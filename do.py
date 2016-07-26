@@ -78,17 +78,17 @@ parser = argparse.ArgumentParser(
     description='Do things on this project'
 )
 
-parser.add_argument('--project', type=str,
+parser.add_argument('--project', type=str, metavar='p',
                     help='Current project')
-parser.add_argument('--mode', type=str,
+parser.add_argument('--mode', type=str, metavar='m',
                     help='Mode to be executed')
 parser.add_argument('--list', action='store_true',
                     help='Docker compose service')
-parser.add_argument('--action', type=str,
+parser.add_argument('--action', type=str, metavar='a',
                     help='Desired action')
-parser.add_argument('--service', type=str,
+parser.add_argument('--service', type=str, metavar='s',
                     help='Docker compose service')
-parser.add_argument('--workers', type=int,
+parser.add_argument('--workers', type=int, metavar='w',
                     help='Number of celery workers to be executed')
 parser.add_argument('extra_arguments',
                     help='Extra arguments for bower and command actions',

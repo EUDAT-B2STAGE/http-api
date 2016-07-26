@@ -17,7 +17,7 @@ class ImplementedActions:
     def service_mandatory(service):
         if service is None:
             raise InvalidArgument(
-                'Service parameters is mandatory for this action'
+                'Service parameter is mandatory for this action'
             )
 
     def service_incompatible(service):
