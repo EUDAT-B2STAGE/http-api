@@ -11,8 +11,8 @@ project="restangulask"
 compose_com="docker-compose"
 webbuild="bower"
 volume_prefix="restangulask_${1}_"
-fronted_container="customfe"
-backend_container="custombe"
+fronted_container="frontend"
+backend_container="backend"
 backend_repo="backend"
 frontend_repo="frontend"
 backend_git="https://github.com/EUDAT-B2STAGE/http-api-base.git"
@@ -20,6 +20,7 @@ frontend_git="https://github.com/pdonorio/restangulask.git"
 services="$backend_container $fronted_container"
 submodule_tracking="submodules.current.commit"
 
+export VOLUMES_PREFIX='rapydo'
 #############################
 echo "# ############################################ #"
 echo -e "\t\tRestangulask"
@@ -69,7 +70,7 @@ if [ "$1" != "help" ]; then
         echo "You might start up copying 'demo.yml'."
         exit 1
     fi
-    files="-f backend/docker-compose.yml frontend/docker-compose.yml -f $file"
+    files="-f backend/docker-compose.yml -f frontend/docker-compose.yml -f $file"
 
     # Remove previous configuration
     #echo "Clean configuration files"
