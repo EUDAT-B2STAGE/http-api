@@ -1,0 +1,19 @@
+<div class="container" ng-controller="WelcomeInfoController as info">
+
+    <md-content flew="100" layout="row" layout-align="end center">
+        <md-button class="md-accent">
+          <a ui-sref="welcome()"
+            layout="row" layout-align="center center">
+            <i class="material-icons">keyboard_arrow_left</i> back
+          </a>
+        </md-button>
+    </md-content>
+
+    <h2>{{info.title}}</h2>
+    <span ng-bind-html="info.moreContent"></span>
+
+    <h5>
+        <i> Note: image to be added here </i>
+    </h5>
+
+</div>

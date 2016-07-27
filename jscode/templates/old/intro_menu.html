@@ -1,0 +1,12 @@
+<div ng-controller="WelcomeMenuController as menu">
+ <ul id="nav-mobile" class="right">
+    <li ng-repeat="button in menu.buttons">
+        <div layout="row">
+            <i class="material-icons">{{button.icon}}</i>
+            <a ui-sref="{{button.link}}">
+                {{ button.name.capitalizeFirstLetter() }}
+            </a>
+        </div>
+    </li>
+ </ul>
+</div>

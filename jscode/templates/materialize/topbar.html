@@ -1,0 +1,34 @@
+
+<md-toolbar ng-if="!main.avoidTheToolbar"
+    ng-class="main.toolbarColor + ' ' + main.shade">
+  <div class="md-toolbar-tools">
+    <a href>
+      <i class="material-icons">menu</i>
+    </a>
+
+    <h2 style="padding-left: 1rem;">
+      <a ui-sref='welcome'>
+        {{ myproject }}
+      </a>
+    </h2>
+    <!-- SEPARATOR -->
+    <span flex></span>
+    <!-- login/logout buttons -->
+    <a href ui-sref="public.login">
+        <md-button ng-if="!logged" class="md-raised">
+            Login
+        </md-button>
+    </a>
+
+    <a href ui-sref="logged.profile" ng-if="logged">
+      <i class="material-icons">people</i>
+      <i><small>{{profile.email}}</small></i>
+    </a>
+    <a href ui-sref="logged.logout">
+        <md-button ng-if="logged" class="md-raised">
+        Logout
+        </md-button>
+    </a>
+
+  </div>
+</md-toolbar>

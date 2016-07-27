@@ -1,0 +1,74 @@
+<div layout="row">
+
+ <div flex="5"></div>
+<!--CONTENT -->
+ <div flex="75">
+
+    <div ng-if="sections.length > 1"
+        style="padding-bottom: 10px;" class="slider"
+        height='350' transition='300' slider>
+     <ul class="slides">
+        <li ng-repeat="x in [0,1,2,3]">
+            <img lazy-img="/static/img/parallax.jpg">
+          <div class="caption center-align">
+            <h3>Our brand new site!</h3>
+            <h5 class="light grey-text text-lighten-3">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo repellat dignissimos velit. Voluptatibus quia iure nemo perspiciatis veniam unde rem ducimus. Adipisci recusandae eius laboriosam, commodi in nihil nam saepe.
+            </h5>
+          </div>
+        </li>
+     </ul>
+    </div>
+
+  <div ng-repeat="section in sections track by $index"
+    id='step{{$index}}'
+    layout-padding
+    class="section scrollspy" scrollspy>
+
+    <h2 class="header">
+        {{ section.data['Section'].capitalizeFirstLetter() }} </h2>
+    <span ng-bind-html="section.data['Description']"></span>
+
+    <md-content
+        ng-show="welcome.isSearch(section)"
+        layout-padding layout-wrap>
+            <div layout="row" layout-align="center center">
+                <input placeholder="{{section.data['Content']}}"
+                    ng-focus="activateSearch()">
+                <i class="material-icons prefix">search</i>
+            </div>
+    </md-content>
+
+    <md-content
+        ng-hide="welcome.isSearch(section)"
+        flew="100" ng-if="section.data['Content'] != ''"
+        layout="row" layout-align="end center">
+        <md-button class="md-warn">
+          <a ui-sref="welcome.more({'section':$index})">more...</a>
+        </md-button>
+    </md-content>
+
+    <md-content layout-padding layout-wrap></md-content>
+
+    <div class="parallax-container">
+        <div parallax>
+            <img src="/static/img/parallax.jpg">
+        </div>
+    </div>
+
+  </div>
+
+ </div>
+
+ <div flex="5"></div>
+<!-- SIDE MENU -->
+ <div ng-if="sections.length > 1"
+    flex="15" pushpin pushpin-offset="1">
+  <ul class="section table-of-contents">
+    <li ng-repeat="section in sections track by $index">
+      <a href="#step{{$index}}"> {{section.data['Section']}} </a>
+    </li>
+  </ul>
+ </div>
+
+</div>

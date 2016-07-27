@@ -1,0 +1,46 @@
+
+# NOTE:
+# VOLUMES MUST BE CALLED WITH 'restangulask_' + FILEPREFIX + '_' + YOURNAME
+# e.g.
+# restangulask_demo_myvolume
+
+#######################
+# Define here your services
+
+myservice:
+    image: busybox
+
+#######################
+# Link services inside API
+
+custombe:
+    extends:
+        file: docker-compose.yml
+        service: backend
+    volumes:
+        # Sql lite database
+        - restangulask_demo_apilitedb:/dbs
+    # links:
+    #     - myservice:rdb
+
+#######################
+# Frontend links only API
+# Note: THIS IS THE MAIN SERVICE TO START WITH DOCKER COMPOSE
+
+customfe:
+    extends:
+        file: docker-compose.yml
+        service: frontend
+    volumes:
+        # Sql lite database & common models
+        - restangulask_demo_apilitedb:/dbs
+    links:
+        - custombe:myapi
+
+#######################
+# EXTRA
+
+sqladmin:
+    image: clue/adminer
+    volumes:
+        - restangulask_demo_apilitedb:/dbs

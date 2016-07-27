@@ -1,0 +1,125 @@
+
+###############################
+# GLOBAL CONFIGURATION
+conf:
+    image: busybox
+    command: ./boot
+    environment:
+        # Decide which service should handle users inside the backend server
+        BACKEND_AUTH_SERVICE: relationaldb
+
+        ## If you are still developing
+        ## (flask wsgi restartable on edit + sqllite dbs + print DEBUG level)
+        # APP_MODE: development
+
+        ## If you need to get serious
+        ## (gunicorn/nginx servers + postgres dbs + print INFO level)
+        # APP_MODE: production
+
+        ## If you are testing something that does not work
+        ## (containers that do not start anything)
+        APP_MODE: debug
+###############################
+
+
+###############################
+backend:
+    extends:
+        service: conf
+    image: pdonorio/py3apil
+    hostname: restapi
+    ports:
+        - 8081:5000
+    volumes:
+        # # Sql lite database
+        # - restangulask_apilitedb:/dbs
+        # Base code
+        - ../backend:/code
+        # Rest API configuration
+        - ../vanilla/specs:/code/restapi/confs/endpoints
+        # Rest API endpoints
+        - ../vanilla/apis:/code/restapi/resources/custom
+        # Rest API services models
+        - ../vanilla/models:/code/commons/models/custom
+        # Other libs
+        - ../vanilla/libs:/code/libs
+        # Tests
+        - ../vanilla/tests/backend:/code/test/custom
+
+
+###############################
+frontend:
+    extends:
+        service: conf
+    image: pdonorio/flasking
+    hostname: frontend
+    working_dir: /data/frontend
+    volumes:
+        # # Sql lite database & common models
+        # - restangulask_apilitedb:/dbs
+        # Main dir. It has to be the root directory, to make links work
+        - ..:/data
+        - ../backend/commons:/data/frontend/commons
+        # js/css libraries installed via bower
+        - ../vanilla/libs/bower_components:/data/frontend/felask/static/bower
+        # custom css files
+        - ../vanilla/templates/customcss:/data/frontend/felask/static/css
+        # All the angular blueprints (&& templates)
+        - ../vanilla/jscode:/data/frontend/felask/static/app
+        # Python pages
+        - ../vanilla/pages:/data/frontend/felask/pypages
+        # Python templates
+        - ../vanilla/templates/python:/data/frontend/felask/templates/custom
+        # Angular blueprint
+        - ../vanilla/specs:/data/frontend/config/angular/blueprints
+        # Custom images
+        - ../vanilla/img:/data/frontend/felask/static/img/custom
+    ports:
+        - 80:5000
+
+#################################
+# REDIS key/value store
+redqueue:
+  image: redis:alpine
+  command: redis-server --appendonly yes
+  hostname: myqueue
+  volumes:
+      - ${VOLUMES_PREFIX}_redisdata:/data
+
+worker:
+  extends:
+    file: docker-compose.yml
+    service: rest
+  hostname: celworker
+  command: celery worker -A restapi.resources.services.celery.worker.celery_app
+
+###############################
+# Make automatic to install libraries
+bower:
+    image: pdonorio/jsdev
+    working_dir: /data/vanilla/libs
+    volumes:
+        - ..:/data
+
+###############################
+# Make automatic to install libraries
+karma:
+    image: pdonorio/jsdev
+    working_dir: /data
+    volumes:
+        - ../vanilla/libs/bower_components:/data/bower_components
+        - ../vanilla/jscode:/data
+
+#################################
+# Database administration
+
+# This image let you access the postgres db with a 'phpmyadmin' like web page
+sqladmin:
+    image: clue/adminer
+    # # Sql lite database & common models
+    # volumes:
+    #     - restangulask_apilitedb:/dbs
+    # links:
+    #     - sql:db
+    ports:
+        - 8888:80

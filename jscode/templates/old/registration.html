@@ -1,0 +1,107 @@
+
+<div class="container"
+    ng-controller='ToastController as toasting'>
+ <div class="row">
+  <div class="col s12">
+
+    <div class="card"
+        ng-controller='RegisterController as reg' ng-cloak>
+
+      <div class="card-content">
+        <span class="card-title">Register a new account</span>
+        <p>
+
+        <form name="myForm">
+
+          <div class="row" ng-if='reg.errors'>
+            <div class="col s12">
+              <h6 style='color:red;'>ERROR(s)</h6>
+              <ul>
+                <li ng-repeat="(key, value) in reg.errors">
+                    <i>{{key}}</i>: {{value}}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">account_circle</i>
+              <input ng-model="reg.user.email"
+                id="email" name="email"
+                id="icon_prefix" type="text" class="validate"
+                required autofocus>
+              <label for="icon_prefix">E-mail address</label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">face</i>
+              <input ng-model="reg.user.name"
+                id="name" name="name"
+                id="icon_prefix" type="text" class="validate" required>
+              <label for="icon_prefix">First name</label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">perm_identity</i>
+              <input ng-model="reg.user.surname"
+                id="surname" name="surname"
+                id="icon_prefix" type="text" class="validate" required>
+              <label for="icon_prefix">Surname</label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">vpn_key</i>
+              <input ng-model="reg.user.password"
+                id="password" name="password" type="password" class="validate"
+                required>
+              <label for="icon_telephone">Password</label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix">vpn_key</i>
+              <input ng-model="reg.user.password_confirm"
+                id="password_confirm" name="password_confirm"
+                type="password" class="validate" required>
+              <label for="icon_telephone">Password confirmation</label>
+            </div>
+          </div>
+
+          <div class="row" ng-if='reg.userMessage'>
+            <div class="col s12">
+                <b> <i> {{reg.userMessage}} </i> </b>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <button ng-click='reg.request()'
+                type="submit" class="btn cyan darken-4"
+                >Submit request</button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col s8">&nbsp;</div>
+            <div class="col s4">
+              or <a ui-sref='login'>sign in</a> with existing credentials
+            </div>
+          </div>
+
+        </form>
+
+        </p>
+      </div>
+    </div>
+
+  </div>
+ </div>
+</div>

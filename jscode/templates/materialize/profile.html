@@ -1,0 +1,33 @@
+
+<div class="themaxsize" layout="column" layout-align="center center">
+    <md-content>
+    	<table>
+    		<tr>
+    			<th colspan=2>User profile</th>
+    		</tr>
+    		<tr ng-repeat="(key, value) in profile">
+    		<th>{{key}}</th>
+
+    		<td ng-if="key != 'roles'">{{value}}</td>
+
+            <td ng-if="key == 'roles'">
+                <md-chips 
+                    ng-model="value" 
+                    readonly="true"
+                >
+                </md-chips>
+            </td>
+
+    		</tr>
+    	</table>
+    </md-content>
+
+    <br><br>
+    <i>
+        <a ui-sref='logged.profile.sessions'>
+            view the list of your open sessions
+        </a>
+    </i>
+</div>
+
+
