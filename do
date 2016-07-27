@@ -2,8 +2,8 @@
 
 #############################
 # Defaults
-apiconf="vanilla/specs/api_init.json"
-jsconf="vanilla/specs/js_init.json"
+apiconf="specs/api_init.json"
+jsconf="specs/js_init.json"
 
 #############################
 # Other variables
@@ -13,8 +13,10 @@ webbuild="bower"
 volume_prefix="restangulask_${1}_"
 fronted_container="customfe"
 backend_container="custombe"
-submodule_repo="backend"
-submodule_git="https://github.com/EUDAT-B2STAGE/http-api-base.git"
+backend_repo="backend"
+frontend_repo="frontend"
+backend_git="https://github.com/EUDAT-B2STAGE/http-api-base.git"
+frontend_git="https://github.com/pdonorio/restangulask.git"
 services="$backend_container $fronted_container"
 submodule_tracking="submodules.current.commit"
 
@@ -42,7 +44,6 @@ do
 done
 
 #############################
-cd containers
 
 if [ "$1" != "help" ]; then
 
@@ -62,13 +63,13 @@ if [ "$1" != "help" ]; then
 
     #############################
     # Check compose stack existence
-    file="custom/${1}.yml"
+    file="containers/${1}/debug.yml"
     if [ ! -f "$file" ]; then
-        echo "File 'containers/$file' not found!"
+        echo "File '$file' not found!"
         echo "You might start up copying 'demo.yml'."
         exit 1
     fi
-    files="-f docker-compose.yml -f $file"
+    files="-f backend/docker-compose.yml frontend/docker-compose.yml -f $file"
 
     # Remove previous configuration
     #echo "Clean configuration files"
@@ -109,7 +110,7 @@ fi
 #############################
 # Check libs
 if [ -z "$2" -o "$2" != "init" ]; then
-    libs="../vanilla/libs/bower_components"
+    libs="libs/bower_components"
     out=`ls $libs 2> /dev/null | wc -m | tr -d ' '`
     if [ "$out" == "0" ]; then
         echo ""
@@ -125,27 +126,27 @@ fi
 
 # Backend
 file="$1.json"
-check="vanilla/specs/$file"
-if [ ! -s "../$check" ]; then
+check="specs/$file"
+if [ ! -s "$check" ]; then
     echo "File '$check' not found or empty..."
     echo "Please create it to define APIs endpoints."
     exit 1
 fi
-echo "{ \"$1\": \"$file\" }" > ../$apiconf
+echo "{ \"$1\": \"$file\" }" > $apiconf
 
 # Frontend
-check="vanilla/jscode/$1"
-if [ ! "$(ls -A ../$check 2> /dev/null)" ]; then
+check="jscode/$1"
+if [ ! "$(ls -A $check 2> /dev/null)" ]; then
     echo "Directory '$check' not found or empty..."
     echo "Please create it to define AngularJS code."
     exit 1
 fi
-echo "{ \"blueprint\": \"$1\" }" > ../$jsconf
+echo "{ \"blueprint\": \"$1\" }" > $jsconf
 
 
 #############################
 # Run services
-bcom="$compose_com run --rm $webbuild bower install"
+bcom="$compose_com -f frontend/docker-compose.yml run --rm $webbuild bower install"
 
 # First time install
 if [ "$2" == "init" ]; then
@@ -154,17 +155,20 @@ if [ "$2" == "init" ]; then
     #git remote add private
     #git@gitlab.hpc.cineca.it:mdantoni/telethon_repo.git
 
-    echo "Download docker images"
-   $compose_com $files pull
-    cd ..
-    if [ ! -d "$submodule_repo" ]; then
-        echo "Clone submodules"
-        git clone $submodule_git $submodule_repo
+    #echo "Download docker images"
+    #$compose_com $files pull
+    if [ ! -d "$backend_repo" ]; then
+        echo "Clone backend"
+        git clone $backend_git $backend_repo
     fi
-    cd -
-    echo "Build bower packages (Javascript libraries)"
-    $bcom
-    echo "Completed"
+    if [ ! -d "$frontend_repo" ]; then
+        echo "Clone frontned"
+        git clone $frontend_git $frontend_repo
+    fi
+
+#    echo "Build bower packages (Javascript libraries)"
+#    $bcom
+#    echo "Completed"
 
 elif [ "$2" == "status" ]; then
     echo -e "ACTION: Status check\n"
@@ -245,12 +249,11 @@ elif [ "$2" == "push" ]; then
         exit 1
     fi
 
-    cd ..
     echo "Pushing submodule"
-    cd $submodule_repo
+    cd $backend_repo
     git push
     if [ $? != "0" ]; then
-        echo "Failed to push submodule"
+        echo "Failed to push backend"
         exit 1
     fi
     cd ..
@@ -278,18 +281,16 @@ elif [ "$2" == "update" ]; then
 
     $compose_com $files pull
     current=`pwd`
-    cd ..
 
     echo "Pulling main repo"
     git pull
 
-    echo "Pulling submodule"
-    cd $submodule_repo
+    echo "Pulling backend"
+    cd $backend_repo
     git pull
     cd ..
 
     echo "Updating libs"
-    cd $current
     $bcom
 
     exit 0
