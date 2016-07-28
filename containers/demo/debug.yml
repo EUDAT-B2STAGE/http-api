@@ -13,10 +13,7 @@ myservice:
 #######################
 # Link services inside API
 
-custombe:
-    extends:
-        file: docker-compose.yml
-        service: backend
+backend:
     volumes:
         # Sql lite database
         - restangulask_demo_apilitedb:/dbs
@@ -27,15 +24,12 @@ custombe:
 # Frontend links only API
 # Note: THIS IS THE MAIN SERVICE TO START WITH DOCKER COMPOSE
 
-customfe:
-    extends:
-        file: docker-compose.yml
-        service: frontend
+frontend:
     volumes:
         # Sql lite database & common models
         - restangulask_demo_apilitedb:/dbs
     links:
-        - custombe:myapi
+        - backend:myapi
 
 #######################
 # EXTRA
