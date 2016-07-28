@@ -7,20 +7,19 @@ jsconf="specs/js_init.json"
 
 #############################
 # Other variables
-project="restangulask"
 compose_com="docker-compose"
 webbuild="bower"
-volume_prefix="restangulask_${1}_"
+volume_prefix="rapydo_${1}_"
 fronted_container="frontend"
 backend_container="backend"
 backend_repo="backend"
 frontend_repo="frontend"
-backend_git="https://github.com/EUDAT-B2STAGE/http-api-base.git"
+backend_git="https://github.com/mdantonio/angularjs-on-flask"
 frontend_git="https://github.com/pdonorio/restangulask.git"
 services="$backend_container $fronted_container"
 submodule_tracking="submodules.current.commit"
 
-export VOLUMES_PREFIX='rapydo'
+export VOLUMES_PREFIX=$volume_prefix
 #############################
 echo "# ############################################ #"
 echo -e "\t\tRestangulask"
