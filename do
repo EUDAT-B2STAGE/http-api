@@ -166,9 +166,9 @@ if [ "$2" == "init" ]; then
         git clone $frontend_git $frontend_repo
     fi
 
-#    echo "Build bower packages (Javascript libraries)"
-#    $bcom
-#    echo "Completed"
+    echo "Build bower packages (Javascript libraries)"
+    $bcom
+    echo "Completed"
 
 elif [ "$2" == "status" ]; then
     echo -e "ACTION: Status check\n"
