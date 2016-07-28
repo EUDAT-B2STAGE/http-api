@@ -1,9 +1,8 @@
-
 ################
 # submodules
 
-# rest-mock
 /backend
+/frontend
 
 ################
 
