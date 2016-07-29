@@ -1,17 +1,4 @@
 
-# myconf:
-#     extends:
-#       file: docker-compose.yml
-#       service: conf
-#     environment:
-#       APP_MODE: development
-myconf:
-  image: alpine
-  command: echo datacontainer
-  volumes:
-      # Sql lite database
-      - restangulask_graphbased_apilitedb:/dbs
-
 #######################
 # Define here your services
 
@@ -34,14 +21,11 @@ gdb:
 #######################
 # Link services inside API
 
-custombe:
-    extends:
-        file: docker-compose.yml
-        service: backend
+backend:
+    ports:
+        - 8081:5000
     environment:
       BACKEND_AUTH_SERVICE: graphdb
-    volumes_from:
-        - myconf
     links:
         # - searchindex:el
         - gdb:gdb
@@ -50,19 +34,7 @@ custombe:
 # Frontend links only API
 # Note: THIS IS THE MAIN SERVICE TO START WITH DOCKER COMPOSE
 
-customfe:
-    extends:
-        file: docker-compose.yml
-        service: frontend
-    volumes_from:
-        - myconf
+frontend:
     links:
         - custombe:myapi
 
-#######################
-# EXTRA
-
-sqladmin:
-    image: clue/adminer
-    volumes_from:
-        - myconf
