@@ -10,15 +10,15 @@
 .ipynb_checkpoints
 
 # user custom configs
-vanilla/specs/api_init.json
-vanilla/specs/js_init.json
+specs/api_init.json
+specs/js_init.json
 frontend/config/angular/blueprint.json
 
 # data
 uploads
 
 # bower
-vanilla/libs/bower_components
+libs/bower_components
 
 # Sublime text
 *.sublime-*

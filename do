@@ -14,8 +14,8 @@ fronted_container="frontend"
 backend_container="backend"
 backend_repo="backend"
 frontend_repo="frontend"
-backend_git="https://github.com/mdantonio/angularjs-on-flask"
-frontend_git="https://github.com/pdonorio/restangulask.git"
+backend_git="https://github.com/EUDAT-B2STAGE/http-api-base"
+frontend_git="https://github.com/mdantonio/angularjs-on-flask"
 services="$backend_container $fronted_container"
 submodule_tracking="submodules.current.commit"
 
@@ -166,9 +166,9 @@ if [ "$2" == "init" ]; then
         git clone $frontend_git $frontend_repo
     fi
 
-#    echo "Build bower packages (Javascript libraries)"
-#    $bcom
-#    echo "Completed"
+    echo "Build bower packages (Javascript libraries)"
+    $bcom
+    echo "Completed"
 
 elif [ "$2" == "status" ]; then
     echo -e "ACTION: Status check\n"
