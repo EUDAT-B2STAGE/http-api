@@ -290,6 +290,11 @@ elif [ "$2" == "update" ]; then
     git pull
     cd ..
 
+    echo "Pulling frontend"
+    cd $frontend_repo
+    git pull
+    cd ..
+
     echo "Updating libs"
     $bcom
 
