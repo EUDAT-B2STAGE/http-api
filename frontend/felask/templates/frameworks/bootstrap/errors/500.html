@@ -1,7 +1,0 @@
-{% extends 'frameworks/bootstrap/main.html' %}
-{% block content %}
-    <h1>Something's wrong!</h1>
-    {% if error_message %}<br><b>{{ error_message }}</b><br>{% endif %}
-    <p>Fortunately we are on the job, and you can just return home!</p>
-    <p><a href="{{url_for('pages.home')}}">Back</a></p>
-{% endblock %}
