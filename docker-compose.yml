@@ -119,10 +119,12 @@ rest:
         - ./vanilla/models:/code/commons/models/custom
         # Rest API endpoints
         - ./vanilla/apis:/code/restapi/resources/custom
-        # B2ACCESS dev certificates
-        - ./certs:/usr/local/share/ca-certificates
         # Tests
         - ./vanilla/tests:/code/test/custom
+        # B2ACCESS dev certificates
+        - ./certs:/usr/local/share/ca-certificates
+        # # Irods home for admin access
+        # - httpapi_irodshome:/home/irods
 
         # # External irods Authority
         # - ./certs/caauth:/opt/certificates/caauth
