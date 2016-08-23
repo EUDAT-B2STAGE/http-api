@@ -1,28 +1,24 @@
 
-GUIDELINES
+GUIDELINES:
 - PEP
 - Python 3
 - Test driven: nose
 - Swagger
 
---- ✄ -----------------------
-USEFULL COMMANDS
+ARCHITECTURE:
+https://confluence.csc.fi/pages/viewpage.action?spaceKey=EUDAT2&title=B2SAFE+architecture
 
-Upload:
+USEFULL COMMANDS:
+
+ - Upload
   http --form POST http://192.168.64.7:8080/api/dataobject file@~/Downloads/pics/tweet.jpg
-
-Certificates:
+ - Certificates
   iadmin aua newuser '/DC=org/DC=example/O=Example/OU=People/CN=New User/CN=UID:drexample'
 
 --- ✄ -----------------------
 
-FIRST STEPS:
+STEPS:
 
- ✔ first endpoint: @upload @done (16-04-01 11:30)
-  ✘ Try to avoid flask save and put directly the file into irods? @cancelled (16-04-06 23:56)
- ✔ unittest / nose @done (16-04-27 10:31)
-  https://talkpython.fm/episodes/show/45/the-python-testing-column-now-a-thing
-  http://pythontesting.net/podcast/coverage-ned-batchelder/
 ☐ How to skip irods validation
   at startup? It needs internet connection...
  ☐ profiling
@@ -45,25 +41,3 @@ IDEAS:
 http://stackoverflow.com/a/23786811
  ☐ In this way we may easily admin the irods users with flask-admin?
    ☐ Also use flask-security to use irods to get login?
-
---- ✄ -----------------------
-
-Completed:
-✔ Update docker images @done (16-02-09 22:15)
-✔ add commentjson to libraries @done (16-02-11 13:02)
-✔ Improve init script @done (16-02-11 13:02)
-✔ Fork rest-mock inside EUDAT team @done (16-02-11 13:02)
-  ✔ Move it inside the repo root and call it 'backend' @done (16-02-11 13:02)
-✔ Add submodule init check @done (16-02-12 08:19)
-✔ verify empty dir for backend @done (16-02-12 12:13)
-✔ update action @done (16-02-12 12:13)
-✔ irods admin iinit at api startup @done (16-02-18 23:56)
-✔ irods icommands test @done (16-03-29 11:41)
-  ✔ iadmin @done (16-03-29 11:41)
-  https://docs.irods.org/master/icommands/administrator/
-  iadmin mkuser guest rodsuser
-  export clientUserName=guest
-✔ update documentation @done (16-03-30 21:47)
-  ✔ docs on adding a user with certificate (with the script) @done (16-03-30 21:41)
-✔ push modifications @done (16-03-31 11:37)
-✔ set plumbum envs for x509 certificates @important @done (16-03-31 11:46)

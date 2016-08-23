@@ -18,4 +18,10 @@
             // "dataobjects/<string:name>"
         ]
     }
+    // "custom.internals.b2safe": {
+    //     "MetadataObject": [
+    //         "internals/metadataobj",
+    //         "internals/metadataobj/<string:uuid>"
+    //     ]
+    // }
 }
