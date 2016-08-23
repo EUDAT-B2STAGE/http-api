@@ -14,6 +14,8 @@ from commons.logs import get_logger
 from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
 from ..services.detect import IRODS_EXTERNAL
+# // TO FIX:
+# Use the correct irods user from the token, instad of IRODS_DEFAULT_USER
 from ..services.irods.client import IrodsException, \
     IRODS_DEFAULT_USER, IRODS_DEFAULT_ADMIN
 from ..services.uploader import Uploader

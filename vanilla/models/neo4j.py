@@ -9,7 +9,7 @@ Imports and models have to be defined/used AFTER normal Graphdb connection.
 """
 
 from __future__ import absolute_import
-from neomodel import StringProperty, \
+from neomodel import StringProperty, BooleanProperty, \
     StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
 
 from ..neo4j import User as UserBase
@@ -28,6 +28,13 @@ class User(UserBase):
 # setattr(User, 'name', StringProperty())
 # setattr(User, 'surname', StringProperty())
 
+## // TO FIX:
+# should we consider roles?
+    # _fields_to_show = {
+    #     'role_1': ['name'],
+    #     'role_2': ['name'],
+    # }
+
 ##############################################################################
 # MODELS
 ##############################################################################
@@ -37,6 +44,7 @@ class User(UserBase):
 
 class IrodsUser(StructuredNode):
     username = StringProperty(unique_index=True)
+    default_user = BooleanProperty(default=True)
     ownership = RelationshipFrom('DataObject', 'IS_OWNED_BY')
     associated = RelationshipFrom(User, 'IS_ASSOCIATED_TO')
 
@@ -47,13 +55,6 @@ class Zone(StructuredNode):
     hosting_res = RelationshipFrom('Resource', 'IS_AVAILABLE_IN')
     hosting_col = RelationshipFrom('Collection', 'IS_PLACED_IN')
     _fields_to_show = ['name']
-
-## // TO FIX:
-# should we consider roles?
-    # _fields_to_show = {
-    #     'role_1': ['name'],
-    #     'role_2': ['name'],
-    # }
 
 
 class Resource(StructuredNode):

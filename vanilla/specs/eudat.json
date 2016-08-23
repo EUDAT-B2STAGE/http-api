@@ -17,11 +17,11 @@
             "dataobjects/<string:uuid>"
             // "dataobjects/<string:name>"
         ]
+    },
+    "custom.internals.b2safe": {
+        "MetadataObject": [
+            "internals/metadataobj",
+            "internals/metadataobj/<string:uuid>"
+        ]
     }
-    // "custom.internals.b2safe": {
-    //     "MetadataObject": [
-    //         "internals/metadataobj",
-    //         "internals/metadataobj/<string:uuid>"
-    //     ]
-    // }
 }
