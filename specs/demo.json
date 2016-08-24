@@ -1,15 +1,14 @@
 // Configuration
 {
-
     "variables": {
 
         "project_title": "My project",
         "project_description": "Title of my project",
 
         "js": {
-            "load_timeout": "800",
-            "index_state_name": "welcome",
-            "index_template": "welcome.html"
+            // "index_state_name": "welcome",
+            // "index_template": "welcome.html"
+            "load_timeout": "800"
         },
 
         "python": {
@@ -17,29 +16,23 @@
         },
 
         "containers": {
-
-
             "authentication_service": "relationaldb",
             //"authentication_service": "neo4j",
 
             "services": {
-                /*
-                "neo4j": {
-                    "password": "chooseapassword"
-                }
-                */
+                // "neo4j": {
+                //     "password": "chooseapassword"
+                // }
             },
-            "external_services": {
-                /*
-                "irods": {
-                    "host": "irods.host.com",
-                    "port": "1247",
-                    "username": "irods_user",
-                    "password": "irods_pwd"
-                }
-                */
-            }
 
+            "external_services": {
+                // "irods": {
+                //     "host": "irods.host.com",
+                //     "port": "1247",
+                //     "username": "irods_user",
+                //     "password": "irods_pwd"
+                // }
+            }
         }
 
     },
@@ -53,18 +46,16 @@
     },
 
     "bower_components": {
-        /*
-        "lib-name": [
-            "file.js",
-            "file.css"
-        ]
-        */
+        // "lib-name": [
+        //     "file.js",
+        //     "file.css"
+        // ]
     },
 
     "css": [
-        //"custom_material.css", 
-        // "http://fonts.googleapis.com/icon?family=Material+Icons"
-    ],
+        // "http://fonts.googleapis.com/icon?family=Material+Icons",
+        "custom_material.css" 
+    ]
 
 
 
