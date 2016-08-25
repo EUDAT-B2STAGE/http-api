@@ -36,4 +36,4 @@ backend:
 
 frontend:
     links:
-        - custombe:myapi
+        - backend:myapi

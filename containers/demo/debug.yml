@@ -27,9 +27,6 @@ backend:
 # Note: THIS IS THE MAIN SERVICE TO START WITH DOCKER COMPOSE
 
 frontend:
-    volumes:
-        # Sql lite database & common models
-        - restangulask_demo_apilitedb:/dbs
     links:
         - backend:myapi
 
