@@ -2,8 +2,7 @@
 
 #############################
 # Defaults
-apiconf="specs/api_init.json"
-jsconf="specs/js_init.json"
+blueprintconf="specs/blueprint.json"
 
 #############################
 # Other variables
@@ -76,11 +75,8 @@ if [ "$1" != "help" ]; then
 
     # Remove previous configuration
     #echo "Clean configuration files"
-    if [ -f "../$apiconf" ]; then
-        rm ../$apiconf
-    fi
-    if [ -f "../$jsconf" ]; then
-        rm ../$jsconf
+    if [ -f "../$blueprintconf" ]; then
+        rm ../$blueprintconf
     fi
 fi
 
@@ -135,7 +131,8 @@ if [ ! -s "$check" ]; then
     echo "Please create it to define APIs endpoints."
     exit 1
 fi
-echo "{ \"$1\": \"$file\" }" > $apiconf
+# echo "{ \"$1\": \"$file\" }" > $blueprintconf
+echo "{ \"blueprint\": \"$1\" }" > $blueprintconf
 
 # Frontend
 check="jscode/$1"
@@ -144,7 +141,6 @@ if [ ! "$(ls -A $check 2> /dev/null)" ]; then
     echo "Please create it to define AngularJS code."
     exit 1
 fi
-echo "{ \"blueprint\": \"$1\" }" > $jsconf
 
 
 #############################
