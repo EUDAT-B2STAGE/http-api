@@ -16,10 +16,19 @@
         },
 
         "containers": {
+
+            "users": {
+                "backend": "root"
+                //"backend": "irods"
+            },
+
             "authentication_service": "relationaldb",
             //"authentication_service": "neo4j",
 
             "services": {
+                // "relationaldb": {
+                //     "remove_data_at_init_time": "false"
+                // },
                 // "neo4j": {
                 //     "password": "chooseapassword"
                 // }
@@ -54,9 +63,7 @@
 
     "css": [
         // "http://fonts.googleapis.com/icon?family=Material+Icons",
-        "custom_material.css" 
+        "custom_material.css"
     ]
-
-
 
 }

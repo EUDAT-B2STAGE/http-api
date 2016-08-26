@@ -181,7 +181,7 @@ elif [ "$2" == "restart" ]; then
     echo -e "ACTION: Reboot\n"
     echo "Cleaning project containers (if any)"
     $compose_com $files stop
-    $compose_com $files rm -f --all
+    $compose_com $files rm -f
     echo "Starting up"
     $compose_com $files up -d $services
 
