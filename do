@@ -43,6 +43,9 @@ do
     fi
 done
 
+# // TO FIX:
+# also for do.py
+compose_com="docker-compose --project-name $1"
 #############################
 
 if [ "$1" != "help" ]; then

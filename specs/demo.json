@@ -1,9 +1,10 @@
 // Configuration
 {
+    "project": {
+        "title": "My project",
+        "description": "Title of my project"
+    },
     "variables": {
-
-        "project_title": "My project",
-        "project_description": "Title of my project",
 
         "js": {
             // "index_state_name": "welcome",
@@ -22,7 +23,11 @@
                 //"backend": "irods"
             },
 
-            "authentication_service": "relationaldb",
+            "authentication": {
+                "service": "relationaldb",
+                "username": "user@nomail.org",
+                "password": "test"
+            },
             //"authentication_service": "neo4j",
 
             "services": {
