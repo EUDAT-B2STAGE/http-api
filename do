@@ -135,7 +135,7 @@ fi
 echo "{ \"blueprint\": \"$1\" }" > $blueprintconf
 
 # Frontend
-check="jscode/$1"
+check="js/$1"
 if [ ! "$(ls -A $check 2> /dev/null)" ]; then
     echo "Directory '$check' not found or empty..."
     echo "Please create it to define AngularJS code."

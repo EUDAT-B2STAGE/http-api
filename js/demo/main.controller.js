@@ -26,7 +26,7 @@ function MainController($scope, $rootScope, $log,
 
     // Passing a global variable
     self.templateDir = templateDir;
-    self.customTemplateDir = customTemplateDir;
+    // self.customTemplateDir = customTemplateDir;
     self.blueprintTemplateDir = blueprintTemplateDir;
 
     var color = 'cyan darken-3';
