@@ -34,7 +34,7 @@ class TestDataObjects(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         logger.info('### Setting up flask server ###')
-        app = create_app(testing=True)
+        app = create_app(testing_mode=True)
         cls.app = app.test_client()
 
         r = cls.app.post(
@@ -176,7 +176,7 @@ class TestDataObjects(unittest.TestCase):
 
         URI = os.path.join(API_URI, 'dataobjects', 'NonExistingUUID')
         r = self.app.get(URI, headers=self.auth_header)
-        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
+        self.assertEqual(r.status_code, hcodes.HTTP_SERVER_ERROR)
 
     def test_10_post_dataobjects_in_non_existing_collection(self):
         """ Test file upload in a non existing collection: POST """
@@ -200,7 +200,7 @@ class TestDataObjects(unittest.TestCase):
         r = self.app.get(
             URI, headers=self.auth_header,
             data=dict(collection=('/home/guest')))
-        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)  # or 404?
+        self.assertEqual(r.status_code, hcodes.HTTP_SERVER_ERROR)  # or 404?
 
         content = json.loads(r.data.decode('utf-8'))
         error_messages = content['Response']['errors'].pop()

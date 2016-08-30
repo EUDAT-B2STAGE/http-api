@@ -52,7 +52,7 @@ class MetadataObject(ExtendedApiResource):
         try:
             myuserobj = graph.IrodsUser.nodes.get(username=myuser.username)
         except graph.IrodsUser.DoesNotExist:
-            return self.response(errors={
+            return self.force_response(errors={
                 'iRODS user':
                     'no valid account associated on the iRODS server'})
         #######################

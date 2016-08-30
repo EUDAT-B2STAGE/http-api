@@ -1,12 +1,14 @@
 // B2SAFE REST API configuration
 {
-    "custom.eudat": {
+    "custom.oauth": {
         "OauthLogin": [
             "askauth"
         ],
         "Authorize": [
             "authorize"
-        ],
+        ]
+    },
+    "custom.eudat": {
         "CollectionEndpoint": [
             "collections",
             "collections/<string:uuid>"

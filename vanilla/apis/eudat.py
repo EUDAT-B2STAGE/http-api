@@ -62,11 +62,11 @@ class CollectionEndpoint(ExtendedApiResource):
             try:
                 content.append(graph.Collection.nodes.get(id=uuid))
             except graph.Collection.DoesNotExist:
-                return self.response(errors={uuid: 'Not found.'})
+                return self.force_response(errors={uuid: 'Not found.'})
 
         # Build jsonapi.org compliant response
         data = self.formatJsonResponse(content)
-        return self.response(data)
+        return self.force_response(data)
 
 ###############
 ## // TO DO:
@@ -96,7 +96,7 @@ class CollectionEndpoint(ExtendedApiResource):
         node = translate.recursive_collection2node(
             collections, current_zone=zone)
 
-        return self.response(
+        return self.force_response(
             {'id': node.id, 'collection': ipath},
             code=hcodes.HTTP_OK_CREATED)
 
@@ -113,7 +113,7 @@ class CollectionEndpoint(ExtendedApiResource):
         try:
             node = graph.Collection.nodes.get(id=uuid)
         except graph.Collection.DoesNotExist:
-            return self.response(errors={uuid: 'Not found.'})
+            return self.force_response(errors={uuid: 'Not found.'})
 
         icom = self.global_get_service('irods', user=irods_tmp_user)
         ipath = icom.handle_collection_path(node.path)
@@ -124,7 +124,7 @@ class CollectionEndpoint(ExtendedApiResource):
         icom.remove(ipath, recursive=True)
         logger.info("Removed collection %s", ipath)
 
-        return self.response({'deleted': ipath})
+        return self.force_response({'deleted': ipath})
 
 
 class DataObjectEndpoint(Uploader, ExtendedApiResource):
@@ -142,11 +142,11 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         # Getting the list
         if uuid is None:
             data = self.formatJsonResponse(graph.DataObject.nodes.all())
-            return self.response(data)
+            return self.force_response(data)
 
         # # If trying to use a path as file
         # elif name[-1] == '/':
-        #     return self.response(
+        #     return self.force_response(
         #         errors={'dataobject': 'No dataobject/file requested'})
 
         # Do irods things
@@ -157,7 +157,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         try:
             dataobj_node = graph.DataObject.nodes.get(id=uuid)
         except graph.DataObject.DoesNotExist:
-            return self.response(errors={uuid: 'Not found.'})
+            return self.force_response(errors={uuid: 'Not found.'})
+        print("TEST", dataobj_node.belonging.all())
         collection_node = dataobj_node.belonging.all().pop()
 
         # irods paths
@@ -247,7 +248,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             }
 
         # Reply to user
-        return self.response(data=content, errors=errors, code=status)
+        return self.force_response(content, errors=errors, code=status)
 
     @authentication.authorization_required
     @decorate.apimethod
@@ -269,7 +270,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         try:
             dataobj_node.delete()
         except graph.DataObject.DoesNotExist:
-            return self.response(errors={uuid: 'Not found.'})
+            return self.force_response(errors={uuid: 'Not found.'})
 
         # # Delete collection if not linked to any dataobject anymore?
         # if len(collection_node.belongs.all()) < 1:
@@ -279,4 +280,4 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         icom.remove(ipath)
         logger.info("Removed %s", ipath)
 
-        return self.response({'deleted': ipath})
+        return self.force_response({'deleted': ipath})

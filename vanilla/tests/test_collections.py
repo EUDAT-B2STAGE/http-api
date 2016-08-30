@@ -34,7 +34,7 @@ class TestCollections(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         logger.info('### Setting up flask server ###')
-        app = create_app(testing=True)
+        app = create_app(testing_mode=True)
         cls.app = app.test_client()
 
         r = cls.app.post(
