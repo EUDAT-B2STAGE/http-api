@@ -11,14 +11,21 @@ from commons.logs import get_logger
 from commons.services.uuid import getUUID
 from ...base import ExtendedApiResource
 from ... import decorators as decorate
-from ....auth import auth
+from ....auth import authentication
+from ....confs import config
 
 logger = get_logger(__name__)
 
 
 class MetadataObject(ExtendedApiResource):
 
-    @auth.login_required
+    # @authentication.authorization_required(config.ROLE_INTERNAL)
+    # @decorate.apimethod
+    # def get(self):
+    #     return "Hello world"
+
+    @authentication.authorization_required(config.ROLE_INTERNAL)
+    # @decorate.add_endpoint_parameter("user", required=True)
     # @decorate.add_endpoint_parameter("location", required=True)
     @decorate.apimethod
     def post(self):
@@ -26,23 +33,21 @@ class MetadataObject(ExtendedApiResource):
 
         # Create graph object
         graph = self.global_get_service('neo4j')
+        icom = self.global_get_service('irods')
 
         #######################
+        #######################
+# // TO FIX: request a 'user' parameter
         # User
+        myuser = None
         userobj = self.get_current_user()
         irodsusers = userobj.associated.search(default_user=True)
-
-        myuser = None
         if len(irodsusers) < 1:
-# // TO FIX:
-# explore association from existing irods user
-            # associate with guest user
+            # associate with guest user?
             class myuser(object):
-                username = 'guest'
-            print("MY USER", myuser)
+                username = icom.get_default_user()
         else:
             myuser = irodsusers.pop()
-
         myuserobj = None
         try:
             myuserobj = graph.IrodsUser.nodes.get(username=myuser.username)
@@ -50,13 +55,14 @@ class MetadataObject(ExtendedApiResource):
             return self.response(errors={
                 'iRODS user':
                     'no valid account associated on the iRODS server'})
+        #######################
+        #######################
 
         #######################
         # Create UUID
         myid = getUUID()
-# // TO FIX:
-# to be requested
-        mylocation = 'noprotocol://TOBEDEFINED/%s/%s/UNKNOWN' % (myuser, myid)
+# // TO FIX: request a 'location' parameter
+        mylocation = 'noprotocol:///%s/%s/TOBEDEFINED' % (myuser, myid)
         dobj = graph.DataObject(id=myid, location=mylocation)
         dobj.save()
 
