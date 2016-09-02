@@ -8,7 +8,7 @@ from commons.logs import get_logger
 from ..base import ExtendedApiResource
 from .. import decorators as decorate
 from ..services.detect import SQL_AVAILABLE, GRAPHDB_AVAILABLE
-from ...auth import auth
+from ...auth import authentication
 
 logger = get_logger(__name__)
 
@@ -27,7 +27,7 @@ if SQL_AVAILABLE:
 
     class SqlEndPoint(ExtendedApiResource):
 
-        @auth.login_required
+        @authentication.authorization_required
         @decorate.apimethod
         def get(self):
             sql = self.global_get_service('sql')
@@ -41,7 +41,7 @@ if GRAPHDB_AVAILABLE:
 
     class GraphEndPoint(ExtendedApiResource):
 
-        @auth.login_required
+        @authentication.authorization_required
         @decorate.apimethod
         def get(self):
             graph = self.global_get_service('neo4j')
