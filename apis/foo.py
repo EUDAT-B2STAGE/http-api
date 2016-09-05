@@ -44,7 +44,9 @@ if GRAPHDB_AVAILABLE:
         @authentication.authorization_required
         @decorate.apimethod
         def get(self):
+
+            user = self.get_current_user()
             graph = self.global_get_service('neo4j')
             print(graph)
             logger.warning("a call")
-            return self.force_response('Hello world!')
+            return self.force_response('Hello world, %s!' % user)
