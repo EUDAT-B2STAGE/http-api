@@ -45,14 +45,14 @@ class User(UserBase):
 class IrodsUser(StructuredNode):
     username = StringProperty(unique_index=True)
     default_user = BooleanProperty(default=True)
-    ownership = RelationshipFrom('DataObject', 'IS_OWNED_BY')
+    ownership = RelationshipFrom('DigitalEntity', 'IS_OWNED_BY')
     associated = RelationshipFrom(User, 'IS_ASSOCIATED_TO')
-    hosted = RelationshipTo(Zone, 'IS_DEFINED_IN')
+    # hosted = RelationshipTo('Zone', 'IS_DEFINED_IN')
 
 
 class Zone(StructuredNode):
     name = StringProperty(unique_index=True)
-    hosting = RelationshipFrom('DataObject', 'IS_LOCATED_IN')
+    hosting = RelationshipFrom('DigitalEntity', 'IS_LOCATED_IN')
     hosting_res = RelationshipFrom('Resource', 'IS_AVAILABLE_IN')
     hosting_col = RelationshipFrom('Collection', 'IS_PLACED_IN')
     _fields_to_show = ['name']
@@ -60,7 +60,7 @@ class Zone(StructuredNode):
 
 class Resource(StructuredNode):
     name = StringProperty(unique_index=True)
-    store = RelationshipFrom('DataObject', 'STORED_IN')
+    store = RelationshipFrom('DigitalEntity', 'STORED_IN')
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     hosted = RelationshipTo(Zone, 'IS_AVAILABLE_IN')
     _fields_to_show = ['name']
@@ -71,7 +71,7 @@ class Collection(StructuredNode):
     id = StringProperty(required=True, unique_index=True)   # UUID
     path = StringProperty(unique_index=True)
     name = StringProperty()
-    belongs = RelationshipFrom('DataObject', 'BELONGS_TO')
+    belongs = RelationshipFrom('DigitalEntity', 'BELONGS_TO')
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     hosted = RelationshipTo(Zone, 'IS_PLACED_IN')
     # A very strange relationship:
@@ -84,7 +84,7 @@ class Collection(StructuredNode):
 
 class Replication(StructuredRel):
     """
-    Replica connects a DataObject to its copies.
+    Replica connects a DigitalEntity to its copies.
         Note: this is a relationship, not a node.
     """
     # Parent
@@ -106,9 +106,9 @@ class DigitalEntity(StructuredNode):
     located = RelationshipTo(Zone, 'IS_LOCATED_IN')
     stored = RelationshipTo(Resource, 'STORED_IN')
     belonging = RelationshipTo(Collection, 'BELONGS_TO')
-    aggregation = RelationshipTo(Aggregation, 'BELONGS_TO')
-    replica = RelationshipTo('DataObject', 'IS_REPLICA_OF', model=Replication)
-    master = RelationshipFrom('DataObject', 'IS_MASTER_OF', model=Replication)
+    aggregation = RelationshipTo('Aggregation', 'BELONGS_TO')
+    replica = RelationshipTo('DigitalEntity', 'IS_REPLICA_OF', model=Replication)
+    master = RelationshipFrom('DigitalEntity', 'IS_MASTER_OF', model=Replication)
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     identity = RelationshipFrom('PID', 'UNIQUELY_IDENTIFIED_BY')
     _fields_to_show = ['location', 'filename', 'path']
@@ -123,7 +123,7 @@ class PID(StructuredNode):
     code = StringProperty(unique_index=True)
     checksum = StringProperty(index=True)   # For integrity
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
-    identify = RelationshipTo(DataObject, 'UNIQUELY_IDENTIFIED_BY')
+    identify = RelationshipTo(DigitalEntity, 'UNIQUELY_IDENTIFIED_BY')
 
 
 class MetaData(StructuredNode):
@@ -136,12 +136,13 @@ class MetaData(StructuredNode):
     content = JSONProperty()
 
     pid = RelationshipTo(PID, 'DESCRIBED_BY')
-    data = RelationshipTo(DataObject, 'DESCRIBED_BY')
+    data = RelationshipTo(DigitalEntity, 'DESCRIBED_BY')
     resource = RelationshipTo(Resource, 'DESCRIBED_BY')
     collection = RelationshipTo(Collection, 'DESCRIBED_BY')
 
 
 class Aggregation(StructuredNode):
     """ A generic relationship between nodes (data and metadata) """
-    belonging = RelationshipFrom(DataObject, 'BELONGS_TO')
+    something = StringProperty()
+    belonging = RelationshipFrom(DigitalEntity, 'BELONGS_TO')
 

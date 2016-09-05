@@ -39,7 +39,7 @@ class MetaDataObject(ExtendedApiResource):
         # create a second node
         myid = getUUID()
         mylocation = 'irods:///%s' % myid
-        datanode = graph.DataObject(id=myid, location=mylocation)
+        datanode = graph.DigitalEntity(id=myid, location=mylocation)
         datanode.save()
 
         # connect the two nodes
