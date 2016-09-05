@@ -141,7 +141,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
         # Getting the list
         if uuid is None:
-            data = self.formatJsonResponse(graph.DataObject.nodes.all())
+            data = self.formatJsonResponse(graph.DigitalEntity.nodes.all())
             return self.force_response(data)
 
         # # If trying to use a path as file
