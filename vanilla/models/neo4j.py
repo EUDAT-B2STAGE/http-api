@@ -9,7 +9,7 @@ Imports and models have to be defined/used AFTER normal Graphdb connection.
 """
 
 from __future__ import absolute_import
-from neomodel import StringProperty, BooleanProperty, \
+from neomodel import StringProperty, BooleanProperty, JSONProperty, \
     StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
 
 from ..neo4j import User as UserBase
@@ -125,9 +125,13 @@ class PID(StructuredNode):
 
 class MetaData(StructuredNode):
     """ Any metaData stored in any service level """
-    key = StringProperty(index=True)
-    metatype = StringProperty()         # Describe the level of metadata
-    value = StringProperty(index=True)
+
+    # key = StringProperty(index=True)
+    # metatype = StringProperty()         # Describe the level of metadata
+    # value = StringProperty(index=True)
+
+    content = JSONProperty()
+
     pid = RelationshipTo(PID, 'DESCRIBED_BY')
     data = RelationshipTo(DataObject, 'DESCRIBED_BY')
     resource = RelationshipTo(Resource, 'DESCRIBED_BY')

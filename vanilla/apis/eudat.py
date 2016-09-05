@@ -158,7 +158,6 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
             dataobj_node = graph.DataObject.nodes.get(id=uuid)
         except graph.DataObject.DoesNotExist:
             return self.force_response(errors={uuid: 'Not found.'})
-        print("TEST", dataobj_node.belonging.all())
         collection_node = dataobj_node.belonging.all().pop()
 
         # irods paths

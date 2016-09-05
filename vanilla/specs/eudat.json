@@ -21,7 +21,7 @@
         ]
     },
     "custom.internals.b2safe": {
-        "MetadataObject": [
+        "MetaDataObject": [
             "internals/metadataobj",
             "internals/metadataobj/<string:uuid>"
         ]
