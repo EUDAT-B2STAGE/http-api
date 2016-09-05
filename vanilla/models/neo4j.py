@@ -47,6 +47,7 @@ class IrodsUser(StructuredNode):
     default_user = BooleanProperty(default=True)
     ownership = RelationshipFrom('DataObject', 'IS_OWNED_BY')
     associated = RelationshipFrom(User, 'IS_ASSOCIATED_TO')
+    hosted = RelationshipTo(Zone, 'IS_DEFINED_IN')
 
 
 class Zone(StructuredNode):
@@ -92,9 +93,9 @@ class Replication(StructuredRel):
     ROR = StringProperty()
 
 
-class DataObject(StructuredNode):
+class DigitalEntity(StructuredNode):
     """
-    iRODS data object [File]
+    iRODS entity (file or collection)
     """
     id = StringProperty(required=True, unique_index=True)   # UUID
     location = StringProperty(unique_index=True)
@@ -105,7 +106,9 @@ class DataObject(StructuredNode):
     located = RelationshipTo(Zone, 'IS_LOCATED_IN')
     stored = RelationshipTo(Resource, 'STORED_IN')
     belonging = RelationshipTo(Collection, 'BELONGS_TO')
+    aggregation = RelationshipTo(Aggregation, 'BELONGS_TO')
     replica = RelationshipTo('DataObject', 'IS_REPLICA_OF', model=Replication)
+    master = RelationshipFrom('DataObject', 'IS_MASTER_OF', model=Replication)
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     identity = RelationshipFrom('PID', 'UNIQUELY_IDENTIFIED_BY')
     _fields_to_show = ['location', 'filename', 'path']
@@ -136,3 +139,9 @@ class MetaData(StructuredNode):
     data = RelationshipTo(DataObject, 'DESCRIBED_BY')
     resource = RelationshipTo(Resource, 'DESCRIBED_BY')
     collection = RelationshipTo(Collection, 'DESCRIBED_BY')
+
+
+class Aggregation(StructuredNode):
+    """ A generic relationship between nodes (data and metadata) """
+    belonging = RelationshipFrom(DataObject, 'BELONGS_TO')
+
