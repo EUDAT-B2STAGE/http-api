@@ -17,12 +17,36 @@ from ....confs import config
 logger = get_logger(__name__)
 
 
-class MetadataObject(ExtendedApiResource):
+class MetaDataObject(ExtendedApiResource):
 
-    # @authentication.authorization_required(config.ROLE_INTERNAL)
-    # @decorate.apimethod
-    # def get(self):
-    #     return "Hello world"
+    @authentication.authorization_required(config.ROLE_INTERNAL)
+    @decorate.apimethod
+    def get(self):
+
+        ###########################
+        # Get the service object
+        graph = self.global_get_service('neo4j')
+
+        ###########################
+        # Models can be found inside the graphdb object
+
+        # create a node
+        myjson = {'test': 1, 'another': 99}
+        node = graph.MetaData(content=myjson)
+        # save it inside the graphdb
+        node.save()
+
+        # create a second node
+        myid = getUUID()
+        mylocation = 'irods:///%s' % myid
+        datanode = graph.DigitalEntity(id=myid, location=mylocation)
+        datanode.save()
+
+        # connect the two nodes
+        datanode.described.connect(node)
+        print(node, datanode)
+
+        return "Hello world"
 
     @authentication.authorization_required(config.ROLE_INTERNAL)
     # @decorate.add_endpoint_parameter("user", required=True)
