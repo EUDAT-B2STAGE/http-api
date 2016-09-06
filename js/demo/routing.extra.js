@@ -35,7 +35,7 @@ angular.module('web')
         url: "/test",
         views: {
             "main": {
-                dir: 'custom',
+                dir: 'blueprint',
                 // OR
                 //dir: 'base',
                 templateUrl: 'test.html',
@@ -49,7 +49,7 @@ angular.module('web')
         url: "/yes",
         views: {
             "loggedview": {
-                dir: 'custom',
+                dir: 'blueprint',
                 templateUrl: 'test.html',
             }
         }
@@ -62,7 +62,7 @@ angular.module('web')
             "sub": {
 // OVERWRITING A PARENT VIEW
             //"loggedview@logged": {
-                dir: 'custom',
+                dir: 'blueprint',
                 templateUrl: 'sub.html',
             }
         }
