@@ -101,10 +101,15 @@ class DigitalEntity(StructuredNode):
     # PID = StringProperty(index=True)    # May not exist
     filename = StringProperty(index=True)
     path = StringProperty()
+    collection = BooleanProperty()
     owned = RelationshipTo(IrodsUser, 'IS_OWNED_BY')
     located = RelationshipTo(Zone, 'IS_LOCATED_IN')
     stored = RelationshipTo(Resource, 'STORED_IN')
-    # belonging = RelationshipTo(Collection, 'BELONGS_TO')
+
+    #collection is a DigitalEntity..
+    parent = RelationshipFrom('DigitalEntity', 'INSIDE')
+    child = RelationshipTo('DigitalEntity', 'INSIDE')
+
     aggregation = RelationshipTo('Aggregation', 'BELONGS_TO')
     replica = RelationshipTo(
         'DigitalEntity', 'IS_REPLICA_OF', model=Replication)

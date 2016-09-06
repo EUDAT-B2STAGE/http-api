@@ -33,5 +33,10 @@
             // mid = metadata uuid
             "internals/metadata/<string:mid>"
         ]
+    },
+    "custom.internals.metadata":{
+        "MetaDataParser": [
+            "internals/digitalentities/<string:uuid>/"
+        ]
     }
 }
