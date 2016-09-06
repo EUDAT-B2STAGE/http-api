@@ -9,23 +9,29 @@
             "authorize"
         ]
     },
+
     // upload and download for normal users
     "custom.digitalobjects": {
-        //// This is now called AGGREGATION and are encapsuled inside
-        //// the digitalentity concept
-        // "CollectionEndpoint": [
-        //     "collections",
-        //     "collections/<string:uuid>"
-        // ],
-        "DigitalEntityEndpoint": [
-            "digitalentity",
-            "digitalentity/<string:uuid>"
+        "DigitalObjectsEndpoint": [
+            "digitalobjects",
+            // doid = digital object uuid
+            "digitalobjects/<string:doid>"
+        ],
+        "EntitiesEndpoint": [
+            // only POST method to upload the object
+            "entities",
+            "digitalobjects/<string:doid>/entities",
+            // eid = entity uuid
+            "digitalobjects/<string:doid>/entities/<string:eid>"
         ]
     },
+
+    // Internal endpoint triggered by iRODS events
     "custom.internals.b2safe": {
         "MetaDataObject": [
-            "internals/mdstore",
-            "internals/mdstore/<string:uuid>"
+            "internals/metadata",
+            // mid = metadata uuid
+            "internals/metadata/<string:mid>"
         ]
     }
 }
