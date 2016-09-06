@@ -27,5 +27,10 @@
             "internals/mdstore",
             "internals/mdstore/<string:uuid>"
         ]
+    },
+    "custom.internals.metadata":{
+        "MetaDataParser": [
+            "internals/digitalentities/<string:uuid>/"
+        ]
     }
 }
