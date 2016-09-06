@@ -193,7 +193,7 @@ elif [ "$2" == "remove" ]; then
     echo -e "ACTION: Removal\n"
     echo "Destroying services"
     $compose_com $files stop
-    $compose_com $files rm -f --all
+    $compose_com $files rm -f
 
 elif [ "$2" == "clean" ]; then
 
@@ -201,7 +201,7 @@ elif [ "$2" == "clean" ]; then
     echo "Destroying (forever) containers & volumes. Are you really sure?"
     sleep 5
     $compose_com $files stop
-    $compose_com $files rm -f --all
+    $compose_com $files rm -f
     for volume in `docker volume ls -q | grep $volume_prefix`;
     do
         docker volume rm $volume
