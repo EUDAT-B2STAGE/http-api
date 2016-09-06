@@ -1,5 +1,6 @@
 // B2SAFE REST API configuration
 {
+    // enabling B2ACCESS token
     "custom.oauth": {
         "OauthLogin": [
             "askauth"
@@ -8,22 +9,23 @@
             "authorize"
         ]
     },
+    // upload and download for normal users
     "custom.eudat": {
-        "CollectionEndpoint": [
-            "collections",
-            "collections/<string:uuid>"
-            // "collections/<string:path>"
-        ],
-        "DataObjectEndpoint": [
-            "dataobjects",
-            "dataobjects/<string:uuid>"
-            // "dataobjects/<string:name>"
+        //// This is now called AGGREGATION and are encapsuled inside
+        //// the digitalentity concept
+        // "CollectionEndpoint": [
+        //     "collections",
+        //     "collections/<string:uuid>"
+        // ],
+        "DigitalEntityEndpoint": [
+            "digitalentity",
+            "digitalentity/<string:uuid>"
         ]
     },
     "custom.internals.b2safe": {
         "MetaDataObject": [
-            "internals/metadataobj",
-            "internals/metadataobj/<string:uuid>"
+            "internals/mdstore",
+            "internals/mdstore/<string:uuid>"
         ]
     }
 }

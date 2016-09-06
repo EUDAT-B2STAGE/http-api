@@ -7,12 +7,12 @@ B2SAFE HTTP REST API endpoints.
 from __future__ import absolute_import
 
 import os
-from commons import htmlcodes as hcodes
+# from commons import htmlcodes as hcodes
 from commons.logs import get_logger
 from ..base import ExtendedApiResource
 from ..services.irods.client import IrodsException, IRODS_DEFAULT_USER
 from ..services.uploader import Uploader
-from ..services.irods.translations import DataObjectToGraph
+# from ..services.irods.translations import DataObjectToGraph
 from .. import decorators as decorate
 from ...auth import authentication
 # from ...confs import config
@@ -29,105 +29,105 @@ irods_tmp_user = IRODS_DEFAULT_USER
 # Classes
 
 
-class CollectionEndpoint(ExtendedApiResource):
+# class CollectionEndpoint(ExtendedApiResource):
 
-    @authentication.authorization_required
-    @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def get(self, uuid=None):
-        """
-        Return list of elements inside a collection.
-        If uuid is added, get the single element.
-        """
+#     @authentication.authorization_required
+#     @decorate.apimethod
+#     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+#     def get(self, uuid=None):
+#         """
+#         Return list of elements inside a collection.
+#         If uuid is added, get the single element.
+#         """
 
-        graph = self.global_get_service('neo4j')
+#         graph = self.global_get_service('neo4j')
 
-    ##########
-## // TO FIX!!
-# List collections and dataobjects only linked to current user :)
+#     ##########
+# ## // TO FIX!!
+# # List collections and dataobjects only linked to current user :)
 
-        # auth = self.global_get('custom_auth')
-        # graph_user = auth.get_user_object(payload=auth._payload)
-        # # get the irods_user connected to graph_user
-        # icom = self.global_get_service('irods', user=FIND_THE_USER)
-    ##########
+#         # auth = self.global_get('custom_auth')
+#         # graph_user = auth.get_user_object(payload=auth._payload)
+#         # # get the irods_user connected to graph_user
+#         # icom = self.global_get_service('irods', user=FIND_THE_USER)
+#     ##########
 
-        content = []
+#         content = []
 
-        # Get ALL elements
-        if uuid is None:
-            content = graph.Collection.nodes.all()
-        # Get SINGLE element
-        else:
-            try:
-                content.append(graph.Collection.nodes.get(id=uuid))
-            except graph.Collection.DoesNotExist:
-                return self.force_response(errors={uuid: 'Not found.'})
+#         # Get ALL elements
+#         if uuid is None:
+#             content = graph.Collection.nodes.all()
+#         # Get SINGLE element
+#         else:
+#             try:
+#                 content.append(graph.Collection.nodes.get(id=uuid))
+#             except graph.Collection.DoesNotExist:
+#                 return self.force_response(errors={uuid: 'Not found.'})
 
-        # Build jsonapi.org compliant response
-        data = self.formatJsonResponse(content)
-        return self.force_response(data)
+#         # Build jsonapi.org compliant response
+#         data = self.formatJsonResponse(content)
+#         return self.force_response(data)
 
-###############
-## // TO DO:
-# The one above is such a standard 'get' method that
-# we could make it general for the graphdb use case
-###############
+# ###############
+# ## // TO DO:
+# # The one above is such a standard 'get' method that
+# # we could make it general for the graphdb use case
+# ###############
 
-    @authentication.authorization_required
-    @decorate.add_endpoint_parameter('collection', required=True)
-    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
-    @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def post(self):
-        """ Create one collection/directory """
+#     @authentication.authorization_required
+#     @decorate.add_endpoint_parameter('collection', required=True)
+#     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+#     @decorate.apimethod
+#     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+#     def post(self):
+#         """ Create one collection/directory """
 
-        icom = self.global_get_service('irods', user=irods_tmp_user)
-        collection_input = self._args.get('collection')
-        ipath = icom.create_empty(
-            collection_input,
-            directory=True, ignore_existing=self._args.get('force'))
-        logger.info("Created irods collection: %s", ipath)
+#         icom = self.global_get_service('irods', user=irods_tmp_user)
+#         collection_input = self._args.get('collection')
+#         ipath = icom.create_empty(
+#             collection_input,
+#             directory=True, ignore_existing=self._args.get('force'))
+#         logger.info("Created irods collection: %s", ipath)
 
-        # Save inside the graph and give back the uuid
-        translate = DataObjectToGraph(
-            icom=icom, graph=self.global_get_service('neo4j'))
-        _, collections, zone = translate.split_ipath(ipath, with_file=False)
-        node = translate.recursive_collection2node(
-            collections, current_zone=zone)
+#         # Save inside the graph and give back the uuid
+#         translate = DataObjectToGraph(
+#             icom=icom, graph=self.global_get_service('neo4j'))
+#         _, collections, zone = translate.split_ipath(ipath, with_file=False)
+#         node = translate.recursive_collection2node(
+#             collections, current_zone=zone)
 
-        return self.force_response(
-            {'id': node.id, 'collection': ipath},
-            code=hcodes.HTTP_OK_CREATED)
+#         return self.force_response(
+#             {'id': node.id, 'collection': ipath},
+#             code=hcodes.HTTP_OK_CREATED)
 
-    @authentication.authorization_required
-    @decorate.add_endpoint_parameter('collection', required=False)
-    @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def delete(self, uuid):
-        """ Remove an object """
+#     @authentication.authorization_required
+#     @decorate.add_endpoint_parameter('collection', required=False)
+#     @decorate.apimethod
+#     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+#     def delete(self, uuid):
+#         """ Remove an object """
 
-        # Get the dataobject from the graph
-        graph = self.global_get_service('neo4j')
-        node = None
-        try:
-            node = graph.Collection.nodes.get(id=uuid)
-        except graph.Collection.DoesNotExist:
-            return self.force_response(errors={uuid: 'Not found.'})
+#         # Get the dataobject from the graph
+#         graph = self.global_get_service('neo4j')
+#         node = None
+#         try:
+#             node = graph.Collection.nodes.get(id=uuid)
+#         except graph.Collection.DoesNotExist:
+#             return self.force_response(errors={uuid: 'Not found.'})
 
-        icom = self.global_get_service('irods', user=irods_tmp_user)
-        ipath = icom.handle_collection_path(node.path)
+#         icom = self.global_get_service('irods', user=irods_tmp_user)
+#         ipath = icom.handle_collection_path(node.path)
 
-        # Remove from graph:
-        node.delete()
-        # Remove from irods
-        icom.remove(ipath, recursive=True)
-        logger.info("Removed collection %s", ipath)
+#         # Remove from graph:
+#         node.delete()
+#         # Remove from irods
+#         icom.remove(ipath, recursive=True)
+#         logger.info("Removed collection %s", ipath)
 
-        return self.force_response({'deleted': ipath})
+#         return self.force_response({'deleted': ipath})
 
 
-class DataObjectEndpoint(Uploader, ExtendedApiResource):
+class DigitalEntityEndpoint(Uploader, ExtendedApiResource):
 
     @authentication.authorization_required
     @decorate.apimethod
@@ -141,7 +141,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
         # Getting the list
         if uuid is None:
-            data = self.formatJsonResponse(graph.DataObject.nodes.all())
+            data = self.formatJsonResponse(graph.DigitalEntity.nodes.all())
             return self.force_response(data)
 
         # # If trying to use a path as file
@@ -155,8 +155,8 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
         # Get filename and ipath from uuid using the graph
         try:
-            dataobj_node = graph.DataObject.nodes.get(id=uuid)
-        except graph.DataObject.DoesNotExist:
+            dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
+        except graph.DigitalEntity.DoesNotExist:
             return self.force_response(errors={uuid: 'Not found.'})
         collection_node = dataobj_node.belonging.all().pop()
 
@@ -200,7 +200,7 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
         user = icom.get_current_user()
 
         # Original upload
-        response = super(DataObjectEndpoint, self).upload(subfolder=user)
+        response = super(DigitalEntityEndpoint, self).upload(subfolder=user)
 
         # If response is success, save inside the database
         key_file = 'filename'
@@ -232,13 +232,15 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
                 # Remove local cache in any case
                 os.remove(abs_file)
 
-            ######################
-            # Save into graphdb
-            graph = self.global_get_service('neo4j')
+            # ######################
+            # # Save into graphdb
+            # graph = self.global_get_service('neo4j')
 
-            translate = DataObjectToGraph(graph=graph, icom=icom)
-            uuid = translate.ifile2nodes(
-                ipath, service_user=self.global_get('custom_auth')._user)
+            # translate = DataObjectToGraph(graph=graph, icom=icom)
+            # uuid = translate.ifile2nodes(
+            #     ipath, service_user=self.global_get('custom_auth')._user)
+
+            uuid = None
 
             # Create response
             content = {
@@ -257,19 +259,19 @@ class DataObjectEndpoint(Uploader, ExtendedApiResource):
 
         # Get the dataobject from the graph
         graph = self.global_get_service('neo4j')
-        dataobj_node = graph.DataObject.nodes.get(id=uuid)
+        dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
         collection_node = dataobj_node.belonging.all().pop()
 
         icom = self.global_get_service('irods', user=irods_tmp_user)
         ipath = icom.get_irods_path(
             collection_node.path, dataobj_node.filename)
 
-        # Remove from graph:
-        # Delete with neomodel the dataobject
-        try:
-            dataobj_node.delete()
-        except graph.DataObject.DoesNotExist:
-            return self.force_response(errors={uuid: 'Not found.'})
+        # # Remove from graph:
+        # # Delete with neomodel the dataobject
+        # try:
+        #     dataobj_node.delete()
+        # except graph.DigitalEntity.DoesNotExist:
+        #     return self.force_response(errors={uuid: 'Not found.'})
 
         # # Delete collection if not linked to any dataobject anymore?
         # if len(collection_node.belongs.all()) < 1:
