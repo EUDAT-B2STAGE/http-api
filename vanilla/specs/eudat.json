@@ -10,7 +10,7 @@
         ]
     },
     // upload and download for normal users
-    "custom.eudat": {
+    "custom.digitalobjects": {
         //// This is now called AGGREGATION and are encapsuled inside
         //// the digitalentity concept
         // "CollectionEndpoint": [
