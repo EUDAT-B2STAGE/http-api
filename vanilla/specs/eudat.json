@@ -30,7 +30,7 @@
     },
     "custom.internals.metadata":{
         "MetaDataParser": [
-            "internals/digitalentities/<string:uuid>/"
+            "internals/digitalentities/<string:uuid>"
         ]
     }
 }
