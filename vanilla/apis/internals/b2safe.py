@@ -21,7 +21,10 @@ class MetaDataObject(ExtendedApiResource):
 
     @authentication.authorization_required(config.ROLE_INTERNAL)
     @decorate.apimethod
-    def get(self):
+    def get(self, mid=None):
+
+        if mid is not None:
+            raise NotImplementedError("To do")
 
         ###########################
         # Get the service object
@@ -49,8 +52,8 @@ class MetaDataObject(ExtendedApiResource):
         return "Hello world"
 
     @authentication.authorization_required(config.ROLE_INTERNAL)
-    # @decorate.add_endpoint_parameter("user", required=True)
-    # @decorate.add_endpoint_parameter("location", required=True)
+    @decorate.add_endpoint_parameter("user", required=True)
+    @decorate.add_endpoint_parameter("location", required=True)
     @decorate.apimethod
     def post(self):
         """ Register a UUID """
