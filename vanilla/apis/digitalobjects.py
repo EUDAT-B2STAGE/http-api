@@ -10,7 +10,7 @@ import os
 # from commons import htmlcodes as hcodes
 from commons.logs import get_logger
 from ..base import ExtendedApiResource
-from ..services.irods.client import IrodsException, IRODS_DEFAULT_USER
+from ..services.irods.client import IrodsException
 from ..services.uploader import Uploader
 from ..services.irods.translations import Irods2Graph
 from .. import decorators as decorate
@@ -18,11 +18,6 @@ from ...auth import authentication
 from ...confs import config
 
 logger = get_logger(__name__)
-
-## // TO FIX:
-# Use the correct irods user from the token,
-# instad of IRODS_DEFAULT_USER
-irods_tmp_user = IRODS_DEFAULT_USER
 
 
 ###############################
@@ -55,7 +50,7 @@ class EntitiesEndpoint(Uploader, ExtendedApiResource):
     #     #         errors={'dataobject': 'No dataobject/file requested'})
 
     #     # Do irods things
-    #     icom = self.global_get_service('irods', user=irods_tmp_user)
+    #     icom = self.global_get_service('irods')
     #     user = icom.get_current_user()
 
     #     # Get filename and ipath from uuid using the graph
@@ -101,11 +96,20 @@ class EntitiesEndpoint(Uploader, ExtendedApiResource):
             file@docker-compose.test.yml
 
         Test with:
-        http --form POST $SERVER/api/entities file@/tmp/gettoken force=True "$AUTH"
+    http --form POST $SERVER/api/entities file@/tmp/gettoken force=True "$AUTH"
         """
 
-        icom = self.global_get_service('irods', user=irods_tmp_user)
-        user = icom.get_current_user()
+###########################
+## This should become the base of each authenticated request...
+        # Note: graph holds the authenticated accounts in our architecture
+        graph = self.global_get_service('neo4j')
+        icom = self.global_get_service('irods')
+        graphuser = self.get_current_user()
+        irodsuser = icom.translate_graph_user(graph, graphuser)
+        user = irodsuser.username
+        print("TEST", user)
+## This should become the base of each authenticated request...
+###########################
 
         # Original upload
         response = super(EntitiesEndpoint, self).upload(subfolder=user)
@@ -139,9 +143,8 @@ class EntitiesEndpoint(Uploader, ExtendedApiResource):
                 # Remove local cache in any case
                 os.remove(abs_file)
 
-            auth = self.global_get('custom_auth')
-            graph = self.global_get_service('neo4j')
-            uuid = DigitalObjectsEndpoint()._post(graph, icom, auth._user)
+            # Call internally the POST method for DO endpoint
+            uuid = DigitalObjectsEndpoint()._post(graph, icom, graphuser)
             print("TEST UUID", uuid)
 
     #         # ######################
@@ -174,7 +177,7 @@ class EntitiesEndpoint(Uploader, ExtendedApiResource):
     #     dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
     #     collection_node = dataobj_node.belonging.all().pop()
 
-    #     icom = self.global_get_service('irods', user=irods_tmp_user)
+    #     icom = self.global_get_service('irods')
     #     ipath = icom.get_irods_path(
     #         collection_node.path, dataobj_node.filename)
 
@@ -218,20 +221,29 @@ class DigitalObjectsEndpoint(ExtendedApiResource):
         Create an id for the digital object
         """
 
-        # user = self._args.get('user')
-        graph = self.global_get_service('neo4j')
-        auth = self.global_get('custom_auth')
-        icom = self.global_get_service('irods', user=irods_tmp_user)
+        user = self._args.get('user', None)
+        if user is not None:
+            userobj = None
+            raise NotImplementedError("Must recover the graph obj from user")
+        else:
+            userobj = self.get_current_user()
 
-        uuid = self._post(graph, icom, auth._user)
+        graph = self.global_get_service('neo4j')
+        icom = self.global_get_service('irods')
+        uuid = self._post(graph, icom, userobj)
 
         # Reply to user
         return self.force_response(uuid)  # , errors=errors, code=status)
 
     def _post(self, graph, icom, user):
-        # Translate
-        return Irods2Graph(graph=graph, icom=icom) \
-            .add_doid_to_irods_user(service_user=user)
+
+        # Make uuid
+
+        # Create the dataobject...
+
+        # Link object to user
+
+        return 'TO DO'
 
     # @authentication.authorization_required
     # @decorate.apimethod
@@ -300,7 +312,7 @@ class CollectionEndpoint(ExtendedApiResource):
 #     def post(self):
 #         """ Create one collection/directory """
 
-#         icom = self.global_get_service('irods', user=irods_tmp_user)
+#         icom = self.global_get_service('irods')
 #         collection_input = self._args.get('collection')
 #         ipath = icom.create_empty(
 #             collection_input,
@@ -333,7 +345,7 @@ class CollectionEndpoint(ExtendedApiResource):
 #         except graph.Collection.DoesNotExist:
 #             return self.force_response(errors={uuid: 'Not found.'})
 
-#         icom = self.global_get_service('irods', user=irods_tmp_user)
+#         icom = self.global_get_service('irods')
 #         ipath = icom.handle_collection_path(node.path)
 
 #         # Remove from graph:
