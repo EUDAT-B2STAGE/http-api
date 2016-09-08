@@ -13,8 +13,9 @@ sql:
      - ./confs/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
 
 icat:
-    command: /install
     #command: sleep infinity    ## DEBUG
+    # command: /install
+    command: /init
     volumes:
      - ./confs/credentials.conf:/myconfig:ro
 

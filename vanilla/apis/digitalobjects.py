@@ -28,6 +28,178 @@ irods_tmp_user = IRODS_DEFAULT_USER
 ###############################
 # Classes
 
+class EntitiesEndpoint(Uploader, ExtendedApiResource):
+
+    @authentication.authorization_required
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def get(self, doid=None, eid=None):
+        """
+        Download file from eid
+        """
+        if doid is None and eid is None:
+            return self.method_not_allowed()
+
+        raise NotImplementedError("Yet to do")
+
+    #     graph = self.global_get_service('neo4j')
+
+    #     # Getting the list
+    #     if uuid is None:
+    #         data = self.formatJsonResponse(graph.DigitalEntity.nodes.all())
+    #         return self.force_response(data)
+
+    #     # # If trying to use a path as file
+    #     # elif name[-1] == '/':
+    #     #     return self.force_response(
+    #     #         errors={'dataobject': 'No dataobject/file requested'})
+
+    #     # Do irods things
+    #     icom = self.global_get_service('irods', user=irods_tmp_user)
+    #     user = icom.get_current_user()
+
+    #     # Get filename and ipath from uuid using the graph
+    #     try:
+    #         dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
+    #     except graph.DigitalEntity.DoesNotExist:
+    #         return self.force_response(errors={uuid: 'Not found.'})
+    #     collection_node = dataobj_node.belonging.all().pop()
+
+    #     # irods paths
+    #     ipath = icom.get_irods_path(
+    #         collection_node.path, dataobj_node.filename)
+
+    #     abs_file = self.absolute_upload_file(dataobj_node.filename, user)
+    #     # Make sure you remove any cached version to get a fresh obj
+    #     try:
+    #         os.remove(abs_file)
+    #     except:
+    #         pass
+
+    #     # Execute icommand (transfer data to cache)
+    #     icom.open(ipath, abs_file)
+
+    #     # Download the file from local fs
+    #     filecontent = super().download(
+    #         dataobj_node.filename, subfolder=user, get=True)
+
+    #     # Remove local file
+    #     os.remove(abs_file)
+
+    #     # Stream file content
+    #     return filecontent
+
+    @authentication.authorization_required
+    # @decorate.add_endpoint_parameter('collection')
+    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def post(self):
+        """
+        Handle file upload
+        http --form POST localhost:8080/api/dataobjects \
+            file@docker-compose.test.yml
+        """
+
+        icom = self.global_get_service('irods', user=irods_tmp_user)
+        user = icom.get_current_user()
+
+        # Original upload
+        response = super(EntitiesEndpoint, self).upload(subfolder=user)
+
+        # If response is success, save inside the database
+        key_file = 'filename'
+        filename = None
+
+        content, errors, status = \
+            self.get_content_from_response(response, get_all=True)
+
+        if isinstance(content, dict) and key_file in content:
+            filename = content[key_file]
+            abs_file = self.absolute_upload_file(filename, user)
+            logger.info("File is '%s'" % abs_file)
+
+            ############################
+            # Move file inside irods
+
+            # ##HANDLING PATH
+            # The home dir for the current user
+            # Where to put the file in irods
+            ipath = icom.get_irods_path(
+                self._args.get('collection'), filename)
+
+            try:
+                iout = icom.save(
+                    abs_file, destination=ipath, force=self._args.get('force'))
+                logger.info("irods call %s", iout)
+            finally:
+                # Remove local cache in any case
+                os.remove(abs_file)
+
+    #         # ######################
+    #         # # Save into graphdb
+    #         # graph = self.global_get_service('neo4j')
+
+    #         # translate = DataObjectToGraph(graph=graph, icom=icom)
+    #         # uuid = translate.ifile2nodes(
+    #         #     ipath, service_user=self.global_get('custom_auth')._user)
+
+    #         uuid = None
+
+    #         # Create response
+    #         content = {
+    #             'collection': ipath,
+    #             'id': uuid
+    #         }
+
+        # Reply to user
+        return self.force_response(content, errors=errors, code=status)
+
+    # @authentication.authorization_required
+    # @decorate.apimethod
+    # @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    # def delete(self, uuid):
+    #     """ Remove an object """
+
+    #     # Get the dataobject from the graph
+    #     graph = self.global_get_service('neo4j')
+    #     dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
+    #     collection_node = dataobj_node.belonging.all().pop()
+
+    #     icom = self.global_get_service('irods', user=irods_tmp_user)
+    #     ipath = icom.get_irods_path(
+    #         collection_node.path, dataobj_node.filename)
+
+    #     # # Remove from graph:
+    #     # # Delete with neomodel the dataobject
+    #     # try:
+    #     #     dataobj_node.delete()
+    #     # except graph.DigitalEntity.DoesNotExist:
+    #     #     return self.force_response(errors={uuid: 'Not found.'})
+
+    #     # # Delete collection if not linked to any dataobject anymore?
+    #     # if len(collection_node.belongs.all()) < 1:
+    #     #     collection_node.delete()
+
+    #     # Remove from irods
+    #     icom.remove(ipath)
+    #     logger.info("Removed %s", ipath)
+
+    #     return self.force_response({'deleted': ipath})
+
+
+class DigitalObjectsEndpoint(ExtendedApiResource):
+
+    @authentication.authorization_required
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def get(self, doid=None):
+        """
+        Get object from ID
+        """
+
+        return "TO DO!"
+
 
 class CollectionEndpoint(ExtendedApiResource):
     """
@@ -133,179 +305,3 @@ class CollectionEndpoint(ExtendedApiResource):
 
 #         return self.force_response({'deleted': ipath})
 
-
-class EntitiesEndpoint(Uploader, ExtendedApiResource):
-
-    @authentication.authorization_required
-    @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def get(self, doid=None, eid=None):
-        """
-        Download file from eid
-        """
-        if doid is None and eid is None:
-            return self.method_not_allowed()
-
-    #     graph = self.global_get_service('neo4j')
-
-    #     # Getting the list
-    #     if uuid is None:
-    #         data = self.formatJsonResponse(graph.DigitalEntity.nodes.all())
-    #         return self.force_response(data)
-
-    #     # # If trying to use a path as file
-    #     # elif name[-1] == '/':
-    #     #     return self.force_response(
-    #     #         errors={'dataobject': 'No dataobject/file requested'})
-
-    #     # Do irods things
-    #     icom = self.global_get_service('irods', user=irods_tmp_user)
-    #     user = icom.get_current_user()
-
-    #     # Get filename and ipath from uuid using the graph
-    #     try:
-    #         dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
-    #     except graph.DigitalEntity.DoesNotExist:
-    #         return self.force_response(errors={uuid: 'Not found.'})
-    #     collection_node = dataobj_node.belonging.all().pop()
-
-    #     # irods paths
-    #     ipath = icom.get_irods_path(
-    #         collection_node.path, dataobj_node.filename)
-
-    #     abs_file = self.absolute_upload_file(dataobj_node.filename, user)
-    #     # Make sure you remove any cached version to get a fresh obj
-    #     try:
-    #         os.remove(abs_file)
-    #     except:
-    #         pass
-
-    #     # Execute icommand (transfer data to cache)
-    #     icom.open(ipath, abs_file)
-
-    #     # Download the file from local fs
-    #     filecontent = super().download(
-    #         dataobj_node.filename, subfolder=user, get=True)
-
-    #     # Remove local file
-    #     os.remove(abs_file)
-
-    #     # Stream file content
-    #     return filecontent
-
-    @authentication.authorization_required
-    # @decorate.add_endpoint_parameter('collection')
-    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
-    @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def post(self):
-        """
-        Handle file upload
-        http --form POST localhost:8080/api/dataobjects \
-            file@docker-compose.test.yml
-        """
-
-        # if SOMETHING:
-        #     return self.method_not_allowed()
-
-        return "TO DO!"
-
-    #     icom = self.global_get_service('irods', user=irods_tmp_user)
-    #     user = icom.get_current_user()
-
-    #     # Original upload
-    #     response = super(DigitalEntityEndpoint, self).upload(subfolder=user)
-
-    #     # If response is success, save inside the database
-    #     key_file = 'filename'
-    #     filename = None
-
-    #     content = self.get_content_from_response(response)
-    #     errors = self.get_content_from_response(response, get_error=True)
-    #     status = self.get_content_from_response(response, get_status=True)
-
-    #     if isinstance(content, dict) and key_file in content:
-    #         filename = content[key_file]
-    #         abs_file = self.absolute_upload_file(filename, user)
-    #         logger.info("File is '%s'" % abs_file)
-
-    #         ############################
-    #         # Move file inside irods
-
-    #         # ##HANDLING PATH
-    #         # The home dir for the current user
-    #         # Where to put the file in irods
-    #         ipath = icom.get_irods_path(
-    #             self._args.get('collection'), filename)
-
-    #         try:
-    #             iout = icom.save(
-    #                 abs_file, destination=ipath, force=self._args.get('force'))
-    #             logger.info("irods call %s", iout)
-    #         finally:
-    #             # Remove local cache in any case
-    #             os.remove(abs_file)
-
-    #         # ######################
-    #         # # Save into graphdb
-    #         # graph = self.global_get_service('neo4j')
-
-    #         # translate = DataObjectToGraph(graph=graph, icom=icom)
-    #         # uuid = translate.ifile2nodes(
-    #         #     ipath, service_user=self.global_get('custom_auth')._user)
-
-    #         uuid = None
-
-    #         # Create response
-    #         content = {
-    #             'collection': ipath,
-    #             'id': uuid
-    #         }
-
-    #     # Reply to user
-    #     return self.force_response(content, errors=errors, code=status)
-
-    # @authentication.authorization_required
-    # @decorate.apimethod
-    # @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    # def delete(self, uuid):
-    #     """ Remove an object """
-
-    #     # Get the dataobject from the graph
-    #     graph = self.global_get_service('neo4j')
-    #     dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
-    #     collection_node = dataobj_node.belonging.all().pop()
-
-    #     icom = self.global_get_service('irods', user=irods_tmp_user)
-    #     ipath = icom.get_irods_path(
-    #         collection_node.path, dataobj_node.filename)
-
-    #     # # Remove from graph:
-    #     # # Delete with neomodel the dataobject
-    #     # try:
-    #     #     dataobj_node.delete()
-    #     # except graph.DigitalEntity.DoesNotExist:
-    #     #     return self.force_response(errors={uuid: 'Not found.'})
-
-    #     # # Delete collection if not linked to any dataobject anymore?
-    #     # if len(collection_node.belongs.all()) < 1:
-    #     #     collection_node.delete()
-
-    #     # Remove from irods
-    #     icom.remove(ipath)
-    #     logger.info("Removed %s", ipath)
-
-    #     return self.force_response({'deleted': ipath})
-
-
-class DigitalObjectsEndpoint(ExtendedApiResource):
-
-    @authentication.authorization_required
-    @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def get(self, doid=None):
-        """
-        Get object from ID
-        """
-
-        return "TO DO!"

@@ -8,7 +8,7 @@ from __future__ import absolute_import
 
 from commons.logs import get_logger
 from commons.services.uuid import getUUID
-from ..services.irods.client import IRODS_DEFAULT_USER
+from ...services.irods.client import IRODS_DEFAULT_USER
 from ...base import ExtendedApiResource
 from ... import decorators as decorate
 from ....auth import authentication
