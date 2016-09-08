@@ -144,23 +144,13 @@ class EntitiesEndpoint(Uploader, ExtendedApiResource):
                 os.remove(abs_file)
 
             # Call internally the POST method for DO endpoint
-            uuid = DigitalObjectsEndpoint()._post(graph, icom, graphuser)
-            print("TEST UUID", uuid)
-
-    #         # ######################
-    #         # # Save into graphdb
-
-    #         # translate = DataObjectToGraph(graph=graph, icom=icom)
-    #         # uuid = translate.ifile2nodes(
-    #         #     ipath, service_user=self.global_get('custom_auth')._user)
-
-    #         # Create response
-    #         content = {
-    #             'collection': ipath,
-    #             'id': uuid
-    #         }
+            doid = DigitalObjectsEndpoint()._post(graph, icom, graphuser)
+            eid = None
+            print("IDS", doid, eid)
+            # Return link to the file /api/digitalobjects/DOID/entities/EID
 
         # Reply to user
+        content = "TO BE COMPLETED"
         return self.force_response(content, errors=errors, code=status)
 
     @authentication.authorization_required(roles=config.ROLE_INTERNAL)
@@ -237,11 +227,22 @@ class DigitalObjectsEndpoint(ExtendedApiResource):
 
     def _post(self, graph, icom, user):
 
-        # Make uuid
+## TO BE FIXED
+
+        # Make DOID
 
         # Create the dataobject...
 
+        # If location, do some collection/aggregations/resource/zone things
+        # and connect them
+
         # Link object to user
+
+        """
+            # translate = DataObjectToGraph(graph=graph, icom=icom)
+            # uuid = translate.ifile2nodes(
+            #     ipath, service_user=self.global_get('custom_auth')._user)
+        """
 
         return 'TO DO'
 

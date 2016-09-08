@@ -12,7 +12,8 @@ cov_options="-C --coverage restapi $cov_reports"
 custom_test_file="test.custom.test_digitalobjects"
 clean_method="TestDataObjects.test_08_delete_dataobjects"
 
-## TO BE FIXED
+echo "TO BE FIXED..."
+exit 1
 
 # $com $custom_test_file.$clean_method
 # echo ""
