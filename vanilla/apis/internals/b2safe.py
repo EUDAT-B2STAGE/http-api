@@ -22,6 +22,9 @@ class MetaDataObject(ExtendedApiResource):
     @authentication.authorization_required(config.ROLE_INTERNAL)
     @decorate.apimethod
     def get(self, mid=None):
+        """
+        This is just an example of what an endpoint can do with the graph
+        """
 
         if mid is not None:
             raise NotImplementedError("To do")

@@ -61,12 +61,9 @@ class TestEntities(unittest.TestCase):
 
         # POST dataobject
         endpoint = API_URI + self._main_endpoint
-        r = self.app.post(
-            endpoint,
-            data=dict(
-                file=(io.BytesIO(b"this is a test"), 'test.pdf'),
-                force=True
-            ), headers=self.auth_header)
+        r = self.app.post(endpoint, data=dict(
+                          file=(io.BytesIO(b"this is a test"), 'test.pdf')),
+                          headers=self.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
 #     def test_02_post_dataobjects_in_specific_collection(self):

@@ -12,10 +12,10 @@ from commons.logs import get_logger
 from ..base import ExtendedApiResource
 from ..services.irods.client import IrodsException, IRODS_DEFAULT_USER
 from ..services.uploader import Uploader
-# from ..services.irods.translations import DataObjectToGraph
+from ..services.irods.translations import Irods2Graph
 from .. import decorators as decorate
 from ...auth import authentication
-# from ...confs import config
+from ...confs import config
 
 logger = get_logger(__name__)
 
@@ -99,6 +99,9 @@ class EntitiesEndpoint(Uploader, ExtendedApiResource):
         Handle file upload
         http --form POST localhost:8080/api/dataobjects \
             file@docker-compose.test.yml
+
+        Test with:
+        http --form POST $SERVER/api/entities file@/tmp/gettoken force=True "$AUTH"
         """
 
         icom = self.global_get_service('irods', user=irods_tmp_user)
@@ -136,15 +139,17 @@ class EntitiesEndpoint(Uploader, ExtendedApiResource):
                 # Remove local cache in any case
                 os.remove(abs_file)
 
+            auth = self.global_get('custom_auth')
+            graph = self.global_get_service('neo4j')
+            uuid = DigitalObjectsEndpoint()._post(graph, icom, auth._user)
+            print("TEST UUID", uuid)
+
     #         # ######################
     #         # # Save into graphdb
-    #         # graph = self.global_get_service('neo4j')
 
     #         # translate = DataObjectToGraph(graph=graph, icom=icom)
     #         # uuid = translate.ifile2nodes(
     #         #     ipath, service_user=self.global_get('custom_auth')._user)
-
-    #         uuid = None
 
     #         # Create response
     #         content = {
@@ -155,11 +160,14 @@ class EntitiesEndpoint(Uploader, ExtendedApiResource):
         # Reply to user
         return self.force_response(content, errors=errors, code=status)
 
-    # @authentication.authorization_required
-    # @decorate.apimethod
-    # @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    # def delete(self, uuid):
-    #     """ Remove an object """
+    @authentication.authorization_required(roles=config.ROLE_INTERNAL)
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def delete(self, doid=None, mid=None):
+        """ Remove an object """
+
+        if doid is not None:
+            raise NotImplementedError("Don't have digital objects yet...")
 
     #     # Get the dataobject from the graph
     #     graph = self.global_get_service('neo4j')
@@ -199,6 +207,37 @@ class DigitalObjectsEndpoint(ExtendedApiResource):
         """
 
         return "TO DO!"
+
+    @authentication.authorization_required
+    # @decorate.add_endpoint_parameter('user')
+    # @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def post(self):
+        """
+        Create an id for the digital object
+        """
+
+        # user = self._args.get('user')
+        graph = self.global_get_service('neo4j')
+        auth = self.global_get('custom_auth')
+        icom = self.global_get_service('irods', user=irods_tmp_user)
+
+        uuid = self._post(graph, icom, auth._user)
+
+        # Reply to user
+        return self.force_response(uuid)  # , errors=errors, code=status)
+
+    def _post(self, graph, icom, user):
+        # Translate
+        return Irods2Graph(graph=graph, icom=icom) \
+            .add_doid_to_irods_user(service_user=user)
+
+    # @authentication.authorization_required
+    # @decorate.apimethod
+    # @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    # def delete(self, uuid):
+    #     """ Remove DO """
 
 
 class CollectionEndpoint(ExtendedApiResource):
