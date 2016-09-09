@@ -144,7 +144,9 @@ class EntitiesEndpoint(Uploader, ExtendedApiResource):
                 os.remove(abs_file)
 
             # Call internally the POST method for DO endpoint
-            doid = DigitalObjectsEndpoint()._post(graph, icom, graphuser)
+## BUILD LOCATION
+            location = None
+            doid = DigitalObjectsEndpoint()._post(graph, graphuser, location)
             eid = None
             print("IDS", doid, eid)
             # Return link to the file /api/digitalobjects/DOID/entities/EID
@@ -219,19 +221,30 @@ class DigitalObjectsEndpoint(ExtendedApiResource):
             userobj = self.get_current_user()
 
         graph = self.global_get_service('neo4j')
-        icom = self.global_get_service('irods')
-        uuid = self._post(graph, icom, userobj)
+        # icom = self.global_get_service('irods')
+        uuid = self._post(graph, userobj)
 
         # Reply to user
         return self.force_response(uuid)  # , errors=errors, code=status)
 
-    def _post(self, graph, icom, user):
+    def _post(self, graph, user, location=None):
 
-## TO BE FIXED
+## WORK IN PROGRESS
 
-        # Make DOID
+        # Make DOID from location
+        from commons.services.uuid import getUUIDfromString
+        if location is None:
+            import datetime
+            now = datetime.datetime.now().isoformat()
+            pattern = "noprotocol://%s/%s/%s" \
+                % (user.surname, user.name, now)
+        else:
+            pattern = location
+        doid = getUUIDfromString(pattern)
+        print("pattern", pattern, doid)
 
         # Create the dataobject...
+        graph.DigitalEntity(_id=doid, location=location)
 
         # If location, do some collection/aggregations/resource/zone things
         # and connect them

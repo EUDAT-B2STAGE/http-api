@@ -63,7 +63,6 @@ class Resource(StructuredNode):
     _fields_to_show = ['name']
 
 
-
 # class Collection(StructuredNode):
 #     """ iRODS collection of data objects [Directory] """
 #     id = StringProperty(required=True, unique_index=True)   # UUID
@@ -78,7 +77,6 @@ class Resource(StructuredNode):
 #     matrioska_to = RelationshipTo('Collection', 'INSIDE')
 #     _fields_to_show = ['path', 'name']
 #     _relationships_to_follow = ['belongs', 'hosted']
-
 
 
 class Replication(StructuredRel):
@@ -97,27 +95,28 @@ class DigitalEntity(StructuredNode):
     iRODS entity (file or collection)
     """
     id = StringProperty(required=True, unique_index=True)   # UUID
-    location = StringProperty(unique_index=True)
-    # PID = StringProperty(index=True)    # May not exist
-    filename = StringProperty(index=True)
-    path = StringProperty()
-    collection = BooleanProperty()
+    location = StringProperty(index=True)
+    # filename = StringProperty(index=True)
+    # path = StringProperty()
+
+    # collection is a DigitalEntity..
+    collection = BooleanProperty(default=False)
+    parent = RelationshipFrom('DigitalEntity', 'INSIDE')
+    child = RelationshipTo('DigitalEntity', 'INSIDE')
+    aggregation = RelationshipTo('Aggregation', 'BELONGS_TO')
+
     owned = RelationshipTo(IrodsUser, 'IS_OWNED_BY')
     located = RelationshipTo(Zone, 'IS_LOCATED_IN')
     stored = RelationshipTo(Resource, 'STORED_IN')
 
-    #collection is a DigitalEntity..
-    parent = RelationshipFrom('DigitalEntity', 'INSIDE')
-    child = RelationshipTo('DigitalEntity', 'INSIDE')
-
-    aggregation = RelationshipTo('Aggregation', 'BELONGS_TO')
     replica = RelationshipTo(
         'DigitalEntity', 'IS_REPLICA_OF', model=Replication)
     master = RelationshipFrom(
         'DigitalEntity', 'IS_MASTER_OF', model=Replication)
+
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     identity = RelationshipFrom('PID', 'UNIQUELY_IDENTIFIED_BY')
-    _fields_to_show = ['location', 'filename', 'path']
+    _fields_to_show = ['location']
     _relationships_to_follow = ['belonging', 'located', 'stored']
 
 
@@ -151,4 +150,3 @@ class Aggregation(StructuredNode):
     """ A generic relationship between nodes (data and metadata) """
     something = StringProperty()
     belonging = RelationshipFrom(DigitalEntity, 'BELONGS_TO')
-
