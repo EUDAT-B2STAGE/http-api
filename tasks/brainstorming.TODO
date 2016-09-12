@@ -1,43 +1,46 @@
 
-GUIDELINES:
-- PEP
-- Python 3
-- Test driven: nose
-- Swagger
+GUIDELINES
+- PEP compliant
+- Python 3.5
+- Unittest: nose2
+- SwaggerTest driven
+- Usable inside and outside Docker environment?
 
-ARCHITECTURE:
-https://confluence.csc.fi/pages/viewpage.action?spaceKey=EUDAT2&title=B2SAFE+architecture
+--- ✄ ----------------------- things to do
 
-USEFULL COMMANDS:
+LAUNCH and CONFIGURATION:
+  ☐ do.py
+  ☐ configuration
+    ☐ run pure python, no docker
+      ☐ requirements.txt (pip freeze)
+        ☐ a smaller one than current python docker image
+      ☐ instructions with @virtualenv
+  ☐ deb package?
 
- - Upload
-  http --form POST http://192.168.64.7:8080/api/dataobject file@~/Downloads/pics/tweet.jpg
- - Certificates
-  iadmin aua newuser '/DC=org/DC=example/O=Example/OU=People/CN=New User/CN=UID:drexample'
+AUTHENTICATION:
+  ☐ check b2access again
 
---- ✄ -----------------------
+ENDPOINTS:
+with no data model
 
-STEPS:
+ ☐ Clean eudat.json
 
-☐ How to skip irods validation
-  at startup? It needs internet connection...
+  ☐ /api/digitalentities (?)
+    ☐ POST upload a file
+    ☐ GET with <ID>: download a file
+      ☐ what
+    ☐ DELETE: remove a file
+    ☐ parameters
+      ☐ specify a collection
+      ☐ specify a zone?
+
+TESTs:
+☐ Rewrite from scratch
+  ☐ Build some users and initial data to test roles
+  ☐ Clean with "finally" if any error
+
+PERFOMANCE & PRODUCTION:
+ ☐ nginx proxy and real certificates
  ☐ profiling
  https://github.com/muatik/flask-profiler
-
-☐ DATA MODELS
-  schema -> https://www.dropbox.com/s/01582z9avmnllzo/EUDAT_datamodel.png?dl=0
-  ☐ Nested collections in B2safe?
-  ☐ Save graphdb data into a volume
-    ☐ push graph data
-      https://github.com/EUDAT-B2SAFE/B2SAFE-core/blob/master/cmd/metadataManager.py
-
-☐ Swagger automatization
-✘ docker 1.10 and docker-compose 1.6 (new syntax: services and networks) @cancelled (16-03-31 11:55)
-
-
-IDEAS:
-
- ☐ May use sqlacodegen to get the sqlalchemy models from irods postgres db
-http://stackoverflow.com/a/23786811
- ☐ In this way we may easily admin the irods users with flask-admin?
-   ☐ Also use flask-security to use irods to get login?
+ ☐ benchmarks

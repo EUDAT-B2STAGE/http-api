@@ -8,36 +8,37 @@
         "Authorize": [
             "authorize"
         ]
-    },
+    // },
 
-    // upload and download for normal users
-    "custom.digitalobjects": {
-        "DigitalObjectsEndpoint": [
-            "digitalobjects",
-            // doid = digital object uuid
-            "digitalobjects/<string:doid>"
-        ],
-        "EntitiesEndpoint": [
-            // only POST method to upload the object
-            "entities",
-            "digitalobjects/<string:doid>/entities",
-            // eid = entity uuid
-            "digitalobjects/<string:doid>/entities/<string:eid>"
-        ]
-    },
+    // // upload and download for normal users
+    // "custom.digitalobjects": {
+    //     "DigitalObjectsEndpoint": [
+    //         "digitalobjects",
+    //         // doid = digital object uuid
+    //         "digitalobjects/<string:doid>"
+    //     ],
+    //     "EntitiesEndpoint": [
+    //         // only POST method to upload the object?
+    //         "entities",
+    //         "entities/<string:eid>",
+    //         // eid = entity uuid
+    //         "digitalobjects/<string:doid>/entities",
+    //         "digitalobjects/<string:doid>/entities/<string:eid>"
+    //     ]
+    // },
 
-    // Internal endpoint triggered by iRODS events
-    "custom.internals.b2safe": {
-        "MetaDataObject": [
-            "internals/metadata",
-            // mid = metadata uuid
-            "internals/metadata/<string:mid>"
-        ]
-    },
-    "custom.internals.metadata":{
-        "MetaDataParser": [
-            // mid = metadata uuid
-            "internals/digitalentities/<string:mid>"
-        ]
+    // // Internal endpoint triggered by iRODS events
+    // "custom.internals.b2safe": {
+    //     "MetaDataStore": [
+    //         "internals/mdstore"
+    //         // // mid = mdstore uuid
+    //         // "internals/mdstore/<string:mid>"
+    //     ]
+    // },
+    // "custom.internals.metadata":{
+    //     "MetaDataParser": [
+    //         // mid = metadata uuid
+    //         "internals/digitalentities/<string:mid>"
+    //     ]
     }
 }

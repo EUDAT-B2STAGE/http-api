@@ -16,11 +16,14 @@ from ..neo4j import User as UserBase
 
 
 class User(UserBase):
+    """
+    This class is a real 'Person'
+    """
     name = StringProperty()
     surname = StringProperty()
     associated = RelationshipTo('IrodsUser', 'IS_ASSOCIATED_TO')
 
-# OR ?
+# ALTERNATIVE OVERRIDE:
 # # Override existing
 # setattr(User, 'name', StringProperty())
 # setattr(User, 'surname', StringProperty())
