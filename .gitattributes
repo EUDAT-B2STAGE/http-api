@@ -3,6 +3,3 @@
 # Git will always convert line endings to LF on checkout.
 # You should use this for files that must keep LF endings, even on Windows.
 *.py text eol=lf
- 
-# Can be force EOL for a single file?
-boot text eol=lf
