@@ -1,0 +1,75 @@
+{
+    "project": {
+        "title": "My project",
+        "description": "Title of my project"
+    },
+    "variables": {
+
+        "js": {
+            // "index_state_name": "welcome",
+            // "index_template": "welcome.html"
+            "load_timeout": "800"
+        },
+
+        "python": {
+
+        },
+
+        "containers": {
+
+            "users": {
+                "backend": "root"
+                //"backend": "irods"
+            },
+
+            "authentication": {
+                "service": "neo4j",
+                "username": "user@nomail.org",
+                "password": "test"
+            },
+
+            "authentication_service": "neo4j",
+
+            "services": {
+                // "relationaldb": {
+                //     "remove_data_at_init_time": "false"
+                // },
+                // "neo4j": {
+                //     "password": "chooseapassword"
+                // }
+            },
+
+            "external_services": {
+                // "irods": {
+                //     "host": "irods.host.com",
+                //     "port": "1247",
+                //     "username": "irods_user",
+                //     "password": "irods_pwd"
+                // }
+            }
+        }
+
+    },
+
+    "apis": {
+        "foo": {
+            "GraphEndPoint": [
+                "graph",
+                "graph/<string:id>"
+            ]
+        }
+    },
+
+    "bower_components": {
+        // "lib-name": [
+        //     "file.js",
+        //     "file.css"
+        // ]
+    },
+
+    "css": [
+        // "http://fonts.googleapis.com/icon?family=Material+Icons",
+        "custom_material.css"
+    ]
+
+}

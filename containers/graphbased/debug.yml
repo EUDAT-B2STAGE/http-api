@@ -1,0 +1,39 @@
+
+#######################
+# Define here your services
+
+# searchindex:
+#   image: elasticsearch
+#   hostname: elastic
+#   volumes:
+#       - restangulask_graphbased_elasticdata:/usr/share/elasticsearch/data
+
+gdb:
+    # image: neo4j  # 3.0 has some bugs with neomodel...
+    image: neo4j:2.3.3
+    ports:
+      - 9090:7474
+    volumes:
+        - restangulask_graphbased_graphdata:/data
+    environment:
+        NEO4J_AUTH: neo4j/chooseapassword
+
+#######################
+# Link services inside API
+
+backend:
+    ports:
+        - 8081:5000
+    environment:
+      BACKEND_AUTH_SERVICE: graphdb
+    links:
+        # - searchindex:el
+        - gdb:gdb
+
+#######################
+# Frontend links only API
+# Note: THIS IS THE MAIN SERVICE TO START WITH DOCKER COMPOSE
+
+frontend:
+    links:
+        - backend:myapi
