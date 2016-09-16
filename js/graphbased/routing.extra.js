@@ -1,8 +1,7 @@
 (function() {
 'use strict';
 
-angular.module('web')
- .constant('graphbasedRoutes',
+angular.module('web').constant('customRoutes',
  {
 // JUST A TEST
 // Note: this will automatically check api online as not subchild of 'logged'

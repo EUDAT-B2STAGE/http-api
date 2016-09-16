@@ -4,17 +4,8 @@
 // Customized logged page (default is public.welcome)
 // loggedLandingPage = "logged";
 
-angular.module('web')
- .constant('demoRoutes',
+angular.module('web').constant('customRoutes',
  {
-// JUST A TEST
-// Note: this will automatically check api online as not subchild of 'logged'
-
-
-angular.module('web')
- .constant('telethonRoutes',
- {
-
 // JUST A TEST
 // Note: this will automatically check api online as not subchild of 'logged'
 
