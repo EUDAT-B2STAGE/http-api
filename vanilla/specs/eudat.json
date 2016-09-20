@@ -8,7 +8,13 @@
         "Authorize": [
             "authorize"
         ]
-    // },
+    },
+    // the most basic and simple upload/download
+    "custom.digitalentities": {
+        "DigitalEntityEndpoint": [
+            "entities",
+            "entities/<string:eid>" // eid = entity uuid
+        ]
 
     // // upload and download for normal users
     // "custom.digitalobjects": {
