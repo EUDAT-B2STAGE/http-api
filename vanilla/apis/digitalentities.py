@@ -109,8 +109,8 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
 
         ###################
         # get the base things
-        icom = self.init_endpoint()
-        user = 'guest'
+        icom, sql, user = self.init_endpoint()
+        print(icom, sql, user)
         return 'DOING'
 
         ###################

@@ -17,16 +17,23 @@ class EudatEndpoint(ExtendedApiResource):
     def init_endpoint(self):
 
         #####################################
-        ## WHEN THE GRAPH WILL BE INTEGRATED
+        # IF THE GRAPH WILL BE INTEGRATED
+
         # # Note: graph holds the authenticated accounts in our architecture
         # graph = self.global_get_service('neo4j')
         # graphuser = self.get_current_user()
         # irodsuser = icom.translate_graph_user(graph, graphuser)
         # icom = self.global_get_service('irods', user=irodsuser.username)
+        #####################################
+
+        sql = self.global_get_service('sql')
 
         #####################################
+        # OTHERWISE
+        # Get current (irods?) user from database/tokens
 # // TO FIX:
-# understand how to know which user is connected
-        icom = self.global_get_service('irods')
+        user = 'guest'
 
-        return icom
+        icom = self.global_get_service('irods', user=user)
+
+        return icom, sql, user
