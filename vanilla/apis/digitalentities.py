@@ -29,19 +29,20 @@ logger = get_logger(__name__)
 class DigitalEntityEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
+    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+    @decorate.add_endpoint_parameter('path')
+    @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def get(self, doid=None, eid=None):
+    def get(self, filename=None):
         """
-        Download file from eid
+        Download file from filename
         """
-        if doid is None and eid is None:
-            return self.method_not_allowed()
 
         raise NotImplementedError("Yet to do")
 
         #################################################
-        ## WITH THE GRAPH?
+        # IN CASE WE USE THE GRAPH
         # graph = self.global_get_service('neo4j')
 
         # # Getting the list
@@ -153,8 +154,6 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
 ## BUILD LOCATION
             location = None
             doid = DigitalObjectsEndpoint()._post(graph, graphuser, location)
-            eid = None
-            print("IDS", doid, eid)
             # Return link to the file /api/digitalobjects/DOID/entities/EID
 
         # Reply to user
@@ -164,11 +163,10 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
     @authentication.authorization_required(roles=config.ROLE_INTERNAL)
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def delete(self, doid=None, mid=None):
+    def delete(self, filename=None):
         """ Remove an object """
 
-        if doid is not None:
-            raise NotImplementedError("Don't have digital objects yet...")
+        pass
 
     #     # Get the dataobject from the graph
     #     graph = self.global_get_service('neo4j')

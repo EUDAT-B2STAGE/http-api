@@ -6,30 +6,32 @@ GUIDELINES
 - SwaggerTest driven
 - Usable inside and outside Docker environment?
 
---- ✄ ----------------------- things to do
+--- ✄ ----------------------- THINGS TO DO
+
+SERVICES:
+  ✔ remove the graphdb link in docker @done (16-09-20 17:12)
+  ✔ use sqlalchemy @done (16-09-20 17:12)
+    ✔ sqllite @done (16-09-20 17:12)
+  ☐ build sqldminer own image with php alpine?
+  ☐ tokens and users
+    ☐ check/write models
 
 ENDPOINTS:
-with no data model
-
-Since the first release is not integrated with B2SAFE,
-we do not use IDs
+Since the first release is not integrated with B2SAFE, we do not use IDs
 
  ✔ Clean eudat.json @done (16-09-13 15:22)
-
-  ☐ endpoint /api/digitalentities (?)
-
+  ☐ endpoint /api/digitalentities
     ☐ POST upload a file
     ☐ GET
       ☐ list recursively all files for current path
         there should be an irods command for this
       ✘ with <ID>: download a file @cancelled (16-09-13 15:38)
-      ☐ when the file is only one, download it
-    ☐ DELETE <ID>: remove a file
-      ☐ how without ID?
+      ☐ when the filename is specified, download it
+    ☐ DELETE
+      ☐ remove a file
     ✘ PATCH <ID>: change file name @cancelled (16-09-13 15:38)
-    ☐ parameters (all optional)
-      ☐ specify a filename
-        ☐ default is filename uploaded
+    ☐ instead of IDs we will use the filename
+    ☐ other parameters
       ☐ specify a path (zone + collection)
         ☐ default is home dir
       ☐ specify a resource (with default)
@@ -41,20 +43,21 @@ TESTs:
   ☐ Clean with "finally" if any error
 
 AUTHENTICATION:
-  with no graphdb
-
-  ☐ add sqllite support for tokens and oauth2
-    ☐ write models
+  ☐ check sqllite support for tokens
+    ☐ oauth2 linked model to tokens?
+      ☐ write new models if necessary
   ☐ check b2access again
+    ☐ proxy certificate
+    ☐ irods user
 
 LAUNCH and CONFIGURATION:
-  ☐ do.py
+  ☐ the new do.py command (from rapydo project)
   ☐ configuration
     ☐ run pure python, no docker
       ☐ requirements.txt (pip freeze)
         ☐ a smaller one than current python docker image
       ☐ instructions with @virtualenv
-  ☐ deb package?
+  ☐ deb/rpm packages?
 
 PERFOMANCE & PRODUCTION:
  ☐ nginx proxy and real certificates

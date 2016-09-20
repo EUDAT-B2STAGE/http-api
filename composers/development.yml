@@ -2,17 +2,24 @@
 rest:
   environment:
     APP_MODE: development
+  links:
+    # IRODS MUST BE CALLED rodserver
+    - icat:rodserver
+    # # GRAPHDB MUST BE CALLED gdb
+    # - graphdb:gdb
 
 proxy:
   volumes:
     - ./confs/dev_proxy.conf:/etc/nginx/sites-enabled/development
   ports:
     - 80:80
+  links:
+      - rest:restapi
 
 apitests:
   links:
     - proxy:apiserver
 
-graphdb:
-  ports:
-    - 9090:7474
+# graphdb:
+#   ports:
+#     - 9090:7474

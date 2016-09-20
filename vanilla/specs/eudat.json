@@ -13,7 +13,7 @@
     "custom.digitalentities": {
         "DigitalEntityEndpoint": [
             "entities",
-            "entities/<string:eid>" // eid = entity uuid
+            "entities/<string:filename>"
         ]
 
     // // upload and download for normal users

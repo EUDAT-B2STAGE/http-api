@@ -274,6 +274,12 @@ then
 
     echo "Docker stack: booting"
 
+    if [ "$2" == "sql_admin" ]; then
+        echo "Administration for relational databases"
+        $compose_run up sqladmin
+        exit 0
+    fi
+
     if [ "$2" == "restart" ]; then
         echo "Clean previous containers"
         $compose_run stop

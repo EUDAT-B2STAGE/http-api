@@ -9,21 +9,24 @@
 # Paragraph: Administrative tasks
 
 sql:
-    volumes:
-     - ./confs/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+  volumes:
+   - ./confs/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
 
 icat:
-    #command: sleep infinity    ## DEBUG
-    # command: /install
-    command: /init
-    volumes:
-     - ./confs/credentials.conf:/myconfig:ro
+  command: /init
+  #command: sleep infinity    ## DEBUG
+  # command: /install
+  volumes:
+   - ./confs/credentials.conf:/myconfig:ro
 
 rest:
-    user: root
-    volumes:
-      - ./confs/fixirodsclient.sh:/fix
-    command: /fix
+  user: root
+  volumes:
+    - ./confs/fixirodsclient.sh:/fix
+  command: /fix
+  links:
+      # IRODS MUST BE CALLED rodserver
+      - icat:rodserver
 
 # To clean like there was no init:
 # ./do clean

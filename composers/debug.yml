@@ -2,12 +2,25 @@
 rest:
   environment:
     APP_MODE: debug
+    # B2ACCESS_APPKEY: GIVEMEAVALIDKEY
+    # BACKEND_AUTH_SERVICE: graphdb
   ports:
     - 8080:5000
+  links:
+    # IRODS MUST BE CALLED rodserver
+    - icat:rodserver
+    # # GRAPHDB MUST BE CALLED gdb
+    # - graphdb:gdb
 
-graphdb:
+# graphdb:
+#   ports:
+#     - 9090:7474
+
+sqladmin:
+  volumes_from:
+    - sharedvolumes
   ports:
-    - 9090:7474
+      - 8888:80
 
 apitests:
   links:
