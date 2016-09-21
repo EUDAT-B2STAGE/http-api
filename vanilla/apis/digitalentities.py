@@ -29,7 +29,6 @@ logger = get_logger(__name__)
 class DigitalEntityEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
-    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
     @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
@@ -39,11 +38,16 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         Download file from filename
         """
 
-        raise NotImplementedError("Yet to do")
+        ###################
+        # BASIC INIT
 
-        #################################################
+        # get the base objects
+        icom, sql, user = self.init_endpoint()
+        # get parameters with defaults
+        path, resource, myname = self.get_file_parameters(icom, filename)
+
+        ###################
         # IN CASE WE USE THE GRAPH
-        # graph = self.global_get_service('neo4j')
 
         # # Getting the list
         # if uuid is None:
@@ -54,29 +58,44 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         # elif name[-1] == '/':
         #     return self.force_response(
         #         errors={'dataobject': 'No dataobject/file requested'})
-        #################################################
 
-    #     # Do irods things
-    #     icom = self.global_get_service('irods')
-    #     user = icom.get_current_user()
+        # # Get filename and ipath from uuid using the graph
+        # try:
+        #     dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
+        # except graph.DigitalEntity.DoesNotExist:
+        #     return self.force_response(errors={uuid: 'Not found.'})
+        # collection_node = dataobj_node.belonging.all().pop()
 
-    #     # Get filename and ipath from uuid using the graph
-    #     try:
-    #         dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
-    #     except graph.DigitalEntity.DoesNotExist:
-    #         return self.force_response(errors={uuid: 'Not found.'})
-    #     collection_node = dataobj_node.belonging.all().pop()
+        # # irods paths
+        # ipath = icom.get_irods_path(
+        #     collection_node.path, dataobj_node.filename)
 
-    #     # irods paths
-    #     ipath = icom.get_irods_path(
-    #         collection_node.path, dataobj_node.filename)
+        ###################
+        # In case we ask the list
+        if myname is None:
+            # files = icom.search(path.lstrip('/'), like=False)
+            files = icom.list(path)
+            print(files)
+            return "GET ALL"
 
-    #     abs_file = self.absolute_upload_file(dataobj_node.filename, user)
-    #     # Make sure you remove any cached version to get a fresh obj
-    #     try:
-    #         os.remove(abs_file)
-    #     except:
-    #         pass
+        ###################
+        # In case we download a specific file
+
+        # ipath = icom.get_irods_path(path, myname)
+        # print("TEST", ipath)
+
+        abs_file = self.absolute_upload_file(myname, user)
+
+# // TO FIX:
+# decide if we want to use a cache, and how
+# note: maybe nginx instead of our own
+        # Make sure you remove any cached version to get a fresh obj
+        try:
+            os.remove(abs_file)
+        except:
+            pass
+
+        print("TEST", abs_file)
 
     #     # Execute icommand (transfer data to cache)
     #     icom.open(ipath, abs_file)
@@ -87,6 +106,8 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
 
     #     # Remove local file
     #     os.remove(abs_file)
+
+        return "GET " + myname
 
     #     # Stream file content
     #     return filecontent
