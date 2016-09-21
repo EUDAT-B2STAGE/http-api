@@ -123,20 +123,24 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         ###################
         # If response is success, save inside the database
         key_file = 'filename'
-        filename = None
 
         content, errors, status = \
             self.get_content_from_response(response, get_all=True)
 
         if isinstance(content, dict) and key_file in content:
-            filename = content[key_file]
-            abs_file = self.absolute_upload_file(filename, user)
+
+            original_filename = content[key_file]
+
+            abs_file = self.absolute_upload_file(original_filename, user)
             logger.info("File is '%s'" % abs_file)
 
-            print("RESPONSE", response)
-            return "HELLO"
             ############################
             # Move file inside irods
+
+            # The user may decide a different name for the uploaded file
+            # otherwise we use the original name from the file itself
+            if filename is None:
+                filename = original_filename
 
             # ##HANDLING PATH
             # The home dir for the current user
@@ -161,7 +165,8 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         # Reply to user
 # // TO FIX:
 ## BUILD LOCATION
-        content = "TO BE COMPLETED"
+        content = "TO BE COMPLETED... should return: " + \
+            "location, resource, path, filename"
 
         return self.force_response(content, errors=errors, code=status)
 

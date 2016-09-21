@@ -23,7 +23,7 @@ Since the first release is not integrated with B2SAFE, we do not use IDs
 
  ✔ Clean eudat.json @done (16-09-13 15:22)
   ☐ endpoint /api/digitalentities
-    ☐ POST upload a file
+    ✔ POST upload a file @done (16-09-21 09:06)
     ☐ GET
       ☐ list recursively all files for current path
         there should be an irods command for this
