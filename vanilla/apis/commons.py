@@ -47,6 +47,11 @@ class EudatEndpoint(ExtendedApiResource):
         resource = self._args.get('resource')
         if resource is None:
             resource = icom.get_default_resource()
+        if filename is None:
+            tmp = self._args.get('filename')
+            if tmp is not None:
+                filename = tmp
+
         logger.debug(
             "Parameters [f{%s}, p{%s}, r{%s}]" % (filename, path, resource))
-        return path, resource
+        return path, resource, filename

@@ -93,6 +93,7 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+    @decorate.add_endpoint_parameter('filename')
     @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
@@ -110,18 +111,16 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         ###################
         # BASIC INIT
 
+        force = self._args.get('force')
         # get the base objects
         icom, sql, user = self.init_endpoint()
         # get parameters with defaults
-        path, resource = self.get_file_parameters(icom)
-
-###################
-        return 'DOING'
-###################
-
+        path, resource, filename = self.get_file_parameters(icom)
         # Original upload
-        response = super(DigitalEntityEndpoint, self).upload(subfolder=user)
+        response = super(DigitalEntityEndpoint, self) \
+            .upload(subfolder=user, force=force)
 
+        ###################
         # If response is success, save inside the database
         key_file = 'filename'
         filename = None
@@ -134,6 +133,8 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
             abs_file = self.absolute_upload_file(filename, user)
             logger.info("File is '%s'" % abs_file)
 
+            print("RESPONSE", response)
+            return "HELLO"
             ############################
             # Move file inside irods
 
@@ -145,20 +146,23 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
 
             try:
                 iout = icom.save(
-                    abs_file, destination=ipath, force=self._args.get('force'))
+                    abs_file, destination=ipath, force=force)
                 logger.info("irods call %s", iout)
             finally:
                 # Remove local cache in any case
                 os.remove(abs_file)
 
-            # Call internally the POST method for DO endpoint
-## BUILD LOCATION
-            location = None
-            doid = DigitalObjectsEndpoint()._post(graph, graphuser, location)
-            # Return link to the file /api/digitalobjects/DOID/entities/EID
+# # GRAPH?
+#             # Call internally the POST method for DO endpoint
+#             location = None
+#             doid = DigitalObjectsEndpoint()._post(graph, graphuser, location)
+#             # Return link to the file /api/digitalobjects/DOID/entities/EID
 
         # Reply to user
+# // TO FIX:
+## BUILD LOCATION
         content = "TO BE COMPLETED"
+
         return self.force_response(content, errors=errors, code=status)
 
     @authentication.authorization_required(roles=config.ROLE_INTERNAL)
