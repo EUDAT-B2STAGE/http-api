@@ -33,7 +33,20 @@ class EudatEndpoint(ExtendedApiResource):
         # Get current (irods?) user from database/tokens
 # // TO FIX:
         user = 'guest'
+        # user = 'rodsminer'
 
         icom = self.global_get_service('irods', user=user)
-
+        logger.debug("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
         return icom, sql, user
+
+    def get_file_parameters(self, icom, filename=None):
+        iuser = icom.get_current_user()
+        path = self._args.get('path')
+        if path is None:
+            path = icom.get_user_home(iuser)
+        resource = self._args.get('resource')
+        if resource is None:
+            resource = icom.get_default_resource()
+        logger.debug(
+            "Parameters [f{%s}, p{%s}, r{%s}]" % (filename, path, resource))
+        return path, resource

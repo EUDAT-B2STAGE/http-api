@@ -4,6 +4,7 @@ rest:
     APP_MODE: debug
     # B2ACCESS_APPKEY: GIVEMEAVALIDKEY
     # BACKEND_AUTH_SERVICE: graphdb
+    IRODS_AUTHSCHEME: GSI
   ports:
     - 8080:5000
   links:

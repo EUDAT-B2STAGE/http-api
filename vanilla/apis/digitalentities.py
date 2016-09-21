@@ -108,15 +108,16 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         """
 
         ###################
-        # get the base things
-        icom, sql, user = self.init_endpoint()
-        print(icom, sql, user)
-        return 'DOING'
+        # BASIC INIT
 
-        ###################
-        # PARAMETERS
-        # path = self._args.get('path', icom.get_home_dir())
-        # resource = self._args.get('resource', icom.get_default_resource())
+        # get the base objects
+        icom, sql, user = self.init_endpoint()
+        # get parameters with defaults
+        path, resource = self.get_file_parameters(icom)
+
+###################
+        return 'DOING'
+###################
 
         # Original upload
         response = super(DigitalEntityEndpoint, self).upload(subfolder=user)

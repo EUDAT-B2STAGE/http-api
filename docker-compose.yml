@@ -95,10 +95,11 @@ rest:
       # Base the user/role mechanism on neo4j
       BACKEND_AUTH_SERVICE: relationaldb
       ## Connection to irods
-      # IRODS_USER: paolo
-      # IRODS_AUTHSCHEME: GSI
       IRODS_ZONE: tempZone
+      # IRODS_USER: paolo
       IRODS_USER: rods
+      # IRODS_AUTHSCHEME: GSI
+      # IRODS_DEFAULT_ADMIN_USER: rodsminer
 
       ## X509 certificates variables
       #CA Authority
