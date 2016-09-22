@@ -17,17 +17,20 @@
     "moment": "~2.11.1",
     "angular-moment": "~0.10.3",
     "angular-hotkeys": "chieffancypants/angular-hotkeys#~1.7.0",
-    "api-check": "~7.5.5",
     "angular-xeditable": "~0.1.9",
     "angular-sortable-view": "^0.0.15",
     "ng-flow": "~2",
-    "noty": "^2.3.8"
+    "noty": "^2.3.8",
+    "api-check": "~7.5.5",
+    "angular-formly": "^8.4.0",
+    "angular-formly-templates-bootstrap": "^6.3.2"
   },
   "devDependencies": {
     "angular-mocks": "~1.5.5"
   },
   "resolutions": {
-    "angular": "1.5.5",
-    "moment": "~2.11.1"
+    "angular": "^1.4.8",
+    "moment": "~2.11.1",
+    "angular-formly": "^8.4.0"
   }
 }
