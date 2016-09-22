@@ -17,6 +17,18 @@ SERVICES:
   https://hub.docker.com/r/clue/adminer/~/dockerfile/
   ☐ tokens and users
     ☐ check/write models
+  ☐ ID
+    ☐ alphanum
+    ☐ first 2 chars are reserved to indentify the b2safe instance
+      ☐ wp6 should map those code
+    ☐ not uuid and as small as possible
+
+IRODS RELATED:
+  ☐ irods resources are only for replica
+    ☐ iget gets the file from the first available resource
+      ☐ if the default one is not available it will get it from another
+      ☐ you can specify from iget the resource to use
+    ☐ resource is not a constraint to get a uniquely identified file name
 
 ENDPOINTS:
 Since the first release is not integrated with B2SAFE, we do not use IDs
@@ -51,6 +63,10 @@ AUTHENTICATION:
   ☐ check b2access again
     ☐ proxy certificate
     ☐ irods user
+      ☐ not email! unity id @important
+      ☐ irule to get the mapping: unity id <-> local irods user
+        note: there could not exist any unity id with no local irods user
+        admin privileges for HTTP API not required
 
 LAUNCH and CONFIGURATION:
   ☐ the new do.py command (from rapydo project)
@@ -59,7 +75,10 @@ LAUNCH and CONFIGURATION:
       ☐ requirements.txt (pip freeze)
         ☐ a smaller one than current python docker image
       ☐ instructions with @virtualenv
-  ☐ deb/rpm packages?
+  ☐ packages?
+    ☐ a script to create the package
+    see B2SAFE example
+    ☐ centos 7 (6?), opensuse 11
 
 PERFOMANCE & PRODUCTION:
  ☐ nginx proxy and real certificates
