@@ -22,7 +22,11 @@ console.log('POST');
         'ui.materialize',
 // AUTH
         'satellizer',
-
+// KEYBOARD SHORTCUTS
+        'cfp.hotkeys',
+// FORMS FROM JSON SCHEMAS
+        'formly',
+        'formlyBootstrap',
 //////////////////////////////////////
 /* Custom */
 
@@ -33,13 +37,8 @@ console.log('POST');
         // 'angularLazyImg',
 // MAKE DATA TREE explorer
         // 'treeControl',
-// KEYBOARD SHORTCUTS
-        // 'cfp.hotkeys',
 // DRAG AND DROP
         // 'angular-sortable-view',
-// FORMS FROM JSON SCHEMAS
-        // 'formly',
-        // 'formlyMaterial',
 // EDITABLE FORMS
         // 'xeditable',
 // RESTARTABLE UPLOAD
