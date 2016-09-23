@@ -1,0 +1,105 @@
+
+header, main, footer {
+  padding: 0;
+  margin: 0;
+}
+
+.navbar {
+  margin-bottom: 2em;
+}
+
+.themaxsize {
+    width: 100%; height: 100%;
+}
+
+.transcription {
+  font-family: "Lucida Console", Monaco, monospace;
+  height: 600px;
+  overflow-y: scroll;
+  padding: 5px;
+}
+
+.celltop {
+  vertical-align: top;
+}
+
+.brandpad {
+  margin-left: 30px;
+}
+
+.tabtop {
+  padding-top:20px;
+}
+
+/* AUTOCOMPLETE */
+.autocomplete-custom-template li {
+  border-bottom: 1px solid #ccc;
+  height: auto;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  white-space: normal; }
+.autocomplete-custom-template li:last-child {
+  border-bottom-width: 0; }
+.autocomplete-custom-template .item-title,
+.autocomplete-custom-template .item-metadata
+ {
+  display: block;
+  line-height: 2;
+  width: 50px;
+}
+
+
+/* FAB BUTTON */
+.fabSpeedDialdemoBasicUsage .text-capitalize {
+  text-transform: capitalize; }
+.fabSpeedDialdemoBasicUsage .md-fab:hover, .fabSpeedDialdemoBasicUsage .md-fab.md-focused {
+  background-color: #000 !important; }
+.fabSpeedDialdemoBasicUsage p.note {
+  font-size: 1.2rem; }
+.fabSpeedDialdemoBasicUsage .lock-size {
+  min-width: 300px;
+  min-height: 300px;
+  width: 300px;
+  height: 300px;
+  margin-left: auto;
+  margin-right: auto; }
+
+.fabSpeedDialdemoMoreOptions .md-fab-top-right {
+  top: 16px; }
+@media only screen and (max-device-width: 600px) {
+  .fabSpeedDialdemoMoreOptions .md-fab-top-right {
+    top: 9px;
+    right: 9px; } }
+.fabSpeedDialdemoMoreOptions .md-fab.demo-fab.trigger-fab:hover, .fabSpeedDialdemoMoreOptions .md-fab.demo-fab.trigger-fab.md-focused, .fabSpeedDialdemoMoreOptions .md-fab.demo-fab.action-fab:hover, .fabSpeedDialdemoMoreOptions .md-fab.demo-fab.action-fab.md-focused {
+  background-color: #333; }
+.fabSpeedDialdemoMoreOptions .md-fab.demo-fab.action-fab {
+  background-color: #aaa; }
+.fabSpeedDialdemoMoreOptions md-content div[flex="50"] {
+  padding: 15px; }
+.fabSpeedDialdemoMoreOptions md-fab-speed-dial {
+  margin-top: 89px; }
+  .fabSpeedDialdemoMoreOptions md-fab-speed-dial md-fab-trigger {
+    transition: all 0.3s ease-in-out;
+    transform: scale(1); }
+  .fabSpeedDialdemoMoreOptions md-fab-speed-dial.md-scale.ng-hide, .fabSpeedDialdemoMoreOptions md-fab-speed-dial.md-fling.ng-hide {
+    display: flex !important; }
+    .fabSpeedDialdemoMoreOptions md-fab-speed-dial.md-scale.ng-hide md-fab-trigger, .fabSpeedDialdemoMoreOptions md-fab-speed-dial.md-fling.ng-hide md-fab-trigger {
+      transform: scale(0); }
+.fabSpeedDialdemoMoreOptions .intro {
+  padding-left: 5px; }
+
+.fabbutton {
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+}
+
+/*
+https://github.com/vitalets/angular-xeditable/issues/232#issuecomment-73084466
+*/
+md-input-container.editable-controls {
+  padding: 0;
+}
+md-input-container.editable-controls [ng-message] {
+  position: static;
+}
