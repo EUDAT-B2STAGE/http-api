@@ -10,18 +10,18 @@ nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
 
 from __future__ import absolute_import
 
-import io
-import os
+# import io
+# import os
 import json
 import unittest
-import commons.htmlcodes as hcodes
+# import commons.htmlcodes as hcodes
 from restapi.server import create_app
 from restapi.confs.config import USER, PWD, \
     TEST_HOST, SERVER_PORT, API_URL, AUTH_URL
 
 from commons.logs import get_logger
 
-__author__ = 'Roberto Mucci (r.mucci@cineca.it)'
+__author__ = "Paolo D'Onorio De Meo (p.donoriodemeo@cineca.it)"
 
 logger = get_logger(__name__, True)
 
@@ -56,15 +56,15 @@ class TestEntities(unittest.TestCase):
         # from restapi.resources.services.neo4j.graph import MyGraph
         # MyGraph().clean_pending_tokens()
 
-    def test_01_post_digitalentity(self):
-        """ Test file upload: POST """
+    # def test_01_post_digitalentity(self):
+    #     """ Test file upload: POST """
 
-        # POST dataobject
-        endpoint = API_URI + self._main_endpoint
-        r = self.app.post(
-            endpoint,
-            data=dict(
-                file=(io.BytesIO(b"this is a test"), 'test.pdf'),
-                force=True
-            ), headers=self.auth_header)
-        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+    #     # POST dataobject
+    #     endpoint = API_URI + self._main_endpoint
+    #     r = self.app.post(
+    #         endpoint,
+    #         data=dict(
+    #             file=(io.BytesIO(b"this is a test"), 'test.pdf'),
+    #             force=True
+    #         ), headers=self.auth_header)
+    #     self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)

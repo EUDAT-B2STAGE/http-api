@@ -17,7 +17,7 @@ from ..services.irods.client import IrodsException
 # from commons import htmlcodes as hcodes
 from .. import decorators as decorate
 from ...auth import authentication
-from ...confs import config
+# from ...confs import config
 from flask import request
 from commons.logs import get_logger
 
@@ -26,6 +26,18 @@ logger = get_logger(__name__)
 ## // TO FIX: build this from the WP6 mappings
 CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
 CURRENT_B2SAFE_SERVER_CODE = 'a0'
+
+
+# class EudatTest(EudatEndpoint):
+
+#     @decorate.add_endpoint_parameter('test')
+#     @decorate.apimethod
+#     def get(self, id=None):
+#         """
+#         This works for all methods: GET, POST, PUT, PATCH, DELETE
+#         """
+#         return self.get_input()
+#         return self.get_input(single_parameter='test')
 
 
 ###############################

@@ -50,14 +50,7 @@ class EudatEndpoint(ExtendedApiResource):
 
         ############################
         # Handle flask differences on GET/DELETE with PUT/POST
-        myargs = {}
-        if len(self._args) > 0:
-            myargs = self._args
-        else:
-            tmp = self.get_input(self, forcing=True)
-            if len(tmp) > 0:
-                myargs = tmp
-
+        myargs = self.get_input()
         # from beeprint import pp
         # pp(myargs)
 
