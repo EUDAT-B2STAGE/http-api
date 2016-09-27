@@ -12,8 +12,8 @@
     // the most basic and simple upload/download
     "custom.digitalentities": {
         "DigitalEntityEndpoint": [
-            "entities",
-            "entities/<string:filename>"
+            "digitalentities",
+            "digitalentities/<string:filename>"
         ]
 
     // // upload and download for normal users

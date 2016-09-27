@@ -33,40 +33,41 @@ class TestDigitalObjects(unittest.TestCase):
 
     _main_endpoint = '/digitalobjects'
 
-    @classmethod
-    def setUpClass(cls):
-        logger.info('### Setting up flask server ###')
-        app = create_app(testing_mode=True)
-        cls.app = app.test_client()
+    # @classmethod
+    # def setUpClass(cls):
+    #     logger.info('### Setting up flask server ###')
+    #     app = create_app(testing_mode=True)
+    #     cls.app = app.test_client()
 
-        r = cls.app.post(
-            AUTH_URI + '/login',
-            data=json.dumps({'username': USER, 'password': PWD}))
-        content = json.loads(r.data.decode('utf-8'))
-        cls.auth_header = {
-            'Authorization': 'Bearer ' + content['Response']['data']['token']}
+    #     r = cls.app.post(
+    #         AUTH_URI + '/login',
+    #         data=json.dumps({'username': USER, 'password': PWD}))
+    #     content = json.loads(r.data.decode('utf-8'))
+    #     cls.auth_header = {
+    #         'Authorization': 'Bearer ' + content['Response']['data']['token']}
 
-    @classmethod
-    def tearDownClass(cls):
-        logger.info('### Tearing down the flask server ###')
-        del cls.app
+    # @classmethod
+    # def tearDownClass(cls):
+    #     logger.info('### Tearing down the flask server ###')
+    #     del cls.app
 
-        # Tokens clean up
-        logger.debug("Cleaned up invalid tokens")
-        from restapi.resources.services.neo4j.graph import MyGraph
-        MyGraph().clean_pending_tokens()
+    #     # Tokens clean up
+    #     logger.debug("Cleaned up invalid tokens")
 
-    def test_01_post_digitalobject(self):
-        """ Test file upload: POST """
+    #     # from restapi.resources.services.neo4j.graph import MyGraph
+    #     # MyGraph().clean_pending_tokens()
 
-        # # POST dataobject
-        # endpoint = API_URI + self._main_endpoint
-        # r = self.app.post(endpoint, data=dict(
-        #                   file=(io.BytesIO(b"this is a test"), 'test.pdf')),
-        #                   headers=self.auth_header)
-        # self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+    # def test_01_post_digitalobject(self):
+    #     """ Test file upload: POST """
 
-        return "To be defined..."
+    #     # # POST dataobject
+    #     # endpoint = API_URI + self._main_endpoint
+    #     # r = self.app.post(endpoint, data=dict(
+    #     #                   file=(io.BytesIO(b"this is a test"), 'test.pdf')),
+    #     #                   headers=self.auth_header)
+    #     # self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+    #     return "To be defined..."
 
 #     def test_02_post_dataobjects_in_specific_collection(self):
 #         """ Test file upload: POST """

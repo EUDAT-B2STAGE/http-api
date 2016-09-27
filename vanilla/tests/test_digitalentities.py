@@ -51,10 +51,10 @@ class TestEntities(unittest.TestCase):
         logger.info('### Tearing down the flask server ###')
         del cls.app
 
-        # Tokens clean up
-        logger.debug("Cleaned up invalid tokens")
-        from restapi.resources.services.neo4j.graph import MyGraph
-        MyGraph().clean_pending_tokens()
+        # # Tokens clean up
+        # logger.debug("Cleaned up invalid tokens")
+        # from restapi.resources.services.neo4j.graph import MyGraph
+        # MyGraph().clean_pending_tokens()
 
     def test_01_post_digitalentity(self):
         """ Test file upload: POST """
