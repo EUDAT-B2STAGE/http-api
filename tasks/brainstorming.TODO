@@ -45,25 +45,33 @@ Since the first release is not integrated with B2SAFE, we do not use IDs
     ✔ POST upload a file @done (16-09-21 09:06)
     ☐ GET
       ☐ list recursively all files for current path
-        there should be an irods command for this
+        use ils -r
       ✘ with <ID>: download a file @cancelled (16-09-13 15:38)
       ☐ when the filename is specified, download it
-    ☐ parameters
+   ☐ Implement @ienv
+    ✔ parameters @done (16-09-27 15:03)
       ✔ specify a path (zone + collection) @done (16-09-26 16:37)
         ✔ default is home dir @done (16-09-26 16:37)
-      ☐ specify a resource (with default)
-        ☐ default is nothing
-          ☐ ils will list if at least in one resource
-          ☐ iget will automatically use the default or another resource
+      ✔ specify a resource (with default) @done (16-09-27 15:03)
+        ✔ default is nothing @done (16-09-27 15:03)
+          ✔ ils will list if at least in one resource @done (16-09-27 15:03)
+          ✔ iget will automatically use the default or another resource @done (16-09-27 15:03)
+          ☐ iput has some errors with different resources
     ☐ DELETE
       ☐ remove a file
+      ☐ resource
     ☐ PATCH
       ☐ change file name
 
-TESTs:
-☐ Rewrite from scratch
-  ☐ Build some users and initial data to test roles
-  ☐ Clean with "finally" if any error
+UNIT TEST:
+☐ clean_pending_tokens
+☐ A common class
+ ☐ startup
+   ☐ create users and token
+ ☐ end
+   ☐ remove users, tokens
+   ☐ and any object related to that user?
+☐ Clean with "finally" if any error?
 
 AUTHENTICATION:
   ☐ check sqllite support for tokens

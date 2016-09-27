@@ -18,9 +18,14 @@ from ..services.irods.client import IrodsException
 from .. import decorators as decorate
 from ...auth import authentication
 from ...confs import config
+from flask import request
 from commons.logs import get_logger
 
 logger = get_logger(__name__)
+
+## // TO FIX: build this from the WP6 mappings
+CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
+CURRENT_B2SAFE_SERVER_CODE = 'a0'
 
 
 ###############################
@@ -45,6 +50,8 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         icom, sql, user = self.init_endpoint()
         # get parameters with defaults
         path, resource, myname = self.get_file_parameters(icom, filename)
+
+        return "TO BE IMPLEMENTED"
 
         ###################
         # IN CASE WE USE THE GRAPH
@@ -74,6 +81,7 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         # In case we ask the list
         if myname is None:
             # files = icom.search(path.lstrip('/'), like=False)
+## FIX with ils -r
             files = icom.list(path)
             print(files)
             return "GET ALL"
@@ -121,12 +129,15 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def post(self):
         """
-        Handle file upload
-        http --form POST localhost:8080/api/dataobjects \
-            file@docker-compose.test.yml
+        Handle file upload.
 
-        Test with:
-    http --form POST $SERVER/api/entities file@/tmp/gettoken force=True "$AUTH"
+        Note: iRODS does not allow to do iput on more than one resource.
+        To put the second one you will need the irepl command, which
+        will assure that we have a replica on all resources.
+
+        Test on docker client shell with:
+        http --form POST $SERVER/api/digitalentities \
+            file@/tmp/gettoken force=True "$AUTH"
         """
 
         ###################
@@ -163,15 +174,12 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
             if filename is None:
                 filename = original_filename
 
-            # ##HANDLING PATH
-            # The home dir for the current user
-            # Where to put the file in irods
-            ipath = icom.get_irods_path(
-                self._args.get('collection'), filename)
+            # Handling iRODS path
+            ipath = icom.get_irods_path(path, filename)
 
             try:
-                iout = icom.save(
-                    abs_file, destination=ipath, force=force)
+                iout = icom.save(abs_file, destination=ipath,
+                                 force=force, resource=resource)
                 logger.info("irods call %s", iout)
             finally:
                 # Remove local cache in any case
@@ -183,44 +191,70 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
 #             doid = DigitalObjectsEndpoint()._post(graph, graphuser, location)
 #             # Return link to the file /api/digitalobjects/DOID/entities/EID
 
-        # Reply to user
-# // TO FIX:
-## BUILD LOCATION
-        content = "TO BE COMPLETED... should return: " + \
-            "location, resource, path, filename"
+            ###################
+            # Reply to user
+
+            content = {
+                'location': 'irods:///%s/%s/%s' % (
+                    CURRENT_B2SAFE_SERVER,
+                    # request.url.lstrip('http://'),
+                    path.lstrip('/'), filename),
+                'filename': filename,
+                'path': path,
+                'resources': icom.get_resources_from_file(ipath),
+                'link': '%s/%s?path=%s' % (request.url, filename, path)
+            }
 
         return self.force_response(content, errors=errors, code=status)
 
-    @authentication.authorization_required(roles=config.ROLE_INTERNAL)
+    @authentication.authorization_required
+    @decorate.add_endpoint_parameter('path')
+    @decorate.add_endpoint_parameter('resource')
+    # @authentication.authorization_required(roles=config.ROLE_INTERNAL)
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def delete(self, filename=None):
-        """ Remove an object """
+        """
+        Remove an object
 
-        pass
+        http DELETE \
+            $SERVER/api/digitalentities/gettoken?resource=replicaResc "$AUTH"
+        """
 
-    #     # Get the dataobject from the graph
-    #     graph = self.global_get_service('neo4j')
-    #     dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
-    #     collection_node = dataobj_node.belonging.all().pop()
+        ###################
+        # BASIC INIT
 
-    #     icom = self.global_get_service('irods')
-    #     ipath = icom.get_irods_path(
-    #         collection_node.path, dataobj_node.filename)
+        # get the base objects
+        icom, sql, user = self.init_endpoint()
+        # get parameters with defaults
+        path, resource, filename = \
+            self.get_file_parameters(icom, filename=filename)
+        # Handling iRODS path
+        ipath = icom.get_irods_path(path, filename)
 
-    #     # # Remove from graph:
-    #     # # Delete with neomodel the dataobject
-    #     # try:
-    #     #     dataobj_node.delete()
-    #     # except graph.DigitalEntity.DoesNotExist:
-    #     #     return self.force_response(errors={uuid: 'Not found.'})
+        ########################################
+        # # Get the dataobject from the graph
+        # graph = self.global_get_service('neo4j')
+        # dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
+        # collection_node = dataobj_node.belonging.all().pop()
 
-    #     # # Delete collection if not linked to any dataobject anymore?
-    #     # if len(collection_node.belongs.all()) < 1:
-    #     #     collection_node.delete()
+        # ipath = icom.get_irods_path(
+        #     collection_node.path, dataobj_node.filename)
 
-    #     # Remove from irods
-    #     icom.remove(ipath)
-    #     logger.info("Removed %s", ipath)
+        # # Remove from graph:
+        # # Delete with neomodel the dataobject
+        # try:
+        #     dataobj_node.delete()
+        # except graph.DigitalEntity.DoesNotExist:
+        #     return self.force_response(errors={uuid: 'Not found.'})
 
-    #     return self.force_response({'deleted': ipath})
+        # # Delete collection if not linked to any dataobject anymore?
+        # if len(collection_node.belongs.all()) < 1:
+        #     collection_node.delete()
+
+        ########################################
+        # Remove from irods
+        icom.remove(ipath, resource=resource)
+        logger.info("Removed %s", ipath)
+
+        return self.force_response({'requested removal': ipath})

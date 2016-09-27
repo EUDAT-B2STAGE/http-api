@@ -40,24 +40,42 @@ class EudatEndpoint(ExtendedApiResource):
         return icom, sql, user
 
     def get_file_parameters(self, icom, filename=None):
+        """
+        Note: the resource is a complicated parameter.
+        Resources are meant for (iRODS) replicas.
+        Adding or removing replicas require explicit irods commands.
+        """
 
         iuser = icom.get_current_user()
 
-        path = self._args.get('path')
+        ############################
+        # Handle flask differences on GET/DELETE with PUT/POST
+        myargs = {}
+        if len(self._args) > 0:
+            myargs = self._args
+        else:
+            tmp = self.get_input(self, forcing=True)
+            if len(tmp) > 0:
+                myargs = tmp
+
+        # from beeprint import pp
+        # pp(myargs)
+
+        ############################
+        path = myargs.get('path')
         if path is None:
             path = icom.get_user_home(iuser)
 
-# // TO FIX:
-# how to really use the resource?
-        resource = self._args.get('resource')
-        if resource is None:
-            resource = icom.get_default_resource()
+        resource = myargs.get('resource')
+        # if resource is None:
+        #     resource = icom.get_default_resource()
 
         if filename is None:
-            tmp = self._args.get('filename')
+            tmp = myargs.get('filename')
             if tmp is not None:
                 filename = tmp
 
+        ############################
         logger.debug(
             "Parameters [f{%s}, p{%s}, r{%s}]" % (filename, path, resource))
         return path, resource, filename
