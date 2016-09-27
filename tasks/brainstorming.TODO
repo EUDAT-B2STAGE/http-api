@@ -17,39 +17,48 @@ SERVICES:
   https://hub.docker.com/r/clue/adminer/~/dockerfile/
   ☐ tokens and users
     ☐ check/write models
-  ☐ ID
+  ☐ UID 12 - 3456789
+  http://stackoverflow.com/a/19580599/2114395
+  http://stackoverflow.com/a/6048639/2114395
+  http://stackoverflow.com/a/14023468/2114395
     ☐ alphanum
     ☐ first 2 chars are reserved to indentify the b2safe instance
       ☐ wp6 should map those code
-    ☐ not uuid and as small as possible
+      ☐ use a /api/internals/mappings/b2safe to manage the list?
+    ☐ not uuid (just Unique ID) and as small as possible
+      ☐ use path, resource, filename and b2safe code for creating the hash
+
 
 IRODS RELATED:
-  ☐ irods resources are only for replica
+  ✔ irods resources are only for replica @done (16-09-26 16:36)
     ☐ iget gets the file from the first available resource
       ☐ if the default one is not available it will get it from another
       ☐ you can specify from iget the resource to use
-    ☐ resource is not a constraint to get a uniquely identified file name
+    ✔ resource is not a constraint to get a uniquely identified file name @done (16-09-26 16:36)
 
 ENDPOINTS:
 Since the first release is not integrated with B2SAFE, we do not use IDs
 
  ✔ Clean eudat.json @done (16-09-13 15:22)
-  ☐ endpoint /api/digitalentities
+✔ endpoint /api/digitalentities @done (16-09-26 16:38)
+    ✔ instead of IDs we will use the filename @done (16-09-26 16:37)
     ✔ POST upload a file @done (16-09-21 09:06)
     ☐ GET
       ☐ list recursively all files for current path
         there should be an irods command for this
       ✘ with <ID>: download a file @cancelled (16-09-13 15:38)
       ☐ when the filename is specified, download it
+    ☐ parameters
+      ✔ specify a path (zone + collection) @done (16-09-26 16:37)
+        ✔ default is home dir @done (16-09-26 16:37)
+      ☐ specify a resource (with default)
+        ☐ default is nothing
+          ☐ ils will list if at least in one resource
+          ☐ iget will automatically use the default or another resource
     ☐ DELETE
       ☐ remove a file
-    ✘ PATCH <ID>: change file name @cancelled (16-09-13 15:38)
-    ☐ instead of IDs we will use the filename
-    ☐ other parameters
-      ☐ specify a path (zone + collection)
-        ☐ default is home dir
-      ☐ specify a resource (with default)
-        ☐ default is default resource
+    ☐ PATCH
+      ☐ change file name
 
 TESTs:
 ☐ Rewrite from scratch
