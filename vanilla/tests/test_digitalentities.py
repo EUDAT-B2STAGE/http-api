@@ -56,6 +56,22 @@ class TestEntities(unittest.TestCase):
         # from restapi.resources.services.neo4j.graph import MyGraph
         # MyGraph().clean_pending_tokens()
 
+# create directory
+
+# upload a file
+
+# upload a file force
+
+# upload a big file
+
+# list content
+
+# download a file
+
+# remove previous files
+
+# remove empty directory
+
     # def test_01_post_digitalentity(self):
     #     """ Test file upload: POST """
 

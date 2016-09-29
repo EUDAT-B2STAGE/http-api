@@ -8,6 +8,16 @@ GUIDELINES
 
 --- ✄ ----------------------- THINGS TO DO
 
+UPCOMING QUESTIONS:
+☐ WP5 lead feedback on document
+☐ Avoid managing collections at all @tobeconfirmed
+   ☐ tests require collections
+     ☐ in case we may allow collections usage inside endpoints only on tests requests
+☐ B2ACCESS id <-> irods user mapping
+   ☐ ask B2SAFE people for the script or help
+☐ tests writing as a team
+   ☐ TDD
+
 SERVICES:
   ✔ remove the graphdb link in docker @done (16-09-20 17:12)
   ✔ use sqlalchemy @done (16-09-20 17:12)

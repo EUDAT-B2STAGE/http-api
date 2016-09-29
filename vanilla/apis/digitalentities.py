@@ -19,6 +19,7 @@ from .. import decorators as decorate
 from ...auth import authentication
 # from ...confs import config
 from flask import request
+from commons import htmlcodes as hcodes
 from commons.logs import get_logger
 
 logger = get_logger(__name__)
@@ -160,17 +161,41 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         icom, sql, user = self.init_endpoint()
         # get parameters with defaults
         path, resource, filename = self.get_file_parameters(icom)
-        # Original upload
-        response = super(DigitalEntityEndpoint, self) \
-            .upload(subfolder=user, force=force)
 
         ###################
-        # If response is success, save inside the database
+        # UPLOADER
+
+        content = None
+        errors = {}
+        status = None
+        # remove from current request any parameters
+        base_url = request.url[:request.url.index('?')]
+
+        # If no files uploaded, create directory if not exists
+        if 'file' not in request.files:
+            ipath = icom.create_empty(
+                path, directory=True, ignore_existing=force)
+            logger.info("Created irods collection: %s", ipath)
+            status = hcodes.HTTP_OK_BASIC
+            content = {
+                'location': 'irods:///%s/%s/' % (
+                    CURRENT_B2SAFE_SERVER, path.lstrip('/')),
+                'path': path,
+                'link': '%s/?path=%s' % (base_url, path)
+            }
+
+        # Normal upload: inside the host tmp folder
+        else:
+            response = super(DigitalEntityEndpoint, self) \
+                .upload(subfolder=user, force=force)
+
+            # If response is success, save inside the database
+            content, errors, status = \
+                self.get_content_from_response(response, get_all=True)
+
+        ###################
+        # If files uploaded
         key_file = 'filename'
-
-        content, errors, status = \
-            self.get_content_from_response(response, get_all=True)
-
         if isinstance(content, dict) and key_file in content:
 
             original_filename = content[key_file]
