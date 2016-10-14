@@ -1,1 +1,3 @@
 # rapydo
+
+Just do `$ ./do`
