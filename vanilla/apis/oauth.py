@@ -10,6 +10,7 @@ import json
 from flask import url_for
 from commons.logs import get_logger
 from ...confs.config import AUTH_URL
+## TO FIX: check how to use the original flask response
 from ..base import ExtendedApiResource
 from ..services.detect import IRODS_EXTERNAL
 from ..services.oauth2clients import decorate_http_request
@@ -35,7 +36,7 @@ class OauthLogin(ExtendedApiResource):
         b2access = auth._oauth2.get('b2access')
         response = b2access.authorize(
             callback=url_for('authorize', _external=True))
-        return self.response(response)
+        return self.force_response(response)
 
 
 class Authorize(ExtendedApiResource):
@@ -61,6 +62,7 @@ class Authorize(ExtendedApiResource):
         except json.decoder.JSONDecodeError as e:
             logger.critical("Authorization empty:\n%s\nCheck app credentials"
                             % str(e))
+## TO BE FIXED WITH ALL THE OTHER 'response' calls
             return self.response({'errors': [{'Server misconfiguration':
                                  'oauth2 failed'}]})
         except Exception as e:
@@ -86,6 +88,9 @@ class Authorize(ExtendedApiResource):
         session['b2access_token'] = (token, '')
         current_user = b2access.get('userinfo')
 
+## TO BE FIXED:
+    # move the code handling graph inside its class for authentication
+    # and create a similar one with sqllite
         # Store b2access information inside the graphdb
         graph = self.global_get_service('neo4j')
         obj = auth.save_oauth2_info_to_user(

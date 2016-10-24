@@ -63,6 +63,7 @@ class EudatEndpoint(ExtendedApiResource):
         # if resource is None:
         #     resource = icom.get_default_resource()
 
+## TO FIX
         if filename is None:
             tmp = myargs.get('filename')
             if tmp is not None:
