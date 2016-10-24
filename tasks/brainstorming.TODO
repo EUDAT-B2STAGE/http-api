@@ -3,41 +3,30 @@ GUIDELINES
 - PEP compliant
 - Python 3.5
 - Unittest: nose2
-- SwaggerTest driven
-- Usable inside and outside Docker environment?
+- Swagger
+- Test driven
+- Usable inside and outside Docker environment
 
 --- ✄ ----------------------- THINGS TO DO
 
 UPCOMING QUESTIONS:
-☐ WP5 lead feedback on document
-☐ Avoid managing collections at all @tobeconfirmed
-   ☐ tests require collections
-     ☐ in case we may allow collections usage inside endpoints only on tests requests
-☐ B2ACCESS id <-> irods user mapping
-   ☐ ask B2SAFE people for the script or help
-☐ tests writing as a team
-   ☐ TDD
 
-SERVICES:
-  ✔ remove the graphdb link in docker @done (16-09-20 17:12)
-  ✔ use sqlalchemy @done (16-09-20 17:12)
-    ✔ sqllite @done (16-09-20 17:12)
+✔ WP5 lead feedback on document @done (16-10-24 09:03)
+  ✘ Avoid managing collections at all @tobeconfirmed @cancelled (16-10-24 09:03)
+☐ Response format
+☐ B2ACCESS id <-> irods user mapping
+   ✔ ask B2SAFE people for the script or help @done (16-10-24 09:03)
+
+AUTHENTICATION:
+  ☐ check if b2access works
+  ☐ check sqllite support for tokens
+    ☐ oauth2 linked model to tokens?
+      ☐ write new models if necessary
   ☐ build sqldminer own image with php alpine?
   https://github.com/vrana/adminer/commit/7a33661b721714a8b266bf57c0065ae653bb8097#commitcomment-17728245
   https://hub.docker.com/r/clue/adminer/~/dockerfile/
   ☐ tokens and users
     ☐ check/write models
-  ☐ UID 12 - 3456789
-  http://stackoverflow.com/a/19580599/2114395
-  http://stackoverflow.com/a/6048639/2114395
-  http://stackoverflow.com/a/14023468/2114395
-    ☐ alphanum
-    ☐ first 2 chars are reserved to indentify the b2safe instance
-      ☐ wp6 should map those code
-      ☐ use a /api/internals/mappings/b2safe to manage the list?
-    ☐ not uuid (just Unique ID) and as small as possible
-      ☐ use path, resource, filename and b2safe code for creating the hash
-
 
 IRODS RELATED:
   ✔ irods resources are only for replica @done (16-09-26 16:36)
@@ -46,57 +35,19 @@ IRODS RELATED:
       ☐ you can specify from iget the resource to use
     ✔ resource is not a constraint to get a uniquely identified file name @done (16-09-26 16:36)
 
-ENDPOINTS:
-Since the first release is not integrated with B2SAFE, we do not use IDs
-
- ✔ Clean eudat.json @done (16-09-13 15:22)
-✔ endpoint /api/digitalentities @done (16-09-26 16:38)
-    ✔ instead of IDs we will use the filename @done (16-09-26 16:37)
-    ✔ POST upload a file @done (16-09-21 09:06)
-    ☐ GET
-      ☐ list recursively all files for current path
-        use ils -r
-      ✘ with <ID>: download a file @cancelled (16-09-13 15:38)
-      ☐ when the filename is specified, download it
-   ☐ Implement @ienv
-    ✔ parameters @done (16-09-27 15:03)
-      ✔ specify a path (zone + collection) @done (16-09-26 16:37)
-        ✔ default is home dir @done (16-09-26 16:37)
-      ✔ specify a resource (with default) @done (16-09-27 15:03)
-        ✔ default is nothing @done (16-09-27 15:03)
-          ✔ ils will list if at least in one resource @done (16-09-27 15:03)
-          ✔ iget will automatically use the default or another resource @done (16-09-27 15:03)
-          ☐ iput has some errors with different resources
-    ☐ DELETE
-      ☐ remove a file
-      ☐ resource
-    ☐ PATCH
-      ☐ change file name
-
 UNIT TEST:
-☐ clean_pending_tokens
+☐ uploads with random name
+☐ users create if testing
 ☐ A common class
  ☐ startup
    ☐ create users and token
  ☐ end
    ☐ remove users, tokens
-   ☐ and any object related to that user?
-☐ Clean with "finally" if any error?
-
-AUTHENTICATION:
-  ☐ check sqllite support for tokens
-    ☐ oauth2 linked model to tokens?
-      ☐ write new models if necessary
-  ☐ check b2access again
-    ☐ proxy certificate
-    ☐ irods user
-      ☐ not email! unity id @important
-      ☐ irule to get the mapping: unity id <-> local irods user
-        note: there could not exist any unity id with no local irods user
-        admin privileges for HTTP API not required
+   ☐ and any object related to that user
+☐ Clean with "finally" if any error
 
 LAUNCH and CONFIGURATION:
-  ☐ the new do.py command (from rapydo project)
+  ☐ the new do.py command @rapydo
   ☐ configuration
     ☐ run pure python, no docker
       ☐ requirements.txt (pip freeze)
@@ -112,3 +63,16 @@ PERFOMANCE & PRODUCTION:
  ☐ profiling
  https://github.com/muatik/flask-profiler
  ☐ benchmarks
+
+UID:
+  # our initial proposal
+  12 - 3456789
+  http://stackoverflow.com/a/19580599/2114395
+  http://stackoverflow.com/a/6048639/2114395
+  http://stackoverflow.com/a/14023468/2114395
+    ☐ alphanum
+    ☐ first 2 chars are reserved to indentify the b2safe instance
+      ☐ wp6 should map those code
+      ☐ use a /api/internals/mappings/b2safe to manage the list?
+    ☐ not uuid (just Unique ID) and as small as possible
+      ☐ use path, resource, filename and b2safe code for creating the hash

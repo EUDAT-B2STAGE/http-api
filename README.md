@@ -3,9 +3,6 @@
 
 [![Build Status](https://travis-ci.org/EUDAT-B2STAGE/http-api.svg)](https://travis-ci.org/EUDAT-B2STAGE/http-api)
 
-This is an attempt to have a multi-container micro-services environment
-to develop REST API service on top of an iCAT iRODS server.
-
 *WARNING*: this environemnt is in an early stage of development.
 You should expect things not to work.
 
@@ -55,6 +52,10 @@ docker-compose up -d icat
 
 ## Documentation
 
+To be re-written.
+
+<!--
+
 For a more detailed explanation and some deep understanding:
 
 ** WARNING: the following pages are not yet updated **
@@ -64,6 +65,9 @@ For a more detailed explanation and some deep understanding:
 * [Developing](docs/client.md)
 * [Admin operations](docs/admin.md)
 
+-->
+
+<!--
 ## Versions
 
 ```
@@ -73,3 +77,13 @@ irods@rodserver:~$ apt-cache showpkg irods-icat | grep -i versions -A 1
 Versions:
 4.1.8 (/var/lib/dpkg/status)
 ```
+-->
+
+<!--
+## quick notes
+
+b2access basic endpoints:
+https://eudat.eu/services/userdoc/b2access-service-integration#B2ACCESS_Services_Endpoints
+
+https://eudat-aai.fz-juelich.de:8445/oauth-demo/get_token.jsp
+-->

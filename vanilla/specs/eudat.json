@@ -10,12 +10,12 @@
         ]
     },
     // the most basic and simple upload/download
-    "custom.digitalentities": {
-        // "EudatTest": [
-        //     "test",
-        //     "test/<string:id>"
-        // ],
-        "DigitalEntityEndpoint": [
+    "custom.registered": {
+        "EudatTest": [
+            "test",
+            "test/<path:location>"
+        ],
+        "RegisteredEndpoint": [
             "digitalentities",
             "digitalentities/<string:filename>"
         ]
