@@ -3,8 +3,12 @@
 """
 B2SAFE HTTP REST API endpoints.
 
-A digital entity is
-...
+Code to implement the /api/registered endpoint
+
+Note:
+Endpoints list and behaviour are available at:
+http://...
+
 """
 
 from __future__ import absolute_import
@@ -29,20 +33,20 @@ CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
 CURRENT_B2SAFE_SERVER_CODE = 'a0'
 
 
-class EudatTest(EudatEndpoint):
+# class EudatTest(EudatEndpoint):
 
-    @decorate.add_endpoint_parameter('test')
-    @decorate.apimethod
-    def get(self, location=None):
-        """
-        This works for all methods: GET, POST, PUT, PATCH, DELETE
-        """
-        data = {
-            'path': location,
-            'parameters': self.get_input(),
-            'parameter': self.get_input(single_parameter='test'),
-        }
-        return data
+#     @decorate.add_endpoint_parameter('test')
+#     @decorate.apimethod
+#     def get(self, location=None):
+#         """
+#         This works for all methods: GET, POST, PUT, PATCH, DELETE
+#         """
+#         data = {
+#             'path': location,
+#             'parameters': self.get_input(),
+#             'parameter': self.get_input(single_parameter='test'),
+#         }
+#         return data
 
 
 ###############################
@@ -55,10 +59,14 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def get(self, filename=None):
+    def get(self, irods_location=None):
         """
         Download file from filename
         """
+
+        return "TO BE IMPLEMENTED"
+
+        filename = "None"
 
         ###################
         # BASIC INIT
@@ -144,7 +152,8 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def post(self):
+    # def post(self):
+    def put(self, irods_location):
         """
         Handle file upload.
 
@@ -156,6 +165,8 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
         http --form POST $SERVER/api/digitalentities \
             file@/tmp/gettoken force=True "$AUTH"
         """
+
+        return "TO BE IMPLEMENTED"
 
         ###################
         # BASIC INIT
@@ -254,13 +265,17 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
     # @authentication.authorization_required(roles=config.ROLE_INTERNAL)
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def delete(self, filename=None):
+    def delete(self, irods_location=None):
         """
         Remove an object
 
         http DELETE \
             $SERVER/api/digitalentities/gettoken?resource=replicaResc "$AUTH"
         """
+
+        return "TO BE IMPLEMENTED"
+
+        filename = None
 
         ###################
         # BASIC INIT

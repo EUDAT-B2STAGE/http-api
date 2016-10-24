@@ -11,13 +11,14 @@
     },
     // the most basic and simple upload/download
     "custom.registered": {
-        "EudatTest": [
-            "test",
-            "test/<path:location>"
-        ],
+        // "EudatTest": [
+        //     "test",
+        //     // http://flask.pocoo.org/snippets/76/
+        //     "test/<path:location>"
+        // ],
         "RegisteredEndpoint": [
-            "digitalentities",
-            "digitalentities/<string:filename>"
+            "registered",
+            "registered/<path:irods_location>"
         ]
 
     // // upload and download for normal users
