@@ -7,7 +7,7 @@ Code to implement the /api/registered endpoint
 
 Note:
 Endpoints list and behaviour are available at:
-http://...
+https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoints.md
 
 """
 
@@ -55,7 +55,7 @@ CURRENT_B2SAFE_SERVER_CODE = 'a0'
 class RegisteredEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
-    @decorate.add_endpoint_parameter('path')
+    # @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
@@ -66,116 +66,113 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
 
         return "TO BE IMPLEMENTED"
 
-        filename = "None"
+#         ###################
+#         # BASIC INIT
 
-        ###################
-        # BASIC INIT
+#         # get the base objects
+#         icom, sql, user = self.init_endpoint()
+#         # get parameters with defaults
+#         path, resource, myname = self.get_file_parameters(icom, filename)
 
-        # get the base objects
-        icom, sql, user = self.init_endpoint()
-        # get parameters with defaults
-        path, resource, myname = self.get_file_parameters(icom, filename)
+#         ###################
+#         # IN CASE WE USE THE GRAPH
 
-        return "TO BE IMPLEMENTED"
+#         # # Getting the list
+#         # if uuid is None:
+#         #     data = self.formatJsonResponse(graph.DigitalEntity.nodes.all())
+#         #     return self.force_response(data)
 
-        ###################
-        # IN CASE WE USE THE GRAPH
+#         # # If trying to use a path as file
+#         # elif name[-1] == '/':
+#         #     return self.force_response(
+#         #         errors={'dataobject': 'No dataobject/file requested'})
 
-        # # Getting the list
-        # if uuid is None:
-        #     data = self.formatJsonResponse(graph.DigitalEntity.nodes.all())
-        #     return self.force_response(data)
+#         # # Get filename and ipath from uuid using the graph
+#         # try:
+#         #     dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
+#         # except graph.DigitalEntity.DoesNotExist:
+#         #     return self.force_response(errors={uuid: 'Not found.'})
+#         # collection_node = dataobj_node.belonging.all().pop()
 
-        # # If trying to use a path as file
-        # elif name[-1] == '/':
-        #     return self.force_response(
-        #         errors={'dataobject': 'No dataobject/file requested'})
+#         # # irods paths
+#         # ipath = icom.get_irods_path(
+#         #     collection_node.path, dataobj_node.filename)
 
-        # # Get filename and ipath from uuid using the graph
-        # try:
-        #     dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
-        # except graph.DigitalEntity.DoesNotExist:
-        #     return self.force_response(errors={uuid: 'Not found.'})
-        # collection_node = dataobj_node.belonging.all().pop()
+#         ###################
+#         # In case we ask the list
+#         if myname is None:
+#             # files = icom.search(path.lstrip('/'), like=False)
+# ## FIX with ils -r
+#             files = icom.list(path)
+#             print(files)
+#             return "GET ALL"
 
-        # # irods paths
-        # ipath = icom.get_irods_path(
-        #     collection_node.path, dataobj_node.filename)
+#         ###################
+#         # In case we download a specific file
 
-        ###################
-        # In case we ask the list
-        if myname is None:
-            # files = icom.search(path.lstrip('/'), like=False)
-## FIX with ils -r
-            files = icom.list(path)
-            print(files)
-            return "GET ALL"
+#         # ipath = icom.get_irods_path(path, myname)
+#         # print("TEST", ipath)
 
-        ###################
-        # In case we download a specific file
+#         abs_file = self.absolute_upload_file(myname, user)
 
-        # ipath = icom.get_irods_path(path, myname)
-        # print("TEST", ipath)
+# # // TO FIX:
+# # decide if we want to use a cache, and how
+# # note: maybe nginx instead of our own
+#         # Make sure you remove any cached version to get a fresh obj
+#         try:
+#             os.remove(abs_file)
+#         except:
+#             pass
 
-        abs_file = self.absolute_upload_file(myname, user)
+#         print("TEST", abs_file)
 
-# // TO FIX:
-# decide if we want to use a cache, and how
-# note: maybe nginx instead of our own
-        # Make sure you remove any cached version to get a fresh obj
-        try:
-            os.remove(abs_file)
-        except:
-            pass
+#     #     # Execute icommand (transfer data to cache)
+#     #     icom.open(ipath, abs_file)
 
-        print("TEST", abs_file)
+#     #     # Download the file from local fs
+#     #     filecontent = super().download(
+#     #         dataobj_node.filename, subfolder=user, get=True)
 
-    #     # Execute icommand (transfer data to cache)
-    #     icom.open(ipath, abs_file)
+#     #     # Remove local file
+#     #     os.remove(abs_file)
 
-    #     # Download the file from local fs
-    #     filecontent = super().download(
-    #         dataobj_node.filename, subfolder=user, get=True)
+#         return "GET " + myname
 
-    #     # Remove local file
-    #     os.remove(abs_file)
-
-        return "GET " + myname
-
-    #     # Stream file content
-    #     return filecontent
+#     #     # Stream file content
+#     #     return filecontent
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
-    @decorate.add_endpoint_parameter('filename')
+    # @decorate.add_endpoint_parameter('filename')
     @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    # def post(self):
-    def put(self, irods_location):
+    def post(self):
         """
         Handle file upload.
 
-        Note: iRODS does not allow to do iput on more than one resource.
+        Test on docker client shell with:
+        http --form POST $SERVER/api/registered \
+            file@/tmp/gettoken force=True "$AUTH"
+
+        Note to developers:
+        iRODS does not allow to do iput on more than one resource.
         To put the second one you will need the irepl command, which
         will assure that we have a replica on all resources.
-
-        Test on docker client shell with:
-        http --form POST $SERVER/api/digitalentities \
-            file@/tmp/gettoken force=True "$AUTH"
         """
-
-        return "TO BE IMPLEMENTED"
 
         ###################
         # BASIC INIT
 
-        force = self._args.get('force')
         # get the base objects
         icom, sql, user = self.init_endpoint()
         # get parameters with defaults
         path, resource, filename = self.get_file_parameters(icom)
+        # This argument is used only for POST / PUT
+        force = self._args.get('force')
+
+        return "WORK IN PROGRESS"
 
         ###################
         # UPLOADER
@@ -260,7 +257,19 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
         return self.force_response(content, errors=errors, code=status)
 
     @authentication.authorization_required
-    @decorate.add_endpoint_parameter('path')
+    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+    @decorate.add_endpoint_parameter('resource')
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def put(self, irods_location):
+        """
+        PUT request to upload a file not working in Flask:
+        http://stackoverflow.com/a/9533843/2114395
+        """
+        return "TO BE IMPLEMENTED"
+
+    @authentication.authorization_required
+    # @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     # @authentication.authorization_required(roles=config.ROLE_INTERNAL)
     @decorate.apimethod
@@ -275,42 +284,40 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
 
         return "TO BE IMPLEMENTED"
 
-        filename = None
+        # ###################
+        # # BASIC INIT
 
-        ###################
-        # BASIC INIT
+        # # get the base objects
+        # icom, sql, user = self.init_endpoint()
+        # # get parameters with defaults
+        # path, resource, filename = \
+        #     self.get_file_parameters(icom, filename=filename)
+        # # Handling iRODS path
+        # ipath = icom.get_irods_path(path, filename)
 
-        # get the base objects
-        icom, sql, user = self.init_endpoint()
-        # get parameters with defaults
-        path, resource, filename = \
-            self.get_file_parameters(icom, filename=filename)
-        # Handling iRODS path
-        ipath = icom.get_irods_path(path, filename)
+        # ########################################
+        # # # Get the dataobject from the graph
+        # # graph = self.global_get_service('neo4j')
+        # # dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
+        # # collection_node = dataobj_node.belonging.all().pop()
 
-        ########################################
-        # # Get the dataobject from the graph
-        # graph = self.global_get_service('neo4j')
-        # dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
-        # collection_node = dataobj_node.belonging.all().pop()
+        # # ipath = icom.get_irods_path(
+        # #     collection_node.path, dataobj_node.filename)
 
-        # ipath = icom.get_irods_path(
-        #     collection_node.path, dataobj_node.filename)
+        # # # Remove from graph:
+        # # # Delete with neomodel the dataobject
+        # # try:
+        # #     dataobj_node.delete()
+        # # except graph.DigitalEntity.DoesNotExist:
+        # #     return self.force_response(errors={uuid: 'Not found.'})
 
-        # # Remove from graph:
-        # # Delete with neomodel the dataobject
-        # try:
-        #     dataobj_node.delete()
-        # except graph.DigitalEntity.DoesNotExist:
-        #     return self.force_response(errors={uuid: 'Not found.'})
+        # # # Delete collection if not linked to any dataobject anymore?
+        # # if len(collection_node.belongs.all()) < 1:
+        # #     collection_node.delete()
 
-        # # Delete collection if not linked to any dataobject anymore?
-        # if len(collection_node.belongs.all()) < 1:
-        #     collection_node.delete()
+        # ########################################
+        # # Remove from irods
+        # icom.remove(ipath, resource=resource)
+        # logger.info("Removed %s", ipath)
 
-        ########################################
-        # Remove from irods
-        icom.remove(ipath, resource=resource)
-        logger.info("Removed %s", ipath)
-
-        return self.force_response({'requested removal': ipath})
+        # return self.force_response({'requested removal': ipath})
