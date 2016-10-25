@@ -143,8 +143,8 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
-    @decorate.add_endpoint_parameter('filename')
-    # @decorate.add_endpoint_parameter('path')
+    # @decorate.add_endpoint_parameter('filename')
+    @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
@@ -152,25 +152,27 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
         """
         Handle file upload.
 
-        Note: iRODS does not allow to do iput on more than one resource.
-        To put the second one you will need the irepl command, which
-        will assure that we have a replica on all resources.
-
         Test on docker client shell with:
         http --form POST $SERVER/api/registered \
             file@/tmp/gettoken force=True "$AUTH"
-        """
 
-        return "TO BE IMPLEMENTED"
+        Note to developers:
+        iRODS does not allow to do iput on more than one resource.
+        To put the second one you will need the irepl command, which
+        will assure that we have a replica on all resources.
+        """
 
         ###################
         # BASIC INIT
 
-        force = self._args.get('force')
         # get the base objects
         icom, sql, user = self.init_endpoint()
         # get parameters with defaults
         path, resource, filename = self.get_file_parameters(icom)
+        # This argument is used only for POST / PUT
+        force = self._args.get('force')
+
+        return "WORK IN PROGRESS"
 
         ###################
         # UPLOADER
@@ -260,10 +262,14 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def put(self, irods_location):
+        """
+        PUT request to upload a file not working in Flask:
+        http://stackoverflow.com/a/9533843/2114395
+        """
         return "TO BE IMPLEMENTED"
 
     @authentication.authorization_required
-    @decorate.add_endpoint_parameter('path')
+    # @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     # @authentication.authorization_required(roles=config.ROLE_INTERNAL)
     @decorate.apimethod

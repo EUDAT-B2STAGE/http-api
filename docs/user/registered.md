@@ -17,6 +17,12 @@ GET https://be2safexx.eudat.eu/api/registered/path/to/directory
 
 ---
 
+POST file@myfile https://be2safexx.eudat.eu/api/registered?path=/path/to/directory/filename
+# will upload "myfile" as "/path/to/directory/filename"
+# and will trigger the registration in b2safe (IMPORTANT!)
+
+---
+
 PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
 # will upload "myfile" as "/path/to/directory/filename"
 # and will trigger the registration in b2safe (IMPORTANT!)
