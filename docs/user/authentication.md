@@ -36,14 +36,13 @@ This section shows how to obtain a valid authenitcation token needed to send req
 
 ### Parameters:
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| username (required) | string | The EUDAT user name. If you do not have one, register a new account on the B2ACCESS user portal |
-| password (required) | string | The password for the user. |
+| Parameter | Type | Description 
+|-----------|------|-------------
+| username (required) | string | The EUDAT user name. If you do not have one, register a new account on the B2ACCESS user portal 
+| password (required) | string | The password for the user. 
 
 To request a token run this cURL command:
-
-```
+```bash
 $ curl -u <username>:<password> http://<http_server:port>/auth/login 
 ```
 
@@ -51,7 +50,7 @@ $ curl -u <username>:<password> http://<http_server:port>/auth/login
 
 If the request succeeds, a successful response containing the authenitcation token will be returned, as in the following example:
 
-```
+```json
 [response example]
 ```
 
@@ -62,6 +61,6 @@ This section shows how to make a basic API call. For a complete list of API call
 Every API request must contain a valid authenitcation token obtained using the Login API.
 An example of API request is the following: 
 
-```
+```bash
 $ curl -H "Authorization: Bearer <auth_token>" http://<http_server:port>/api/status 
 ```
