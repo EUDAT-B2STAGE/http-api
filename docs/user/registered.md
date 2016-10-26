@@ -2,7 +2,7 @@
 # Registered APIs
 
 
-The registered APIs allow to managed registerd registered entities (entitied with a PID associated).
+The registered APIs allow to managed registered entities (entitied with a PID associated).
 The endpoint URI will use the directory namespace.
 The examples in this section use cURL commands. For information about cURL, see http://curl.haxx.se/.
 
