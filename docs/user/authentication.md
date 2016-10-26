@@ -34,7 +34,7 @@ The examples in this section use cURL commands. For information about cURL, see 
 
 This section shows how to obtain a valid authenitcation token needed to send requests to the B2SATGE HTTP-API.
 
-The payload of credentials to login contains these parameters:
+### Parameters:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
@@ -46,6 +46,8 @@ To request a token run this cURL command:
 ```
 $ curl -u <username>:<password> http://<http_server:port>/auth/login 
 ```
+
+### Response 
 
 If the request succeeds, a successful response containing the authenitcation token will be returned, as in the following example:
 
