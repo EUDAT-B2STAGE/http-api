@@ -7,3 +7,11 @@ backend:
     BACKEND_AUTH_SERVICE: graphdb
   links:
     - gdb:gdb
+
+frontend:
+  ports:
+    - 80:5000
+
+gdb:
+  ports:
+  - 9090:7474

@@ -1,8 +1,8 @@
 
 backend:
   user: root
-  # command: init
-  command: sleep infinity
+  command: init
+  # command: sleep infinity
   environment:
     - UWSGI_MASTER=/tmp/uwsgi/starter.ini
     - NGINX_ACTIVE=true
@@ -13,5 +13,13 @@ backend:
     # - ./app:/code
 
 frontend:
+  # command: sleep infinity
   links:
     - backend:myapi
+
+proxy:
+  links:
+    - backend:api
+    - frontend:html
+  ports:
+    - 80:80

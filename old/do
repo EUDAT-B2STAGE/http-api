@@ -8,7 +8,7 @@ blueprintconf="specs/blueprint.json"
 # Other variables
 compose_com="docker-compose"
 webbuild="bower"
-volume_prefix="rapydo_${1}_"
+volume_prefix="rapydo_${1}"
 fronted_container="frontend"
 backend_container="backend"
 backend_repo="backend"
@@ -79,6 +79,9 @@ if [ "$1" != "help" ]; then
 ## VERY IMPORTANT !!!
     echo "### SELECTED MODE: [$mode]"
     export SELECTED_APP_MODE=$mode
+    if [ "$mode" == "production" ]; then
+        services="proxy"
+    fi
 
     filebase="containers/$mode.yml"
     if [ ! -f "$filebase" ]; then
@@ -190,6 +193,10 @@ if [ "$2" == "init" ]; then
     echo "Build bower packages (Javascript libraries)"
     $bcom
     echo "Completed"
+# Logs
+elif [ "$2" == "logs" ]; then
+
+    $compose_com $files logs -f
 
 elif [ "$2" == "status" ]; then
     echo -e "ACTION: Status check\n"
