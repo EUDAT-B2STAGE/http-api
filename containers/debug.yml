@@ -3,13 +3,13 @@
 # Link services inside API
 
 backend:
-    ports:
-        - 8081:5000
+  ports:
+    - 8081:5000
 
 #######################
 # Frontend links only API
 # Note: THIS IS THE MAIN SERVICE TO START WITH DOCKER COMPOSE
 
 frontend:
-    links:
-        - backend:myapi
+  links:
+    - backend:myapi

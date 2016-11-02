@@ -9,20 +9,20 @@
 #       - restangulask_graphbased_elasticdata:/usr/share/elasticsearch/data
 
 gdb:
-    # image: neo4j  # 3.0 has some bugs with neomodel...
-    image: neo4j:2.3.3
-    ports:
-      - 9090:7474
-    volumes:
-        - restangulask_graphbased_graphdata:/data
-    environment:
-        NEO4J_AUTH: neo4j/chooseapassword
+  # image: neo4j  # 3.0 has some bugs with neomodel...
+  image: neo4j:2.3.3
+  ports:
+  - 9090:7474
+  volumes:
+    - restangulask_graphbased_graphdata:/data
+  environment:
+    NEO4J_AUTH: neo4j/chooseapassword
 
 #######################
 # Link services inside API
 
 backend:
-    environment:
-      BACKEND_AUTH_SERVICE: graphdb
-    links:
-        - gdb:gdb
+  environment:
+    BACKEND_AUTH_SERVICE: graphdb
+  links:
+    - gdb:gdb

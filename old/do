@@ -19,6 +19,7 @@ services="$backend_container $fronted_container"
 submodule_tracking="submodules.current.commit"
 
 export VOLUMES_PREFIX=$volume_prefix
+
 #############################
 echo "# ############################################ #"
 echo -e "\t\tRestangulask"
@@ -74,7 +75,10 @@ if [ "$1" != "help" ]; then
     else
         mode="$3"
     fi
+
+## VERY IMPORTANT !!!
     echo "### SELECTED MODE: [$mode]"
+    export SELECTED_APP_MODE=$mode
 
     filebase="containers/$mode.yml"
     if [ ! -f "$filebase" ]; then
