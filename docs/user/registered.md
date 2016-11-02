@@ -56,10 +56,10 @@ GET https://be2safexx.eudat.eu/api/registered/path/to/directory
 
 ### Upload an entity **and trigger the registration in b2safe**
 ##### Parameters
-| Parameter | Type | Description 
+| Parameter | Type | Description
 |-----------|------|-------------
-| file  | string | Name of the local file to be uploaded  
-| path  | string | The path where the entity will be uploaded (home is the default)  
+| file  | string | Name of the local file to be uploaded
+| path  | string | The path where the entity will be uploaded (home is the default)
 ##### Example
 ```bash
 POST file@myfile https://be2safexx.eudat.eu/api/registered?path=/path/to/directory/filename
@@ -75,9 +75,9 @@ POST file@myfile https://be2safexx.eudat.eu/api/registered?path=/path/to/directo
 
 ### Upload an entity **and trigger the registration in B2SAFE**
 ##### Parameters
-| Parameter | Type | Description 
+| Parameter | Type | Description
 |-----------|------|-------------
-| file | string | Name of the local file to be uploaded  
+| file | string | Name of the local file to be uploaded
 ##### Example
 ```bash
 PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
@@ -89,7 +89,7 @@ PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/file
 ```
 
 
-### Create a new direcoty
+### Create a new directory
 ##### Example
 ```bash
 PUT https://be2safexx.eudat.eu/api/registered/path/to/directory
@@ -103,7 +103,7 @@ PUT https://be2safexx.eudat.eu/api/registered/path/to/directory
 ---
 ## **DELETE**
 
-### Delete an entity 
+### Delete an entity
 ##### Example
 ```bash
 DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
@@ -114,7 +114,7 @@ DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
 [JSON example]
 ```
 
-### Delete an empty directory 
+### Delete an empty directory
 ##### Example
 ```bash
 DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory
@@ -130,9 +130,9 @@ DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory
 
 ### Update an entity name
 ##### Parameters
-| Parameter | Type | Description 
+| Parameter | Type | Description
 |-----------|------|-------------
-| newname | string | Name that will replace the old one  
+| newname | string | Name that will replace the old one
 ##### Example
 ```bash
 PATCH https://be2safexx.eudat.eu/api/registered/path/to/directory/filename?newname=filename2
@@ -146,9 +146,9 @@ PATCH https://be2safexx.eudat.eu/api/registered/path/to/directory/filename?newna
 
 ### Update a directory name
 ##### Parameters
-| Parameter | Type | Description 
+| Parameter | Type | Description
 |-----------|------|-------------
-| newname | string | Name that will replace the old one  
+| newname | string | Name that will replace the old one
 ##### Example
 ```bash
 PATCH https://be2safexx.eudat.eu/api/registered/path/to/directory?newname=directory2

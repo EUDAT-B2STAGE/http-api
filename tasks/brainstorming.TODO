@@ -7,6 +7,28 @@ GUIDELINES
 - Test driven
 - Usable inside and outside Docker environment
 
+--- ✄ -----------------------
+
+Creating-Updating
+
+POST:
+
+  - not accepting relative urls (not starting with '/')
+  - create a new file by upload
+  - create a new directory if no file specified
+  - no recursive mkdir
+
+PUT:
+
+  - update an existing file with a new one
+  - respond with error if the path is an irods collection
+  - gives error if no file specified
+
+PATCH:
+
+  - rename a file
+  - rename a directory
+
 --- ✄ ----------------------- THINGS TO DO
 
 - endpoints & tests
