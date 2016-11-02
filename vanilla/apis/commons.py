@@ -61,32 +61,42 @@ class EudatEndpoint(ExtendedApiResource):
     def filename_from_path(path):
         return os.path.basename(os.path.normpath(path))
 
-    def get_file_parameters(self, icom, path=None):
+    def get_file_parameters(self, icom, path=None, filename=None):
         """
         Note: the resource is a complicated parameter.
         Resources are meant for (iRODS) replicas.
         Adding or removing replicas require explicit irods commands.
         """
 
-        iuser = icom.get_current_user()
+        # iuser = icom.get_current_user()
 
         ############################
-        # Handle flask differences on GET/DELETE with PUT/POST
+        # Handle flask differences on GET/DELETE and PUT/POST
         myargs = self.get_input()
 
         ############################
         # main parameters
 
-        filename = None
-
         # If empty the first time, we received path from the URI
         if path is None:
             path = myargs.get('path')
-        # If path is empty again, I rely to the home of the user
-        if path is None:
-            path = icom.get_user_home(iuser)
-        elif not os.path.isabs(path):
-            path = icom.get_user_home(iuser) + '/' + path
+
+# BAD
+        # # If path is empty again, I rely to the home of the user
+        # if path is None:
+        #     path = icom.get_user_home(iuser)
+        # elif not os.path.isabs(path):
+        #     path = icom.get_user_home(iuser) + '/' + path
+
+# GOOD
+        # If path is empty again or we have a relative path, send empty
+        # so that we can give an error
+        if path is None or not os.path.isabs(path):
+            return None, None, None
+
+        ############################
+
+        filename = None
 
         # # Should this check be done to uploaded file?
         # if os.path.isfile(path):

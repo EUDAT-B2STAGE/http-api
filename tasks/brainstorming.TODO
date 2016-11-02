@@ -1,38 +1,40 @@
 
 GUIDELINES
-- PEP compliant
 - Python 3.5
+- PEP compliant
 - Unittest: nose2
-- Swagger
 - Test driven
-- Usable inside and outside Docker environment
+- Based on docker
+- Usable if not inside Docker
+- Swagger
 
 --- ✄ -----------------------
 
 Creating-Updating
 
 POST:
-
-  - not accepting relative urls (not starting with '/')
-  - create a new file by upload
+  ✔ not accepting relative urls (not starting with '/') @done (16-11-02 15:45)
+  ✘ create a new file by upload @cancelled (16-11-02 15:45)
+  - give error if file upload
   - create a new directory if no file specified
   - no recursive mkdir
 
 PUT:
-
-  - update an existing file with a new one
-  - respond with error if the path is an irods collection
+  ✘ update an existing file with a new one @cancelled (16-11-02 15:46)
+  - create new file if upload
   - gives error if no file specified
+  - respond with error if the path is an irods collection
 
 PATCH:
-
   - rename a file
   - rename a directory
 
 --- ✄ ----------------------- THINGS TO DO
 
-- endpoints & tests
-- custom response
+- endpoints
+- tests
+- write a custom response
+- support custom response inside unit tests
 - sql support to irods users
 - b2access
 

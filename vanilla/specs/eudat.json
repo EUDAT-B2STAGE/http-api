@@ -10,15 +10,15 @@
         ]
     },
     // the most basic and simple upload/download
-    "custom.registered": {
+    "custom.basic": {
         // "EudatTest": [
         //     "test",
         //     // http://flask.pocoo.org/snippets/76/
         //     "test/<path:location>"
         // ],
-        "RegisteredEndpoint": [
-            "registered",
-            "registered/<path:irods_location>"
+        "BasicEndpoint": [
+            "resources",
+            "resources/<path:irods_location>"
         ]
 
     // // upload and download for normal users

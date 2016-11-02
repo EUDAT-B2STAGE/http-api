@@ -153,7 +153,7 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
 
         Test on docker client shell with:
         http --form POST $SERVER/api/registered \
-            file@/tmp/gettoken force=True "$AUTH"
+          file@/tmp/gettoken force=True path=/tempZone/home/guest/test "$AUTH"
 
         Note to developers:
         iRODS does not allow to do iput on more than one resource.
@@ -177,10 +177,9 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
         errors = {}
         status = None
 
+        base_url = request.url
         # remove from current request any parameters
         post_delimiter = '?'
-
-        base_url = request.url
         if post_delimiter in request.url:
             base_url = request.url[:request.url.index(post_delimiter)]
 
