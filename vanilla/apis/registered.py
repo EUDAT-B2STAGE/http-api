@@ -24,7 +24,7 @@ from ...auth import authentication
 # from ...confs import config
 from flask import request
 from commons import htmlcodes as hcodes
-from commons.logs import get_logger
+from commons.logs import get_logger, pretty_print
 
 logger = get_logger(__name__)
 
@@ -262,11 +262,17 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def put(self, irods_location):
+    def put(self, irods_location=None):
         """
         PUT request to upload a file not working in Flask:
         http://stackoverflow.com/a/9533843/2114395
         """
+
+        if irods_location is None:
+            return self.force_response(
+                errors={'location': 'Missing filepath inside URI for PUT'})
+
+        pretty_print(request.files)
         return "TO BE IMPLEMENTED"
 
     @authentication.authorization_required
