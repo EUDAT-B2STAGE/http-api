@@ -66,13 +66,30 @@ if [ "$1" != "help" ]; then
 
     #############################
     # Check compose stack existence
-    file="containers/${1}/debug.yml"
-    if [ ! -f "$file" ]; then
-        echo "File '$file' not found!"
+    backendyaml="backend/docker-compose.yml"
+    frontendyaml="frontend/docker-compose.yml"
+
+    if [ -z $3 ]; then
+        mode="debug"
+    else
+        mode="$3"
+    fi
+    echo "### SELECTED MODE: [$mode]"
+
+    filebase="containers/$mode.yml"
+    if [ ! -f "$filebase" ]; then
+        echo "File '$filebase' not found!"
+        echo ""
+        echo "Configuration is corrupted!!"
+        exit 1
+    fi
+    filecustom="containers/${1}/$mode.yml"
+    if [ ! -f "$filecustom" ]; then
+        echo "File '$filecustom' not found!"
         echo "You might start up copying 'demo.yml'."
         exit 1
     fi
-    files="-f backend/docker-compose.yml -f frontend/docker-compose.yml -f $file"
+    files="-f $backendyaml -f $frontendyaml -f $filebase -f $filecustom"
 
     # Remove previous configuration
     #echo "Clean configuration files"
