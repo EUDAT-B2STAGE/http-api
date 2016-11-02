@@ -2,20 +2,19 @@
 # Registered APIs
 
 
-The registered APIs allow to managed registered entities (entitied with a PID associated).
+The registered APIs allow the management of registered entities (entities with a PID associated).
 The endpoint URI will use the directory namespace.
 The examples in this section use cURL commands. For information about cURL, see http://curl.haxx.se/.
 
 ## Methods
 1. [GET](#get)
-2. [POST](#post)
-3. [PUT](#put)
+2. [PUT](#put)
+3. [POST](#post)
 4. [DELETE](#delete)
 5. [PATCH](#patch)
 
 
 ## **GET**
-
 ### Obtain entity metadata
 ##### Example
 ```bash
@@ -27,7 +26,6 @@ GET https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
 [JSON example]
 ```
 
-
 ### Download an entity
 ##### Example
 ```bash
@@ -38,7 +36,6 @@ GET https://be2safexx.eudat.eu/api/registered/path/to/directory/filename?downloa
 ```json
 [JSON example]
 ```
-
 
 ### Get list of entities in a directory
 ##### Example
@@ -52,18 +49,22 @@ GET https://be2safexx.eudat.eu/api/registered/path/to/directory
 ```
 
 ---
-## **POST**
+## **PUT**
+### Create or update an entity **and trigger the registration in B2SAFE**
 
-### Upload an entity **and trigger the registration in b2safe**
+> Notes:
+1. The entity registration depends on the policies adopted by the B2SAFE instance which the HTTP-API is connected to
+2. This operation is idempotent
+
+####
 ##### Parameters
 | Parameter | Type | Description
 |-----------|------|-------------
-| file  | string | Name of the local file to be uploaded
-| path  | string | The path where the entity will be uploaded (home is the default)
+| file (required) | string | Name of the local file to be uploaded
 ##### Example
 ```bash
-POST file@myfile https://be2safexx.eudat.eu/api/registered?path=/path/to/directory/filename
-# upload 'myfile' as '/path/to/directory/filename' and trigger the registration in B2SAFE
+PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
+# create or update 'myfile' as '/path/to/directory/filename' and trigger the registration in B2SAFE
 ```
 ##### Response
 ```json
@@ -71,28 +72,14 @@ POST file@myfile https://be2safexx.eudat.eu/api/registered?path=/path/to/directo
 ```
 
 ---
-## **PUT**
-
-### Upload an entity **and trigger the registration in B2SAFE**
-##### Parameters
+## **POST**
+### Create a new directory
 | Parameter | Type | Description
 |-----------|------|-------------
-| file | string | Name of the local file to be uploaded
+| path (required) | string | Absolute directory path to be created (recursive creation is not allowed)
 ##### Example
 ```bash
-PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
-# upload 'myfile' as '/path/to/directory/filename' and trigger the registration in B2SAFE
-```
-##### Response
-```json
-[JSON example]
-```
-
-
-### Create a new directory
-##### Example
-```bash
-PUT https://be2safexx.eudat.eu/api/registered/path/to/directory
+POST https://be2safexx.eudat.eu/api/registered?path=/path/to/directory
 # create the directory '/path/to/directory' in B2SAFE
 ```
 ##### Response
@@ -102,7 +89,6 @@ PUT https://be2safexx.eudat.eu/api/registered/path/to/directory
 
 ---
 ## **DELETE**
-
 ### Delete an entity
 ##### Example
 ```bash
@@ -125,9 +111,9 @@ DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory
 [JSON example]
 ```
 
+
 ---
 ## **PATCH**
-
 ### Update an entity name
 ##### Parameters
 | Parameter | Type | Description
@@ -143,7 +129,6 @@ PATCH https://be2safexx.eudat.eu/api/registered/path/to/directory/filename?newna
 [JSON example]
 ```
 
-
 ### Update a directory name
 ##### Parameters
 | Parameter | Type | Description
@@ -158,4 +143,3 @@ PATCH https://be2safexx.eudat.eu/api/registered/path/to/directory?newname=direct
 ```json
 [JSON example]
 ```
-
