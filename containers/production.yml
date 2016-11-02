@@ -1,0 +1,17 @@
+
+backend:
+  user: root
+  # command: init
+  command: sleep infinity
+  environment:
+    - UWSGI_MASTER=/tmp/uwsgi/starter.ini
+    - NGINX_ACTIVE=true
+  volumes:
+    - ../containers/wsgi:/tmp/uwsgi
+    # - nginx_empty_sites:/etc/nginx/sites-enabled
+    - ../containers/nginx_internal:/etc/nginx/conf.d
+    # - ./app:/code
+
+frontend:
+  links:
+    - backend:myapi
