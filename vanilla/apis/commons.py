@@ -92,7 +92,7 @@ class EudatEndpoint(ExtendedApiResource):
         # If path is empty again or we have a relative path, send empty
         # so that we can give an error
         if path is None or not os.path.isabs(path):
-            return None, None, None
+            return [None] * 4
 
         ############################
 
@@ -106,7 +106,11 @@ class EudatEndpoint(ExtendedApiResource):
         # if resource is None:
         #     resource = icom.get_default_resource()
 
+        # This argument is used only for POST / PUT
+        force = self._args.get('force')
+
         ############################
         logger.debug(
-            "Parameters [f{%s}, p{%s}, r{%s}]" % (filename, path, resource))
-        return path, resource, filename
+            "Parameters [file{%s}, path{%s}, res{%s}, force{%s}]"
+            % (filename, path, resource, force))
+        return path, resource, filename, force

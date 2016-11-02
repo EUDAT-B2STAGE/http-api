@@ -3,7 +3,7 @@
 """
 B2SAFE HTTP REST API endpoints.
 
-Code to implement the /api/registered endpoint
+Code to implement the /api/resources endpoint
 
 Note:
 Endpoints list and behaviour are available at:
@@ -52,7 +52,7 @@ CURRENT_B2SAFE_SERVER_CODE = 'a0'
 ###############################
 # Classes
 
-class RegisteredEndpoint(Uploader, EudatEndpoint):
+class BasicEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
     # @decorate.add_endpoint_parameter('path')
@@ -72,7 +72,7 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
 #         # get the base objects
 #         icom, sql, user = self.init_endpoint()
 #         # get parameters with defaults
-#         path, resource, myname = self.get_file_parameters(icom, filename)
+        path, resource, filename, force = self.get_file_parameters(icom)
 
 #         ###################
 #         # IN CASE WE USE THE GRAPH
@@ -149,17 +149,22 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def post(self):
         """
-        Handle file upload.
+        Handle [directory creation](docs/user/registered.md#post).
 
         Test on docker client shell with:
-        http --form POST $SERVER/api/registered \
-          file@/tmp/gettoken force=True path=/tempZone/home/guest/test "$AUTH"
-
-        Note to developers:
-        iRODS does not allow to do iput on more than one resource.
-        To put the second one you will need the irepl command, which
-        will assure that we have a replica on all resources.
+        http --form POST $SERVER/api/resources \
+            force=True path=/tempZone/home/guest/test "$AUTH"
         """
+
+        # Disable upload for POST method
+        if 'file' in request.files:
+            return self.force_response(
+                errors={
+                    'File upload forbidden for this method':
+                    'Please use the PUT method for this operation'
+                },
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+            )
 
         ###################
         # BASIC INIT
@@ -167,9 +172,16 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
         # get the base objects
         icom, sql, user = self.init_endpoint()
         # get parameters with defaults
-        path, resource, filename = self.get_file_parameters(icom)
-        # This argument is used only for POST / PUT
-        force = self._args.get('force')
+        path, resource, filename, force = self.get_file_parameters(icom)
+        # if path variable empty something is wrong
+        if path is None:
+            return self.force_response(
+                errors={
+                    'Path to remote resource is wrong':
+                    'Note: only absolute paths are allowed'
+                },
+                code=hcodes.HTTP_NOT_IMPLEMENTED
+            )
 
         ###################
         # UPLOADER
@@ -183,27 +195,63 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
         if post_delimiter in request.url:
             base_url = request.url[:request.url.index(post_delimiter)]
 
-        # If no files uploaded, create directory if not exists
+        # Create directory if not exists
+        ipath = icom.create_empty(
+            path, directory=True, ignore_existing=force)
+        logger.info("Created irods collection: %s", ipath)
+        status = hcodes.HTTP_OK_BASIC
+        content = {
+            'location': 'irods:///%s/%s/' % (
+                CURRENT_B2SAFE_SERVER, path.lstrip('/')),
+            'path': path,
+            'link': '%s/?path=%s' % (base_url, path)
+        }
+
+        return self.force_response(content, errors=errors, code=status)
+
+    @authentication.authorization_required
+    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+    @decorate.add_endpoint_parameter('resource')
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def put(self, irods_location=None):
+        """
+        Handle file upload.
+
+        Test on docker client shell with:
+        http --form PUT $SERVER/api/resources/tempZone/home/guest/test \
+            file@/tmp/gettoken force=True "$AUTH"
+
+        PUT request to upload a file not working in Flask:
+        http://stackoverflow.com/a/9533843/2114395
+
+        Note to developers:
+        iRODS does not allow to do iput on more than one resource.
+        To put the second one you will need the irepl command, which
+        will assure that we have a replica on all resources.
+        """
+
+        if irods_location is None:
+            return self.force_response(
+                errors={'location': 'Missing filepath inside URI for PUT'})
+
+        # Disable directory creation for PUT method
         if 'file' not in request.files:
-            ipath = icom.create_empty(
-                path, directory=True, ignore_existing=force)
-            logger.info("Created irods collection: %s", ipath)
-            status = hcodes.HTTP_OK_BASIC
-            content = {
-                'location': 'irods:///%s/%s/' % (
-                    CURRENT_B2SAFE_SERVER, path.lstrip('/')),
-                'path': path,
-                'link': '%s/?path=%s' % (base_url, path)
-            }
+            return self.force_response(
+                errors={
+                    'Directory creation is forbidden for this method':
+                    'Please use the POST method for this operation'
+                },
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+            )
 
         # Normal upload: inside the host tmp folder
-        else:
-            response = super(RegisteredEndpoint, self) \
-                .upload(subfolder=user, force=force)
+        response = super(BasicEndpoint, self) \
+            .upload(subfolder=user, force=force)
 
-            # If response is success, save inside the database
-            content, errors, status = \
-                self.get_content_from_response(response, get_all=True)
+        # If response is success, save inside the database
+        content, errors, status = \
+            self.get_content_from_response(response, get_all=True)
 
         ###################
         # If files uploaded
@@ -254,25 +302,8 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
                 'link': '%s/%s?path=%s' % (request.url, filename, path)
             }
 
+        pretty_print(content)
         return self.force_response(content, errors=errors, code=status)
-
-    @authentication.authorization_required
-    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
-    @decorate.add_endpoint_parameter('resource')
-    @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def put(self, irods_location=None):
-        """
-        PUT request to upload a file not working in Flask:
-        http://stackoverflow.com/a/9533843/2114395
-        """
-
-        if irods_location is None:
-            return self.force_response(
-                errors={'location': 'Missing filepath inside URI for PUT'})
-
-        pretty_print(request.files)
-        return "TO BE IMPLEMENTED"
 
     @authentication.authorization_required
     # @decorate.add_endpoint_parameter('path')
@@ -296,8 +327,7 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
         # # get the base objects
         # icom, sql, user = self.init_endpoint()
         # # get parameters with defaults
-        # path, resource, filename = \
-        #     self.get_file_parameters(icom, filename=filename)
+        path, resource, filename, force = self.get_file_parameters(icom)
         # # Handling iRODS path
         # ipath = icom.get_irods_path(path, filename)
 
