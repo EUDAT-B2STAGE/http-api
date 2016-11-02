@@ -73,33 +73,24 @@ class EudatEndpoint(ExtendedApiResource):
         ############################
         # Handle flask differences on GET/DELETE with PUT/POST
         myargs = self.get_input()
-        for key, value in myargs.items():
-            if value is None:
-                del myargs[key]
-        from beeprint import pp
-        pp(myargs)
 
         ############################
         # main parameters
 
-## TO FIX
-# path (zone + collection path) and filename are coupled together
-        # if filename is None:
-        #     tmp = myargs.get('filename')
-        #     if tmp is not None:
-        #         filename = tmp
+        filename = None
 
-        print("PATH 0", path)
+        # If empty the first time, we received path from the URI
         if path is None:
-            path = myargs.get('path', icom.get_user_home(iuser))
-            print("PATH 1", path)
-        print("PATH 2", path)
-        filename = self.filename_from_path(path)
-        pp(self.splitall(path))
+            path = myargs.get('path')
+        # If path is empty again, I rely to the home of the user
+        if path is None:
+            path = icom.get_user_home(iuser)
+        elif not os.path.isabs(path):
+            path = icom.get_user_home(iuser) + '/' + path
 
-        # https://docs.python.org/3/library/os.path.html
-        # os.path.isabs(path)
-        # os.path.isfile(path)
+        # # Should this check be done to uploaded file?
+        # if os.path.isfile(path):
+        #     filename = self.filename_from_path(path)
 
         resource = myargs.get('resource')
         # if resource is None:

@@ -9,6 +9,13 @@ GUIDELINES
 
 --- ✄ ----------------------- THINGS TO DO
 
+- endpoints & tests
+- custom response
+- sql support to irods users
+- b2access
+
+--- ✄ ----------------------- DETAILS
+
 UPCOMING QUESTIONS:
 
 ✔ WP5 lead feedback on document @done (16-10-24 09:03)
@@ -65,11 +72,12 @@ PERFOMANCE & PRODUCTION:
  ☐ benchmarks
 
 UID:
-  # our initial proposal
-  12 - 3456789
   http://stackoverflow.com/a/19580599/2114395
   http://stackoverflow.com/a/6048639/2114395
   http://stackoverflow.com/a/14023468/2114395
+
+  # initial proposal
+  12 - 3456789
     ☐ alphanum
     ☐ first 2 chars are reserved to indentify the b2safe instance
       ☐ wp6 should map those code

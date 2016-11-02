@@ -143,8 +143,7 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
-    # @decorate.add_endpoint_parameter('filename')
-    @decorate.add_endpoint_parameter('path')
+    @decorate.add_endpoint_parameter('path')  # should contain the filename too
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
@@ -172,16 +171,18 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
         # This argument is used only for POST / PUT
         force = self._args.get('force')
 
-        return "WORK IN PROGRESS"
-
         ###################
         # UPLOADER
-
         content = None
         errors = {}
         status = None
+
         # remove from current request any parameters
-        base_url = request.url[:request.url.index('?')]
+        post_delimiter = '?'
+
+        base_url = request.url
+        if post_delimiter in request.url:
+            base_url = request.url[:request.url.index(post_delimiter)]
 
         # If no files uploaded, create directory if not exists
         if 'file' not in request.files:
@@ -198,7 +199,7 @@ class RegisteredEndpoint(Uploader, EudatEndpoint):
 
         # Normal upload: inside the host tmp folder
         else:
-            response = super(DigitalEntityEndpoint, self) \
+            response = super(RegisteredEndpoint, self) \
                 .upload(subfolder=user, force=force)
 
             # If response is success, save inside the database
