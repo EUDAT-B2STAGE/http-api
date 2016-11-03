@@ -8,37 +8,15 @@ GUIDELINES
 - Usable if not inside Docker
 - Swagger?
 
---- ✄ -----------------------
-
-Creating-Updating
-
-POST:
-  ✔ not accepting relative urls (not starting with '/') @done (16-11-02 15:45)
-  ✘ create a new file by upload @cancelled (16-11-02 15:45)
-  ✔ give error if file upload @done (16-11-03 06:57)
-  ✔ create a new directory if no file specified @done (16-11-03 06:57)
-  ✔ recursive mkdir with force @done (16-11-03 11:08)
-
-PUT:
-  ✘ update an existing file with a new one @cancelled (16-11-02 15:46)
-  ✔ create new file if upload @done (16-11-03 06:57)
-  ✔ gives error if no file specified @done (16-11-03 06:57)
-  ✘ respond with error if the path is an irods collection @cancelled (16-11-03 06:57)
-  ✔ use original file name if path is an irods collection @done (16-11-03 07:46)
-
-PATCH:
-  - rename a file
-  - rename a directory
-
 --- ✄ ----------------------- THINGS TO DO
 
-- endpoints
+- endpoints: GET, PATCH, DELETE
 - tests
 - write a custom response
 - support custom response inside unit tests
 - sql support to irods users
 - b2access
-- how to specify current b2safe environment domain: a configuration paramater?
+- how to specify current b2safe environment domain: a configuration @paramater
 
 --- ✄ ----------------------- DETAILS
 
