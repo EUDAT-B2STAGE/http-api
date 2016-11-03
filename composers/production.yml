@@ -2,6 +2,11 @@
 rest:
   environment:
     APP_MODE: production
+  links:
+    # IRODS MUST BE CALLED rodserver
+    - icat:rodserver
+    # # GRAPHDB MUST BE CALLED gdb
+    # - graphdb:gdb
 
 proxy:
   #################
@@ -14,6 +19,8 @@ proxy:
     - 80:80
     - 443:443
   #################
+  links:
+    - rest:restapi
 
 apitests:
   volumes:

@@ -17,16 +17,46 @@ from ....confs import config
 logger = get_logger(__name__)
 
 
-class MetadataObject(ExtendedApiResource):
-
-    # @authentication.authorization_required(config.ROLE_INTERNAL)
-    # @decorate.apimethod
-    # def get(self):
-    #     return "Hello world"
+class MetaDataObject(ExtendedApiResource):
 
     @authentication.authorization_required(config.ROLE_INTERNAL)
-    # @decorate.add_endpoint_parameter("user", required=True)
-    # @decorate.add_endpoint_parameter("location", required=True)
+    @decorate.apimethod
+    def get(self, mid=None):
+        """
+        This is just an example of what an endpoint can do with the graph
+        """
+
+        if mid is not None:
+            raise NotImplementedError("To do")
+
+        ###########################
+        # Get the service object
+        graph = self.global_get_service('neo4j')
+
+        ###########################
+        # Models can be found inside the graphdb object
+
+        # create a node
+        myjson = {'test': 1, 'another': 99}
+        node = graph.MetaData(content=myjson)
+        # save it inside the graphdb
+        node.save()
+
+        # create a second node
+        myid = getUUID()
+        mylocation = 'irods:///%s' % myid
+        datanode = graph.DigitalEntity(id=myid, location=mylocation)
+        datanode.save()
+
+        # connect the two nodes
+        datanode.described.connect(node)
+        print(node, datanode)
+
+        return "Hello world"
+
+    @authentication.authorization_required(config.ROLE_INTERNAL)
+    @decorate.add_endpoint_parameter("user", required=True)
+    @decorate.add_endpoint_parameter("location", required=True)
     @decorate.apimethod
     def post(self):
         """ Register a UUID """

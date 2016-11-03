@@ -1,43 +1,93 @@
 
-GUIDELINES:
-- PEP
-- Python 3
-- Test driven: nose
-- Swagger
+GUIDELINES
+- Python 3.5
+- PEP compliant
+- Unittest: nose2
+- Test driven
+- Based on docker environment
+- Usable if not inside Docker
+- Swagger?
 
-ARCHITECTURE:
-https://confluence.csc.fi/pages/viewpage.action?spaceKey=EUDAT2&title=B2SAFE+architecture
+--- ✄ ----------------------- THINGS TO DO
 
-USEFULL COMMANDS:
+- endpoints: GET, PATCH, DELETE
+- tests
+- write a custom response
+- support custom response inside unit tests
+- sql support to irods users
+- b2access
+- how to specify current b2safe environment domain: a configuration @paramater
 
- - Upload
-  http --form POST http://192.168.64.7:8080/api/dataobject file@~/Downloads/pics/tweet.jpg
- - Certificates
-  iadmin aua newuser '/DC=org/DC=example/O=Example/OU=People/CN=New User/CN=UID:drexample'
+--- ✄ ----------------------- DETAILS
+
+UPCOMING QUESTIONS:
+
+✔ WP5 lead feedback on document @done (16-10-24 09:03)
+  ✘ Avoid managing collections at all @tobeconfirmed @cancelled (16-10-24 09:03)
+☐ Response format
+☐ B2ACCESS id <-> irods user mapping
+   ✔ ask B2SAFE people for the script or help @done (16-10-24 09:03)
+
+AUTHENTICATION:
+  ☐ check if b2access works
+  ☐ check sqllite support for tokens
+    ☐ oauth2 linked model to tokens?
+      ☐ write new models if necessary
+  ☐ build sqldminer own image with php alpine?
+  https://github.com/vrana/adminer/commit/7a33661b721714a8b266bf57c0065ae653bb8097#commitcomment-17728245
+  https://hub.docker.com/r/clue/adminer/~/dockerfile/
+  ☐ tokens and users
+    ☐ check/write models
+
+IRODS RELATED:
+  ✔ irods resources are only for replica @done (16-09-26 16:36)
+    ☐ iget gets the file from the first available resource
+      ☐ if the default one is not available it will get it from another
+      ☐ you can specify from iget the resource to use
+    ✔ resource is not a constraint to get a uniquely identified file name @done (16-09-26 16:36)
+
+UNIT TEST:
+☐ uploads with random name
+☐ users create if testing
+☐ A common class
+ ☐ startup
+   ☐ create users and token
+ ☐ end
+   ☐ remove users, tokens
+   ☐ and any object related to that user
+☐ Clean with "finally" if any error
+
+LAUNCH and CONFIGURATION:
+  ☐ the new do.py command @rapydo
+  ☐ configuration
+    ☐ run pure python, no docker
+      ☐ requirements.txt (pip freeze)
+        ☐ a smaller one than current python docker image
+      ☐ instructions with @virtualenv
+  ☐ packages?
+    ☐ a script to create the package
+    see B2SAFE example
+    ☐ centos 7 (6?), opensuse 11
+
+PERFOMANCE & PRODUCTION:
+ ☐ nginx proxy and real certificates
+ ☐ profiling
+ https://github.com/muatik/flask-profiler
+ ☐ benchmarks
 
 --- ✄ -----------------------
 
-STEPS:
+UID:
+  ☐ Not for now
+  http://stackoverflow.com/a/19580599/2114395
+  http://stackoverflow.com/a/6048639/2114395
+  http://stackoverflow.com/a/14023468/2114395
 
-☐ How to skip irods validation
-  at startup? It needs internet connection...
- ☐ profiling
- https://github.com/muatik/flask-profiler
-
-☐ DATA MODELS
-  schema -> https://www.dropbox.com/s/01582z9avmnllzo/EUDAT_datamodel.png?dl=0
-  ☐ Nested collections in B2safe?
-  ☐ Save graphdb data into a volume
-    ☐ push graph data
-      https://github.com/EUDAT-B2SAFE/B2SAFE-core/blob/master/cmd/metadataManager.py
-
-☐ Swagger automatization
-✘ docker 1.10 and docker-compose 1.6 (new syntax: services and networks) @cancelled (16-03-31 11:55)
-
-
-IDEAS:
-
- ☐ May use sqlacodegen to get the sqlalchemy models from irods postgres db
-http://stackoverflow.com/a/23786811
- ☐ In this way we may easily admin the irods users with flask-admin?
-   ☐ Also use flask-security to use irods to get login?
+  # initial proposal
+  12 - 3456789
+    ☐ alphanum
+    ☐ first 2 chars are reserved to indentify the b2safe instance
+      ☐ wp6 should map those code
+      ☐ use a /api/internals/mappings/b2safe to manage the list?
+    ☐ not uuid (just Unique ID) and as small as possible
+      ☐ use path, resource, filename and b2safe code for creating the hash

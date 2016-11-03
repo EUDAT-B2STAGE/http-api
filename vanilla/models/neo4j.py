@@ -2,14 +2,11 @@
 
 """
 Graph DB abstraction from neo4j server.
-These are custom models!
-
-VERY IMPORTANT!
-Imports and models have to be defined/used AFTER normal Graphdb connection.
+These are custom models (project dependent).
 """
 
 from __future__ import absolute_import
-from neomodel import StringProperty, BooleanProperty, \
+from neomodel import StringProperty, BooleanProperty, JSONProperty, \
     StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
 
 from ..neo4j import User as UserBase
@@ -19,11 +16,14 @@ from ..neo4j import User as UserBase
 
 
 class User(UserBase):
+    """
+    This class is a real 'Person'
+    """
     name = StringProperty()
     surname = StringProperty()
     associated = RelationshipTo('IrodsUser', 'IS_ASSOCIATED_TO')
 
-# OR ?
+# ALTERNATIVE OVERRIDE:
 # # Override existing
 # setattr(User, 'name', StringProperty())
 # setattr(User, 'surname', StringProperty())
@@ -45,45 +45,46 @@ class User(UserBase):
 class IrodsUser(StructuredNode):
     username = StringProperty(unique_index=True)
     default_user = BooleanProperty(default=True)
-    ownership = RelationshipFrom('DataObject', 'IS_OWNED_BY')
+    ownership = RelationshipFrom('DigitalEntity', 'IS_OWNED_BY')
     associated = RelationshipFrom(User, 'IS_ASSOCIATED_TO')
+    # hosted = RelationshipTo('Zone', 'IS_DEFINED_IN')
 
 
 class Zone(StructuredNode):
     name = StringProperty(unique_index=True)
-    hosting = RelationshipFrom('DataObject', 'IS_LOCATED_IN')
+    hosting = RelationshipFrom('DigitalEntity', 'IS_LOCATED_IN')
     hosting_res = RelationshipFrom('Resource', 'IS_AVAILABLE_IN')
-    hosting_col = RelationshipFrom('Collection', 'IS_PLACED_IN')
+    # hosting_col = RelationshipFrom('Collection', 'IS_PLACED_IN')
     _fields_to_show = ['name']
 
 
 class Resource(StructuredNode):
     name = StringProperty(unique_index=True)
-    store = RelationshipFrom('DataObject', 'STORED_IN')
+    store = RelationshipFrom('DigitalEntity', 'STORED_IN')
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     hosted = RelationshipTo(Zone, 'IS_AVAILABLE_IN')
     _fields_to_show = ['name']
 
 
-class Collection(StructuredNode):
-    """ iRODS collection of data objects [Directory] """
-    id = StringProperty(required=True, unique_index=True)   # UUID
-    path = StringProperty(unique_index=True)
-    name = StringProperty()
-    belongs = RelationshipFrom('DataObject', 'BELONGS_TO')
-    described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
-    hosted = RelationshipTo(Zone, 'IS_PLACED_IN')
-    # A very strange relationship:
-    # Related to itself! A collection may be inside a collection.
-    matrioska_from = RelationshipFrom('Collection', 'INSIDE')
-    matrioska_to = RelationshipTo('Collection', 'INSIDE')
-    _fields_to_show = ['path', 'name']
-    _relationships_to_follow = ['belongs', 'hosted']
+# class Collection(StructuredNode):
+#     """ iRODS collection of data objects [Directory] """
+#     id = StringProperty(required=True, unique_index=True)   # UUID
+#     path = StringProperty(unique_index=True)
+#     name = StringProperty()
+#     belongs = RelationshipFrom('DigitalEntity', 'BELONGS_TO')
+#     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
+#     hosted = RelationshipTo(Zone, 'IS_PLACED_IN')
+#     # A very strange relationship:
+#     # Related to itself! A collection may be inside a collection.
+#     matrioska_from = RelationshipFrom('Collection', 'INSIDE')
+#     matrioska_to = RelationshipTo('Collection', 'INSIDE')
+#     _fields_to_show = ['path', 'name']
+#     _relationships_to_follow = ['belongs', 'hosted']
 
 
 class Replication(StructuredRel):
     """
-    Replica connects a DataObject to its copies.
+    Replica connects a DigitalEntity to its copies.
         Note: this is a relationship, not a node.
     """
     # Parent
@@ -92,23 +93,33 @@ class Replication(StructuredRel):
     ROR = StringProperty()
 
 
-class DataObject(StructuredNode):
+class DigitalEntity(StructuredNode):
     """
-    iRODS data object [File]
+    iRODS entity (file or collection)
     """
     id = StringProperty(required=True, unique_index=True)   # UUID
-    location = StringProperty(unique_index=True)
-    # PID = StringProperty(index=True)    # May not exist
-    filename = StringProperty(index=True)
-    path = StringProperty()
+    location = StringProperty(index=True)
+    # filename = StringProperty(index=True)
+    # path = StringProperty()
+
+    # collection is a DigitalEntity..
+    collection = BooleanProperty(default=False)
+    parent = RelationshipFrom('DigitalEntity', 'INSIDE')
+    child = RelationshipTo('DigitalEntity', 'INSIDE')
+    aggregation = RelationshipTo('Aggregation', 'BELONGS_TO')
+
     owned = RelationshipTo(IrodsUser, 'IS_OWNED_BY')
     located = RelationshipTo(Zone, 'IS_LOCATED_IN')
     stored = RelationshipTo(Resource, 'STORED_IN')
-    belonging = RelationshipTo(Collection, 'BELONGS_TO')
-    replica = RelationshipTo('DataObject', 'IS_REPLICA_OF', model=Replication)
+
+    replica = RelationshipTo(
+        'DigitalEntity', 'IS_REPLICA_OF', model=Replication)
+    master = RelationshipFrom(
+        'DigitalEntity', 'IS_MASTER_OF', model=Replication)
+
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
     identity = RelationshipFrom('PID', 'UNIQUELY_IDENTIFIED_BY')
-    _fields_to_show = ['location', 'filename', 'path']
+    _fields_to_show = ['location']
     _relationships_to_follow = ['belonging', 'located', 'stored']
 
 
@@ -120,15 +131,25 @@ class PID(StructuredNode):
     code = StringProperty(unique_index=True)
     checksum = StringProperty(index=True)   # For integrity
     described = RelationshipFrom('MetaData', 'DESCRIBED_BY')
-    identify = RelationshipTo(DataObject, 'UNIQUELY_IDENTIFIED_BY')
+    identify = RelationshipTo(DigitalEntity, 'UNIQUELY_IDENTIFIED_BY')
 
 
 class MetaData(StructuredNode):
     """ Any metaData stored in any service level """
-    key = StringProperty(index=True)
-    metatype = StringProperty()         # Describe the level of metadata
-    value = StringProperty(index=True)
+
+    # key = StringProperty(index=True)
+    # metatype = StringProperty()         # Describe the level of metadata
+    # value = StringProperty(index=True)
+
+    content = JSONProperty()
+
     pid = RelationshipTo(PID, 'DESCRIBED_BY')
-    data = RelationshipTo(DataObject, 'DESCRIBED_BY')
+    data = RelationshipTo(DigitalEntity, 'DESCRIBED_BY')
     resource = RelationshipTo(Resource, 'DESCRIBED_BY')
-    collection = RelationshipTo(Collection, 'DESCRIBED_BY')
+    # collection = RelationshipTo(Collection, 'DESCRIBED_BY')
+
+
+class Aggregation(StructuredNode):
+    """ A generic relationship between nodes (data and metadata) """
+    something = StringProperty()
+    belonging = RelationshipFrom(DigitalEntity, 'BELONGS_TO')

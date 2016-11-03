@@ -13,11 +13,13 @@
 
 #################################
 # Shared volume(s)
-certshare:
+sharedvolumes:
     image: alpine
     command: echo "Data volume on"
     volumes:
       - httpapi_sharedcerts:/opt/certificates
+      # Sql lite database (only for this container)
+      - httpapi_restlitedb:/dbs
 
 #################################
 # Postgres database server
@@ -56,7 +58,7 @@ icat:
         # a script to do operations inside the irods container
         - ./confs/irestart.sh:/irestart
     volumes_from:
-      - certshare
+      - sharedvolumes
     links:
         - sql:db
 
@@ -91,12 +93,13 @@ rest:
       B2ACCESS_APPKEY: GIVEMEAVALIDKEY
 
       # Base the user/role mechanism on neo4j
-      BACKEND_AUTH_SERVICE: graphdb
+      BACKEND_AUTH_SERVICE: relationaldb
       ## Connection to irods
+      IRODS_ZONE: tempZone
+      # IRODS_USER: paolo
       IRODS_USER: rods
       # IRODS_AUTHSCHEME: GSI
-      # IRODS_USER: paolo
-      IRODS_ZONE: tempZone
+      # IRODS_DEFAULT_ADMIN_USER: rodsminer
 
       ## X509 certificates variables
       #CA Authority
@@ -109,8 +112,6 @@ rest:
     volumes:
         # Uploads dir
         - httpapi_tmpuploads:/uploads
-        # Sql lite database (only for this container)
-        - httpapi_restlitedb:/dbs
         # Base code
         - ./backend:/code
         # Rest API configuration
@@ -131,12 +132,7 @@ rest:
         # # External irods User
         # - ./certs/user:/opt/certificates/paolo
     volumes_from:
-      - certshare
-    links:
-        # IRODS MUST BE CALLED rodserver
-        - icat:rodserver
-        # GRAPHDB MUST BE CALLED gdb
-        - graphdb:gdb
+      - sharedvolumes
 
 #################################
 # REST API client
@@ -149,14 +145,16 @@ apitests:
 #################################
 # Database administration
 
+###########
+## TO FIX: should build my image here too!
+###########
+
 # This docker image let you access sqllite/postgres/mysql
 # with a phpmyadmin-like web page
 sqladmin:
     image: clue/adminer
-    links:
-        - sql:db
-    ports:
-        - 8888:80
+    # links:
+    #   - sql:db
 
 #################################
 # Nginx proxy
@@ -166,8 +164,3 @@ proxy:
     volumes:
         # Proxy configuration
         - ./confs/nginx.conf:/etc/nginx/nginx.conf
-## Certificates to be added
-    links:
-        - rest:restapi
-
-#################################
