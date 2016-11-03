@@ -53,18 +53,18 @@ GET https://be2safexx.eudat.eu/api/registered/path/to/directory
 ## **PUT**
 ### Create or update an entity **and trigger the registration in B2SAFE**
 
-> Notes:
-1. The entity registration depends on the policies adopted by the B2SAFE instance which the HTTP-API is connected to
-2. This operation is idempotent
+> Notes: The entity registration depends on the policies adopted by the B2SAFE instance which the HTTP-API is connected to. This operation is idempotent.
 
 ##### Parameters
 | Parameter | Type | Description
 |-----------|------|-------------
 | file (required) | string | Name of the local file to be uploaded
+| force | bool | Force overwrite
+
 ##### Example
 ```bash
 PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
-# create or update 'myfile' as '/path/to/directory/filename' and trigger the registration in B2SAFE
+# create 'myfile' as '/path/to/directory/filename' and trigger the registration in B2SAFE
 ```
 ##### Response
 ```json
@@ -77,7 +77,8 @@ PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/file
 ### Create a new directory
 | Parameter | Type | Description
 |-----------|------|-------------
-| path (required) | string | Absolute directory path to be created (recursive creation is not allowed)
+| path (required) | string | Absolute directory path to be created 
+| force | bool | Force recursive creation
 ##### Example
 ```bash
 POST https://be2safexx.eudat.eu/api/registered?path=/path/to/directory
@@ -89,7 +90,6 @@ POST https://be2safexx.eudat.eu/api/registered?path=/path/to/directory
 ```
 
 ---
-
 ## **DELETE**
 ### Delete an entity
 ##### Example
