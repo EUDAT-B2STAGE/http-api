@@ -66,12 +66,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return "TO BE IMPLEMENTED"
 
-#         ###################
-#         # BASIC INIT
+        ###################
+        # BASIC INIT
 
-#         # get the base objects
-#         icom, sql, user = self.init_endpoint()
-#         # get parameters with defaults
+        # get the base objects
+        icom, sql, user = self.init_endpoint()
+        # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
 
 #         ###################
@@ -151,9 +151,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
         Handle [directory creation](docs/user/registered.md#post).
 
-        Test on docker client shell with:
-        http --form POST $SERVER/api/resources \
-            force=True path=/tempZone/home/guest/test "$AUTH"
+        Test on internal client shell with:
+
+        http --form POST \
+            $SERVER/api/resources?path=/tempZone/home/guest/test \
+            force=True "$AUTH"
         """
 
         # Disable upload for POST method
@@ -173,6 +175,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         icom, sql, user = self.init_endpoint()
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
+
         # if path variable empty something is wrong
         if path is None:
             return self.force_response(
@@ -184,10 +187,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             )
 
         ###################
-        # UPLOADER
-        content = None
-        errors = {}
-        status = None
+        # Create Directory
 
         base_url = request.url
         # remove from current request any parameters
@@ -197,7 +197,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # Create directory if not exists
         ipath = icom.create_empty(
-            path, directory=True, ignore_existing=force)
+            path, directory=True, ignore_existing=force
+        )
         logger.info("Created irods collection: %s", ipath)
         status = hcodes.HTTP_OK_BASIC
         content = {
@@ -207,7 +208,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             'link': '%s/?path=%s' % (base_url, path)
         }
 
-        return self.force_response(content, errors=errors, code=status)
+        return self.force_response(content, code=status)
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
@@ -234,6 +235,17 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if irods_location is None:
             return self.force_response(
                 errors={'location': 'Missing filepath inside URI for PUT'})
+        elif not irods_location.startswith('/'):
+            irods_location = '/' + irods_location
+
+        ###################
+        # BASIC INIT
+
+        # get the base objects
+        icom, sql, user = self.init_endpoint()
+        # get parameters with defaults
+        path, resource, filename, force = \
+            self.get_file_parameters(icom, path=irods_location)
 
         # Disable directory creation for PUT method
         if 'file' not in request.files:
@@ -249,7 +261,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         response = super(BasicEndpoint, self) \
             .upload(subfolder=user, force=force)
 
-        # If response is success, save inside the database
+        # Check if upload response is success
+## // TO FIX:
+# this piece of code does not work with a custom response
         content, errors, status = \
             self.get_content_from_response(response, get_all=True)
 
@@ -266,43 +280,60 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ############################
             # Move file inside irods
 
-            # The user may decide a different name for the uploaded file
-            # otherwise we use the original name from the file itself
-            if filename is None:
+            filename = None
+            # Verify if the current path proposed from the user
+            # is indeed an existing collection in iRODS
+            if icom.is_collection(path):
+                # When should the original name be used?
+                # Only if the path specified is an existing irods collection
                 filename = original_filename
 
-            # Handling iRODS path
-            ipath = icom.get_irods_path(path, filename)
-
+            ipath = None
             try:
-                iout = icom.save(abs_file, destination=ipath,
-                                 force=force, resource=resource)
+                # Handling (iRODS) path
+                ipath = self.complete_path(path, filename)
+                # ipath = icom.get_irods_path(path, filename)
+
+                iout = icom.save(
+                    abs_file,
+                    destination=path, force=force, resource=resource)
                 logger.info("irods call %s", iout)
             finally:
-                # Remove local cache in any case
+                # Transaction rollback: remove local cache in any case
+                logger.debug("Removing cache object")
                 os.remove(abs_file)
 
-# # GRAPH?
-#             # Call internally the POST method for DO endpoint
-#             location = None
-#             doid = DigitalObjectsEndpoint()._post(graph, graphuser, location)
-#             # Return link to the file /api/digitalobjects/DOID/entities/EID
+            ###################
+            # ## GRAPH DB - not included in the pre-production release
+            # # Call internally the POST method for DO endpoint
+            # location = None
+            # doid = BasicEndpoint()._post(graph, graphuser, location)
+            # # Return link to the file /api/resources/<DOID>
 
             ###################
             # Reply to user
 
+            link = "%s://%s%s%s" % (
+                request.environ['wsgi.url_scheme'],
+                request.environ['HTTP_HOST'],
+                str(request.url_rule).split('<')[0].rstrip('/'),
+                ipath
+            )
+
+            if filename is None:
+                filename = self.filename_from_path(path)
+
             content = {
-                'location': 'irods:///%s/%s/%s' % (
-                    CURRENT_B2SAFE_SERVER,
-                    # request.url.lstrip('http://'),
-                    path.lstrip('/'), filename),
+                'location': 'irods:///%s/%s'
+                % (CURRENT_B2SAFE_SERVER, ipath.lstrip('/')),
                 'filename': filename,
                 'path': path,
                 'resources': icom.get_resources_from_file(ipath),
-                'link': '%s/%s?path=%s' % (request.url, filename, path)
+                # 'link': '%s/%s?path=%s' % (request.url, filename, path)
+                'link': link
             }
 
-        pretty_print(content)
+        # pretty_print(content)
         return self.force_response(content, errors=errors, code=status)
 
     @authentication.authorization_required
@@ -321,12 +352,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return "TO BE IMPLEMENTED"
 
-        # ###################
-        # # BASIC INIT
+        ###################
+        # BASIC INIT
 
-        # # get the base objects
-        # icom, sql, user = self.init_endpoint()
-        # # get parameters with defaults
+        # get the base objects
+        icom, sql, user = self.init_endpoint()
+        # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
         # # Handling iRODS path
         # ipath = icom.get_irods_path(path, filename)

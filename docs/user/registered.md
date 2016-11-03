@@ -1,7 +1,6 @@
 
 # Registered APIs
 
-
 The registered APIs allow the management of registered entities (entities with a PID associated).
 The endpoint URI will use the directory namespace.
 The examples in this section use cURL commands. For information about cURL, see http://curl.haxx.se/.
@@ -13,6 +12,7 @@ The examples in this section use cURL commands. For information about cURL, see 
 4. [DELETE](#delete)
 5. [PATCH](#patch)
 
+---
 
 ## **GET**
 ### Obtain entity metadata
@@ -49,6 +49,7 @@ GET https://be2safexx.eudat.eu/api/registered/path/to/directory
 ```
 
 ---
+
 ## **PUT**
 ### Create or update an entity **and trigger the registration in B2SAFE**
 
@@ -56,7 +57,6 @@ GET https://be2safexx.eudat.eu/api/registered/path/to/directory
 1. The entity registration depends on the policies adopted by the B2SAFE instance which the HTTP-API is connected to
 2. This operation is idempotent
 
-####
 ##### Parameters
 | Parameter | Type | Description
 |-----------|------|-------------
@@ -72,6 +72,7 @@ PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/file
 ```
 
 ---
+
 ## **POST**
 ### Create a new directory
 | Parameter | Type | Description
@@ -88,6 +89,7 @@ POST https://be2safexx.eudat.eu/api/registered?path=/path/to/directory
 ```
 
 ---
+
 ## **DELETE**
 ### Delete an entity
 ##### Example
@@ -111,8 +113,8 @@ DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory
 [JSON example]
 ```
 
-
 ---
+
 ## **PATCH**
 ### Update an entity name
 ##### Parameters
