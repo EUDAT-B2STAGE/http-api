@@ -11,7 +11,6 @@ nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
 from __future__ import absolute_import
 
 import io
-import os
 import json
 import unittest
 import commons.htmlcodes as hcodes
@@ -31,99 +30,101 @@ AUTH_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, AUTH_URL)
 
 class TestDigitalObjects(unittest.TestCase):
 
-    _main_endpoint = '/digitalobjects'
+    _main_endpoint = '/resources'
+    _irods_path = '/tempZone/home/guest/test'
+    _invalid_irods_path = '/tempZone/home/x/guest/test'
 
-    # @classmethod
-    # def setUpClass(cls):
-    #     logger.info('### Setting up flask server ###')
-    #     app = create_app(testing_mode=True)
-    #     cls.app = app.test_client()
+    def setUp(self):
+        logger.info('### Setting up flask server ###')
+        app = create_app(testing_mode=True)
+        self.app = app.test_client()
 
-    #     r = cls.app.post(
-    #         AUTH_URI + '/login',
-    #         data=json.dumps({'username': USER, 'password': PWD}))
-    #     content = json.loads(r.data.decode('utf-8'))
-    #     cls.auth_header = {
-    #         'Authorization': 'Bearer ' + content['Response']['data']['token']}
+        logger.info("*** VERIFY valid credentials")
+        endpoint = AUTH_URI + '/login'
+        r = self.app.post(endpoint, data=json.dumps({'username': USER,
+                          'password': PWD}))
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     logger.info('### Tearing down the flask server ###')
-    #     del cls.app
+        content = json.loads(r.data.decode('utf-8'))
+        # Since unittests use class object and not instances
+        # This is the only workaround to set a persistent variable
+        # self.auth_header does not work
+        self.__class__.auth_header = {
+            'Authorization': 'Bearer ' + content['Response']['data']['token']}
 
-    #     # Tokens clean up
-    #     logger.debug("Cleaned up invalid tokens")
+    def tearDown(self):
+        logger.info('### Tearing down the flask server ###')
+        del self.app
 
-    #     # from restapi.resources.services.neo4j.graph import MyGraph
-    #     # MyGraph().clean_pending_tokens()
+        # Tokens clean up
+        logger.debug("Cleaned up invalid tokens")
 
-    # def test_01_post_digitalobject(self):
-    #     """ Test file upload: POST """
+    def test_01_post_create_test_folder(self):
+        """ Test test directory creation: POST """
 
-    #     # # POST dataobject
-    #     # endpoint = API_URI + self._main_endpoint
-    #     # r = self.app.post(endpoint, data=dict(
-    #     #                   file=(io.BytesIO(b"this is a test"), 'test.pdf')),
-    #     #                   headers=self.auth_header)
-    #     # self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+        logger.info('*** Testing POST')
+        # Create a directory
+        endpoint = API_URI + self._main_endpoint
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-    #     return "To be defined..."
+        # Overwrite a directory
+        r = self.app.post(endpoint, data=dict(path=self._irods_path,
+                          force='True'), headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-#     def test_02_post_dataobjects_in_specific_collection(self):
-#         """ Test file upload: POST """
+        # Overwrite a directory w/o force flag
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
 
-#         URI = API_URI + '/collections'
-#         # Create the collection
-#         r = self.app.post(URI, headers=self.auth_header,
-#                           data=dict(collection='test', force='True'))
-#         self.assertEqual(r.status_code, hcodes.HTTP_OK_CREATED)
+        # Create a directory in a non existing path
+        r = self.app.post(endpoint, data=dict(path=self._invalid_irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
 
-#         URI = API_URI + '/dataobjects'
+        # Create a directory w/o passing a path
+        r = self.app.post(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_NOT_IMPLEMENTED)
+        # Maybe HTTP_BAD_METHOD_NOT_ALLOWED 405 is more appropriate?
 
-#         # Absolute path
-#         r = self.app.post(
-#             URI, headers=self.auth_header,
-#             data=dict(
-#                 file=(io.BytesIO(b"this is a test"), 'test1.pdf'),
-#                 collection='/home/guest/test'))
-#         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+    def test_02_put_upload_entity(self):
+        """ Test file upload: PUT """
 
-#         # Relative path
-#         r = self.app.post(
-#             URI, headers=self.auth_header,
-#             data=dict(
-#                 file=(io.BytesIO(b"this is a test"), 'test2.pdf'),
-#                 collection='test', force='True'))
-#         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+        logger.info('*** Testing PUT')
+        # Upload dataobject in test folder
+        endpoint = API_URI + self._main_endpoint + self._irods_path
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"), 'test.pdf')),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-#     def test_03_post_large_dataobjects(self):
-#         """ Test large file upload: POST """
-#         path = os.path.join('/home/irods', 'img.JPG')
-#         with open(path, "wb") as f:
-#             f.seek(100000000)  # 100MB file
-#             f.write(b"\0")
-#         r = self.app.post(API_URI + '/dataobjects', data=dict(
-#                           file=(open(path, 'rb'), 'img.JPG')),
-#                           headers=self.auth_header)
-#         os.remove(path)
-#     ## maybe 201 is more appropriate?
-#         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+        # Overwrite dataobject in test folder
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"), 'test.pdf'),
+                         force='True'), headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-#         content = json.loads(r.data.decode('utf-8'))
-#         self.__class__.large = content['Response']['data']['id']
+        # Overwrite dataobject in test folder w/o force flag
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"), 'test.pdf')),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
 
-#     def test_04_post_overwrite_dataobjects(self):
-#         """ Test file upload: POST """
+        # Upload dataobject w/o passing a file
+        r = self.app.put(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
-#         # POST dataobject
-#         endpoint = API_URI + '/dataobjects'
-#         r = self.app.post(endpoint, data=dict(force='True',
-#                           file=(io.BytesIO(b"a test again"), 'test.pdf')),
-#                           headers=self.auth_header)
-#         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+        # Upload dataobject in a non existing path
+        endpoint = API_URI + self._main_endpoint + self._invalid_irods_path
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"), 'test.pdf')),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
 
-#         content = json.loads(r.data.decode('utf-8'))
-#         self.__class__.small = content['Response']['data']['id']
+
+
 
 #     def test_05_get_dataobjects(self):
 #         """ Test file download: GET """
