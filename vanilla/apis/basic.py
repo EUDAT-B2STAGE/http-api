@@ -344,13 +344,17 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def delete(self, irods_location=None):
         """
-        Remove an object
+        Remove an object or an empty directory on iRODS
 
-        http DELETE \
-            $SERVER/api/digitalentities/gettoken?resource=replicaResc "$AUTH"
+        http DELETE $SERVER/api/resources/tempZone/home/guest/test/filename 
+        "$AUTH"
         """
 
-        return "TO BE IMPLEMENTED"
+        if irods_location is None:
+            return self.force_response(
+                errors={'location': 'Missing path inside URI for DELETE'})
+        elif not irods_location.startswith('/'):
+            irods_location = '/' + irods_location
 
         ###################
         # BASIC INIT
@@ -383,8 +387,18 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # #     collection_node.delete()
 
         # ########################################
-        # # Remove from irods
-        # icom.remove(ipath, resource=resource)
-        # logger.info("Removed %s", ipath)
+        # Remove from irods (only files and empty directories)
+        isRecursive = False
+        if icom.is_collection(irods_location):
+            if not icom.list_as_json(root=irods_location):
+                isRecursive = True
+            else:
+                logger.info("list:  %i", len(icom.list(path=irods_location)))
+                return self.force_response(
+                    errors={'Directory is not empty':
+                            'Only empty directories can be deleted'})
 
-        # return self.force_response({'requested removal': ipath})
+        icom.remove(irods_location, recursive=isRecursive, resource=resource)
+        logger.info("Removed %s", irods_location)
+
+        return self.force_response({'requested removal': irods_location})
