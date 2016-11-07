@@ -24,7 +24,7 @@ from ...auth import authentication
 # from ...confs import config
 from flask import request
 from commons import htmlcodes as hcodes
-from commons.logs import get_logger  # , pretty_print
+from commons.logs import get_logger, pretty_print
 
 logger = get_logger(__name__)
 
@@ -56,7 +56,6 @@ INTERNAL_PATH_SEPARATOR = '/'
 class BasicEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
-    # @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
@@ -65,15 +64,20 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         Download file from filename
         """
 
-        return "TO BE IMPLEMENTED"
-
         ###################
         # BASIC INIT
+
+        if irods_location is None:
+            return self.force_response(
+                errors={'location': 'Missing filepath inside URI for GET'})
+        elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
+            irods_location = INTERNAL_PATH_SEPARATOR + irods_location
 
         # get the base objects
         icom, sql, user = self.init_endpoint()
         # get parameters with defaults
-        path, resource, filename, force = self.get_file_parameters(icom)
+        path, resource, filename, force = \
+            self.get_file_parameters(icom, path=irods_location)
 
 #         ###################
 #         # IN CASE WE USE THE GRAPH
@@ -99,31 +103,38 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 #         # ipath = icom.get_irods_path(
 #         #     collection_node.path, dataobj_node.filename)
 
-#         ###################
-#         # In case we ask the list
-#         if myname is None:
-#             # files = icom.search(path.lstrip(INTERNAL_PATH_SEPARATOR), like=False)
-# ## FIX with ils -r
-#             files = icom.list(path)
-#             print(files)
-#             return "GET ALL"
+        # ###################
+        # # In case we ask the list
+        # if irods_location is None:
+        #     # files = icom.search(
+        #     #     path.lstrip(INTERNAL_PATH_SEPARATOR), like=False)
+        #     print(files)
+        #     return "GET ALL"
 
-#         ###################
-#         # In case we download a specific file
+        files = icom.list(path)
+## FIX with ils -r
+        lasj = icom.list_as_json(root=path)
+        glasj = icom.get_list_as_json(root=path)
+        print("TEST", files, lasj)
+        pretty_print(glasj)
+        return "NOT IMPLEMENTED"
 
-#         # ipath = icom.get_irods_path(path, myname)
-#         # print("TEST", ipath)
+        ###################
+        # In case we download a specific file
 
-#         abs_file = self.absolute_upload_file(myname, user)
+        # ipath = icom.get_irods_path(path, irods_location)
+        # print("TEST", ipath)
 
-# # // TO FIX:
-# # decide if we want to use a cache, and how
-# # note: maybe nginx instead of our own
-#         # Make sure you remove any cached version to get a fresh obj
-#         try:
-#             os.remove(abs_file)
-#         except:
-#             pass
+        abs_file = self.absolute_upload_file(irods_location, user)
+
+# // TO FIX:
+# decide if we want to use a cache, and how!
+# maybe nginx cache is better instead of our own?
+        # Make sure you remove any cached version to get a fresh obj
+        try:
+            os.remove(abs_file)
+        except:
+            pass
 
 #         print("TEST", abs_file)
 
@@ -137,7 +148,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 #     #     # Remove local file
 #     #     os.remove(abs_file)
 
-#         return "GET " + myname
+#         return "GET " + irods_location
 
 #     #     # Stream file content
 #     #     return filecontent
