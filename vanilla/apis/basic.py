@@ -24,13 +24,14 @@ from ...auth import authentication
 # from ...confs import config
 from flask import request
 from commons import htmlcodes as hcodes
-from commons.logs import get_logger, pretty_print
+from commons.logs import get_logger  # , pretty_print
 
 logger = get_logger(__name__)
 
 ## // TO FIX: build this from the WP6 mappings
 CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
 CURRENT_B2SAFE_SERVER_CODE = 'a0'
+INTERNAL_PATH_SEPARATOR = '/'
 
 
 # class EudatTest(EudatEndpoint):
@@ -83,7 +84,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 #         #     return self.force_response(data)
 
 #         # # If trying to use a path as file
-#         # elif name[-1] == '/':
+#         # elif name[-1] == INTERNAL_PATH_SEPARATOR:
 #         #     return self.force_response(
 #         #         errors={'dataobject': 'No dataobject/file requested'})
 
@@ -101,7 +102,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 #         ###################
 #         # In case we ask the list
 #         if myname is None:
-#             # files = icom.search(path.lstrip('/'), like=False)
+#             # files = icom.search(path.lstrip(INTERNAL_PATH_SEPARATOR), like=False)
 # ## FIX with ils -r
 #             files = icom.list(path)
 #             print(files)
@@ -203,7 +204,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         status = hcodes.HTTP_OK_BASIC
         content = {
             'location': 'irods:///%s/%s/' % (
-                CURRENT_B2SAFE_SERVER, path.lstrip('/')),
+                CURRENT_B2SAFE_SERVER, path.lstrip(INTERNAL_PATH_SEPARATOR)),
             'path': path,
             'link': '%s/?path=%s' % (base_url, path)
         }
@@ -232,11 +233,14 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         will assure that we have a replica on all resources.
         """
 
+# // TO FIX:
+# this is also used inside the delete method
+# we may consider moving this block inside the `get_file_parameters` method
         if irods_location is None:
             return self.force_response(
                 errors={'location': 'Missing filepath inside URI for PUT'})
-        elif not irods_location.startswith('/'):
-            irods_location = '/' + irods_location
+        elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
+            irods_location = INTERNAL_PATH_SEPARATOR + irods_location
 
         ###################
         # BASIC INIT
@@ -316,7 +320,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             link = "%s://%s%s%s" % (
                 request.environ['wsgi.url_scheme'],
                 request.environ['HTTP_HOST'],
-                str(request.url_rule).split('<')[0].rstrip('/'),
+                str(request.url_rule)
+                .split('<')[0].rstrip(INTERNAL_PATH_SEPARATOR),
                 ipath
             )
 
@@ -324,8 +329,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 filename = self.filename_from_path(path)
 
             content = {
-                'location': 'irods:///%s/%s'
-                % (CURRENT_B2SAFE_SERVER, ipath.lstrip('/')),
+                'location': 'irods:///%s/%s' %
+                (CURRENT_B2SAFE_SERVER, ipath.lstrip(INTERNAL_PATH_SEPARATOR)),
                 'filename': filename,
                 'path': path,
                 'resources': icom.get_resources_from_file(ipath),
@@ -337,7 +342,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         return self.force_response(content, errors=errors, code=status)
 
     @authentication.authorization_required
-    # @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     # @authentication.authorization_required(roles=config.ROLE_INTERNAL)
     @decorate.apimethod
@@ -346,15 +350,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
         Remove an object or an empty directory on iRODS
 
-        http DELETE $SERVER/api/resources/tempZone/home/guest/test/filename 
-        "$AUTH"
+        http DELETE \
+            $SERVER/api/resources/tempZone/home/guest/test/filename "$AUTH"
         """
 
         if irods_location is None:
             return self.force_response(
                 errors={'location': 'Missing path inside URI for DELETE'})
-        elif not irods_location.startswith('/'):
-            irods_location = '/' + irods_location
+        elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
+            irods_location = INTERNAL_PATH_SEPARATOR + irods_location
 
         ###################
         # BASIC INIT
@@ -363,42 +367,41 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         icom, sql, user = self.init_endpoint()
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
-        # # Handling iRODS path
-        # ipath = icom.get_irods_path(path, filename)
 
-        # ########################################
-        # # # Get the dataobject from the graph
-        # # graph = self.global_get_service('neo4j')
-        # # dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
-        # # collection_node = dataobj_node.belonging.all().pop()
+        ########################################
+        # # Get the dataobject from the graph
+        # graph = self.global_get_service('neo4j')
+        # dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
+        # collection_node = dataobj_node.belonging.all().pop()
 
-        # # ipath = icom.get_irods_path(
-        # #     collection_node.path, dataobj_node.filename)
+        # ipath = icom.get_irods_path(
+        #     collection_node.path, dataobj_node.filename)
 
-        # # # Remove from graph:
-        # # # Delete with neomodel the dataobject
-        # # try:
-        # #     dataobj_node.delete()
-        # # except graph.DigitalEntity.DoesNotExist:
-        # #     return self.force_response(errors={uuid: 'Not found.'})
+        # # Remove from graph:
+        # # Delete with neomodel the dataobject
+        # try:
+        #     dataobj_node.delete()
+        # except graph.DigitalEntity.DoesNotExist:
+        #     return self.force_response(errors={uuid: 'Not found.'})
 
-        # # # Delete collection if not linked to any dataobject anymore?
-        # # if len(collection_node.belongs.all()) < 1:
-        # #     collection_node.delete()
+        # # Delete collection if not linked to any dataobject anymore?
+        # if len(collection_node.belongs.all()) < 1:
+        #     collection_node.delete()
 
-        # ########################################
+        ########################################
         # Remove from irods (only files and empty directories)
-        isRecursive = False
+        is_recursive = False
         if icom.is_collection(irods_location):
             if not icom.list_as_json(root=irods_location):
-                isRecursive = True
+                # nb: recursive option is necessary to remove a collection
+                is_recursive = True
             else:
                 logger.info("list:  %i", len(icom.list(path=irods_location)))
                 return self.force_response(
                     errors={'Directory is not empty':
                             'Only empty directories can be deleted'})
 
-        icom.remove(irods_location, recursive=isRecursive, resource=resource)
+        icom.remove(irods_location, recursive=is_recursive, resource=resource)
         logger.info("Removed %s", irods_location)
 
         return self.force_response({'requested removal': irods_location})

@@ -1,5 +1,5 @@
 
-GUIDELINES
+GUIDELINES:
 - Python 3.5
 - PEP compliant
 - Unittest: nose2
@@ -8,9 +8,27 @@ GUIDELINES
 - Usable if not inside Docker
 - Swagger?
 
---- ✄ ----------------------- THINGS TO DO
+--- ✄ -----------------------
 
-- endpoints: GET, PATCH, DELETE
+BEST PRACTICES:
+
+  - use collection.namedtuple for returning multiple values
+  - ptipython as default shell
+  - httpie as command line
+  - click/easyargs for quick command line prototypes
+  - virtualenv for multiple versioning libraries
+
+
+
+
+
+
+
+
+--- ✄ -----------------------
+THINGS TO DO:
+
+- endpoints: GET, PATCH
 - tests
 - write a custom response
 - support custom response inside unit tests
