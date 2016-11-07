@@ -183,7 +183,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     'Path to remote resource is wrong':
                     'Note: only absolute paths are allowed'
                 },
-                code=hcodes.HTTP_NOT_IMPLEMENTED
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
             )
 
         ###################
@@ -352,7 +352,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         if irods_location is None:
             return self.force_response(
-                errors={'location': 'Missing path inside URI for DELETE'})
+                errors={'location': 'Missing path inside URI for DELETE'},
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
         elif not irods_location.startswith('/'):
             irods_location = '/' + irods_location
 

@@ -33,6 +33,8 @@ class TestDigitalObjects(unittest.TestCase):
     _main_endpoint = '/resources'
     _irods_path = '/tempZone/home/guest/test'
     _invalid_irods_path = '/tempZone/home/x/guest/test'
+    _test_filename = 'test.pdf'
+
 
     def setUp(self):
         logger.info('### Setting up flask server ###')
@@ -59,8 +61,8 @@ class TestDigitalObjects(unittest.TestCase):
         # Tokens clean up
         logger.debug("Cleaned up invalid tokens")
 
-    def test_01_post_create_test_folder(self):
-        """ Test test directory creation: POST """
+    def test_01_post_create_test_directory(self):
+        """ Test directory creation: POST """
 
         logger.info('*** Testing POST')
         # Create a directory
@@ -86,42 +88,74 @@ class TestDigitalObjects(unittest.TestCase):
 
         # Create a directory w/o passing a path
         r = self.app.post(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, hcodes.HTTP_NOT_IMPLEMENTED)
-        # Maybe HTTP_BAD_METHOD_NOT_ALLOWED 405 is more appropriate?
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
     def test_02_put_upload_entity(self):
         """ Test file upload: PUT """
 
         logger.info('*** Testing PUT')
-        # Upload dataobject in test folder
+        # Upload entity in test folder
         endpoint = API_URI + self._main_endpoint + self._irods_path
         r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(b"this is a test"), 'test.pdf')),
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename)),
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-        # Overwrite dataobject in test folder
+        # Overwrite entity in test folder
         r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(b"this is a test"), 'test.pdf'),
-                         force='True'), headers=self.__class__.auth_header)
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename), force='True'),
+                         headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
-        # Overwrite dataobject in test folder w/o force flag
+        # Overwrite entity in test folder w/o force flag
         r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(b"this is a test"), 'test.pdf')),
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename)),
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
 
-        # Upload dataobject w/o passing a file
+        # Upload entity w/o passing a file
         r = self.app.put(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
-        # Upload dataobject in a non existing path
+        # Upload entity in a non existing path
         endpoint = API_URI + self._main_endpoint + self._invalid_irods_path
         r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(b"this is a test"), 'test.pdf')),
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename)),
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
+
+    def test_03_delete_entities(self):
+        """ Test the entity delete: DELETE """
+
+        logger.info('*** Testing DELETE')
+        # Delete entity
+        endpoint = API_URI + self._main_endpoint + self._irods_path + '/' + self._test_filename
+        r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+        # Delete directory
+        endpoint = API_URI + self._main_endpoint + self._irods_path
+        r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+        # Delete non existing entity
+        endpoint = API_URI + self._main_endpoint + self._irods_path + '/' + self._test_filename + 'x'
+        r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
+
+        # Delete non existing directory
+        endpoint = API_URI + self._main_endpoint + self._invalid_irods_path
+        r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
+
+        # Delete w/o passing a path
+        endpoint = API_URI + self._main_endpoint
+        r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
 
 
