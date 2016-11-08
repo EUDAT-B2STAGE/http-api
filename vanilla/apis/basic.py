@@ -22,7 +22,7 @@ from ..services.irods.client import IrodsException
 from .. import decorators as decorate
 from ...auth import authentication
 # from ...confs import config
-from flask import request
+from flask import request, current_app
 from commons import htmlcodes as hcodes
 from commons.logs import get_logger, pretty_print
 
@@ -57,6 +57,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('resource')
+    @decorate.add_endpoint_parameter('download', ptype=bool, default=False)
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self, irods_location=None):
@@ -99,25 +100,21 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 #         #     return self.force_response(errors={uuid: 'Not found.'})
 #         # collection_node = dataobj_node.belonging.all().pop()
 
-#         # # irods paths
-#         # ipath = icom.get_irods_path(
-#         #     collection_node.path, dataobj_node.filename)
+        ###################
+        download = self._args.get('download')
+        print("Should download?", download)
+        data = icom.list_as_json(root=path)
+        # pretty_print(data)
 
-        # ###################
-        # # In case we ask the list
-        # if irods_location is None:
-        #     # files = icom.search(
-        #     #     path.lstrip(INTERNAL_PATH_SEPARATOR), like=False)
-        #     print(files)
-        #     return "GET ALL"
+#         files = icom.list(path)
+#         glasj = icom.get_list_as_json(root=path)
+# ## FIX with ils -r
 
-        files = icom.list(path)
-## FIX with ils -r
-        lasj = icom.list_as_json(root=path)
-        glasj = icom.get_list_as_json(root=path)
-        print("TEST", files, lasj)
-        pretty_print(glasj)
-        return "NOT IMPLEMENTED"
+        return data
+
+        ###################
+        # In case we list the file details/metadata?
+        icom.meta_sys_list
 
         ###################
         # In case we download a specific file
@@ -127,13 +124,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         abs_file = self.absolute_upload_file(irods_location, user)
 
-# // TO FIX:
-# decide if we want to use a cache, and how!
-# maybe nginx cache is better instead of our own?
         # Make sure you remove any cached version to get a fresh obj
         try:
             os.remove(abs_file)
         except:
+# // TO FIX:
+# decide if we want to use a cache, and how!
+# maybe nginx cache is better instead of our own?
             pass
 
 #         print("TEST", abs_file)
@@ -354,6 +351,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('resource')
+    @decorate.add_endpoint_parameter('debugclean')
     # @authentication.authorization_required(roles=config.ROLE_INTERNAL)
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
@@ -365,6 +363,20 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             $SERVER/api/resources/tempZone/home/guest/test/filename "$AUTH"
         """
 
+        # Debug option to remove the whole content of current home
+        if current_app.config['DEBUG']:
+            if self._args.get('debugclean'):
+                icom, sql, user = self.init_endpoint()
+                home = icom.get_user_home()
+                files = icom.list_as_json(home)
+                for key, obj in files.items():
+                    icom.remove(
+                        home + '/' + obj['name'],
+                        recursive=obj['object_type'] == 'collection')
+                    logger.debug("Removed %s" % obj['name'])
+                return "Cleaned"
+
+        # URI parameter is required
         if irods_location is None:
             return self.force_response(
                 errors={'location': 'Missing path inside URI for DELETE'})

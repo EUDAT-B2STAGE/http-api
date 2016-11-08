@@ -2,7 +2,16 @@
 
 ######################################
 # NOTE: you need to source this script
+# e.g.
+# $ . query_api.sh help
 ######################################
+
+if [ "$1" == "help" ]; then
+    echo "Usage: . query_api.sh [METHOD]"
+    echo ""
+    echo "available methods: get, post, put, delete, clean"
+    return
+fi
 
 IHOME="/tempZone/home/guest"
 MIN_INVALID_STATUS="299"
@@ -10,10 +19,18 @@ ALL_COMMAND=""
 
 ######################################
 if [ "$AUTH" == '' ]; then
-    echo "Getting token"
+    echo "Generating authentication token"
     . /tmp/gettoken 2>&1 1> /dev/null
-    if [ "$?" != "0" ]; then echo "ERROR"; exit 1; fi
 fi
+
+alive=$(http GET $SERVER/api/status 2>&1 1> /dev/null)
+if [ "$?" != "0" ]; then
+    echo "API status: DOWN!"
+    return
+fi
+
+echo "Token available as \$TOKEN"
+echo ""
 
 if [ "$SERVER" == '' ]; then
     echo "Error with getting server name"
@@ -63,7 +80,7 @@ function api_call()
 if [ "$1" == 'post' -o "$1" == "$ALL_COMMAND" ]; then
     echo "Create directory [POST]"
 
-    api_call result 'POST' "$IHOME/test" "force=True"
+    api_call result POST "$IHOME/test" "force=True"
     # http://stackoverflow.com/a/9640736/2114395
     if [ "$result" -gt "$MIN_INVALID_STATUS" ]; then return; fi
 fi
@@ -88,7 +105,7 @@ if [ "$1" == 'get' -o "$1" == "$ALL_COMMAND" ]; then
     # api_call result 'GET'
 
     echo "[GET] directory listing"
-    api_call result 'GET' "$IHOME"
+    api_call result GET "$IHOME"
     if [ "$result" -gt "$MIN_INVALID_STATUS" ]; then return; fi
 fi
 
@@ -98,15 +115,22 @@ fi
 if [ "$1" == 'delete' -o "$1" == "$ALL_COMMAND" ]; then
 
     echo "Remove non empty directory [DELETE]"
-    api_call result 'DELETE' "$IHOME/test"
+    api_call result DELETE "$IHOME/test"
 
     echo "Remove file [DELETE]"
-    api_call result 'DELETE' "$IHOME/test/gettoken"
+    api_call result DELETE "$IHOME/test/gettoken"
     if [ "$result" -gt "$MIN_INVALID_STATUS" ]; then return; fi
 
     echo "Remove directory [DELETE]"
-    api_call result 'DELETE' "$IHOME/test"
+    api_call result DELETE "$IHOME/test"
     if [ "$result" -gt "$MIN_INVALID_STATUS" ]; then return; fi
+fi
+
+######################################
+# CLEAN
+
+if [ "$1" == 'clean' ]; then
+    api_call status DELETE ?debugclean=true
 fi
 
 ######################################
