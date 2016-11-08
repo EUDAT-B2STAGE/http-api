@@ -101,54 +101,56 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 #         # collection_node = dataobj_node.belonging.all().pop()
 
         ###################
-        download = self._args.get('download')
-        print("Should download?", download)
-        data = icom.list_as_json(root=path)
-        # pretty_print(data)
+        # No graph...
 
-#         files = icom.list(path)
-#         glasj = icom.get_list_as_json(root=path)
-# ## FIX with ils -r
+        # note: this command will give irods error
+        # if the current user does not have permissions
+        is_collection = icom.is_collection(path)
+
+        data = {}
+
+        ###################
+        # In case the user request the download of a specific file
+        if self._args.get('download'):
+            if is_collection:
+                return self.force_response(
+                    errors={'collection': 'Recursive download is not allowed'})
+
+            if filename is None:
+                filename = self.filename_from_path(path)
+            abs_file = self.absolute_upload_file(filename, user)
+
+            # Make sure you remove any cached version to get a fresh obj
+            try:
+# // TO FIX:
+    # decide if we want to use a cache, and how!
+    # maybe nginx cache is better instead of our own?
+                os.remove(abs_file)
+            except:
+                pass
+            # Execute icommand (transfer data to cache)
+            icom.open(path, abs_file)
+            # Download the file from local fs
+            filecontent = super().download(
+                filename, subfolder=user, get=True)
+            # Remove local file
+            os.remove(abs_file)
+            # Stream file content
+            return filecontent
+
+        ###################
+        # data listing
+        else:
+
+            if is_collection:
+                data = icom.list_as_json(root=path)
+                # Print content list if it's a collection
+            else:
+                # Print file details/sys metadata if it's a specific file
+# to be better parsed
+                data = icom.meta_sys_list(path)
 
         return data
-
-        ###################
-        # In case we list the file details/metadata?
-        icom.meta_sys_list
-
-        ###################
-        # In case we download a specific file
-
-        # ipath = icom.get_irods_path(path, irods_location)
-        # print("TEST", ipath)
-
-        abs_file = self.absolute_upload_file(irods_location, user)
-
-        # Make sure you remove any cached version to get a fresh obj
-        try:
-            os.remove(abs_file)
-        except:
-# // TO FIX:
-# decide if we want to use a cache, and how!
-# maybe nginx cache is better instead of our own?
-            pass
-
-#         print("TEST", abs_file)
-
-#     #     # Execute icommand (transfer data to cache)
-#     #     icom.open(ipath, abs_file)
-
-#     #     # Download the file from local fs
-#     #     filecontent = super().download(
-#     #         dataobj_node.filename, subfolder=user, get=True)
-
-#     #     # Remove local file
-#     #     os.remove(abs_file)
-
-#         return "GET " + irods_location
-
-#     #     # Stream file content
-#     #     return filecontent
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
@@ -276,6 +278,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # Check if upload response is success
 ## // TO FIX:
 # this piece of code does not work with a custom response
+# if it changes the main blocks of the json root;
+# same developer should be able to provide a 'custom_split' on it
         content, errors, status = \
             self.get_content_from_response(response, get_all=True)
 
@@ -364,17 +368,16 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
 
         # Debug option to remove the whole content of current home
-        if current_app.config['DEBUG']:
-            if self._args.get('debugclean'):
-                icom, sql, user = self.init_endpoint()
-                home = icom.get_user_home()
-                files = icom.list_as_json(home)
-                for key, obj in files.items():
-                    icom.remove(
-                        home + '/' + obj['name'],
-                        recursive=obj['object_type'] == 'collection')
-                    logger.debug("Removed %s" % obj['name'])
-                return "Cleaned"
+        if current_app.config['DEBUG'] and self._args.get('debugclean'):
+            icom, sql, user = self.init_endpoint()
+            home = icom.get_user_home()
+            files = icom.list_as_json(home)
+            for key, obj in files.items():
+                icom.remove(
+                    home + INTERNAL_PATH_SEPARATOR + obj['name'],
+                    recursive=obj['object_type'] == 'collection')
+                logger.debug("Removed %s" % obj['name'])
+            return "Cleaned"
 
         # URI parameter is required
         if irods_location is None:
