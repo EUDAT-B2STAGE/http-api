@@ -194,7 +194,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     'Path to remote resource is wrong':
                     'Note: only absolute paths are allowed'
                 },
-                code=hcodes.HTTP_NOT_IMPLEMENTED
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
             )
 
         ###################
