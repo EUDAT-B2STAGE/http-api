@@ -367,10 +367,19 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             $SERVER/api/resources/tempZone/home/guest/test/filename "$AUTH"
         """
 
+        ###################
+        # BASIC INIT
+
+        # get the base objects
+        icom, sql, user = self.init_endpoint()
+        # get parameters with defaults
+        path, resource, filename, force = self.get_file_parameters(icom)
+
         # Debug option to remove the whole content of current home
-        if current_app.config['DEBUG'] and self._args.get('debugclean'):
+        if ((current_app.config['DEBUG'] or current_app.config['TESTING']) and
+                self._args.get('debugclean')):
             icom, sql, user = self.init_endpoint()
-            home = icom.get_user_home()
+            home = icom.get_user_home(user)
             files = icom.list_as_json(home)
             for key, obj in files.items():
                 icom.remove(
@@ -382,17 +391,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # URI parameter is required
         if irods_location is None:
             return self.force_response(
-                errors={'location': 'Missing path inside URI for DELETE'})
+                errors={'location': 'Missing path inside URI for DELETE'},
+                code=hcodes.HTTP_BAD_REQUEST)
         elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
             irods_location = INTERNAL_PATH_SEPARATOR + irods_location
-
-        ###################
-        # BASIC INIT
-
-        # get the base objects
-        icom, sql, user = self.init_endpoint()
-        # get parameters with defaults
-        path, resource, filename, force = self.get_file_parameters(icom)
 
         ########################################
         # # Get the dataobject from the graph
@@ -425,7 +427,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 logger.info("list:  %i", len(icom.list(path=irods_location)))
                 return self.force_response(
                     errors={'Directory is not empty':
-                            'Only empty directories can be deleted'})
+                            'Only empty directories can be deleted'},
+                    code=hcodes.HTTP_BAD_REQUEST)
 
         icom.remove(irods_location, recursive=is_recursive, resource=resource)
         logger.info("Removed %s", irods_location)

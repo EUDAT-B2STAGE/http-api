@@ -55,7 +55,14 @@ class TestDigitalObjects(unittest.TestCase):
             'Authorization': 'Bearer ' + content['Response']['data']['token']}
 
     def tearDown(self):
-        logger.info('### Tearing down the flask server ###')
+        logger.info('### Cleaning all and tearing down the flask server###')
+
+        # Delete w/o passing a path
+        endpoint = API_URI + self._main_endpoint
+        r = self.app.delete(endpoint, data=dict(debugclean='True'),
+                            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
         del self.app
 
         # Tokens clean up
@@ -131,9 +138,31 @@ class TestDigitalObjects(unittest.TestCase):
     def test_03_delete_entities(self):
         """ Test the entity delete: DELETE """
 
+        ###################################################
+        # I need to upload some data to test the DELETE..
+        # Create a directory
+        endpoint = API_URI + self._main_endpoint
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+        # Upload entity in test folder
+        endpoint = API_URI + self._main_endpoint + self._irods_path
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename)),
+                         headers=self.__class__.auth_header)
+        ###################################################
+
         logger.info('*** Testing DELETE')
+        # Delete non empty directory
+        endpoint = API_URI + self._main_endpoint + self._irods_path
+        r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
+
         # Delete entity
-        endpoint = API_URI + self._main_endpoint + self._irods_path + '/' + self._test_filename
+        endpoint = (API_URI + self._main_endpoint + self._irods_path +
+                    '/' + self._test_filename)
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
@@ -143,7 +172,8 @@ class TestDigitalObjects(unittest.TestCase):
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
         # Delete non existing entity
-        endpoint = API_URI + self._main_endpoint + self._irods_path + '/' + self._test_filename + 'x'
+        endpoint = (API_URI + self._main_endpoint + self._irods_path +
+                    '/' + self._test_filename + 'x')
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
 
@@ -155,7 +185,7 @@ class TestDigitalObjects(unittest.TestCase):
         # Delete w/o passing a path
         endpoint = API_URI + self._main_endpoint
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
 
 
 
