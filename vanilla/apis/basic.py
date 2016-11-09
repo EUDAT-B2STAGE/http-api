@@ -367,17 +367,18 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             $SERVER/api/resources/tempZone/home/guest/test/filename "$AUTH"
         """
 
-        # Debug option to remove the whole content of current home
-        if current_app.config['DEBUG'] and self._args.get('debugclean'):
-            icom, sql, user = self.init_endpoint()
-            home = icom.get_user_home()
-            files = icom.list_as_json(home)
-            for key, obj in files.items():
-                icom.remove(
-                    home + INTERNAL_PATH_SEPARATOR + obj['name'],
-                    recursive=obj['object_type'] == 'collection')
-                logger.debug("Removed %s" % obj['name'])
-            return "Cleaned"
+        # Debug/Testing option to remove the whole content of current home
+        if current_app.config['DEBUG'] or current_app.config['TESTING']:
+            if self._args.get('debugclean'):
+                icom, sql, user = self.init_endpoint()
+                home = icom.get_user_home()
+                files = icom.list_as_json(home)
+                for key, obj in files.items():
+                    icom.remove(
+                        home + INTERNAL_PATH_SEPARATOR + obj['name'],
+                        recursive=obj['object_type'] == 'collection')
+                    logger.debug("Removed %s" % obj['name'])
+                return "Cleaned"
 
         # URI parameter is required
         if irods_location is None:
