@@ -259,7 +259,7 @@ elif [ "$1" == "client_shell" ]; then
     echo "Opening a client shell"
     # $compose_run up --no-deps -d $clientcontainer
     # $compose_run exec $clientcontainer ash
-    $compose_run exec $clientcontainer bash
+    TERM=xterm-256color $compose_run exec $clientcontainer bash
     exit 0
 
 # Handle the right logs
