@@ -380,7 +380,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if current_app.config['DEBUG'] or current_app.config['TESTING']:
             if self._args.get('debugclean'):
                 icom, sql, user = self.init_endpoint()
-                home = icom.get_user_home()
+                home = icom.get_user_home(user)
                 files = icom.list_as_json(home)
                 for key, obj in files.items():
                     icom.remove(
