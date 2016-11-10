@@ -227,7 +227,7 @@ class TestDigitalObjects(unittest.TestCase):
         # Delete non existing directory
         endpoint = API_URI + self._main_endpoint + self._invalid_irods_path
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_NOTFOUND)
 
         # Delete w/o passing a path
         endpoint = API_URI + self._main_endpoint

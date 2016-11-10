@@ -162,7 +162,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 if len(data) < 1:
                     return self.force_response(errors={
                         'not found':
-                        "path does not exists or you don't have privileges"})
+                        "path does not exists or you don't have privileges"},
+                        code=hcodes.HTTP_BAD_NOTFOUND)
 
                 ## // TO FIX:
                 # to be better parsed
@@ -461,6 +462,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     errors={'Directory is not empty':
                             'Only empty directories can be deleted'},
                     code=hcodes.HTTP_BAD_REQUEST)
+        else:
+                # Print file details/sys metadata if it's a specific file
+                data = icom.meta_sys_list(irods_location)
+                # if a path that does not exist
+                if len(data) < 1:
+                    return self.force_response(errors={
+                        'not found':
+                        "path does not exists or you don't have privileges"},
+                        code=hcodes.HTTP_BAD_NOTFOUND)
 
         icom.remove(irods_location, recursive=is_recursive, resource=resource)
         logger.info("Removed %s", irods_location)
