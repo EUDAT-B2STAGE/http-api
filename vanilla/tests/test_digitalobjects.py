@@ -140,6 +140,28 @@ class TestDigitalObjects(unittest.TestCase):
         """ Test the entity listingend retrieval: GET """
 
         logger.info('*** Testing GET')
+        # GET non existing entity
+        endpoint = (API_URI + self._main_endpoint + self._irods_path + '/' +
+                    self._test_filename)
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_NOTFOUND)
+
+        ###################################################
+        # I need to upload some data to test the DELETE..
+        # Create a directory
+        endpoint = API_URI + self._main_endpoint
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+        # Upload entity in test folder
+        endpoint = API_URI + self._main_endpoint + self._irods_path
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename)),
+                         headers=self.__class__.auth_header)
+        ###################################################
+
         # Obtain entity metadata
         endpoint = (API_URI + self._main_endpoint + self._irods_path + '/' +
                     self._test_filename)
@@ -154,14 +176,10 @@ class TestDigitalObjects(unittest.TestCase):
         # Download an entity
         endpoint = (API_URI + self._main_endpoint + self._irods_path + '/' +
                     self._test_filename)
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        r = self.app.get(endpoint, data=dict(download='True'),
+                         headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
-
-        # GET non existing entity
-        endpoint = (API_URI + self._main_endpoint + self._irods_path + '/' +
-                    self._test_filename + 'x')
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, hcodes.HTTP_BAD_NOTFOUND)
+        self.assertEqual(r.data, b'this is a test')
 
     def test_04_delete_entities(self):
         """ Test the entity delete: DELETE """
