@@ -475,4 +475,4 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         icom.remove(irods_location, recursive=is_recursive, resource=resource)
         logger.info("Removed %s", irods_location)
 
-        return self.force_response({'requested removal': irods_location})
+        return self.force_response({'removed': irods_location})

@@ -19,6 +19,8 @@ logger = get_logger(__name__)
 #         errors={},
 #         headers={}):
 
+    # return response, code, errors, headers
+
 #     return ExtendedApiResource.flask_response("Hello")
 
 # # OPTION 2
@@ -39,12 +41,15 @@ SERVER_ERROR = {'message': 'Internal Server Error'}
 
 
 @decorate.custom_response
-def eudat_response(*args, defined_content=None, code=None, headers={},
-                   errors={}, **kwargs):
+def eudat_response(defined_content=None,
+                   code=None, headers={}, errors={}):
+                   #, *args, **kwargs):
     """
     Define my response that will be used
     from any custom endpoint inside any file
     """
+
+    print("TEST_06: Eudat custom response")
 
     if defined_content is None:
         defined_content = {}

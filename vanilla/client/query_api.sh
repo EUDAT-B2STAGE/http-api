@@ -9,9 +9,17 @@
 if [ "$1" == "help" ]; then
     echo "Usage: . query_api.sh [METHOD]"
     echo ""
-    echo "available methods: get, post, put, delete, clean"
+    # echo "available methods: get, post, put, delete, clean"
+    echo "available methods:"
+    echo ""
+    echo -e "\t - list PATH"
+## // TO FIX:
+# complete
     return
 fi
+
+## // TO FIX:
+# add parameters like path for the method or similar?
 
 IHOME="/tempZone/home/guest"
 MIN_INVALID_STATUS="299"
@@ -59,6 +67,7 @@ function api_call()
     echo "Command: [ $com \"\$AUTH\" ]"
     out=`$com "$AUTH"`
     status=`echo $out | jq '.Meta.status'`
+    ${status:-500}
     errors=`echo $out | jq '.Response.errors'`
     if [ "$status" -gt "$MIN_INVALID_STATUS" ]; then
         echo ""

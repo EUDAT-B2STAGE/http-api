@@ -11,11 +11,15 @@
     },
     // the most basic and simple upload/download
     "custom.basic": {
-        // "EudatTest": [
-        //     "test",
-        //     // http://flask.pocoo.org/snippets/76/
-        //     "test/<path:location>"
-        // ],
+////////////////////////
+// TO BE REMOVED
+        "EudatTest": [
+            "test",
+            // http://flask.pocoo.org/snippets/76/
+            "test/<path:location>"
+        ],
+// TO BE REMOVED
+////////////////////////
         "BasicEndpoint": [
             "resources",
             "resources/<path:irods_location>"
