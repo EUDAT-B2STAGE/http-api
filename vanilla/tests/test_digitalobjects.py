@@ -57,10 +57,11 @@ class TestDigitalObjects(unittest.TestCase):
     def tearDown(self):
         logger.info('### Cleaning all and tearing down the flask server###')
 
-        # Delete w/o passing a path
+        # Clean all test data
         endpoint = API_URI + self._main_endpoint
         r = self.app.delete(endpoint, data=dict(debugclean='True'),
                             headers=self.__class__.auth_header)
+        # Do I nedd the assert here?
         self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
 
         del self.app
@@ -135,7 +136,34 @@ class TestDigitalObjects(unittest.TestCase):
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
 
-    def test_03_delete_entities(self):
+    def test_03_get_entities(self):
+        """ Test the entity listingend retrieval: GET """
+
+        logger.info('*** Testing GET')
+        # Obtain entity metadata
+        endpoint = (API_URI + self._main_endpoint + self._irods_path + '/' +
+                    self._test_filename)
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+        # Get list of entities in a directory
+        endpoint = API_URI + self._main_endpoint + self._irods_path
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+        # Download an entity
+        endpoint = (API_URI + self._main_endpoint + self._irods_path + '/' +
+                    self._test_filename)
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
+
+        # GET non existing entity
+        endpoint = (API_URI + self._main_endpoint + self._irods_path + '/' +
+                    self._test_filename + 'x')
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_NOTFOUND)
+
+    def test_04_delete_entities(self):
         """ Test the entity delete: DELETE """
 
         ###################################################
@@ -175,7 +203,8 @@ class TestDigitalObjects(unittest.TestCase):
         endpoint = (API_URI + self._main_endpoint + self._irods_path +
                     '/' + self._test_filename + 'x')
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, hcodes.HTTP_BAD_REQUEST)
+        self.assertEqual(r.status_code, hcodes.HTTP_BAD_NOTFOUND)
+        # HTTP_BAD_NOTFOUND is more appropriate
 
         # Delete non existing directory
         endpoint = API_URI + self._main_endpoint + self._invalid_irods_path
