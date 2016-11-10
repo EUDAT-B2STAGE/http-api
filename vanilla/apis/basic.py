@@ -19,12 +19,15 @@ from ..services.uploader import Uploader
 from ..services.irods.client import IrodsException
 # from ..services.irods.translations import Irods2Graph
 # from commons import htmlcodes as hcodes
-from .. import decorators as decorate
 from ...auth import authentication
 # from ...confs import config
 from flask import request, current_app
 from commons import htmlcodes as hcodes
 from commons.logs import get_logger, pretty_print
+
+## // TO FIX for custom response:
+# from .response import decorate
+from .. import decorators as decorate
 
 logger = get_logger(__name__)
 
@@ -34,20 +37,25 @@ CURRENT_B2SAFE_SERVER_CODE = 'a0'
 INTERNAL_PATH_SEPARATOR = '/'
 
 
-# class EudatTest(EudatEndpoint):
+class EudatTest(EudatEndpoint):
+    """
+    A class to test development of internal parts,
+    e.g. responses
+    """
 
-#     @decorate.add_endpoint_parameter('test')
-#     @decorate.apimethod
-#     def get(self, location=None):
-#         """
-#         This works for all methods: GET, POST, PUT, PATCH, DELETE
-#         """
-#         data = {
-#             'path': location,
-#             'parameters': self.get_input(),
-#             'parameter': self.get_input(single_parameter='test'),
-#         }
-#         return data
+    @decorate.add_endpoint_parameter('test')
+    @decorate.apimethod
+    def get(self, location=None):
+        """
+        This works for all methods: GET, POST, PUT, PATCH, DELETE
+        """
+        data = {
+            'path': location,
+            'parameters': self.get_input(),
+            'parameter': self.get_input(single_parameter='test'),
+        }
+        # return data
+        return self.force_response(data)
 
 
 ###############################
@@ -144,11 +152,23 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             if is_collection:
                 data = icom.list_as_json(root=path)
+                if len(data) < 1:
+                    data = []
                 # Print content list if it's a collection
             else:
                 # Print file details/sys metadata if it's a specific file
-# to be better parsed
                 data = icom.meta_sys_list(path)
+                # if a path that does not exist
+                if len(data) < 1:
+                    return self.force_response(errors={
+                        'not found':
+                        "path does not exists or you don't have privileges"})
+
+                ## // TO FIX:
+                # to be better parsed
+
+            # what if does not exist?
+            print("TEST", data, len(data))
 
         return data
 
@@ -158,7 +178,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-    def post(self):
+    def post(self, irods_location=None):
         """
         Handle [directory creation](docs/user/registered.md#post).
 
@@ -168,6 +188,16 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             $SERVER/api/resources?path=/tempZone/home/guest/test \
             force=True "$AUTH"
         """
+
+        # Post does not accept the <ID> inside the URI
+        if irods_location is not None:
+            return self.force_response(
+                errors={
+                    'Forbidden path inside URI':
+                    "Please pass the location string as parameter 'path'"
+                },
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+            )
 
         # Disable upload for POST method
         if 'file' in request.files:
