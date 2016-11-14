@@ -1,39 +1,4 @@
 
-SCHEMA:
-
-KEEP - forcing response
-  # to be called to change the content
-  # errors and headers somewhere
-
-MOVE/REMOVE - default response
-# apply Meta|Response structure
-
-MOVE -  custom response
-# call the custom function for data (and errors?) content
-
-MOVE - flask response inside base
-# create the flask response from all above
-
-ALREADY MOVED and automatic  -  jsonify
-
-ALREADY MOVED as a class -  Made flask response in server.py
-
-REMOVE - decorator received  <InternalResponse 273 bytes [200 OK]>
-
-
-current:
-
-✔ fix comment json import in config.py from jsonify @done (16-11-10 15:47)
-- move default_response inside the new Flask MyResponse class
-- what is the motivation of make_custom_response?
-- remove decorator actions on response
-- move also get_content_from_response from base to response
-- why doesn't b2access response be modified?
-
-http GET $SERVER/api/resources/tempZone/home/x/guest/test/tesdddt.pdf "$AUTH"
-- should fail
-
-
 GUIDELINES:
 - Python 3.5
 - PEP compliant
@@ -43,27 +8,33 @@ GUIDELINES:
 - Usable if not inside Docker
 - Swagger?
 
---- ✄ -----------------------
-
 BEST PRACTICES:
 
   - use collection.namedtuple for returning multiple values
   - ptipython as default shell
   - httpie as command line
-  - click/easyargs for quick command line prototypes
+  - click/easyargs/anythingsimilar for quick command line prototypes
   - virtualenv for multiple versioning libraries
 
+--- ✄ -----------------------
 
-
-
-
-
-
+current:
+✔ new response @done (16-11-15 00:45)
+  ✘ headers? @cancelled (16-11-15 00:45)
+☐ why doesn't b2access response be modified?
+☐ parameters input from reading the json config
+  ☐ custom response.py
+☐ what is the motivation of make_custom_response?
+☐ handle @get_content_from_response
+  ☐ from base to response
+☐ PATCH METHOD
+☐ B2ACCESS id <-> irods user mapping
+☐ fix json: import from jsonify
 
 --- ✄ -----------------------
 THINGS TO DO:
 
-- endpoints: GET, PATCH
+- endpoints
 - tests
 - write a custom response
 - support custom response inside unit tests
@@ -72,14 +43,6 @@ THINGS TO DO:
 - how to specify current b2safe environment domain: a configuration @paramater
 
 --- ✄ ----------------------- DETAILS
-
-UPCOMING QUESTIONS:
-
-✔ WP5 lead feedback on document @done (16-10-24 09:03)
-  ✘ Avoid managing collections at all @tobeconfirmed @cancelled (16-10-24 09:03)
-☐ Response format
-☐ B2ACCESS id <-> irods user mapping
-   ✔ ask B2SAFE people for the script or help @done (16-10-24 09:03)
 
 AUTHENTICATION:
   ☐ check if b2access works
@@ -144,3 +107,8 @@ UID:
       ☐ use a /api/internals/mappings/b2safe to manage the list?
     ☐ not uuid (just Unique ID) and as small as possible
       ☐ use path, resource, filename and b2safe code for creating the hash
+
+curl commands:
+  - put file
+  curl -X PUT -F file=@/tmp/gettoken $SERVER/api/resources/tempZone/home/guest/token.txt -H "$AUTH"
+

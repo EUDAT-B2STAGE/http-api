@@ -37,14 +37,17 @@ CURRENT_B2SAFE_SERVER_CODE = 'a0'
 INTERNAL_PATH_SEPARATOR = '/'
 
 
+# @decorate.all_rest_methods
 class EudatTest(EudatEndpoint):
     """
     A class to test development of internal parts,
     e.g. responses
     """
 
+    # @authentication.authorization_required
     @decorate.add_endpoint_parameter('test')
     @decorate.apimethod
+    # @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self, location=None):
         """
         This works for all methods: GET, POST, PUT, PATCH, DELETE
@@ -54,8 +57,8 @@ class EudatTest(EudatEndpoint):
             'parameters': self.get_input(),
             'parameter': self.get_input(single_parameter='test'),
         }
-        # return data
         return self.force_response(data)
+        return data
 
 
 ###############################
