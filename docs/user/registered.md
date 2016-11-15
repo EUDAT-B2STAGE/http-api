@@ -18,37 +18,75 @@ The examples in this section use cURL commands. For information about cURL, see 
 ### Obtain entity metadata
 ##### Example
 ```bash
-GET https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
-# return a JSON containing the 'filename' metadata
+# Get 'filename.txt' metadata
+$ curl https://be2safexx.eudat.eu/api/namespace/path/to/directory/filename.txt -H "Authorization: Bearer <auth_token>"
 ```
 ##### Response
 ```json
-[JSON example]
+{
+  "Meta": {
+    "data_type": "<class 'list'>", 
+    "elements": 1, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": [
+      [
+        "data_name", 
+        "filename.txt"
+      ]
+    ], 
+    "errors": null
+  }
+}
+
 ```
 
 ### Download an entity
 ##### Example
 ```bash
-GET https://be2safexx.eudat.eu/api/registered/path/to/directory/filename?download
-# download 'filename'
+# Download 'filename.txt'
+$ curl https://be2safexx.eudat.eu/api/namespace/path/to/directory/filename.txt?download=true -H "Authorization: Bearer <auth_token>"
 ```
 ##### Response
 ```json
-[JSON example]
+filename content
 ```
 
 ### Get list of entities in a directory
 ##### Example
 ```bash
-GET https://be2safexx.eudat.eu/api/registered/path/to/directory
-# return a JSON containing the list of entities inside 'directory'
+# Get list of entities inside 'directory'
+$ curl https://be2safexx.eudat.eu/api/resources/namespace/path/to/directory/ -H "Authorization: Bearer <auth_token>"
 ```
 ##### Response
 ```json
-[JSON example]
+{
+  "Meta": {
+    "data_type": "<class 'dict'>", 
+    "elements": 1, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": {
+      "filename.txt": {
+        "acl": null, 
+        "acl_inheritance": null, 
+        "content_length": "778", 
+        "last_modified": "2016-11-11.13:27", 
+        "name": "filename.txt", 
+        "object_type": "dataobject", 
+        "owner": "guest", 
+        "path": ""
+      }
+    }, 
+    "errors": null
+  }
+}
 ```
 
----
 
 ## **PUT**
 ### Create or update an entity **and trigger the registration in B2SAFE**
@@ -63,12 +101,32 @@ GET https://be2safexx.eudat.eu/api/registered/path/to/directory
 
 ##### Example
 ```bash
-PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
-# create 'myfile' as '/path/to/directory/filename' and trigger the registration in B2SAFE
+# create 'myfile.txt' as '/path/to/directory/filename' and trigger the registration in B2SAFE
+$ curl -X PUT -F file=@myfile.txt  https://be2safexx.eudat.eu/api/namespace/path/to/directory/filename -H "Authorization: Bearer <auth_token>"
+
 ```
 ##### Response
 ```json
-[JSON example]
+{
+  "Meta": {
+    "data_type": "<class 'dict'>", 
+    "elements": 5, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": {
+      "filename": "myfile", 
+      "link": "http://172.17.0.4:5000/api/namespace/path/to/directory/myfile.txt", 
+      "location": "irods:///b2safe.cineca.it/path/to/directory/myfile.txt", 
+      "path": "/path/to/directory/myfile.txt", 
+      "resources": [
+        "myResc"
+      ]
+    }, 
+    "errors": null
+  }
+}
 ```
 
 ---
@@ -81,12 +139,13 @@ PUT file@myfile https://be2safexx.eudat.eu/api/registered/path/to/directory/file
 | force | bool | Force recursive creation
 ##### Example
 ```bash
-POST https://be2safexx.eudat.eu/api/registered?path=/path/to/directory
-# create the directory '/path/to/directory' in B2SAFE
+# Create the directory '/new_directory' in B2SAFE
+$ curl -X POST https://be2safexx.eudat.eu/api/namespace?path=/path/to/directory/new_directory/ -H "Authorization: Bearer <auth_token>"
+#POST https://be2safexx.eudat.eu/api/registered?path=/path/to/directory
 ```
 ##### Response
 ```json
-[JSON example]
+[JSON]
 ```
 
 ---
@@ -94,23 +153,53 @@ POST https://be2safexx.eudat.eu/api/registered?path=/path/to/directory
 ### Delete an entity
 ##### Example
 ```bash
-DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
-# delete the file '/path/to/directory/filename'
+# Delete the file '/path/to/directory/file.txt'
+$ curl -X DELETE https://be2safexx.eudat.eu/api/namespace/path/to/directory/file.txt -H "Authorization: Bearer <auth_token>"
+#DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
+
 ```
 ##### Response
 ```json
-[JSON example]
+{
+  "Meta": {
+    "data_type": "<class 'dict'>", 
+    "elements": 1, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": {
+      "requested removal": "/path/to/directory/file.txt"
+    }, 
+    "errors": null
+  }
+}
+
 ```
 
 ### Delete an empty directory
 ##### Example
 ```bash
-DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory
-# delete the directory "/path/to/directory" (only if empty)
+# Delete "directory" (only if empty)
+$ curl -X DELETE https://be2safexx.eudat.eu/api/namespace/path/to/directory/ -H "Authorization: Bearer <auth_token>"
+#DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory
 ```
 ##### Response
 ```json
-[JSON example]
+{
+  "Meta": {
+    "data_type": "<class 'dict'>", 
+    "elements": 1, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": {
+      "requested removal": "/path/to/directory/"
+    }, 
+    "errors": null
+  }
+}
 ```
 
 ---
