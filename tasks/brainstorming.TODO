@@ -22,8 +22,13 @@ current:
 ✔ new response @done (16-11-15 00:45)
   ✘ headers? @cancelled (16-11-15 00:45)
 ☐ check b2access
+   ✔ check force_response calls @done (16-11-15 12:21)
+   ☐ check account
    ☐ check responses into protocol
+✔ fix base test @done (16-11-15 12:21)
+  ☐ use the explode method
 ☐ parameters input from reading the json config
+☐ change base.py into core.py
 ☐ write again a custom response.py
   ☐ what is the motivation of make_custom_response?
 ☐ handle @get_content_from_response
