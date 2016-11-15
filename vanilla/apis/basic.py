@@ -37,14 +37,17 @@ CURRENT_B2SAFE_SERVER_CODE = 'a0'
 INTERNAL_PATH_SEPARATOR = '/'
 
 
+# @decorate.all_rest_methods
 class EudatTest(EudatEndpoint):
     """
     A class to test development of internal parts,
     e.g. responses
     """
 
+    # @authentication.authorization_required
     @decorate.add_endpoint_parameter('test')
     @decorate.apimethod
+    # @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self, location=None):
         """
         This works for all methods: GET, POST, PUT, PATCH, DELETE
@@ -54,8 +57,8 @@ class EudatTest(EudatEndpoint):
             'parameters': self.get_input(),
             'parameter': self.get_input(single_parameter='test'),
         }
-        # return data
         return self.force_response(data)
+        return data
 
 
 ###############################
@@ -77,8 +80,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # BASIC INIT
 
         if irods_location is None:
-            return self.force_response(
-                errors={'location': 'Missing filepath inside URI for GET'})
+            return self.send_errors(
+                'location', 'Missing filepath inside URI for GET')
         elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
             irods_location = INTERNAL_PATH_SEPARATOR + irods_location
 
@@ -98,14 +101,14 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
 #         # # If trying to use a path as file
 #         # elif name[-1] == INTERNAL_PATH_SEPARATOR:
-#         #     return self.force_response(
-#         #         errors={'dataobject': 'No dataobject/file requested'})
+#         #     return self.send_errors(
+#         #         'dataobject', 'No dataobject/file requested')
 
 #         # # Get filename and ipath from uuid using the graph
 #         # try:
 #         #     dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
 #         # except graph.DigitalEntity.DoesNotExist:
-#         #     return self.force_response(errors={uuid: 'Not found.'})
+#         #     return self.send_errors(uuid, 'Not found.')
 #         # collection_node = dataobj_node.belonging.all().pop()
 
         ###################
@@ -121,8 +124,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # In case the user request the download of a specific file
         if self._args.get('download'):
             if is_collection:
-                return self.force_response(
-                    errors={'collection': 'Recursive download is not allowed'})
+                return self.send_errors(
+                    'collection', 'Recursive download is not allowed')
 
             if filename is None:
                 filename = self.filename_from_path(path)
@@ -160,9 +163,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 data = icom.meta_sys_list(path)
                 # if a path that does not exist
                 if len(data) < 1:
-                    return self.force_response(errors={
-                        'not found':
-                        "path does not exists or you don't have privileges"},
+                    return self.send_errors(
+                        'not found',
+                        "path does not exists or you don't have privileges",
                         code=hcodes.HTTP_BAD_NOTFOUND)
 
                 ## // TO FIX:
@@ -192,21 +195,17 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # Post does not accept the <ID> inside the URI
         if irods_location is not None:
-            return self.force_response(
-                errors={
-                    'Forbidden path inside URI':
-                    "Please pass the location string as parameter 'path'"
-                },
+            return self.send_errors(
+                'Forbidden path inside URI',
+                "Please pass the location string as parameter 'path'",
                 code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
             )
 
         # Disable upload for POST method
         if 'file' in request.files:
-            return self.force_response(
-                errors={
-                    'File upload forbidden for this method':
-                    'Please use the PUT method for this operation'
-                },
+            return self.send_errors(
+                'File upload forbidden for this method',
+                'Please use the PUT method for this operation',
                 code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
             )
 
@@ -220,11 +219,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # if path variable empty something is wrong
         if path is None:
-            return self.force_response(
-                errors={
-                    'Path to remote resource is wrong':
-                    'Note: only absolute paths are allowed'
-                },
+            return self.send_errors(
+                'Path to remote resource is wrong',
+                'Note: only absolute paths are allowed',
                 code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
             )
 
@@ -278,8 +275,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 # this is also used inside the delete method
 # we may consider moving this block inside the `get_file_parameters` method
         if irods_location is None:
-            return self.force_response(
-                errors={'location': 'Missing filepath inside URI for PUT'})
+            return self.send_errors(
+                'location', 'Missing filepath inside URI for PUT')
         elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
             irods_location = INTERNAL_PATH_SEPARATOR + irods_location
 
@@ -294,11 +291,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # Disable directory creation for PUT method
         if 'file' not in request.files:
-            return self.force_response(
-                errors={
-                    'Directory creation is forbidden for this method':
-                    'Please use the POST method for this operation'
-                },
+            return self.send_errors(
+                'Directory creation is forbidden for this method',
+                'Please use the POST method for this operation',
                 code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
             )
 
@@ -312,7 +307,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 # if it changes the main blocks of the json root;
 # same developer should be able to provide a 'custom_split' on it
         content, errors, status = \
-            self.get_content_from_response(response, get_all=True)
+            self.explode_response(response, get_all=True)
 
         ###################
         # If files uploaded
@@ -423,8 +418,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         ###################
         # URI parameter is required
         if irods_location is None:
-            return self.force_response(
-                errors={'location': 'Missing path inside URI for DELETE'},
+            return self.send_errors(
+                'location', 'Missing path inside URI for DELETE',
                 code=hcodes.HTTP_BAD_REQUEST)
         elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
             irods_location = INTERNAL_PATH_SEPARATOR + irods_location
@@ -443,7 +438,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # try:
         #     dataobj_node.delete()
         # except graph.DigitalEntity.DoesNotExist:
-        #     return self.force_response(errors={uuid: 'Not found.'})
+        #     return self.send_errors(uuid, 'Not found.')
 
         # # Delete collection if not linked to any dataobject anymore?
         # if len(collection_node.belongs.all()) < 1:
@@ -458,21 +453,21 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 is_recursive = True
             else:
                 logger.info("list:  %i", len(icom.list(path=irods_location)))
-                return self.force_response(
-                    errors={'Directory is not empty':
-                            'Only empty directories can be deleted'},
+                return self.send_errors(
+                    'Directory is not empty',
+                    'Only empty directories can be deleted',
                     code=hcodes.HTTP_BAD_REQUEST)
         else:
                 # Print file details/sys metadata if it's a specific file
                 data = icom.meta_sys_list(irods_location)
                 # if a path that does not exist
                 if len(data) < 1:
-                    return self.force_response(errors={
-                        'not found':
-                        "path does not exists or you don't have privileges"},
+                    return self.send_errors(
+                        'not found',
+                        "path does not exists or you don't have privileges",
                         code=hcodes.HTTP_BAD_NOTFOUND)
 
         icom.remove(irods_location, recursive=is_recursive, resource=resource)
         logger.info("Removed %s", irods_location)
 
-        return self.force_response({'requested removal': irods_location})
+        return self.force_response({'removed': irods_location})

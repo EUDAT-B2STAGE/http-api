@@ -60,25 +60,19 @@ class Authorize(ExtendedApiResource):
         try:
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
-            logger.critical("Authorization empty:\n%s\nCheck app credentials"
-                            % str(e))
-## TO BE FIXED WITH ALL THE OTHER 'response' calls
-            return self.response({'errors': [{'Server misconfiguration':
-                                 'oauth2 failed'}]})
+            logger.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
+            return self.send_errors('Server misconfiguration', 'oauth2 failed')
         except Exception as e:
-            # raise e
-            logger.critical("Failed to get authorized response:\n%s" % str(e))
-            return self.response(
-                {'errors': [{'Access denied': 'B2ACCESS OAUTH2: ' + str(e)}]})
+            # raise e  # DEBUG
+            logger.critical("Failed to get authorized @B2access:\n%s" % str(e))
+            return self.send_errors('B2ACCESS denied', 'oauth2: %s' % e)
         if resp is None:
-            return self.response(
-                {'errors': [{'Access denied': 'Uknown error'}]})
+            return self.send_errors('B2ACCESS denied', 'Uknown error')
 
         token = resp.get('access_token')
         if token is None:
             logger.critical("No token received")
-            return self.response(
-                {'errors': [{'External token': 'Empty token from B2ACCESS'}]})
+            return self.send_errors('B2ACCESS', 'Empty token')
 
         ############################################
         # Use b2access with token to get user info
@@ -88,21 +82,23 @@ class Authorize(ExtendedApiResource):
         session['b2access_token'] = (token, '')
         current_user = b2access.get('userinfo')
 
-## TO BE FIXED:
-    # move the code handling graph inside its class for authentication
-    # and create a similar one with sqllite
-        # Store b2access information inside the graphdb
-        graph = self.global_get_service('neo4j')
-        obj = auth.save_oauth2_info_to_user(
-            graph, current_user, token)
+        print("CURRENT USER", current_user)
 
-## // TO FIX:
-# make this a 'check_if_error_obj' inside the ExtendedAPIResource
-        if isinstance(obj, dict) and 'errors' in obj:
-            return self.response(obj)
+# ## TO BE FIXED:
+#     # move the code handling graph inside its class for authentication
+#     # and create a similar one with sqllite
+#         # Store b2access information inside the graphdb
+#         graph = self.global_get_service('neo4j')
+#         obj = auth.save_oauth2_info_to_user(
+#             graph, current_user, token)
 
-        user_node = obj
-        logger.info("Stored access info")
+#         ## // TO FIX:
+#         # make this a 'check_if_error_obj' inside the ExtendedAPIResource
+#         if isinstance(obj, dict) and 'errors' in obj:
+#             return self.force_response(obj)
+
+#         user_node = obj
+#         logger.info("Stored access info")
 
         ############################################
 ## // TO FIX:
@@ -125,8 +121,13 @@ class Authorize(ExtendedApiResource):
         from commons.certificates import Certificates
         b2accessCA = auth._oauth2.get('b2accessCA')
         obj = Certificates().make_proxy_from_ca(b2accessCA)
+
+# STOP HERE!
+        print("TEST DEBUG", obj); return obj
+
         if isinstance(obj, dict) and 'errors' in obj:
-            return self.response(obj)
+            return self.force_response(obj)
+
 
         ############################################
         # Save the proxy filename into the graph
@@ -195,4 +196,4 @@ ERROR: [-]  iRODS/lib/core/src/clientLogin.cpp:321:clientLogin :
 
 ## // TO FIX:
 # Create a 'return_credentials' method to use standard Bearer oauth response
-        return self.response({'token': token})
+        return self.force_response({'token': token})

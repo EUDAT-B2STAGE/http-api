@@ -8,27 +8,39 @@ GUIDELINES:
 - Usable if not inside Docker
 - Swagger?
 
---- ✄ -----------------------
-
 BEST PRACTICES:
 
   - use collection.namedtuple for returning multiple values
   - ptipython as default shell
   - httpie as command line
-  - click/easyargs for quick command line prototypes
+  - click/easyargs/anythingsimilar for quick command line prototypes
   - virtualenv for multiple versioning libraries
 
+--- ✄ -----------------------
 
-
-
-
-
-
+current:
+✔ new response @done (16-11-15 00:45)
+  ✘ headers? @cancelled (16-11-15 00:45)
+☐ check b2access
+   ✔ check force_response calls @done (16-11-15 12:21)
+   ☐ check account
+   ☐ check responses into protocol
+✔ fix base test @done (16-11-15 12:21)
+  ☐ use the explode method
+☐ parameters input from reading the json config
+☐ change base.py into core.py
+☐ write again a custom response.py
+  ☐ what is the motivation of make_custom_response?
+☐ handle @get_content_from_response
+  ☐ from base to response
+☐ PATCH METHOD
+☐ B2ACCESS id <-> irods user mapping
+☐ fix json: import from jsonify
 
 --- ✄ -----------------------
 THINGS TO DO:
 
-- endpoints: GET, PATCH
+- endpoints
 - tests
 - write a custom response
 - support custom response inside unit tests
@@ -37,14 +49,6 @@ THINGS TO DO:
 - how to specify current b2safe environment domain: a configuration @paramater
 
 --- ✄ ----------------------- DETAILS
-
-UPCOMING QUESTIONS:
-
-✔ WP5 lead feedback on document @done (16-10-24 09:03)
-  ✘ Avoid managing collections at all @tobeconfirmed @cancelled (16-10-24 09:03)
-☐ Response format
-☐ B2ACCESS id <-> irods user mapping
-   ✔ ask B2SAFE people for the script or help @done (16-10-24 09:03)
 
 AUTHENTICATION:
   ☐ check if b2access works
@@ -109,3 +113,8 @@ UID:
       ☐ use a /api/internals/mappings/b2safe to manage the list?
     ☐ not uuid (just Unique ID) and as small as possible
       ☐ use path, resource, filename and b2safe code for creating the hash
+
+curl commands:
+  - put file
+  curl -X PUT -F file=@/tmp/gettoken $SERVER/api/resources/tempZone/home/guest/token.txt -H "$AUTH"
+
