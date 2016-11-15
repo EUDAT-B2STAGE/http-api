@@ -1,2 +1,2 @@
-6968ae7 Few bug fixes from recent changes
+20cae92 Handling hierarchy and redirect responses.
  graph_based_auth LICENSE README.md backend certs composers confs do docker-compose.yml docs notebooks submodules.current.commit tasks vanilla master oauthtest
