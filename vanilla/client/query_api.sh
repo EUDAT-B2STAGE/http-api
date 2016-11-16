@@ -48,7 +48,7 @@ if [ "$SERVER" == '' ]; then
     return
 fi
 
-ENDPOINT="$SERVER/api/resources"
+ENDPOINT="$SERVER/api/namespace"
 
 ######################################
 function api_call()

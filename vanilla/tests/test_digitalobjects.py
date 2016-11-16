@@ -5,7 +5,6 @@ Test dataobjects endpoints
 
 Run single test:
 nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
-
 """
 
 from __future__ import absolute_import
@@ -22,10 +21,7 @@ logger = get_logger(__name__, True)
 
 class TestDigitalObjects(RestTestsAuthenticatedBase):
 
-# TO FIX on the code and here
-    _main_endpoint = '/resources'
-# TO FIX
-
+    _main_endpoint = '/namespace'
     _irods_path = '/tempZone/home/guest/test'
     _invalid_irods_path = '/tempZone/home/x/guest/test'
     _test_filename = 'test.pdf'
