@@ -1,2 +1,2 @@
-20cae92 Handling hierarchy and redirect responses.
+7f2a4ed Cleaning oauth2 base clients
  graph_based_auth LICENSE README.md backend certs composers confs do docker-compose.yml docs notebooks submodules.current.commit tasks vanilla master oauthtest
