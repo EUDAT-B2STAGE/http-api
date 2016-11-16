@@ -1,29 +1,43 @@
 
+## TO BE FIXED:
+# proxy:
+#   #################
+#   # SSL / HTTPS
+#   volumes:
+#     - ./confs/prod_proxy.conf:/etc/nginx/sites-enabled/production
+#     - ./certs/nginx-selfsigned.key:/etc/nginx/server.key
+#     - ./certs/nginx-selfsigned.crt:/etc/nginx/server.crt
+#   ports:
+#     - 80:80
+#     - 443:443
+#   #################
+#   links:
+#     - rest:restapi
+
 rest:
+  user: root
+  # set the home to the main internal irods user
+  # otherwise it will try to write insie the /root homedir
+  command: /bin/bash -c "HOME=/home/irods init"
+  # command: sleep infinity
   environment:
     APP_MODE: production
+    UWSGI_MASTER: /tmp/uwsgi/uwsgi_starter.ini
+    NGINX_ACTIVE: "True"
+  volumes:
+    - ./confs/uwsgi:/tmp/uwsgi
+    - ./confs/nginx_internal:/etc/nginx/conf.d
+  ports:
+    - 8080:8080
   links:
     # IRODS MUST BE CALLED rodserver
     - icat:rodserver
     # # GRAPHDB MUST BE CALLED gdb
     # - graphdb:gdb
 
-proxy:
-  #################
-  # SSL / HTTPS
-  volumes:
-    - ./confs/prod_proxy.conf:/etc/nginx/sites-enabled/production
-    - ./certs/nginx-selfsigned.key:/etc/nginx/server.key
-    - ./certs/nginx-selfsigned.crt:/etc/nginx/server.crt
-  ports:
-    - 80:80
-    - 443:443
-  #################
-  links:
-    - rest:restapi
-
 apitests:
   volumes:
     - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
   links:
-    - proxy:awesome.docker
+    # - proxy:awesome.docker
+    - rest:apiserver

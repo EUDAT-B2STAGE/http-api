@@ -88,9 +88,16 @@ rest:
     # APP_MODE: development
     # APP_MODE: production
 
+    #########################
     # Application credentials to use the b2access environment
+
+    # DEV
     B2ACCESS_APPNAME: httpapi
-    B2ACCESS_APPKEY: GIVEMEAVALIDKEY
+    B2ACCESS_APPKEY: WHOKNOWS
+
+    # # PROD
+    # B2ACCESS_APPNAME: b2stage_httpapi
+    #########################
 
     # Base the user/role mechanism on neo4j
     BACKEND_AUTH_SERVICE: relationaldb
@@ -161,9 +168,9 @@ sqladmin:
 
 #################################
 # Nginx proxy
-proxy:
-  image: nginx
-  hostname: myproxy
+  image: nginx:1.11.5-alpine
+  hostname: iamaproxy
+  # command: echo "Hello"
   volumes:
     # Proxy configuration
     - ./confs/nginx.conf:/etc/nginx/nginx.conf

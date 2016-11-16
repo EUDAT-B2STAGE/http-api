@@ -27,7 +27,8 @@ current:
 ✔ remove RESPONSE_CONTENT and RESPONSE_META @done (16-11-16 07:53)
    ✘ use them from the response file/classes @cancelled (16-11-16 07:53)
 ✔ change resource into @namespace @done (16-11-16 11:01)
-☐ uwsgi
+✔ uwsgi @done (16-11-16 16:49)
+ ☐ HTTPS
 ☐ parameters input from reading the json config
 ☐ change base.py into core.py
 ☐ check b2access
