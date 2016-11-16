@@ -38,8 +38,8 @@
 ////////////////////////
 ///////////////////////
         "BasicEndpoint": [
-            "resources",
-            "resources/<path:irods_location>"
+            "namespace",
+            "namespace/<path:irods_location>"
         ]
 
     // // upload and download for normal users

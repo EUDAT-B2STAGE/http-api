@@ -54,9 +54,13 @@ class Authorize(ExtendedApiResource):
         # B2ACCESS requires some fixes to make this authorization call
         decorate_http_request(b2access)
 
+        # from beeprint import pp as prettyprint
+        # prettyprint(b2access)
+
         ############################################
         # Use b2access to get authorization
         resp = None
+
         try:
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
@@ -83,6 +87,8 @@ class Authorize(ExtendedApiResource):
         current_user = b2access.get('userinfo')
 
         print("CURRENT USER", current_user)
+        from beeprint import pp as prettyprint
+        prettyprint(current_user)
 
 # ## TO BE FIXED:
 #     # move the code handling graph inside its class for authentication
@@ -120,55 +126,59 @@ class Authorize(ExtendedApiResource):
 
         from commons.certificates import Certificates
         b2accessCA = auth._oauth2.get('b2accessCA')
+        # make a proxy
         obj = Certificates().make_proxy_from_ca(b2accessCA)
+        # check for errors
+        if obj is None:
+            return self.send_errors("B2ACCESS proxy", "failed to create")
 
-# STOP HERE!
-        print("TEST DEBUG", obj); return obj
-
-        if isinstance(obj, dict) and 'errors' in obj:
-            return self.force_response(obj)
-
-
-        ############################################
-        # Save the proxy filename into the graph
+#####################################
+# STOP HERE (if anything goes well)!
         proxyfile = obj
-        external_account_node = user_node.externals.all().pop()
-        external_account_node.proxyfile = proxyfile
-        external_account_node.save()
+        print("TEST DEBUG", proxyfile)
+        return obj
+#####################################
 
-        ############################################
-        # Graph linking new accounts to an iRODS user
+        # ############################################
+        # # Save the proxy filename into the graph
+        # external_account_node = user_node.externals.all().pop()
+        # external_account_node.proxyfile = proxyfile
+        # external_account_node.save()
 
-        # irods as admin
-        icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
+        # ############################################
+        # # Graph linking new accounts to an iRODS user
 
-        # Two kind of accounts
-        irods_user = icom.get_translated_user(user_node.email)
+        # # irods as admin
+        # icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
 
-        ##################################
-        # Create irods user and add CN
-## // TO FIX:
-# Probably this code should be moved to irods class
-        graph_irods_user = None
-        try:
-            graph_irods_user = graph.IrodsUser.nodes.get(username=irods_user)
-        except graph.IrodsUser.DoesNotExist:
+        # # Two kind of accounts
+        # irods_user = icom.get_translated_user(user_node.email)
+        # print("IRODS USER", irods_user)
 
-            if not IRODS_EXTERNAL:
-                # Add user inside irods
-                icom.create_user(irods_user)
-                # Get CN from ExternalAccounts
-                user_ext = list(user_node.externals.all()).pop()
-                icom.admin('aua', irods_user, user_ext.certificate_cn)
+#         ##################################
+#         # Create irods user and add CN
+# ## // TO FIX:
+# # Probably this code should be moved into the irods class
+#         graph_irods_user = None
+#         try:
+#             graph_irods_user = graph.IrodsUser.nodes.get(username=irods_user)
+#         except graph.IrodsUser.DoesNotExist:
 
-            # Save into the graph
-            graph_irods_user = graph.IrodsUser(username=irods_user)
-            graph_irods_user.save()
+#             if not IRODS_EXTERNAL:
+#                 # Add user inside irods
+#                 icom.create_user(irods_user)
+#                 # Get CN from ExternalAccounts
+#                 user_ext = list(user_node.externals.all()).pop()
+#                 icom.admin('aua', irods_user, user_ext.certificate_cn)
 
-        ##################################
-        # Connect the user to graph If not already
-        if len(user_node.associated.search(username=irods_user)) < 1:
-            user_node.associated.connect(graph_irods_user)
+#             # Save into the graph
+#             graph_irods_user = graph.IrodsUser(username=irods_user)
+#             graph_irods_user.save()
+
+        # ##################################
+        # # Connect the user to graph If not already
+        # if len(user_node.associated.search(username=irods_user)) < 1:
+        #     user_node.associated.connect(graph_irods_user)
 
 # // TO FIX:
         """
@@ -184,15 +194,17 @@ ERROR: [-]  iRODS/lib/core/src/clientLogin.cpp:321:clientLogin :
  status [GSI_ERROR_INIT_SECURITY_CONTEXT]  errno [] -- message []
         """
 
-        # # Test GSS-API
-        # icom = self.global_get_service('irods', user=irods_user)
-        # icom.list()
+        # Test GSS-API
+        icom = self.global_get_service('irods', user=irods_user)
+        icom.list()
 
-        ###################################
-        # Create a valid token for our API
-        token, jti = auth.create_token(auth.fill_payload(user_node))
-        auth.save_token(auth._user, token, jti)
-        self.set_latest_token(token)
+        token = "Hello World"
+
+        # ###################################
+        # # Create a valid token for our API
+        # token, jti = auth.create_token(auth.fill_payload(user_node))
+        # auth.save_token(auth._user, token, jti)
+        # self.set_latest_token(token)
 
 ## // TO FIX:
 # Create a 'return_credentials' method to use standard Bearer oauth response
