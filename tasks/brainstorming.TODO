@@ -21,12 +21,17 @@ BEST PRACTICES:
 current:
 ✔ new response @done (16-11-15 00:45)
   ✘ headers? @cancelled (16-11-15 00:45)
+✔ fix base test @done (16-11-15 12:21)
+  ✔ use the explode method @done (16-11-16 07:27)
+   ✔ create a base class for authenticated tests @done (16-11-16 07:50)
+☐ remove RESPONSE_CONTENT and RESPONSE_META
+   ☐ use them from the response file/classes
 ☐ check b2access
    ✔ check force_response calls @done (16-11-15 12:21)
-   ☐ check account
-   ☐ check responses into protocol
-✔ fix base test @done (16-11-15 12:21)
-  ☐ use the explode method
+   ✔ check account @done (16-11-15 14:34)
+   ✔ check responses into protocol @done (16-11-15 14:34)
+   ☐ timeout on development server
+   ☐ unittest that fake the two parts comunication?
 ☐ parameters input from reading the json config
 ☐ change base.py into core.py
 ☐ write again a custom response.py
