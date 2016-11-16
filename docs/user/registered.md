@@ -1,9 +1,17 @@
 
-# Registered APIs
+# Namespace APIs
 
-The registered APIs allow the management of registered entities (entities with a PID associated).
-The endpoint URI will use the directory namespace.
+>Note: According to the EUDAT Data Architecture B2SAFE is part of the registered data domain, where digital objects are stored and managed in such a way that data carrying associated descriptive metadata is discoverable and can be referred to or retrieved using persistent identifiers.
+Since B2SAFE still manages also non registered entities, we are not using *registered* in the endpoint URL. As B2SAFE is fully complaint to the EUDAT Data Architecture, **namespace** will replaced by **registered**: please consider it as a temporary placeholder.
+
+The namespace APIs allow the management of entities on B2SAFE.
+The following operations are currently available:
+- list, upload, download and delete files (objects in iRODS) 
+- create and delete directories (collection in iRODS).
+
+The endpoint methods will use the directory namespace (iRODS full path) to identify entities .
 The examples in this section use cURL commands. For information about cURL, see http://curl.haxx.se/.
+
 
 ## Methods
 1. [GET](#get)
