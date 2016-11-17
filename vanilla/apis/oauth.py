@@ -17,6 +17,7 @@ from ..services.oauth2clients import decorate_http_request
 from .. import decorators as decorate
 ## TO FIX: make sure the default irods admin is requested in the config file
 from ..services.irods.client import IRODS_DEFAULT_ADMIN
+from beeprint import pp as prettyprint
 
 logger = get_logger(__name__)
 
@@ -25,11 +26,13 @@ logger = get_logger(__name__)
 # Classes
 
 class OauthLogin(ExtendedApiResource):
-    """ API online test """
+    """
+    Endpoint which redirects to B2ACCESS server online,
+    to ask the current user for authorization/token.
+    """
 
     base_url = AUTH_URL
 
-    @decorate.apimethod
     def get(self):
 
         auth = self.global_get('custom_auth')
@@ -40,11 +43,14 @@ class OauthLogin(ExtendedApiResource):
 
 
 class Authorize(ExtendedApiResource):
-    """ API online test """
+    """
+    Previous endpoint will redirect here if authorization was granted.
+    Use the B2ACCESS token to retrieve info about the user,
+    and to store the proxyfile.
+    """
 
     base_url = AUTH_URL
 
-    @decorate.apimethod
     def get(self):
 
         ############################################
@@ -53,8 +59,6 @@ class Authorize(ExtendedApiResource):
         b2access = auth._oauth2.get('b2access')
         # B2ACCESS requires some fixes to make this authorization call
         decorate_http_request(b2access)
-
-        # from beeprint import pp as prettyprint
         # prettyprint(b2access)
 
         ############################################
@@ -81,104 +85,72 @@ class Authorize(ExtendedApiResource):
         ############################################
         # Use b2access with token to get user info
         logger.info("Received token: '%s'" % token)
-        # ## http://j.mp/b2access_profile_attributes
+        # http://j.mp/b2access_profile_attributes
+
+        # Save the b2access token into session? For the next endpoint
         from flask import session
         session['b2access_token'] = (token, '')
-        current_user = b2access.get('userinfo')
 
-        print("CURRENT USER", current_user)
-        from beeprint import pp as prettyprint
+        # All the personal data we can see from the token on B2ACCESS
+        current_user = b2access.get('userinfo')
+## DEBUG
         prettyprint(current_user)
 
-# ## TO BE FIXED:
-#     # move the code handling graph inside its class for authentication
-#     # and create a similar one with sqllite
-#         # Store b2access information inside the graphdb
-#         graph = self.global_get_service('neo4j')
-#         obj = auth.save_oauth2_info_to_user(
-#             graph, current_user, token)
+        # # Store b2access information inside the db
+        # user_node, external_user = auth.store_oauth2_user(current_user, token)
+        # # In case of error this account already existed...
+        # if user_node is None:
+        #     return self.send_errors(
+        #         'Invalid e-mail',
+        #         'Account locally already exists with other credentials')
+        # else:
+        #     logger.info("Stored access info")
 
-#         ## // TO FIX:
-#         # make this a 'check_if_error_obj' inside the ExtendedAPIResource
-#         if isinstance(obj, dict) and 'errors' in obj:
-#             return self.force_response(obj)
-
-#         user_node = obj
-#         logger.info("Stored access info")
-
-        ############################################
-## // TO FIX:
-# Move this code inside the certificates class
-# as this should be done everytime the proxy expires...!
-        # Get a valid certificate to access irods
-
-        # INSECURE SSL CONTEXT. IMPORTANT: to use if not in production
-        from flask import current_app
-        if current_app.config['DEBUG']:
-            # See more here:
-            # http://stackoverflow.com/a/28052583/2114395
-            import ssl
-            ssl._create_default_https_context = \
-                ssl._create_unverified_context
-        else:
-            raise NotImplementedError(
-                "Do we have certificates for production?")
-
+        #########################
+        # Get a proxy certificate to access irods
         from commons.certificates import Certificates
         b2accessCA = auth._oauth2.get('b2accessCA')
-        # make a proxy
-        obj = Certificates().make_proxy_from_ca(b2accessCA)
+        proxyfile = Certificates().make_proxy_from_ca(b2accessCA)
+
         # check for errors
-        if obj is None:
-            return self.send_errors("B2ACCESS proxy", "failed to create")
+        if proxyfile is None:
+            return self.send_errors(
+                "B2ACCESS proxy",
+                "Failed to create file or empty response")
+        # # Save the proxy filename into the database
+        # auth.store_proxy_cert(external_user, proxyfile)
 
-#####################################
-# STOP HERE (if anything goes well)!
-        proxyfile = obj
-        print("TEST DEBUG", proxyfile)
-        return obj
-#####################################
+        #########################
+        # Find out what is the irods username
 
-        # ############################################
-        # # Save the proxy filename into the graph
-        # external_account_node = user_node.externals.all().pop()
-        # external_account_node.proxyfile = proxyfile
-        # external_account_node.save()
-
-        # ############################################
-        # # Graph linking new accounts to an iRODS user
-
+## // TO BE CHANGED
         # # irods as admin
         # icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
-
         # # Two kind of accounts
         # irods_user = icom.get_translated_user(user_node.email)
         # print("IRODS USER", irods_user)
 
+# check with icom if user exists...
+
+        # if not IRODS_EXTERNAL:
+        #     # Add user inside irods
+        #     icom.create_user(irods_user)
+        #     icom.admin('aua', irods_user, external_user.certificate_cn)
+
 #         ##################################
-#         # Create irods user and add CN
-# ## // TO FIX:
-# # Probably this code should be moved into the irods class
+#         # Create irods user inside the database
 #         graph_irods_user = None
+#         graph = self.global_get_service('neo4j')
 #         try:
 #             graph_irods_user = graph.IrodsUser.nodes.get(username=irods_user)
 #         except graph.IrodsUser.DoesNotExist:
-
-#             if not IRODS_EXTERNAL:
-#                 # Add user inside irods
-#                 icom.create_user(irods_user)
-#                 # Get CN from ExternalAccounts
-#                 user_ext = list(user_node.externals.all()).pop()
-#                 icom.admin('aua', irods_user, user_ext.certificate_cn)
 
 #             # Save into the graph
 #             graph_irods_user = graph.IrodsUser(username=irods_user)
 #             graph_irods_user.save()
 
-        # ##################################
         # # Connect the user to graph If not already
-        # if len(user_node.associated.search(username=irods_user)) < 1:
-        #     user_node.associated.connect(graph_irods_user)
+        # user_node.associated.connect(graph_irods_user)
 
 # // TO FIX:
         """
@@ -194,9 +166,9 @@ ERROR: [-]  iRODS/lib/core/src/clientLogin.cpp:321:clientLogin :
  status [GSI_ERROR_INIT_SECURITY_CONTEXT]  errno [] -- message []
         """
 
-        # Test GSS-API
-        icom = self.global_get_service('irods', user=irods_user)
-        icom.list()
+        # # Test GSS-API
+        # icom = self.global_get_service('irods', user=irods_user)
+        # icom.list()
 
         token = "Hello World"
 
