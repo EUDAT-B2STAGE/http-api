@@ -18,39 +18,42 @@ BEST PRACTICES:
 
 --- ✄ -----------------------
 
-curl \
-  -k 'https://unity.eudat-aai.fz-juelich.de:8443/oauth2/userinfo' \
-  -H "Accept: application/json" -H "Authorization: Bearer TOKEN"
-
-{"sub":"82e56123-149c-4bf8-9f92-87848aaafc24","cn":"PaoloD'OnorioDeMeo","email":"p.donoriodemeo@cineca.it"}
-
-current:
+CURRENT:
 
   about being effectively collaborative in a team project
 
    - ask
-    ☐ Ask for b2safe production certification authority (+ signing_policy)
+    ✔ Ask for b2safe production certification authority (+ signing_policy) @done (16-11-18 10:18)
     ☐ Ask for two accounts rmucci + pdonorio on B2SAFE dev
  - travis
    ☐ check CI
-   - endpoints
-    ☐ PATCH method
-    ☐ GET response
-   - irods
-    ☐ b2access id <-> irods user mapping
-    ☐ sqllite External account
-   - b2access
+ - endpoints
+    ☐ GET single element response
+    ☐ PATCH method?
+ - irods
+    ✔ b2access id <-> irods user mapping @done (16-11-18 10:19)
+    iquest "SELECT USER_NAME WHERE USER_DN = '/O=Grid/OU=GlobusTest/OU=simpleCA-fb8ca5e4ccd2/OU=Globus Simple CA/CN=guest'"
+    ☐ sqllite External account @work
+ - b2access
    ☐ use X509_USER_PROXY if token is "flagged" external/b2access?
    ☐ test with B2SAFE dev
    ☐ what if, when the proxy or the token expire?
- - HTTPS proxy
+- HTTPS proxy
    ☐ enable and check
-   ☐ openstack
+   ✔ openstack @done (16-11-18 10:19)
      ☐ https://b2stage.cineca.it/api
    ☐ real certificates
 
-later:
+LATER:
+
+  ☐ release a package
+    ☐ and documentation
+  https://pythonhosted.org/
   ☐ unittest for B2ACCESS...
+   ☐ simple?
+    http://stackoverflow.com/a/18832732/2114395
+    ☐ mocking?
+    https://realpython.com/blog/python/testing-third-party-apis-with-mocks/
   ☐ remove _latest_token from anywhere and test
   ☐ fix json: import from jsonify
   ☐ parameters input from reading the json config

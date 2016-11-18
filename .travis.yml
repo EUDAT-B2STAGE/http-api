@@ -6,7 +6,7 @@ services:
   - docker
 
 env:
-  DOCKER_COMPOSE_VERSION: 1.7
+  DOCKER_COMPOSE_VERSION: 1.9.0
 
 before_install:
   # update docker
@@ -28,6 +28,8 @@ install:
 script:
   - docker -v
   - docker-compose -v
+  - docker-compose build
+  # - docker-compose run test
   - ./do update
   - ./do init
   # needed to let the system create files with test coverage
