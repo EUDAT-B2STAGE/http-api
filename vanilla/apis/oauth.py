@@ -59,7 +59,6 @@ class Authorize(ExtendedApiResource):
         b2access = auth._oauth2.get('b2access')
         # B2ACCESS requires some fixes to make this authorization call
         decorate_http_request(b2access)
-        # prettyprint(b2access)
 
         ############################################
         # Use b2access to get authorization
@@ -96,7 +95,7 @@ class Authorize(ExtendedApiResource):
 ## DEBUG
         prettyprint(current_user)
 
-        # # Store b2access information inside the db
+        # # # Store b2access information inside the db
         # user_node, external_user = auth.store_oauth2_user(current_user, token)
         # # In case of error this account already existed...
         # if user_node is None:
@@ -112,30 +111,33 @@ class Authorize(ExtendedApiResource):
         b2accessCA = auth._oauth2.get('b2accessCA')
         proxyfile = Certificates().make_proxy_from_ca(b2accessCA)
 
+        return "HELLO!"
+
         # check for errors
         if proxyfile is None:
             return self.send_errors(
                 "B2ACCESS proxy",
                 "Failed to create file or empty response")
-        # # Save the proxy filename into the database
-        # auth.store_proxy_cert(external_user, proxyfile)
+        # Save the proxy filename into the database
+        auth.store_proxy_cert(external_user, proxyfile)
 
         #########################
         # Find out what is the irods username
 
+        # irods as admin
+        icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
+        # irods related account
 ## // TO BE CHANGED
-        # # irods as admin
-        # icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
-        # # Two kind of accounts
-        # irods_user = icom.get_translated_user(user_node.email)
-        # print("IRODS USER", irods_user)
+        irods_user = icom.get_translated_user(user_node.email)
+        irods_user = "paolo"
+        print("IRODS USER", irods_user)
 
 # check with icom if user exists...
 
-        # if not IRODS_EXTERNAL:
-        #     # Add user inside irods
-        #     icom.create_user(irods_user)
-        #     icom.admin('aua', irods_user, external_user.certificate_cn)
+        if not IRODS_EXTERNAL:
+            # Add user inside irods
+            icom.create_user(irods_user)
+            icom.admin('aua', irods_user, external_user.certificate_cn)
 
 #         ##################################
 #         # Create irods user inside the database

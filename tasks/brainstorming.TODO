@@ -24,35 +24,39 @@ curl \
 
 {"sub":"82e56123-149c-4bf8-9f92-87848aaafc24","cn":"PaoloD'OnorioDeMeo","email":"p.donoriodemeo@cineca.it"}
 
-
 current:
-✔ new response @done (16-11-15 00:45)
-  ✘ headers? @cancelled (16-11-15 00:45)
-✔ fix base test @done (16-11-15 12:21)
-  ✔ use the explode method @done (16-11-16 07:27)
-   ✔ create a base class for authenticated tests @done (16-11-16 07:50)
-✔ remove RESPONSE_CONTENT and RESPONSE_META @done (16-11-16 07:53)
-   ✘ use them from the response file/classes @cancelled (16-11-16 07:53)
-✔ change resource into @namespace @done (16-11-16 11:01)
-✔ handle @get_content_from_response @done (16-11-17 08:10)
-  ✔ from base to response @done (16-11-17 08:10)
-✔ uwsgi @done (16-11-16 16:49)
-☐ check b2access
-   ✔ check force_response calls @done (16-11-15 12:21)
-   ✔ check account @done (16-11-15 14:34)
-   ✔ check responses into protocol @done (16-11-15 14:34)
-   ☐ unittest that fake the two parts comunication?
-   ☐ B2ACCESS id <-> irods user mapping
-   ☐ what if, when the proxy or the token  expire?
- ☐ HTTPS proxy check
-☐ PATCH METHOD
 
-☐ remove _latest_token from anywhere and test
-☐ fix json: import from jsonify
-☐ parameters input from reading the json config
-☐ change base.py into core.py
-☐ write again a custom response.py
-  ☐ what is the motivation of make_custom_response?
+  about being effectively collaborative in a team project
+
+   - ask
+    ☐ Ask for b2safe production certification authority (+ signing_policy)
+    ☐ Ask for two accounts rmucci + pdonorio on B2SAFE dev
+ - travis
+   ☐ check CI
+   - endpoints
+    ☐ PATCH method
+    ☐ GET response
+   - irods
+    ☐ b2access id <-> irods user mapping
+    ☐ sqllite External account
+   - b2access
+   ☐ use X509_USER_PROXY if token is "flagged" external/b2access?
+   ☐ test with B2SAFE dev
+   ☐ what if, when the proxy or the token expire?
+ - HTTPS proxy
+   ☐ enable and check
+   ☐ openstack
+     ☐ https://b2stage.cineca.it/api
+   ☐ real certificates
+
+later:
+  ☐ unittest for B2ACCESS...
+  ☐ remove _latest_token from anywhere and test
+  ☐ fix json: import from jsonify
+  ☐ parameters input from reading the json config
+  ☐ change base.py into core.py
+  ☐ write again a custom response.py
+    ☐ what is the motivation of make_custom_response?
 
 --- ✄ -----------------------
 THINGS TO DO:

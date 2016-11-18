@@ -1,3 +1,9 @@
+#############################################
+
+# This script keeps track of efforts done in
+# trying to make the X509 normal/proxy certificates
+# hand-made or from b2access work
+# onto the dockerized version of b2safe
 
 #############################################
 # Become guest (normal certificates)
@@ -49,7 +55,7 @@ iadmin aua $GSI_USER \
 iadmin lua
 exit
 
-# Become paolo inside rest api
+# Become this new user inside rest api
 docker exec -it eudatapi_rest_1 bash
 export IRODS_USER_NAME=paolo
 export IRODS_HOST=rodserver
