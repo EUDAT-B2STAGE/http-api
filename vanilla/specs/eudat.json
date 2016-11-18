@@ -7,57 +7,23 @@
         ],
         "Authorize": [
             "authorize"
+        ],
+        "TestB2access": [
+            "b2accesstest"
         ]
     },
     // the most basic and simple upload/download
     "custom.basic": {
-////////////////////////
-////////////////////////
-// TO BE REMOVED
-        "EudatTest": [
-            // {
-            //     "GET": {
-            //         "param1": {
-            //             "default": "value",
-            //             "required": "True",
-            //             "type": "..."
-            //         },
-            //         "param2": {
-
-            //         }
-            //     },
-            //     "POST": {
-
-            //     }
-            // },
-            "test",
-            // http://flask.pocoo.org/snippets/76/
-            "test/<path:location>"
-        ],
-// TO BE REMOVED
-////////////////////////
-///////////////////////
+        // "EudatTest": [
+        //     "test",
+        //     // http://flask.pocoo.org/snippets/76/
+        //     "test/<path:location>"
+        // ],
+        // upload and download for normal users
         "BasicEndpoint": [
             "namespace",
             "namespace/<path:irods_location>"
         ]
-
-    // // upload and download for normal users
-    // "custom.digitalobjects": {
-    //     "DigitalObjectsEndpoint": [
-    //         "digitalobjects",
-    //         // doid = digital object uuid
-    //         "digitalobjects/<string:doid>"
-    //     ],
-    //     "EntitiesEndpoint": [
-    //         // only POST method to upload the object?
-    //         "entities",
-    //         "entities/<string:eid>",
-    //         // eid = entity uuid
-    //         "digitalobjects/<string:doid>/entities",
-    //         "digitalobjects/<string:doid>/entities/<string:eid>"
-    //     ]
-    // },
 
     // // Internal endpoint triggered by iRODS events
     // "custom.internals.b2safe": {
