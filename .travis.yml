@@ -10,8 +10,8 @@ env:
 
 before_install:
   # update docker
-  - sudo apt-get update
-  - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
+  #- sudo apt-get update
+  #- sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 
   # update docker-compose
   #- sudo rm /usr/local/bin/docker-compose
