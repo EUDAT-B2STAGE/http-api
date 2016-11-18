@@ -1,10 +1,12 @@
 
-# B2STAGE HTTP-API development for EUDAT project
+# B2STAGE HTTP-API for EUDAT project
 
 [![Build Status](https://travis-ci.org/EUDAT-B2STAGE/http-api.svg)](https://travis-ci.org/EUDAT-B2STAGE/http-api)
 
-*WARNING*: this environment is in an early stage of development.
-You should expect things not to work.
+*WARNING*: this project is under development. You should expect things not to work.
+
+> NOTE: since the B2STAGE HTTP-API is an interface towards other EUDAT services which are subject to modifications and new developments, the functionalities and the implementation will have to be changed accordingly. 
+
 
 --
 
@@ -18,21 +20,21 @@ The primary goal is to allow users to ingest and retrieve data via a standard RE
 - allow direct access to data assets held with the EUDAT CDI.
 
 The first development is focused on the interaction with B2SAFE, allowing users to transfer and manage data on the "registered" domain.
-During the EUDAT2020 project other functionalities will be added: the development road map is available on the [EUDAT Wiki](https://confluence.csc.fi/display/EUDAT2/Service+building+roadmap)
+Over the EUDAT2020 project other functionalities will be added: the development road map is available on the [EUDAT Wiki](https://confluence.csc.fi/display/EUDAT2/Service+building+roadmap)
 
-> NOTE: since the B2STAGE HTTP-API is an interface towards other EUDAT services which are subject to modifications and new developments, the functionalities and the implementation will have to be changed accordingly. 
 
 
 ## Implementation
 The API is implemented in Python 3 using the Flask framework (Flask can be used with most web-servers via the WSGI-standard).
-To facilitate and speed the development Docker will be used to automate the deployment of the software stack needed
-The API interconnects with EUDAT services' native APIs or libraries
-For B2SAFE (which has iRODS as back end) the interface is initially implemented as a python wrapper for icommands. Other approach will be investigated such as the iRODS python library or the iRODS native protocol.
+To facilitate and speed the development Docker will be used to automate the deployment of the software stack needed.
+The API interconnects with EUDAT services' native APIs or libraries.
+For B2SAFE (which is built on an iRODS as back end) the interface is initially implemented as a python wrapper for icommands. Other approaches will be investigated such as the iRODS python library or the iRODS native protocol.
+
 
 ## Documentation
 
 - [User documentation](docs/user/user.md)
-- [Admin operations](docs/deploy/_empty)
+- [Admin operations](docs/deploy/deploy.md)
 - [Developing](docs/development/development.md)
 
 
