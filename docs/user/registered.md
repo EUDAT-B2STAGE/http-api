@@ -27,7 +27,7 @@ The examples in this section use cURL commands. For information about cURL, see 
 ##### Example
 ```bash
 # Get 'filename.txt' metadata
-$ curl https://be2safexx.eudat.eu/api/namespace/path/to/directory/filename.txt -H "Authorization: Bearer <auth_token>"
+$ curl https://<http_server:port>/api/namespace/path/to/directory/filename.txt -H "Authorization: Bearer <auth_token>"
 ```
 ##### Response
 ```json
@@ -55,7 +55,7 @@ $ curl https://be2safexx.eudat.eu/api/namespace/path/to/directory/filename.txt -
 ##### Example
 ```bash
 # Download 'filename.txt'
-$ curl https://be2safexx.eudat.eu/api/namespace/path/to/directory/filename.txt?download=true -H "Authorization: Bearer <auth_token>"
+$ curl https://<http_server:port>/api/namespace/path/to/directory/filename.txt?download=true -H "Authorization: Bearer <auth_token>"
 ```
 ##### Response
 ```json
@@ -66,7 +66,7 @@ filename content
 ##### Example
 ```bash
 # Get list of entities inside 'directory'
-$ curl https://be2safexx.eudat.eu/api/resources/namespace/path/to/directory/ -H "Authorization: Bearer <auth_token>"
+$ curl https://<http_server:port>/api/resources/namespace/path/to/directory/ -H "Authorization: Bearer <auth_token>"
 ```
 ##### Response
 ```json
@@ -110,7 +110,7 @@ $ curl https://be2safexx.eudat.eu/api/resources/namespace/path/to/directory/ -H 
 ##### Example
 ```bash
 # create 'myfile.txt' as '/path/to/directory/filename' and trigger the registration in B2SAFE
-$ curl -X PUT -F file=@myfile.txt  https://be2safexx.eudat.eu/api/namespace/path/to/directory/filename -H "Authorization: Bearer <auth_token>"
+$ curl -X PUT -F file=@myfile.txt  https://<http_server:port>/api/namespace/path/to/directory/filename -H "Authorization: Bearer <auth_token>"
 
 ```
 ##### Response
@@ -148,7 +148,7 @@ $ curl -X PUT -F file=@myfile.txt  https://be2safexx.eudat.eu/api/namespace/path
 ##### Example
 ```bash
 # Create the directory '/new_directory' in B2SAFE
-$ curl -X POST https://be2safexx.eudat.eu/api/namespace?path=/path/to/directory/new_directory/ -H "Authorization: Bearer <auth_token>"
+$ curl -X POST https://<http_server:port>/api/namespace?path=/path/to/directory/new_directory/ -H "Authorization: Bearer <auth_token>"
 #POST https://be2safexx.eudat.eu/api/registered?path=/path/to/directory
 ```
 ##### Response
@@ -162,7 +162,7 @@ $ curl -X POST https://be2safexx.eudat.eu/api/namespace?path=/path/to/directory/
 ##### Example
 ```bash
 # Delete the file '/path/to/directory/file.txt'
-$ curl -X DELETE https://be2safexx.eudat.eu/api/namespace/path/to/directory/file.txt -H "Authorization: Bearer <auth_token>"
+$ curl -X DELETE https://<http_server:port>/api/namespace/path/to/directory/file.txt -H "Authorization: Bearer <auth_token>"
 #DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory/filename
 
 ```
@@ -189,7 +189,7 @@ $ curl -X DELETE https://be2safexx.eudat.eu/api/namespace/path/to/directory/file
 ##### Example
 ```bash
 # Delete "directory" (only if empty)
-$ curl -X DELETE https://be2safexx.eudat.eu/api/namespace/path/to/directory/ -H "Authorization: Bearer <auth_token>"
+$ curl -X DELETE https://<http_server:port>/api/namespace/path/to/directory/ -H "Authorization: Bearer <auth_token>"
 #DELETE https://be2safexx.eudat.eu/api/registered/path/to/directory
 ```
 ##### Response
@@ -220,7 +220,7 @@ $ curl -X DELETE https://be2safexx.eudat.eu/api/namespace/path/to/directory/ -H 
 | newname | string | Name that will replace the old one
 ##### Example
 ```bash
-PATCH https://be2safexx.eudat.eu/api/registered/path/to/directory/filename?newname=filename2
+PATCH https://<http_server:port>/api/registered/path/to/directory/filename?newname=filename2
 # change the file name "path/to/directory/filename" to "path/to/directory/filename2"
 ```
 ##### Response
@@ -235,7 +235,7 @@ PATCH https://be2safexx.eudat.eu/api/registered/path/to/directory/filename?newna
 | newname | string | Name that will replace the old one
 ##### Example
 ```bash
-PATCH https://be2safexx.eudat.eu/api/registered/path/to/directory?newname=directory2
+PATCH https://<http_server:port>/api/registered/path/to/directory?newname=directory2
 # change the directory name "path/to/directory" to "path/to/directory2"
 ```
 ##### Response
