@@ -7,17 +7,17 @@ B2SAFE HTTP REST API endpoints.
 from __future__ import absolute_import
 
 import json
-from flask import url_for
-from commons.logs import get_logger
+from flask import url_for, session
 from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
 from ..services.oauth2clients import decorate_http_request
 ## TO FIX: make sure the default irods admin is requested in the config file
-from ..services.irods.client import IRODS_DEFAULT_ADMIN
+from ..services.irods.client import \
+    IrodsException, IRODS_DEFAULT_ADMIN, IRODS_DEFAULT_USER, Certificates
 from ..services.detect import IRODS_EXTERNAL
-from beeprint import pp as prettyprint
-
-# from ...auth import authentication
+from .. import decorators as decorate
+from ...auth import authentication
+from commons.logs import get_logger, pretty_print
 
 logger = get_logger(__name__)
 
@@ -51,6 +51,7 @@ class Authorize(ExtendedApiResource):
 
     base_url = AUTH_URL
 
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self):
 
         ############################################
@@ -76,28 +77,26 @@ class Authorize(ExtendedApiResource):
         if resp is None:
             return self.send_errors('B2ACCESS denied', 'Uknown error')
 
-        token = resp.get('access_token')
-        if token is None:
+        b2access_token = resp.get('access_token')
+        if b2access_token is None:
             logger.critical("No token received")
             return self.send_errors('B2ACCESS', 'Empty token')
 
         ############################################
-        # Use b2access with token to get user info
-        logger.info("Received token: '%s'" % token)
+        # Save the b2access token into session for oauth2client purpose
+        session['b2access_token'] = (b2access_token, '')
+        logger.info("Received token: '%s'" % b2access_token)
         # http://j.mp/b2access_profile_attributes
-
-        # Save the b2access token into session? For the next endpoint
-        from flask import session
-        session['b2access_token'] = (token, '')
 
         # All the personal data we can see from the token on B2ACCESS
         current_user = b2access.get('userinfo')
-        prettyprint(current_user)
+        pretty_print(current_user)
 
         # # Store b2access information inside the db
-        user_node, external_user = auth.store_oauth2_user(current_user, token)
+        intuser, extuser = \
+            auth.store_oauth2_user(current_user, b2access_token)
         # In case of error this account already existed...
-        if user_node is None:
+        if intuser is None:
             return self.send_errors(
                 'Invalid e-mail',
                 'Account locally already exists with other credentials')
@@ -106,9 +105,9 @@ class Authorize(ExtendedApiResource):
 
         #########################
         # Get a proxy certificate to access irods
-        from commons.certificates import Certificates
         b2accessCA = auth._oauth2.get('b2accessCA')
-        proxyfile = Certificates().make_proxy_from_ca(b2accessCA)
+        certs = Certificates()
+        proxyfile = certs.make_proxy_from_ca(b2accessCA)
 
         # check for errors
         if proxyfile is None:
@@ -116,9 +115,59 @@ class Authorize(ExtendedApiResource):
                 "B2ACCESS proxy",
                 "Failed to create file or empty response")
         # Save the proxy filename into the database
-        auth.store_proxy_cert(external_user, proxyfile)
+        auth.store_proxy_cert(extuser, proxyfile)
 
-        return "Proxy obtained"
+        #########################
+        # Find out what is the irods username
+
+        # irods related account
+        icom = self.global_get_service('irods')
+        # irods_user = icom.get_translated_user(external.email)  # OLD
+        irods_user = icom.get_user_from_dn(extuser.certificate_dn)  # NEW
+
+        # Does this user exist?
+        if irods_user is None or not icom.user_exists(irods_user):
+            if IRODS_EXTERNAL:
+                return self.send_errors(
+                    "No iRODS user related to your certificate")
+            else:
+                # irods as admin
+                admin_icom = self.global_get_service(
+                    'irods', user=IRODS_DEFAULT_ADMIN)
+                # Add user inside irods
+                admin_icom.create_user(irods_user, admin=False)
+                admin_icom.admin('aua', irods_user, extuser.certificate_dn)
+        else:
+            if not IRODS_EXTERNAL:
+## // TO FIX
+                print("Should we change DN associated to the existing user?")
+
+        # Update db to save the irods user related to this extuser account
+        auth.associate_object_to_attribute(extuser, 'irodsuser', irods_user)
+        # Copy certificate in the dedicated path, and update db info
+        crt = certs.save_proxy_cert(extuser.proxyfile, irods_user)
+        auth.associate_object_to_attribute(extuser, 'proxyfile', crt)
+
+        ###################################
+        # Create a valid token for our API
+        local_token, jti = auth.create_token(auth.fill_payload(intuser))
+        # save it inside the current database
+        auth.save_token(auth._user, local_token, jti)
+
+# ## // TO FIX:
+# # Create a 'return_credentials' method to use standard Bearer oauth response
+        return {'token': local_token}
+
+
+from .commons import EudatEndpoint
+
+class RefreshProxy(EudatEndpoint):
+    """ Allow refreshing of the proxy if the b2access token is still valid """
+
+    base_url = AUTH_URL
+
+    def get(self):
+        pass
 
 
 class TestB2access(ExtendedApiResource):
@@ -126,62 +175,40 @@ class TestB2access(ExtendedApiResource):
 
     base_url = AUTH_URL
 
-    # @authentication.authorization_required
+    @authentication.authorization_required
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self):
+        """
+        Just testing
+## // TO FIX: move it into common
+        """
 
-        # use this to call again b2access?
-        b2access_token = "2J87ucxv5tpcHO23vysQzqH9exTShgNumREW1iVd2nk"
-
-        # or to recover data from sql
         auth = self.global_get('custom_auth')
-        internal_user, external_user = auth.oauth_from_token(b2access_token)
 
-        #########################
-        # Find out what is the irods username
+        iuser = IRODS_DEFAULT_USER
+        use_proxy = False
+        _, extuser = auth.oauth_from_local(self.get_current_user())
+        if extuser is not None:
+            iuser = extuser.irodsuser
+            use_proxy = True
+        icom = self.global_get_service('irods', user=iuser, proxy=use_proxy)
 
-        # irods as admin
-        icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
-        # irods related account
-        irods_user = icom.get_translated_user(external_user.email)
-        print("IRODS USER", irods_user)
+        out = None
+        regexp = r'The proxy credential:\s+([^\s]+)\s+' \
+            + r'with subject:\s+([^\s]+)\s+expired\s+([0-9]+)\s+([^\s]+)\s+ago'
 
-        # Does this user exist?
-        return icom.user_exists(irods_user)
+        try:
+            out = icom.list()
+        except Exception as e:
+            import re
+            pattern = re.compile(regexp)
+            mall = pattern.findall(str(e))
+            if len(mall) > 0:
+                m = mall.pop()
+                error = "'%s' became invalid %s %s ago" % (m[1], m[2], m[3])
+                return self.send_errors('Expired proxy credential', error)
+            else:
+                raise e
 
-        return irods_user
-
-        # if not IRODS_EXTERNAL:
-        #     # Add user inside irods
-        #     icom.create_user(irods_user, admin=False)
-        #     icom.admin('aua', irods_user, external_user.certificate_cn)
-
-# #         ##################################
-# #         # Create irods user inside the database
-# #         graph_irods_user = None
-# #         graph = self.global_get_service('neo4j')
-# #         try:
-# #             graph_irods_user = graph.IrodsUser.nodes.get(username=irods_user)
-# #         except graph.IrodsUser.DoesNotExist:
-
-# #             # Save into the graph
-# #             graph_irods_user = graph.IrodsUser(username=irods_user)
-# #             graph_irods_user.save()
-
-#         # # Connect the user to graph If not already
-#         # user_node.associated.connect(graph_irods_user)
-
-#         # # Test GSS-API
-#         # icom = self.global_get_service('irods', user=irods_user)
-#         # icom.list()
-
-#         token = "Hello World"
-
-#         # ###################################
-#         # # Create a valid token for our API
-#         # token, jti = auth.create_token(auth.fill_payload(user_node))
-#         # auth.save_token(auth._user, token, jti)
-#         # self.set_latest_token(token)
-
-# ## // TO FIX:
-# # Create a 'return_credentials' method to use standard Bearer oauth response
-#         return self.force_response({'token': token})
+        return out
+        # return [internal.email, external.proxyfile, external.irodsuser]

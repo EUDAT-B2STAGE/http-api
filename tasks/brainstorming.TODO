@@ -5,40 +5,29 @@ GUIDELINES:
 - Unittest: nose2
 - Test driven
 - Based on docker environment
-- Usable if not inside Docker
-- Swagger?
-
-BEST PRACTICES:
-
-  - use collection.namedtuple for returning multiple values
-  - ptipython as default shell
-  - httpie as command line
-  - click/easyargs/anythingsimilar for quick command line prototypes
-  - virtualenv for multiple versioning libraries
+- Swagger
 
 --- ✄ -----------------------
 
 CURRENT:
 
-  about being effectively collaborative in a team project
-
-   - ask
-    ✔ Ask for b2safe production certification authority (+ signing_policy) @done (16-11-18 10:18)
-    ☐ Ask for two accounts rmucci + pdonorio on B2SAFE dev
- - travis
-   ☐ check CI
- - endpoints
+- endpoints
     ☐ GET single element response
     ☐ PATCH method?
- - irods
+ - ask
+    ✔ Ask for b2safe production certification authority (+ signing_policy) @done (16-11-18 10:18)
+    ☐ Ask for two accounts rmucci + pdonorio on B2SAFE dev
+ ✔ travis @done (16-11-18 17:21)
+   ✔ check CI @done (16-11-18 17:21)
+ ✔ irods @done (16-11-18 17:21)
     ✔ b2access id <-> irods user mapping @done (16-11-18 10:19)
     iquest "SELECT USER_NAME WHERE USER_DN = '/O=Grid/OU=GlobusTest/OU=simpleCA-fb8ca5e4ccd2/OU=Globus Simple CA/CN=guest'"
-    ☐ sqllite External account @work
-    ☐ return new token
+    ✔ sqllite External account @done (16-11-18 17:21)
+    ✔ return new token @done (16-11-18 17:21)
  - b2access
-   ☐ use X509_USER_PROXY if token is "flagged" external/b2access?
+   ✔ use X509_USER_PROXY if token is "flagged" external/b2access? @done (16-11-18 22:56)
+   ☐ what if, when the proxy or the token expire? @work
    ☐ test with B2SAFE dev
-   ☐ what if, when the proxy or the token expire?
 - HTTPS proxy
    ☐ enable and check
    ✔ openstack @done (16-11-18 10:19)
@@ -47,12 +36,18 @@ CURRENT:
   - Real DB
    ☐ postgres?
      ☐ the same used by irods??
+- how to specify current b2safe environment domain: a configuration @paramater
 
 LATER:
 
+   ☐ profiling
+   https://github.com/muatik/flask-profiler
   ☐ release a package
     ☐ and documentation
   https://pythonhosted.org/
+  ☐ build sqldminer own image with php alpine?
+  https://github.com/vrana/adminer/commit/7a33661b721714a8b266bf57c0065ae653bb8097#commitcomment-17728245
+  https://hub.docker.com/r/clue/adminer/~/dockerfile/
   ☐ unittest for B2ACCESS...
    ☐ simple?
     http://stackoverflow.com/a/18832732/2114395
@@ -65,37 +60,6 @@ LATER:
   ☐ write again a custom response.py
     ☐ what is the motivation of make_custom_response?
 
---- ✄ -----------------------
-THINGS TO DO:
-
-- endpoints
-- tests
-- write a custom response
-- support custom response inside unit tests
-- sql support to irods users
-- b2access
-- how to specify current b2safe environment domain: a configuration @paramater
-
---- ✄ ----------------------- DETAILS
-
-AUTHENTICATION:
-  ☐ check if b2access works
-  ☐ check sqllite support for tokens
-    ☐ oauth2 linked model to tokens?
-      ☐ write new models if necessary
-  ☐ build sqldminer own image with php alpine?
-  https://github.com/vrana/adminer/commit/7a33661b721714a8b266bf57c0065ae653bb8097#commitcomment-17728245
-  https://hub.docker.com/r/clue/adminer/~/dockerfile/
-  ☐ tokens and users
-    ☐ check/write models
-
-IRODS RELATED:
-  ✔ irods resources are only for replica @done (16-09-26 16:36)
-    ☐ iget gets the file from the first available resource
-      ☐ if the default one is not available it will get it from another
-      ☐ you can specify from iget the resource to use
-    ✔ resource is not a constraint to get a uniquely identified file name @done (16-09-26 16:36)
-
 UNIT TEST:
 ☐ uploads with random name
 ☐ users create if testing
@@ -106,26 +70,6 @@ UNIT TEST:
    ☐ remove users, tokens
    ☐ and any object related to that user
 ☐ Clean with "finally" if any error
-
-LAUNCH and CONFIGURATION:
-  ☐ the new do.py command @rapydo
-  ☐ configuration
-    ☐ run pure python, no docker
-      ☐ requirements.txt (pip freeze)
-        ☐ a smaller one than current python docker image
-      ☐ instructions with @virtualenv
-  ☐ packages?
-    ☐ a script to create the package
-    see B2SAFE example
-    ☐ centos 7 (6?), opensuse 11
-
-PERFOMANCE & PRODUCTION:
- ☐ nginx proxy and real certificates
- ☐ profiling
- https://github.com/muatik/flask-profiler
- ☐ benchmarks
-
---- ✄ -----------------------
 
 UID:
   ☐ Not for now
@@ -141,8 +85,3 @@ UID:
       ☐ use a /api/internals/mappings/b2safe to manage the list?
     ☐ not uuid (just Unique ID) and as small as possible
       ☐ use path, resource, filename and b2safe code for creating the hash
-
-curl commands:
-  - put file
-  curl -X PUT -F file=@/tmp/gettoken $SERVER/api/resources/tempZone/home/guest/token.txt -H "$AUTH"
-

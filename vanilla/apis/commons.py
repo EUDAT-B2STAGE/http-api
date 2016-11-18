@@ -28,6 +28,7 @@ class EudatEndpoint(ExtendedApiResource):
         # icom = self.global_get_service('irods', user=irodsuser.username)
         #####################################
 
+        # SQLALCHEMY connection
         sql = self.global_get_service('sql')
 
         #####################################

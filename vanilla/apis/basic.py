@@ -24,9 +24,6 @@ from ...auth import authentication
 from flask import request, current_app
 from commons import htmlcodes as hcodes
 from commons.logs import get_logger, pretty_print
-
-## // TO FIX for custom response:
-# from .response import decorate
 from .. import decorators as decorate
 
 logger = get_logger(__name__)
