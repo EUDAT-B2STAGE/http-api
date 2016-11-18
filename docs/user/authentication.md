@@ -2,19 +2,26 @@
 
 The B2STAGE HTTP-API uses the OAuth2 authorization framework to obtain limited access to B2ACCESS user accounts. It works by delegating user authentication to the service that hosts the user account (B2ACCESS), and authorizing third-party applications (B2STAGE HTTP-API) to access the user account. 
 
-Therefore, to access to the B2SATGE HTTP-API service, you must first register a new **B2ACCESS** account and [get valid credentials](https://b2access.eudat.eu:8443/home/home).
+Therefore, to use the B2SATGE HTTP-API service, you must first register a new **B2ACCESS** personal account and [get valid credentials](https://b2access.eudat.eu:8443/home/home).
 
 
 ## B2ACCESS Authorization 
 
 Credentials are a combination of your user name and password: they are needed to generate authentication tokens.
 
-To allow the B2STAGE HTTP-API to access B2ACCESS user's account, visit the following URL via a web browser and click on "authorize application":
+To allow the B2STAGE HTTP-API to access B2ACCESS user's account:
 
-'http://<http_server:port>/auth/askauth'
+1. visit the following URL via a web browser:
 
-[describe the full workflow]
-You will redirect to 'http://<http_server:port>/auth/authorization' where you will be prompted to authorize the B2SATGE HTTP-API application.
+```bash
+http://<http_server:port>/auth/askauth
+```
+
+You will be redirect to the B2ACCESS log in page.
+
+2. Log in using your EUDAT credentilas. You will be redirect to a web page where you are prompted to authorize the B2STAGE HTTP-API to access some user profile information.
+
+3. Click on "Confirm" to authorize the the B2STAGE HTTP-API.
 
 This is a one-time operation, needed only the first time you need to get access to the B2STAGE HTTP-API.
 
