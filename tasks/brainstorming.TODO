@@ -34,6 +34,7 @@ CURRENT:
     ✔ b2access id <-> irods user mapping @done (16-11-18 10:19)
     iquest "SELECT USER_NAME WHERE USER_DN = '/O=Grid/OU=GlobusTest/OU=simpleCA-fb8ca5e4ccd2/OU=Globus Simple CA/CN=guest'"
     ☐ sqllite External account @work
+    ☐ return new token
  - b2access
    ☐ use X509_USER_PROXY if token is "flagged" external/b2access?
    ☐ test with B2SAFE dev
@@ -43,6 +44,9 @@ CURRENT:
    ✔ openstack @done (16-11-18 10:19)
      ☐ https://b2stage.cineca.it/api
    ☐ real certificates
+  - Real DB
+   ☐ postgres?
+     ☐ the same used by irods??
 
 LATER:
 

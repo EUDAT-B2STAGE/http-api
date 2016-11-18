@@ -12,12 +12,12 @@ from commons.logs import get_logger
 from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
 from ..services.oauth2clients import decorate_http_request
+## TO FIX: make sure the default irods admin is requested in the config file
+from ..services.irods.client import IRODS_DEFAULT_ADMIN
+from ..services.detect import IRODS_EXTERNAL
 from beeprint import pp as prettyprint
 
 # from ...auth import authentication
-# from ..services.detect import IRODS_EXTERNAL
-# ## TO FIX: make sure the default irods admin is requested in the config file
-# from ..services.irods.client import IRODS_DEFAULT_ADMIN
 
 logger = get_logger(__name__)
 
@@ -134,27 +134,26 @@ class TestB2access(ExtendedApiResource):
 
         # or to recover data from sql
         auth = self.global_get('custom_auth')
-        auth.oauth_from_token(b2access_token)
+        internal_user, external_user = auth.oauth_from_token(b2access_token)
 
-        return "Hello?"
+        #########################
+        # Find out what is the irods username
 
-#         #########################
-#         # Find out what is the irods username
+        # irods as admin
+        icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
+        # irods related account
+        irods_user = icom.get_translated_user(external_user.email)
+        print("IRODS USER", irods_user)
 
-#         # irods as admin
-#         icom = self.global_get_service('irods', user=IRODS_DEFAULT_ADMIN)
-#         # irods related account
-# ## // TO BE CHANGED
-#         irods_user = icom.get_translated_user(user_node.email)
-#         irods_user = "paolo"
-#         print("IRODS USER", irods_user)
+        # Does this user exist?
+        return icom.user_exists(irods_user)
 
-# # check with icom if user exists...
+        return irods_user
 
-#         if not IRODS_EXTERNAL:
-#             # Add user inside irods
-#             icom.create_user(irods_user)
-#             icom.admin('aua', irods_user, external_user.certificate_cn)
+        # if not IRODS_EXTERNAL:
+        #     # Add user inside irods
+        #     icom.create_user(irods_user, admin=False)
+        #     icom.admin('aua', irods_user, external_user.certificate_cn)
 
 # #         ##################################
 # #         # Create irods user inside the database
