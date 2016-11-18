@@ -92,11 +92,12 @@ rest:
     # Application credentials to use the b2access environment
 
     # DEV
-    B2ACCESS_APPNAME: httpapi
-    B2ACCESS_APPKEY: WHOKNOWS
+    #B2ACCESS_APPNAME: httpapi
+    #B2ACCESS_APPKEY: WHOKNOWS
 
     # # PROD
-    # B2ACCESS_APPNAME: b2stage_httpapi
+    B2ACCESS_APPNAME: b2stage_httpapi
+    B2ACCESS_APPKEY: FTaP?7pB6wRnTt&=jgQ*;Q87
     #########################
 
     # Base the user/role mechanism on neo4j

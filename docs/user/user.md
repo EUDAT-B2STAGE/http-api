@@ -1,7 +1,7 @@
 
 # B2STAGE HTTP-API User Documentation
 
-This guide describes the B2STAGE HTTP-API operations, related request and response structures, and error codes.
+This guide describes the B2STAGE HTTP-API operations, related request, response structures and error codes.
 
 To send any kind of requests to the B2STAGE HTTP-API an *authentication token*is needed: vist this the [Authentication documentation](authentication.md) for further details.
 
