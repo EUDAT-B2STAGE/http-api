@@ -14,7 +14,7 @@ before_install:
   - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 
   # update docker-compose
-  - sudo rm /usr/local/bin/docker-compose
+  #- sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
@@ -27,7 +27,9 @@ install:
 
 script:
   - docker -v
-  - docker-compose -v
+  #- docker-compose -v
+  - docker-compose build
+  - docker-compose run test
   - ./do update
   - ./do init
   # needed to let the system create files with test coverage
