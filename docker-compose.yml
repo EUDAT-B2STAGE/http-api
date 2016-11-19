@@ -97,6 +97,7 @@ rest:
 
     # # PROD
     # B2ACCESS_APPNAME: b2stage_httpapi
+    # B2ACCESS_APPKEY: WHOKNOWS
     #########################
 
     # Base the user/role mechanism on neo4j
