@@ -11,12 +11,12 @@ from flask import url_for, session
 from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
 from ..services.oauth2clients import decorate_http_request
-## TO FIX: make sure the default irods admin is requested in the config file
 from ..services.irods.client import \
-    IrodsException, IRODS_DEFAULT_ADMIN, IRODS_DEFAULT_USER, Certificates
+    IrodsException, IRODS_DEFAULT_ADMIN, Certificates
 from ..services.detect import IRODS_EXTERNAL
 from .. import decorators as decorate
 from ...auth import authentication
+from .commons import EudatEndpoint
 from commons.logs import get_logger, pretty_print
 
 logger = get_logger(__name__)
@@ -159,18 +159,21 @@ class Authorize(ExtendedApiResource):
         return {'token': local_token}
 
 
-from .commons import EudatEndpoint
-
 class RefreshProxy(EudatEndpoint):
     """ Allow refreshing of the proxy if the b2access token is still valid """
 
     base_url = AUTH_URL
 
+    @authentication.authorization_required
     def get(self):
-        pass
+
+        if not self.init_endpoint(only_check_proxy=True):
+            return "Do refresh"
+        else:
+            return "NOT refreshing"
 
 
-class TestB2access(ExtendedApiResource):
+class TestB2access(EudatEndpoint):
     """ development tests """
 
     base_url = AUTH_URL
@@ -178,37 +181,6 @@ class TestB2access(ExtendedApiResource):
     @authentication.authorization_required
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self):
-        """
-        Just testing
-## // TO FIX: move it into common
-        """
 
-        auth = self.global_get('custom_auth')
-
-        iuser = IRODS_DEFAULT_USER
-        use_proxy = False
-        _, extuser = auth.oauth_from_local(self.get_current_user())
-        if extuser is not None:
-            iuser = extuser.irodsuser
-            use_proxy = True
-        icom = self.global_get_service('irods', user=iuser, proxy=use_proxy)
-
-        out = None
-        regexp = r'The proxy credential:\s+([^\s]+)\s+' \
-            + r'with subject:\s+([^\s]+)\s+expired\s+([0-9]+)\s+([^\s]+)\s+ago'
-
-        try:
-            out = icom.list()
-        except Exception as e:
-            import re
-            pattern = re.compile(regexp)
-            mall = pattern.findall(str(e))
-            if len(mall) > 0:
-                m = mall.pop()
-                error = "'%s' became invalid %s %s ago" % (m[1], m[2], m[3])
-                return self.send_errors('Expired proxy credential', error)
-            else:
-                raise e
-
-        return out
-        # return [internal.email, external.proxyfile, external.irodsuser]
+        icom, sql, user = self.init_endpoint()
+        return {'user': user, 'ls': icom.list()}

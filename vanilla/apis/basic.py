@@ -54,7 +54,7 @@ class EudatTest(EudatEndpoint):
             'parameters': self.get_input(),
             'parameter': self.get_input(single_parameter='test'),
         }
-        return self.force_response(data)
+        # return self.force_response(data)
         return data
 
 

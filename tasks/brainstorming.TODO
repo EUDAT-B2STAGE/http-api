@@ -26,7 +26,9 @@ CURRENT:
     ✔ return new token @done (16-11-18 17:21)
  - b2access
    ✔ use X509_USER_PROXY if token is "flagged" external/b2access? @done (16-11-18 22:56)
-   ☐ what if, when the proxy or the token expire? @work
+   ☐ refresh b2access proxy
+   ☐ return {'token': token}
+     ☐ auth.token_reply
    ☐ test with B2SAFE dev
 - HTTPS proxy
    ☐ enable and check

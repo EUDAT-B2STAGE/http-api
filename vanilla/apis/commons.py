@@ -7,38 +7,58 @@ Common functions for EUDAT endpoints
 from __future__ import absolute_import
 
 import os
-import sys
 from ..base import ExtendedApiResource
 from commons.logs import get_logger
+from ..services.irods.client import IRODS_DEFAULT_USER
 
 logger = get_logger(__name__)
 
 
 class EudatEndpoint(ExtendedApiResource):
 
-    def init_endpoint(self):
+    def init_endpoint(self, only_check_proxy=False):
 
-        #####################################
-        # IF THE GRAPH WILL BE INTEGRATED
+        # main object to handle token and oauth2 things
+        auth = self.global_get('custom_auth')
 
-        # # Note: graph holds the authenticated accounts in our architecture
-        # graph = self.global_get_service('neo4j')
-        # graphuser = self.get_current_user()
-        # irodsuser = icom.translate_graph_user(graph, graphuser)
-        # icom = self.global_get_service('irods', user=irodsuser.username)
-        #####################################
+        # Get the irods user
+        # (either from oauth or using default)
+        iuser = IRODS_DEFAULT_USER
+        use_proxy = False
+        intuser, extuser = auth.oauth_from_local(self.get_current_user())
+        if extuser is not None:
+            iuser = extuser.irodsuser
+            use_proxy = True
+        icom = self.global_get_service('irods', user=iuser, proxy=use_proxy)
+
+        regexp = r'The proxy credential:\s+([^\s]+)\s+' \
+            + r'with subject:\s+([^\s]+)\s+expired\s+([0-9]+)\s+([^\s]+)\s+ago'
+
+        # Verify if irods certificates are ok
+        try:
+            # icd and ipwd do not give error with wrong certificates...
+            # so the minimum command is ils inside the home dir
+            icom.list()
+            if only_check_proxy:
+                return True
+        except Exception as e:
+            if only_check_proxy:
+                return False
+            import re
+            pattern = re.compile(regexp)
+            mall = pattern.findall(str(e))
+            if len(mall) > 0:
+                m = mall.pop()
+                error = "'%s' became invalid %s %s ago" % (m[1], m[2], m[3])
+                return self.send_errors('Expired proxy credential', error)
+            else:
+                raise e
 
         # SQLALCHEMY connection
         sql = self.global_get_service('sql')
+        user = intuser.email
 
         #####################################
-        # OTHERWISE
-        # Get current (irods?) user from database/tokens
-# // TO FIX:
-        user = 'guest'
-        # user = 'rodsminer'
-
-        icom = self.global_get_service('irods', user=user)
         logger.debug("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
         return icom, sql, user
 
