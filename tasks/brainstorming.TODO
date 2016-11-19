@@ -11,51 +11,49 @@ GUIDELINES:
 
 CURRENT:
 
-- endpoints
-    ☐ GET single element response
-    ☐ PATCH method?
  - ask
     ✔ Ask for b2safe production certification authority (+ signing_policy) @done (16-11-18 10:18)
+      ☐ waiting response
     ☐ Ask for two accounts rmucci + pdonorio on B2SAFE dev
- ✔ travis @done (16-11-18 17:21)
-   ✔ check CI @done (16-11-18 17:21)
- ✔ irods @done (16-11-18 17:21)
-    ✔ b2access id <-> irods user mapping @done (16-11-18 10:19)
-    iquest "SELECT USER_NAME WHERE USER_DN = '/O=Grid/OU=GlobusTest/OU=simpleCA-fb8ca5e4ccd2/OU=Globus Simple CA/CN=guest'"
-    ✔ sqllite External account @done (16-11-18 17:21)
-    ✔ return new token @done (16-11-18 17:21)
  - b2access
-   ✔ use X509_USER_PROXY if token is "flagged" external/b2access? @done (16-11-18 22:56)
    ☐ refresh b2access proxy
-   ☐ return {'token': token}
-     ☐ auth.token_reply
    ☐ test with B2SAFE dev
 - HTTPS proxy
    ☐ enable and check
    ✔ openstack @done (16-11-18 10:19)
      ☐ https://b2stage.cineca.it/api
    ☐ real certificates
-  - Real DB
+- endpoints
+    ☐ GET single element response
+    ☐ PATCH method?
+- Real DB
    ☐ postgres?
      ☐ the same used by irods??
-- how to specify current b2safe environment domain: a configuration @paramater
+- configuration
+   ☐ how to specify current b2safe environment domain
+     ☐ a configuration @paramater
 
 LATER:
 
-   ☐ profiling
-   https://github.com/muatik/flask-profiler
-  ☐ release a package
-    ☐ and documentation
-  https://pythonhosted.org/
-  ☐ build sqldminer own image with php alpine?
-  https://github.com/vrana/adminer/commit/7a33661b721714a8b266bf57c0065ae653bb8097#commitcomment-17728245
-  https://hub.docker.com/r/clue/adminer/~/dockerfile/
-  ☐ unittest for B2ACCESS...
+  ☐ remove _latest_token from anywhere and test
+
+  - build sqldminer own image with php alpine?
+    https://github.com/vrana/adminer/commit/7a33661b721714a8b266bf57c0065ae653bb8097#commitcomment-17728245
+    https://hub.docker.com/r/clue/adminer/~/dockerfile/
+  - unittest for B2ACCESS...
    ☐ simple?
     http://stackoverflow.com/a/18832732/2114395
     ☐ mocking?
     https://realpython.com/blog/python/testing-third-party-apis-with-mocks/
-  ☐ remove _latest_token from anywhere and test
+  - return token bearer credentials
+   ☐ return {'token': token}
+     ☐ auth.token_reply
+  - profiling
+   ☐ flask profiler
+     https://github.com/muatik/flask-profiler
+  - release a PyPi package
+    ☐ with documentation
+    https://pythonhosted.org/
   ☐ fix json: import from jsonify
   ☐ parameters input from reading the json config
   ☐ change base.py into core.py

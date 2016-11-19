@@ -7,7 +7,7 @@ B2SAFE HTTP REST API endpoints.
 from __future__ import absolute_import
 
 import json
-from flask import url_for, session
+from flask import url_for, session, current_app
 from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
 from ..services.oauth2clients import decorate_http_request
@@ -81,16 +81,19 @@ class Authorize(ExtendedApiResource):
         if b2access_token is None:
             logger.critical("No token received")
             return self.send_errors('B2ACCESS', 'Empty token')
+        logger.info("Received token: '%s'" % b2access_token)
 
         ############################################
+        # Get user info from current b2acess token
+
         # Save the b2access token into session for oauth2client purpose
         session['b2access_token'] = (b2access_token, '')
-        logger.info("Received token: '%s'" % b2access_token)
-        # http://j.mp/b2access_profile_attributes
 
-        # All the personal data we can see from the token on B2ACCESS
+        # Calling with the oauth2 client
         current_user = b2access.get('userinfo')
-        pretty_print(current_user)
+        if current_app.config['DEBUG']:
+            # Attributes you find: http://j.mp/b2access_profile_attributes
+            pretty_print(current_user)  # DEBUG
 
         # # Store b2access information inside the db
         intuser, extuser = \
@@ -105,7 +108,13 @@ class Authorize(ExtendedApiResource):
 
         #########################
         # Get a proxy certificate to access irods
+
+        # Save the b2access token into session for oauth2client purpose
+        session['b2access_token'] = (b2access_token, '')
+        # Create the object for accessing certificates in B2ACCESS
         b2accessCA = auth._oauth2.get('b2accessCA')
+
+        # Call the oauth2 object requesting a certificate
         certs = Certificates()
         proxyfile = certs.make_proxy_from_ca(b2accessCA)
 
@@ -114,6 +123,7 @@ class Authorize(ExtendedApiResource):
             return self.send_errors(
                 "B2ACCESS proxy",
                 "Failed to create file or empty response")
+
         # Save the proxy filename into the database
         auth.store_proxy_cert(extuser, proxyfile)
 
