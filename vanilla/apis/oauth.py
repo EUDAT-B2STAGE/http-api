@@ -7,6 +7,7 @@ B2SAFE HTTP REST API endpoints.
 from __future__ import absolute_import
 
 import json
+from datetime import datetime as dt
 from flask import url_for, session, current_app
 from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
@@ -42,14 +43,11 @@ class OauthLogin(ExtendedApiResource):
         return self.force_response(response)
 
 
-class Authorize(ExtendedApiResource):
+class B2accessUtilities(EudatEndpoint):
     """
-    Previous endpoint will redirect here if authorization was granted.
-    Use the B2ACCESS token to retrieve info about the user,
-    and to store the proxyfile.
+    Utilities to use B2ACCESS
     """
 
-    base_url = AUTH_URL
     _certs = None
 
     def create_b2access_client(self, auth):
@@ -75,6 +73,8 @@ class Authorize(ExtendedApiResource):
             return self.send_errors('B2ACCESS denied', 'oauth2: %s' % e)
         if resp is None:
             return self.send_errors('B2ACCESS denied', 'Uknown error')
+        if current_app.config['DEBUG']:
+            pretty_print(resp)  # DEBUG
 
         b2access_token = resp.get('access_token')
         if b2access_token is None:
@@ -107,7 +107,18 @@ class Authorize(ExtendedApiResource):
         else:
             logger.info("Stored access info")
 
-        return current_user, intuser, extuser
+        # Get token expiration time
+        response = b2access.get('tokeninfo')
+        timestamp = response.data.get('exp')
+
+        timestamp_resolution = 1
+        # timestamp_resolution = 1e3
+
+        # Convert into datetime object and save it inside db
+        token_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
+        auth.associate_object_to_attr(extuser, 'token_expiration', token_exp)
+
+        return intuser, extuser
 
     def obtain_proxy_certificate(self, auth, extuser):
         """
@@ -118,7 +129,12 @@ class Authorize(ExtendedApiResource):
 
         # To use the b2access token with oauth2 client
         # We have to save it into session
-        session['b2access_token'] = (extuser.token, '')
+        key = 'b2access_token'
+        if key not in session or session.get(key, None) is None:
+            session[key] = (extuser.token, '')
+
+        # # invalidate token, for debug purpose
+        # session[key] = ('ABC', '')
 
         # Create the object for accessing certificates in B2ACCESS
         b2accessCA = auth._oauth2.get('b2accessCA')
@@ -128,18 +144,13 @@ class Authorize(ExtendedApiResource):
             self._certs = Certificates()
         proxy_file = self._certs.make_proxy_from_ca(b2accessCA)
 
-        # check for errors
-        if proxy_file is None:
-            return self.send_errors(
-                "B2ACCESS proxy",
-                "Failed to create file or empty response")
-
         # Save the proxy filename into the database
-        auth.store_proxy_cert(extuser, proxy_file)
+        if proxy_file is not None:
+            auth.store_proxy_cert(extuser, proxy_file)
 
         return proxy_file
 
-    def set_irods_username(self, auth, curuser, extuser):
+    def set_irods_username(self, auth, extuser):
         """ Find out what is the irods username and save it """
 
         icom = self.global_get_service('irods')
@@ -173,6 +184,7 @@ class Authorize(ExtendedApiResource):
 
         # Update db to save the irods user related to this extuser account
         auth.associate_object_to_attr(extuser, 'irodsuser', irods_user)
+
         # Copy certificate in the dedicated path, and update db info
         if self._certs is None:
             self._certs = Certificates()
@@ -180,6 +192,16 @@ class Authorize(ExtendedApiResource):
         auth.associate_object_to_attr(extuser, 'proxyfile', crt)
 
         return irods_user
+
+
+class Authorize(B2accessUtilities):
+    """
+    Previous endpoint will redirect here if authorization was granted.
+    Use the B2ACCESS token to retrieve info about the user,
+    and to store the proxyfile.
+    """
+
+    base_url = AUTH_URL
 
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def get(self):
@@ -196,10 +218,15 @@ class Authorize(ExtendedApiResource):
         b2access_token = self.request_b2access_token(b2access)
 
         # Get user info and certificate
-        curuser, intuser, extuser = \
+        intuser, extuser = \
             self.get_b2access_user_info(auth, b2access, b2access_token)
-        self.obtain_proxy_certificate(auth, extuser)
-        self.set_irods_username(auth, curuser, extuser)
+        proxy_file = self.obtain_proxy_certificate(auth, extuser)
+        # check for errors
+        if proxy_file is None:
+            return self.send_errors(
+                "B2ACCESS proxy", "Cannot get file or unauthorized response")
+
+        self.set_irods_username(auth, extuser)
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
@@ -210,23 +237,7 @@ class Authorize(ExtendedApiResource):
         return {'token': local_token}
 
 
-# class Proxy(EudatEndpoint):
-#     """
-#     Endpoint to let the user manage their b2access proxy?
-#     """
-
-#     base_url = AUTH_URL
-
-#     @authentication.authorization_required
-#     def get(self):
-
-#         pass
-
-#         # _, extuser = self.init_endpoint(only_check_proxy=True)
-#         # return {'proxy_file': extuser.proxyfile}
-
-
-class RefreshProxy(EudatEndpoint):
+class B2accesProxyEndpoint(B2accessUtilities):
     """
     Allow refreshing current proxy (if invalid)
     using the stored b2access token (if still valid)
@@ -235,7 +246,7 @@ class RefreshProxy(EudatEndpoint):
     base_url = AUTH_URL
 
     @authentication.authorization_required
-    def get(self):
+    def post(self):
 
         ##########################
         # get the response
@@ -246,16 +257,26 @@ class RefreshProxy(EudatEndpoint):
 
         ##########################
         # verify what happened
-        if not r.valid_credentials:
-            auth = self.global_get('custom_auth')
-            proxy_file = self.obtain_proxy_certificate(auth, r.extuser_object)
-            logger.info("Refreshed with a new proxy: %s" % proxy_file)
-        else:
+        if r.valid_credentials:
             logger.debug("A valid proxy already exists")
+            return {"Completed": "Current proxy is still valid."}
 
-        return {"message": "Operation completed"}
+        auth = self.global_get('custom_auth')
+        proxy_file = self.obtain_proxy_certificate(auth, r.extuser_object)
+
+        # check for errors
+        if proxy_file is None:
+            return self.send_errors(
+                "B2ACCESS proxy",
+                "B2ACCESS current token is invalid or expired. " +
+                "Please request a new one at /auth/askauth.")
+        self.set_irods_username(auth, r.extuser_object)
+        logger.info("Refreshed with a new proxy: %s" % proxy_file)
+
+        return {"Completed": "New proxy was generated."}
 
 
+# class TestB2access(B2accessUtilities):
 class TestB2access(EudatEndpoint):
     """ development tests """
 
@@ -271,6 +292,7 @@ class TestB2access(EudatEndpoint):
         # pretty_print(r)
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
+        pretty_print(r)
 
         ##########################
         return {'list': r.icommands.list()}

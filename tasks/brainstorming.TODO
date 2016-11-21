@@ -15,59 +15,61 @@ CURRENT:
 
 - proxy
  ✔ retest the whole authentication @done (16-11-21 08:50)
- ☐ invalid proxy
-   ☐ refresh
- ☐ invalid b2access_token
-   ☐ redirect
-
-- ask
-  ✔ Ask for b2safe production certification authority (+ signing_policy) @done (16-11-18 10:18)
-    ☐ waiting response
-  ☐ Ask for two accounts rmucci + pdonorio on B2SAFE dev
-
-- b2access
-   ☐ refresh b2access proxy @working
-   ☐ test with B2SAFE dev
-   ☐ standard for returning credentials
-
-- HTTPS proxy
-   ☐ enable and check
-   ✔ openstack @done (16-11-18 10:19)
-     ☐ https://b2stage.cineca.it/api
-   ☐ real certificates
+ ✔ invalid proxy @done (16-11-21 12:09)
+   ✔ refresh @done (16-11-21 15:28)
+ ✔ invalid b2access_token @done (16-11-21 15:59)
 
 - endpoints
     ☐ GET single element response
     ☐ PATCH method?
 
+- ask
+  ✔ Ask for b2safe production certification authority (+ signing_policy) @done (16-11-18 10:18)
+    ☐ waiting response
+  ☐ Ask for account pdonorio on B2SAFE dev
+    ☐ change pw
+
+- b2access
+   ☐ standard for returning credentials
+   ✔ refresh b2access proxy @working @done (16-11-21 15:40)
+     ☐ automatic?
+     ☐ redirect with flask for invalid token?
+   ☐ test with B2SAFE dev
+
+- HTTPS proxy
+   ✔ openstack @done (16-11-18 10:19)
+     ✔ https://b2stage.cineca.it/api @done (16-11-21 16:00)
+   ✔ real certificates @done (16-11-21 16:00)
+   ☐ enable and check
+
 - configuration
+   ☐ debug level in production / uwsgi
    ☐ how to specify current b2safe environment domain
      ☐ a configuration @paramater
-
-- Real DB
-   ☐ postgres?
-     ☐ the same used by irods??
 
 LATER:
 
   ☐ remove _latest_token from anywhere (and test)
   ☐ fix configurations names and paths in ./confs
 
-  - build sqldminer own image with php alpine?
+- Real DB
+   ☐ postgres?
+     ☐ the same used by irods??
+- build sqldminer own image with php alpine?
     https://github.com/vrana/adminer/commit/7a33661b721714a8b266bf57c0065ae653bb8097#commitcomment-17728245
     https://hub.docker.com/r/clue/adminer/~/dockerfile/
-  - unittest for B2ACCESS...
+- unittest for B2ACCESS...
    ☐ simple?
     http://stackoverflow.com/a/18832732/2114395
     ☐ mocking?
     https://realpython.com/blog/python/testing-third-party-apis-with-mocks/
-  - return token bearer credentials
+- return token bearer credentials
    ☐ return {'token': token}
      ☐ auth.token_reply
-  - profiling
+- profiling
    ☐ flask profiler
      https://github.com/muatik/flask-profiler
-  - release a PyPi package
+- release a PyPi package
     ☐ with documentation
     https://pythonhosted.org/
   ☐ fix json: import from jsonify

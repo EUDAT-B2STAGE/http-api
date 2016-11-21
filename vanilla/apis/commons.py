@@ -82,8 +82,8 @@ class EudatEndpoint(ExtendedApiResource):
             if len(mall) > 0:
                 m = mall.pop()
                 error = "'%s' became invalid %s %s ago.\n" % (m[1], m[2], m[3])
-                error += "To refresh the proxy use the URI '%s'" \
-                    % "/auth/proxy/refresh"
+                error += "To refresh the proxy make '%s' on URI '%s'" \
+                    % ("POST", "/auth/proxy")
                 return InitialObjects(
                     errors={'Expired proxy credential': error})
             else:
@@ -99,8 +99,9 @@ class EudatEndpoint(ExtendedApiResource):
         logger.debug("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
         return InitialObjects(
             username=user,
+            extuser_object=extuser,
             icommands=icom,
-            db_handler=sql
+            db_handler=sql,
         )
 
     @staticmethod
