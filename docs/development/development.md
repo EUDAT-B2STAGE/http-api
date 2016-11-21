@@ -4,6 +4,10 @@ Before starting please make sure that you have installed on your system:
 * [Docker](http://docs.docker.com/) 1.11+
 * [docker-compose](https://docs.docker.com/compose/) 1.7+
 
+
+##Coding Style
+Primarily all code has to adhere to PEP8 http://legacy.python.org/dev/peps/pep-0008/.
+
 ## Quick start
 
 If you need to jump in as soon as possible:
