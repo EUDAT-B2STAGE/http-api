@@ -83,7 +83,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             irods_location = INTERNAL_PATH_SEPARATOR + irods_location
 
         # get the base objects
-        icom, sql, user = self.init_endpoint()
+        r = self.init_endpoint()
+        # pretty_print(r)
+        if r.errors is not None:
+            return self.send_errors(errors=r.errors)
+        icom = r.icommands
+
         # get parameters with defaults
         path, resource, filename, force = \
             self.get_file_parameters(icom, path=irods_location)
@@ -126,7 +131,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             if filename is None:
                 filename = self.filename_from_path(path)
-            abs_file = self.absolute_upload_file(filename, user)
+            abs_file = self.absolute_upload_file(filename, r.username)
 
             # Make sure you remove any cached version to get a fresh obj
             try:
@@ -140,7 +145,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             icom.open(path, abs_file)
             # Download the file from local fs
             filecontent = super().download(
-                filename, subfolder=user, get=True)
+                filename, subfolder=r.username, get=True)
             # Remove local file
             os.remove(abs_file)
             # Stream file content
@@ -165,9 +170,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                         "path does not exists or you don't have privileges",
                         code=hcodes.HTTP_BAD_NOTFOUND)
 
-                ## // TO FIX:
+## // TO FIX:
                 # to be better parsed
 
+## // TO FIX:
             # what if does not exist?
             print("TEST", data, len(data))
 
@@ -210,14 +216,17 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # BASIC INIT
 
         # get the base objects
-        icom, sql, user = self.init_endpoint()
+        r = self.init_endpoint()
+        # pretty_print(r)
+        if r.errors is not None:
+            return self.send_errors(errors=r.errors)
+        icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
-
         # if path variable empty something is wrong
         if path is None:
             return self.send_errors(
-                'Path to remote resource is wrong',
+                'Path to remote resource',
                 'Note: only absolute paths are allowed',
                 code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
             )
@@ -281,7 +290,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # BASIC INIT
 
         # get the base objects
-        icom, sql, user = self.init_endpoint()
+        r = self.init_endpoint()
+        # pretty_print(r)
+        if r.errors is not None:
+            return self.send_errors(errors=r.errors)
+        icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = \
             self.get_file_parameters(icom, path=irods_location)
@@ -296,13 +309,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # Normal upload: inside the host tmp folder
         response = super(BasicEndpoint, self) \
-            .upload(subfolder=user, force=force)
+            .upload(subfolder=r.username, force=force)
 
         # Check if upload response is success
 ## // TO FIX:
 # this piece of code does not work with a custom response
 # if it changes the main blocks of the json root;
-# same developer should be able to provide a 'custom_split' on it
+# the developer should be able to provide a 'custom_split' on this
         content, errors, status = \
             self.explode_response(response, get_all=True)
 
@@ -313,7 +326,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             original_filename = content[key_file]
 
-            abs_file = self.absolute_upload_file(original_filename, user)
+            abs_file = self.absolute_upload_file(original_filename, r.username)
             logger.info("File is '%s'" % abs_file)
 
             ############################
@@ -369,12 +382,35 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 'filename': filename,
                 'path': path,
                 'resources': icom.get_resources_from_file(ipath),
-                # 'link': '%s/%s?path=%s' % (request.url, filename, path)
                 'link': link
             }
 
         # pretty_print(content)
         return self.force_response(content, errors=errors, code=status)
+
+#     @authentication.authorization_required
+#     @decorate.add_endpoint_parameter('resource')
+#     @decorate.apimethod
+#     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+#     def patch(self, irods_location=None):
+
+# # Does patch use the URI or parameter?
+
+#         ###################
+#         # BASIC INIT
+
+#         # get the base objects
+#         r = self.init_endpoint()
+#         # pretty_print(r)
+#         if r.errors is not None:
+#             return self.send_errors(errors=r.errors)
+#         icom = r.icommands
+#         # get parameters with defaults
+#         path, resource, filename, force = \
+#             self.get_file_parameters(icom, path=irods_location)
+
+#         ###################
+#         return "Hello World"
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('resource')
@@ -394,7 +430,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # BASIC INIT
 
         # get the base objects
-        icom, sql, user = self.init_endpoint()
+        r = self.init_endpoint()
+        # pretty_print(r)
+        if r.errors is not None:
+            return self.send_errors(errors=r.errors)
+        icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
 
@@ -402,8 +442,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # Debug/Testing option to remove the whole content of current home
         if current_app.config['DEBUG'] or current_app.config['TESTING']:
             if self._args.get('debugclean'):
-                icom, sql, user = self.init_endpoint()
-                home = icom.get_user_home(user)
+                home = icom.get_user_home()
                 files = icom.list_as_json(home)
                 for key, obj in files.items():
                     icom.remove(
