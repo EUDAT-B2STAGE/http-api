@@ -8,17 +8,13 @@
         "Authorize": [
             "authorize"
         ],
-        "TestB2access": [
-            "b2accesstest"
+        "RefreshProxy": [
+            "proxy/refresh"
         ]
     },
     // the most basic and simple upload/download
     "custom.basic": {
-        // "EudatTest": [
-        //     "test",
-        //     // http://flask.pocoo.org/snippets/76/
-        //     "test/<path:location>"
-        // ],
+
         // upload and download for normal users
         "BasicEndpoint": [
             "namespace",

@@ -65,4 +65,5 @@ export IRODS_ZONE=tempZone
 export IRODS_HOME=/tempZone/home/paolo
 export X509_CERT_DIR=/opt/certificates/caauth
 export X509_USER_PROXY=/opt/certificates/paolo/test
+# export X509_USER_PROXY=/opt/certificates/paolo/userproxy.crt
 ils
