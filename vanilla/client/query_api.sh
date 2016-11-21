@@ -91,10 +91,15 @@ function api_call()
 }
 
 ######################################
+used="0"
+
+
+######################################
 # POST
 
 if [ "$1" == 'create' -o "$1" == "$ALL_COMMAND" ]; then
 
+    used="1"
     path="$IHOME/test"
     if [ ! -z "$2" ]; then
         path="$2"
@@ -112,6 +117,7 @@ fi
 
 if [ "$1" == 'upload' -o "$1" == "$ALL_COMMAND" ]; then
 
+    used="1"
     path="$IHOME/test"
     if [ ! -z "$2" ]; then
         path="$2"
@@ -133,6 +139,7 @@ fi
 
 if [ "$1" == 'list' -o "$1" == "$ALL_COMMAND" ]; then
 
+    used="1"
     path="$IHOME"
     if [ ! -z "$2" ]; then
         path="$2"
@@ -148,6 +155,7 @@ fi
 
 if [ "$1" == 'remove' -o "$1" == "$ALL_COMMAND" ]; then
 
+    used="1"
     if [ ! -z "$2" ]; then
         path="$2"
         echo "Remove path $path [DELETE]"
@@ -170,9 +178,15 @@ fi
 # CLEAN
 
 if [ "$1" == 'clean' ]; then
+    used="1"
     api_call status DELETE ?debugclean=true
 fi
 
 ######################################
 # THE END
+if [ "$used" == "0" ]; then
+    echo "Unknown action '$1'. Check available commands with:"
+    echo ""
+    echo "$ . query_api.sh help"
+fi
 echo ""

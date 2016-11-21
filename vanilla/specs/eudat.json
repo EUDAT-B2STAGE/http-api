@@ -2,19 +2,21 @@
 {
     // enabling B2ACCESS token
     "custom.oauth": {
+        // "TestB2access": [
+        //     "b2accesstest"
+        // ],
         "OauthLogin": [
             "askauth"
         ],
         "Authorize": [
             "authorize"
         ],
-        "RefreshProxy": [
-            "proxy/refresh"
+        "B2accesProxyEndpoint": [
+            "proxy"
         ]
     },
     // the most basic and simple upload/download
     "custom.basic": {
-
         // upload and download for normal users
         "BasicEndpoint": [
             "namespace",

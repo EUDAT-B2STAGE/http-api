@@ -7,12 +7,41 @@ Common functions for EUDAT endpoints
 from __future__ import absolute_import
 
 import os
+from attr import (
+    s as AttributedModel,
+    ib as attribute,
+)
 from ..base import ExtendedApiResource
 from commons.logs import get_logger
 from ..services.irods.client import IRODS_DEFAULT_USER
 
 logger = get_logger(__name__)
 
+
+########################
+#  A class with attributes
+########################
+@AttributedModel
+class InitialObjects(object):
+    """
+    A pythonic way to handle a method response with different features
+    """
+
+    # User info
+    username = attribute(default=None)
+    extuser_object = attribute(default=None)
+    # Service handlers
+    icommands = attribute(default=None)
+    db_handler = attribute(default=None)
+    # Verify certificates or normal credentials
+    valid_credentials = attribute(default=False)
+    # Save errors to report
+    errors = attribute(default=None)
+
+
+########################
+#  Extend normal API to init EUDAT B2STAGE API services
+########################
 
 class EudatEndpoint(ExtendedApiResource):
 
@@ -26,6 +55,7 @@ class EudatEndpoint(ExtendedApiResource):
         iuser = IRODS_DEFAULT_USER
         use_proxy = False
         intuser, extuser = auth.oauth_from_local(self.get_current_user())
+        # If we have an "external user" we are using b2access oauth2
         if extuser is not None:
             iuser = extuser.irodsuser
             use_proxy = True
@@ -40,19 +70,26 @@ class EudatEndpoint(ExtendedApiResource):
             # so the minimum command is ils inside the home dir
             icom.list()
             if only_check_proxy:
-                return True
+                return InitialObjects(valid_credentials=True)
         except Exception as e:
             if only_check_proxy:
-                return False
+                return InitialObjects(
+                    valid_credentials=False, extuser_object=extuser)
+
             import re
             pattern = re.compile(regexp)
             mall = pattern.findall(str(e))
             if len(mall) > 0:
                 m = mall.pop()
-                error = "'%s' became invalid %s %s ago" % (m[1], m[2], m[3])
-                return self.send_errors('Expired proxy credential', error)
+                error = "'%s' became invalid %s %s ago.\n" % (m[1], m[2], m[3])
+                error += "To refresh the proxy make '%s' on URI '%s'" \
+                    % ("POST", "/auth/proxy")
+                return InitialObjects(
+                    errors={'Expired proxy credential': error})
             else:
-                raise e
+                # raise e
+                return InitialObjects(
+                    errors={'Invalid proxy credential': error})
 
         # SQLALCHEMY connection
         sql = self.global_get_service('sql')
@@ -60,7 +97,12 @@ class EudatEndpoint(ExtendedApiResource):
 
         #####################################
         logger.debug("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
-        return icom, sql, user
+        return InitialObjects(
+            username=user,
+            extuser_object=extuser,
+            icommands=icom,
+            db_handler=sql,
+        )
 
     @staticmethod
     def splitall(path):
