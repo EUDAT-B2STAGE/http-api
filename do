@@ -54,10 +54,33 @@ if [ "$1" == "init" ]; then
 
 # Production mode
 elif [ "$1" == "PRODUCTION" ]; then
-    compose_run="$compose_base -f composers/production.yml"
 
-## // TO FIX:
-    # Check for certificates
+    # # Check for REAL certificates
+    # if [ ! -f "./certs/nginx.key" -o ! -f "./certs/nginx.crt" ];
+    # then
+
+        # # REAL CERTIFICATES
+        # echo "Warning: no real certificates..."
+        # echo ""
+        # echo "To create them you may use the free Letsencrypt service:"
+        # echo "https://letsencrypt.org/"
+        # echo ""
+        # # exit 1
+        # sleep 2
+
+        if [ ! -f "./certs/nginx-selfsigned.key" -o ! -f "./certs/nginx-selfsigned.crt" ];
+        then
+            # SELF SIGNED CERTIFICATES
+            echo "Missing certificates."
+
+            echo "To generate self_signed files right now:"
+            echo "./confs/create_self_signed_ssl.sh"
+            exit 1
+        fi
+
+    # fi
+
+    compose_run="$compose_base -f composers/production.yml"
 
 # Development mode
 elif [ "$1" == "DEVELOPMENT" ]; then
@@ -286,16 +309,9 @@ then
         $compose_run rm -f
     fi
 
-    # Check certificates
-    if [ "$1" == "PRODUCTION" ]; then
-        if [ ! -f "./certs/nginx-selfsigned.key" -o ! -f "./certs/nginx-selfsigned.crt" ];
-        then
-            echo "Missing certificates."
-            echo "To create self_signed files you may use:"
-            echo "./confs/create_self_signed_ssl.sh"
-            exit 1
-        fi
-    fi
+    # # Checks?
+    # if [ "$1" == "PRODUCTION" ]; then
+    # fi
 
     # The client container always has the best link to access the server
     $compose_run up -d $clientcontainer

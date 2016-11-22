@@ -13,34 +13,28 @@ GUIDELINES:
 
 CURRENT:
 
-- proxy
- ✔ retest the whole authentication @done (16-11-21 08:50)
- ✔ invalid proxy @done (16-11-21 12:09)
-   ✔ refresh @done (16-11-21 15:28)
- ✔ invalid b2access_token @done (16-11-21 15:59)
-
-- endpoints
-    ☐ GET single element response
-    ☐ PATCH method?
-
-- ask
-  ✔ Ask for b2safe production certification authority (+ signing_policy) @done (16-11-18 10:18)
-    ☐ waiting response
-  ☐ Ask for account pdonorio on B2SAFE dev
-    ☐ change pw
-
-- b2access
-   ☐ standard for returning credentials
-   ✔ refresh b2access proxy @working @done (16-11-21 15:40)
-     ☐ automatic?
-     ☐ redirect with flask for invalid token?
-   ☐ test with B2SAFE dev
-
 - HTTPS proxy
    ✔ openstack @done (16-11-18 10:19)
      ✔ https://b2stage.cineca.it/api @done (16-11-21 16:00)
    ✔ real certificates @done (16-11-21 16:00)
-   ☐ enable and check
+   ✔ enable and check @done (16-11-21 17:35)
+   ✔ check letsencrypt certificates @cool @done (16-11-22 09:35)
+
+- ask
+  ✔ Ask for account pdonorio on B2SAFE dev @done (16-11-21 17:35)
+    ✔ change pw @done (16-11-22 09:36)
+  ☐ Ask for b2access production certification authority (+ signing_policy)
+    ☐ waiting response
+
+- b2access
+   ☐ test production...
+     ☐ not working... @sigh
+   ☐ test with B2SAFE dev @live
+     ☐ production
+
+- endpoints
+    ☐ GET single element response
+    ☐ PATCH method? @todo
 
 - configuration
    ☐ debug level in production / uwsgi
@@ -63,6 +57,10 @@ LATER:
     http://stackoverflow.com/a/18832732/2114395
     ☐ mocking?
     https://realpython.com/blog/python/testing-third-party-apis-with-mocks/
+- b2access
+   ☐ automatic refresh proxy?
+   ☐ redirect with flask for invalid token?
+   ☐ standard for returning credentials
 - return token bearer credentials
    ☐ return {'token': token}
      ☐ auth.token_reply

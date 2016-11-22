@@ -1,18 +1,19 @@
 
-## TO BE FIXED:
-# proxy:
-#   #################
-#   # SSL / HTTPS
-#   volumes:
-#     - ./confs/prod_proxy.conf:/etc/nginx/sites-enabled/production
-#     - ./certs/nginx-selfsigned.key:/etc/nginx/server.key
-#     - ./certs/nginx-selfsigned.crt:/etc/nginx/server.crt
-#   ports:
-#     - 80:80
-#     - 443:443
-#   #################
-#   links:
-#     - rest:restapi
+proxy:
+  #################
+  # SSL / HTTPS
+  volumes:
+    - ./confs/prod_proxy.conf:/etc/nginx/sites-enabled/production
+    - ./certs/nginx-selfsigned.key:/etc/nginx/server.key
+    - ./certs/nginx-selfsigned.crt:/etc/nginx/server.crt
+    # # LET'S ENCRYPT!
+    # - ./certs/b2stage.cineca.it:/etc/letsencrypt/real
+  ports:
+    - 80:80
+    - 443:443
+  #################
+  links:
+    - rest:restapi
 
 rest:
   user: root
@@ -27,8 +28,8 @@ rest:
   volumes:
     - ./confs/uwsgi:/tmp/uwsgi
     - ./confs/nginx_internal:/etc/nginx/conf.d
-  ports:
-    - 8080:8080
+  # ports:
+  #   - 8080:8080
   links:
     # IRODS MUST BE CALLED rodserver
     - icat:rodserver
@@ -39,5 +40,7 @@ apitests:
   volumes:
     - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
   links:
-    # - proxy:awesome.docker
-    - rest:apiserver
+    # - rest:apiserver
+    - proxy:awesome.docker
+    # - proxy:USEYOURDOMAINNAME
+    # - proxy:b2stage.cineca.it

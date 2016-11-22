@@ -118,7 +118,7 @@ class B2accessUtilities(EudatEndpoint):
         token_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
         auth.associate_object_to_attr(extuser, 'token_expiration', token_exp)
 
-        return intuser, extuser
+        return current_user, intuser, extuser
 
     def obtain_proxy_certificate(self, auth, extuser):
         """
@@ -150,7 +150,7 @@ class B2accessUtilities(EudatEndpoint):
 
         return proxy_file
 
-    def set_irods_username(self, auth, extuser):
+    def set_irods_username(self, auth, extuser, unityid='b2access_guest'):
         """ Find out what is the irods username and save it """
 
         icom = self.global_get_service('irods')
@@ -165,11 +165,13 @@ class B2accessUtilities(EudatEndpoint):
         # Does this user exist?
         if irods_user is None or not icom.user_exists(irods_user):
             if IRODS_EXTERNAL:
-                return self.send_errors(
-                    "No iRODS user related to your certificate")
+                logger.error("No iRODS user related to your certificate")
+                return None
             else:
+                irods_user = unityid
                 # Add user inside irods (if using local irods with docker)
-                admin_icom.create_user(irods_user, admin=False)
+                if not admin_icom.create_user(irods_user, admin=False):
+                    return None
                 admin_icom.admin('aua', irods_user, extuser.certificate_dn)
         else:
             # Update DN for current irods user
@@ -218,7 +220,7 @@ class Authorize(B2accessUtilities):
         b2access_token = self.request_b2access_token(b2access)
 
         # Get user info and certificate
-        intuser, extuser = \
+        curuser, intuser, extuser = \
             self.get_b2access_user_info(auth, b2access, b2access_token)
         proxy_file = self.obtain_proxy_certificate(auth, extuser)
         # check for errors
@@ -226,7 +228,10 @@ class Authorize(B2accessUtilities):
             return self.send_errors(
                 "B2ACCESS proxy", "Cannot get file or unauthorized response")
 
-        self.set_irods_username(auth, extuser)
+        # Get the possible name for irods user
+        unityid = curuser.data.get('unity:persistent').split('-')[::-1][0]
+        if self.set_irods_username(auth, extuser, unityid) is None:
+            return self.send_errors("Can't create '%s'" % irods_user)
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
