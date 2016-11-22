@@ -61,27 +61,28 @@ class B2accessUtilities(EudatEndpoint):
     def request_b2access_token(self, b2access):
         """ Use b2access client to get a token for all necessary operations """
         resp = None
+        b2a_token = None
 
         try:
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
             logger.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
-            return self.send_errors('Server misconfiguration', 'oauth2 failed')
+            return (b2a_token, ('Server misconfiguration', 'oauth2 failed'))
         except Exception as e:
             # raise e  # DEBUG
             logger.critical("Failed to get authorized @B2access:\n%s" % str(e))
-            return self.send_errors('B2ACCESS denied', 'oauth2: %s' % e)
+            return (b2a_token, ('B2ACCESS denied', 'oauth2: %s' % e))
         if resp is None:
-            return self.send_errors('B2ACCESS denied', 'Uknown error')
+            return (b2a_token, ('B2ACCESS denied', 'Uknown error'))
         if current_app.config['DEBUG']:
             pretty_print(resp)  # DEBUG
 
-        b2access_token = resp.get('access_token')
-        if b2access_token is None:
+        b2a_token = resp.get('access_token')
+        if b2a_token is None:
             logger.critical("No token received")
-            return self.send_errors('B2ACCESS', 'Empty token')
-        logger.info("Received token: '%s'" % b2access_token)
-        return b2access_token
+            return (b2a_token, ('B2ACCESS', 'Empty token'))
+        logger.info("Received token: '%s'" % b2a_token)
+        return (b2a_token, tuple())
 
     def get_b2access_user_info(self, auth, b2access, b2access_token):
         """ Get user info from current b2access token """
@@ -92,6 +93,9 @@ class B2accessUtilities(EudatEndpoint):
 
         # Calling with the oauth2 client
         current_user = b2access.get('userinfo')
+        from flask_oauthlib.client import OAuthResponse
+        if current_user is None or not isinstance(current_user, OAuthResponse):
+            return tuple([None] * 3)
         if current_app.config['DEBUG']:
             # Attributes you find: http://j.mp/b2access_profile_attributes
             pretty_print(current_user)  # DEBUG
@@ -100,23 +104,19 @@ class B2accessUtilities(EudatEndpoint):
         intuser, extuser = \
             auth.store_oauth2_user(current_user, b2access_token)
         # In case of error this account already existed...
-        if intuser is None:
-            return self.send_errors(
-                'Invalid e-mail',
-                'Account locally already exists with other credentials')
-        else:
+        if intuser is not None:
             logger.info("Stored access info")
 
-        # Get token expiration time
-        response = b2access.get('tokeninfo')
-        timestamp = response.data.get('exp')
+            # Get token expiration time
+            response = b2access.get('tokeninfo')
+            timestamp = response.data.get('exp')
 
-        timestamp_resolution = 1
-        # timestamp_resolution = 1e3
+            timestamp_resolution = 1
+            # timestamp_resolution = 1e3
 
-        # Convert into datetime object and save it inside db
-        token_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
-        auth.associate_object_to_attr(extuser, 'token_expiration', token_exp)
+            # Convert into datetime object and save it inside db
+            tok_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
+            auth.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
 
         return current_user, intuser, extuser
 
@@ -170,8 +170,7 @@ class B2accessUtilities(EudatEndpoint):
             else:
                 irods_user = unityid
                 # Add user inside irods (if using local irods with docker)
-                if not admin_icom.create_user(irods_user, admin=False):
-                    return None
+                admin_icom.create_user(irods_user, admin=False)
                 admin_icom.admin('aua', irods_user, extuser.certificate_dn)
         else:
             # Update DN for current irods user
@@ -217,21 +216,32 @@ class Authorize(B2accessUtilities):
         # Get b2access token
         auth = self.global_get('custom_auth')
         b2access = self.create_b2access_client(auth)
-        b2access_token = self.request_b2access_token(b2access)
+        b2access_token, b2access_errors = self.request_b2access_token(b2access)
+        if b2access_token is None:
+            return self.send_errors(*b2access_errors)
 
-        # Get user info and certificate
         curuser, intuser, extuser = \
             self.get_b2access_user_info(auth, b2access, b2access_token)
+        if curuser is None:
+            return self.send_errors(
+                'Unavailable', 'Remote account info retrieval failed')
+        if intuser is None:
+            return self.send_errors(
+                'Invalid e-mail',
+                'Account locally already exists with other credentials')
+
         proxy_file = self.obtain_proxy_certificate(auth, extuser)
-        # check for errors
         if proxy_file is None:
             return self.send_errors(
-                "B2ACCESS proxy", "Cannot get file or unauthorized response")
+                "B2ACCESS proxy", "Could not get certificate files")
 
         # Get the possible name for irods user
+## // TO FIX: move it inside auth module
         unityid = curuser.data.get('unity:persistent').split('-')[::-1][0]
+
         if self.set_irods_username(auth, extuser, unityid) is None:
-            return self.send_errors("Can't create '%s'" % irods_user)
+            return self.send_errors(
+                "Failed to set irods user from: %s/%s" % (unityid, extuser))
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
