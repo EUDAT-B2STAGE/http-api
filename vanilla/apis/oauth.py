@@ -45,13 +45,14 @@ class B2accessUtilities(EudatEndpoint):
         b2a_token = None
 
         try:
+
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
             logger.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
             return (b2a_token, ('Server misconfiguration', 'oauth2 failed'))
         except Exception as e:
             # raise e  # DEBUG
-            logger.critical("Failed to get authorized @B2access:\n%s" % str(e))
+            logger.critical("Failed to get authorized @B2access: %s" % str(e))
             return (b2a_token, ('B2ACCESS denied', 'oauth2: %s' % e))
         if resp is None:
             return (b2a_token, ('B2ACCESS denied', 'Uknown error'))
