@@ -21,26 +21,27 @@ CURRENT:
 
 - endpoints
     ☐ GET single element response
-    ☐ PATCH method?
+    ☐ PATCH method? @todo
 
 - ask
   ✔ Ask for b2safe production certification authority (+ signing_policy) @done (16-11-18 10:18)
     ☐ waiting response
-  ☐ Ask for account pdonorio on B2SAFE dev
+  ✔ Ask for account pdonorio on B2SAFE dev @done (16-11-21 17:35)
     ☐ change pw
 
 - b2access
-   ☐ standard for returning credentials
+   ☐ test with B2SAFE dev @live
    ✔ refresh b2access proxy @working @done (16-11-21 15:40)
      ☐ automatic?
      ☐ redirect with flask for invalid token?
-   ☐ test with B2SAFE dev
+   ☐ standard for returning credentials
 
 - HTTPS proxy
    ✔ openstack @done (16-11-18 10:19)
      ✔ https://b2stage.cineca.it/api @done (16-11-21 16:00)
    ✔ real certificates @done (16-11-21 16:00)
-   ☐ enable and check
+   ✔ enable and check @done (16-11-21 17:35)
+   ☐ check letsencrypt certificates @cool
 
 - configuration
    ☐ debug level in production / uwsgi

@@ -93,11 +93,11 @@ rest:
 
     # DEV
     B2ACCESS_APPNAME: httpapi
-    B2ACCESS_APPKEY: WHOKNOWS
+    B2ACCESS_APPKEY: SETYOURSECRETKEY
 
     # # PROD
     # B2ACCESS_APPNAME: b2stage_httpapi
-    # B2ACCESS_APPKEY: WHOKNOWS
+    # B2ACCESS_APPKEY: SETYOURSECRETKEY
     #########################
 
     # Base the user/role mechanism on neo4j
@@ -169,6 +169,7 @@ sqladmin:
 
 #################################
 # Nginx proxy
+proxy:
   image: nginx:1.11.5-alpine
   hostname: iamaproxy
   # command: echo "Hello"
