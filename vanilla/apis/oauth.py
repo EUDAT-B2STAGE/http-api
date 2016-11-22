@@ -178,7 +178,7 @@ class B2accessUtilities(EudatEndpoint):
             if not IRODS_EXTERNAL:
                 # recover the old/current one
                 tmp = admin_icom.admin('lua', irods_user)
-                current_dn = tmp.strip().split(" ", 1)[1]
+                current_dn = tmp.splitlines()[0].strip().split(" ", 1)[1]
                 # remove the old one
                 admin_icom.admin('rua', irods_user, current_dn)
                 # add the new one
