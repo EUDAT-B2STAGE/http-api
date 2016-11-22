@@ -26,36 +26,17 @@ logger = get_logger(__name__)
 ###############################
 # Classes
 
-class OauthLogin(ExtendedApiResource):
-    """
-    Endpoint which redirects to B2ACCESS server online,
-    to ask the current user for authorization/token.
-    """
-
-    base_url = AUTH_URL
-
-    def get(self):
-
-        auth = self.global_get('custom_auth')
-        b2access = auth._oauth2.get('b2access')
-        response = b2access.authorize(
-            callback=url_for('authorize', _external=True))
-        return self.force_response(response)
-
-
 class B2accessUtilities(EudatEndpoint):
-    """
-    Utilities to use B2ACCESS
-    """
-
+    """ All utilities to use B2ACCESS """
     _certs = None
 
-    def create_b2access_client(self, auth):
+    def create_b2access_client(self, auth, decorate=False):
         """ Create the b2access Flask oauth2 object """
 
         b2access = auth._oauth2.get('b2access')
         # B2ACCESS requires some fixes to make authorization work...
-        decorate_http_request(b2access)
+        if decorate:
+            decorate_http_request(b2access)
         return b2access
 
     def request_b2access_token(self, b2access):
@@ -154,34 +135,37 @@ class B2accessUtilities(EudatEndpoint):
         """ Find out what is the irods username and save it """
 
         icom = self.global_get_service('irods')
-        if not IRODS_EXTERNAL:
-            # irods as admin
-            admin_icom = self.global_get_service(
-                'irods', user=IRODS_DEFAULT_ADMIN)
 
         # irods_user = icom.get_translated_user(external.email)  # OLD
         irods_user = icom.get_user_from_dn(extuser.certificate_dn)  # NEW
 
         # Does this user exist?
-        if irods_user is None or not icom.user_exists(irods_user):
-            if IRODS_EXTERNAL:
-                logger.error("No iRODS user related to your certificate")
+        user_exists = irods_user is not None and icom.user_exists(irods_user)
+
+        # Production / Real B2SAFE and irods instance
+        if IRODS_EXTERNAL:
+            logger.error("No iRODS user related to your certificate")
+            if not user_exists:
                 return None
-            else:
-                irods_user = unityid
-                # Add user inside irods (if using local irods with docker)
-                admin_icom.create_user(irods_user, admin=False)
-                admin_icom.admin('aua', irods_user, extuser.certificate_dn)
+        # IN CASE WE ARE USING DOCKERIZED iRODS/B2SAFE
         else:
-            # Update DN for current irods user
-            if not IRODS_EXTERNAL:
+            # irods admin user handler
+            admin_icom = self.global_get_service('irods', become_admin=True)
+
+            if user_exists:
                 # recover the old/current one
                 tmp = admin_icom.admin('lua', irods_user)
-                current_dn = tmp.strip().split()[1]
+                current_dn = tmp.splitlines()[0].strip().split(" ", 1)[1]
                 # remove the old one
                 admin_icom.admin('rua', irods_user, current_dn)
-                # add the new one
-                admin_icom.admin('aua', irods_user, extuser.certificate_dn)
+            else:
+                irods_user = unityid
+
+                # Add (as normal) user inside irods
+                admin_icom.create_user(irods_user, admin=False)
+
+            # Add DN to user access possibility
+            admin_icom.admin('aua', irods_user, extuser.certificate_dn)
 
         # Update db to save the irods user related to this extuser account
         auth.associate_object_to_attr(extuser, 'irodsuser', irods_user)
@@ -195,6 +179,30 @@ class B2accessUtilities(EudatEndpoint):
         return irods_user
 
 
+#######################################
+#######################################
+class OauthLogin(B2accessUtilities):
+    """
+    Endpoint which redirects to B2ACCESS server online,
+    to ask the current user for authorization/token.
+    """
+
+    base_url = AUTH_URL
+
+    def get(self):
+
+        auth = self.global_get('custom_auth')
+        b2access = self.create_b2access_client(auth)
+
+        authorized_uri = url_for('authorize', _external=True)
+        logger.debug("Will be redirected to: %s" % authorized_uri)
+
+        response = b2access.authorize(callback=authorized_uri)
+        return self.force_response(response)
+
+
+#######################################
+#######################################
 class Authorize(B2accessUtilities):
     """
     Previous endpoint will redirect here if authorization was granted.
@@ -215,7 +223,7 @@ class Authorize(B2accessUtilities):
 
         # Get b2access token
         auth = self.global_get('custom_auth')
-        b2access = self.create_b2access_client(auth)
+        b2access = self.create_b2access_client(auth, decorate=True)
         b2access_token, b2access_errors = self.request_b2access_token(b2access)
         if b2access_token is None:
             return self.send_errors(*b2access_errors)
@@ -252,6 +260,8 @@ class Authorize(B2accessUtilities):
         return {'token': local_token}
 
 
+#######################################
+#######################################
 class B2accesProxyEndpoint(B2accessUtilities):
     """
     Allow refreshing current proxy (if invalid)
@@ -291,6 +301,9 @@ class B2accesProxyEndpoint(B2accessUtilities):
         return {"Completed": "New proxy was generated."}
 
 
+#######################################
+# JUST TO TEST
+#######################################
 # class TestB2access(B2accessUtilities):
 class TestB2access(EudatEndpoint):
     """ development tests """

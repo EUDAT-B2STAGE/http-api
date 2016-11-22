@@ -43,8 +43,9 @@ CURRENT:
 
 LATER:
 
-  ☐ remove _latest_token from anywhere (and test)
-  ☐ fix configurations names and paths in ./confs
+☐ lock for double authentications operations (chrome prerendering)
+☐ remove _latest_token from anywhere (and test)
+☐ fix configurations names and paths in ./confs
 
 - Real DB
    ☐ postgres?
