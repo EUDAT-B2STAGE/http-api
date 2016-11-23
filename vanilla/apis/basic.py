@@ -43,7 +43,7 @@ class EudatTest(EudatEndpoint):
     # @authentication.authorization_required
     @decorate.add_endpoint_parameter('test')
     @decorate.apimethod
-    # @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    # @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, location=None):
         """
         This works for all methods: GET, POST, PUT, PATCH, DELETE
@@ -66,7 +66,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('resource')
     @decorate.add_endpoint_parameter('download', ptype=bool, default=False)
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, irods_location=None):
         """
         Download file from filename
@@ -181,7 +181,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     # @decorate.add_endpoint_parameter('resource')
     @decorate.add_endpoint_parameter('path')  # should contain the filename too
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self, irods_location=None):
         """
         Handle [directory creation](docs/user/registered.md#post).
@@ -256,7 +256,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, irods_location=None):
         """
         Handle file upload. Test on docker client shell with:
@@ -376,7 +376,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @authentication.authorization_required
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def patch(self, irods_location=None):
         """
         PATCH a record. E.g. change only the filename to a resource.
@@ -415,7 +415,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('debugclean')
     # @authentication.authorization_required(roles=config.ROLE_INTERNAL)
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def delete(self, irods_location=None):
         """
         Remove an object or an empty directory on iRODS

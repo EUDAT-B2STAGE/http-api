@@ -50,7 +50,7 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, filename=None):
         """
         Download file from filename
@@ -139,7 +139,7 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('path')
     @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self):
         """
         Handle file upload.
@@ -249,7 +249,7 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('resource')
     # @authentication.authorization_required(roles=config.ROLE_INTERNAL)
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def delete(self, filename=None):
         """
         Remove an object

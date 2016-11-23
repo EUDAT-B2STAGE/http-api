@@ -85,6 +85,7 @@ class B2accessUtilities(EudatEndpoint):
         elif not isinstance(current_user, OAuthResponse):
             errstring = "Invalid response from B2ACCESS"
         elif current_user.status > hcodes.HTTP_TRESHOLD:
+            logger.error("Bad status: %s" % str(current_user._resp))
             if current_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:
@@ -248,7 +249,7 @@ class Authorize(B2accessUtilities):
 
     base_url = AUTH_URL
 
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self):
         """
         Get the data for upcoming operations.
@@ -272,7 +273,7 @@ class Authorize(B2accessUtilities):
         proxy_file = self.obtain_proxy_certificate(auth, extuser)
         if proxy_file is None:
             return self.send_errors(
-                "B2ACCESS proxy", "Could not get certificate files")
+                "B2ACCESS CA is down", "Could not get certificate files")
 
         # Get the possible name for irods user
 ## // TO FIX: move it inside auth module
@@ -350,7 +351,7 @@ class TestB2access(EudatEndpoint):
     base_url = AUTH_URL
 
     @authentication.authorization_required
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self):
 
         ##########################

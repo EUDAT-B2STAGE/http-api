@@ -29,7 +29,7 @@ class DigitalObjectsEndpoint(ExtendedApiResource):
 
     @authentication.authorization_required
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, doid=None):
         """
         Get object from ID
@@ -41,7 +41,7 @@ class DigitalObjectsEndpoint(ExtendedApiResource):
     # @decorate.add_endpoint_parameter('user')
     # @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self):
         """
         Create an id for the digital object
@@ -95,7 +95,7 @@ class DigitalObjectsEndpoint(ExtendedApiResource):
 
     # @authentication.authorization_required
     # @decorate.apimethod
-    # @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    # @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     # def delete(self, uuid):
     #     """ Remove DO """
 
@@ -111,7 +111,7 @@ class CollectionEndpoint(ExtendedApiResource):
 
 #     @authentication.authorization_required
 #     @decorate.apimethod
-#     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+#     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
 #     def get(self, uuid=None):
 #         """
 #         Return list of elements inside a collection.
@@ -156,7 +156,7 @@ class CollectionEndpoint(ExtendedApiResource):
 #     @decorate.add_endpoint_parameter('collection', required=True)
 #     @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
 #     @decorate.apimethod
-#     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+#     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
 #     def post(self):
 #         """ Create one collection/directory """
 
@@ -181,7 +181,7 @@ class CollectionEndpoint(ExtendedApiResource):
 #     @authentication.authorization_required
 #     @decorate.add_endpoint_parameter('collection', required=False)
 #     @decorate.apimethod
-#     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+#     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
 #     def delete(self, uuid):
 #         """ Remove an object """
 
