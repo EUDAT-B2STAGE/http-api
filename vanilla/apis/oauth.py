@@ -9,11 +9,11 @@ from __future__ import absolute_import
 import json
 from datetime import datetime as dt
 from flask import url_for, session, current_app
+from flask_oauthlib.client import OAuthResponse
 from ...confs.config import AUTH_URL
 from ..base import ExtendedApiResource
 from ..services.oauth2clients import decorate_http_request
-from ..services.irods.client import \
-    IrodsException, IRODS_DEFAULT_ADMIN, Certificates
+from ..services.irods.client import IrodsException, Certificates
 from ..services.detect import IRODS_EXTERNAL
 from .. import decorators as decorate
 from ...auth import authentication
@@ -75,8 +75,9 @@ class B2accessUtilities(EudatEndpoint):
 
         # Calling with the oauth2 client
         current_user = b2access.get('userinfo')
-        from flask_oauthlib.client import OAuthResponse
+
         if current_user is None or not isinstance(current_user, OAuthResponse):
+            # Something has failed
             return tuple([None] * 3)
         if current_app.config['DEBUG']:
             # Attributes you find: http://j.mp/b2access_profile_attributes
@@ -195,8 +196,9 @@ class OauthLogin(B2accessUtilities):
         auth = self.global_get('custom_auth')
         b2access = self.create_b2access_client(auth)
 
+# probably missing https (since flask is running in http mode?)
         authorized_uri = url_for('authorize', _external=True)
-        logger.debug("Will be redirected to: %s" % authorized_uri)
+        logger.info("Will be redirected to: %s" % authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
         return self.force_response(response)

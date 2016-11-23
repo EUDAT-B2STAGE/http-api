@@ -13,28 +13,14 @@ GUIDELINES:
 
 CURRENT:
 
-- HTTPS proxy
-   ✔ openstack @done (16-11-18 10:19)
-     ✔ https://b2stage.cineca.it/api @done (16-11-21 16:00)
-   ✔ real certificates @done (16-11-21 16:00)
-   ✔ enable and check @done (16-11-21 17:35)
-   ✔ check letsencrypt certificates @cool @done (16-11-22 09:35)
-
-- ask
-  ✔ Ask for account pdonorio on B2SAFE dev @done (16-11-21 17:35)
-    ✔ change pw @done (16-11-22 09:36)
-  ☐ Ask for b2access production certification authority (+ signing_policy)
-    ☐ waiting response
-
-- b2access
-   ☐ test production...
-     ☐ not working... @sigh
-   ☐ test with B2SAFE dev @live
-     ☐ production
-
 - endpoints
     ☐ GET single element response
     ☐ PATCH method? @todo
+
+- b2access
+   ☐ production certification authority (+ signing_policy)
+   ☐ test production...
+   ☐ test with B2SAFE dev @live
 
 - configuration
    ☐ debug level in production / uwsgi
