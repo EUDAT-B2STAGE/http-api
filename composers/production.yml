@@ -23,6 +23,13 @@ rest:
   # command: sleep infinity
   environment:
     APP_MODE: production
+##################
+# Enable debug in our first prototype
+
+## TO BE REMOVED
+    API_DEBUG: true
+## TO BE REMOVED
+##################
     UWSGI_MASTER: /tmp/uwsgi/uwsgi_starter.ini
     NGINX_ACTIVE: "True"
   volumes:

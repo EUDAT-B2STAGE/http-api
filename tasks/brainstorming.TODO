@@ -18,15 +18,14 @@ CURRENT:
     ☐ PATCH method? @todo
       ☐ query_api.sh
       ☐ unittest
-    ☐ user documentation: curl calls with JSON (POST, PUT, PATCH) ? -d ?
 
 - b2access
-   ☐ production certification authority (+ signing_policy)
-   ☐ test production...
+   ✔ production certification authority (+ signing_policy) @done (16-11-23 12:25)
+   ✔ test production... @done (16-11-23 12:25)
    ☐ test with B2SAFE dev @live
 
 - configuration
-   ☐ debug level in production / uwsgi
+   ✘ debug level in production / uwsgi @cancelled (16-11-23 12:26)
    ☐ how to specify current b2safe environment domain
      ☐ a configuration @paramater
 
@@ -35,6 +34,7 @@ LATER:
 ☐ lock for double authentications operations (chrome prerendering)
 ☐ remove _latest_token from anywhere (and test)
 ☐ fix configurations names and paths in ./confs
+☐ user documentation: curl calls with JSON (POST, PUT, PATCH) ? -d ?
 
 - Real DB
    ☐ postgres?

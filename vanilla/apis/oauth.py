@@ -198,6 +198,9 @@ class OauthLogin(B2accessUtilities):
 
 # probably missing https (since flask is running in http mode?)
         authorized_uri = url_for('authorize', _external=True)
+## TO BE REMOVED
+        authorized_uri = "https://b2stage.cineca.it/auth/authorize"
+## TO BE REMOVED
         logger.info("Will be redirected to: %s" % authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
