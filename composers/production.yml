@@ -27,7 +27,7 @@ rest:
 # Enable debug in our first prototype
 
 ## TO BE REMOVED
-    API_DEBUG: true
+    API_DEBUG: "true"
 ## TO BE REMOVED
 ##################
     UWSGI_MASTER: /tmp/uwsgi/uwsgi_starter.ini
