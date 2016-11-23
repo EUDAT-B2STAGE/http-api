@@ -1,2 +1,2 @@
-7f2a4ed Cleaning oauth2 base clients
- graph_based_auth LICENSE README.md backend certs composers confs do docker-compose.yml docs notebooks submodules.current.commit tasks vanilla master oauthtest
+b6592e6 Production mode automatic in b2access client
+* master
