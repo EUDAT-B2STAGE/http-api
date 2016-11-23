@@ -45,6 +45,8 @@ class InitialObjects(object):
 
 class EudatEndpoint(ExtendedApiResource):
 
+    _path_separator = '/'
+
     def init_endpoint(self, only_check_proxy=False):
 
         # main object to handle token and oauth2 things
@@ -104,6 +106,11 @@ class EudatEndpoint(ExtendedApiResource):
             db_handler=sql,
         )
 
+    def fix_location(self, irods_location):
+        if not irods_location.startswith(self._path_separator):
+            irods_location = self._path_separator + irods_location
+        return irods_location
+
     @staticmethod
     def splitall(path):
         allparts = []
@@ -133,7 +140,7 @@ class EudatEndpoint(ExtendedApiResource):
         # print("PATH 2", path)
         return path
 
-    def get_file_parameters(self, icom, path=None, filename=None):
+    def get_file_parameters(self, icom, path=None, filename=None, newfile=False):
         """
         Note: the resource is a complicated parameter.
         Resources are meant for (iRODS) replicas.
@@ -162,16 +169,16 @@ class EudatEndpoint(ExtendedApiResource):
         ############################
 
         filename = None
-
         # # Should this check be done to uploaded file?
         # if os.path.isfile(path):
         #     filename = self.filename_from_path(path)
+        if newfile:
+            filename = myargs.get('newname')
 
         resource = myargs.get('resource')
         # if resource is None:
         #     resource = icom.get_default_resource()
 
-        # This argument is used only for POST / PUT
         force = self._args.get('force')
 
         ############################

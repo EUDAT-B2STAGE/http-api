@@ -16,6 +16,9 @@ CURRENT:
 - endpoints
     ☐ GET single element response
     ☐ PATCH method? @todo
+      ☐ query_api.sh
+      ☐ unittest
+    ☐ user documentation: curl calls with JSON (POST, PUT, PATCH) ? -d ?
 
 - b2access
    ☐ production certification authority (+ signing_policy)

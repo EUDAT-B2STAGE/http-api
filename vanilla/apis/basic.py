@@ -31,7 +31,6 @@ logger = get_logger(__name__)
 ## // TO FIX: build this from the WP6 mappings
 CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
 CURRENT_B2SAFE_SERVER_CODE = 'a0'
-INTERNAL_PATH_SEPARATOR = '/'
 
 
 # @decorate.all_rest_methods
@@ -73,14 +72,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         Download file from filename
         """
 
+        if irods_location is None:
+            return self.send_errors('location', 'Missing filepath inside URI')
+        irods_location = self.fix_location(irods_location)
+
         ###################
         # BASIC INIT
-
-        if irods_location is None:
-            return self.send_errors(
-                'location', 'Missing filepath inside URI for GET')
-        elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
-            irods_location = INTERNAL_PATH_SEPARATOR + irods_location
 
         # get the base objects
         r = self.init_endpoint()
@@ -102,7 +99,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 #         #     return self.force_response(data)
 
 #         # # If trying to use a path as file
-#         # elif name[-1] == INTERNAL_PATH_SEPARATOR:
+#         # elif name[-1] == self._path_separator:
 #         #     return self.send_errors(
 #         #         'dataobject', 'No dataobject/file requested')
 
@@ -180,9 +177,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         return data
 
     @authentication.authorization_required
-    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+    # @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+    # @decorate.add_endpoint_parameter('resource')
     @decorate.add_endpoint_parameter('path')  # should contain the filename too
-    @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def post(self, irods_location=None):
@@ -248,7 +245,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         status = hcodes.HTTP_OK_BASIC
         content = {
             'location': 'irods:///%s/%s/' % (
-                CURRENT_B2SAFE_SERVER, path.lstrip(INTERNAL_PATH_SEPARATOR)),
+                CURRENT_B2SAFE_SERVER, path.lstrip(self._path_separator)),
             'path': path,
             'link': '%s/?path=%s' % (base_url, path)
         }
@@ -262,29 +259,18 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
     def put(self, irods_location=None):
         """
-        Handle file upload.
-
-        Test on docker client shell with:
+        Handle file upload. Test on docker client shell with:
         http --form PUT $SERVER/api/resources/tempZone/home/guest/test \
             file@/tmp/gettoken force=True "$AUTH"
 
-        PUT request to upload a file not working in Flask:
-        http://stackoverflow.com/a/9533843/2114395
-
-        Note to developers:
-        iRODS does not allow to do iput on more than one resource.
-        To put the second one you will need the irepl command, which
-        will assure that we have a replica on all resources.
+        Note to devs: iRODS does not allow to iput on more than one resource.
+        To put the second one you need the irepl command,
+        which will assure that we have a replica on all resources...
         """
 
-# // TO FIX:
-# this is also used inside the delete method
-# we may consider moving this block inside the `get_file_parameters` method
         if irods_location is None:
-            return self.send_errors(
-                'location', 'Missing filepath inside URI for PUT')
-        elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
-            irods_location = INTERNAL_PATH_SEPARATOR + irods_location
+            return self.send_errors('location', 'Missing filepath inside URI')
+        irods_location = self.fix_location(irods_location)
 
         ###################
         # BASIC INIT
@@ -369,7 +355,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 request.environ['wsgi.url_scheme'],
                 request.environ['HTTP_HOST'],
                 str(request.url_rule)
-                .split('<')[0].rstrip(INTERNAL_PATH_SEPARATOR),
+                .split('<')[0].rstrip(self._path_separator),
                 ipath
             )
 
@@ -378,7 +364,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             content = {
                 'location': 'irods:///%s/%s' %
-                (CURRENT_B2SAFE_SERVER, ipath.lstrip(INTERNAL_PATH_SEPARATOR)),
+                (CURRENT_B2SAFE_SERVER, ipath.lstrip(self._path_separator)),
                 'filename': filename,
                 'path': path,
                 'resources': icom.get_resources_from_file(ipath),
@@ -388,29 +374,41 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # pretty_print(content)
         return self.force_response(content, errors=errors, code=status)
 
-#     @authentication.authorization_required
-#     @decorate.add_endpoint_parameter('resource')
-#     @decorate.apimethod
-#     @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
-#     def patch(self, irods_location=None):
+    @authentication.authorization_required
+    @decorate.apimethod
+    @decorate.catch_error(exception=IrodsException, exception_label='iRODS')
+    def patch(self, irods_location=None):
+        """
+        PATCH a record. E.g. change only the filename to a resource.
+        """
 
-# # Does patch use the URI or parameter?
+        if irods_location is None:
+            return self.send_errors('location', 'Missing filepath inside URI')
+        irods_location = self.fix_location(irods_location)
 
-#         ###################
-#         # BASIC INIT
+        ###################
+        # BASIC INIT
+        r = self.init_endpoint()
+        if r.errors is not None:
+            return self.send_errors(errors=r.errors)
+        icom = r.icommands
+        # Note: ignore resource, get new filename as 'newname'
+        path, _, newfile, force = \
+            self.get_file_parameters(icom, path=irods_location, newfile=True)
 
-#         # get the base objects
-#         r = self.init_endpoint()
-#         # pretty_print(r)
-#         if r.errors is not None:
-#             return self.send_errors(errors=r.errors)
-#         icom = r.icommands
-#         # get parameters with defaults
-#         path, resource, filename, force = \
-#             self.get_file_parameters(icom, path=irods_location)
+        if newfile is None or newfile.strip() == '':
+            return self.send_errors(
+                'New filename missing', "Use the 'newname' JSON parameter")
 
-#         ###################
-#         return "Hello World"
+        # Get the base directory
+
+        # Add the newname
+
+        # # apply imv
+        # icom.move('a', 'b')
+
+        # return {'changed': 'SOMETHING'}
+        return "Hello World"
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('resource')
@@ -446,19 +444,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 files = icom.list_as_json(home)
                 for key, obj in files.items():
                     icom.remove(
-                        home + INTERNAL_PATH_SEPARATOR + obj['name'],
+                        home + self._path_separator + obj['name'],
                         recursive=obj['object_type'] == 'collection')
                     logger.debug("Removed %s" % obj['name'])
                 return "Cleaned"
 
-        ###################
-        # URI parameter is required
+        # Note: this check is not at the beginning to allow the clean operation
         if irods_location is None:
-            return self.send_errors(
-                'location', 'Missing path inside URI for DELETE',
-                code=hcodes.HTTP_BAD_REQUEST)
-        elif not irods_location.startswith(INTERNAL_PATH_SEPARATOR):
-            irods_location = INTERNAL_PATH_SEPARATOR + irods_location
+            return self.send_errors('location', 'Missing filepath inside URI')
+        irods_location = self.fix_location(irods_location)
 
         ########################################
         # # Get the dataobject from the graph
@@ -506,4 +500,4 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         icom.remove(irods_location, recursive=is_recursive, resource=resource)
         logger.info("Removed %s", irods_location)
 
-        return self.force_response({'removed': irods_location})
+        return {'removed': irods_location}
