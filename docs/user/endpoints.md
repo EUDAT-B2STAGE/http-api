@@ -1,7 +1,8 @@
 
 # Available resources
 
-* [registered](registered.md)
+* registered
 * workspace
 * digital entities
+* temporary: [namespace](namespace.md)
 * ...
