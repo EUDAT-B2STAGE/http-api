@@ -94,7 +94,6 @@ class EudatEndpoint(ExtendedApiResource):
                 mall = pattern.findall(error)
                 if len(mall) > 0:
                     m = mall.pop()
-                    print("PEPPE", m)
                     return InitialObjects(
                         errors={'Failed credentials': m.replace('\n', '')})
 

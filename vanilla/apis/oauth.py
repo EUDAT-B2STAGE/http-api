@@ -212,12 +212,14 @@ class OauthLogin(B2accessUtilities):
         auth = self.global_get('custom_auth')
         b2access = self.create_b2access_client(auth)
 
-# probably missing https (since flask is running in http mode?)
-        authorized_uri = url_for('authorize', _external=True)
-# ## TO BE REMOVED
-#         authorized_uri = "https://b2stage.cineca.it/auth/authorize"
-# ## TO BE REMOVED
-        logger.info("Will be redirected to: %s" % authorized_uri)
+        # What needs a fix:
+        # http://awesome.docker:443/auth/authorize
+        # curl -i -k https://awesome.docker/auth/askauth
+        authorized_uri = \
+            url_for('authorize', _external=True) \
+            .replace('http:', 'https:') \
+            .replace(':443', '')
+        logger.info("Ask redirection to: %s" % authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
         return self.force_response(response)
