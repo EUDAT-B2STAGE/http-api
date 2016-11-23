@@ -141,7 +141,9 @@ class B2accessUtilities(EudatEndpoint):
         # Call the oauth2 object requesting a certificate
         if self._certs is None:
             self._certs = Certificates()
-        proxy_file = self._certs.make_proxy_from_ca(b2accessCA)
+        from ...confs.config import PRODUCTION, DEBUG as ENVVAR_DEBUG
+        prod = not PRODUCTION or ENVVAR_DEBUG
+        proxy_file = self._certs.make_proxy_from_ca(b2accessCA, prod=prod)
 
         # Save the proxy filename into the database
         if proxy_file is not None:
