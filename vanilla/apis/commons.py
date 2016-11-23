@@ -63,9 +63,6 @@ class EudatEndpoint(ExtendedApiResource):
             use_proxy = True
         icom = self.global_get_service('irods', user=iuser, proxy=use_proxy)
 
-        regexp = r'The proxy credential:\s+([^\s]+)\s+' \
-            + r'with subject:\s+([^\s]+)\s+expired\s+([0-9]+)\s+([^\s]+)\s+ago'
-
         # Verify if irods certificates are ok
         try:
             # icd and ipwd do not give error with wrong certificates...
@@ -74,24 +71,46 @@ class EudatEndpoint(ExtendedApiResource):
             if only_check_proxy:
                 return InitialObjects(valid_credentials=True)
         except Exception as e:
+
             if only_check_proxy:
                 return InitialObjects(
                     valid_credentials=False, extuser_object=extuser)
 
-            import re
-            pattern = re.compile(regexp)
-            mall = pattern.findall(str(e))
-            if len(mall) > 0:
-                m = mall.pop()
-                error = "'%s' became invalid %s %s ago.\n" % (m[1], m[2], m[3])
-                error += "To refresh the proxy make '%s' on URI '%s'" \
-                    % ("POST", "/auth/proxy")
-                return InitialObjects(
-                    errors={'Expired proxy credential': error})
-            else:
-                # raise e
-                return InitialObjects(
-                    errors={'Invalid proxy credential': error})
+            if use_proxy:
+
+                import re
+                error = str(e)
+
+# Error reading proxy credential: Couldn't read PEM from bio
+# OpenSSL Error: pem_lib.c:809: in library: PEM routines, function PEM_read_bio: bad end line
+
+                re1 = r':\s+(Error reading[^\:\n]+:[^\n]+\n[^\n]+)\n'
+
+                re2 = r'proxy credential:\s+([^\s]+)\s+' \
+                    + r'with subject:\s+([^\n]+)\s+' \
+                    + r'expired\s+([0-9]+)\s+([^\s]+)\s+ago'
+
+                pattern = re.compile(re1)
+                mall = pattern.findall(error)
+                if len(mall) > 0:
+                    m = mall.pop()
+                    return InitialObjects(
+                        errors={'Failed credentials': m.replace('\n', '')})
+
+                pattern = re.compile(re2)
+                mall = pattern.findall(error)
+                if len(mall) > 0:
+                    m = mall.pop()
+                    error = "'%s' became invalid %s %s ago. " \
+                        % (m[1], m[2], m[3])
+                    error += "To refresh the proxy make '%s' on URI '%s'" \
+                        % ("POST", "/auth/proxy")
+                    return InitialObjects(
+                        errors={'Expired proxy credential': error})
+
+            # raise e
+            return InitialObjects(
+                errors={'Invalid proxy credential': error})
 
         # SQLALCHEMY connection
         sql = self.global_get_service('sql')

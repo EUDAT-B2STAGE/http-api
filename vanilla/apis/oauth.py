@@ -10,15 +10,14 @@ import json
 from datetime import datetime as dt
 from flask import url_for, session, current_app
 from flask_oauthlib.client import OAuthResponse
-from ...confs.config import AUTH_URL
-from ..base import ExtendedApiResource
+from ...confs.config import AUTH_URL, PRODUCTION, DEBUG as ENVVAR_DEBUG
 from ..services.oauth2clients import decorate_http_request
 from ..services.irods.client import IrodsException, Certificates
 from ..services.detect import IRODS_EXTERNAL
 from .. import decorators as decorate
 from ...auth import authentication
 from .commons import EudatEndpoint
-from commons import htmlcodes as hcodes
+# from commons import htmlcodes as hcodes
 from commons.logs import get_logger, pretty_print
 
 logger = get_logger(__name__)
@@ -57,7 +56,9 @@ class B2accessUtilities(EudatEndpoint):
             return (b2a_token, ('B2ACCESS denied', 'oauth2: %s' % e))
         if resp is None:
             return (b2a_token, ('B2ACCESS denied', 'Uknown error'))
-        if current_app.config['DEBUG']:
+
+        DEBUG_PRINT = current_app.config['DEBUG'] or ENVVAR_DEBUG
+        if DEBUG_PRINT:
             pretty_print(resp)  # DEBUG
 
         b2a_token = resp.get('access_token')
@@ -79,23 +80,21 @@ class B2accessUtilities(EudatEndpoint):
 
         error = False
         from urllib3.exceptions import HTTPError
-
         if current_user is None:
             error = True
-            logger.warning("Empty response from B2ACCESS")
+            errstring = "Empty response from B2ACCESS"
         elif not isinstance(current_user, OAuthResponse):
-            logger.warning("Invalid response from B2ACCESS")
+            errstring = "Invalid response from B2ACCESS"
             error = True
         # elif current_user.status > hcodes.HTTP_TRESHOLD:
         elif isinstance(current_user._resp, HTTPError):
-            logger.warning("Error from B2ACCESS: %s" % current_user._resp)
+            errstring = "Error from B2ACCESS: %s" % current_user._resp
             error = True
-
-        # Something has failed
         if error:
-            return tuple([None] * 3)
+            return None, None, errstring
 
-        if current_app.config['DEBUG']:
+        DEBUG_PRINT = current_app.config['DEBUG'] or ENVVAR_DEBUG
+        if DEBUG_PRINT:
             # Attributes you find: http://j.mp/b2access_profile_attributes
             pretty_print(current_user)  # DEBUG
 
@@ -103,19 +102,24 @@ class B2accessUtilities(EudatEndpoint):
         intuser, extuser = \
             auth.store_oauth2_user(current_user, b2access_token)
         # In case of error this account already existed...
-        if intuser is not None:
-            logger.info("Stored access info")
+        if intuser is None:
+            error = "Failed to store access info"
+            if extuser is not None:
+                error = extuser
+            return None, None, error
 
-            # Get token expiration time
-            response = b2access.get('tokeninfo')
-            timestamp = response.data.get('exp')
+        logger.info("Stored access info")
 
-            timestamp_resolution = 1
-            # timestamp_resolution = 1e3
+        # Get token expiration time
+        response = b2access.get('tokeninfo')
+        timestamp = response.data.get('exp')
 
-            # Convert into datetime object and save it inside db
-            tok_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
-            auth.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
+        timestamp_resolution = 1
+        # timestamp_resolution = 1e3
+
+        # Convert into datetime object and save it inside db
+        tok_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
+        auth.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
 
         return current_user, intuser, extuser
 
@@ -141,7 +145,8 @@ class B2accessUtilities(EudatEndpoint):
         # Call the oauth2 object requesting a certificate
         if self._certs is None:
             self._certs = Certificates()
-        proxy_file = self._certs.make_proxy_from_ca(b2accessCA)
+        prod = not PRODUCTION or ENVVAR_DEBUG
+        proxy_file = self._certs.make_proxy_from_ca(b2accessCA, prod=prod)
 
         # Save the proxy filename into the database
         if proxy_file is not None:
@@ -212,12 +217,16 @@ class OauthLogin(B2accessUtilities):
         auth = self.global_get('custom_auth')
         b2access = self.create_b2access_client(auth)
 
-# probably missing https (since flask is running in http mode?)
         authorized_uri = url_for('authorize', _external=True)
-# ## TO BE REMOVED
-#         authorized_uri = "https://b2stage.cineca.it/auth/authorize"
-# ## TO BE REMOVED
-        logger.info("Will be redirected to: %s" % authorized_uri)
+        if PRODUCTION:
+            # What needs a fix:
+            # http://awesome.docker:443/auth/authorize
+            # curl -i -k https://awesome.docker/auth/askauth
+            authorized_uri = authorized_uri \
+                .replace('http:', 'https:') \
+                .replace(':443', '')
+
+        logger.info("Ask redirection to: %s" % authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
         return self.force_response(response)
@@ -252,13 +261,8 @@ class Authorize(B2accessUtilities):
 
         curuser, intuser, extuser = \
             self.get_b2access_user_info(auth, b2access, b2access_token)
-        if curuser is None:
-            return self.send_errors(
-                'Unavailable', 'Remote account info retrieval failed')
-        if intuser is None:
-            return self.send_errors(
-                'Invalid e-mail',
-                'Account locally already exists with other credentials')
+        if curuser is None and intuser is None:
+            return self.send_errors('oauth2', extuser)
 
         proxy_file = self.obtain_proxy_certificate(auth, extuser)
         if proxy_file is None:
