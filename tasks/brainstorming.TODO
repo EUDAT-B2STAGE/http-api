@@ -1,16 +1,4 @@
 
-GUIDELINES:
-
-- Python 3.5
-- PEP compliant
-- Unittest: nose2
-- Test driven
-- Based on docker environment
-- Swagger
-
-
---- ✄ -----------------------
-
 CURRENT:
 
 - endpoints
@@ -27,7 +15,8 @@ CURRENT:
 - configuration
    ✘ debug level in production / uwsgi @cancelled (16-11-23 12:26)
    ☐ how to specify current b2safe environment domain
-     ☐ a configuration @paramater
+      ☐ docker env?
+      b2stage.cineca.it
 
 LATER:
 

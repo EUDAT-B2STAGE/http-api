@@ -10,6 +10,7 @@ import json
 from datetime import datetime as dt
 from flask import url_for, session, current_app
 from flask_oauthlib.client import OAuthResponse
+from urllib3.exceptions import HTTPError
 from ...confs.config import AUTH_URL, PRODUCTION, DEBUG as ENVVAR_DEBUG
 from ..services.oauth2clients import decorate_http_request
 from ..services.irods.client import IrodsException, Certificates
@@ -17,7 +18,7 @@ from ..services.detect import IRODS_EXTERNAL
 from .. import decorators as decorate
 from ...auth import authentication
 from .commons import EudatEndpoint
-# from commons import htmlcodes as hcodes
+from commons import htmlcodes as hcodes
 from commons.logs import get_logger, pretty_print
 
 logger = get_logger(__name__)
@@ -78,18 +79,22 @@ class B2accessUtilities(EudatEndpoint):
         # Calling with the oauth2 client
         current_user = b2access.get('userinfo')
 
-        error = False
-        from urllib3.exceptions import HTTPError
+        error = True
         if current_user is None:
-            error = True
             errstring = "Empty response from B2ACCESS"
         elif not isinstance(current_user, OAuthResponse):
             errstring = "Invalid response from B2ACCESS"
-            error = True
-        # elif current_user.status > hcodes.HTTP_TRESHOLD:
+        elif current_user.status > hcodes.HTTP_TRESHOLD:
+            if current_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
+                errstring = "B2ACCESS token obtained is unauthorized..."
+            else:
+                errstring = "B2ACCESS token obtained failed with %s" \
+                    % current_user.status
         elif isinstance(current_user._resp, HTTPError):
             errstring = "Error from B2ACCESS: %s" % current_user._resp
-            error = True
+        else:
+            error = False
+
         if error:
             return None, None, errstring
 
