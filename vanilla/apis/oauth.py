@@ -18,6 +18,7 @@ from ..services.detect import IRODS_EXTERNAL
 from .. import decorators as decorate
 from ...auth import authentication
 from .commons import EudatEndpoint
+from commons import htmlcodes as hcodes
 from commons.logs import get_logger, pretty_print
 
 logger = get_logger(__name__)
@@ -76,9 +77,24 @@ class B2accessUtilities(EudatEndpoint):
         # Calling with the oauth2 client
         current_user = b2access.get('userinfo')
 
-        if current_user is None or not isinstance(current_user, OAuthResponse):
-            # Something has failed
+        error = False
+        from urllib3.exceptions import HTTPError
+
+        if current_user is None:
+            error = True
+            logger.warning("Empty response from B2ACCESS")
+        elif not isinstance(current_user, OAuthResponse):
+            logger.warning("Invalid response from B2ACCESS")
+            error = True
+        # elif current_user.status > hcodes.HTTP_TRESHOLD:
+        elif isinstance(current_user._resp, HTTPError):
+            logger.warning("Error from B2ACCESS: %s" % current_user._resp)
+            error = True
+
+        # Something has failed
+        if error:
             return tuple([None] * 3)
+
         if current_app.config['DEBUG']:
             # Attributes you find: http://j.mp/b2access_profile_attributes
             pretty_print(current_user)  # DEBUG
@@ -198,9 +214,9 @@ class OauthLogin(B2accessUtilities):
 
 # probably missing https (since flask is running in http mode?)
         authorized_uri = url_for('authorize', _external=True)
-## TO BE REMOVED
-        authorized_uri = "https://b2stage.cineca.it/auth/authorize"
-## TO BE REMOVED
+# ## TO BE REMOVED
+#         authorized_uri = "https://b2stage.cineca.it/auth/authorize"
+# ## TO BE REMOVED
         logger.info("Will be redirected to: %s" % authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
@@ -263,7 +279,15 @@ class Authorize(B2accessUtilities):
 
 # ## // TO FIX:
 # # Create a 'return_credentials' method to use standard Bearer oauth response
-        return {'token': local_token}
+
+# ## // TO FIX:
+# return irods username!!
+# and home dir?
+        return {
+            'token': local_token,
+            'irods_username': None,
+            'irods_homedir': None
+        }
 
 
 #######################################

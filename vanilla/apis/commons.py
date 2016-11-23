@@ -140,7 +140,8 @@ class EudatEndpoint(ExtendedApiResource):
         # print("PATH 2", path)
         return path
 
-    def get_file_parameters(self, icom, path=None, filename=None, newfile=False):
+    def get_file_parameters(self, icom,
+                            path=None, filename=None, newfile=False):
         """
         Note: the resource is a complicated parameter.
         Resources are meant for (iRODS) replicas.
