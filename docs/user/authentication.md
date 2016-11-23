@@ -17,31 +17,49 @@ To send any kind of requests to the B2STAGE HTTP-API an authentication token is 
 
 ## B2ACCESS Authorization 
 
-Credentials are a combination of your user name and password: they are needed to generate authentication tokens.
-
 To allow the B2STAGE HTTP-API to access B2ACCESS user's account:
 
 1. visit the following URL via a web browser:
 
-```bash
-http://<http_server:port>/auth/askauth
-```
-
-You will be redirect to the B2ACCESS log in page.
+    ```bash
+    http://<http_server:port>/auth/askauth
+    ```
+    
+    You will be redirect to the B2ACCESS log in page.
 
 2. Log in using your EUDAT credentials. You will be redirect to a web page where you are prompted to authorize the B2STAGE HTTP-API to access some user profile information.
 
 3. Click on "Confirm" to authorize the the B2STAGE HTTP-API.
 
-4. You will be redirect to a page containing the auth-toekn to be used for each HTTP request (see [Send API request](#send-api-request)).
+4. You will be redirect to a page containing the authentication token like in the following response example:
+
+```json
+{
+  "Meta": {
+    "data_type": "<class 'dict'>", 
+    "elements": 1, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": {
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzk4Mjc2NzgsImlhdCI6MTQ3OTgyNzY3OCwianRpIjoiYTQ3ODQzMzktOGYyYy00ZTc3LWEwYjctNmM4YzBhNmQxMDM0IiwiaHB3ZCI6bnVsbCwiZXhwIjoxNDgyNDE5Njc4LCJ1c2VyX2lkIjoiOWI1NDZlZWYtYWIxOS00MmMxLWFmMzItNjE4NGJjMDI0NDhkIn0.DktJaui7ijgqTEDzjsXGe8dm0Rvr7wfJdJ9WW1LXiRY"
+    }, 
+    "errors": null
+  }
+}
+```
+
+The token received (in our example:
+"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzk4Mjc2NzgsImlhdCI6MTQ3OTgyNzY3OCwianRpIjoiYTQ3ODQzMzktOGYyYy00ZTc3LWEwYjctNmM4YzBhNmQxMDM0IiwiaHB3ZCI6bnVsbCwiZXhwIjoxNDgyNDE5Njc4LCJ1c2VyX2lkIjoiOWI1NDZlZWYtYWIxOS00MmMxLWFmMzItNjE4NGJjMDI0NDhkIn0.DktJaui7ijgqTEDzjsXGe8dm0Rvr7wfJdJ9WW1LXiRY") is needed for each HTTP request (see [Send API request](#send-api-request)).
 
 This is a one-time operation, needed only the first time you need to get access to the B2STAGE HTTP-API.
 
 
 ## Send API request
-This section shows how to make a basic API call. For a complete list of API calls, see the [User documentation](user.md).
+This section shows how to make a basic API call using the authentication  toeken. For a complete list of API, see the [User documentation](user.md).
 
-Every API request must contain a valid authentication token obtained using the Login API.
+Every API request must contain a valid authentication token obtained using the [B2ACCESS Authorization](#b2access-authorization) process.
 An example of API request is the following: 
 
 ```bash
