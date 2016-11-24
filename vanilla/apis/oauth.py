@@ -352,23 +352,24 @@ class B2accesProxyEndpoint(B2accessUtilities):
 #######################################
 # JUST TO TEST
 #######################################
-# class TestB2access(B2accessUtilities):
-class TestB2access(EudatEndpoint):
-    """ development tests """
 
-    base_url = AUTH_URL
+# # class TestB2access(B2accessUtilities):
+# class TestB2access(EudatEndpoint):
+#     """ development tests """
 
-    @authentication.authorization_required
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def get(self):
+#     base_url = AUTH_URL
 
-        ##########################
-        # get the response
-        r = self.init_endpoint()
-        # pretty_print(r)
-        if r.errors is not None:
-            return self.send_errors(errors=r.errors)
-        pretty_print(r)
+#     @authentication.authorization_required
+#     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+#     def get(self):
 
-        ##########################
-        return {'list': r.icommands.list()}
+#         ##########################
+#         # get the response
+#         r = self.init_endpoint()
+#         # pretty_print(r)
+#         if r.errors is not None:
+#             return self.send_errors(errors=r.errors)
+#         pretty_print(r)
+
+#         ##########################
+#         return {'list': r.icommands.list()}

@@ -15,8 +15,19 @@ from ..base import ExtendedApiResource
 from commons.logs import get_logger
 from ..services.irods.client import IRODS_DEFAULT_USER
 from ..services.detect import IRODS_EXTERNAL
+from ...confs.config import PRODUCTION
 
 logger = get_logger(__name__)
+
+## // TO FIX: move into global configuration across containers (e.g. nginx)
+CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
+CURRENT_HTTPAPI_SERVER = 'b2stage.cineca.it'
+IRODS_PROTOCOL = 'irods'
+CURRENT_PROTOCOL = 'http'
+if PRODUCTION:
+    CURRENT_PROTOCOL = 'https'
+## // TO FIX: build this from the WP6 mappings
+CURRENT_B2SAFE_SERVER_CODE = 'a0'
 
 
 ########################
@@ -48,6 +59,7 @@ class InitObj(object):
 class EudatEndpoint(ExtendedApiResource):
 
     _path_separator = '/'
+    _post_delimiter = '?'
 
     def init_endpoint(self, only_check_proxy=False):
 
@@ -75,6 +87,7 @@ class EudatEndpoint(ExtendedApiResource):
         except Exception as e:
             if only_check_proxy:
                 if not IRODS_EXTERNAL:
+                    # You need admin icommands to fix
                     icom = self.global_get_service('irods', become_admin=True)
                 return InitObj(icommands=icom, is_proxy=use_proxy,
                                valid_credentials=False, extuser_object=extuser)
@@ -122,6 +135,39 @@ class EudatEndpoint(ExtendedApiResource):
             db_handler=sql,
             is_proxy=use_proxy
         )
+
+    def httpapi_location(self, url, ipath, remove_suffix=None):
+        """ URI for retrieving with GET method """
+
+        # remove from current request any parameters
+        if self._post_delimiter in url:
+            url = url[:url.index(self._post_delimiter)]
+
+        split_point = url.find('/api')
+        uri = self.api_server_uri(url[:split_point])
+        uri_path = url[split_point:]
+        if remove_suffix is not None and uri_path.endswith(remove_suffix):
+            uri_path = uri_path.replace(remove_suffix, '')
+        return uri + uri_path + ipath.rstrip(self._path_separator)
+
+    def api_server_uri(self, url):
+        server = url.replace('http://', '')
+        if PRODUCTION:
+            server = CURRENT_HTTPAPI_SERVER
+        else:
+            # Fix docker internal net with the link name
+            if server.startswith('172.17.0'):
+                port = ''
+                if ':' in url:
+                    port = server[server.find(':') + 1:]
+                server = '%s:%s' % ('apiserver', port)
+
+        return "%s://%s" % (CURRENT_PROTOCOL, server)
+
+    def b2safe_location(self, ipath):
+        return '%s:///%s/%s/' % (
+            IRODS_PROTOCOL, CURRENT_B2SAFE_SERVER,
+            ipath.lstrip(self._path_separator))
 
     def fix_location(self, irods_location):
         if not irods_location.startswith(self._path_separator):
