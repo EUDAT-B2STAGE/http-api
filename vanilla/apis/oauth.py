@@ -160,10 +160,8 @@ class B2accessUtilities(EudatEndpoint):
 
         return proxy_file
 
-    def set_irods_username(self, auth, extuser, unityid='b2access_guest'):
+    def set_irods_username(self, icom, auth, extuser, unityid='eudat_guest'):
         """ Find out what is the irods username and save it """
-
-        icom = self.global_get_service('irods')
 
         # irods_user = icom.get_translated_user(external.email)  # OLD
         irods_user = icom.get_user_from_dn(extuser.certificate_dn)  # NEW
@@ -265,23 +263,25 @@ class Authorize(B2accessUtilities):
         if b2access_token is None:
             return self.send_errors(*b2access_errors)
 
+        # B2access user info
         curuser, intuser, extuser = \
             self.get_b2access_user_info(auth, b2access, b2access_token)
         if curuser is None and intuser is None:
             return self.send_errors('oauth2', extuser)
 
+        # B2access user proxy
         proxy_file = self.obtain_proxy_certificate(auth, extuser)
         if proxy_file is None:
             return self.send_errors(
                 "B2ACCESS CA is down", "Could not get certificate files")
 
-        # Get the possible name for irods user
-## // TO FIX: move it inside auth module
-        unityid = curuser.data.get('unity:persistent').split('-')[::-1][0]
-
-        if self.set_irods_username(auth, extuser, unityid) is None:
+        # iRODS related
+        icom = self.global_get_service('irods')
+        uid = self.username_from_unity(curuser.data.get('unity:persistent'))
+        irods_user = self.set_irods_username(icom, auth, extuser, uid)
+        if irods_user is None:
             return self.send_errors(
-                "Failed to set irods user from: %s/%s" % (unityid, extuser))
+                "Failed to set irods user from: %s/%s" % (uid, extuser))
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
@@ -289,14 +289,10 @@ class Authorize(B2accessUtilities):
 
 # ## // TO FIX:
 # # Create a 'return_credentials' method to use standard Bearer oauth response
-
-# ## // TO FIX:
-# return irods username!!
-# and home dir?
         return {
             'token': local_token,
-            'irods_username': None,
-            'irods_homedir': None
+            'b2safe_user': irods_user,
+            'b2safe_home': icom.get_user_home(irods_user)
         }
 
 
@@ -323,8 +319,12 @@ class B2accesProxyEndpoint(B2accessUtilities):
         ##########################
         # verify what happened
         if r.valid_credentials:
-            logger.debug("A valid proxy already exists")
-            return {"Completed": "Current proxy is still valid."}
+            if r.is_proxy:
+                logger.debug("A valid proxy already exists")
+                return {"Completed": "Current proxy is still valid."}
+            else:
+                logger.debug("Current user does not use a proxy")
+                return {"Skipped": "Not using a certificate proxy."}
 
         auth = self.global_get('custom_auth')
         proxy_file = self.obtain_proxy_certificate(auth, r.extuser_object)
@@ -333,9 +333,14 @@ class B2accesProxyEndpoint(B2accessUtilities):
         if proxy_file is None:
             return self.send_errors(
                 "B2ACCESS proxy",
-                "B2ACCESS current token is invalid or expired. " +
+                "B2ACCESS current Token is invalid or expired. " +
                 "Please request a new one at /auth/askauth.")
-        self.set_irods_username(auth, r.extuser_object)
+
+        irods_user = self.set_irods_username(
+            r.icommands, auth, r.extuser_object, r.extuser_object.unity)
+        if irods_user is None:
+            return self.send_errors(
+                "Failed to set irods user from: %s" % r.extuser_object)
         logger.info("Refreshed with a new proxy: %s" % proxy_file)
 
         return {"Completed": "New proxy was generated."}

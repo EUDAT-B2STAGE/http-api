@@ -22,7 +22,7 @@ logger = get_logger(__name__)
 #  A class with attributes
 ########################
 @AttributedModel
-class InitialObjects(object):
+class InitObj(object):
     """
     A pythonic way to handle a method response with different features
     """
@@ -34,6 +34,7 @@ class InitialObjects(object):
     icommands = attribute(default=None)
     db_handler = attribute(default=None)
     # Verify certificates or normal credentials
+    is_proxy = attribute(default=False)
     valid_credentials = attribute(default=False)
     # Save errors to report
     errors = attribute(default=None)
@@ -69,23 +70,17 @@ class EudatEndpoint(ExtendedApiResource):
             # so the minimum command is ils inside the home dir
             icom.list()
             if only_check_proxy:
-                return InitialObjects(valid_credentials=True)
+                return InitObj(is_proxy=use_proxy, valid_credentials=True)
         except Exception as e:
-
             if only_check_proxy:
-                return InitialObjects(
-                    valid_credentials=False, extuser_object=extuser)
+                return InitObj(is_proxy=use_proxy,
+                               valid_credentials=False, extuser_object=extuser)
 
             if use_proxy:
-
                 import re
                 error = str(e)
 
-# Error reading proxy credential: Couldn't read PEM from bio
-# OpenSSL Error: pem_lib.c:809: in library: PEM routines, function PEM_read_bio: bad end line
-
                 re1 = r':\s+(Error reading[^\:\n]+:[^\n]+\n[^\n]+)\n'
-
                 re2 = r'proxy credential:\s+([^\s]+)\s+' \
                     + r'with subject:\s+([^\n]+)\s+' \
                     + r'expired\s+([0-9]+)\s+([^\s]+)\s+ago'
@@ -94,7 +89,7 @@ class EudatEndpoint(ExtendedApiResource):
                 mall = pattern.findall(error)
                 if len(mall) > 0:
                     m = mall.pop()
-                    return InitialObjects(
+                    return InitObj(
                         errors={'Failed credentials': m.replace('\n', '')})
 
                 pattern = re.compile(re2)
@@ -105,11 +100,10 @@ class EudatEndpoint(ExtendedApiResource):
                         % (m[1], m[2], m[3])
                     error += "To refresh the proxy make '%s' on URI '%s'" \
                         % ("POST", "/auth/proxy")
-                    return InitialObjects(
+                    return InitObj(
                         errors={'Expired proxy credential': error})
 
-            # raise e
-            return InitialObjects(
+            return InitObj(
                 errors={'Invalid proxy credential': error})
 
         # SQLALCHEMY connection
@@ -118,17 +112,23 @@ class EudatEndpoint(ExtendedApiResource):
 
         #####################################
         logger.debug("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
-        return InitialObjects(
+        return InitObj(
             username=user,
             extuser_object=extuser,
             icommands=icom,
             db_handler=sql,
+            is_proxy=use_proxy
         )
 
     def fix_location(self, irods_location):
         if not irods_location.startswith(self._path_separator):
             irods_location = self._path_separator + irods_location
         return irods_location
+
+    @staticmethod
+    def username_from_unity(unity_persistent):
+        """ Take the last piece of the unity id """
+        return unity_persistent.split('-')[::-1][0]
 
     @staticmethod
     def splitall(path):
