@@ -142,7 +142,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         self.assertEqual(r.data, b'this is a test')
 
-    def test_04_PATCH_create_test_directory(self):
+    def test_04_PATCH_rename(self):
         """ Test directory creation: POST """
 
         logger.info('*** Testing PATCH')
@@ -150,54 +150,71 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         new_file_name = "filetest1"
         new_directory_name = "directorytest1"
 
+        ###################################################
+        # I need to upload some data to test the DELETE..
+        # Create a directory
+        endpoint = self._api_uri + self._main_endpoint
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        # Upload entity in test folder
+        endpoint = self._api_uri + self._main_endpoint + self._irods_path
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename)),
+                         headers=self.__class__.auth_header)
+        ###################################################
+
         # Rename file
+        params = json.dumps(dict(newname=new_file_name))
         endpoint = (self._api_uri + self._main_endpoint +
                     self._irods_path + '/' + self._test_filename)
-        r = self.app.post(endpoint, data=dict(newname=new_file_name),
+        r = self.app.patch(endpoint, data=params,
                           headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Rename again with the original name
+        params = json.dumps(dict(newname=self._test_filename))
         endpoint = (self._api_uri + self._main_endpoint +
                     self._irods_path + '/' + new_file_name)
-        r = self.app.post(endpoint, data=json.dumps(
-            dict(newname=self._test_filename)),
-            headers=self.__class__.auth_header)
+        r = self.app.patch(endpoint, data=params,
+                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Rename directory
+        params = json.dumps(dict(newname=new_directory_name))
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
-        r = self.app.post(endpoint, data=json.dumps(
-            dict(newname=new_directory_name)),
-            headers=self.__class__.auth_header)
+        r = self.app.patch(endpoint, data=params,
+                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Rename again with the original name
+        params = json.dumps(dict(newname=self._irods_path))
         endpoint = self._api_uri + self._main_endpoint + new_directory_name
-        r = self.app.post(endpoint, data=json.dumps(
-            dict(newname=self._irods_path)),
-            headers=self.__class__.auth_header)
+        r = self.app.patch(endpoint, data=params,
+                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Rename non existing file
+        params = json.dumps(dict(newname=self._test_filename))
         endpoint = (self._api_uri + self._main_endpoint +
                     self._irods_path + '/' + new_file_name)
-        r = self.app.post(endpoint, data=json.dumps(
-            dict(newname=self._test_filename)),
+        r = self.app.patch(endpoint, data=params,
             headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
         # Rename non existing directory
+        params = json.dumps(dict(newname=self._irods_path))
         endpoint = self._api_uri + self._main_endpoint + new_directory_name
-        r = self.app.post(endpoint, data=json.dumps(
-            dict(newname=self._irods_path)),
-            headers=self.__class__.auth_header)
+        r = self.app.patch(endpoint, data=params,
+                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Rename w/o passing "newname"
         endpoint = (self._api_uri + self._main_endpoint +
                     self._irods_path + '/' + new_file_name)
-        r = self.app.post(endpoint, data=dict(
+        r = self.app.patch(endpoint, data=dict(
             headers=self.__class__.auth_header))
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
