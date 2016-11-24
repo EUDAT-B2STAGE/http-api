@@ -18,8 +18,9 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo -e "clean:\tRemove containers and volumes (BE CAREFUL!)"
     echo ""
     echo -e "irods_shell:\tOpen a shell inside the iRODS iCAT server container"
-    echo -e "server_shell:\tOpen a shell inside the Flask server container"
     echo -e "client_shell:\tOpen a shell to test API endpoints"
+    echo -e "server_shell:\tOpen a shell inside the Flask server container"
+    echo -e "httpapi_restart:\tRelaunch only the HTTP Flask server "
     echo -e "api_test:\tRun tests with nose (+ coverage)"
     echo ""
     echo -e "push:\tPush code to github"
@@ -271,6 +272,11 @@ elif [ "$1" == "irods_shell" ]; then
 
 elif [ "$1" == "server_shell" ]; then
     $compose_run exec $restcontainer bash
+    exit 0
+
+elif [ "$1" == "httpapi_restart" ]; then
+    # docker restart $vprefix${restcontainer}_1
+    $compose_run restart $restcontainer
     exit 0
 
 elif [ "$1" == "api_test" ]; then

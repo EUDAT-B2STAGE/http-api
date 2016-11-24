@@ -1,12 +1,11 @@
 
 CURRENT:
 
-    ☐ do
-      ☐ docker restart httpapi_rest_1
+    ✔ do @done (16-11-24 10:34)
+      ✔ docker restart httpapi_rest_1 @done (16-11-24 10:34)
     ☐ PATCH method?
       ☐ query_api.sh
       ☐ unittest
-      ☐ documentation
     ☐ links inside response (fix or add)
       ☐ GET single element response
         ☐ ils of parent directory @notimportant

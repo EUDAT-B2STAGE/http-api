@@ -1,6 +1,9 @@
 Here is a list of topics and issues to be work on in the near future:
 
 - deploy documentation
+- unittest
+    + b2access handshake
+    + proxy refresh
 - improve responses
     + Get should present direct link to resources
     + Get should present more metadata
