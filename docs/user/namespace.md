@@ -175,7 +175,8 @@ $ curl -X PUT \
 # Create the directory '/new_directory' in B2SAFE
 $ curl -X POST \
   -H "Authorization: Bearer <auth_token>" \
-  -d '{"path"="/path/to/directory/new_directory"}' \
+  -H "Content-Type: application/json" \
+  -d '{"path":"/path/to/directory/new_directory", "force"="false"}' \
   <http_server:port>/api/namespace
 ```
 ##### Response

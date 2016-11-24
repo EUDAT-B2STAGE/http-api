@@ -26,7 +26,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     _invalid_irods_path = '/tempZone/home/x/guest/test'
     _test_filename = 'test.pdf'
 
-    def test_01_post_create_test_directory(self):
+    def test_01_POST_create_test_directory(self):
         """ Test directory creation: POST """
 
         logger.info('*** Testing POST')
@@ -56,7 +56,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(
             r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
-    def test_02_put_upload_entity(self):
+    def test_02_PUT_upload_entity(self):
         """ Test file upload: PUT """
 
         logger.info('*** Testing PUT')
@@ -96,7 +96,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
-    def test_03_get_entities(self):
+    def test_03_GET_entities(self):
         """ Test the entity listingend retrieval: GET """
 
         logger.info('*** Testing GET')
@@ -141,7 +141,66 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         self.assertEqual(r.data, b'this is a test')
 
-    def test_04_delete_entities(self):
+    def test_04_PATCH_create_test_directory(self):
+        """ Test directory creation: POST """
+
+        logger.info('*** Testing PATCH')
+        
+        new_file_name = "filetest1"
+        new_directory_name = "directorytest1"
+
+        # Rename file
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + self._test_filename)
+        r = self.app.post(endpoint, data=dict(newname=new_file_name),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        # Rename again with the original name
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + new_file_name)
+        r = self.app.post(endpoint, data=json.dumps(
+            dict(newname=self._test_filename)),
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        # Rename directory
+        endpoint = self._api_uri + self._main_endpoint + self._irods_path
+        r = self.app.post(endpoint, data=json.dumps(
+            dict(newname=new_directory_name)),
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        # Rename again with the original name
+        endpoint = self._api_uri + self._main_endpoint + new_directory_name
+        r = self.app.post(endpoint, data=json.dumps(
+            dict(newname=self._irods_path)),
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        # Rename non existing file
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + new_file_name)
+        r = self.app.post(endpoint, data=json.dumps(
+            dict(newname=self._test_filename)),
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+
+        # Rename non existing directory
+        endpoint = self._api_uri + self._main_endpoint + new_directory_name
+        r = self.app.post(endpoint, data=json.dumps(
+            dict(newname=self._irods_path)),
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        # Rename w/o passing "newname"
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + new_file_name)
+        r = self.app.post(endpoint, data=dict(
+            headers=self.__class__.auth_header))
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+
+    def test_05_DELETE_entities(self):
         """ Test the entity delete: DELETE """
 
         ###################################################
@@ -195,108 +254,3 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
-        ##############################
-        ## OLD NOTES:
-
-        # create directory
-
-        # upload a file
-
-        # upload a file force
-
-        # upload a big file
-
-        # list content
-
-        # download a file
-
-        # remove previous files
-
-        # remove empty directory
-        ##############################
-
-#     def test_05_get_dataobjects(self):
-#         """ Test file download: GET """
-
-#         objURI = os.path.join(self._api_uri, 'dataobjects', self.__class__.small)
-#         r = self.app.get(objURI, headers=self.auth_header)
-#         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-#         # Verify file content
-#         self.assertEqual(r.data, b'a test again')
-
-#     def test_06_get_large_dataobjects(self):
-#         """ Test file download: GET """
-#         objURI = os.path.join(self._api_uri, 'dataobjects', self.__class__.large)
-#         r = self.app.get(objURI, headers=self.auth_header)
-#         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-
-#     def test_07_post_already_existing_dataobjects(self):
-#         """ Test file upload with already existsing object: POST """
-#         r = self.app.post(
-#             self._api_uri + '/dataobjects',
-#             headers=self.auth_header,
-#             data=dict(file=(io.BytesIO(b"this is a test"), 'test.pdf')))
-#         # content = json.loads(r.data.decode('utf-8'))
-#         # error_message = content['Response']['errors']
-#         # logger.debug(error_message)
-#         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)  # or 409?
-
-# ## // TO FIX:
-# # If tests fails before the next method,
-# # you will find your self with data already existing on irods
-# # which will lead to errors also when tests are good
-
-# # Maybe we could add a method which finds data and removes it
-# # at 'init time' of the class.
-
-#     def test_08_delete_dataobjects(self):
-#         """ Test file delete: DELETE """
-
-#         URI = os.path.join(self._api_uri, 'dataobjects')
-
-#         # Obtain the list of objects end delete
-#         r = self.app.get(URI, headers=self.auth_header)
-#         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-#         content = json.loads(r.data.decode('utf-8'))
-
-#         # Find the path
-#         data = content['Response']['data']['content']
-#         for obj in data:
-#             deleteURI = os.path.join(URI, obj['id'])
-#             r = self.app.delete(deleteURI, headers=self.auth_header)
-#             self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-
-#     def test_09_delete_nonexisting_dataobjects(self):
-#         """ Test fake file delete: DELETE """
-
-#         URI = os.path.join(self._api_uri, 'dataobjects', 'NonExistingUUID')
-#         r = self.app.get(URI, headers=self.auth_header)
-#         self.assertEqual(r.status_code, self._hcodes.HTTP_SERVER_ERROR)
-
-#     def test_10_post_dataobjects_in_non_existing_collection(self):
-#         """ Test file upload in a non existing collection: POST """
-
-#         URI = os.path.join(self._api_uri, 'dataobjects')
-#         r = self.app.post(
-#             URI, headers=self.auth_header,
-#             data=dict(collection=('/home/wrong/path'),
-#                       file=(io.BytesIO(b"this is a test"), 'test.pdf')))
-#         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)  # or 409?
-#         content = json.loads(r.data.decode('utf-8'))
-#         error_message = content['Response']['errors'][0]['iRODS']
-#         self.assertIn('collection does not exist', error_message)
-
-#     def test_11_get_non_exising_dataobjects(self):
-#         """ Test file download of a non existing object: GET """
-
-#         filename = 'test.pdf'
-#         URI = os.path.join(self._api_uri, 'dataobjects', filename)
-
-#         r = self.app.get(
-#             URI, headers=self.auth_header,
-#             data=dict(collection=('/home/guest')))
-#         self.assertEqual(r.status_code, self._hcodes.HTTP_SERVER_ERROR)  # or 404?
-
-#         content = json.loads(r.data.decode('utf-8'))
-#         error_messages = content['Response']['errors'].pop()
-#         self.assertIn('Not found.', error_messages[filename])
