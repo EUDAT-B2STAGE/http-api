@@ -14,6 +14,7 @@ from attr import (
 from ..base import ExtendedApiResource
 from commons.logs import get_logger
 from ..services.irods.client import IRODS_DEFAULT_USER
+from ..services.detect import IRODS_EXTERNAL
 
 logger = get_logger(__name__)
 
@@ -73,7 +74,10 @@ class EudatEndpoint(ExtendedApiResource):
                 return InitObj(is_proxy=use_proxy, valid_credentials=True)
         except Exception as e:
             if only_check_proxy:
-                return InitObj(is_proxy=use_proxy,
+                if not IRODS_EXTERNAL:
+                    # You need admin icommands to fix
+                    icom = self.global_get_service('irods', become_admin=True)
+                return InitObj(icommands=icom, is_proxy=use_proxy,
                                valid_credentials=False, extuser_object=extuser)
 
             if use_proxy:

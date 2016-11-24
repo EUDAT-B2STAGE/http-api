@@ -1,17 +1,18 @@
 
 CURRENT:
 
+    ☐ do
+      ☐ docker restart httpapi_rest_1
     ☐ PATCH method?
       ☐ query_api.sh
       ☐ unittest
+      ☐ documentation
     ☐ links inside response (fix or add)
       ☐ GET single element response
-        ☐ ils of parent directory
-   ☐ configuration how to specify current b2safe environment domain
-      ☐ docker env?
+        ☐ ils of parent directory @notimportant
+    ☐ configuration how to specify current b2safe environment domain
       b2stage.cineca.it and b2safe.cineca.it
-    ☐ do
-      ☐ docker restart httpapi_rest_1
+      ☐ docker env?
 
 LATER:
 
