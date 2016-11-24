@@ -12,10 +12,10 @@ from attr import (
     ib as attribute,
 )
 from ..base import ExtendedApiResource
-from commons.logs import get_logger
 from ..services.irods.client import IRODS_DEFAULT_USER
 from ..services.detect import IRODS_EXTERNAL
 from ...confs.config import PRODUCTION
+from commons.logs import get_logger, pretty_print
 
 logger = get_logger(__name__)
 
@@ -221,6 +221,7 @@ class EudatEndpoint(ExtendedApiResource):
         ############################
         # Handle flask differences on GET/DELETE and PUT/POST
         myargs = self.get_input()
+        # pretty_print(myargs)
 
         ############################
         # main parameters
@@ -248,7 +249,7 @@ class EudatEndpoint(ExtendedApiResource):
         # if resource is None:
         #     resource = icom.get_default_resource()
 
-        force = self._args.get('force')
+        force = myargs.get('force')
 
         ############################
         logger.debug(

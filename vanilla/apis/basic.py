@@ -64,7 +64,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     @decorate.add_endpoint_parameter('resource')
     @decorate.add_endpoint_parameter('download', ptype=bool, default=False)
     @decorate.apimethod
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @decorate.catch_error(
+        exception=IrodsException, error_code=hcodes.HTTP_BAD_NOTFOUND,
+        exception_label='B2SAFE')
     def get(self, irods_location=None):
         """
         Download file from filename
@@ -245,6 +247,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
+
         # if path variable empty something is wrong
         if path is None:
             return self.send_errors(
@@ -408,7 +411,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
         icom = r.icommands
-        # Note: ignore resource, get new filename as 'newname'
+        # Note: ignore resource, get new filename as 'newname'
         path, _, newfile, force = \
             self.get_file_parameters(icom, path=irods_location, newfile=True)
 
@@ -428,6 +431,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if post_delimiter in request.url:
             base_url = request.url[:request.url.index(post_delimiter)]
 
+## // TO FIX:
         return {
             'location': 'irods:///%s/%s/' % (
                 CURRENT_B2SAFE_SERVER, newpath.lstrip(self._path_separator)),
@@ -475,9 +479,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     logger.debug("Removed %s" % obj['name'])
                 return "Cleaned"
 
-        # Note: this check is not at the beginning to allow the clean operation
+        # Note: this check is not at the beginning to allow the clean operation
         if irods_location is None:
-            return self.send_errors('location', 'Missing filepath inside URI')
+            return self.send_errors('location', 'Missing filepath inside URI',
+                                    code=hcodes.HTTP_BAD_REQUEST)
         irods_location = self.fix_location(irods_location)
 
         ########################################

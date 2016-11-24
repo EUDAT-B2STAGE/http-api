@@ -10,7 +10,7 @@ nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
 from __future__ import absolute_import
 
 import io
-# from restapi.jsonify import json
+from restapi.jsonify import json
 from .. import RestTestsAuthenticatedBase
 from commons.logs import get_logger
 
@@ -37,8 +37,9 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Overwrite a directory
-        r = self.app.post(endpoint, data=dict(path=self._irods_path,
-                          force='True'), headers=self.__class__.auth_header)
+        params = json.dumps(dict({'force': True, 'path': self._irods_path}))
+        r = self.app.post(endpoint, data=params,
+                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Overwrite a directory w/o force flag
