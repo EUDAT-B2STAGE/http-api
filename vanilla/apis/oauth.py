@@ -157,6 +157,8 @@ class B2accessUtilities(EudatEndpoint):
         # Save the proxy filename into the database
         if proxy_file is not None:
             auth.store_proxy_cert(extuser, proxy_file)
+        else:
+            pretty_print(b2accessCA, "Failed oauth2")
 
         return proxy_file
 

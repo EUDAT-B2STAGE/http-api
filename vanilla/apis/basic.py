@@ -401,14 +401,24 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 'New filename missing', "Use the 'newname' JSON parameter")
 
         # Get the base directory
+        collection = icom.get_collection_from_path(irods_location)
+        # Set the new absolute path
+        newpath = icom.get_absolute_path(newfile, root=collection)
+        # Move in irods
+        icom.move(irods_location, newpath)
 
-        # Add the newname
+        base_url = request.url.replace(irods_location, '')
+        post_delimiter = '?'
+        if post_delimiter in request.url:
+            base_url = request.url[:request.url.index(post_delimiter)]
 
-        # # apply imv
-        # icom.move('a', 'b')
-
-        # return {'changed': 'SOMETHING'}
-        return "Hello World"
+        return {
+            'location': 'irods:///%s/%s/' % (
+                CURRENT_B2SAFE_SERVER, newpath.lstrip(self._path_separator)),
+            'filename': newfile,
+            'path': collection,
+            'link': '%s/?path=%s' % (base_url, newpath)
+        }
 
     @authentication.authorization_required
     @decorate.add_endpoint_parameter('resource')

@@ -2,21 +2,16 @@
 CURRENT:
 
 - endpoints
-    ☐ GET single element response
-    ☐ PATCH method? @todo
+    ✔ PATCH method? @done (16-11-24 08:22)
       ☐ query_api.sh
       ☐ unittest
+    ☐ GET single element response
 
 - configuration
    ✘ debug level in production / uwsgi @cancelled (16-11-23 12:26)
    ☐ how to specify current b2safe environment domain
       ☐ docker env?
-      b2stage.cineca.it
-
-- b2access
-   ✔ production certification authority (+ signing_policy) @done (16-11-23 12:25)
-   ✔ test production... @done (16-11-23 12:25)
-   ✔ test with B2SAFE dev @live @done (16-11-23 22:53)
+      b2stage.cineca.it and b2safe.cineca.it
 
 LATER:
 
