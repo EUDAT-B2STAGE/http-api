@@ -7,17 +7,16 @@ Therefore, to use the B2SATGE HTTP-API service, you must first register a new **
 To manage B2STAGE HTTP-API authentication the following enpoints are available:
 
 ## Endpoints
-1. [/auth/askauth](#get)
-2. [/auth/proxy](#put)
+1. /auth/askauth - *request an access token*
+2. /auth/proxy - *request a new proxy certificate*
 
----
 
 ## Authentication flow
 To send any kind of requests to the B2STAGE HTTP-API an authentication token is needed:
 
 1. to request an authentication token follow the steps described ni the section [Authentication token](#authentication-token). If the request succeeds, the server returns an authentication token;
 
-2. once obtained a valid authentication token user can send HTTP requests to the B2STAGE http server including the token in the "Authorization: Bearer" header (see [Send API request](#send-api-request)). Continue to send API requests with that token until the service completes the request or the Unauthorized (401) error occurs.
+2. once obtained a valid authentication token user can send HTTP requests to the B2STAGE http server including the token in the "Authorization: Bearer" header (see [Send API request](#send-api-request)).
 
 3. If an *Unauthorized (401)** error occurs, request another token (see point 1). If an *Internal Server Error (500)* with an "Expired proxy credential" error occurs, request a new proxy certificate (see [B2ACCESS CA Proxy Ceritificate](#b2access-ca-proxy-ceritificate))
 
