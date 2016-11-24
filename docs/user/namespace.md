@@ -3,7 +3,7 @@
 
 >Note: According to the EUDAT Data Architecture B2SAFE is part of the registered data domain, where digital objects are stored and managed in such a way that data carrying associated descriptive metadata is discoverable and can be referred to or retrieved using persistent identifiers.
 >For the time being B2SAFE object registration policies are not applied to a specific path, but can be configured to trigger the registration in any available paths. Therefore the B2STAGE HTTP-API can not guarantee that an uploaded file will be registered by B2SAFE.
->Until this behaviour is in place, we are not using **registered** in the endpoint URL, but **namespace**. As B2SAFE is fully complaint to the EUDAT Data Architecture, *namespace* will replaced by *registered*: please consider it as a temporary placeholder.
+>Until this behaviour is in place, we are not using **registered** in the endpoint URL, but **namespace**. As B2SAFE is fully complaint to the EUDAT Data Architecture, *namespace* will replaced by *registered*: please consider *namespace* as a temporary placeholder.
 
 The namespace APIs allow the management of entities on B2SAFE.
 The following operations are currently available:
@@ -28,7 +28,9 @@ The examples in this section use cURL commands. For information about cURL, see 
 ##### Example
 ```bash
 # Get 'filename.txt' metadata
-$ curl https://<http_server:port>/api/namespace/path/to/directory/filename.txt -H "Authorization: Bearer <auth_token>"
+$ curl \
+  -H "Authorization: Bearer <auth_token>"
+  <http_server:port>/api/namespace/path/to/directory/filename.txt 
 ```
 ##### Response
 ```json
@@ -56,7 +58,9 @@ $ curl https://<http_server:port>/api/namespace/path/to/directory/filename.txt -
 ##### Example
 ```bash
 # Download 'filename.txt'
-$ curl https://<http_server:port>/api/namespace/path/to/directory/filename.txt?download=true -H "Authorization: Bearer <auth_token>"
+$ curl \
+  -H "Authorization: Bearer <auth_token>" \
+  <http_server:port>/api/namespace/path/to/directory/filename.txt?download=true 
 ```
 ##### Response
 ```json
@@ -67,7 +71,9 @@ Content of filename.txt
 ##### Example
 ```bash
 # Get list of entities inside 'directory'
-$ curl https://<http_server:port>/api/namespace/path/to/directory/ -H "Authorization: Bearer <auth_token>"
+$ curl \
+  -H "Authorization: Bearer <auth_token>" \
+  <http_server:port>/api/namespace/path/to/directory/ 
 ```
 ##### Response
 ```json
@@ -120,11 +126,17 @@ $ curl https://<http_server:port>/api/namespace/path/to/directory/ -H "Authoriza
 
 ##### Examples
 ```bash
-# create 'myfile.txt' as '/path/to/directory/filename'
-$ curl -X PUT -F file=@myfile.txt  https://<http_server:port>/api/namespace/path/to/directory/filename -H "Authorization: Bearer <auth_token>"
+# Upload 'myfile.txt' in '/path/to/directory/filename'
+$ curl -X PUT \
+  -H "Authorization: Bearer <auth_token>"
+  -F file=@myfile.txt \
+  <http_server:port>/api/namespace/path/to/directory/filename \
 
-# overwrite 'myfile2.txt' as '/path/to/directory/filename'
-$ curl -X PUT -F file=@myfile2.txt  https://<http_server:port>/api/namespace/path/to/directory/filename?force=true -H "Authorization: Bearer <auth_token>"
+# Overwrite 'myfile2.txt' as '/path/to/directory/filename'
+$ curl -X PUT \
+  -H "Authorization: Bearer <auth_token>" \
+  -F file=@myfile2.txt \
+  <http_server:port>/api/namespace/path/to/directory/filename?force=true 
 ```
 ##### Response
 ```json
@@ -150,7 +162,6 @@ $ curl -X PUT -F file=@myfile2.txt  https://<http_server:port>/api/namespace/pat
 }
 ```
 
----
 
 ## **POST**
 ### Create a new directory
@@ -162,7 +173,10 @@ $ curl -X PUT -F file=@myfile2.txt  https://<http_server:port>/api/namespace/pat
 ##### Example
 ```bash
 # Create the directory '/new_directory' in B2SAFE
-$ curl -X POST -d path=/path/to/directory/new_directory/ https://<http_server:port>/api/namespace -H "Authorization: Bearer <auth_token>"
+$ curl -X POST \
+  -H "Authorization: Bearer <auth_token>" \
+  -d '{"path"="/path/to/directory/new_directory"}' \
+  <http_server:port>/api/namespace
 ```
 ##### Response
 ```json
@@ -191,7 +205,9 @@ $ curl -X POST -d path=/path/to/directory/new_directory/ https://<http_server:po
 ##### Example
 ```bash
 # Delete the file '/path/to/directory/file.txt'
-$ curl -X DELETE https://<http_server:port>/api/namespace/path/to/directory/file.txt -H "Authorization: Bearer <auth_token>"
+$ curl -X DELETE \
+  -H "Authorization: Bearer <auth_token>" \
+  <http_server:port>/api/namespace/path/to/directory/file.txt 
 ```
 ##### Response
 ```json
@@ -204,7 +220,7 @@ $ curl -X DELETE https://<http_server:port>/api/namespace/path/to/directory/file
   }, 
   "Response": {
     "data": {
-      "requested removal": "/path/to/directory/file.txt"
+      "removed": "/path/to/directory/file.txt"
     }, 
     "errors": null
   }
@@ -217,7 +233,9 @@ $ curl -X DELETE https://<http_server:port>/api/namespace/path/to/directory/file
 ##### Example
 ```bash
 # Delete "directory" (only if empty)
-$ curl -X DELETE https://<http_server:port>/api/namespace/path/to/directory/ -H "Authorization: Bearer <auth_token>"
+$ curl -X DELETE \
+  -H "Authorization: Bearer <auth_token>" \
+  <http_server:port>/api/namespace/path/to/directory/ 
 ```
 ##### Response
 ```json
@@ -230,14 +248,13 @@ $ curl -X DELETE https://<http_server:port>/api/namespace/path/to/directory/ -H 
   }, 
   "Response": {
     "data": {
-      "requested removal": "/path/to/directory/"
+      "removed": "/path/to/directory/"
     }, 
     "errors": null
   }
 }
 ```
 
----
 
 ## **PATCH**
 ### Update an entity name
@@ -248,12 +265,31 @@ $ curl -X DELETE https://<http_server:port>/api/namespace/path/to/directory/ -H 
 
 ##### Example
 ```bash
-PATCH -d newname=filename2 https://<http_server:port>/api/registered/path/to/directory/filename
-# change the file name "path/to/directory/filename" to "path/to/directory/filename2"
+# Rename teh file "path/to/directory/filename" in "path/to/directory/filename2"
+curl -X PATCH \
+  -H "Authorization: Bearer <auth_token>" \
+  -d '{"newname":"filename4"}' \
+  <http_server:port>/api/namespace/path/to/directory/filename
 ```
 ##### Response
 ```json
-[JSON example]
+{
+  "Meta": {
+    "data_type": "<class 'dict'>", 
+    "elements": 4, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": {
+      "filename": "filename2", 
+      "link": "http://<http_server:port>/api/namespace/path/to/directory/filename2", 
+      "location": "irods:///b2safe.cineca.it/path/to/directory/filename2", 
+      "path": "/path/to/directory"
+    }, 
+    "errors": null
+  }
+}
 ```
 
 ### Update a directory name
@@ -264,10 +300,29 @@ PATCH -d newname=filename2 https://<http_server:port>/api/registered/path/to/dir
 
 ##### Example
 ```bash
-PATCH -d newname=directory2 https://<http_server:port>/api/registered/path/to/directory
-# change the directory name "path/to/directory" to "path/to/directory2"
+# Rename the directory "path/to/directory" in "path/to/directory2"
+curl -X PATCH \
+  -H "Authorization: Bearer <auth_token>" \
+  -d '{"newname":"directory2"}' \
+  <http_server:port>/api/registered/path/to/directory
 ```
 ##### Response
 ```json
-[JSON example]
+{
+  "Meta": {
+    "data_type": "<class 'dict'>", 
+    "elements": 4, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": {
+      "filename": "test1", 
+      "link": "http://<http_server:port>/api/namespace/path/to/directory2", 
+      "location": "irods:///b2safe.cineca.it/path/to/directory2", 
+      "path": "/path/to"
+    }, 
+    "errors": null
+  }
+}
 ```

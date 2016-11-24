@@ -1,28 +1,36 @@
-# Authentication and API request workflow 
+# Authentication API
 
 The B2STAGE HTTP-API uses the OAuth2 authorization framework to obtain limited access to B2ACCESS user accounts. It works by delegating user authentication to the service that hosts the user account (B2ACCESS), and authorizing third-party applications (B2STAGE HTTP-API) to access the user account. 
 
 Therefore, to use the B2SATGE HTTP-API service, you must first register a new **B2ACCESS** personal account and [get valid credentials](https://b2access.eudat.eu:8443/home/home).
 
-## Authentication
+To manage B2STAGE HTTP-API authentication the following enpoints are available:
 
+## Endpoints
+1. [/auth/askauth](#get)
+2. [/auth/proxy](#put)
+
+---
+
+## Authentication flow
 To send any kind of requests to the B2STAGE HTTP-API an authentication token is needed:
 
-1. to request an authentication token the B2ACCESS credentials has to be sent in the request as shown in [B2ACCESS Authorization](#b2access-authorization). If the request succeeds, the server returns an authentication token;
+1. to request an authentication token follow the steps described ni the section [Authentication token](#authentication-token). If the request succeeds, the server returns an authentication token;
 
-2. once you obtain a valid authentication token user can send HTTP requests including the token in the "Authorization: Bearer" header (see [Send API request](#send-api-request)). Continue to send API requests with that token until the service completes the request or the Unauthorized (401) error occurs.
+2. once obtained a valid authentication token user can send HTTP requests to the B2STAGE http server including the token in the "Authorization: Bearer" header (see [Send API request](#send-api-request)). Continue to send API requests with that token until the service completes the request or the Unauthorized (401) error occurs.
 
-3. if the Unauthorized (401) error occurs, request another token (see point 1).
+3. If an *Unauthorized (401)** error occurs, request another token (see point 1). If an *Internal Server Error (500)* with an "Expired proxy credential" error occurs, request a new proxy certificate (see [B2ACCESS CA Proxy Ceritificate](#b2access-ca-proxy-ceritificate))
 
 
-## B2ACCESS Authorization 
+## Authentication token 
+This operation is needed the very first time a user needs to get access to the B2STAGE HTTP-API and every time the B2ACCESS "access token" expires.
 
-To allow the B2STAGE HTTP-API to access B2ACCESS user's account:
+To get an authentication token:
 
 1. visit the following URL via a web browser:
 
     ```bash
-    http://<http_server:port>/auth/askauth
+    <http_server:port>/auth/askauth
     ```
     
     You will be redirect to the B2ACCESS log in page.
@@ -37,23 +45,24 @@ To allow the B2STAGE HTTP-API to access B2ACCESS user's account:
 {
   "Meta": {
     "data_type": "<class 'dict'>", 
-    "elements": 1, 
+    "elements": 3, 
     "errors": 0, 
     "status": 200
   }, 
   "Response": {
     "data": {
-      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzk4Mjc2NzgsImlhdCI6MTQ3OTgyNzY3OCwianRpIjoiYTQ3ODQzMzktOGYyYy00ZTc3LWEwYjctNmM4YzBhNmQxMDM0IiwiaHB3ZCI6bnVsbCwiZXhwIjoxNDgyNDE5Njc4LCJ1c2VyX2lkIjoiOWI1NDZlZWYtYWIxOS00MmMxLWFmMzItNjE4NGJjMDI0NDhkIn0.DktJaui7ijgqTEDzjsXGe8dm0Rvr7wfJdJ9WW1LXiRY"
+      "b2safe_home": "/path/to/home/directory", 
+      "b2safe_user": "myusername", 
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJocHdkIjpudWxsLCJleHAiOjE0ODI1NzQ2MjYsIm5iZiI6MTQ3OTk4MjYyNiwiaWF0IjoxNDc5OTgyNjI2LCJ1c2VyX2lkIjoiYjI3ZGM4ZDQtMWM4Yi00YjYxLWI2OWUtZjAzOWNlNGYyYjc2IiwianRpIjoiMDc0YjhiYmQtMDcwYy00MDQxLWJhN2UtMjRjZDE3NGZlODhhIn0.JQKXId5HocLF7FcHG5N8m_-aRxITw-XwfL33av5oQMY"
     }, 
     "errors": null
   }
 }
+
 ```
 
 The token received (in our example:
-"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0Nzk4Mjc2NzgsImlhdCI6MTQ3OTgyNzY3OCwianRpIjoiYTQ3ODQzMzktOGYyYy00ZTc3LWEwYjctNmM4YzBhNmQxMDM0IiwiaHB3ZCI6bnVsbCwiZXhwIjoxNDgyNDE5Njc4LCJ1c2VyX2lkIjoiOWI1NDZlZWYtYWIxOS00MmMxLWFmMzItNjE4NGJjMDI0NDhkIn0.DktJaui7ijgqTEDzjsXGe8dm0Rvr7wfJdJ9WW1LXiRY") is needed for each HTTP request (see [Send API request](#send-api-request)).
-
-This is a one-time operation, needed only the first time you need to get access to the B2STAGE HTTP-API.
+"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJocHdkIjpudWxsLCJleHAiOjE0ODI1NzQ2MjYsIm5iZiI6MTQ3OTk4MjYyNiwiaWF0IjoxNDc5OTgyNjI2LCJ1c2VyX2lkIjoiYjI3ZGM4ZDQtMWM4Yi00YjYxLWI2OWUtZjAzOWNlNGYyYjc2IiwianRpIjoiMDc0YjhiYmQtMDcwYy00MDQxLWJhN2UtMjRjZDE3NGZlODhhIn0.JQKXId5HocLF7FcHG5N8m_-aRxITw-XwfL33av5oQMY") is needed for each HTTP request (see [Send API request](#send-api-request)).
 
 
 ## Send API request
@@ -63,5 +72,73 @@ Every API request must contain a valid authentication token obtained using the [
 An example of API request is the following: 
 
 ```bash
-$ curl http://<http_server:port>/api/status -H "Authorization: Bearer <auth_token>"
+$ curl \
+  -H "Authorization: Bearer <auth_token>" \
+  <http_server:port>/api/status 
+```
+
+
+## B2ACCESS CA Proxy Ceritificate
+To interact with B2SAFE, the B2STAGE HTTP-API server uses a X.509 proxy certificate generated by the B2ACCESS Certification Authority. The proxy has a short duration (tipically 12 hours) and need to be regenerated when expired.
+When the proxy certifcated expires an error like the following will be returned:
+```json
+{  
+   "Meta":{  
+      "data_type":"<class 'NoneType'>",
+      "elements":0,
+      "errors":1,
+      "status":500
+   },
+   "Response":{  
+      "data":null,
+      "errors":[  
+         {  
+            "Expired proxy credential":"'/C=DE/L=B2ACCESS/O=FZJ/OU=JSC/CN=e280fe69-3753-4061-9d9d-c52aa34324eb/CN=Name Surnmae' became invalid 675 minutes ago.\nTo refresh the proxy make 'POST' on URI '/auth/proxy'"
+         }
+      ]
+   }
+}
+```
+
+To get generate a new proxy certificate send a POST request using the */auth/proxy* endpoint as show below:
+```bash
+$ curl \
+  -H "Authorization: Bearer <auth_token>" \
+  curl -X POST http://<http_server:port>/auth/proxy 
+```
+
+#### Response if th proxy was successfully generated
+```json
+{
+  "Meta": {
+    "data_type": "<class 'dict'>", 
+    "elements": 1, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": {
+      "Completed": "New proxy was generated."
+    }, 
+    "errors": null
+  }
+}
+```
+
+#### Response if the proxy is still valid
+```json
+{
+  "Meta": {
+    "data_type": "<class 'dict'>", 
+    "elements": 1, 
+    "errors": 0, 
+    "status": 200
+  }, 
+  "Response": {
+    "data": {
+      "Completed": "Current proxy is still valid."
+    }, 
+    "errors": null
+  }
+}
 ```

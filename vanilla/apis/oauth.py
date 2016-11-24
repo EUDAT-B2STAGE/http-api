@@ -336,7 +336,8 @@ class B2accesProxyEndpoint(B2accessUtilities):
             return self.send_errors(
                 "B2ACCESS proxy",
                 "B2ACCESS current Token is invalid or expired. " +
-                "Please request a new one at /auth/askauth.")
+                "Please request a new one at /auth/askauth.",
+                code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
         irods_user = self.set_irods_username(
             r.icommands, auth, r.extuser_object, r.extuser_object.unity)
