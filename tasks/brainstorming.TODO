@@ -1,17 +1,17 @@
 
 CURRENT:
 
-- endpoints
-    ✔ PATCH method? @done (16-11-24 08:22)
+    ☐ PATCH method?
       ☐ query_api.sh
       ☐ unittest
-    ☐ GET single element response
-
-- configuration
-   ✘ debug level in production / uwsgi @cancelled (16-11-23 12:26)
-   ☐ how to specify current b2safe environment domain
+    ☐ links inside response (fix or add)
+      ☐ GET single element response
+        ☐ ils of parent directory
+   ☐ configuration how to specify current b2safe environment domain
       ☐ docker env?
       b2stage.cineca.it and b2safe.cineca.it
+    ☐ do
+      ☐ docker restart httpapi_rest_1
 
 LATER:
 
