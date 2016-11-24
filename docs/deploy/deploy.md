@@ -1,3 +1,3 @@
-# Deploy documentation
+# Admin documentation
 
 >To be written
