@@ -15,6 +15,7 @@ if [ "$1" == "help" ]; then
     echo -e "\t - list PATH"
     echo -e "\t - create PATH"
     echo -e "\t - upload PATH FILE"
+    echo -e "\t - update PATH FILE"
     echo -e "\t - download PATH"
     echo -e "\t - remove PATH"
     return
@@ -135,6 +136,28 @@ if [ "$1" == 'upload' -o "$1" == "$ALL_COMMAND" ]; then
 fi
 
 ######################################
+# PATCH
+
+if [ "$1" == 'update' -o "$1" == "$ALL_COMMAND" ]; then
+
+    used="1"
+    path="$IHOME/test/gettoken"
+    if [ ! -z "$2" ]; then
+        path="$2"
+    fi
+
+    file="myfile"
+    if [ ! -z "$3" ]; then
+        file="$3"
+    fi
+
+    echo "Update file name [PATCH]"
+
+    api_call result PATCH "$path" "newname=$file"
+    if [ "$result" -gt "$MIN_INVALID_STATUS" ]; then return; fi
+fi
+
+######################################
 # GET
 
 if [ "$1" == 'list' -o "$1" == "$ALL_COMMAND" ]; then
@@ -165,7 +188,7 @@ if [ "$1" == 'remove' -o "$1" == "$ALL_COMMAND" ]; then
         api_call result DELETE "$IHOME/test"
 
         echo "Remove file [DELETE]"
-        api_call result DELETE "$IHOME/test/gettoken"
+        api_call result DELETE "$IHOME/test/myfile"
         if [ "$result" -gt "$MIN_INVALID_STATUS" ]; then return; fi
 
         echo "Remove directory [DELETE]"

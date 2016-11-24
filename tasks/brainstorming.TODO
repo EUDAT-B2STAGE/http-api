@@ -4,7 +4,7 @@ CURRENT:
     ✔ do @done (16-11-24 10:34)
       ✔ docker restart httpapi_rest_1 @done (16-11-24 10:34)
     ☐ PATCH method?
-      ☐ query_api.sh
+      ✔ query_api.sh @done (16-11-24 10:40)
       ☐ unittest
     ☐ links inside response (fix or add)
       ☐ GET single element response
