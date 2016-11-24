@@ -15,6 +15,7 @@ CURRENT:
 
 LATER:
 
+☐ ENVVAR_DEBUG should be splitted: DEBUG in production + B2ACCESS dev
 ☐ deploy documentation
 ☐ lock for double authentications operations (chrome prerendering)
 ☐ remove _latest_token from anywhere (and test)
