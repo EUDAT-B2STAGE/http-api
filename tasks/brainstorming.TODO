@@ -6,22 +6,25 @@ CURRENT:
     ☐ PATCH method?
       ✔ query_api.sh @done (16-11-24 10:40)
       ☐ unittest
-    ☐ links inside response (fix or add)
-      ☐ GET single element response
-        ☐ ils of parent directory @notimportant
-    ☐ configuration how to specify current b2safe environment domain
+    ✔ links inside response (fix or add) @done (16-11-24 14:19)
+      ✔ GET single element response @done (16-11-24 14:32)
+        ✔ ils of parent directory @notimportant @done (16-11-24 14:32)
+    ✔ configuration how to specify current b2safe environment domain @done (16-11-24 14:19)
       b2stage.cineca.it and b2safe.cineca.it
-      ☐ docker env?
 
 LATER:
 
-☐ ENVVAR_DEBUG should be splitted: DEBUG in production + B2ACCESS dev
+☐ ENVVAR_DEBUG should be splitted
+  DEBUG in production + B2ACCESS dev
 ☐ deploy documentation
 ☐ lock for double authentications operations (chrome prerendering)
 ☐ remove _latest_token from anywhere (and test)
 ☐ fix configurations names and paths in ./confs
 ☐ user documentation: curl calls with JSON (POST, PUT, PATCH) ? -d ?
 
+- Examples in meta response
+    ☐ example of curl after authorized token?
+    ☐ example of curl call after directory creation?
 - Real DB
    ☐ postgres?
      ☐ the same used by irods??

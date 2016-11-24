@@ -2,12 +2,15 @@ Here is a list of topics and issues to be work on in the near future:
 
 - deploy documentation
 - unittest
+    + patch method
     + b2access handshake
     + proxy refresh
 - improve responses
-    + Get should present direct link to resources
-    + Get should present more metadata
+    + Standard bearer token response
+    + a better standard for all resources responses
 - allow configuration files/options
+    + set at docker level across containers
+- Look into "TO FIX" labeled notes inside the code
 - iRODS related
     - test python official driver with python3
     - irods 4.2

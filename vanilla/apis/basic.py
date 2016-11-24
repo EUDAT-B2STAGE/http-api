@@ -28,33 +28,31 @@ from .. import decorators as decorate
 
 logger = get_logger(__name__)
 
-## // TO FIX: build this from the WP6 mappings
-CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
-CURRENT_B2SAFE_SERVER_CODE = 'a0'
 
+## // TO FIX: set parameters via configuration
 
-# @decorate.all_rest_methods
-class EudatTest(EudatEndpoint):
-    """
-    A class to test development of internal parts,
-    e.g. responses
-    """
+# # @decorate.all_rest_methods
+# class EudatTest(EudatEndpoint):
+#     """
+#     A class to test development of internal parts,
+#     e.g. responses
+#     """
 
-    # @authentication.authorization_required
-    @decorate.add_endpoint_parameter('test')
-    @decorate.apimethod
-    # @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def get(self, location=None):
-        """
-        This works for all methods: GET, POST, PUT, PATCH, DELETE
-        """
-        data = {
-            'path': location,
-            'parameters': self.get_input(),
-            'parameter': self.get_input(single_parameter='test'),
-        }
-        # return self.force_response(data)
-        return data
+#     # @authentication.authorization_required
+#     @decorate.add_endpoint_parameter('test')
+#     @decorate.apimethod
+#     # @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+#     def get(self, location=None):
+#         """
+#         This works for all methods: GET, POST, PUT, PATCH, DELETE
+#         """
+#         data = {
+#             'path': location,
+#             'parameters': self.get_input(),
+#             'parameter': self.get_input(single_parameter='test'),
+#         }
+#         # return self.force_response(data)
+#         return data
 
 
 ###############################
@@ -120,7 +118,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         data = {}
 
         ###################
-        # In case the user request the download of a specific file
+        # DOWNLOAD a specific file
+        ###################
+
         if self._args.get('download'):
             if is_collection:
                 return self.send_errors(
@@ -149,32 +149,57 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             return filecontent
 
         ###################
-        # data listing
+        # DATA LISTING
+        ###################
+
+        #####################
+        # DIRECTORY
+        if is_collection:
+            collection = path
+            data = icom.list_as_json(root=path)
+            if len(data) < 1:
+                data = []
+            # Print content list if it's a collection
+        #####################
+        # FILE (or not existing)
         else:
+            collection = icom.get_collection_from_path(path)
+            current_filename = path[len(collection) + 1:]
+            filelist = icom.list_as_json(root=collection)
+            data = {}
+            for filename, metadata in filelist.items():
+                if filename == current_filename:
+                    data[filename] = metadata
+            # pretty_print(data)
 
-            if is_collection:
-                data = icom.list_as_json(root=path)
-                if len(data) < 1:
-                    data = []
-                # Print content list if it's a collection
-            else:
-                # Print file details/sys metadata if it's a specific file
-                data = icom.meta_sys_list(path)
-                # if a path that does not exist
-                if len(data) < 1:
-                    return self.send_errors(
-                        'not found',
-                        "path does not exists or you don't have privileges",
-                        code=hcodes.HTTP_BAD_NOTFOUND)
+            # # Print file details/sys metadata if it's a specific file
+            # data = icom.meta_sys_list(path)
 
-## // TO FIX:
-                # to be better parsed
+            # if a path that does not exist
+            if len(data) < 1:
+                return self.send_errors(
+                    'not found',
+                    "path does not exists or you don't have privileges",
+                    code=hcodes.HTTP_BAD_NOTFOUND)
 
-## // TO FIX:
-            # what if does not exist?
-            print("TEST", data, len(data))
+        # Set the right context to each element
+        response = []
+        for filename, metadata in data.items():
+            metadata.pop('path')
+            response.append({
+                filename: {
+                    'metadata': metadata,
+                    metadata['object_type']: filename,
+                    'path': collection,
+                    'location': self.b2safe_location(collection),
+                    'link': self.httpapi_location(
+                        request.url,
+                        icom.get_absolute_path(filename, root=collection),
+                        remove_suffix=irods_location)
+                }
+            })
 
-        return data
+        return response
 
     @authentication.authorization_required
     # @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
@@ -231,12 +256,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         ###################
         # Create Directory
 
-        base_url = request.url
-        # remove from current request any parameters
-        post_delimiter = '?'
-        if post_delimiter in request.url:
-            base_url = request.url[:request.url.index(post_delimiter)]
-
         # Create directory if not exists
         ipath = icom.create_empty(
             path, directory=True, ignore_existing=force
@@ -244,10 +263,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         logger.info("Created irods collection: %s", ipath)
         status = hcodes.HTTP_OK_BASIC
         content = {
-            'location': 'irods:///%s/%s/' % (
-                CURRENT_B2SAFE_SERVER, path.lstrip(self._path_separator)),
-            'path': path,
-            'link': '%s/?path=%s' % (base_url, path)
+            'location': self.b2safe_location(ipath),
+            'path': ipath,
+            'link': self.httpapi_location(request.url, ipath)
         }
 
         return self.force_response(content, code=status)
@@ -351,24 +369,22 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ###################
             # Reply to user
 
-            link = "%s://%s%s%s" % (
-                request.environ['wsgi.url_scheme'],
-                request.environ['HTTP_HOST'],
-                str(request.url_rule)
-                .split('<')[0].rstrip(self._path_separator),
-                ipath
-            )
-
             if filename is None:
                 filename = self.filename_from_path(path)
 
+            # link = "%s://%s%s%s" % (
+            #     request.environ['wsgi.url_scheme'],
+            #     request.environ['HTTP_HOST'],
+            #     str(request.url_rule)
+            #     .split('<')[0].rstrip(self._path_separator),
+            #     ipath
+            # )
+
             content = {
-                'location': 'irods:///%s/%s' %
-                (CURRENT_B2SAFE_SERVER, ipath.lstrip(self._path_separator)),
+                'location': self.b2safe_location(ipath),
                 'filename': filename,
                 'path': path,
-                'resources': icom.get_resources_from_file(ipath),
-                'link': link
+                'link': self.httpapi_location(request.url, ipath, path)
             }
 
         # pretty_print(content)
