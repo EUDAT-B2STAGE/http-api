@@ -165,9 +165,9 @@ class EudatEndpoint(ExtendedApiResource):
         return "%s://%s" % (CURRENT_PROTOCOL, server)
 
     def b2safe_location(self, ipath):
-        return '%s:///%s/%s/' % (
+        return '%s:///%s/%s' % (
             IRODS_PROTOCOL, CURRENT_B2SAFE_SERVER,
-            ipath.lstrip(self._path_separator))
+            ipath.strip(self._path_separator))
 
     def fix_location(self, irods_location):
         if not irods_location.startswith(self._path_separator):

@@ -426,18 +426,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # Move in irods
         icom.move(irods_location, newpath)
 
-        base_url = request.url.replace(irods_location, '')
-        post_delimiter = '?'
-        if post_delimiter in request.url:
-            base_url = request.url[:request.url.index(post_delimiter)]
-
-## // TO FIX:
         return {
-            'location': 'irods:///%s/%s/' % (
-                CURRENT_B2SAFE_SERVER, newpath.lstrip(self._path_separator)),
+            'location': self.b2safe_location(newpath),
             'filename': newfile,
             'path': collection,
-            'link': '%s/?path=%s' % (base_url, newpath)
+            'link': self.httpapi_location(request.url, newpath, irods_location)
         }
 
     @authentication.authorization_required
