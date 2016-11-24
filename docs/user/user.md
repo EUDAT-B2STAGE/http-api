@@ -4,8 +4,8 @@
 This guide describes the B2STAGE HTTP-API operations, related request, response structures and error codes.
 
 The alpha release of the B2STAGE HTTP-API allows user to perform the following operations on B2SAFE:
-- list, upload, download and delete files (objects in iRODS) 
-- create and delete directories (collection in iRODS).
+- list, upload, rename, download and delete files (objects in iRODS) 
+- create, rename and delete directories (collection in iRODS).
 
 The complete description of the operation you can perform on B2SAFE (aka Registered Data Domain) is available in the [namespace api](namespace.md) page.
 
