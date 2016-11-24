@@ -2,7 +2,7 @@ Here is a list of topics and issues to be work on in the near future:
 
 - deploy documentation
 - unittest
-    + patch method
+    + refactor all code that is duplicated (repeated put and post, json dumps)
     + b2access handshake
     + proxy refresh
 - improve responses

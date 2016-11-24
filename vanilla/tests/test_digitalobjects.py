@@ -22,6 +22,8 @@ logger = get_logger(__name__, True)
 class TestDigitalObjects(RestTestsAuthenticatedBase):
 
     _main_endpoint = '/namespace'
+    _irods_test_name = 'test'
+    _irods_home = '/tempZone/home/guest'
     _irods_path = '/tempZone/home/guest/test'
     _invalid_irods_path = '/tempZone/home/x/guest/test'
     _test_filename = 'test.pdf'
@@ -60,12 +62,20 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_02_PUT_upload_entity(self):
         """ Test file upload: PUT """
 
+        ###################################################
+        # I need to upload some data to test the DELETE..
+        # Create a directory
+        endpoint = self._api_uri + self._main_endpoint
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        ###################################################
+
         logger.info('*** Testing PUT')
         # Upload entity in test folder
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
         r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(b"this is a test"),
-                               self._test_filename)),
+                         file=(io.BytesIO(b"a test"), self._test_filename)),
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
@@ -103,7 +113,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         logger.info('*** Testing GET')
         # GET non existing entity
         endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename)
+                    self._irods_path + '/' + self._test_filename + 'NOTEXISTS')
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
@@ -167,7 +177,6 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         ###################################################
 
         # Rename file
-        print("rename file")
         params = json.dumps(dict(newname=new_file_name))
         endpoint = (self._api_uri + self._main_endpoint +
                     self._irods_path + '/' + self._test_filename)
@@ -175,7 +184,6 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
                            headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-        print("rename again")
         # Rename again with the original name
         params = json.dumps(dict(newname=self._test_filename))
         endpoint = (self._api_uri + self._main_endpoint +
@@ -192,8 +200,9 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Rename again with the original name
-        params = json.dumps(dict(newname=self._irods_path))
-        endpoint = self._api_uri + self._main_endpoint + new_directory_name
+        params = json.dumps(dict(newname=self._irods_test_name))
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_home + '/' + new_directory_name
         r = self.app.patch(endpoint, data=params,
                            headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
@@ -211,13 +220,12 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = self._api_uri + self._main_endpoint + new_directory_name
         r = self.app.patch(endpoint, data=params,
                            headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
         # Rename w/o passing "newname"
         endpoint = (self._api_uri + self._main_endpoint +
                     self._irods_path + '/' + new_file_name)
-        r = self.app.patch(endpoint, data=dict(
-            headers=self.__class__.auth_header))
+        r = self.app.patch(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
     def test_05_DELETE_entities(self):

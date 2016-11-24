@@ -73,7 +73,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
 
         if irods_location is None:
-            return self.send_errors('location', 'Missing filepath inside URI')
+            return self.send_errors('location', 'Missing filepath inside URI',
+                                    code=hcodes.HTTP_BAD_REQUEST)
         irods_location = self.fix_location(irods_location)
 
         ###################
@@ -290,7 +291,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
 
         if irods_location is None:
-            return self.send_errors('location', 'Missing filepath inside URI')
+            return self.send_errors('location', 'Missing filepath inside URI',
+                                    code=hcodes.HTTP_BAD_REQUEST)
         irods_location = self.fix_location(irods_location)
 
         ###################
@@ -402,7 +404,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
 
         if irods_location is None:
-            return self.send_errors('location', 'Missing filepath inside URI')
+            return self.send_errors('location', 'Missing filepath inside URI',
+                                    code=hcodes.HTTP_BAD_REQUEST)
         irods_location = self.fix_location(irods_location)
 
         ###################
@@ -417,7 +420,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         if newfile is None or newfile.strip() == '':
             return self.send_errors(
-                'New filename missing', "Use the 'newname' JSON parameter")
+                'New filename missing', "Use the 'newname' JSON parameter",
+                code=hcodes.HTTP_BAD_REQUEST)
 
         # Get the base directory
         collection = icom.get_collection_from_path(irods_location)
