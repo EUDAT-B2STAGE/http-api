@@ -282,7 +282,7 @@ elif [ "$1" == "httpapi_restart" ]; then
 elif [ "$1" == "api_test" ]; then
     echo "Opening a shell for nose2 tests"
     $make_tests
-    exit 0
+    exit $?
 
 elif [ "$1" == "client_shell" ]; then
     echo "Opening a client shell"
