@@ -28,6 +28,17 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     _invalid_irods_path = '/tempZone/home/x/guest/test'
     _test_filename = 'test.pdf'
 
+    def tearDown(self):
+
+        logger.debug('### Cleaning custom data ###\n')
+        # Clean all test data
+        endpoint = self._api_uri + self._main_endpoint
+        r = self.app.delete(endpoint, data=dict(debugclean='True'),
+                            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        super().tearDown()
+
     def test_01_POST_create_test_directory(self):
         """ Test directory creation: POST """
 
