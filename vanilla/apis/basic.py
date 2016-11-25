@@ -14,7 +14,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 from __future__ import absolute_import
 
 import os
-from .commons import EudatEndpoint
+from .commons import EudatEndpoint, PRODUCTION
 from ..services.uploader import Uploader
 from ..services.irods.client import IrodsException
 # from ..services.irods.translations import Irods2Graph
@@ -465,7 +465,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ###################
         # Debug/Testing option to remove the whole content of current home
-        if current_app.config['DEBUG'] or current_app.config['TESTING']:
+        if not PRODUCTION or current_app.config['TESTING']:
             if self._args.get('debugclean'):
                 home = icom.get_user_home()
                 files = icom.list_as_json(home)

@@ -1,2 +1,2 @@
-b6592e6 Production mode automatic in b2access client
-* master
+bf4232b Limit the debug output for making response
+ graph_based_auth LICENSE README.md ROADMAP.md backend certs composers confs do docker-compose.yml docs notebooks submodules.current.commit tasks vanilla master oauthtest

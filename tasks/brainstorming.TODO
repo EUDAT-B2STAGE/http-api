@@ -1,12 +1,12 @@
 
-☐ ENVVAR_DEBUG should be splitted
-  DEBUG in production + B2ACCESS dev
-☐ deploy documentation
-☐ lock for double authentications operations (chrome prerendering)
-☐ remove _latest_token from anywhere (and test)
-☐ fix configurations names and paths in ./confs
-☐ user documentation: curl calls with JSON (POST, PUT, PATCH) ? -d ?
-
+- Various
+  ☐ ENVVAR_DEBUG should be splitted
+    DEBUG in production + B2ACCESS dev
+  ☐ deploy documentation
+  ☐ lock for double authentications operations (chrome prerendering)
+  ☐ remove _latest_token from anywhere (and test)
+  ☐ fix configurations names and paths in ./confs
+  ☐ user documentation: curl calls with JSON (POST, PUT, PATCH) ? -d ?
 - Examples in meta response
     ☐ example of curl after authorized token?
     ☐ example of curl call after directory creation?

@@ -25,6 +25,15 @@ fi
 # add parameters like path for the method or similar?
 
 IHOME="/tempZone/home/guest"
+
+#####################
+# ## HOW TO FORCE TESTING ON OUTSIDE SERVER
+# SERVER="https://b2stage.cineca.it"
+# IHOME="/tempZone/home/0a646980c779"
+# TOKEN="SOMETHING"
+# AUTH="Authorization:Bearer $TOKEN"
+#####################
+
 MIN_INVALID_STATUS="299"
 ALL_COMMAND=""
 
