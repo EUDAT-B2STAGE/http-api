@@ -38,7 +38,7 @@ To get an authentication token:
 
 3. Click on "Confirm" to authorize the the B2STAGE HTTP-API.
 
-4. You will be redirect to a page containing the authentication token like in the following response example:
+4. You will be redirect to a page containing the authentication token, the B2SAFE home path and your B2SAFE username like in the following response example:
 
 ```json
 {
