@@ -170,7 +170,7 @@ fi
 
 #############################
 # Run services
-bcom="$compose_com -f frontend/docker-compose.yml run --rm $webbuild bower install"
+bcom="$compose_com -f backend/docker-compose.yml -f frontend/docker-compose.yml run --rm $webbuild bower install"
 
 # First time install
 if [ "$2" == "init" ]; then
