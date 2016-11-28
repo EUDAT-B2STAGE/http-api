@@ -12,11 +12,11 @@
 ## Topics for the parallel sessions 
 
 ### Current state
-- Presentation of the alpha release
-    + Demo with prototype online
-    + Show B2ACCESS authorization
+- **Presentation of the alpha release**
+    + demo with prototype online
+    + show B2ACCESS authorization
 - **Open issues**
-    - Generic discussion
+    - generic discussion
         + Data domains: clarify registered and workspace data domain.
         + Pluggable backend
         + Data pilot: *Community testing*
@@ -26,30 +26,31 @@
 
 
 ### Roadmap
-- roadmap towards a production release
+- **Towards a production release**
     + documentation for project deploy (both with and w/o Docker)
     + documentation for developers
     + improve responses
     + profile/performances
     + internal API for metadata management 
-        * local GraphDB (B2STAGE HTTP-API manages all the metadata store operations)
+        * local GraphDB (B2STAGE HTTP-API for managing all the metadata store operations)
     + issues
         * which platform to support and how (python and kernel versions)
     + timeline
-- long term roadmap
+- **Long term**
    +   *internal endpoints* for other EUDAT services (B2SHARE, B2FIND)?
+   +    timeline
 
 
 ### HTTP specifications document
 [//]: # (Comment: Generic or specific for B2STAGE?)
-- scope 
-- owner
+- **Scope**
+- **Owner**
 
 
 ---
 
 ## After the meeting
-- Redefine ROADMAP and schedule deadlines
+- **Redefine ROADMAP and schedule deadlines**
 
 ---
 
