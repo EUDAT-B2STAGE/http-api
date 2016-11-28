@@ -1,6 +1,8 @@
+
 # Bologna WP5 F2F meeting
 
 ---
+
 
 ## Before the meeting
 - Connect the test instance (b2stage.cineca.it) to B2SAFE devel instance
@@ -11,7 +13,9 @@
 
 ## Topics for the parallel sessions 
 
+
 ### Current state
+
 - **Presentation of the alpha release**
     + demo with prototype online
     + show B2ACCESS authorization
@@ -26,6 +30,8 @@
 
 
 ### Roadmap
+
+
 - **Towards a production release**
     + documentation for project deploy (both with and w/o Docker)
     + documentation for developers
@@ -42,19 +48,27 @@
 
 
 ### HTTP specifications document
+
+
 [//]: # (Comment: Generic or specific for B2STAGE?)
+
 - **Scope**
 - **Owner**
 
 
 ---
 
+
 ## After the meeting
+
+
 - **Redefine ROADMAP and schedule deadlines**
 
 ---
 
+
 # Future topics and issues
+
 
 To be discussed
 
