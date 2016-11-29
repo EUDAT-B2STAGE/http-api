@@ -101,9 +101,9 @@ When the proxy certifcated expires an error like the following will be returned:
 
 To get generate a new proxy certificate send a POST request using the */auth/proxy* endpoint as show below:
 ```bash
-$ curl \
+$ curl -X POST\
   -H "Authorization: Bearer <auth_token>" \
-  curl -X POST http://<http_server:port>/auth/proxy 
+  <http_server:port>/auth/proxy 
 ```
 
 #### Response if th proxy was successfully generated
