@@ -250,6 +250,19 @@ class EudatEndpoint(ExtendedApiResource):
         #     resource = icom.get_default_resource()
 
         force = myargs.get('force')
+        """ Works with:
+           http POST $SERVER/api/namespace path=/path/to/dir force:=1 "$AUTH"
+           http POST $SERVER/api/namespace path=/path/to/dir force=True "$AUTH"
+           http POST $SERVER/api/namespace path=/path/to/dir force=true "$AUTH"
+        """
+        if force is not None:
+            if isinstance(force, str):
+                if force.lower() == 'true':
+                    force = True
+                else:
+                    force = False
+            elif isinstance(force, int):
+                force = (force == 1)
 
         ############################
         logger.debug(
