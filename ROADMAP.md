@@ -5,13 +5,14 @@
 
 
 ## Before the meeting
+
 - Connect the test instance (b2stage.cineca.it) to B2SAFE devel instance
 - Python script to test the endpoint (with requests)?
 - Session on extending the HTTP API base/core repository
 
 ---
 
-## Topics for the parallel sessions 
+## Topics for the parallel sessions
 
 
 ### Current state
@@ -37,14 +38,14 @@
     + documentation for developers
     + improve responses
     + profile/performances
-    + internal API for metadata management 
+    + internal API for metadata management
         * local GraphDB (B2STAGE HTTP-API for managing all the metadata store operations)
     + issues
         * which platform to support and how (python and kernel versions)
     + timeline
 - **Long term**
-   +   *internal endpoints* for other EUDAT services (B2SHARE, B2FIND)?
-   +    timeline
+    + *internal endpoints* for other EUDAT services (B2SHARE, B2FIND)?
+    + timeline
 
 
 ### HTTP specifications document
@@ -61,8 +62,8 @@
 
 ## After the meeting
 
-
 - **Redefine ROADMAP and schedule deadlines**
+
 
 ---
 
@@ -83,6 +84,9 @@ To be discussed
 [//]: # (    + benchmark)
 [//]: # (    + cache)
 [//]: # (    + load balancing proxy)
+[//]: # (- SSL)
+[//]: # (    + automatic creation of certificates from letsencrypt)
+[//]: # (    + automatic update every 3 months with cronjob?)
 [//]: # (- improve responses)
 [//]: # (    + create a standard bearer-token response)
 [//]: # (    + also a better standard for all resources responses)
@@ -90,6 +94,9 @@ To be discussed
 [//]: # (- allow configuration files/options)
 [//]: # (    + set at docker level across containers)
 [//]: # (- Look into `TO FIX` labeled notes inside the code)
+[//]: # (- GraphDB neo4j)
+[//]: # (    + test bolt native driver)
+[//]: # (    + write Eudat models used in B2SAFE metadata parser)
 [//]: # (- iRODS related)
 [//]: # (    + test python official driver with python3)
 [//]: # (    + irods 4.2)
