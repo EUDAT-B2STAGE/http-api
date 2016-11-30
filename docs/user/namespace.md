@@ -29,7 +29,7 @@ The examples in this section use cURL commands. For information about cURL, see 
 ```bash
 # Get 'filename.txt' metadata
 $ curl \
-  -H "Authorization: Bearer <auth_token>"
+  -H "Authorization: Bearer <auth_token>"  \
   <http_server:port>/api/namespace/path/to/directory/filename.txt 
 ```
 ##### Response
