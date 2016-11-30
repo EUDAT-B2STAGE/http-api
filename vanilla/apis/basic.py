@@ -155,13 +155,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # DATA LISTING
         ###################
 
+        EMPTY_RESPONSE = {}
+
         #####################
         # DIRECTORY
         if is_collection:
             collection = path
             data = icom.list_as_json(root=path)
             if len(data) < 1:
-                data = []
+                data = EMPTY_RESPONSE
             # Print content list if it's a collection
         #####################
         # FILE (or not existing)
@@ -169,7 +171,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             collection = icom.get_collection_from_path(path)
             current_filename = path[len(collection) + 1:]
             filelist = icom.list_as_json(root=collection)
-            data = {}
+            data = EMPTY_RESPONSE
             for filename, metadata in filelist.items():
                 if filename == current_filename:
                     data[filename] = metadata
