@@ -159,11 +159,8 @@ apitests:
 # This docker image let you access sqllite/postgres/mysql
 # with a phpmyadmin-like web page
 sqladmin:
-  image: clue/adminer
-###########
-## TO FIX: should build a custom image here
-# otherwise for sqllite admin you are missing a file...
-###########
+  image: eudatb2safe/sqladminer:latest
+  # image: clue/adminer
   # links:
   #   - sql:db
 
