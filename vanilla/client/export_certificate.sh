@@ -57,13 +57,14 @@ exit
 
 # Become this new user inside rest api
 docker exec -it eudatapi_rest_1 bash
-export IRODS_USER_NAME=paolo
+export MYUSER="0a646980c779"
+export IRODS_USER_NAME=$MYUSER
 export IRODS_HOST=rodserver
 export IRODS_PORT=1247
 export IRODS_AUTHENTICATION_SCHEME=gsi
 export IRODS_ZONE=tempZone
-export IRODS_HOME=/tempZone/home/paolo
+export IRODS_HOME=/tempZone/home/$MYUSER
 export X509_CERT_DIR=/opt/certificates/caauth
-export X509_USER_PROXY=/opt/certificates/paolo/test
-# export X509_USER_PROXY=/opt/certificates/paolo/userproxy.crt
+export X509_USER_PROXY=/opt/certificates/$MYUSER/userproxy.crt
+# export X509_USER_PROXY=/opt/certificates/$MYUSER/test
 ils

@@ -255,7 +255,9 @@ class EudatEndpoint(ExtendedApiResource):
            http POST $SERVER/api/namespace path=/path/to/dir force=True "$AUTH"
            http POST $SERVER/api/namespace path=/path/to/dir force=true "$AUTH"
         """
-        if force is not None:
+        if force is None:
+            force = False
+        else:
             if isinstance(force, str):
                 if force.lower() == 'true':
                     force = True

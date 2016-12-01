@@ -277,8 +277,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         return self.force_response(content, code=status)
 
     @authentication.authorization_required
-    @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
-    @decorate.add_endpoint_parameter('resource')
+    # @decorate.add_endpoint_parameter('force', ptype=bool, default=False)
+    # @decorate.add_endpoint_parameter('resource')
     @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, irods_location=None):

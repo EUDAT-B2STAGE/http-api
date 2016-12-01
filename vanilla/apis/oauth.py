@@ -8,10 +8,11 @@ from __future__ import absolute_import
 
 import json
 from datetime import datetime as dt
-from flask import url_for, session, current_app
+from flask import url_for, session, current_app, request
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
-from ...confs.config import AUTH_URL, PRODUCTION, DEBUG as ENVVAR_DEBUG
+from ...confs.config import API_URL, AUTH_URL, \
+    PRODUCTION, DEBUG as ENVVAR_DEBUG
 from ..services.oauth2clients import decorate_http_request
 from ..services.irods.client import IrodsException, Certificates
 from ..services.detect import IRODS_EXTERNAL
@@ -277,6 +278,9 @@ class Authorize(B2accessUtilities):
             return self.send_errors(
                 "B2ACCESS CA is down", "Could not get certificate files")
 
+#######################
+# // TO FIX
+# DOES THIS WORK ON EXTERNAL B2SAFE??
         # iRODS related
         icom = self.global_get_service('irods')
         uid = self.username_from_unity(curuser.data.get('unity:persistent'))
@@ -284,18 +288,35 @@ class Authorize(B2accessUtilities):
         if irods_user is None:
             return self.send_errors(
                 "Failed to set irods user from: %s/%s" % (uid, extuser))
+        user_home = icom.get_user_home(irods_user)
+#######################
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
 
+        uri = self.httpapi_location(
+            request.url.replace("/auth/authorize", ''),
+            API_URL + "/namespace" + user_home
+        )
+
+        get_example = "curl -H 'Authorization: %s %s' %s" \
+            % ('Bearer', local_token, uri)
+
 # ## // TO FIX:
 # # Create a 'return_credentials' method to use standard Bearer oauth response
-        return {
-            'token': local_token,
-            'b2safe_user': irods_user,
-            'b2safe_home': icom.get_user_home(irods_user)
-        }
+        return self.force_response(
+            defined_content={
+                'token': local_token,
+                'b2safe_user': irods_user,
+                'b2safe_home': user_home
+            },
+            meta={
+                'examples': {
+                    'get': get_example
+                }
+            }
+        )
 
 
 #######################################
