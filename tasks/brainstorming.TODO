@@ -1,4 +1,24 @@
 
+ ☐ url_for inside tests
+ ☐ b2stage_http_api@cineca.it
+   ☐ traceback and string the error
+   ☐ save it into db
+   ☐ response with code and email and/or github issue
+
+--- ✄ -----------------------
+
+https://gitlab.hpc.cineca.it/mdantoni/telethon_repo/blob/master/containers/telethon/debug.yml#L25
+
+    ICAT_1_ENV_IRODS_HOST: 'data.repo.cineca.it'
+    ICAT_1_PORT: '1247'
+    IRODS_AUTHSCHEME: 'GSI'
+    IRODS_USER: 'a07gen00'
+    #ICAT_1_ENV_IRODS_PASS: ''
+    IRODS_ZONE: 'CINECA01'
+    IRODS_CUSTOM_HOME: /home/DRES_Genomi
+
+--- ✄ -----------------------
+
 - Various
   ☐ ENVVAR_DEBUG should be splitted
     DEBUG in production + B2ACCESS dev
