@@ -22,6 +22,9 @@ sqladmin:
     - sharedvolumes
   ports:
     - 8888:8888
+swagclient:
+  ports:
+    - 80:80
 
 apitests:
   links:

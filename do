@@ -9,15 +9,16 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo "Available commands:"
     echo ""
     echo -e "init:\t\tStartup your repository code, containers and volumes"
-    echo -e "irestart:\tRestart the main iRODS iCAT service instance"
-    echo -e "addiuser:\tAdd a new certificated user to irods"
     echo ""
     echo -e "check:\tCheck the stack status"
     echo -e "stop:\tFreeze your containers stack"
     echo -e "remove:\tRemove all containers"
     echo -e "clean:\tRemove containers and volumes (BE CAREFUL!)"
     echo ""
+    echo -e "irestart:\tRestart the main iRODS iCAT service instance"
+    echo -e "addiuser:\tAdd a new certificated user to irods"
     echo -e "irods_shell:\tOpen a shell inside the iRODS iCAT server container"
+    echo ""
     echo -e "client_shell:\tOpen a shell to test API endpoints"
     echo -e "server_shell:\tOpen a shell inside the Flask server container"
     echo -e "httpapi_restart:\tRelaunch only the HTTP Flask server "
@@ -31,7 +32,7 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo -e "DEVELOPMENT:\tREST API server with Flask WSGI and Debug"
     echo -e "PRODUCTION:\tREST API server with Gunicorn behind nginx proxy"
     echo ""
-    echo -e "[Mode] restart:\t(Re)Launch the Docker stack"
+    echo -e "[Mode:DEBUG|DEVELOPMENT|PRODUCTION] [restart|sqladmin|swagger]:\tLaunch the Docker stack using one of the modes available"
     echo -e "logs:\tAttach to all container logs"
     exit 0
 fi
@@ -307,9 +308,20 @@ then
         echo "Administration for relational databases"
         $compose_run up sqladmin
         exit 0
+    elif [ "$2" == "swagger" ]; then
+        if [ "$1" != "DEBUG" ]; then
+            echo "Swagger should run only in debug mode"
+            exit 1
+        fi
+        echo "Note: with your browser"
+        swagger_url="http://localhost/swagger-ui/"
+        local_url="http://localhost:8080/api/spec"
+        echo "open \"$swagger_url?url=$local_url\""
+        echo ""
+        $compose_run up swagclient
+        exit 0
     fi
-
-    if [ "$2" == "restart" ]; then
+    elif [ "$2" == "restart" ]; then
         echo "Clean previous containers"
         $compose_run stop
         $compose_run rm -f
