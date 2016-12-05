@@ -27,6 +27,8 @@ The API is implemented in Python 3 using the Flask framework (Flask can be used 
 To facilitate and speed the development Docker will be used to automate the deployment of the software stack needed.
 The API interconnects with EUDAT services' native APIs or libraries.
 For B2SAFE (which is built on an iRODS as back end) the interface is initially implemented as a python wrapper for icommands. Other approaches will be investigated such as the iRODS python library or the iRODS native protocol.
+This porject is based on the [HTTP-API base](https://github.com/EUDAT-B2STAGE/http-api-base)
+
 
 
 ## Documentation
