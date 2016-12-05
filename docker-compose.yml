@@ -149,13 +149,18 @@ rest:
     - ./vanilla/tests:/code/test/custom
     # B2ACCESS dev certificates
     - ./certs:/usr/local/share/ca-certificates
+    # Swagger
+    - ./vanilla/swagger:/code/restapi/swagger/custom
+
+    ## CURRENTLY UNUSED:
+    #
     # # Irods home for admin access
     # - httpapi_irodshome:/home/irods
-
     # # External irods Authority
     # - ./certs/caauth:/opt/certificates/caauth
     # # External irods User
     # - ./certs/user:/opt/certificates/paolo
+
   volumes_from:
     - sharedvolumes
 

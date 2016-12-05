@@ -70,6 +70,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     def get(self, irods_location=None):
         """
         Download file from filename
+
+        swagger_from_file: restapi/swagger/custom/namespace/get.yaml
         """
 
         if irods_location is None:

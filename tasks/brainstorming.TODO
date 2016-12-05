@@ -4,6 +4,7 @@
    ☐ traceback and string the error
    ☐ save it into db
    ☐ response with code and email and/or github issue
+   ☐ enable with some variable
 
 Others:
 - Various
