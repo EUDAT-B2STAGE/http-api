@@ -304,7 +304,9 @@ class Authorize(B2accessUtilities):
             % ('Bearer', local_token, uri)
 
 # ## // TO FIX:
-# # Create a 'return_credentials' method to use standard Bearer oauth response
+        # # Create method to use standard Bearer oauth response
+        # return self.send_credentials(local_token, extra, metas)
+
         return self.force_response(
             defined_content={
                 'token': local_token,
