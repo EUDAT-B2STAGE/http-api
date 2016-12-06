@@ -1,61 +1,53 @@
-// B2SAFE REST API configuration
 {
-    // enabling B2ACCESS token
-    "custom.oauth": {
-        // "TestB2access": [
-        //     "b2accesstest"
-        // ],
-        "OauthLogin": [
-            "askauth"
-        ],
-        "Authorize": [
-            "authorize"
-        ],
-        "B2accesProxyEndpoint": [
-            "proxy"
-        ]
+    "project": {
+        "title": "My project",
+        "description": "Title of my project"
     },
-    // the most basic and simple upload/download
-    "custom.basic": {
-        // "EudatTest": [
-        //     // {
-        //     //     "GET": {
-        //     //         "param1": {
-        //     //             "default": "value",
-        //     //             "required": "True",
-        //     //             "type": "..."
-        //     //         },
-        //     //         "param2": {
-
-        //     //         }
-        //     //     },
-        //     //     "POST": {
-
-        //     //     }
-        //     // },
-        //     "test",
-        //     // http://flask.pocoo.org/snippets/76/
-        //     "test/<path:location>"
-        // ],
-
-        // upload and download for normal users
-        "BasicEndpoint": [
-            "namespace",
-            "namespace/<path:irods_location>"
-        ]
-
-    // // Internal endpoint triggered by iRODS events
-    // "custom.internals.b2safe": {
-    //     "MetaDataStore": [
-    //         "internals/mdstore"
-    //         // // mid = mdstore uuid
-    //         // "internals/mdstore/<string:mid>"
-    //     ]
-    // },
-    // "custom.internals.metadata":{
-    //     "MetaDataParser": [
-    //         // mid = metadata uuid
-    //         "internals/digitalentities/<string:mid>"
-    //     ]
+    "apis": {
+        // enabling B2ACCESS token
+        "oauth": {
+            // "TestB2access": [
+            //     "b2accesstest"
+            // ],
+            "OauthLogin": [
+                "askauth"
+            ],
+            "Authorize": [
+                "authorize"
+            ],
+            "B2accesProxyEndpoint": [
+                "proxy"
+            ]
+        },
+        // the most basic and simple file operations
+        "basic": {
+            // "EudatTest": [
+            //     "test",
+            //     "test/<path:location>"
+            // ],
+            // upload and download for normal users
+            "BasicEndpoint": [
+                "namespace",
+                // using the path option http://flask.pocoo.org/snippets/76/
+                "namespace/<path:irods_location>"
+            ]
+        }
     }
+
+// IF USING A FRONTEND
+    // },
+    // "variables": {
+    //     "python": {
+    //     },
+    //     "containers": {
+    //     }
+    // },
+    // "bower_components": {
+    //     // "lib-name": [
+    //     //     "file.js",
+    //     //     "file.css"
+    //     // ]
+    // },
+    // "css": [
+    // ]
 }
