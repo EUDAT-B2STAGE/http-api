@@ -35,6 +35,7 @@ IHOME="/tempZone/home/guest"
 #####################
 
 MIN_INVALID_STATUS="299"
+DEFAULT_INVALID_STATUS="500"
 ALL_COMMAND=""
 
 ######################################
@@ -78,17 +79,21 @@ function api_call()
     fi
     echo "Command: [ $com \"\$AUTH\" ]"
     out=`$com "$AUTH"`
-    status=`echo $out | jq '.Meta.status'`
 
     # default if not set or number?
-    if [ -z "$status" ]; then
-        ${status:-500}
+    if [ -z "$out" ]; then
+        status="$DEFAULT_INVALID_STATUS"
+    else
+        status=`echo $out | jq '.Meta.status'`
     fi
+    # if [ -z "$status" ]; then
+    #     ${status:-500}
+    # fi
 
-    errors=`echo $out | jq '.Response.errors'`
     if [ "$status" -gt "$MIN_INVALID_STATUS" ]; then
         echo ""
         echo "API called exit with error [$status]:"
+        errors=`echo $out | jq '.Response.errors'`
         echo $errors | jq
     else
         data=`echo $out | jq '.Response.data'`
