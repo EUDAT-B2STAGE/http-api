@@ -4,6 +4,7 @@ backend
 
 # Skip self-signed certificates
 certs/nginx-selfsigned*
+certs/*cineca*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
