@@ -71,7 +71,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
         Download file from filename
 
-        swagger_from_file: restapi/swagger/custom/namespace/get.yaml
+        swag_file: restapi/swagger/custom/namespace/get.yaml
         """
 
         if irods_location is None:

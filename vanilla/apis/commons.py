@@ -144,7 +144,11 @@ class EudatEndpoint(ExtendedApiResource):
             url = url[:url.index(self._post_delimiter)]
 
         split_point = url.find('/api')
+##################
+## TO BE CHECKED
+        # Does this add by mistake a character?
         uri = self.api_server_uri(url[:split_point])
+##################
         uri_path = url[split_point:]
         if remove_suffix is not None and uri_path.endswith(remove_suffix):
             uri_path = uri_path.replace(remove_suffix, '')
