@@ -174,7 +174,7 @@ class B2accessUtilities(EudatEndpoint):
 
         # Production / Real B2SAFE and irods instance
         if IRODS_EXTERNAL:
-            logger.error("No iRODS user related to your certificate")
+            #logger.error("No iRODS user related to your certificate")
             if not user_exists:
                 return None
         # IN CASE WE ARE USING DOCKERIZED iRODS/B2SAFE
@@ -278,10 +278,8 @@ class Authorize(B2accessUtilities):
             return self.send_errors(
                 "B2ACCESS CA is down", "Could not get certificate files")
 
-#######################
-# // TO FIX
-# DOES THIS WORK ON EXTERNAL B2SAFE??
         # iRODS related
+        # NOTE: this irods client uses default admin to find the related user
         icom = self.global_get_service('irods')
         uid = self.username_from_unity(curuser.data.get('unity:persistent'))
         irods_user = self.set_irods_username(icom, auth, extuser, uid)
@@ -289,7 +287,6 @@ class Authorize(B2accessUtilities):
             return self.send_errors(
                 "Failed to set irods user from: %s/%s" % (uid, extuser))
         user_home = icom.get_user_home(irods_user)
-#######################
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
