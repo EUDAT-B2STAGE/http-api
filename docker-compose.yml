@@ -94,7 +94,7 @@ rest:
 
     # DEV
     B2ACCESS_APPNAME: httpapi
-    B2ACCESS_APPKEY: SETYOURSECRETKEY
+    B2ACCESS_APPKEY: SETYOURSECRETKEY 
 
     # # PROD
     # B2ACCESS_APPNAME: b2stage_httpapi
@@ -111,27 +111,29 @@ rest:
     IRODS_ZONE: tempZone
     # IRODS_USER: paolo
     IRODS_USER: rods
-    # IRODS_AUTHSCHEME: GSI
-    # IRODS_DEFAULT_ADMIN_USER: rodsminer
+    IRODS_AUTHSCHEME: GSI
+    IRODS_DEFAULT_ADMIN_USER: rodsminer
 
 # EXTERNAL VERSION
-    # ICAT_1_ENV_IRODS_HOST: '130.186.13.110'
-    # ICAT_1_PORT: '1247'
-    # # IRODS_AUTHSCHEME: 'GSI'
-    # # IRODS_AUTHSCHEME: 'PAM'
-    # IRODS_AUTHSCHEME: 'native'
-    # IRODS_USER: 'pdonorio'
-    # #ICAT_1_ENV_IRODS_PASS: ''
-    # IRODS_ZONE: 'cinecaDMPZone1'
-    # IRODS_CUSTOM_HOME: '/cinecaDMPZone1/home/pdonorio'
+    #ICAT_1_ENV_IRODS_HOST: '130.186.13.110'
+    #ICAT_1_PORT: '1247'
+    #IRODS_AUTHSCHEME: 'GSI'
+    ## IRODS_AUTHSCHEME: 'PAM'
+    ## IRODS_AUTHSCHEME: 'native'
+    #IRODS_USER: 'rmucci'
+    #IRODS_DEFAULT_ADMIN_USER: 'rmucci'
+    ##ICAT_1_ENV_IRODS_PASS: ''
+    #IRODS_ZONE: 'cinecaDMPZone1'
+    #IRODS_CUSTOM_HOME: '/cinecaDMPZone1/home/rmucci'
+
 
     ########################
     ## X509 certificates variables
-    #CA Authority
-    # X509_CERT_DIR: /opt/certificates/caauth
-    # #USER PEMs: Private (key) and Public (Cert)
-    # X509_USER_CERT: /opt/certificates/guest/usercert.pem
-    # X509_USER_KEY: /opt/certificates/guest/userkey.pem
+    ##CA Authority
+    #X509_CERT_DIR: /opt/certificates/caauth
+    ##USER PEMs: Private (key) and Public (Cert)
+    #X509_USER_CERT: /opt/certificates/rmucci/usercert.pem
+    #X509_USER_KEY: /opt/certificates/rmucci/userkey.pem
 
   working_dir: /code
   volumes:
