@@ -1,5 +1,28 @@
 
- ERRORS in alpha testing:
+TODAY:
+  ✔ convert path parameter into a parameter @done (16-12-31 13:40)
+  ✔ add produces json @done (16-12-31 13:42)
+  ✔ link one class to all uris for Flask Restful @done (17-01-05 17:32)
+  ✔ check at least one definition (excluding common) in one METHOD.yaml @done (17-01-08 09:35)
+  ✔ do authentication @done (17-01-08 00:58)
+  - define a variable inside the METHOD.yaml to skip definition in final JSON swagger
+  - write definition for base endpoints
+  - read and apply parameters
+
+--- ✄ -----------------------
+
+"patterns": {
+    "TODO": "TODO[\\s]*?:[\\s]*(?P<todo>.*)$",
+    "NOTE": "NOTE[\\s]*?:[\\s]*(?P<note>.*)$",
+    "FIXME": "TO ?FIX[\\s]*?:[\\s]*(?P<fixme>.*)$",
+    "CHANGED": "CHANGED[\\s]*?:[\\s]*(?P<changed>.*)$"
+    "SHUTOUT":?
+    "DEBATE":?
+}
+
+--- ✄ -----------------------
+
+ERRORS tracing in alpha testing:
  ☐ b2stage_http_api@cineca.it
    ☐ traceback and string the error
    ☐ save it into db
@@ -9,13 +32,12 @@
 Others:
 - Various
   ☐ url_for inside tests
-  ☐ ENVVAR_DEBUG should be splitted
+  ☐ remove _latest_token from anywhere (and test)
+  ☐ ENVVAR_DEBUG should/could be splitted
     DEBUG in production + B2ACCESS dev
   ☐ deploy documentation
   ☐ lock for double authentications operations (chrome prerendering)
-  ☐ remove _latest_token from anywhere (and test)
   ☐ fix configurations names and paths in ./confs
-  ☐ user documentation: curl calls with JSON (POST, PUT, PATCH) ? -d ?
 - Examples in meta response
     ☐ example of curl after authorized token?
     ☐ example of curl call after directory creation?

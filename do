@@ -315,7 +315,7 @@ then
         fi
         echo "Note: with your browser"
         swagger_url="http://localhost/swagger-ui/"
-        local_url="http://localhost:8080/api/spec"
+        local_url="http://localhost:8080/api/specs"
         echo "open \"$swagger_url?url=$local_url\""
         echo ""
         $compose_run up swagclient
