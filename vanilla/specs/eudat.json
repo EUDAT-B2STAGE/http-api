@@ -1,7 +1,8 @@
 {
     "project": {
-        "title": "My project",
-        "description": "Title of my project"
+        "title": "EUDAT-B2STAGE HTTP-API server",
+        "version": "v0.2-alpha",
+        "description": "Processing files in different EUDAT domains"
     },
     "apis": {
         // enabling B2ACCESS token

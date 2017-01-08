@@ -7,9 +7,12 @@ rest:
     IRODS_AUTHSCHEME: GSI
   ports:
     - 8080:5000
+##################
+# NOTE: to be commented out if you need IRODS_EXTERNAL
   links:
     # IRODS MUST BE CALLED rodserver
     - icat:rodserver
+##################
     # # GRAPHDB MUST BE CALLED gdb
     # - graphdb:gdb
 

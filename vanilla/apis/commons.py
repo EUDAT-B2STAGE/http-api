@@ -11,7 +11,7 @@ from attr import (
     s as AttributedModel,
     ib as attribute,
 )
-from ..base import ExtendedApiResource
+from ..rest.definition import EndpointResource
 from ..services.irods.client import IRODS_DEFAULT_USER
 from ..services.detect import IRODS_EXTERNAL
 from ...confs.config import PRODUCTION
@@ -56,7 +56,7 @@ class InitObj(object):
 #  Extend normal API to init EUDAT B2STAGE API services
 ########################
 
-class EudatEndpoint(ExtendedApiResource):
+class EudatEndpoint(EndpointResource):
 
     _path_separator = '/'
     _post_delimiter = '?'
@@ -143,9 +143,10 @@ class EudatEndpoint(ExtendedApiResource):
         if self._post_delimiter in url:
             url = url[:url.index(self._post_delimiter)]
 
-        split_point = url.find('/api')
+        from commons import API_URL
+        split_point = url.find(API_URL)
 ##################
-## TO BE CHECKED
+# // TO FIX:
         # Does this add by mistake a character?
         uri = self.api_server_uri(url[:split_point])
 ##################

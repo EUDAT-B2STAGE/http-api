@@ -6,6 +6,9 @@ backend
 certs/nginx-selfsigned*
 certs/*cineca*
 
+# Skip any data
+data
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -278,9 +278,6 @@ class Authorize(B2accessUtilities):
             return self.send_errors(
                 "B2ACCESS CA is down", "Could not get certificate files")
 
-#######################
-# // TO FIX
-# DOES THIS WORK ON EXTERNAL B2SAFE??
         # iRODS related
         icom = self.global_get_service('irods')
         uid = self.username_from_unity(curuser.data.get('unity:persistent'))
@@ -289,7 +286,6 @@ class Authorize(B2accessUtilities):
             return self.send_errors(
                 "Failed to set irods user from: %s/%s" % (uid, extuser))
         user_home = icom.get_user_home(irods_user)
-#######################
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
@@ -303,8 +299,7 @@ class Authorize(B2accessUtilities):
         get_example = "curl -H 'Authorization: %s %s' %s" \
             % ('Bearer', local_token, uri)
 
-# ## // TO FIX:
-        # # Create method to use standard Bearer oauth response
+        # TO FIX: Create a method to reply with standard Bearer oauth response
         # return self.send_credentials(local_token, extra, metas)
 
         return self.force_response(
