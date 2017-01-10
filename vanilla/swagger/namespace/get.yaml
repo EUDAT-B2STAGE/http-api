@@ -1,18 +1,19 @@
 
 # LABEL mapped into SPECS.yaml must match inside the METHOD.yaml
-
 # inside METHOD raise error if label does not exist in specs
 
-# COMMON TO THE TWO CALLS (like a default)
+##################
+# common to different alias (like a default)
 common:
   custom:
     authentication: true
     authorized:
       - normal_user
-      - admin # what if not matching? should be admin_root
-  tags:
-    - namespace
+      # - admin # what if not matching? should be admin_root
+  # tags:
+  #   - namespace
 
+##################
 all:
   summary: this is just a test
   description: "catch'em all"
@@ -26,6 +27,7 @@ single:
     '200':
       description: "hell yeah!"
 
+##################
 # # TO BE REMOVED, just a test
 # test:
 #   summary: this is just a single test

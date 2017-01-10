@@ -1,13 +1,16 @@
 
-TODAY:
-  ✔ convert path parameter into a parameter @done (16-12-31 13:40)
-  ✔ add produces json @done (16-12-31 13:42)
-  ✔ link one class to all uris for Flask Restful @done (17-01-05 17:32)
-  ✔ check at least one definition (excluding common) in one METHOD.yaml @done (17-01-08 09:35)
-  ✔ do authentication @done (17-01-08 00:58)
-  - define a variable inside the METHOD.yaml to skip definition in final JSON swagger
-  - write definition for base endpoints
-  - read and apply parameters
+SWAGGER
+  ✔ define a variable inside the METHOD.yaml to skip definition in final JSON swagger @done (17-01-09 07:10)
+  ✔ enable tags description in eudat.json @done (17-01-10 07:21)
+  - parameters
+    ✔ schema definition for body paramaters @done (17-01-09 23:04)
+    - query parameters
+      - attach decorator to class
+      a method to substitute an attribute of a cls?
+  - enable security bearer
+  - write definition for base endpoints...
+  - default blueprint configuration?
+
 
 --- ✄ -----------------------
 

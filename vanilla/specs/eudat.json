@@ -1,38 +1,42 @@
 {
+    "tags": {
+      "eudat": "all endpoints associated to EUDAT services",
+      "namespace": "upload, list and download objects"
+    },
     "project": {
         "title": "EUDAT-B2STAGE HTTP-API server",
         "version": "v0.2-alpha",
         "description": "Processing files in different EUDAT domains"
-    },
-    "apis": {
-        // enabling B2ACCESS token
-        "oauth": {
-            // "TestB2access": [
-            //     "b2accesstest"
-            // ],
-            "OauthLogin": [
-                "askauth"
-            ],
-            "Authorize": [
-                "authorize"
-            ],
-            "B2accesProxyEndpoint": [
-                "proxy"
-            ]
-        },
-        // the most basic and simple file operations
-        "basic": {
-            // "EudatTest": [
-            //     "test",
-            //     "test/<path:location>"
-            // ],
-            // upload and download for normal users
-            "BasicEndpoint": [
-                "namespace",
-                // using the path option http://flask.pocoo.org/snippets/76/
-                "namespace/<path:irods_location>"
-            ]
-        }
+    // },
+    // "apis": {
+    //     // enabling B2ACCESS token
+    //     "oauth": {
+    //         // "TestB2access": [
+    //         //     "b2accesstest"
+    //         // ],
+    //         "OauthLogin": [
+    //             "askauth"
+    //         ],
+    //         "Authorize": [
+    //             "authorize"
+    //         ],
+    //         "B2accesProxyEndpoint": [
+    //             "proxy"
+    //         ]
+    //     },
+    //     // the most basic and simple file operations
+    //     "basic": {
+    //         // "EudatTest": [
+    //         //     "test",
+    //         //     "test/<path:location>"
+    //         // ],
+    //         // upload and download for normal users
+    //         "BasicEndpoint": [
+    //             "namespace",
+    //             // using the path option http://flask.pocoo.org/snippets/76/
+    //             "namespace/<path:irods_location>"
+    //         ]
+    //     }
     }
 
 // IF USING A FRONTEND
