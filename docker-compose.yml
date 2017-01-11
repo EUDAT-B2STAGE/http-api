@@ -20,6 +20,7 @@ sharedvolumes:
       - httpapi_sharedcerts:/opt/certificates
       # Sql lite database (only for this container)
       - httpapi_restlitedb:/dbs
+      # - ./data/dbs:/dbs
 
 #################################
 # Postgres database server
@@ -80,9 +81,11 @@ graphdb:
 # iRODS iCAT server for EUDAT B2safe
 rest:
   hostname: api
-  image: eudatb2stage/apiserver
+  image: eudatb2stage/apiserver:latest
   command: ./boot
   environment:
+
+    PYTHON_SERVER_CATEGORY: backend
 
     ## MODES
     # APP_MODE: debug
@@ -107,31 +110,27 @@ rest:
     ########################
     ## Connection to irods
 
-# LOCAL VERSION
-    IRODS_ZONE: tempZone
-    # IRODS_USER: paolo
+    # LOCAL iRODS server VERSION
     IRODS_USER: rods
-    # IRODS_AUTHSCHEME: GSI
-    # IRODS_DEFAULT_ADMIN_USER: rodsminer
+    IRODS_AUTHSCHEME: GSI
+    IRODS_DEFAULT_ADMIN_USER: rodsminer
+    IRODS_ZONE: tempZone
 
-# EXTERNAL VERSION
-    # ICAT_1_ENV_IRODS_HOST: '130.186.13.110'
+    # EXTERNAL iRODS server VERSION
+      ##############################
+    # ICAT_1_ENV_IRODS_HOST: '1.2.3.4'
     # ICAT_1_PORT: '1247'
-    # # IRODS_AUTHSCHEME: 'GSI'
+    # # IRODS_AUTHSCHEME: 'native'
     # # IRODS_AUTHSCHEME: 'PAM'
-    # IRODS_AUTHSCHEME: 'native'
+    # IRODS_AUTHSCHEME: 'GSI'
     # IRODS_USER: 'pdonorio'
-    # #ICAT_1_ENV_IRODS_PASS: ''
+    # IRODS_DEFAULT_ADMIN_USER: 'pdonorio'
     # IRODS_ZONE: 'cinecaDMPZone1'
     # IRODS_CUSTOM_HOME: '/cinecaDMPZone1/home/pdonorio'
-
-    ########################
     ## X509 certificates variables
-    #CA Authority
     # X509_CERT_DIR: /opt/certificates/caauth
-    # #USER PEMs: Private (key) and Public (Cert)
-    # X509_USER_CERT: /opt/certificates/guest/usercert.pem
-    # X509_USER_KEY: /opt/certificates/guest/userkey.pem
+    # X509_USER_CERT: /opt/certificates/pdonorio/usercert.pem
+    # X509_USER_KEY: /opt/certificates/pdonorio/userkey.pem
 
   working_dir: /code
   volumes:
@@ -139,8 +138,10 @@ rest:
     - httpapi_tmpuploads:/uploads
     # Base code
     - ./backend:/code
-    # Rest API configuration
-    - ./vanilla/specs:/code/restapi/confs/endpoints
+    # Project configuration
+    - ./vanilla/specs:/code/restapi/confs/main
+    # Swagger API definition
+    - ./vanilla/swagger:/code/restapi/confs/custom
     # Rest API services models
     - ./vanilla/models:/code/commons/models/custom
     # Rest API endpoints
@@ -149,8 +150,6 @@ rest:
     - ./vanilla/tests:/code/test/custom
     # B2ACCESS dev certificates
     - ./certs:/usr/local/share/ca-certificates
-    # Swagger
-    - ./vanilla/swagger:/code/restapi/swagger/custom
 
     ## CURRENTLY UNUSED:
     #
@@ -203,3 +202,16 @@ swagclient:
   #   API_URL: "http://localhost/swagger-ui/"
   # ports:
   #   - 80:80
+
+#################################
+# Write irods python client
+pyirods:
+  image: pdonorio/gsi-python-client
+  command: sleep infinity
+  volumes:
+  - /Users/projects/restapi/pyirods:/code
+  - httpapi_sharedcerts:/opt/certificates
+  hostname:
+    pyirods
+  links:
+    - icat:rodserver

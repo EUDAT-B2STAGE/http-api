@@ -8,8 +8,25 @@ SWAGGER
       - attach decorator to class
       a method to substitute an attribute of a cls?
   - enable security bearer
-  - write definition for base endpoints...
-  - default blueprint configuration?
+  ✔ default blueprint configuration @done (17-01-10 10:01)
+    ✔ profile PUT? @done (17-01-10 10:01)
+  ✔ write definition for base endpoints @done (17-01-10 10:26)
+
+  --- ✄ -----------------------
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+  OauthSecurity:
+    type: oauth2
+    flow: accessCode
+    authorizationUrl: 'https://oauth.simple.api/authorization'
+    tokenUrl: 'https://oauth.simple.api/token'
+    scopes:
+      admin: Admin scope
+      user: User scope
 
 
 --- ✄ -----------------------

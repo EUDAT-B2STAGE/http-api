@@ -5,7 +5,15 @@
 ##################
 # common to different alias (like a default)
 common:
+  parameters:
+    - name: resource
+      description: just a test
+      in: query
+      type: string
+      # schema:
+      #   $ref: "#/definitions/Credentials"
   custom:
+    # publish: false
     authentication: true
     authorized:
       - normal_user
@@ -14,12 +22,12 @@ common:
   #   - namespace
 
 ##################
-all:
-  summary: this is just a test
-  description: "catch'em all"
-  responses:
-    '200':
-      description: hell yes
+# all:
+#   summary: this is just a test
+#   description: "catch'em all"
+#   responses:
+#     '200':
+#       description: hell yes
 
 single:
   summary: this is just a single test

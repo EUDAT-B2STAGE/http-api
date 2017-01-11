@@ -23,7 +23,7 @@ from ...auth import authentication
 # from ...confs import config
 from flask import request, current_app
 from commons import htmlcodes as hcodes
-from commons.logs import get_logger, pretty_print
+from commons.logs import get_logger  # , pretty_print
 from .. import decorators as decorate
 
 logger = get_logger(__name__)
@@ -60,7 +60,7 @@ logger = get_logger(__name__)
 
 class BasicEndpoint(Uploader, EudatEndpoint):
 
-    @authentication.authorization_required
+    # @authentication.authorization_required
     @decorate.add_endpoint_parameter('resource')
     @decorate.add_endpoint_parameter('download', ptype=bool, default=False)
     @decorate.apimethod
