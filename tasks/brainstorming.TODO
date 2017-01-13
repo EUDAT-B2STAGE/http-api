@@ -17,6 +17,7 @@ SWAGGER:
   - enable security bearer @definitions
   - unittests
   ☐ extras:
+    - fix /tmp/gettoken in docker image client
     - generate a new statis json only with base
     - decorate catch error?
     - automatic http forbidden error for authenticated endpoints

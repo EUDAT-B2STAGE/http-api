@@ -1,0 +1,9 @@
+
+class: Authorize
+file: oauth
+baseuri: /auth
+mapping:
+  authorize: /authorize
+labels:
+  - eudat
+  - b2access

@@ -1,0 +1,8 @@
+
+authproxy:
+  custom:
+    authentication: true
+  summary: Refresh B2ACCESS authorization
+  responses:
+    '200':
+      description: token object refreshed

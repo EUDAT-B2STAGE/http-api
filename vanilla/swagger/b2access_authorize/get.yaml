@@ -1,0 +1,8 @@
+
+authorize:
+  custom:
+    authentication: false
+  summary: Produce internal token if B2ACCESS authorization is granted
+  responses:
+    '200':
+      description: REST API token from B2ACCESS authentication

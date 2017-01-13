@@ -174,10 +174,10 @@ class B2accessUtilities(EudatEndpoint):
 
         # Production / Real B2SAFE and irods instance
         if IRODS_EXTERNAL:
-            #logger.error("No iRODS user related to your certificate")
+            # logger.error("No iRODS user related to your certificate")
             if not user_exists:
                 return None
-        # IN CASE WE ARE USING DOCKERIZED iRODS/B2SAFE
+        # In case we are using dockerized iRODS/B2SAFE
         else:
             # irods admin user handler
             admin_icom = self.global_get_service('irods', become_admin=True)
@@ -210,15 +210,15 @@ class B2accessUtilities(EudatEndpoint):
 
 
 #######################################
-#######################################
 class OauthLogin(B2accessUtilities):
     """
     Endpoint which redirects to B2ACCESS server online,
     to ask the current user for authorization/token.
     """
 
-    base_url = AUTH_URL
-
+    @decorate.catch_error(
+        exception=RuntimeError,
+        exception_label='Server side B2ACCESS misconfiguration')
     def get(self):
 
         auth = self.global_get('custom_auth')
@@ -240,15 +240,12 @@ class OauthLogin(B2accessUtilities):
 
 
 #######################################
-#######################################
 class Authorize(B2accessUtilities):
     """
     Previous endpoint will redirect here if authorization was granted.
     Use the B2ACCESS token to retrieve info about the user,
     and to store the proxyfile.
     """
-
-    base_url = AUTH_URL
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self):
@@ -318,16 +315,12 @@ class Authorize(B2accessUtilities):
 
 
 #######################################
-#######################################
 class B2accesProxyEndpoint(B2accessUtilities):
     """
     Allow refreshing current proxy (if invalid)
     using the stored b2access token (if still valid)
     """
 
-    base_url = AUTH_URL
-
-    @authentication.authorization_required
     def post(self):
 
         ##########################
@@ -376,9 +369,6 @@ class B2accesProxyEndpoint(B2accessUtilities):
 # class TestB2access(EudatEndpoint):
 #     """ development tests """
 
-#     base_url = AUTH_URL
-
-#     @authentication.authorization_required
 #     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
 #     def get(self):
 
