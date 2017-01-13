@@ -1,16 +1,31 @@
 
-SWAGGER
-  ✔ define a variable inside the METHOD.yaml to skip definition in final JSON swagger @done (17-01-09 07:10)
+SWAGGER:
   ✔ enable tags description in eudat.json @done (17-01-10 07:21)
-  - parameters
-    ✔ schema definition for body paramaters @done (17-01-09 23:04)
-    - query parameters
-      - attach decorator to class
-      a method to substitute an attribute of a cls?
-  - enable security bearer
   ✔ default blueprint configuration @done (17-01-10 10:01)
     ✔ profile PUT? @done (17-01-10 10:01)
   ✔ write definition for base endpoints @done (17-01-10 10:26)
+  ✔ parameters @done (17-01-12 16:54)
+    ✔ schema definition for body paramaters @done (17-01-09 23:04)
+    ✔ query parameters @done (17-01-12 16:54)
+      ✔ attach decorator to class @done (17-01-12 16:54)
+      a method to substitute an attribute of a cls?
+  ✔ loops in parameter setting @refactor @done (17-01-12 23:40)
+    ✔ self._params must be defined at swagger time and become global @done (17-01-12 23:40)
+    ✔ query parameters association to URIs too (avoid double implementation) @done (17-01-12 23:40)
+  ✔ path parameter description @done (17-01-13 06:54)
+  - remove deprecated into basic.py
+  - enable security bearer @definitions
+  - unittests
+  ☐ extras:
+    - generate a new statis json only with base
+    - decorate catch error?
+    - automatic http forbidden error for authenticated endpoints
+    - method to convert types
+      swagger.py: paramtype == 'int'
+      definition.py: current_params.items
+    - check if one endpoint definition with two different ids (error)
+    - decorated api_method: report_generic_error ?
+
 
   --- ✄ -----------------------
 

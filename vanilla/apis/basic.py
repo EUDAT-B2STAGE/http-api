@@ -26,33 +26,7 @@ from commons import htmlcodes as hcodes
 from commons.logs import get_logger  # , pretty_print
 from .. import decorators as decorate
 
-logger = get_logger(__name__)
-
-
-## // TO FIX: set parameters via configuration
-
-# # @decorate.all_rest_methods
-# class EudatTest(EudatEndpoint):
-#     """
-#     A class to test development of internal parts,
-#     e.g. responses
-#     """
-
-#     # @authentication.authorization_required
-#     @decorate.add_endpoint_parameter('test')
-#     @decorate.apimethod
-#     # @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-#     def get(self, location=None):
-#         """
-#         This works for all methods: GET, POST, PUT, PATCH, DELETE
-#         """
-#         data = {
-#             'path': location,
-#             'parameters': self.get_input(),
-#             'parameter': self.get_input(single_parameter='test'),
-#         }
-#         # return self.force_response(data)
-#         return data
+log = get_logger(__name__)
 
 
 ###############################
@@ -60,19 +34,11 @@ logger = get_logger(__name__)
 
 class BasicEndpoint(Uploader, EudatEndpoint):
 
-    # @authentication.authorization_required
-    @decorate.add_endpoint_parameter('resource')
-    @decorate.add_endpoint_parameter('download', ptype=bool, default=False)
-    @decorate.apimethod
     @decorate.catch_error(
         exception=IrodsException, error_code=hcodes.HTTP_BAD_NOTFOUND,
         exception_label='B2SAFE')
     def get(self, irods_location=None):
-        """
-        Download file from filename
-
-        swag_file: restapi/swagger/custom/namespace/get.yaml
-        """
+        """ Download file from filename """
 
         if irods_location is None:
             return self.send_errors('location', 'Missing filepath inside URI',
@@ -135,11 +101,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 filename = self.filename_from_path(path)
             abs_file = self.absolute_upload_file(filename, r.username)
 
+            # TODO: decide if we want to use a cache when streaming
+            # what about nginx caching?
+
             # Make sure you remove any cached version to get a fresh obj
             try:
-# // TO FIX:
-    # decide if we want to use a cache, and how!
-    # maybe nginx cache is better instead of our own?
                 os.remove(abs_file)
             except:
                 pass
@@ -208,18 +174,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return response
 
-    @authentication.authorization_required
-    @decorate.add_endpoint_parameter('resource')
-    @decorate.add_endpoint_parameter('force')
-    @decorate.add_endpoint_parameter('path')  # should contain the filename too
-    @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self, irods_location=None):
         """
         Handle [directory creation](docs/user/registered.md#post).
 
         Test on internal client shell with:
-
         http --form POST \
             $SERVER/api/resources?path=/tempZone/home/guest/test \
             force=True "$AUTH"
@@ -268,7 +228,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         ipath = icom.create_empty(
             path, directory=True, ignore_existing=force
         )
-        logger.info("Created irods collection: %s", ipath)
+        log.info("Created irods collection: %s", ipath)
+
+        # TO FIX: Should this status be No response?
         status = hcodes.HTTP_OK_BASIC
         content = {
             'location': self.b2safe_location(ipath),
@@ -278,10 +240,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.force_response(content, code=status)
 
-    @authentication.authorization_required
-    @decorate.add_endpoint_parameter('force')
-    @decorate.add_endpoint_parameter('resource')
-    @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, irods_location=None):
         """
@@ -325,7 +283,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             .upload(subfolder=r.username, force=force)
 
         # Check if upload response is success
-## // TO FIX:
+## TO FIX: custom split of a custom response
 # this piece of code does not work with a custom response
 # if it changes the main blocks of the json root;
 # the developer should be able to provide a 'custom_split' on this
@@ -340,7 +298,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             original_filename = content[key_file]
 
             abs_file = self.absolute_upload_file(original_filename, r.username)
-            logger.info("File is '%s'" % abs_file)
+            log.info("File is '%s'" % abs_file)
 
             ############################
             # Move file inside irods
@@ -362,10 +320,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 iout = icom.save(
                     abs_file,
                     destination=path, force=force, resource=resource)
-                logger.info("irods call %s", iout)
+                log.info("irods call %s", iout)
             finally:
                 # Transaction rollback: remove local cache in any case
-                logger.debug("Removing cache object")
+                log.debug("Removing cache object")
                 os.remove(abs_file)
 
             ###################
@@ -399,8 +357,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # pretty_print(content)
         return self.force_response(content, errors=errors, code=status)
 
-    @authentication.authorization_required
-    @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def patch(self, irods_location=None):
         """
@@ -441,11 +397,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             'link': self.httpapi_location(request.url, newpath, irods_location)
         }
 
-    @authentication.authorization_required
-    @decorate.add_endpoint_parameter('resource')
-    @decorate.add_endpoint_parameter('debugclean')
-    # @authentication.authorization_required(roles=config.ROLE_INTERNAL)
-    @decorate.apimethod
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def delete(self, irods_location=None):
         """
@@ -477,7 +428,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     icom.remove(
                         home + self._path_separator + obj['name'],
                         recursive=obj['object_type'] == 'collection')
-                    logger.debug("Removed %s" % obj['name'])
+                    log.debug("Removed %s" % obj['name'])
                 return "Cleaned"
 
         # Note: this check is not at the beginning to allow the clean operation
@@ -514,22 +465,22 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 # nb: recursive option is necessary to remove a collection
                 is_recursive = True
             else:
-                logger.info("list:  %i", len(icom.list(path=irods_location)))
+                log.info("list:  %i", len(icom.list(path=irods_location)))
                 return self.send_errors(
                     'Directory is not empty',
                     'Only empty directories can be deleted',
                     code=hcodes.HTTP_BAD_REQUEST)
         else:
-                # Print file details/sys metadata if it's a specific file
-                data = icom.meta_sys_list(irods_location)
-                # if a path that does not exist
-                if len(data) < 1:
-                    return self.send_errors(
-                        'not found',
-                        "path does not exists or you don't have privileges",
-                        code=hcodes.HTTP_BAD_NOTFOUND)
+            # Print file details/sys metadata if it's a specific file
+            data = icom.meta_sys_list(irods_location)
+            # if a path that does not exist
+            if len(data) < 1:
+                return self.send_errors(
+                    'not found',
+                    "path does not exists or you don't have privileges",
+                    code=hcodes.HTTP_BAD_NOTFOUND)
 
         icom.remove(irods_location, recursive=is_recursive, resource=resource)
-        logger.info("Removed %s", irods_location)
+        log.info("Removed %s", irods_location)
 
         return {'removed': irods_location}

@@ -1,0 +1,20 @@
+
+single:
+  summary: Upload a new file
+  custom:
+    authentication: true
+    authorized:
+      - normal_user
+  responses:
+    '200':
+      description: File created
+  parameters:
+    - name: resource
+      in: query
+      type: string
+      description: iRODS resource
+    - name: force
+      in: query
+      type: boolean
+      default: false
+      description: force action even if getting warnings

@@ -1,44 +1,36 @@
 
-# LABEL mapped into SPECS.yaml must match inside the METHOD.yaml
-# inside METHOD raise error if label does not exist in specs
-
-##################
-# common to different alias (like a default)
 common:
   parameters:
     - name: resource
-      description: just a test
+      description: iRODS resource
       in: query
       type: string
-      # schema:
-      #   $ref: "#/definitions/Credentials"
   custom:
-    # publish: false
     authentication: true
     authorized:
       - normal_user
-      # - admin # what if not matching? should be admin_root
-  # tags:
-  #   - namespace
 
-##################
-# all:
-#   summary: this is just a test
-#   description: "catch'em all"
-#   responses:
-#     '200':
-#       description: hell yes
-
-single:
-  summary: this is just a single test
+all:
+  # TO FIX: decide if this option is allowed
+  summary: Get data from the current user home page?
   responses:
     '200':
-      description: "hell yeah!"
+      description: The directory and/or files list
 
-##################
-# # TO BE REMOVED, just a test
-# test:
-#   summary: this is just a single test
-#   responses:
-#     '200':
-#       description: "hell yeah!"
+single:
+  summary: Retrieve a single digital entity/object information or download it
+  parameters:
+    - name: download
+      description: activate file downloading (if path is a single file)
+      in: query
+      type: boolean
+      default: false
+    # # TOFIX: move this parameter into body
+    # - name: force
+    #   description: force action even if getting warnings
+    #   in: query
+    #   type: boolean
+    #   default: false
+  responses:
+    '200':
+      description: The list of objects related to the requested path (or file content if download is activated)

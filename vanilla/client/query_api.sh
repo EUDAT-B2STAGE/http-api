@@ -145,7 +145,7 @@ if [ "$1" == 'upload' -o "$1" == "$ALL_COMMAND" ]; then
 
     echo "Upload file [PUT]"
 
-    api_call result '--form PUT' "$path" "file@$file force=True"
+    api_call result '--form PUT' "$path?force=True" "file@$file"
     if [ "$result" -gt "$MIN_INVALID_STATUS" ]; then return; fi
 fi
 

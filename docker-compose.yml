@@ -146,6 +146,8 @@ rest:
     - ./vanilla/models:/code/commons/models/custom
     # Rest API endpoints
     - ./vanilla/apis:/code/restapi/resources/custom
+    # JWT tokens secret
+    - jwt_tokens:/jwt_tokens
     # Tests
     - ./vanilla/tests:/code/test/custom
     # B2ACCESS dev certificates

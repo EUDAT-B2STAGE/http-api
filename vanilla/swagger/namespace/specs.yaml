@@ -1,30 +1,15 @@
 
-# REQUIRED: the name of the REST class
+# The name of the REST class
 class: BasicEndpoint
-
-# OPTIONAL: The python file where your REST class is located
+# The python file where your REST class is located
 # (inside the 'restapi/confs/custom' dir)
-# default is the same name of current file's directory holder
 file: basic
 
-# OPTIONAL: if the class depends on some environment variables
-# (usefull for dependencies on docker containers existence)
-# depends_on:
-
-# OPTIONAL: Mapping to a certain base path. Allowed: '/api' or '/auth'
-baseuri: "/api"
-
-# OPTIONAL: mapping the class to one or more URIs
-# if not specified, we will take the name of the directory
-# Note: this is a list!
 mapping:
-  # Define the URIs aliases; key/values in the form of [label: uri]
-  # It may contain directly nesting paths and various IDs
   all: "/namespace"
   single: "/namespace/<path:irods_location>"
-  # test: "/study/<string:id>/dataset/<test>"
-
-# OPTIONAL: internal label(s) for classification of endpoints (global tags)
+ids:
+  irods_location: the filesystem path to your digital entities/objects
 labels:
   - eudat
   - namespace
