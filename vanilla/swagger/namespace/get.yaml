@@ -24,7 +24,7 @@ single:
       description: activate file downloading (if path is a single file)
       in: query
       type: boolean
-      default: false
+      # default: False
     # # TOFIX: move this parameter into body
     # - name: force
     #   description: force action even if getting warnings

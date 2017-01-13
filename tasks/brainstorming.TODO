@@ -1,20 +1,19 @@
 
-#SWAGGER
-  ✔ path parameter description @done (17-01-13 06:54)
-  ✔ remove deprecated into basic.py @done (17-01-13 15:43)
-  ✔ enable security bearer @definitions @done (17-01-13 16:34)
-  - new way of writing unittests?
-  extras:
-    ✔ generate a new static json only with base @done (17-01-13 15:47)
-    - fix /tmp/gettoken in docker image client
-    - decorate catch error?
-    - general error catching with old decorator
-    - automatic http forbidden error for authenticated endpoints
-    - method to convert types
-      swagger.py: paramtype == 'int'
-      definition.py: current_params.items
-    - check if one endpoint definition with two different ids (error)
-    - decorated api_method: report_generic_error ?
+SWAGGER:
+  ✔ check bearer missing in header @done (17-01-13 17:24)
+  - fix boolean default from swagger ui
+  - decorate catch error?
+  - fix getting user/pw from configuration at testing time
+  - fix /tmp/gettoken in docker image client
+  - general error catching with old decorator
+  - method to convert types
+    swagger.py: paramtype == 'int'
+    definition.py: current_params.items
+  - check if one endpoint definition with two different ids (error)
+  - decorated api_method: report_generic_error ?
+
+UNITTESTS:
+  - by swagger
 
 --- ✄ -----------------------
 

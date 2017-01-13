@@ -16,5 +16,5 @@ single:
     - name: force
       in: query
       type: boolean
-      default: false
+      # default: false
       description: force action even if getting warnings
