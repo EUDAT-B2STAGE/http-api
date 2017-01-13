@@ -8,16 +8,23 @@
       "eudat": "all endpoints associated to EUDAT services",
       "namespace": "upload, list and download objects",
       "b2access": "request and refresh authorization from the B2ACCESS service"
-    // },
-    // "variables": {
-    //     "python": {
-    //         "backend": {
-    //             "credentials":{
-    //                 "username": "itsakindof@magic.orc",
-    //                 "password": "mypassword"
-    //             }
-    //         }
-    //     }
+    },
+    "variables": {
+        // "python": {
+        //     "backend": {
+        //         // Note: if modify user/pw you need to set Roles too
+        //         "credentials":{
+        //             "username": "itsakindof@magic.orc",
+        //             "password": "itsmagic",
+        //             "roles": {
+        //                 "user": "normal_user",
+        //                 "internal": "staff_user",
+        //                 "admin": "admin_root",
+        //                 "default": "normal_user"
+        //             }
+        //         }
+        //     }
+        // }
     }
 
 // IF USING A FRONTEND
