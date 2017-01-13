@@ -12,7 +12,12 @@
         },
 
         "python": {
-
+            "backend": {
+                "credentials": {
+                    "username": "user@nomail.org",
+                    "password": "test"
+                }
+            }
         },
 
         "containers": {
