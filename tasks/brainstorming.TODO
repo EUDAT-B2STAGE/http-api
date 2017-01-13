@@ -1,60 +1,20 @@
 
-SWAGGER:
-  ✔ enable tags description in eudat.json @done (17-01-10 07:21)
-  ✔ default blueprint configuration @done (17-01-10 10:01)
-    ✔ profile PUT? @done (17-01-10 10:01)
-  ✔ write definition for base endpoints @done (17-01-10 10:26)
-  ✔ parameters @done (17-01-12 16:54)
-    ✔ schema definition for body paramaters @done (17-01-09 23:04)
-    ✔ query parameters @done (17-01-12 16:54)
-      ✔ attach decorator to class @done (17-01-12 16:54)
-      a method to substitute an attribute of a cls?
-  ✔ loops in parameter setting @refactor @done (17-01-12 23:40)
-    ✔ self._params must be defined at swagger time and become global @done (17-01-12 23:40)
-    ✔ query parameters association to URIs too (avoid double implementation) @done (17-01-12 23:40)
+#SWAGGER
   ✔ path parameter description @done (17-01-13 06:54)
-  - remove deprecated into basic.py
-  - enable security bearer @definitions
-  - unittests
-  ☐ extras:
+  ✔ remove deprecated into basic.py @done (17-01-13 15:43)
+  ✔ enable security bearer @definitions @done (17-01-13 16:34)
+  - new way of writing unittests?
+  extras:
+    ✔ generate a new static json only with base @done (17-01-13 15:47)
     - fix /tmp/gettoken in docker image client
-    - generate a new statis json only with base
     - decorate catch error?
+    - general error catching with old decorator
     - automatic http forbidden error for authenticated endpoints
     - method to convert types
       swagger.py: paramtype == 'int'
       definition.py: current_params.items
     - check if one endpoint definition with two different ids (error)
     - decorated api_method: report_generic_error ?
-
-
-  --- ✄ -----------------------
-
-securityDefinitions:
-  Bearer:
-    type: apiKey
-    name: Authorization
-    in: header
-  OauthSecurity:
-    type: oauth2
-    flow: accessCode
-    authorizationUrl: 'https://oauth.simple.api/authorization'
-    tokenUrl: 'https://oauth.simple.api/token'
-    scopes:
-      admin: Admin scope
-      user: User scope
-
-
---- ✄ -----------------------
-
-"patterns": {
-    "TODO": "TODO[\\s]*?:[\\s]*(?P<todo>.*)$",
-    "NOTE": "NOTE[\\s]*?:[\\s]*(?P<note>.*)$",
-    "FIXME": "TO ?FIX[\\s]*?:[\\s]*(?P<fixme>.*)$",
-    "CHANGED": "CHANGED[\\s]*?:[\\s]*(?P<changed>.*)$"
-    "SHUTOUT":?
-    "DEBATE":?
-}
 
 --- ✄ -----------------------
 
@@ -121,18 +81,3 @@ UNIT TEST:
    ☐ remove users, tokens
    ☐ and any object related to that user
 ☐ Clean with "finally" if any error
-
-UID:
-  ☐ Not for now
-  http://stackoverflow.com/a/19580599/2114395
-  http://stackoverflow.com/a/6048639/2114395
-  http://stackoverflow.com/a/14023468/2114395
-
-  # initial proposal
-  12 - 3456789
-    ☐ alphanum
-    ☐ first 2 chars are reserved to indentify the b2safe instance
-      ☐ wp6 should map those code
-      ☐ use a /api/internals/mappings/b2safe to manage the list?
-    ☐ not uuid (just Unique ID) and as small as possible
-      ☐ use path, resource, filename and b2safe code for creating the hash
