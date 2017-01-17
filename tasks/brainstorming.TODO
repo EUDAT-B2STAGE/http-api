@@ -1,10 +1,10 @@
 
 SWAGGER:
   ✔ check bearer missing in header @done (17-01-13 17:24)
-  - fix boolean default from swagger ui
+  ✔ fix getting user/pw from configuration at testing time @done (17-01-16 17:12)
+  ✔ fix /tmp/gettoken in docker image client @done (17-01-16 17:12)
+  - check boolean defaults from swagger ui
   - decorate catch error?
-  - fix getting user/pw from configuration at testing time
-  - fix /tmp/gettoken in docker image client
   - general error catching with old decorator
   - method to convert types
     swagger.py: paramtype == 'int'
