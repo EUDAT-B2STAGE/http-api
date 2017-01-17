@@ -13,3 +13,9 @@ backend:
 frontend:
   links:
     - backend:myapi
+
+
+##############################
+swagger:
+  ports:
+    - 7777:80
