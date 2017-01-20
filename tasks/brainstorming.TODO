@@ -4,10 +4,12 @@ SWAGGER:
   ✔ fix getting user/pw from configuration at testing time @done (17-01-16 17:12)
   ✔ fix /tmp/gettoken in docker image client @done (17-01-16 17:12)
   ✔ replace mem with mem.customizer @done (17-01-20 07:08)
-  - endpoints should become a dictionary, at the moment is a list...
+  ✘ endpoints should become a dictionary, at the moment is a list... @cancelled (17-01-20 12:38)
+
   - general error catching with old decorator
   - decorate catch error?
   - check boolean defaults from swagger ui
+
   - method to convert types
     swagger.py: paramtype == 'int'
     definition.py: current_params.items

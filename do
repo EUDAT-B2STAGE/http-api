@@ -123,7 +123,11 @@ else
     # git submodule init
     # git submodule update --remote
     cd $subdir
+    # Go into the master
     git checkout master
+    # print latest commit
+    echo "Check latest commit"
+    git log -n 1
     cd ..
 fi
 
