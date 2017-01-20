@@ -1,14 +1,26 @@
 
+# *next*: v0.3-alpha
+**due date**: Feb 28, 2017
+**milestone**: to be defined
+
+## features
+- User testing
+- Partecipating in adding Python3 support into irods python official client
+- Bug fixes
+
+
 # *next*: v0.2-alpha
-**due date**: Dec 16, 2016
+**commit**: 643ed4a
+**due date**: Jan 20, 2017
 **milestone**: [Consolidations](https://github.com/EUDAT-B2STAGE/http-api/milestone/4)
 
 ## features
 
 - Swagger integration
-- B2SAFE integration online
-- User testing
+- Core refactoring to follow what swagger has unlocked
+- B2SAFE and B2ACCESS development integration for online prototype
 - `http-api-base` merge from concurrent projects
+- Partecipated in adding GSI authentication into irods python official client
 - Various bug fixes
 
 # *current*: v0.1-alpha
