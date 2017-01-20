@@ -7,15 +7,12 @@ Common functions for EUDAT endpoints
 from __future__ import absolute_import
 
 import os
-from attr import (
-    s as AttributedModel,
-    ib as attribute,
-)
+from attr import s as AttributedModel, ib as attribute
 from ..rest.definition import EndpointResource
 from ..services.irods.client import IRODS_DEFAULT_USER
 from ..services.detect import IRODS_EXTERNAL
 from ...confs.config import PRODUCTION
-from commons.logs import get_logger, pretty_print
+from commons.logs import get_logger
 
 logger = get_logger(__name__)
 
@@ -226,7 +223,7 @@ class EudatEndpoint(EndpointResource):
         ############################
         # Handle flask differences on GET/DELETE and PUT/POST
         myargs = self.get_input()
-        # pretty_print(myargs)
+        # log.pp(myargs)
 
         ############################
         # main parameters

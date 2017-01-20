@@ -20,7 +20,7 @@ from .. import decorators as decorate
 from ...auth import authentication
 from .commons import EudatEndpoint
 from commons import htmlcodes as hcodes
-from commons.logs import get_logger, pretty_print
+from commons.logs import get_logger
 
 logger = get_logger(__name__)
 
@@ -61,7 +61,7 @@ class B2accessUtilities(EudatEndpoint):
 
         DEBUG_PRINT = current_app.config['DEBUG'] or ENVVAR_DEBUG
         if DEBUG_PRINT:
-            pretty_print(resp)  # DEBUG
+            log.pp(resp)  # DEBUG
 
         b2a_token = resp.get('access_token')
         if b2a_token is None:
@@ -103,7 +103,7 @@ class B2accessUtilities(EudatEndpoint):
         DEBUG_PRINT = current_app.config['DEBUG'] or ENVVAR_DEBUG
         if DEBUG_PRINT:
             # Attributes you find: http://j.mp/b2access_profile_attributes
-            pretty_print(current_user)  # DEBUG
+            log.pp(current_user)  # DEBUG
 
         # Store b2access information inside the db
         intuser, extuser = \
@@ -159,7 +159,7 @@ class B2accessUtilities(EudatEndpoint):
         if proxy_file is not None:
             auth.store_proxy_cert(extuser, proxy_file)
         else:
-            pretty_print(b2accessCA, "Failed oauth2")
+            log.pp(b2accessCA, "Failed oauth2")
 
         return proxy_file
 
@@ -326,7 +326,7 @@ class B2accesProxyEndpoint(B2accessUtilities):
         ##########################
         # get the response
         r = self.init_endpoint(only_check_proxy=True)
-        # pretty_print(r)
+        # log.pp(r)
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
 
@@ -375,10 +375,10 @@ class B2accesProxyEndpoint(B2accessUtilities):
 #         ##########################
 #         # get the response
 #         r = self.init_endpoint()
-#         # pretty_print(r)
+#         # log.pp(r)
 #         if r.errors is not None:
 #             return self.send_errors(errors=r.errors)
-#         pretty_print(r)
+#         log.pp(r)
 
 #         ##########################
 #         return {'list': r.icommands.list()}

@@ -23,7 +23,7 @@ from ...auth import authentication
 # from ...confs import config
 from flask import request, current_app
 from commons import htmlcodes as hcodes
-from commons.logs import get_logger  # , pretty_print
+from commons.logs import get_logger
 from .. import decorators as decorate
 
 log = get_logger(__name__)
@@ -50,7 +50,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # get the base objects
         r = self.init_endpoint()
-        # pretty_print(r)
+        # log.pp(r)
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
         icom = r.icommands
@@ -93,6 +93,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         ###################
 
         if self._args.get('download'):
+            # TO FIX: problem with swagger-ui boolean?
+            print("TEST!")
             if is_collection:
                 return self.send_errors(
                     'collection', 'Recursive download is not allowed')
@@ -143,7 +145,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             for filename, metadata in filelist.items():
                 if filename == current_filename:
                     data[filename] = metadata
-            # pretty_print(data)
+            # log.pp(data)
 
             # # Print file details/sys metadata if it's a specific file
             # data = icom.meta_sys_list(path)
@@ -206,7 +208,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # get the base objects
         r = self.init_endpoint()
-        # pretty_print(r)
+        # log.pp(r)
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
         icom = r.icommands
@@ -262,7 +264,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # get the base objects
         r = self.init_endpoint()
-        # pretty_print(r)
+        # log.pp(r)
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
         icom = r.icommands
@@ -354,7 +356,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 'link': self.httpapi_location(request.url, ipath, path)
             }
 
-        # pretty_print(content)
+        # log.pp(content)
         return self.force_response(content, errors=errors, code=status)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
@@ -411,7 +413,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # get the base objects
         r = self.init_endpoint()
-        # pretty_print(r)
+        # log.pp(r)
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
         icom = r.icommands
