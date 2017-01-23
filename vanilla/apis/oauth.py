@@ -12,7 +12,7 @@ from flask import url_for, session, current_app, request
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
 from ...confs.config import \
-    PRODUCTION, DEBUG as ENVVAR_DEBUG  # , API_URL, AUTH_URL
+    PRODUCTION, DEBUG as ENVVAR_DEBUG, API_URL
 from ..services.oauth2clients import decorate_http_request
 from ..services.irods.client import IrodsException, Certificates
 from ..services.detect import IRODS_EXTERNAL
@@ -215,9 +215,9 @@ class OauthLogin(B2accessUtilities):
     to ask the current user for authorization/token.
     """
 
-    @decorate.catch_error(
-        exception=RuntimeError,
-        exception_label='Server side B2ACCESS misconfiguration')
+    # @decorate.catch_error(
+    #     exception=RuntimeError,
+    #     exception_label='Server side B2ACCESS misconfiguration')
     def get(self):
 
         auth = self.global_get('custom_auth')
@@ -288,13 +288,13 @@ class Authorize(B2accessUtilities):
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
 
-        uri = self.httpapi_location(
-            request.url.replace("/auth/authorize", ''),
-            API_URL + "/namespace" + user_home
-        )
-
-        get_example = "curl -H 'Authorization: %s %s' %s" \
-            % ('Bearer', local_token, uri)
+        # # TO FIX: Workout a better way to get the host in this example
+        # uri = self.httpapi_location(
+        #     request.url.replace("/auth/authorize", ''),
+        #     API_URL + "/namespace" + user_home
+        # )
+        # get_example = "curl -H 'Authorization: %s %s' %s" \
+        #     % ('Bearer', local_token, uri)
 
         # TO FIX: Create a method to reply with standard Bearer oauth response
         # return self.send_credentials(local_token, extra, metas)
@@ -305,11 +305,11 @@ class Authorize(B2accessUtilities):
                 'b2safe_user': irods_user,
                 'b2safe_home': user_home
             },
-            meta={
-                'examples': {
-                    'get': get_example
-                }
-            }
+            # meta={
+            #     'examples': {
+            #         'get': get_example
+            #     }
+            # }
         )
 
 
