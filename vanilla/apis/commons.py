@@ -11,7 +11,7 @@ from attr import s as AttributedModel, ib as attribute
 from ..rest.definition import EndpointResource
 from ..services.irods.client import IRODS_DEFAULT_USER
 from ..services.detect import IRODS_EXTERNAL
-from ...confs.config import PRODUCTION
+from commons import PRODUCTION
 from commons.logs import get_logger
 
 log = get_logger(__name__)

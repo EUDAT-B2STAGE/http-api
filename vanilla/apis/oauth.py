@@ -8,11 +8,10 @@ from __future__ import absolute_import
 
 import json
 from datetime import datetime as dt
-from flask import url_for, session, current_app, request
+from flask import url_for, session, current_app
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
-from ...confs.config import \
-    PRODUCTION, DEBUG as ENVVAR_DEBUG, API_URL
+from commons import PRODUCTION, DEBUG as ENVVAR_DEBUG
 from ..services.oauth2clients import decorate_http_request
 from ..services.irods.client import IrodsException, Certificates
 from ..services.detect import IRODS_EXTERNAL

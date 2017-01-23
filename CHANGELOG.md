@@ -5,7 +5,7 @@
 
 ## features
 - User testing
-- Partecipating in adding Python3 support into irods python official client
+- Participating in adding Python3 support into irods python official client
 - Bug fixes
 
 
@@ -20,7 +20,7 @@
 - Core refactoring to follow what swagger has unlocked
 - B2SAFE and B2ACCESS development integration for online prototype
 - `http-api-base` merge from concurrent projects
-- Partecipated in adding GSI authentication into irods python official client
+- Participated in adding GSI authentication into irods python official client
 - Global better logging
 - Various bug fixes
 

@@ -50,6 +50,7 @@ vprefix="httpapi_"
 cprefix=`basename $(pwd) | tr -d '-'`
 
 compose_base="docker-compose -f docker-compose.yml"
+compose_all="$compose_base -f composers/init.yml -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
 
 # Init mode
 if [ "$1" == "init" ]; then
@@ -183,8 +184,11 @@ if [ "$1" == "update" ]; then
     echo "Pulling submodule"
     cd $subdir
     git pull
-    echo "Updating docker images to latest release"
-    $compose_run pull
+    cd ..
+    # Note: images must be updated after pulling the code
+    # otherwise we won't know if new images are requested
+    echo "Updating (all) docker images to latest release"
+    $compose_all pull
     echo "Done"
     exit 0
 fi

@@ -1,5 +1,6 @@
 
 Since Swagger is enabled:
+  ✔ always save two definitions from swagger @done (17-01-23 16:38)
   - general error catching with old decorator
   - decorate catch error?
   - check boolean defaults from swagger ui
