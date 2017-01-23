@@ -14,7 +14,7 @@ from ... import decorators as decorate
 from ....auth import authentication
 from ....confs import config
 
-logger = get_logger(__name__)
+log = get_logger(__name__)
 
 
 class MetaDataObject(ExtendedApiResource):

@@ -6,21 +6,20 @@ B2SAFE internal enpoint to manage metadata
 
 from __future__ import absolute_import
 
-from commons.logs import get_logger
-from commons.services.uuid import getUUID
 from ...services.irods.client import IRODS_DEFAULT_USER
 from ...base import ExtendedApiResource
 from ... import decorators as decorate
 from ....auth import authentication
 from ....confs import config
+# from commons.services.uuid import getUUID
+from commons.logs import get_logger
 
-logger = get_logger(__name__)
+log = get_logger(__name__)
 
 irods_tmp_user = IRODS_DEFAULT_USER
 
 
-## // TO FIX:
-# Use the correct irods user from the token,
+# TO FIX: Use the correct irods user from the token,
 # instad of IRODS_DEFAULT_USER
 irods_tmp_user = IRODS_DEFAULT_USER
 
@@ -49,7 +48,7 @@ class MetaDataParser(ExtendedApiResource):
             de_node = graph.DigitalEntity.nodes.get(id=mid)
         except graph.DigitalEntity.DoesNotExist:
 
-            logger.info("Insed MetaDataParser: %s", mid)
+            log.info("Insed MetaDataParser: %s", mid)
             return self.force_response(errors={mid: 'Not found.'})
 
         manifest_path = None
@@ -59,7 +58,7 @@ class MetaDataParser(ExtendedApiResource):
             # except graph.DigitalEntity.DoesNotExist: # to be modified
             return self.force_response(errors={'manifest.xml not found.'})
         else:
-            logger.info("Manifest.xml found in %s", manifest_path)
+            log.info("Manifest.xml found in %s", manifest_path)
 
         # 3. Parse the manifest file
         return "Hello world"
@@ -67,9 +66,9 @@ class MetaDataParser(ExtendedApiResource):
     def _recursive_search(self, node):
         if node.collection:
             for de in node.parent.all():
-                logger.info(de.filename)
+                log.info(de.filename)
                 if de.filename == 'manifest.xml':
-                    logger.info('manifest.xml found!')
+                    log.info('manifest.xml found!')
                     return de.location
                 else:
                     self._recursive_search(de)
@@ -77,7 +76,7 @@ class MetaDataParser(ExtendedApiResource):
             if node.filename == 'manifest.xml':
                 return node.location
             else:
-                logger.info('manifest.xml not found')
+                log.info('manifest.xml not found')
                 return None
 
 

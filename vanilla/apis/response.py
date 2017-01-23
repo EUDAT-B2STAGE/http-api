@@ -7,15 +7,15 @@ WARNING: TO BE REDEFINED.
 
 """
 
-from __future__ import absolute_import
+# from __future__ import absolute_import
 
 from commons.logs import get_logger
 # from ..base import ExtendedApiResource
 # from .. import decorators as decorate
 
-logger = get_logger(__name__)
+log = get_logger(__name__)
 
-logger.info("TO BE DEVELOPED AGAIN")
+log.warning("Custom response: TO BE DEVELOPED AGAIN!")
 
 
 ############################################################

@@ -22,9 +22,9 @@ from flask import request
 from commons import htmlcodes as hcodes
 from commons.logs import get_logger
 
-logger = get_logger(__name__)
+log = get_logger(__name__)
 
-## // TO FIX: build this from the WP6 mappings
+# TODO: build this from WP6 mappings?
 CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
 CURRENT_B2SAFE_SERVER_CODE = 'a0'
 
@@ -175,7 +175,7 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         if 'file' not in request.files:
             ipath = icom.create_empty(
                 path, directory=True, ignore_existing=force)
-            logger.info("Created irods collection: %s", ipath)
+            log.info("Created irods collection: %s", ipath)
             status = hcodes.HTTP_OK_BASIC
             content = {
                 'location': 'irods:///%s/%s/' % (
@@ -201,7 +201,7 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
             original_filename = content[key_file]
 
             abs_file = self.absolute_upload_file(original_filename, user)
-            logger.info("File is '%s'" % abs_file)
+            log.info("File is '%s'" % abs_file)
 
             ############################
             # Move file inside irods
@@ -217,7 +217,7 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
             try:
                 iout = icom.save(abs_file, destination=ipath,
                                  force=force, resource=resource)
-                logger.info("irods call %s", iout)
+                log.info("irods call %s", iout)
             finally:
                 # Remove local cache in any case
                 os.remove(abs_file)
@@ -292,6 +292,6 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
         ########################################
         # Remove from irods
         icom.remove(ipath, resource=resource)
-        logger.info("Removed %s", ipath)
+        log.info("Removed %s", ipath)
 
         return self.force_response({'requested removal': ipath})

@@ -10,13 +10,14 @@ nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
 from __future__ import absolute_import
 
 import io
+# import logging
 from restapi.jsonify import json
 from .. import RestTestsAuthenticatedBase
 from commons.logs import get_logger
 
 __author__ = 'Roberto Mucci (r.mucci@cineca.it)'
 
-logger = get_logger(__name__, True)
+log = get_logger(__name__)
 
 
 class TestDigitalObjects(RestTestsAuthenticatedBase):
@@ -30,7 +31,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
     def tearDown(self):
 
-        logger.debug('### Cleaning custom data ###\n')
+        log.debug('### Cleaning custom data ###\n')
         # Clean all test data
         endpoint = self._api_uri + self._main_endpoint
         r = self.app.delete(endpoint, data=dict(debugclean='True'),
@@ -42,7 +43,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_01_POST_create_test_directory(self):
         """ Test directory creation: POST """
 
-        logger.info('*** Testing POST')
+        log.info('*** Testing POST')
         # Create a directory
         endpoint = self._api_uri + self._main_endpoint
         r = self.app.post(endpoint, data=dict(path=self._irods_path),
@@ -82,7 +83,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         ###################################################
 
-        logger.info('*** Testing PUT')
+        log.info('*** Testing PUT')
         # Upload entity in test folder
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
         r = self.app.put(endpoint, data=dict(
@@ -121,7 +122,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_03_GET_entities(self):
         """ Test the entity listingend retrieval: GET """
 
-        logger.info('*** Testing GET')
+        log.info('*** Testing GET')
         # GET non existing entity
         endpoint = (self._api_uri + self._main_endpoint +
                     self._irods_path + '/' + self._test_filename + 'NOTEXISTS')
@@ -166,7 +167,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_04_PATCH_rename(self):
         """ Test directory creation: POST """
 
-        logger.info('*** Testing PATCH')
+        log.info('*** Testing PATCH')
 
         new_file_name = "filetest1"
         new_directory_name = "directorytest1"
@@ -258,7 +259,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
                          headers=self.__class__.auth_header)
         ###################################################
 
-        logger.info('*** Testing DELETE')
+        log.info('*** Testing DELETE')
         # Delete non empty directory
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)

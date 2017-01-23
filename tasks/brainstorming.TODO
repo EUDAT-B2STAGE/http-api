@@ -1,23 +1,14 @@
 
-SWAGGER:
-  ✔ check bearer missing in header @done (17-01-13 17:24)
-  ✔ fix getting user/pw from configuration at testing time @done (17-01-16 17:12)
-  ✔ fix /tmp/gettoken in docker image client @done (17-01-16 17:12)
-  ✔ replace mem with mem.customizer @done (17-01-20 07:08)
-  ✘ endpoints should become a dictionary, at the moment is a list... @cancelled (17-01-20 12:38)
-
+Since Swagger is enabled:
   - general error catching with old decorator
   - decorate catch error?
   - check boolean defaults from swagger ui
-
   - method to convert types
     swagger.py: paramtype == 'int'
     definition.py: current_params.items
   - check if one endpoint definition with two different ids (error)
   - decorated api_method: report_generic_error ?
-
-UNITTESTS:
-  - by swagger
+  - unittests @important
 
 --- ✄ -----------------------
 

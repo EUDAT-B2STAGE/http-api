@@ -11,18 +11,17 @@ from datetime import datetime as dt
 from flask import url_for, session, current_app, request
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
-from ...confs.config import API_URL, AUTH_URL, \
-    PRODUCTION, DEBUG as ENVVAR_DEBUG
+from ...confs.config import \
+    PRODUCTION, DEBUG as ENVVAR_DEBUG  # , API_URL, AUTH_URL
 from ..services.oauth2clients import decorate_http_request
 from ..services.irods.client import IrodsException, Certificates
 from ..services.detect import IRODS_EXTERNAL
 from .. import decorators as decorate
-from ...auth import authentication
 from .commons import EudatEndpoint
 from commons import htmlcodes as hcodes
 from commons.logs import get_logger
 
-logger = get_logger(__name__)
+log = get_logger(__name__)
 
 
 ###############################
@@ -50,11 +49,11 @@ class B2accessUtilities(EudatEndpoint):
 
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
-            logger.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
+            log.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
             return (b2a_token, ('Server misconfiguration', 'oauth2 failed'))
         except Exception as e:
             # raise e  # DEBUG
-            logger.critical("Failed to get authorized @B2access: %s" % str(e))
+            log.critical("Failed to get authorized @B2access: %s" % str(e))
             return (b2a_token, ('B2ACCESS denied', 'oauth2: %s' % e))
         if resp is None:
             return (b2a_token, ('B2ACCESS denied', 'Uknown error'))
@@ -65,9 +64,9 @@ class B2accessUtilities(EudatEndpoint):
 
         b2a_token = resp.get('access_token')
         if b2a_token is None:
-            logger.critical("No token received")
+            log.critical("No token received")
             return (b2a_token, ('B2ACCESS', 'Empty token'))
-        logger.info("Received token: '%s'" % b2a_token)
+        log.info("Received token: '%s'" % b2a_token)
         return (b2a_token, tuple())
 
     def get_b2access_user_info(self, auth, b2access, b2access_token):
@@ -86,7 +85,7 @@ class B2accessUtilities(EudatEndpoint):
         elif not isinstance(current_user, OAuthResponse):
             errstring = "Invalid response from B2ACCESS"
         elif current_user.status > hcodes.HTTP_TRESHOLD:
-            logger.error("Bad status: %s" % str(current_user._resp))
+            log.error("Bad status: %s" % str(current_user._resp))
             if current_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:
@@ -115,7 +114,7 @@ class B2accessUtilities(EudatEndpoint):
                 error = extuser
             return None, None, error
 
-        logger.info("Stored access info")
+        log.info("Stored access info")
 
         # Get token expiration time
         response = b2access.get('tokeninfo')
@@ -174,7 +173,7 @@ class B2accessUtilities(EudatEndpoint):
 
         # Production / Real B2SAFE and irods instance
         if IRODS_EXTERNAL:
-            # logger.error("No iRODS user related to your certificate")
+            # log.error("No iRODS user related to your certificate")
             if not user_exists:
                 return None
         # In case we are using dockerized iRODS/B2SAFE
@@ -233,7 +232,7 @@ class OauthLogin(B2accessUtilities):
                 .replace('http:', 'https:') \
                 .replace(':443', '')
 
-        logger.info("Ask redirection to: %s" % authorized_uri)
+        log.info("Ask redirection to: %s" % authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
         return self.force_response(response)
@@ -334,10 +333,10 @@ class B2accesProxyEndpoint(B2accessUtilities):
         # verify what happened
         if r.valid_credentials:
             if r.is_proxy:
-                logger.debug("A valid proxy already exists")
+                log.debug("A valid proxy already exists")
                 return {"Completed": "Current proxy is still valid."}
             else:
-                logger.debug("Current user does not use a proxy")
+                log.debug("Current user does not use a proxy")
                 return {"Skipped": "Not using a certificate proxy."}
 
         auth = self.global_get('custom_auth')
@@ -356,7 +355,7 @@ class B2accesProxyEndpoint(B2accessUtilities):
         if irods_user is None:
             return self.send_errors(
                 "Failed to set irods user from: %s" % r.extuser_object)
-        logger.info("Refreshed with a new proxy: %s" % proxy_file)
+        log.info("Refreshed with a new proxy: %s" % proxy_file)
 
         return {"Completed": "New proxy was generated."}
 

@@ -14,7 +14,7 @@ from ..services.detect import IRODS_EXTERNAL
 from ...confs.config import PRODUCTION
 from commons.logs import get_logger
 
-logger = get_logger(__name__)
+log = get_logger(__name__)
 
 ## // TO FIX: move into global configuration across containers (e.g. nginx)
 CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
@@ -124,7 +124,7 @@ class EudatEndpoint(EndpointResource):
         user = intuser.email
 
         #####################################
-        logger.debug("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
+        log.very_verbose("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
         return InitObj(
             username=user,
             extuser_object=extuser,
@@ -269,7 +269,7 @@ class EudatEndpoint(EndpointResource):
                 force = (force == 1)
 
         ############################
-        logger.debug(
+        log.verbose(
             "Parameters [file{%s}, path{%s}, res{%s}, force{%s}]"
             % (filename, path, resource, force))
         return path, resource, filename, force

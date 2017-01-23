@@ -11,15 +11,15 @@ A digital object is
 from __future__ import absolute_import
 
 # from commons import htmlcodes as hcodes
-from commons.logs import get_logger
 from ..base import ExtendedApiResource
 from ..services.irods.client import IrodsException
 # from ..services.irods.translations import Irods2Graph
 from .. import decorators as decorate
 from ...auth import authentication
 # from ...confs import config
+from commons.logs import get_logger
 
-logger = get_logger(__name__)
+log = get_logger(__name__)
 
 
 ###############################
@@ -165,7 +165,7 @@ class CollectionEndpoint(ExtendedApiResource):
 #         ipath = icom.create_empty(
 #             collection_input,
 #             directory=True, ignore_existing=self._args.get('force'))
-#         logger.info("Created irods collection: %s", ipath)
+#         log.info("Created irods collection: %s", ipath)
 
 #         # Save inside the graph and give back the uuid
 #         translate = DataObjectToGraph(
@@ -200,6 +200,6 @@ class CollectionEndpoint(ExtendedApiResource):
 #         node.delete()
 #         # Remove from irods
 #         icom.remove(ipath, recursive=True)
-#         logger.info("Removed collection %s", ipath)
+#         log.info("Removed collection %s", ipath)
 
 #         return self.force_response({'deleted': ipath})

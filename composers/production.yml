@@ -23,6 +23,7 @@ rest:
   # command: sleep infinity
   environment:
     APP_MODE: production
+    DEBUG_LEVEL: INFO
 ##################
 # Enable debug in our first prototype
 

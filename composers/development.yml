@@ -2,6 +2,7 @@
 rest:
   environment:
     APP_MODE: development
+    DEBUG_LEVEL: DEBUG
   links:
     # IRODS MUST BE CALLED rodserver
     - icat:rodserver

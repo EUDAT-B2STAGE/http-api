@@ -21,6 +21,7 @@
 - B2SAFE and B2ACCESS development integration for online prototype
 - `http-api-base` merge from concurrent projects
 - Partecipated in adding GSI authentication into irods python official client
+- Global better logging
 - Various bug fixes
 
 # *current*: v0.1-alpha

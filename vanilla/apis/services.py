@@ -4,9 +4,12 @@
 Custom method to initialize mixed services which rely on each other
 """
 
+# from __future__ import absolute_import
+
 from commons.services import get_instance_from_services
 from commons.logs import get_logger
-logger = get_logger(__name__)
+
+log = get_logger(__name__)
 
 
 def init(internal_services, enable_security):
@@ -34,6 +37,6 @@ def init(internal_services, enable_security):
                     if irodsuser not in associated:
                         userobj.associated.connect(irodsuser)
 
-            logger.info("Mixed irods and graph users")
+            log.info("Mixed irods and graph users")
     else:
         pass
