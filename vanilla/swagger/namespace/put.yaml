@@ -9,6 +9,11 @@ single:
     '200':
       description: File created
   parameters:
+    - name: file
+      in: formData
+      description: file data to be uploaded
+      required: true
+      type: file
     - name: resource
       in: query
       type: string

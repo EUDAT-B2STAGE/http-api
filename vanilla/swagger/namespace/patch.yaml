@@ -1,6 +1,6 @@
 
 single:
-  summary: Upload an entity name
+  summary: Update an entity name
   custom:
     authentication: true
     authorized:
