@@ -178,13 +178,13 @@ fi
 
 # Update your code
 if [ "$1" == "update" ]; then
-    echo "Updating docker images to latest release"
-    $compose_run pull
     echo "Pulling main repo"
     git pull
     echo "Pulling submodule"
     cd $subdir
     git pull
+    echo "Updating docker images to latest release"
+    $compose_run pull
     echo "Done"
     exit 0
 fi
