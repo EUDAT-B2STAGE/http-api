@@ -6,19 +6,16 @@ Test  dataobjects endpoints
 
 # import io
 # import os
-import json
+# import json
 import unittest
 import logging
-import commons.htmlcodes as hcodes
 from commons.logs import get_logger
 from restapi.server import create_app
-from restapi.confs.config import USER, PWD, \
-    TEST_HOST, SERVER_PORT, API_URL, AUTH_URL
 
 __author__ = "Paolo D'Onorio De Meo (GitHub@pdonorio)"
 
-API_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, API_URL)
-AUTH_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, AUTH_URL)
+# API_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, API_URL)
+# AUTH_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, AUTH_URL)
 
 logger = get_logger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -32,12 +29,13 @@ class TestDataObjects(unittest.TestCase):
         app = create_app(testing=True)
         cls.app = app.test_client()
 
-        r = cls.app.post(
-            AUTH_URI + '/login',
-            data=json.dumps({'username': USER, 'password': PWD}))
-        content = json.loads(r.data.decode('utf-8'))
-        cls.auth_header = {
-            'Authorization': 'Bearer ' + content['Response']['data']['token']}
+        # r = cls.app.post(
+        #     AUTH_URI + '/login',
+        #     data=json.dumps({'username': USER, 'password': PWD}))
+        # content = json.loads(r.data.decode('utf-8'))
+        # token = content['Response']['data']['token']
+        # cls.auth_header = {
+        #     'Authorization': 'Bearer ' + token}
 
     @classmethod
     def tearDownClass(cls):
