@@ -4,6 +4,7 @@
 
 backend:
   environment:
+    DEBUG_LEVEL: INFO
     BACKEND_AUTH_SERVICE: graphdb
   links:
     - gdb:gdb
