@@ -21,9 +21,17 @@ if [ "$1" == "help" ]; then
     return
 fi
 
-## // TO FIX:
-# add parameters like path for the method or similar?
+######################################
+if [ -z "$SERVER" ]; then
+    SERVER=`echo $APISERVER_PORT | sed 's/tcp/http/'`
+fi
+alive=$(http GET $SERVER/api/status 2>&1 1> /dev/null)
+if [ "$?" != "0" ]; then
+    echo "API status: DOWN!"
+    return
+fi
 
+######################################
 IHOME="/tempZone/home/guest"
 
 #####################
@@ -39,15 +47,34 @@ DEFAULT_INVALID_STATUS="500"
 ALL_COMMAND=""
 
 ######################################
+# Read credentials from current files
+
+dfile="/tmp/confs/base/defaults.yaml"
+cfile="/tmp/confs/custom/eudat.yaml"
+jpath="variables.python.backend.credentials"
+
+# Custom
+credentials=`yq --json -c ".$jpath" $cfile`
+if [ "$credentials" == "null" ]; then
+    # if not custom, base
+    credentials=`yq --json -c ".$jpath" $dfile`
+    if [ "$credentials" == "null" ]; then
+        echo "FATAL!"
+        echo "No credentials found"
+        exit 1
+    else
+        echo "credentials set"
+    fi
+fi
+
+username=`echo $credentials | jq .username | tr -d '"'`
+password=`echo $credentials | jq .password | tr -d '"'`
+export CREDENTIALS="username=$username password=$password"
+
+######################################
 if [ "$AUTH" == '' ]; then
     echo "Generating authentication token"
     . /tmp/gettoken 2>&1 1> /dev/null
-fi
-
-alive=$(http GET $SERVER/api/status 2>&1 1> /dev/null)
-if [ "$?" != "0" ]; then
-    echo "API status: DOWN!"
-    return
 fi
 
 echo "Token available as \$TOKEN"

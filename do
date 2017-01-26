@@ -299,29 +299,8 @@ elif [ "$1" == "api_test" ]; then
 elif [ "$1" == "client_shell" ]; then
     echo "Opening a client shell"
 
-    dfile="backend/restapi/confs/defaults/blueprint.json"
-    cfile="vanilla/specs/eudat.json"
-    jpath="variables.python.backend.credentials"
-    filter="^\s*/{2}"
-
-    # Custom
-    credentials=`cat $cfile | egrep -v "$filter" | jq .$jpath`
-    if [ "$credentials" == "null" ]; then
-        # if not custom, base
-        credentials=`cat $dfile | egrep -v "$filter" | jq .$jpath`
-        if [ "$credentials" == "null" ]; then
-            echo "FATAL!"
-            echo "No credentials found"
-            exit 1
-        fi
-    fi
-
-    username=`echo $credentials | jq .username | tr -d '"'`
-    password=`echo $credentials | jq .password | tr -d '"'`
-    CRED="username=$username password=$password"
-
-    # TERM=xterm-256color $compose_run exec $clientcontainer bash
-    docker exec -e CREDENTIALS="$CRED" -it ${cprefix}_${clientcontainer}_1 bash
+    TERM=xterm-256color $compose_run exec $clientcontainer bash
+    # docker exec -e CREDENTIALS="$CRED" -it ${cprefix}_${clientcontainer}_1 bash
     exit 0
 
 # Handle the right logs

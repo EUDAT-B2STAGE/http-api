@@ -175,6 +175,8 @@ apitests:
   working_dir: /tmp/client
   volumes:
     - ./vanilla/client:/tmp/client
+    - ./backend/commons/confs:/tmp/confs/base
+    - ./vanilla/specs:/tmp/confs/custom
 
 #################################
 # Database administration
