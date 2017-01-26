@@ -8,6 +8,10 @@ file: basic
 mapping:
   all: "/namespace"
   single: "/namespace/<path:irods_location>"
+# schema:
+#   # expose: False
+#   expose: True
+#   # publish: True # should check the publish from the method
 ids:
   irods_location: the filesystem path to your digital entities/objects
 labels:

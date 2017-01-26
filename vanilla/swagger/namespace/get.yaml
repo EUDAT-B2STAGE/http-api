@@ -25,7 +25,7 @@ single:
       in: query
       type: boolean
       # default: False
-    # # TOFIX: move this parameter into body
+    # # TOFIX: move this parameter into body
     # - name: force
     #   description: force action even if getting warnings
     #   in: query

@@ -17,7 +17,7 @@ all:
       in: query
       type: string
       description: iRODS resource
-    # # TOFIX: move this parameter into body
+    # # TOFIX: move this parameter into body
     # - name: force
     #   in: query
     #   type: boolean

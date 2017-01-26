@@ -1,6 +1,5 @@
 
-Since Swagger is enabled:
-  ✔ always save two definitions from swagger @done (17-01-23 16:38)
+With SWAGGER enabled:
   - general error catching with old decorator
   - decorate catch error?
   - check boolean defaults from swagger ui
@@ -9,7 +8,19 @@ Since Swagger is enabled:
     definition.py: current_params.items
   - check if one endpoint definition with two different ids (error)
   - decorated api_method: report_generic_error ?
-  - unittests @important
+
+--- ✄ -----------------------
+
+UNIT TEST:
+☐ uploads with random name
+☐ users create if testing
+☐ A common class
+ ☐ startup
+   ☐ create users and token
+ ☐ end
+   ☐ remove users, tokens
+   ☐ and any object related to that user
+☐ Clean with "finally" if any error
 
 --- ✄ -----------------------
 
@@ -62,17 +73,3 @@ Others:
   ☐ write again a custom response.py
     ☐ what is the motivation of make_custom_response?
 
-
-==============================================
-
-
-UNIT TEST:
-☐ uploads with random name
-☐ users create if testing
-☐ A common class
- ☐ startup
-   ☐ create users and token
- ☐ end
-   ☐ remove users, tokens
-   ☐ and any object related to that user
-☐ Clean with "finally" if any error
