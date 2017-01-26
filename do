@@ -1,5 +1,7 @@
 #!/bin/bash
 
+core_branch="master"
+
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
 echo "# ############################################ #"
@@ -124,8 +126,8 @@ else
     # git submodule init
     # git submodule update --remote
     cd $subdir
-    # Go into the master
-    git checkout master
+    # Go into the current branch
+    git checkout $core_branch
     # print latest commit
     echo "Check latest commit"
     git log -n 1
