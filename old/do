@@ -2,7 +2,7 @@
 
 #############################
 # Defaults
-blueprintconf="specs/blueprint.json"
+blueprintconf="specs/blueprint.init"
 
 #############################
 # Other variables
@@ -158,7 +158,8 @@ if [ ! -s "$check" ]; then
     exit 1
 fi
 # echo "{ \"$1\": \"$file\" }" > $blueprintconf
-echo "{ \"blueprint\": \"$1\" }" > $blueprintconf
+# echo "{ \"blueprint\": \"$1\" }" > $blueprintconf
+echo "$1" > $blueprintconf
 
 # Frontend
 check="js/$1"
