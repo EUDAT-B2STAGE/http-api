@@ -10,7 +10,7 @@
 .ipynb_checkpoints
 
 # user custom configs
-specs/blueprint.json
+specs/blueprint.init
 frontend/config/angular/blueprint.json
 
 # data

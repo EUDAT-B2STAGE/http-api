@@ -150,7 +150,7 @@ fi
 # DEFAULTS FILES
 
 # Backend
-file="$1.json"
+file="$1.yaml"
 check="specs/$file"
 if [ ! -s "$check" ]; then
     echo "File '$check' not found or empty..."
