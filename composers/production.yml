@@ -41,6 +41,11 @@ rest:
   links:
     # IRODS MUST BE CALLED rodserver
     - icat:rodserver
+    #
+    # AS DATABASE BACKEND, choose postgres or neo4j:
+    #
+    # POSTGRES MUST BE CALLED psql
+    - sql:sqldb
     # # GRAPHDB MUST BE CALLED gdb
     # - graphdb:gdb
 

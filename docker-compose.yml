@@ -14,24 +14,24 @@
 #################################
 # Shared volume(s)
 sharedvolumes:
-    image: alpine
-    command: echo "Data volume on"
-    volumes:
-      - httpapi_sharedcerts:/opt/certificates
-      # Sql lite database (only for this container)
-      - httpapi_restlitedb:/dbs
-      # - ./data/dbs:/dbs
+  image: alpine
+  command: echo "Data volume on"
+  volumes:
+    - httpapi_sharedcerts:/opt/certificates
+    # Sql lite database (only for this container)
+    - httpapi_restlitedb:/dbs
+    # - ./data/dbs:/dbs
 
 #################################
 # Postgres database server
 sql:
-    image: postgres
-    volumes:
-        - httpapi_sqldata:/var/lib/postgresql/data
-    environment:
-        POSTGRES_USER: irods
-        POSTGRES_PASSWORD: icatserver
-        POSTGRES_DB: ICAT
+  image: postgres:9.6
+  volumes:
+    - httpapi_sqldata:/var/lib/postgresql/data
+  environment:
+    POSTGRES_USER: irods
+    POSTGRES_PASSWORD: icatserver
+    POSTGRES_DBS: ICAT SQL_API
 
 #################################
 # iRODS iCAT server for EUDAT B2safe
