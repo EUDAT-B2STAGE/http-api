@@ -13,7 +13,11 @@ variables:
             credentials: 
                 username: "user@nomail.org"
                 password: "test"
-
+                roles:
+                  user: normal_user
+                  internal: staff_user
+                  admin: admin_root
+                  default: normal_user
     containers: 
         users:
             backend: "root"
