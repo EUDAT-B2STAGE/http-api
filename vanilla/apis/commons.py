@@ -82,6 +82,10 @@ class EudatEndpoint(EndpointResource):
             if only_check_proxy:
                 return InitObj(is_proxy=use_proxy, valid_credentials=True)
         except Exception as e:
+
+            # Init the error and use it in above cases
+            error = str(e)
+
             if only_check_proxy:
                 if not IRODS_EXTERNAL:
                     # You need admin icommands to fix
@@ -91,7 +95,6 @@ class EudatEndpoint(EndpointResource):
 
             if use_proxy:
                 import re
-                error = str(e)
 
                 re1 = r':\s+(Error reading[^\:\n]+:[^\n]+\n[^\n]+)\n'
                 re2 = r'proxy credential:\s+([^\s]+)\s+' \
