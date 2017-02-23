@@ -1,59 +1,57 @@
 
-proxy:
-  #################
-  # SSL / HTTPS
-  volumes:
-    - ./confs/prod_proxy.conf:/etc/nginx/sites-enabled/production
-    - ./certs/nginx-selfsigned.key:/etc/nginx/server.key
-    - ./certs/nginx-selfsigned.crt:/etc/nginx/server.crt
-    # # LET'S ENCRYPT!
-    # - ./certs/b2stage.cineca.it:/etc/letsencrypt/real
-  ports:
-    - 80:80
-    - 443:443
-  #################
-  links:
-    - rest:restapi
+version: '3'
+services:
 
-rest:
-  user: root
-  # set the home to the main internal irods user
-  # otherwise it will try to write insie the /root homedir
-  command: /bin/bash -c "HOME=/home/irods init"
-  # command: sleep infinity
-  environment:
-    APP_MODE: production
-    DEBUG_LEVEL: INFO
-##################
-# Enable debug in our first prototype
+  proxy:
+    volumes:
+      # SSL / HTTPS
+      - ./confs/prod_proxy.conf:/etc/nginx/sites-enabled/production
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - rest:restapi
 
-## TO BE REMOVED
-    API_DEBUG: "true"
-## TO BE REMOVED
-##################
-    UWSGI_MASTER: /tmp/uwsgi/uwsgi_starter.ini
-    NGINX_ACTIVE: "True"
-  volumes:
-    - ./confs/uwsgi:/tmp/uwsgi
-    - ./confs/nginx_internal:/etc/nginx/conf.d
-  # ports:
-  #   - 8080:8080
-  links:
-    # IRODS MUST BE CALLED rodserver
-    - icat:rodserver
-    #
-    # AS DATABASE BACKEND, choose postgres or neo4j:
-    #
-    # POSTGRES MUST BE CALLED psql
-    - sql:sqldb
-    # # GRAPHDB MUST BE CALLED gdb
-    # - graphdb:gdb
+  rest:
+    user: root
+    # set the home to the main internal 'irods' unix user
+    # otherwise `uwsgi` will try to write inside the /root homedir
+    command: /bin/bash -c "HOME=/home/irods init"
+    # command: sleep infinity
+    environment:
+      APP_MODE: production
+      DEBUG_LEVEL: INFO
+  ##################
+  # Enable debug in our first prototype
 
-apitests:
-  volumes:
-    - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
-  links:
-    # - rest:apiserver
-    - proxy:awesome.docker
-    # - proxy:USEYOURDOMAINNAME
-    # - proxy:b2stage.cineca.it
+  ## TO BE REMOVED
+      API_DEBUG: "true"
+  ## TO BE REMOVED
+  ##################
+      UWSGI_MASTER: /tmp/uwsgi/uwsgi_starter.ini
+      NGINX_ACTIVE: "True"
+    volumes:
+      - ./confs/uwsgi:/tmp/uwsgi
+      - ./confs/nginx_internal:/etc/nginx/conf.d
+    # ports:
+    #   - 8080:8080
+    links:
+      # IRODS MUST BE CALLED rodserver
+      - icat:rodserver
+      #
+      # AS DATABASE BACKEND, choose postgres or neo4j:
+      #
+      # POSTGRES MUST BE CALLED psql
+      - sql:sqldb
+      # # GRAPHDB MUST BE CALLED gdb
+      # - graphdb:gdb
+
+  # if using self signed certificates
+  # and trying to test locally:
+  apitests:
+    volumes:
+      # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
+      - httpapi_sslcerts:/tmp/certs
+    links:
+      - proxy:awesome.docker
+      # - proxy:USEYOURDOMAINNAME

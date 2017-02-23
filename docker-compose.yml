@@ -1,221 +1,221 @@
+#################################
+# STACK handling: use $ ./do
+# DO NOT TOUCH THINGS HERE IF YOU DON'T KNOW WHAT YOU ARE DOING
+#################################
 
-# ################
-# ################
 
-# ## RUN THE STACK
 
-# Please use the bash script at the repo root directory:
-# ./do help
-
-# ################
-# ################
-
+# Upgrading to latest docker-compose reference version
+# (V3 at the moment) - Feb 2017
+version: '3'
 
 #################################
-# Shared volume(s)
-sharedvolumes:
-  image: alpine
-  command: echo "Data volume on"
-  volumes:
-    - httpapi_sharedcerts:/opt/certificates
-    # Sql lite database (only for this container)
-    - httpapi_restlitedb:/dbs
-    # - ./data/dbs:/dbs
+services:
 
-#################################
-# Postgres database server
-sql:
-  image: postgres:9.6
-  volumes:
-    - httpapi_sqldata:/var/lib/postgresql/data
-  environment:
-    POSTGRES_USER: irods
-    POSTGRES_PASSWORD: icatserver
-    POSTGRES_DBS: ICAT SQL_API
-
-#################################
-# iRODS iCAT server for EUDAT B2safe
-icat:
-
-  # # Simple irods server
-  #image: eudatb2safe/irods
-
-  ## OR
-
-  # B2safe instance on irods
-  image: eudatb2safe/b2safe
-
-  # # Open irods port to Outside world
-  # ## CAREFULL: don't uncomment the two lines below if you don't know why
-  # ports:
-  #     - 1247:1247
-
-  hostname: rodserver
-  volumes:
-    - httpapi_etcconf:/etc
-    - httpapi_irodshome:/home/irods
-    - httpapi_irodsvar:/var/lib/irods
-    - httpapi_eudatopt:/opt
-    # a script to do operations inside the irods container
-    - ./confs/irestart.sh:/irestart
-  volumes_from:
-    - sharedvolumes
-  links:
-    - sql:db
-
-#################################
-# GRAPHdb neo4j
-graphdb:
-    image: neo4j:3.1
-    # image: neo4j:2.3.3
-    hostname: gdb
-    environment:
-      NEO4J_AUTH: neo4j/eudatapi
-      # Other parameters?
-      #NEO4J_HEAP_MEMORY
-      #NEO4J_CACHE_MEMORY
+  #############
+  # Postgres database server
+  sql:
+    image: postgres:9.6
     volumes:
-        - httpapi_graphdata:/data
+      - sqldata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: irods
+      POSTGRES_PASSWORD: icatserver
+      POSTGRES_DBS: ICAT SQL_API
+
+  #############
+  # iRODS iCAT server for EUDAT B2safe
+  icat:
+
+    # # Simple irods server
+    #image: eudatb2safe/irods
+
+    ## OR
+
+    # B2safe instance on irods
+    image: eudatb2safe/b2safe
+
+    # # Open irods port to Outside world
+    # ## CAREFULL: don't uncomment the two lines below if you don't know why
+    # ports:
+    #     - 1247:1247
+
+    hostname: rodserver
+    volumes:
+      - etcconf:/etc
+      - irodshome:/home/irods
+      - irodsvar:/var/lib/irods
+      - eudatopt:/opt
+      # a script to do operations inside the irods container
+      - ./confs/irestart.sh:/irestart
+      # shared
+      - sharedcerts:/opt/certificates
+    links:
+      - sql:db
+
+  #############
+  # GRAPHdb neo4j
+  graphdb:
+      image: neo4j:3.1
+      # image: neo4j:2.3.3
+      hostname: gdb
+      environment:
+        NEO4J_AUTH: neo4j/eudatapi
+        # Other parameters?
+        #NEO4J_HEAP_MEMORY
+        #NEO4J_CACHE_MEMORY
+      volumes:
+          - graphdata:/data
+
+  #############
+  # iRODS iCAT server for EUDAT B2safe
+  rest:
+    hostname: api
+    image: eudatb2stage/apiserver:neo4j3
+    command: ./boot
+    environment:
+
+      PYTHON_SERVER_CATEGORY: backend
+
+      ## MODES
+      # APP_MODE: debug
+      # APP_MODE: development
+      # APP_MODE: production
+
+      #########################
+      # Application credentials to use the b2access environment
+
+      # DEV
+      B2ACCESS_APPNAME: httpapi
+      B2ACCESS_APPKEY: SETYOURSECRETKEY
+
+      # # PROD
+      # B2ACCESS_APPNAME: b2stage_httpapi
+      # B2ACCESS_APPKEY: SETYOURSECRETKEY
+      #########################
+
+      # Base the user/role mechanism on neo4j
+      BACKEND_AUTH_SERVICE: relationaldb
+
+      ########################
+      ## Connection to irods
+
+      # LOCAL iRODS server VERSION
+      IRODS_USER: rods
+      IRODS_AUTHSCHEME: GSI
+      IRODS_DEFAULT_ADMIN_USER: rodsminer
+      IRODS_ZONE: tempZone
+
+      # EXTERNAL iRODS server VERSION
+        ##############################
+      # ICAT_1_ENV_IRODS_HOST: '1.2.3.4'
+      # ICAT_1_PORT: '1247'
+      # # IRODS_AUTHSCHEME: 'native'
+      # # IRODS_AUTHSCHEME: 'PAM'
+      # IRODS_AUTHSCHEME: 'GSI'
+      # IRODS_USER: 'pdonorio'
+      # IRODS_DEFAULT_ADMIN_USER: 'pdonorio'
+      # IRODS_ZONE: 'cinecaDMPZone1'
+      # IRODS_CUSTOM_HOME: '/cinecaDMPZone1/home/pdonorio'
+      ## X509 certificates variables
+      # X509_CERT_DIR: /opt/certificates/caauth
+      # X509_USER_CERT: /opt/certificates/pdonorio/usercert.pem
+      # X509_USER_KEY: /opt/certificates/pdonorio/userkey.pem
+
+    working_dir: /code
+    volumes:
+      # Uploads dir
+      - tmpuploads:/uploads
+      # Base code
+      - ./backend:/code
+      # Project configuration
+      - ./vanilla/specs:/code/restapi/confs/main
+      # Swagger API definition
+      - ./vanilla/swagger:/code/restapi/confs/custom
+      # Rest API services models
+      - ./vanilla/models:/code/commons/models/custom
+      # Rest API endpoints
+      - ./vanilla/apis:/code/restapi/resources/custom
+      # JWT tokens secret
+      - jwt_tokens:/jwt_tokens
+      # Tests
+      - ./vanilla/tests:/code/test/custom
+      # B2ACCESS dev certificates
+      - ./certs:/usr/local/share/ca-certificates
+
+      ## CURRENTLY UNUSED:
+      #
+      # # Irods home for admin access
+      # - irodshome:/home/irods
+      # # External irods Authority
+      # - ./certs/caauth:/opt/certificates/caauth
+      # # External irods User
+      # - ./certs/user:/opt/certificates/paolo
+
+      # SHARED
+      - sharedcerts:/opt/certificates
+      - restlitedb:/dbs
+
+  #############
+  # REST API client
+  # (wget, curl, httpie, http-prompt)
+
+  apitests:
+    image: eudatb2stage/apiclient
+    command: sleep 1234567890
+    working_dir: /tmp/client
+    volumes:
+      - ./vanilla/client:/tmp/client
+      - ./backend/commons/confs:/tmp/confs/base
+      - ./vanilla/specs:/tmp/confs/custom
+
+  #############
+  # Database administration
+  sqladmin:
+  # This docker image let you access sqllite/postgres/mysql
+  # with a phpmyadmin-like web page
+    image: eudatb2stage/sqladminer:latest
+    # links:
+    #   - sql:db
+
+  #############
+  # Nginx proxy
+  proxy:
+    image: nginx:1.11-alpine
+    hostname: iamaproxy
+    volumes:
+      - ./confs/nginx.conf:/etc/nginx/nginx.conf
+
+  #############
+  # Client interface if using swagger
+  swagclient:
+    image: eudatb2stage/swagger-ui:latest
+    # environment:
+    #   API_URL: "http://localhost/swagger-ui/"
+    # ports:
+    #   - 80:80
 
 #################################
-# iRODS iCAT server for EUDAT B2safe
-rest:
-  hostname: api
-  image: eudatb2stage/apiserver:neo4j3
-  command: ./boot
-  environment:
-
-    PYTHON_SERVER_CATEGORY: backend
-
-    ## MODES
-    # APP_MODE: debug
-    # APP_MODE: development
-    # APP_MODE: production
-
-    #########################
-    # Application credentials to use the b2access environment
-
-    # DEV
-    B2ACCESS_APPNAME: httpapi
-    B2ACCESS_APPKEY: SETYOURSECRETKEY
-
-    # # PROD
-    # B2ACCESS_APPNAME: b2stage_httpapi
-    # B2ACCESS_APPKEY: SETYOURSECRETKEY
-    #########################
-
-    # Base the user/role mechanism on neo4j
-    BACKEND_AUTH_SERVICE: relationaldb
-
-    ########################
-    ## Connection to irods
-
-    # LOCAL iRODS server VERSION
-    IRODS_USER: rods
-    IRODS_AUTHSCHEME: GSI
-    IRODS_DEFAULT_ADMIN_USER: rodsminer
-    IRODS_ZONE: tempZone
-
-    # EXTERNAL iRODS server VERSION
-      ##############################
-    # ICAT_1_ENV_IRODS_HOST: '1.2.3.4'
-    # ICAT_1_PORT: '1247'
-    # # IRODS_AUTHSCHEME: 'native'
-    # # IRODS_AUTHSCHEME: 'PAM'
-    # IRODS_AUTHSCHEME: 'GSI'
-    # IRODS_USER: 'pdonorio'
-    # IRODS_DEFAULT_ADMIN_USER: 'pdonorio'
-    # IRODS_ZONE: 'cinecaDMPZone1'
-    # IRODS_CUSTOM_HOME: '/cinecaDMPZone1/home/pdonorio'
-    ## X509 certificates variables
-    # X509_CERT_DIR: /opt/certificates/caauth
-    # X509_USER_CERT: /opt/certificates/pdonorio/usercert.pem
-    # X509_USER_KEY: /opt/certificates/pdonorio/userkey.pem
-
-  working_dir: /code
-  volumes:
-    # Uploads dir
-    - httpapi_tmpuploads:/uploads
-    # Base code
-    - ./backend:/code
-    # Project configuration
-    - ./vanilla/specs:/code/restapi/confs/main
-    # Swagger API definition
-    - ./vanilla/swagger:/code/restapi/confs/custom
-    # Rest API services models
-    - ./vanilla/models:/code/commons/models/custom
-    # Rest API endpoints
-    - ./vanilla/apis:/code/restapi/resources/custom
-    # JWT tokens secret
-    - httpapi_jwt_tokens:/jwt_tokens
-    # Tests
-    - ./vanilla/tests:/code/test/custom
-    # B2ACCESS dev certificates
-    - ./certs:/usr/local/share/ca-certificates
-
-    ## CURRENTLY UNUSED:
-    #
-    # # Irods home for admin access
-    # - httpapi_irodshome:/home/irods
-    # # External irods Authority
-    # - ./certs/caauth:/opt/certificates/caauth
-    # # External irods User
-    # - ./certs/user:/opt/certificates/paolo
-
-  volumes_from:
-    - sharedvolumes
-
-#################################
-# REST API client
-# (wget, curl, httpie, http-prompt)
-
-apitests:
-  image: eudatb2stage/apiclient
-  command: sleep 1234567890
-  working_dir: /tmp/client
-  volumes:
-    - ./vanilla/client:/tmp/client
-    - ./backend/commons/confs:/tmp/confs/base
-    - ./vanilla/specs:/tmp/confs/custom
-
-#################################
-# Database administration
-
-# This docker image let you access sqllite/postgres/mysql
-# with a phpmyadmin-like web page
-sqladmin:
-  image: eudatb2stage/sqladminer:latest
-  # links:
-  #   - sql:db
-
-#################################
-# Nginx proxy
-proxy:
-  image: nginx:1.11-alpine
-  hostname: iamaproxy
-  # command: echo "Hello"
-  volumes:
-    # Proxy configuration
-    - ./confs/nginx.conf:/etc/nginx/nginx.conf
-
-#################################
-# Client interface if using swagger
-swagclient:
-  image: eudatb2stage/swagger-ui:latest
-  # environment:
-  #   API_URL: "http://localhost/swagger-ui/"
-  # ports:
-  #   - 80:80
-
-#################################
-# Write irods python client
-pyirods:
-  image: pdonorio/gsi-python-client
-  command: sleep infinity
-  volumes:
-  - /Users/projects/restapi/pyirods:/code
-  - httpapi_sharedcerts:/opt/certificates
-  hostname:
-    pyirods
-  links:
-    - icat:rodserver
+volumes:
+  sharedcerts:
+    driver: local
+  restlitedb:
+    driver: local
+  graphdata:
+    driver: local
+  sqldata:
+    driver: local
+  etcconf:
+    driver: local
+  irodshome:
+    driver: local
+  irodsvar:
+    driver: local
+  eudatopt:
+    driver: local
+  tmpuploads:
+    driver: local
+  jwt_tokens:
+    driver: local
+  sslcerts:
+    driver: local

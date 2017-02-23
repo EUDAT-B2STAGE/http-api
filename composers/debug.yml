@@ -1,36 +1,40 @@
 
-rest:
-  environment:
-    APP_MODE: debug
-    # DEBUG_LEVEL: VERY_VERBOSE
-    DEBUG_LEVEL: VERBOSE
-    # B2ACCESS_APPKEY: GIVEMEAVALIDKEY
-    # BACKEND_AUTH_SERVICE: graphdb
-    IRODS_AUTHSCHEME: GSI
-  ports:
-    - 8080:5000
-##################
-# NOTE: to be commented out if you need IRODS_EXTERNAL
-  links:
-    # IRODS MUST BE CALLED rodserver
-    - icat:rodserver
-##################
-    # # GRAPHDB MUST BE CALLED gdb
-    # - graphdb:gdb
+version: '3'
+services:
 
-# graphdb:
-#   ports:
-#     - 9090:7474
+  rest:
+    environment:
+      APP_MODE: debug
+      # DEBUG_LEVEL: VERY_VERBOSE
+      DEBUG_LEVEL: VERBOSE
+      # B2ACCESS_APPKEY: GIVEMEAVALIDKEY
+      # BACKEND_AUTH_SERVICE: graphdb
+      IRODS_AUTHSCHEME: GSI
+    ports:
+      - 8080:5000
+  ##################
+  # NOTE: to be commented out if you need IRODS_EXTERNAL
+    links:
+      # IRODS MUST BE CALLED rodserver
+      - icat:rodserver
+  ##################
+      # # GRAPHDB MUST BE CALLED gdb
+      # - graphdb:gdb
 
-sqladmin:
-  volumes_from:
-    - sharedvolumes
-  ports:
-    - 8888:8888
-swagclient:
-  ports:
-    - 80:80
+  # graphdb:
+  #   ports:
+  #     - 9090:7474
 
-apitests:
-  links:
-    - rest:apiserver
+  sqladmin:
+    volumes:
+      - httpapi_restlitedb:/dbs
+    ports:
+      - 8888:8888
+
+  swagclient:
+    ports:
+      - 80:80
+
+  apitests:
+    links:
+      - rest:apiserver
