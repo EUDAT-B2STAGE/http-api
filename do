@@ -48,6 +48,9 @@ restcontainer="rest"
 proxycontainer="proxy"
 clientcontainer="apitests"
 vcom="docker volume"
+
+# TO FIX: use always cprefix and not vprefix anymore;
+# due to docker-compose V3
 vprefix="httpapi_"
 cprefix=`basename $(pwd) | tr -d '-'`
 
@@ -306,6 +309,12 @@ elif [ "$1" == "client_shell" ]; then
 # Handle the right logs
 elif [ "$1" == "logs" ]; then
     $compose_run logs -f -t --tail="10"
+    exit 0
+
+# SSL certificates in production with letsencrypt
+elif [ "$1" == "letsencrypt" ]; then
+    echo "Creating new letsencrypt certificates"
+    $compose_run exec proxy /updatecertificates
     exit 0
 fi
 

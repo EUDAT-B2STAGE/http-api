@@ -14,11 +14,7 @@ ERRORS tracing in beta testing:
  ☐ email with id from db, error, timestamp, user
 
 more:
-✔ Real DB @done (17-02-23 07:26)
-   ✔ postgres? @done (17-02-23 07:26)
-✔ build sqldminer own image with php alpine? @done (17-02-23 07:27)
 - others
-  ✘ fix json: import from jsonify @cancelled (17-02-23 07:30)
   ☐ change base.py into core.py
   ☐ write again a custom response.py
     ☐ what is the motivation of make_custom_response?

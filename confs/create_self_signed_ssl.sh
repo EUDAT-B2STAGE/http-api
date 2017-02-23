@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Where to store key and cert files
+# TO FIX: use this inside the nginx container
 key="./certs/nginx-selfsigned.key"
 cert="./certs/nginx-selfsigned.crt"
 
