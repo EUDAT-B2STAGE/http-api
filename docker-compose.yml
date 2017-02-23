@@ -181,10 +181,18 @@ services:
   #############
   # Nginx proxy
   proxy:
-    image: nginx:1.11-alpine
+    build: ./builds/sslproxy
+    image: nginx:rapydo
+    # OLD: using the official image directly with no letsencrypt
+    # image: nginx:1.11-alpine
     hostname: iamaproxy
+    environment:
+      DOMAIN: justatest.io
+      MODE: "--staging"
     volumes:
-      - ./confs/nginx.conf:/etc/nginx/nginx.conf
+      - sslcerts:/etc/letsencrypt
+    # THIS FILE WAS MOVED INSIDE THE DOCKEFILE
+    #   - ./confs/nginx.conf:/etc/nginx/nginx.conf
 
   #############
   # Client interface if using swagger
