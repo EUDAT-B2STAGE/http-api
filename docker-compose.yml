@@ -22,6 +22,12 @@ services:
       POSTGRES_USER: irods
       POSTGRES_PASSWORD: icatserver
       POSTGRES_DBS: ICAT SQL_API
+    deploy:
+      replicas: 1
+    networks:
+      dbnet:
+        aliases:
+          - db
 
   #############
   # iRODS iCAT server for EUDAT B2safe
@@ -50,8 +56,15 @@ services:
       - ./confs/irestart.sh:/irestart
       # shared
       - sharedcerts:/opt/certificates
-    links:
-      - sql:db
+    # links:
+    #   - sql:db
+    networks:
+      - dbnet
+    depends_on:
+      - sql
+    # NOT WORKING?
+      # sql:
+      #   condition: service_started
 
   #############
   # GRAPHdb neo4j
@@ -227,3 +240,13 @@ volumes:
     driver: local
   sslcerts:
     driver: local
+
+networks:
+  dbnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        # Note: use this configuration to match inside internal rules
+        # TO FIX: make this an env variable
+        - subnet: 172.1.0.0/16

@@ -51,7 +51,7 @@ services:
   apitests:
     volumes:
       # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
-      - httpapi_sslcerts:/tmp/certs
+      - sslcerts:/tmp/certs
     links:
       - proxy:awesome.docker
       # - proxy:USEYOURDOMAINNAME

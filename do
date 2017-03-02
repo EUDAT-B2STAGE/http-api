@@ -48,10 +48,7 @@ restcontainer="rest"
 proxycontainer="proxy"
 clientcontainer="apitests"
 vcom="docker volume"
-
-# TO FIX: use always cprefix and not vprefix anymore;
-# due to docker-compose V3
-vprefix="httpapi_"
+ncom="docker network"
 cprefix=`basename $(pwd) | tr -d '-'`
 
 compose_base="docker-compose -f docker-compose.yml"
@@ -126,8 +123,6 @@ if [ "$(ls -A $subdir)" ]; then
 else
     echo "Inizialitazion for the http-api-base submodule"
     git clone https://github.com/EUDAT-B2STAGE/http-api-base.git $subdir
-    # git submodule init
-    # git submodule update --remote
     cd $subdir
     # Go into the current branch
     git checkout $core_branch
@@ -200,7 +195,9 @@ fi
 
 # Check if init has been executed
 
-volumes=`$vcom ls | awk '{print $NF}' | grep "^$vprefix"`
+networks=`$ncom ls | awk '{print $2}' | grep "^$cprefix"`
+volumes=`$vcom ls | awk '{print $NF}' | grep "^$cprefix"`
+
 #echo -e "VOLUMES are\n*$volumes*"
 if [ "$volumes"  == "" ]; then
     if [ "$1" != "init" ]; then
@@ -216,17 +213,24 @@ fi
 
 # Init your stack
 if [ "$1" == "init" ]; then
+
     echo "WARNING: Removing old containers/volumes if any"
     echo "(Sleeping some seconds to let you stop in case you made a mistake)"
-    sleep 7
-    echo "Containers stopping"
+    sleep 5
+
+    ###########################
+    echo "Containers stop & rm"
     $compose_run stop
-    echo "Containers deletion"
     $compose_run rm -f
     if [ "$volumes"  != "" ]; then
         echo "Destroy volumes:"
         docker volume rm $volumes
     fi
+    if [ "$networks"  != "" ]; then
+        echo "Destroy networks:"
+        docker network rm $networks
+    fi
+
     echo "READY TO INIT"
     $compose_run up icat rest
     if [ "$?" == "0" ]; then
@@ -290,7 +294,6 @@ elif [ "$1" == "server_shell" ]; then
     exit 0
 
 elif [ "$1" == "httpapi_restart" ]; then
-    # docker restart $vprefix${restcontainer}_1
     $compose_run restart $restcontainer
     exit 0
 

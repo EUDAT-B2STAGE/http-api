@@ -1,13 +1,14 @@
 #!/bin/bash
 
 conf='/var/lib/postgresql/data/pg_hba.conf'
+net="172.1.0.0/16"
 ## http://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html
 
 echo "Changing access"
 echo "" > $conf
 # ENABLE THIS ONLY FOR LOCAL DEBUG
 # echo "local   $POSTGRES_USER  $POSTGRES_USER  trust" >> $conf
-echo "hostnossl       postgres  $POSTGRES_USER  172.17.0.0/16   password" >> $conf
+echo "hostnossl       postgres  $POSTGRES_USER  $net   password" >> $conf
 
 ###################
 # DBs handling
@@ -20,7 +21,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" << EOSQL
 EOSQL
     # GRANT ALL PRIVILEGES ON DATABASE "$db" TO $POSTGRES_USER;
 # Add privileges
-echo "hostnossl       $db  $POSTGRES_USER  172.17.0.0/16   password" >> $conf
+echo "hostnossl       $db  $POSTGRES_USER  $net   password" >> $conf
 done
 
 ###################

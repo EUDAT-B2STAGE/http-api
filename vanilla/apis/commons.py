@@ -161,7 +161,7 @@ class EudatEndpoint(EndpointResource):
             server = CURRENT_HTTPAPI_SERVER
         else:
             # Fix docker internal net with the link name
-            if server.startswith('172.17.0'):
+            if server.startswith('172.1.0'):
                 port = ''
                 if ':' in url:
                     port = server[server.find(':') + 1:]
