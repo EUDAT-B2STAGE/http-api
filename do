@@ -98,6 +98,17 @@ else
 
 fi
 
+#####################
+warnings=$($compose_run config -q 2>&1)
+if [ "$warnings" != "" ]; then
+    echo "Failed to validate compose files:"
+    echo $warnings
+    exit 1
+fi
+
+# echo "DEBUG"
+# exit 1
+
 make_tests="$compose_run exec rest ./tests.sh"
 #####################
 
