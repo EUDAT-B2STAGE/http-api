@@ -11,20 +11,15 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 """
 
-from __future__ import absolute_import
-
 import os
-from .commons import EudatEndpoint, PRODUCTION
-from ..services.uploader import Uploader
-from ..services.irods.client import IrodsException
-# from ..services.irods.translations import Irods2Graph
-# from commons import htmlcodes as hcodes
-from ...auth import authentication
-# from ...confs import config
 from flask import request, current_app
-from commons import htmlcodes as hcodes
-from commons.logs import get_logger
-from .. import decorators as decorate
+from eudat.resources.commons import EudatEndpoint, PRODUCTION
+from rapydo.services.uploader import Uploader
+from rapydo.services.irods.client import IrodsException
+# from ..services.irods.translations import Irods2Graph
+from rapydo.utils import htmlcodes as hcodes
+from rapydo import decorators as decorate
+from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 

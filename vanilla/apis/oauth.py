@@ -4,21 +4,20 @@
 B2SAFE HTTP REST API endpoints.
 """
 
-from __future__ import absolute_import
-
 import json
 from datetime import datetime as dt
 from flask import url_for, session, current_app
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
-from commons import PRODUCTION, DEBUG as ENVVAR_DEBUG
-from ..services.oauth2clients import decorate_http_request
-from ..services.irods.client import IrodsException, Certificates
-from ..services.detect import IRODS_EXTERNAL
-from .. import decorators as decorate
-from .commons import EudatEndpoint
-from commons import htmlcodes as hcodes
-from commons.logs import get_logger
+
+from eudat.resources.commons import EudatEndpoint
+from rapydo.confs import PRODUCTION, DEBUG as ENVVAR_DEBUG
+from rapydo.services.oauth2clients import decorate_http_request
+from rapydo.services.irods.client import IrodsException, Certificates
+from rapydo.services.detect import IRODS_EXTERNAL
+from rapydo import decorators as decorate
+from rapydo.utils import htmlcodes as hcodes
+from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 
@@ -45,7 +44,6 @@ class B2accessUtilities(EudatEndpoint):
         b2a_token = None
 
         try:
-
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
             log.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)

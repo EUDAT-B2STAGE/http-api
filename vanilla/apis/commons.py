@@ -4,27 +4,26 @@
 Common functions for EUDAT endpoints
 """
 
-from __future__ import absolute_import
-
 import os
+import re
+
 from attr import s as AttributedModel, ib as attribute
-from ..rest.definition import EndpointResource
-from ..services.irods.client import IRODS_DEFAULT_USER
-from ..services.detect import IRODS_EXTERNAL
-from commons import PRODUCTION
-from commons.logs import get_logger
+from rapydo.rest.definition import EndpointResource
+from rapydo.services.irods.client import IRODS_DEFAULT_USER
+from rapydo.services.detect import IRODS_EXTERNAL
+from rapydo.confs import PRODUCTION, API_URL
+
+from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 
-## // TO FIX: move into global configuration across containers (e.g. nginx)
+# TO FIX: move into global configuration across containers (e.g. nginx)
 CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
 CURRENT_HTTPAPI_SERVER = 'b2stage.cineca.it'
 IRODS_PROTOCOL = 'irods'
 CURRENT_PROTOCOL = 'http'
 if PRODUCTION:
     CURRENT_PROTOCOL = 'https'
-## // TO FIX: build this from the WP6 mappings
-CURRENT_B2SAFE_SERVER_CODE = 'a0'
 
 
 ########################
@@ -94,7 +93,6 @@ class EudatEndpoint(EndpointResource):
                                valid_credentials=False, extuser_object=extuser)
 
             if use_proxy:
-                import re
 
                 re1 = r':\s+(Error reading[^\:\n]+:[^\n]+\n[^\n]+)\n'
                 re2 = r'proxy credential:\s+([^\s]+)\s+' \
@@ -143,7 +141,6 @@ class EudatEndpoint(EndpointResource):
         if self._post_delimiter in url:
             url = url[:url.index(self._post_delimiter)]
 
-        from commons import API_URL
         split_point = url.find(API_URL)
 ##################
 # // TO FIX:

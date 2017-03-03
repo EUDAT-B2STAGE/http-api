@@ -8,8 +8,6 @@ A digital object is
 
 """
 
-from __future__ import absolute_import
-
 # from commons import htmlcodes as hcodes
 from ..base import ExtendedApiResource
 from ..services.irods.client import IrodsException

@@ -4,81 +4,80 @@
 B2SAFE internal enpoint to manage metadata
 """
 
-from __future__ import absolute_import
+# from ...services.irods.client import IRODS_DEFAULT_USER
+# from ...base import ExtendedApiResource
+# from ... import decorators as decorate
+# from ....auth import authentication
+# from ....confs import config
+# # from commons.services.uuid import getUUID
+# from commons.logs import get_logger
 
-from ...services.irods.client import IRODS_DEFAULT_USER
-from ...base import ExtendedApiResource
-from ... import decorators as decorate
-from ....auth import authentication
-from ....confs import config
-# from commons.services.uuid import getUUID
-from commons.logs import get_logger
+from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
-
-irods_tmp_user = IRODS_DEFAULT_USER
-
 
 # TO FIX: Use the correct irods user from the token,
 # instad of IRODS_DEFAULT_USER
 irods_tmp_user = IRODS_DEFAULT_USER
 
+log.warning("TO BE REFACTORED")
+
 
 class MetaDataParser(ExtendedApiResource):
 
-    @authentication.authorization_required(config.ROLE_INTERNAL)
-    @decorate.apimethod
+    # @authentication.authorization_required(config.ROLE_INTERNAL)
     def put(self, mid=None):
         # Get neo4j service object
         graph = self.global_get_service('neo4j')
-
-        # Do irods things
-        # icom = self.global_get_service('irods', user=irods_tmp_user)
-
-        # create a test node
-        # myid = getUUID()
-        # mylocation = 'irods:////tempZone/home/rods'
-        # datanode = graph.DigitalEntity(id=myid, location=mylocation,
-        #     filename = 'manifest.xml')
-        # datanode.save()
-
-        # Get the manifest.xml using the graph
-
-        try:
-            de_node = graph.DigitalEntity.nodes.get(id=mid)
-        except graph.DigitalEntity.DoesNotExist:
-
-            log.info("Insed MetaDataParser: %s", mid)
-            return self.force_response(errors={mid: 'Not found.'})
-
-        manifest_path = None
-        manifest_path = self._recursive_search(de_node)
-
-        if manifest_path is None:
-            # except graph.DigitalEntity.DoesNotExist: # to be modified
-            return self.force_response(errors={'manifest.xml not found.'})
-        else:
-            log.info("Manifest.xml found in %s", manifest_path)
-
-        # 3. Parse the manifest file
-        return "Hello world"
-
-    def _recursive_search(self, node):
-        if node.collection:
-            for de in node.parent.all():
-                log.info(de.filename)
-                if de.filename == 'manifest.xml':
-                    log.info('manifest.xml found!')
-                    return de.location
-                else:
-                    self._recursive_search(de)
-        else:
-            if node.filename == 'manifest.xml':
-                return node.location
-            else:
-                log.info('manifest.xml not found')
-                return None
-
-
-    def _manifest_parser(self):
         pass
+
+    #     # Do irods things
+    #     # icom = self.global_get_service('irods', user=irods_tmp_user)
+
+    #     # create a test node
+    #     # myid = getUUID()
+    #     # mylocation = 'irods:////tempZone/home/rods'
+    #     # datanode = graph.DigitalEntity(id=myid, location=mylocation,
+    #     #     filename = 'manifest.xml')
+    #     # datanode.save()
+
+    #     # Get the manifest.xml using the graph
+
+    #     try:
+    #         de_node = graph.DigitalEntity.nodes.get(id=mid)
+    #     except graph.DigitalEntity.DoesNotExist:
+
+    #         log.info("Insed MetaDataParser: %s", mid)
+    #         return self.force_response(errors={mid: 'Not found.'})
+
+    #     manifest_path = None
+    #     manifest_path = self._recursive_search(de_node)
+
+    #     if manifest_path is None:
+    #         # except graph.DigitalEntity.DoesNotExist: # to be modified
+    #         return self.force_response(errors={'manifest.xml not found.'})
+    #     else:
+    #         log.info("Manifest.xml found in %s", manifest_path)
+
+    #     # 3. Parse the manifest file
+    #     return "Hello world"
+
+    # def _recursive_search(self, node):
+    #     if node.collection:
+    #         for de in node.parent.all():
+    #             log.info(de.filename)
+    #             if de.filename == 'manifest.xml':
+    #                 log.info('manifest.xml found!')
+    #                 return de.location
+    #             else:
+    #                 self._recursive_search(de)
+    #     else:
+    #         if node.filename == 'manifest.xml':
+    #             return node.location
+    #         else:
+    #             log.info('manifest.xml not found')
+    #             return None
+
+
+    # def _manifest_parser(self):
+    #     pass

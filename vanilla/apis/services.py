@@ -4,10 +4,8 @@
 Custom method to initialize mixed services which rely on each other
 """
 
-# from __future__ import absolute_import
-
-from commons.services import get_instance_from_services
-from commons.logs import get_logger
+from rapydo.services import get_instance_from_services
+from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 
