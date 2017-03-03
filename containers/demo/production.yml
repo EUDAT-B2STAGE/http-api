@@ -3,6 +3,8 @@
 # Link services inside API
 
 backend:
+  volumes:
+      - ..:/code/custom
   environment:
     DEBUG_LEVEL: INFO
     BACKEND_AUTH_SERVICE: graphdb

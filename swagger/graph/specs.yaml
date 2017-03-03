@@ -1,0 +1,11 @@
+depends_on:
+  - GRAPHDB_AVAILABLE
+file: foo
+class: GraphEndPoint
+schema:
+  expose: true
+mapping:
+  helloworld: "/graph"
+labels:
+  - example
+  - helloworld

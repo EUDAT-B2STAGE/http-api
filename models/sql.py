@@ -2,8 +2,7 @@
 
 """ CUSTOM Models for the relational database """
 
-from __future__ import absolute_import
-from ..sql import db, User
+from rapydo.models.sql import db, User
 
 import logging
 
