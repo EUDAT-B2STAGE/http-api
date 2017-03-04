@@ -1,19 +1,23 @@
 #!/bin/bash
 
 conf='/var/lib/postgresql/data/pg_hba.conf'
+## TO FIX: from an environment variable
 net="172.1.0.0/16"
 ## http://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html
 
 echo "Changing access"
 echo "" > $conf
-# ENABLE THIS ONLY FOR LOCAL DEBUG
-# echo "local   $POSTGRES_USER  $POSTGRES_USER  trust" >> $conf
+
+# Enable to allow health checks
+echo "local   $POSTGRES_USER  $POSTGRES_USER  trust" >> $conf
+
 echo "hostnossl       postgres  $POSTGRES_USER  $net   password" >> $conf
 
 ###################
 # DBs handling
-for db in $POSTGRES_DBS;
+for obj in $POSTGRES_DBS;
 do
+    db=$(echo $obj | tr -d "'")
     echo "Enabling DB $db"
 # Create it
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" << EOSQL

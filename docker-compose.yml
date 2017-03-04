@@ -16,14 +16,21 @@ services:
   # Postgres database server
   sql:
     image: postgres:9.6
+    # command: /bin/bash -c "echo $$POSTGRES_DBS | tr -d \"'\""
     volumes:
       - sqldata:/var/lib/postgresql/data
+      - ./confs/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
-      POSTGRES_USER: irods
-      POSTGRES_PASSWORD: icatserver
-      POSTGRES_DBS: ICAT SQL_API
-    deploy:
-      replicas: 1
+      POSTGRES_USER: "${ALCHEMY_USER}"
+      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
+      POSTGRES_DBS: ${ALCHEMY_DBS}
+    # healthcheck:
+    #   test: ["CMD", "psql", "-U", "${ALCHEMY_USER}", "-c", "\\d"]
+    #   interval: 5s
+    #   timeout: 3s
+    #   retries: 3
+    # deploy:
+    #   replicas: 1
     networks:
       dbnet:
         aliases:
@@ -32,14 +39,18 @@ services:
   #############
   # iRODS iCAT server for EUDAT B2safe
   icat:
-
-    # # Simple irods server
-    #image: eudatb2safe/irods
-
-    ## OR
-
     # B2safe instance on irods
-    image: eudatb2safe/b2safe
+    build: ./builds/b2safe
+    image: "b2safe/irods:rapydo"
+    environment:
+      POSTGRES_HOST: "${ALCHEMY_HOST}"
+      POSTGRES_USER: "${ALCHEMY_USER}"
+      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
+      IRODS_HOST: ${IRODS_HOST}
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_DB: "${IRODS_DB}"
+      IRODS_USER: ${ALCHEMY_PASSWORD}
+      # IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why
@@ -59,12 +70,14 @@ services:
     # links:
     #   - sql:db
     networks:
-      - dbnet
-    depends_on:
-      - sql
-    # NOT WORKING?
-      # sql:
-      #   condition: service_started
+      inet:
+        aliases:
+          - rodserver
+      dbnet:
+    # depends_on:
+    #   - sql
+    #   sql:
+    #     condition: service_healthy
 
   #############
   # GRAPHdb neo4j
@@ -86,88 +99,47 @@ services:
     hostname: api
     image: eudatb2stage/apiserver:neo4j3
     command: ./boot
-    environment:
-
-      PYTHON_SERVER_CATEGORY: backend
-
-      ## MODES
-      # APP_MODE: debug
-      # APP_MODE: development
-      # APP_MODE: production
-
-      #########################
-      # Application credentials to use the b2access environment
-
-      # DEV
-      B2ACCESS_APPNAME: httpapi
-      B2ACCESS_APPKEY: SETYOURSECRETKEY
-
-      # # PROD
-      # B2ACCESS_APPNAME: b2stage_httpapi
-      # B2ACCESS_APPKEY: SETYOURSECRETKEY
-      #########################
-
-      # Base the user/role mechanism on neo4j
-      BACKEND_AUTH_SERVICE: relationaldb
-
-      ########################
-      ## Connection to irods
-
-      # LOCAL iRODS server VERSION
-      IRODS_USER: rods
-      IRODS_AUTHSCHEME: GSI
-      IRODS_DEFAULT_ADMIN_USER: rodsminer
-      IRODS_ZONE: tempZone
-
-      # EXTERNAL iRODS server VERSION
-        ##############################
-      # ICAT_1_ENV_IRODS_HOST: '1.2.3.4'
-      # ICAT_1_PORT: '1247'
-      # # IRODS_AUTHSCHEME: 'native'
-      # # IRODS_AUTHSCHEME: 'PAM'
-      # IRODS_AUTHSCHEME: 'GSI'
-      # IRODS_USER: 'pdonorio'
-      # IRODS_DEFAULT_ADMIN_USER: 'pdonorio'
-      # IRODS_ZONE: 'cinecaDMPZone1'
-      # IRODS_CUSTOM_HOME: '/cinecaDMPZone1/home/pdonorio'
-      ## X509 certificates variables
-      # X509_CERT_DIR: /opt/certificates/caauth
-      # X509_USER_CERT: /opt/certificates/pdonorio/usercert.pem
-      # X509_USER_KEY: /opt/certificates/pdonorio/userkey.pem
-
     working_dir: /code
+
+    environment:
+      # project/package/prefix name
+      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      # app credentials to work inside the b2access environment
+      B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
+      B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
+      # base the user/role mechanism on some database
+      AUTH_SERVICE: alchemy
+      # db access
+      ALCHEMY_ENABLE: 1
+      ALCHEMY_USER: "${ALCHEMY_USER}"
+      ALCHEMY_PASSWORD: "${ALCHEMY_PASSWORD}"
+      # ALCHEMY_DBS: "${ALCHEMY_DBS}"
+      # irods configuration
+      IRODS_ENABLE: 1
+      IRODS_HOST: ${IRODS_HOST}
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
+      IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
+      IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
+
     volumes:
-      # Uploads dir
-      - tmpuploads:/uploads
-      # Base code
-      - ./backend:/code
-      # Project configuration
-      - ./vanilla/specs:/code/restapi/confs/main
-      # Swagger API definition
-      - ./vanilla/swagger:/code/restapi/confs/custom
-      # Rest API services models
-      - ./vanilla/models:/code/commons/models/custom
-      # Rest API endpoints
-      - ./vanilla/apis:/code/restapi/resources/custom
-      # JWT tokens secret
-      - jwt_tokens:/jwt_tokens
-      # Tests
-      - ./vanilla/tests:/code/test/custom
-      # B2ACCESS dev certificates
-      - ./certs:/usr/local/share/ca-certificates
-
-      ## CURRENTLY UNUSED:
-      #
-      # # Irods home for admin access
-      # - irodshome:/home/irods
-      # # External irods Authority
-      # - ./certs/caauth:/opt/certificates/caauth
-      # # External irods User
-      # - ./certs/user:/opt/certificates/paolo
-
       # SHARED
       - sharedcerts:/opt/certificates
       - restlitedb:/dbs
+      # Uploads dir
+      - tmpuploads:/uploads
+      # JWT tokens secret
+      - jwt_tokens:/jwt_tokens
+      # B2ACCESS dev certificates
+      - ./certs:/usr/local/share/ca-certificates
+      # Base code
+      - ./backend:/code
+      # Vanilla code
+      - ./vanilla:/code/eudat
+      # Tests
+      - ./vanilla/tests:/code/test/custom
 
   #############
   # REST API client
@@ -178,9 +150,11 @@ services:
     command: sleep 1234567890
     working_dir: /tmp/client
     volumes:
-      - ./vanilla/client:/tmp/client
-      - ./backend/commons/confs:/tmp/confs/base
-      - ./vanilla/specs:/tmp/confs/custom
+      # - ./vanilla/client:/tmp/client
+      # - ./vanilla/specs:/tmp/confs/custom
+      # - ./backend/commons/confs:/tmp/confs/base
+      - ./backend:/tmp/code/core
+      - ./vanilla:/tmp/code/custom
 
   #############
   # Database administration
@@ -242,6 +216,7 @@ volumes:
     driver: local
 
 networks:
+  inet:
   dbnet:
     driver: bridge
     ipam:
