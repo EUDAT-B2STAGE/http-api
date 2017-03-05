@@ -7,19 +7,9 @@ services:
       APP_MODE: debug
       # DEBUG_LEVEL: VERY_VERBOSE
       DEBUG_LEVEL: VERBOSE
-      # B2ACCESS_APPKEY: GIVEMEAVALIDKEY
-      # BACKEND_AUTH_SERVICE: graphdb
       IRODS_AUTHSCHEME: GSI
     ports:
       - 8080:5000
-  ##################
-  # NOTE: to be commented out if you need IRODS_EXTERNAL
-    links:
-      # IRODS MUST BE CALLED rodserver
-      - icat:rodserver
-  ##################
-      # # GRAPHDB MUST BE CALLED gdb
-      # - graphdb:gdb
 
   # graphdb:
   #   ports:

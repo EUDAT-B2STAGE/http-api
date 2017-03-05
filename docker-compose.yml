@@ -48,9 +48,10 @@ services:
       POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
       IRODS_HOST: ${IRODS_HOST}
       IRODS_PORT: ${IRODS_PORT}
+      IRODS_ZONE: ${IRODS_ZONE}
       IRODS_DB: "${IRODS_DB}"
-      IRODS_USER: ${ALCHEMY_PASSWORD}
-      # IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why

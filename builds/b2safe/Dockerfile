@@ -13,6 +13,8 @@ RUN apt-get update -qq && apt-get install -y \
         gnupg-curl \
         ## fix "The method driver /usr/lib/apt/methods/https could not be found"
         apt-transport-https \
+        ## fix the plugin error at irods installation time
+        libxml2 \
     # clean
     && apt-get clean autoclean && apt-get autoremove -y && \
     rm -rf /var/lib/cache /var/lib/log /tmp/*
@@ -40,8 +42,8 @@ RUN apt-get update && apt-get install -y \
 ## Closing operations
 
 ENV TERM xterm-256color
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+# RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # # User 'guest' for testing certificates
 # ENV GSI_USER guest
 # RUN useradd -ms /bin/bash $GSI_USER
@@ -54,21 +56,17 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # COPY new_authority.sh /addusercert
 # COPY certificates_init.sh /init_certificates
 
-# # if you need to add future commands after irods installation:
-# ENV EXTRA_INSTALLATION_SCRIPT /extras
-# # normal boot up script
-# COPY bootstrap.sh /bootup
+# if you need to add future commands after irods installation:
+ENV EXTRA_INSTALLATION_SCRIPT /extras
 
 # VOLUMES
 VOLUME /etc
-# VOLUME /home/$IRODS_USER
 VOLUME /var/lib/irods
+# Not needed because irods home is var/lib/irods!!
+# VOLUME /home/$IRODS_USER
 
-# HEALTHCHECK --interval=5m --timeout=3s \
-#   CMD curl -f http://localhost/ || exit 1
-
-COPY ./docker-entrypoint.sh /
 COPY ./expect_irods.sh /prepare_answers
+COPY ./docker-entrypoint.sh /
 
 EXPOSE 1247
 WORKDIR /tmp

@@ -49,7 +49,10 @@ proxycontainer="proxy"
 clientcontainer="apitests"
 vcom="docker volume"
 ncom="docker network"
-cprefix=`basename $(pwd) | tr -d '-'`
+
+source .env
+# cprefix=`basename $(pwd) | tr -d '-'`
+cprefix=$COMPOSE_PROJECT_NAME
 
 compose_base="docker-compose -f docker-compose.yml"
 compose_all="$compose_base -f composers/init.yml -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
@@ -329,6 +332,14 @@ elif [ "$1" == "logs" ]; then
 elif [ "$1" == "letsencrypt" ]; then
     echo "Creating new letsencrypt certificates"
     $compose_run exec proxy /updatecertificates
+    exit 0
+
+elif [ "$1" == "buildall" ]; then
+    $compose_run build --pull
+    exit 0
+
+elif [ "$1" == "buildone" ]; then
+    $compose_run build $2
     exit 0
 fi
 
