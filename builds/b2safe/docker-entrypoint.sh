@@ -1,4 +1,12 @@
 #!/bin/bash
+set -e
+
+if [ "$1" != 'irods' ]; then
+    echo "Requested custom command:"
+    echo "\$ $@"
+    $@
+    exit 0
+fi
 
 ######################################
 #
@@ -6,10 +14,13 @@
 #
 ######################################
 
-## START
-echo start
-
 # check environment variables
+if [ -z "$IRODS_HOST" -o -z "$POSTGRES_HOST" ];
+then
+    echo "Cannot launch irods without basic environment variables"
+    echo "Please review your '.env' file"
+    exit 1
+fi
 
 # Check postgres at startup
 # https://docs.docker.com/compose/startup-order/
@@ -18,7 +29,6 @@ do
   >&2 echo "Postgres is unavailable - sleeping"
   sleep 1
 done
-
 
 # Is it init time?
 checkirods=$(ls /etc/irods/)
@@ -45,33 +55,28 @@ if [ "$checkirods" == "" ]; then
         exit 1
     fi
 
-    # set guest/rodsminer certificate user(s)
-
-    # extra script
-
     # Cleanup
-    echo "All done. Cleaning..."
-    sudo rm -rf /tmp/*
+    echo "Cleaning temporary files"
+    rm -rf /tmp/*
 
 else
     # NO: launch irods
     echo "Already installed. Launching..."
+
     service irods start
-
 fi
-## END
 
+# Extra scripts
+dedir="/docker-entrypoint.d"
+for f in `ls $dedir`; do
+    case "$f" in
+        *.sh)     echo "running $f"; bash "$dedir/$f" ;;
+        *)        echo "ignoring $f" ;;
+    esac
+    echo
+done
+
+# Completed
 echo "iRODS is ready"
 sleep infinity
 exit 0
-
-# Certifications
-/init_certificates
-# B2SAFE extra if any
-if [ -f $EXTRA_INSTALLATION_SCRIPT ]; then
-	echo "Executing: extra configuration"
-	$EXTRA_INSTALLATION_SCRIPT
-else
-    echo "No extra installation script"
-fi
-

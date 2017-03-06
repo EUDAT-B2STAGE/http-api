@@ -1,34 +1,27 @@
 
-#  The idea is to extend the original composer
-# to add some init command to launch only the first time.
+#############################
+# TO FIX: remove this file and `do init` command?
+# 
+# It will be done when confs/fixirodsclient.sh
+# will be mapped to a builds/apiserver file
+#############################
 
-# After init data will be saved as volumes.
-# Note: do not remove those volumes from your docker environment!
-
-####################################
 version: '3'
 services:
 
-  sql:
-    volumes:
-     - ./confs/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+#   sql:
+#     volumes:
+#      - ./confs/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
 
-  icat:
-    # command: /init
-    command: sleep infinity    ## DEBUG
-    # command: /install
-    volumes:
-     - ./confs/credentials.conf:/myconfig:ro
+#   icat:
+#     command: /init
+#     # command: sleep infinity    ## DEBUG
+#     # volumes:
+#     #  - ./confs/credentials.conf:/myconfig:ro
 
   rest:
     user: root
+    # command: sleep infinity    ## DEBUG
+    command: /fix
     volumes:
       - ./confs/fixirodsclient.sh:/fix
-    command: /fix
-    links:
-        # IRODS MUST BE CALLED rodserver
-        - icat:rodserver
-
-####################################
-# To clean like there was no init:
-# ./do clean

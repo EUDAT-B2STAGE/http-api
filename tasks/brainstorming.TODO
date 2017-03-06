@@ -1,6 +1,8 @@
 
 Refactor:
-  ☐ change base.py into core.py
+  ✘ change base.py into core.py @cancelled (17-03-05 14:14)
+    ✔ not using core @done (17-03-05 14:14)
+    ✔ moving to rapydo base package @done (17-03-05 14:14)
   ☐ release a PyPi package
     https://medium.com/python-pandemonium/publish-library-in-pypi-77474902819d#.4npyo3iki
     ☐ with documentation

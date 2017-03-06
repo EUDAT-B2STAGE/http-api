@@ -31,7 +31,7 @@ script:
   - docker-compose build
   # - docker-compose run test
   - ./do update
-  - ./do init
+  # - ./do init
   # needed to let the system create files with test coverage
   - chmod o+w backend
   - ./do DEBUG

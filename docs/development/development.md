@@ -16,8 +16,6 @@ If you need to jump in as soon as possible:
 ```bash
 # Clone repo
 git clone https://github.com/EUDAT-B2STAGE/http-api.git
-# Init services
-./do init
 # Then run the final services
 ./do DEVELOPMENT
 ### Develop from here!
@@ -38,8 +36,6 @@ Then:
 ```bash
 # Clone repo
 git clone ...
-# Init services
-./do init
 # Bring up only irods and postgres
 docker-compose up -d icat
 ```

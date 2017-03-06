@@ -3,8 +3,6 @@
 # DO NOT TOUCH THINGS HERE IF YOU DON'T KNOW WHAT YOU ARE DOING
 #################################
 
-
-
 # Upgrading to latest docker-compose reference version
 # (V3 at the moment) - Feb 2017
 version: '3'
@@ -34,7 +32,7 @@ services:
     networks:
       dbnet:
         aliases:
-          - db
+          - ${ALCHEMY_HOST}
 
   #############
   # iRODS iCAT server for EUDAT B2safe
@@ -42,11 +40,14 @@ services:
     # B2safe instance on irods
     build: ./builds/b2safe
     image: "b2safe/irods:rapydo"
+    hostname: ${IRODS_HOST}
+    # command: sleep infinity
+
     environment:
       POSTGRES_HOST: "${ALCHEMY_HOST}"
       POSTGRES_USER: "${ALCHEMY_USER}"
       POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
-      IRODS_HOST: ${IRODS_HOST}
+      IRODS_HOST: "${IRODS_HOST}"
       IRODS_PORT: ${IRODS_PORT}
       IRODS_ZONE: ${IRODS_ZONE}
       IRODS_DB: "${IRODS_DB}"
@@ -58,22 +59,18 @@ services:
     # ports:
     #     - 1247:1247
 
-    hostname: rodserver
     volumes:
       - etcconf:/etc
       - irodshome:/home/irods
       - irodsvar:/var/lib/irods
-      - eudatopt:/opt
-      # a script to do operations inside the irods container
-      - ./confs/irestart.sh:/irestart
-      # shared
       - sharedcerts:/opt/certificates
-    # links:
-    #   - sql:db
+      # - eudatopt:/opt
+      - ./builds/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
+
     networks:
       inet:
         aliases:
-          - rodserver
+          - ${IRODS_HOST}
       dbnet:
     # depends_on:
     #   - sql
@@ -101,6 +98,10 @@ services:
     image: eudatb2stage/apiserver:neo4j3
     command: ./boot
     working_dir: /code
+
+    networks:
+      inet:
+      dbnet:
 
     environment:
       # project/package/prefix name
@@ -217,7 +218,6 @@ volumes:
     driver: local
 
 networks:
-  inet:
   dbnet:
     driver: bridge
     ipam:
@@ -226,3 +226,4 @@ networks:
         # Note: use this configuration to match inside internal rules
         # TO FIX: make this an env variable
         - subnet: 172.1.0.0/16
+  inet:

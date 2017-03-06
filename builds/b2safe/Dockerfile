@@ -1,8 +1,9 @@
-
-FROM ubuntu:16.04
+###################
 # LTS
+FROM ubuntu:16.04
 MAINTAINER "Paolo D'Onorio De Meo <p.donoriodemeo@cineca.it>"
 
+###################
 # Preparation
 RUN apt-get update -qq && apt-get install -y \
         ## normal base
@@ -15,10 +16,13 @@ RUN apt-get update -qq && apt-get install -y \
         apt-transport-https \
         ## fix the plugin error at irods installation time
         libxml2 \
+        ## GSI and Grid FTP dependencies
+        globus-gsi-cert-utils-progs globus-simple-ca \
     # clean
     && apt-get clean autoclean && apt-get autoremove -y && \
     rm -rf /var/lib/cache /var/lib/log /tmp/*
 
+###################
 # Add repos, download and install
 ENV URL https://packages.irods.org
 RUN apt-key adv --fetch-keys $URL/irods-signing-key.asc \
@@ -38,36 +42,31 @@ RUN apt-get update && apt-get install -y \
 
 # Note: USER and GROUP are added automatically by irods install scripts
 
-#######################################
-## Closing operations
+###################
+# OTHER OPERATIONS
 
 ENV TERM xterm-256color
+# certificates
+ENV CERTDIR /opt/certificates
+RUN mkdir -p $CERTDIR/simple_ca
+COPY add_irods_x509.sh /usr/local/bin/add-irods-X509
 
-# RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-# # User 'guest' for testing certificates
-# ENV GSI_USER guest
-# RUN useradd -ms /bin/bash $GSI_USER
-# WORKDIR /home/$GSI_USER
-# COPY guest.irods.env.json .irods/irods_environment.json
-# RUN chown -R $GSI_USER:$GSI_USER /home/$GSI_USER/.irods
-# # rodsminer for administration with GSI auth
-# ENV GSI_ADMIN rodsminer
-# RUN useradd -ms /bin/bash $GSI_ADMIN
-# COPY new_authority.sh /addusercert
-# COPY certificates_init.sh /init_certificates
-
-# if you need to add future commands after irods installation:
-ENV EXTRA_INSTALLATION_SCRIPT /extras
-
+###################
 # VOLUMES
 VOLUME /etc
 VOLUME /var/lib/irods
-# Not needed because irods home is var/lib/irods!!
-# VOLUME /home/$IRODS_USER
+VOLUME /opt/certificates
 
+###################
+# ENTRYPOINT
+# if you need to add future commands after irods installation:
+# allow custom scripts to be executed at launch time
+RUN mkdir /docker-entrypoint.d/
+ENTRYPOINT ["docker-entrypoint"]
 COPY ./expect_irods.sh /prepare_answers
-COPY ./docker-entrypoint.sh /
+COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 
+###################
+# WORKDIR /tmp
 EXPOSE 1247
-WORKDIR /tmp
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["irods"]

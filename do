@@ -9,8 +9,8 @@ echo ""
 
 if [ "$1" == "help" -o -z "$1" ]; then
     echo "Available commands:"
-    echo ""
-    echo -e "init:\t\tStartup your repository code, containers and volumes"
+    # echo ""
+    # echo -e "init:\t\tStartup your repository code, containers and volumes"
     echo ""
     echo -e "check:\tCheck the stack status"
     echo -e "stop:\tFreeze your containers stack"
@@ -55,14 +55,15 @@ source .env
 cprefix=$COMPOSE_PROJECT_NAME
 
 compose_base="docker-compose -f docker-compose.yml"
-compose_all="$compose_base -f composers/init.yml -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
+compose_all="$compose_base -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
+# compose_all="$compose_base -f composers/init.yml -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
 
-# Init mode
-if [ "$1" == "init" ]; then
-    compose_run="$compose_base -f composers/init.yml"
+# # Init mode
+# if [ "$1" == "init" ]; then
+#     compose_run="$compose_base -f composers/init.yml"
 
 # Production mode
-elif [ "$1" == "PRODUCTION" ]; then
+if [ "$1" == "PRODUCTION" ]; then
 
     # # Check for REAL certificates
     # if [ ! -f "./certs/nginx.key" -o ! -f "./certs/nginx.crt" ];
@@ -207,57 +208,55 @@ if [ "$1" == "update" ]; then
     exit 0
 fi
 
-# Check if init has been executed
-
 networks=`$ncom ls | awk '{print $2}' | grep "^$cprefix"`
 volumes=`$vcom ls | awk '{print $NF}' | grep "^$cprefix"`
 
-#echo -e "VOLUMES are\n*$volumes*"
-if [ "$volumes"  == "" ]; then
-    if [ "$1" != "init" ]; then
-        echo "Please init this project."
-        echo "You may do so by running:"
-        echo "\$ $0 init"
-        exit 1
-    fi
-fi
+# #echo -e "VOLUMES are\n*$volumes*"
+# if [ "$volumes"  == "" ]; then
+#     if [ "$1" != "init" ]; then
+#         echo "Please init this project."
+#         echo "You may do so by running:"
+#         echo "\$ $0 init"
+#         exit 1
+#     fi
+# fi
 
 ################################
 # EXECUTE OPTIONS
 
-# Init your stack
-if [ "$1" == "init" ]; then
+# # Init your stack
+# if [ "$1" == "init" ]; then
 
-    echo "WARNING: Removing old containers/volumes if any"
-    echo "(Sleeping some seconds to let you stop in case you made a mistake)"
-    sleep 5
+#     echo "WARNING: Removing old containers/volumes if any"
+#     echo "(Sleeping some seconds to let you stop in case you made a mistake)"
+#     sleep 5
 
-    ###########################
-    echo "Containers stop & rm"
-    $compose_run stop
-    $compose_run rm -f
-    if [ "$volumes"  != "" ]; then
-        echo "Destroy volumes:"
-        docker volume rm $volumes
-    fi
-    if [ "$networks"  != "" ]; then
-        echo "Destroy networks:"
-        docker network rm $networks
-    fi
+#     ###########################
+#     echo "Containers stop & rm"
+#     $compose_run stop
+#     $compose_run rm -f
+#     if [ "$volumes"  != "" ]; then
+#         echo "Destroy volumes:"
+#         docker volume rm $volumes
+#     fi
+#     if [ "$networks"  != "" ]; then
+#         echo "Destroy networks:"
+#         docker network rm $networks
+#     fi
 
-    echo "READY TO INIT"
-    $compose_run up icat rest
-    if [ "$?" == "0" ]; then
-        echo ""
-        echo "Your project is ready to be used."
-        echo "Everytime you need to start just run:"
-        echo "\$ $0 DEBUG"
-        echo ""
-    fi
-    exit 0
+#     echo "READY TO INIT"
+#     $compose_run up icat rest
+#     if [ "$?" == "0" ]; then
+#         echo ""
+#         echo "Your project is ready to be used."
+#         echo "Everytime you need to start just run:"
+#         echo "\$ $0 DEBUG"
+#         echo ""
+#     fi
+#     exit 0
 
 # Verify the status
-elif [ "$1" == "check" ]; then
+if [ "$1" == "check" ]; then
     echo "Stack status:"
     $compose_run ps
     exit 0
@@ -296,11 +295,11 @@ elif [ "$1" == "addiuser" ]; then
     exit 0
 
 elif [ "$1" == "irestart" ]; then
-    $compose_run exec $irodscontainer /irestart
+    $compose_run exec $irodscontainer service irods restart
     exit 0
 
 elif [ "$1" == "irods_shell" ]; then
-    $compose_run exec $irodscontainer bash
+    $compose_run exec $irodscontainer --user irods bash
     exit 0
 
 elif [ "$1" == "server_shell" ]; then
