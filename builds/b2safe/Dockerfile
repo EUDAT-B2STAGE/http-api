@@ -50,6 +50,8 @@ ENV TERM xterm-256color
 ENV CERTDIR /opt/certificates
 RUN mkdir -p $CERTDIR/simple_ca
 COPY add_irods_x509.sh /usr/local/bin/add-irods-X509
+COPY switch_gsi_user.sh /usr/local/bin/switch-gsi
+RUN echo "alias berods='HOME=/var/lib/irods su -p irods'" >> /root/.bash_aliases
 
 ###################
 # VOLUMES
