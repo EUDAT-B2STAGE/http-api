@@ -97,7 +97,7 @@ services:
     build: ./builds/apiserver
     image: apiserver:rapydo
     # user: ${IRODS_USER}
-    user: developer
+    # user: ${APIUSER}
     # command: ./boot
     # working_dir: /code
 

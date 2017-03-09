@@ -63,6 +63,7 @@ done
 
 # Completed
 echo "REST API backend server is ready"
-sleep 10000d
-# sleep infinity
+sleep infinity
+# sleep 10000d
+# whoami
 exit 0

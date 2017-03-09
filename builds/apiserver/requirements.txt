@@ -1,7 +1,4 @@
-
 pip
-git+https://github.com/pdonorio/python-irodsclient.git@python3
-gssapi
 
 attrs
 beeprint
@@ -18,9 +15,13 @@ neomodel
 nose2
 pyOpenSSL
 plumbum
+psycopg2
 PyJWT
 requests
 swagger-spec-validator
 #uWSGI
 #uwsgitop
 urllib3
+
+gssapi
+git+https://github.com/pdonorio/python-irodsclient.git@python3

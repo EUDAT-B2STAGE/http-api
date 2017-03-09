@@ -4,5 +4,5 @@
 add-irods-X509 guest
 add-irods-X509 rodsminer admin
 
-# More?
-echo "Extra!"
+# # More?
+# echo "Extra!"
