@@ -1,9 +1,14 @@
 
 Refactor:
-  ✘ change base.py into core.py @cancelled (17-03-05 14:14)
-    ✔ not using core @done (17-03-05 14:14)
-    ✔ moving to rapydo base package @done (17-03-05 14:14)
-  ☐ release a PyPi package
+  ✔ builds @done (17-03-09 13:46)
+    ✔ irods 4.2 @done (17-03-09 13:45)
+    ✔ rest server @done (17-03-09 13:46)
+      ✘ alpine @cancelled (17-03-09 13:46)
+      ✔ ubuntu @done (17-03-09 13:46)
+      ✔ PRC python3 @done (17-03-09 13:46)
+  ☐ letsencrypt automatic
+  ☐ compose V3
+  ☐ release a PyPi package @rapydo
     https://medium.com/python-pandemonium/publish-library-in-pypi-77474902819d#.4npyo3iki
     ☐ with documentation
     https://pythonhosted.org/

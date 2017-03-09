@@ -10,7 +10,7 @@ from flask import url_for, session, current_app
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
 
-from eudat.resources.commons import EudatEndpoint
+from eudat.apis.commons import EudatEndpoint
 from rapydo.confs import PRODUCTION, DEBUG as ENVVAR_DEBUG
 from rapydo.services.oauth2clients import decorate_http_request
 from rapydo.services.irods.client import IrodsException, Certificates

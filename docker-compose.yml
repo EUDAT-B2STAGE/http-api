@@ -39,7 +39,7 @@ services:
   icat:
     # B2safe instance on irods
     build: ./builds/b2safe
-    image: "b2safe/irods:rapydo"
+    image: b2safe:rapydo
     hostname: ${IRODS_HOST}
     # command: sleep infinity
 
@@ -72,38 +72,45 @@ services:
         aliases:
           - ${IRODS_HOST}
       dbnet:
-    # depends_on:
-    #   - sql
-    #   sql:
-    #     condition: service_healthy
+    depends_on:
+      - sql
 
-  #############
-  # GRAPHdb neo4j
-  graphdb:
-      image: neo4j:3.1
-      # image: neo4j:2.3.3
-      hostname: gdb
-      environment:
-        NEO4J_AUTH: neo4j/eudatapi
-        # Other parameters?
-        #NEO4J_HEAP_MEMORY
-        #NEO4J_CACHE_MEMORY
-      volumes:
-          - graphdata:/data
+  # #############
+  # # GRAPHdb neo4j
+  # graphdb:
+  #     image: neo4j:3.1
+  #     # image: neo4j:2.3.3
+  #     hostname: gdb
+  #     environment:
+  #       NEO4J_AUTH: neo4j/eudatapi
+  #       # Other parameters?
+  #       #NEO4J_HEAP_MEMORY
+  #       #NEO4J_CACHE_MEMORY
+  #     volumes:
+  #         - graphdata:/data
 
   #############
   # iRODS iCAT server for EUDAT B2safe
   rest:
     hostname: api
-    image: eudatb2stage/apiserver:neo4j3
-    command: ./boot
-    working_dir: /code
+    # image: eudatb2stage/apiserver:neo4j3
+    build: ./builds/apiserver
+    image: apiserver:rapydo
+    # user: ${IRODS_USER}
+    user: developer
+    # command: ./boot
+    # working_dir: /code
 
     networks:
       inet:
       dbnet:
 
+    depends_on:
+      - sql
+      - icat
+
     environment:
+      APP_MODE: debug
       # project/package/prefix name
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       # app credentials to work inside the b2access environment
@@ -113,6 +120,7 @@ services:
       AUTH_SERVICE: alchemy
       # db access
       ALCHEMY_ENABLE: 1
+      ALCHEMY_HOST: "${ALCHEMY_HOST}"
       ALCHEMY_USER: "${ALCHEMY_USER}"
       ALCHEMY_PASSWORD: "${ALCHEMY_PASSWORD}"
       # ALCHEMY_DBS: "${ALCHEMY_DBS}"
@@ -129,6 +137,8 @@ services:
     volumes:
       # SHARED
       - sharedcerts:/opt/certificates
+# TO FIX: remove sqllite also in debug mode?
+# It should be used only in the package without docker environment
       - restlitedb:/dbs
       # Uploads dir
       - tmpuploads:/uploads
@@ -143,54 +153,54 @@ services:
       # Tests
       - ./vanilla/tests:/code/test/custom
 
-  #############
-  # REST API client
-  # (wget, curl, httpie, http-prompt)
+  # #############
+  # # REST API client
+  # # (wget, curl, httpie, http-prompt)
 
-  apitests:
-    image: eudatb2stage/apiclient
-    command: sleep 1234567890
-    working_dir: /tmp/client
-    volumes:
-      # - ./vanilla/client:/tmp/client
-      # - ./vanilla/specs:/tmp/confs/custom
-      # - ./backend/commons/confs:/tmp/confs/base
-      - ./backend:/tmp/code/core
-      - ./vanilla:/tmp/code/custom
+  # apitests:
+  #   image: eudatb2stage/apiclient
+  #   command: sleep 1234567890
+  #   working_dir: /tmp/client
+  #   volumes:
+  #     # - ./vanilla/client:/tmp/client
+  #     # - ./vanilla/specs:/tmp/confs/custom
+  #     # - ./backend/commons/confs:/tmp/confs/base
+  #     - ./backend:/tmp/code/core
+  #     - ./vanilla:/tmp/code/custom
 
-  #############
-  # Database administration
-  sqladmin:
-  # This docker image let you access sqllite/postgres/mysql
-  # with a phpmyadmin-like web page
-    image: eudatb2stage/sqladminer:latest
-    # links:
-    #   - sql:db
+  # #############
+  # # Database administration
+  # sqladmin:
+  # # This docker image let you access sqllite/postgres/mysql
+  # # with a phpmyadmin-like web page
+  #   image: eudatb2stage/sqladminer:latest
+  #   # links:
+  #   #   - sql:db
 
-  #############
-  # Nginx proxy
-  proxy:
-    build: ./builds/sslproxy
-    image: nginx:rapydo
-    # OLD: using the official image directly with no letsencrypt
-    # image: nginx:1.11-alpine
-    hostname: iamaproxy
-    environment:
-      DOMAIN: justatest.io
-      MODE: "--staging"
-    volumes:
-      - sslcerts:/etc/letsencrypt
-    # THIS FILE WAS MOVED INSIDE THE DOCKEFILE
-    #   - ./confs/nginx.conf:/etc/nginx/nginx.conf
+  # #############
+  # # Nginx proxy
+  # proxy:
+  #   build: ./builds/sslproxy
+  #   image: nginx:rapydo
+  #   # OLD: using the official image directly with no letsencrypt
+  #   # image: nginx:1.11-alpine
+  #   hostname: iamaproxy
+  #   environment:
+  #     DOMAIN: justatest.io
+  #     MODE: "--staging"
+  #   volumes:
+  #     - sslcerts:/etc/letsencrypt
+  #   # THIS FILE WAS MOVED INSIDE THE DOCKEFILE
+  #   #   - ./confs/nginx.conf:/etc/nginx/nginx.conf
 
-  #############
-  # Client interface if using swagger
-  swagclient:
-    image: eudatb2stage/swagger-ui:latest
-    # environment:
-    #   API_URL: "http://localhost/swagger-ui/"
-    # ports:
-    #   - 80:80
+  # #############
+  # # Client interface if using swagger
+  # swagclient:
+  #   image: eudatb2stage/swagger-ui:latest
+  #   # environment:
+  #   #   API_URL: "http://localhost/swagger-ui/"
+  #   # ports:
+  #   #   - 80:80
 
 #################################
 volumes:

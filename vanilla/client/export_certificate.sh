@@ -1,25 +1,8 @@
 # #############################################
-
-# # This script keeps track of efforts done in
-# # trying to make the X509 normal/proxy certificates
-# # hand-made or from b2access work
-# # onto the dockerized version of b2safe
-
-# #############################################
-# # Become guest (normal certificates)
-
-# export IRODS_USER_NAME=guest
-# export IRODS_HOST=rodserver
-# export IRODS_PORT=1247
-# export IRODS_AUTHENTICATION_SCHEME=gsi
-# export IRODS_ZONE=tempZone
-# export IRODS_HOME=/tempZone/home/guest
-
-# export X509_USER_CERT=/opt/certificates/guest/usercert.pem
-# export X509_USER_KEY=/opt/certificates/guest/userkey.pem
-# export X509_CERT_DIR=/opt/certificates/caauth
-
-# exit
+# This script keeps track of efforts done in
+# trying to make the X509 normal/proxy certificates
+# hand-made or from b2access work
+# onto the dockerized version of b2safe
 
 # #############################################
 # # Install proxy and CA for b2access dev
@@ -55,18 +38,19 @@
 # iadmin lua
 # exit
 
+# export X509_CERT_DIR=/etc/grid-security/certificates
+
 # # Become this new user inside rest api
 # docker exec -it eudatapi_rest_1 bash
 
-export MYUSER="guest"
-
+MYUSER="guest"
+# MYUSER="rodsminer"
 export IRODS_USER_NAME=$MYUSER
 export IRODS_HOST=rodserver
 export IRODS_PORT=1247
 export IRODS_AUTHENTICATION_SCHEME=gsi
 export IRODS_ZONE=tempZone
 export IRODS_HOME=/tempZone/home/$MYUSER
-export X509_CERT_DIR=/etc/grid-security/certificates
 export X509_CERT_DIR=/opt/certificates/simple_ca
 export X509_USER_CERT=/opt/certificates/$MYUSER/usercert.pem
 export X509_USER_KEY=/opt/certificates/$MYUSER/userkey.pem

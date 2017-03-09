@@ -13,7 +13,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 import os
 from flask import request, current_app
-from eudat.resources.commons import EudatEndpoint, PRODUCTION
+from eudat.apis.commons import EudatEndpoint, PRODUCTION
 from rapydo.services.uploader import Uploader
 from rapydo.services.irods.client import IrodsException
 # from ..services.irods.translations import Irods2Graph
