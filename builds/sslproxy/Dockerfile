@@ -1,7 +1,7 @@
 
 # PROXY that accepts challenges
 FROM nginx:1.11-alpine
-MAINTAINER "Paolo D'Onorio De Meo <p.donoriodemeo@cineca.it>"
+MAINTAINER "Paolo D'Onorio De Meo <p.donorio.demeo@gmail.it>"
 
 RUN apk update && \
     apk add wget git openssl \
@@ -9,12 +9,15 @@ RUN apk update && \
 
 WORKDIR /tmp
 # TO FIX: choose the right directory for installation
-ENV ACMEDIR /root/.acme.sh
+ENV ACMEDIR /acme
+ENV ACMEV "2.6.6"
 # TO FIX: clone on a certain release/commit
-RUN git clone https://github.com/Neilpang/acme.sh.git \
-    && cd acme.sh && \
-    ./acme.sh --install \
-    && cd .. && rm -rf acme.sh
+RUN echo acme && \
+    # git clone https://github.com/Neilpang/acme.sh.git \
+    wget https://github.com/Neilpang/acme.sh/archive/2.6.6.zip \
+    && unzip ${ACMEV}.zip && cd acme.sh-${ACMEV} \
+    && ./acme.sh --install --home $ACMEDIR \
+    && cd .. && rm -rf *$ACMEV
 
 RUN mkdir -p /usr/share/nginx/html/.well-known/acme-challenge
 RUN chown -R nginx /usr/share/nginx/html
