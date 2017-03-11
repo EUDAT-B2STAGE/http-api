@@ -75,19 +75,22 @@ services:
     depends_on:
       - sql
 
-  # #############
-  # # GRAPHdb neo4j
-  # graphdb:
-  #     image: neo4j:3.1
-  #     # image: neo4j:2.3.3
-  #     hostname: gdb
-  #     environment:
-  #       NEO4J_AUTH: neo4j/eudatapi
-  #       # Other parameters?
-  #       #NEO4J_HEAP_MEMORY
-  #       #NEO4J_CACHE_MEMORY
-  #     volumes:
-  #         - graphdata:/data
+  #############
+  # GRAPHdb neo4j
+  graphdb:
+    image: neo4j:3.1
+    hostname: ${GRAPHDB_HOST}
+    environment:
+      NEO4J_AUTH: neo4j/${GRAPHDB_PASSWORD}
+      # Other parameters?
+      #NEO4J_HEAP_MEMORY
+      #NEO4J_CACHE_MEMORY
+    networks:
+      dbnet:
+        aliases:
+          - ${GRAPHDB_HOST}
+    volumes:
+        - graphdata:/data
 
   #############
   # iRODS iCAT server for EUDAT B2safe
@@ -107,6 +110,7 @@ services:
 
     depends_on:
       - sql
+      - graphdb
       - icat
 
     environment:
@@ -120,16 +124,20 @@ services:
       AUTH_SERVICE: alchemy
       # db access
       ALCHEMY_ENABLE: 1
-      ALCHEMY_HOST: "${ALCHEMY_HOST}"
-      ALCHEMY_USER: "${ALCHEMY_USER}"
-      ALCHEMY_PASSWORD: "${ALCHEMY_PASSWORD}"
+      ALCHEMY_HOST: ${ALCHEMY_HOST}
+      ALCHEMY_USER: ${ALCHEMY_USER}
+      ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
+      GRAPHDB_ENABLE: 1
+      GRAPHDB_HOST: ${GRAPHDB_HOST}
+      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
       # ALCHEMY_DBS: "${ALCHEMY_DBS}"
       # irods configuration
       IRODS_ENABLE: 1
       IRODS_HOST: ${IRODS_HOST}
       IRODS_PORT: ${IRODS_PORT}
       IRODS_USER: ${IRODS_USER}
-      IRODS_ZONE: "${IRODS_ZONE}"
+      IRODS_ZONE: ${IRODS_ZONE}
       IRODS_HOME: ${IRODS_HOME}
       IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
