@@ -9,6 +9,7 @@ Flask-Cors
 Flask-OAuthlib
 Flask-RESTful
 Flask-SQLAlchemy
+Flask-Injector
 httpie
 ipython
 neomodel

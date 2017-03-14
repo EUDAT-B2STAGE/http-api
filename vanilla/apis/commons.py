@@ -10,6 +10,7 @@ import re
 from attr import s as AttributedModel, ib as attribute
 from rapydo.rest.definition import EndpointResource
 from rapydo.services.irods.client import IRODS_DEFAULT_USER
+# TO FIX: do not import from detect anymore with the new service providers
 from rapydo.services.detect import IRODS_EXTERNAL
 from rapydo.confs import PRODUCTION, API_URL
 
@@ -20,6 +21,7 @@ log = get_logger(__name__)
 # TO FIX: move into global configuration across containers (e.g. nginx)
 CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
 CURRENT_HTTPAPI_SERVER = 'b2stage.cineca.it'
+
 IRODS_PROTOCOL = 'irods'
 CURRENT_PROTOCOL = 'http'
 if PRODUCTION:

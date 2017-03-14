@@ -9,6 +9,9 @@ tags:
   namespace: upload, list and download objects
   b2access: request and refresh authorization from the B2ACCESS service
 
+# TO FIX: define here a variable
+# that tells the server what the domain will be
+
 # variables:
 #   python:
 #     backend:
