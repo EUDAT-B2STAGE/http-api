@@ -1,17 +1,33 @@
 
 Refactor:
   ✔ builds @done (17-03-09 13:46)
-    ✔ irods 4.2 @done (17-03-09 13:45)
-    ✔ rest server @done (17-03-09 13:46)
-      ✘ alpine @cancelled (17-03-09 13:46)
-      ✔ ubuntu @done (17-03-09 13:46)
-      ✔ PRC python3 @done (17-03-09 13:46)
-  ☐ letsencrypt automatic
+    ☐ templates repo
+      ✔ create @done (17-03-16 14:45)
+      ☐ fill
+  ✔ services @done (17-03-16 14:45)
+    ✔ yaml file @done (17-03-16 14:45)
+  ☐ connectors
+    ✔ neomodel @done (17-03-15 16:20)
+      ✔ models @done (17-03-17 23:08)
+    ✔ irods rpc @done (17-03-15 16:20)
+      ✔ no models @done (17-03-17 23:05)
+    ✔ sqlalchemy @done (17-03-16 17:26)
+      ✔ models @done (17-03-17 23:05)
+    ☐ auth service @nontrivial
+      ☐ auth init
+    ☐ celery
+  ☐ check detect.py tofix and todo
+    ☐ clean rapydo.services python folder...
   ☐ compose V3
-  ☐ release a PyPi package @rapydo
-    https://medium.com/python-pandemonium/publish-library-in-pypi-77474902819d#.4npyo3iki
+  ☐ letsencrypt automatic
+  ☐ release a PyPi package
     ☐ with documentation
     https://pythonhosted.org/
+
+
+
+
+
 
 --- ✄ -----------------------
 
