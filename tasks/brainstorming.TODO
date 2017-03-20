@@ -2,20 +2,20 @@
 Refactor:
   ✔ builds @done (17-03-09 13:46)
     ☐ templates repo
-      ✔ create @done (17-03-16 14:45)
-      ☐ fill
-  ✔ services @done (17-03-16 14:45)
-    ✔ yaml file @done (17-03-16 14:45)
   ☐ connectors
     ✔ neomodel @done (17-03-15 16:20)
-      ✔ models @done (17-03-17 23:08)
     ✔ irods rpc @done (17-03-15 16:20)
-      ✔ no models @done (17-03-17 23:05)
     ✔ sqlalchemy @done (17-03-16 17:26)
-      ✔ models @done (17-03-17 23:05)
     ☐ auth service @nontrivial
-      ☐ auth init
-    ☐ celery
+      ☐ move away from server.py
+        ☐ enable_security
+        ☐ worker_mode
+    ☐ all auth modules
+      ☐ check file name
+      ✔ no connection @done (17-03-20 12:07)
+        ✔ inject services @done (17-03-20 12:07)
+      ☐ how to give error with injector when service is not available
+    ☐ celery?
   ☐ check detect.py tofix and todo
     ☐ clean rapydo.services python folder...
   ☐ compose V3
@@ -23,6 +23,10 @@ Refactor:
   ☐ release a PyPi package
     ☐ with documentation
     https://pythonhosted.org/
+
+
+
+
 
 
 

@@ -116,14 +116,20 @@ services:
       - icat
 
     environment:
+      # set this variable with docker-compose debug/production extensions
       APP_MODE: debug
+
       # project/package/prefix name
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
+
       # base the user/role mechanism on some database
-      AUTH_SERVICE: alchemy
+      AUTH_ENABLE: 1
+      # putting this here because it should not be configurable in .env
+      AUTH_SERVICE: sqlalchemy
+
       # db access
       ALCHEMY_ENABLE: 1
       ALCHEMY_EXTERNAL: ${ALCHEMY_EXTERNAL}

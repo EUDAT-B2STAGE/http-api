@@ -34,7 +34,8 @@ if PRODUCTION:
 @AttributedModel
 class InitObj(object):
     """
-    A pythonic way to handle a method response with different features
+    A pythonic way to handle a method response with different features.
+    Here's the list of needed attributes:
     """
 
     # User info
