@@ -26,7 +26,7 @@ class MetaDataObject(EndpointResource):
 
         ###########################
         # Get the service object
-        graph = self.global_get_service('neo4j')
+        graph = self.neo
 
         ###########################
         # Models can be found inside the graphdb object
@@ -57,8 +57,8 @@ class MetaDataObject(EndpointResource):
 #         """ Register a UUID """
 
 #         # Create graph object
-#         graph = self.global_get_service('neo4j')
-#         icom = self.global_get_service('irods')
+#         graph = self.neo
+#         icom = self.rpc
 
 #         #######################
 #         #######################

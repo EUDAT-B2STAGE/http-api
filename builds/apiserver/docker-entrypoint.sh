@@ -39,10 +39,10 @@ fi
 
     # Fix sqllite permissions?
 
-    # # Create the secret to enable security on JWT tokens (in production)
-    # mkdir -p /jwt_tokens
-    # head -c 24 /dev/urandom > /jwt_tokens/secret.key
-    # # chown -R 999 /jwt_tokens
+    # Create the secret to enable security on JWT tokens
+    mkdir -p /jwt_tokens
+    head -c 24 /dev/urandom > /jwt_tokens/secret.key
+    # chown -R 999 /jwt_tokens
 
 # else
 

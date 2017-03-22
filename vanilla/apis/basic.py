@@ -436,7 +436,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ########################################
         # # Get the dataobject from the graph
-        # graph = self.global_get_service('neo4j')
+        # graph = self.neo
         # dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
         # collection_node = dataobj_node.belonging.all().pop()
 

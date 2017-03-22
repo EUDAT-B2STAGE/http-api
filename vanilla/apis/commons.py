@@ -63,7 +63,7 @@ class EudatEndpoint(EndpointResource):
     def init_endpoint(self, only_check_proxy=False):
 
         # main object to handle token and oauth2 things
-        auth = self.global_get('custom_auth')
+        auth = self.auth
 
         # Get the irods user
         # (either from oauth or using default)
@@ -74,7 +74,10 @@ class EudatEndpoint(EndpointResource):
         if extuser is not None:
             iuser = extuser.irodsuser
             use_proxy = True
-        icom = self.global_get_service('irods', user=iuser, proxy=use_proxy)
+
+        # TO FIX: implement rpc wrapper
+        # icom = self.global_get_service('irods', user=iuser, proxy=use_proxy)
+        icom = self.rpc
 
         # Verify if irods certificates are ok
         try:
@@ -91,7 +94,8 @@ class EudatEndpoint(EndpointResource):
             if only_check_proxy:
                 if not IRODS_EXTERNAL:
                     # You need admin icommands to fix
-                    icom = self.global_get_service('irods', become_admin=True)
+                    icom = self.rpc
+                    # icom = self.global_get_service('irods', become_admin=True)
                 return InitObj(icommands=icom, is_proxy=use_proxy,
                                valid_credentials=False, extuser_object=extuser)
 
@@ -124,7 +128,7 @@ class EudatEndpoint(EndpointResource):
                 errors={'Invalid proxy credential': error})
 
         # SQLALCHEMY connection
-        sql = self.global_get_service('sql')
+        sql = self.db
         user = intuser.email
 
         #####################################
@@ -145,11 +149,10 @@ class EudatEndpoint(EndpointResource):
             url = url[:url.index(self._post_delimiter)]
 
         split_point = url.find(API_URL)
-##################
-# // TO FIX:
-        # Does this add by mistake a character?
+
+        # TO FIX: # Does this add by mistake a character?
         uri = self.api_server_uri(url[:split_point])
-##################
+
         uri_path = url[split_point:]
         if remove_suffix is not None and uri_path.endswith(remove_suffix):
             uri_path = uri_path.replace(remove_suffix, '')
