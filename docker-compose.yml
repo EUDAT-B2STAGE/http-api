@@ -16,10 +16,9 @@ services:
   # Postgres database server
   sql:
     image: postgres:9.6
-    # command: /bin/bash -c "echo $$POSTGRES_DBS | tr -d \"'\""
     volumes:
       - sqldata:/var/lib/postgresql/data
-      - ./confs/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+      - ./builds/postgresql/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
       POSTGRES_USER: "${ALCHEMY_USER}"
       POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
@@ -184,6 +183,7 @@ services:
 
   client:
     build: ./builds/apiclient
+    image: apiclient:rapydo
     # image: eudatb2stage/apiclient
     volumes:
       - ./backend:/code/core

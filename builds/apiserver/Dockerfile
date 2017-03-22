@@ -50,6 +50,7 @@ RUN mkdir /code
 WORKDIR /code
 RUN mkdir /docker-entrypoint.d/
 RUN echo "alias httpapi=\"su -p \$APIUSER -c 'cd /code; python run.py'\"" >> /root/.bash_aliases
+RUN echo "alias testapi=\"su -p \$APIUSER -c 'cd /code; nose2 -F '\"" >> /root/.bash_aliases
 
 COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["docker-entrypoint"]
@@ -62,5 +63,5 @@ EXPOSE 5000
 
 RUN echo "Entrylevel" && \
     echo "echo\necho 'Run Flask server as ($APIUSER) with the command:'\necho '$ httpapi'" >> /root/.bashrc && \
-    echo "echo\necho 'Run tests with $ cd /code; nose2 -F [test.FOLDER]'\n" \
+    echo "echo\necho 'Run tests also with:\n$ testapi [test.FOLDER]'\n" \
     >> /root/.bashrc

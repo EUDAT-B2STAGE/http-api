@@ -8,7 +8,7 @@ Refactor:
   ☐ rpc? @mattia
 
   ☐ unittests
-    ☐ remove all
+    ✔ remove all @done (17-03-22 11:55)
     ☐ fix base
     ☐ fix eudat
   ✔ base connectors @done (17-03-22 00:34)
