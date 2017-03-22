@@ -113,7 +113,7 @@ fi
 # echo "DEBUG"
 # exit 1
 
-make_tests="$compose_run exec rest ./tests.sh"
+# make_tests="$compose_run exec rest ./tests.sh"
 #####################
 
 # Check prerequisites
@@ -160,17 +160,19 @@ if [ "$1" == "push" ]; then
     fi
 
     if [ "$2" != "force" ]; then
-        testlogs="/tmp/tests.log"
-        echo "Running tests before pushing..."
-        $make_tests > $testlogs
-        if [ "$?" == "0" ]; then
-            echo "Test are fine!"
-        else
-            echo "Failed, to test... (see $testlogs file)"
-            echo "Fix errors before pushing, or run again with:"
-            echo "$0 $1 force"
-            exit 1
-        fi
+        echo "TO BE FIXED"
+        exit 1
+        # testlogs="/tmp/tests.log"
+        # echo "Running tests before pushing..."
+        # $make_tests > $testlogs
+        # if [ "$?" == "0" ]; then
+        #     echo "Test are fine!"
+        # else
+        #     echo "Failed, to test... (see $testlogs file)"
+        #     echo "Fix errors before pushing, or run again with:"
+        #     echo "$0 $1 force"
+        #     exit 1
+        # fi
     fi
 
     echo "Pushing submodule"
@@ -312,7 +314,7 @@ elif [ "$1" == "httpapi_restart" ]; then
 
 elif [ "$1" == "api_test" ]; then
     echo "Opening a shell for nose2 tests"
-    $make_tests
+    $compose_run exec rest /bin/bash -c "su -p developer -c ./tests.sh"
     exit $?
 
 elif [ "$1" == "client_shell" ]; then
