@@ -23,7 +23,7 @@ fi
 
 ######################################
 if [ -z "$SERVER" ]; then
-    SERVER=`echo $APISERVER_PORT | sed 's/tcp/http/'`
+    export SERVER="$APP_HOST:$APP_PORT"
 fi
 alive=$(http GET $SERVER/api/status 2>&1 1> /dev/null)
 if [ "$?" != "0" ]; then
@@ -49,8 +49,8 @@ ALL_COMMAND=""
 ######################################
 # Read credentials from current files
 
-dfile="/tmp/confs/base/defaults.yaml"
-cfile="/tmp/confs/custom/eudat.yaml"
+dfile="/code/core/rapydo/confs/defaults.yaml"
+cfile="/code/custom/specs/eudat.yaml"
 jpath="variables.python.backend.credentials"
 
 # Custom
@@ -74,7 +74,7 @@ export CREDENTIALS="username=$username password=$password"
 ######################################
 if [ "$AUTH" == '' ]; then
     echo "Generating authentication token"
-    . /tmp/gettoken 2>&1 1> /dev/null
+    . /code/gettoken 2>&1 1> /dev/null
 fi
 
 echo "Token available as \$TOKEN"
@@ -165,7 +165,7 @@ if [ "$1" == 'upload' -o "$1" == "$ALL_COMMAND" ]; then
         path="$2"
     fi
 
-    file="/tmp/gettoken"
+    file="/code/gettoken"
     if [ ! -z "$3" ]; then
         file="$3"
     fi

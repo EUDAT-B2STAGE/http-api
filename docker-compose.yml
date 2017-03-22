@@ -1,6 +1,8 @@
 #################################
-# STACK handling: use $ ./do
-# DO NOT TOUCH THINGS HERE IF YOU DON'T KNOW WHAT YOU ARE DOING
+#
+# To handle this STACK please use
+# $ ./do
+#
 #################################
 
 # Upgrading to latest docker-compose reference version
@@ -107,8 +109,11 @@ services:
     # working_dir: /code
 
     networks:
-      inet:
+      flasknet:
+        aliases:
+          - ${FLASK_HOST}
       dbnet:
+      inet:
 
     depends_on:
       - sql
@@ -118,6 +123,7 @@ services:
     environment:
       # set this variable with docker-compose debug/production extensions
       APP_MODE: debug
+      # DEBUG_LEVEL: DEBUG
 
       # project/package/prefix name
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
@@ -159,9 +165,6 @@ services:
     volumes:
       # SHARED
       - sharedcerts:/opt/certificates
-# TO FIX: remove sqllite also in debug mode?
-# It should be used only in the package without docker environment
-      - restlitedb:/dbs
       # Uploads dir
       - tmpuploads:/uploads
       # JWT tokens secret
@@ -175,20 +178,23 @@ services:
       # Tests
       - ./vanilla/tests:/code/test/custom
 
-  # #############
-  # # REST API client
-  # # (wget, curl, httpie, http-prompt)
+  #############
+  # REST API client
+  # (wget, curl, httpie, http-prompt)
 
-  # apitests:
-  #   image: eudatb2stage/apiclient
-  #   command: sleep 1234567890
-  #   working_dir: /tmp/client
-  #   volumes:
-  #     # - ./vanilla/client:/tmp/client
-  #     # - ./vanilla/specs:/tmp/confs/custom
-  #     # - ./backend/commons/confs:/tmp/confs/base
-  #     - ./backend:/tmp/code/core
-  #     - ./vanilla:/tmp/code/custom
+  client:
+    build: ./builds/apiclient
+    # image: eudatb2stage/apiclient
+    volumes:
+      - ./backend:/code/core
+      - ./vanilla:/code/custom
+    environment:
+      APP_HOST: ${FLASK_HOST}
+      APP_PORT: 5000
+    networks:
+      flasknet:
+    depends_on:
+      - rest
 
   # #############
   # # Database administration
@@ -251,7 +257,7 @@ volumes:
 
 networks:
   dbnet:
-    driver: bridge
+    # driver: bridge
     ipam:
       driver: default
       config:
@@ -259,3 +265,4 @@ networks:
         # TO FIX: make this an env variable
         - subnet: 172.1.0.0/16
   inet:
+  flasknet:

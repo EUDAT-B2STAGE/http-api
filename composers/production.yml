@@ -9,8 +9,6 @@ services:
     ports:
       - 80:80
       - 443:443
-    links:
-      - rest:restapi
 
   rest:
     user: root
@@ -35,23 +33,13 @@ services:
       - ./confs/nginx_internal:/etc/nginx/conf.d
     # ports:
     #   - 8080:8080
-    links:
-      # IRODS MUST BE CALLED rodserver
-      - icat:rodserver
-      #
-      # AS DATABASE BACKEND, choose postgres or neo4j:
-      #
-      # POSTGRES MUST BE CALLED psql
-      - sql:sqldb
-      # # GRAPHDB MUST BE CALLED gdb
-      # - graphdb:gdb
 
-  # if using self signed certificates
-  # and trying to test locally:
-  apitests:
-    volumes:
-      # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
-      - sslcerts:/tmp/certs
-    links:
-      - proxy:awesome.docker
-      # - proxy:USEYOURDOMAINNAME
+  # # if using self signed certificates
+  # # and trying to test locally:
+  # client:
+  #   volumes:
+  #     # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
+  #     - sslcerts:/tmp/certs
+  #   links:
+  #     - proxy:awesome.docker
+  #     # - proxy:USEYOURDOMAINNAME

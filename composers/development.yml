@@ -6,11 +6,6 @@ services:
     environment:
       APP_MODE: development
       DEBUG_LEVEL: DEBUG
-    links:
-      # IRODS MUST BE CALLED rodserver
-      - icat:rodserver
-      # # GRAPHDB MUST BE CALLED gdb
-      # - graphdb:gdb
 
   proxy:
     volumes:
@@ -19,10 +14,6 @@ services:
       - 80:80
     links:
         - rest:restapi
-
-  apitests:
-    links:
-      - proxy:apiserver
 
   # graphdb:
   #   ports:

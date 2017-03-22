@@ -12,6 +12,7 @@ log = get_logger(__name__)
 
 def init(internal_services=None):
 
+    print("CUSTOM MIXED SERVICES INIT: to be fixed")
     # TO FIX: use injector
     icom = get_instance_from_services(internal_services, 'irods')
     graph = get_instance_from_services(internal_services, 'neo4j')

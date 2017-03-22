@@ -46,7 +46,7 @@ submodule_tracking="submodules.current.commit"
 irodscontainer="icat"
 restcontainer="rest"
 proxycontainer="proxy"
-clientcontainer="apitests"
+clientcontainer="client"
 vcom="docker volume"
 ncom="docker network"
 
@@ -317,9 +317,7 @@ elif [ "$1" == "api_test" ]; then
 
 elif [ "$1" == "client_shell" ]; then
     echo "Opening a client shell"
-
-    TERM=xterm-256color $compose_run exec $clientcontainer bash
-    # docker exec -e CREDENTIALS="$CRED" -it ${cprefix}_${clientcontainer}_1 bash
+    $compose_run run --rm --no-deps $clientcontainer bash
     exit 0
 
 # Handle the right logs
@@ -371,19 +369,14 @@ then
         $compose_run rm -f
     fi
 
-    # # Checks?
-    # if [ "$1" == "PRODUCTION" ]; then
-    # fi
-
-    # The client container always has the best link to access the server
-    $compose_run up -d $clientcontainer
+    $compose_run up -d $restcontainer
     status="$?"
 
     echo "Stack processes:"
     $compose_run ps
 
     if [ "$status" == "0" ]; then
-        $compose_run exec --user root rest update-ca-certificates
+        $compose_run exec $restcontainer update-ca-certificates
         echo ""
         echo "To access the flask api container:"
         echo "$0 server_shell"

@@ -57,6 +57,8 @@ CMD ["rest"]
 ENV PAGER less
 ENV TERM=xterm-256color
 ENV PYTHONIOENCODING="utf-8"
+# Flask port
+EXPOSE 5000
 
 RUN echo "Entrylevel" && \
     echo "echo\necho 'Run Flask server as ($APIUSER) with the command:'\necho '$ httpapi'" >> /root/.bashrc && \

@@ -1,17 +1,17 @@
 
 Refactor:
 
+  ☐ move authentication inside flask_ext
+  ☐ get_object() and set_object()
   ☐ compose V3
     ☐ rewrite debug, development, production yamls
+  ☐ rpc? @mattia
+
   ☐ unittests
-  ☐ base connectors
-    ✔ auth service @nontrivial @done (17-03-21 16:05)
-      ✔ move away from server.py @done (17-03-21 16:05)
-    ✔ all auth modules @done (17-03-22 00:12)
-      ✔ check file name @done (17-03-22 00:12)
-      ✔ no connection @done (17-03-20 12:07)
-        ✔ inject services @done (17-03-20 12:07)
-      ✘ how to give error with injector when service is not available @cancelled (17-03-22 00:12)
+    ☐ remove all
+    ☐ fix base
+    ☐ fix eudat
+  ✔ base connectors @done (17-03-22 00:34)
   ☐ advanced connectors
     ☐ celery?
       server.py

@@ -5,9 +5,10 @@ services:
   rest:
     environment:
       APP_MODE: debug
-      # DEBUG_LEVEL: VERY_VERBOSE
-      DEBUG_LEVEL: VERBOSE
-      IRODS_AUTHSCHEME: GSI
+      # DEBUG_LEVEL: VERBOSE
+      DEBUG_LEVEL: VERY_VERBOSE
+    # volumes:
+    #   - restlitedb:/dbs
     ports:
       - 8080:5000
 
@@ -15,16 +16,13 @@ services:
   #   ports:
   #     - 9090:7474
 
-  sqladmin:
-    volumes:
-      - restlitedb:/dbs
-    ports:
-      - 8888:8888
+# TO FIX
+  # sqladmin:
+  #   # volumes:
+  #   #   - restlitedb:/dbs
+  #   ports:
+  #     - 8888:8888
 
-  swagclient:
-    ports:
-      - 80:80
-
-  apitests:
-    links:
-      - rest:apiserver
+  # swagclient:
+  #   ports:
+  #     - 80:80
