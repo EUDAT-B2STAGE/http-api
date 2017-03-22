@@ -1,6 +1,8 @@
 #!/bin/bash
 
-core_branch="master"
+# core_branch="master"
+# TO BE FIXED when completing the branch
+core_branch="last_refactor"
 
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
