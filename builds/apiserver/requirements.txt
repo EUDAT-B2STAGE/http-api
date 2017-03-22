@@ -14,6 +14,7 @@ httpie
 ipython
 neomodel
 nose2
+cov-core
 pyOpenSSL
 plumbum
 psycopg2

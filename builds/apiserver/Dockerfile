@@ -63,5 +63,5 @@ EXPOSE 5000
 
 RUN echo "Entrylevel" && \
     echo "echo\necho 'Run Flask server as ($APIUSER) with the command:'\necho '$ httpapi'" >> /root/.bashrc && \
-    echo "echo\necho 'Run tests also with:\n$ testapi [test.FOLDER]'\n" \
+    echo "echo\necho 'Run tests also with:\n$ testapi [test.FOLDER]'\n\n" \
     >> /root/.bashrc

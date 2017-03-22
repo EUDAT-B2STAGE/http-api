@@ -6,7 +6,7 @@ services:
   - docker
 
 env:
-  DOCKER_COMPOSE_VERSION: 1.10.0
+  DOCKER_COMPOSE_VERSION: 1.11.2
 
 before_install:
   # update docker
@@ -28,12 +28,9 @@ install:
 script:
   - docker -v
   - docker-compose -v
-  - docker-compose build
-  # - docker-compose run test
   - ./do update
-  # - ./do init
-  # needed to let the system create files with test coverage
-  - chmod o+w backend
+  - chmod o+w backend # needed to let the system create files with test coverage
+  - ./do buildall
   - ./do DEBUG
   - ./do api_test
 
