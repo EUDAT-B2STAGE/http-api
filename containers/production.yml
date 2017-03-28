@@ -18,8 +18,12 @@ frontend:
     - backend:myapi
 
 proxy:
+  volumes:
+    - letsencrypt_certs:/etc/letsencrypt
+    - ssl_dhparam:/etc/nginx/ssl/
   links:
     - backend:api
     - frontend:html
   ports:
     - 80:80
+    - 443:443
