@@ -81,7 +81,7 @@ graphdb:
 # iRODS iCAT server for EUDAT B2safe
 rest:
   hostname: api
-  image: eudatb2stage/apiserver:neo4j3
+  image: eudatb2stage/apiserver:neo4j2
   command: ./boot
   environment:
 

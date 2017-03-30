@@ -1,4 +1,20 @@
 
+online:
+- epos
+
+offline:
+- docker api image (see how to fix)
+eudatb2stage/apiserver:bridge
+- copy folder and create new endpoint
+- test service from new folder
+commit
+- unittest
+- swagger
+  - authentication
+
+--- ✄ -----------------------
+
+
 With SWAGGER enabled:
   - general error catching with old decorator
   - decorate catch error?

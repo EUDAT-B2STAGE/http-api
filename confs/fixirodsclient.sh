@@ -1,8 +1,10 @@
 #!/bin/bash
 
 user="1000"
+group="999"
 echo "Fix db permissions"
-chown -R $user /dbs /uploads
+chown -R $user:$group /dbs /uploads
+chmod g+w /dbs /uploads
 
 # echo "Link shared lib"
 # mypath="/var/lib/irods/plugins/auth"
