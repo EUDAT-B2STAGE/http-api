@@ -1,0 +1,10 @@
+
+new:
+  summary: My new endpoint
+  responses:
+    '200':
+      description: Hello world
+  # custom:
+  #   authentication: true
+  #   authorized:
+  #     - normal_user
