@@ -1,0 +1,14 @@
+
+# The name of the REST class
+class: RPC
+# The python file where your REST class is located
+# (inside the 'restapi/confs/custom' dir)
+file: rpctests
+
+mapping:
+  all: "/rpc"
+  single: "/rpc/<path:irods_location>"
+ids:
+  irods_location: the filesystem path to your digital entities/objects
+labels:
+  - testing

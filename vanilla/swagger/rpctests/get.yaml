@@ -1,0 +1,12 @@
+
+all:
+  summary: test all
+  responses:
+    '200':
+      description: "yes"
+
+single:
+  summary: test single
+  responses:
+    '200':
+      description: "yes"
