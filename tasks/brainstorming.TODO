@@ -1,31 +1,43 @@
 
 Refactor:
 
-  ☐ move authentication inside flask_ext
-  ☐ get_object() and set_object()
-  ☐ compose V3
-    ☐ rewrite debug, development, production yamls
-  ☐ rpc? @mattia
+☐ backend pull now that init does not exists anymore?
+  it looks it already does so?
+☐ args and debug
+   ☐ flask command
+     ☐ threaded option?
+   ☐ clean after
+     ☐ remove boot file?
+     ☐ fix commands for debug, development and production
+☐ compose V3 YAMLs final check
+  - debug
+  - development
+  - production
+☐ move authentication all inside flask_ext
+☐ get_object() and set_object() fix
+☐ rpc? @mattia
+☐ swagger
+  ☐ new ui 3.0 with react
 
-  ☐ unittests
-    ✔ remove all @done (17-03-22 11:55)
-    ☐ fix base
-    ☐ fix eudat
-  ✔ base connectors @done (17-03-22 00:34)
-  ☐ advanced connectors
-    ☐ celery?
-      server.py
-      ☐ enable_security
-      ☐ worker_mode
-  ☐ check detect.py tofix and todo
-    also clean rapydo.services python folder...
-  ☐ docker builds: templates repo
-  ☐ letsencrypt automatic
-  ☐ use "flask" command from bash
-    ☐ export variables
-  ☐ release a PyPi package
-    ☐ with documentation
-    https://pythonhosted.org/
+☐ unittests
+  ✔ remove all @done (17-03-22 11:55)
+  ☐ fix base
+  ☐ fix eudat
+✔ base connectors @done (17-03-22 00:34)
+☐ advanced connectors
+  ☐ celery?
+    server.py
+    ☐ enable_security
+    ☐ worker_mode
+☐ check detect.py tofix and todo
+  also clean rapydo.services python folder...
+☐ docker builds: templates repo
+☐ letsencrypt automatic
+☐ use "flask" command from bash
+  ☐ export variables
+☐ release a PyPi package
+  ☐ with documentation
+  https://pythonhosted.org/
 
 
 

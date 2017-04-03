@@ -2,6 +2,7 @@ pip
 
 attrs
 beeprint
+better_exceptions
 bravado-core
 celery
 Flask
@@ -27,3 +28,4 @@ urllib3
 
 gssapi
 git+https://github.com/pdonorio/python-irodsclient.git@python3
+git+https://github.com/EUDAT-B2STAGE/B2HANDLE.git@master
