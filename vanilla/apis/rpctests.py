@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
 from functools import lru_cache
 
-from irods.manager.access_manager import AccessManager
-from irods.manager.user_manager import UserManager
 from irods.access import iRODSAccess
 from irods.models import User, UserGroup
 from irods import exception as iexceptions
@@ -51,13 +48,16 @@ class RPC(EndpointResource):
         # self.move(filename2, filename3)
 
         self.write_file_content(filename, "pippo pluto e topolino\nE Orazio?")
-        out = self.get_file_content(filename)
+        self.open(filename, "/tmp/mytext.txt")
+        self.save("/tmp/mytext.txt", home + "/prova.txt", force=True)
+
+        out = self.get_file_content(home + "/prova.txt")
 
         # out = self.list(path=home, recursive=True, detailed=True, acl=True)
 
-        out = self.get_user_info("guest")
-        out = str(self.user_has_group("guest", "public2"))
-        _, out = self.check_user_exists("guest", "public2")
+        # out = self.get_user_info("guest")
+        # out = str(self.user_has_group("guest", "public2"))
+        # _, out = self.check_user_exists("guest", "public2")
 
         self.remove(filename)
         self.remove(dirname, recursive=True)
@@ -292,6 +292,9 @@ class RPC(EndpointResource):
         #     com = 'itrim'
         #     args = ['-S', resource]
 
+        # Try with:
+        # self.rpc.resources.remove(name, test=dryRunTrueOrFalse)
+
     def write_file_content(self, path, content, position=0):
         try:
             obj = self.rpc.data_objects.get(path)
@@ -326,34 +329,45 @@ class RPC(EndpointResource):
         except iexceptions.DataObjectDoesNotExist:
             raise IrodsException("Cannot read file: not found")
 
-    # TO FIX: not implemented
     def open(self, absolute_path, destination):
-        com = 'iget'
-        args = [absolute_path]
-        args.append(destination)
-        # Execute
-        iout = self.basic_icom(com, args)
-        # Debug
-        log.debug("Obtaining irods object: %s" % absolute_path)
-        return iout
 
-    # TO FIX: not implemented
-    def save(self, path, destination=None, force=False, resource=None):
-        com = 'iput'
-        args = [path]
-        if force:
-            args.append('-f')
-        if destination is not None:
-            args.append(destination)
+        try:
+            obj = self.rpc.data_objects.get(absolute_path)
+            with obj.open('r+') as handle:
+                if handle.readable():
+                    with open(destination, "w", encoding="utf-8") as target:
+                        for line in handle:
+                            s = line.decode("utf-8")
+                            target.write(s)
+                    target.close()
+            handle.close()
+            return True
 
-        # Bug fix: currently irods does not use the default resource anymore?
-        if resource is None:
-            resource = self.get_base_resource()
-        args.append('-R')
-        args.append(resource)
+        except iexceptions.DataObjectDoesNotExist:
+            raise IrodsException("Cannot read file: not found")
+        return False
 
-        # Execute
-        return self.basic_icom(com, args)
+    def save(self, path, destination, force=False, resource=None):
+
+        try:
+            with open(path, "r") as handle:
+                self.create_empty(
+                    destination, directory=False, ignore_existing=force)
+                obj = self.rpc.data_objects.get(destination)
+                with obj.open('w+') as target:
+                    for line in handle:
+                        a_buffer = bytearray()
+                        a_buffer.extend(map(ord, line))
+                        target.write(a_buffer)
+                    target.close()
+            handle.close()
+            return True
+        # except iexceptions.DataObjectDoesNotExist:
+        #     raise IrodsException("Cannot write to file: not found")
+        except iexceptions.CollectionDoesNotExist:
+            raise IrodsException("Cannot write to file: path not found")
+
+        return False
 
     ############################################
     # ############ ACL Management ##############
@@ -382,14 +396,12 @@ class RPC(EndpointResource):
 
         try:
 
-            permissions = AccessManager(self.rpc)
-
             ACL = iRODSAccess(
                 access_name=permission,
                 path=path,
                 user_name=userOrGroup,
                 user_zone=zone)
-            permissions.set(ACL, recursive=recursive)
+            self.rpc.permissions.set(ACL, recursive=recursive)
 
             log.debug(
                 "Set %s permission to %s for %s" %
@@ -414,14 +426,12 @@ class RPC(EndpointResource):
             else:
                 permission = "noinherit"
 
-            permissions = AccessManager(self.rpc)
-
             ACL = iRODSAccess(
                 access_name=permission,
                 path=path,
                 user_name='',
                 user_zone='')
-            permissions.set(ACL, recursive=recursive)
+            self.rpc.permissions.set(ACL, recursive=recursive)
             log.debug("Set inheritance %r to %s" % (inheritance, path))
             return True
         except iexceptions.CAT_NO_ACCESS_PERMISSION:
@@ -441,8 +451,7 @@ class RPC(EndpointResource):
         if username is None:
             username = self.get_current_user()
         try:
-            users = UserManager(self.rpc)
-            user = users.get(username)
+            user = self.rpc.users.get(username)
             data = {}
             data["id"] = user.id
             data["name"] = user.name
@@ -502,6 +511,8 @@ class RPC(EndpointResource):
     # ######### Resources Management ###########
     ############################################
 
+    # for resources use this object manager:
+    # self.rpc.resources
     def list_resources(self):
         com = 'ilsresc'
         iout = self.basic_icom(com).strip()
@@ -549,6 +560,8 @@ class RPC(EndpointResource):
 
     def create_user(self, user, admin=False):
 
+        # Use this:
+        # self.rpc.users.create
         if user is None:
             log.error("Asking for NULL user...")
             return False
