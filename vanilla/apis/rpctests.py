@@ -46,13 +46,17 @@ class RPC(EndpointResource):
         self.copy(filename, filename2, recursive=False, force=True)
         # self.copy(dirname, dirname2, recursive=True, force=False)
 
-        self.move(filename2, filename3)
+        # self.move(filename2, filename3)
 
-        coll = self.list(path=dirname, recursive=True, detailed=True, acl=True)
+        self.write_file_content(filename, "pippo pluto e topolino\nE Orazio?")
+        out = self.get_file_content(filename)
+
+        # out = self.list(
+        #     path=dirname, recursive=True, detailed=True, acl=True)
 
         self.remove(filename)
         self.remove(dirname, recursive=True)
-        return coll
+        return out
 
 # ##################################
 # ##################################
@@ -239,6 +243,7 @@ class RPC(EndpointResource):
             with source.open('r+') as f:
                 with target.open('w') as t:
                     for line in f:
+                        # if t.writable():
                         t.write(line)
         except iexceptions.DataObjectDoesNotExist:
             raise IrodsException("Data oject not found")
@@ -284,6 +289,38 @@ class RPC(EndpointResource):
         # if resource is not None:
         #     com = 'itrim'
         #     args = ['-S', resource]
+
+    def write_file_content(self, path, content, position=0):
+        try:
+            obj = self.rpc.data_objects.get(path)
+            with obj.open('w+') as handle:
+
+                if position > 0 and handle.seekable():
+                    handle.seek(position)
+
+                if handle.writable():
+
+                    # handle.write('foo\nbar\n')
+                    a_buffer = bytearray()
+                    a_buffer.extend(map(ord, content))
+                    handle.write(a_buffer)
+                handle.close()
+        except iexceptions.DataObjectDoesNotExist:
+            raise IrodsException("File not found")
+
+    def get_file_content(self, path):
+
+        data = []
+        obj = self.rpc.data_objects.get(path)
+        with obj.open('r+') as handle:
+
+            if handle.readable():
+
+                for line in handle:
+                    s = line.decode("utf-8")
+                    data.append(s)
+
+        return data
 
     # TO FIX: not implemented
     def open(self, absolute_path, destination):
