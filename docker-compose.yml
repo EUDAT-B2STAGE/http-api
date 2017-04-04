@@ -225,11 +225,9 @@ services:
   #############
   # Client interface if using swagger
   swagclient:
-# TO FIX: move the build in here
-    image: eudatb2stage/swagger-ui:latest
-# TO FIX: network?
-    # environment:
-    #   API_URL: "http://localhost/swagger-ui/"
+    build: ./builds/swaggerui
+    image: swagger-ui:rapydo
+    # Note: no network is required since localhost is already opened
 
 #################################
 volumes:
