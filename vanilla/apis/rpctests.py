@@ -306,21 +306,23 @@ class RPC(EndpointResource):
                     handle.write(a_buffer)
                 handle.close()
         except iexceptions.DataObjectDoesNotExist:
-            raise IrodsException("File not found")
+            raise IrodsException("Cannot write to file: not found")
 
     def get_file_content(self, path):
+        try:
+            data = []
+            obj = self.rpc.data_objects.get(path)
+            with obj.open('r+') as handle:
 
-        data = []
-        obj = self.rpc.data_objects.get(path)
-        with obj.open('r+') as handle:
+                if handle.readable():
 
-            if handle.readable():
+                    for line in handle:
+                        s = line.decode("utf-8")
+                        data.append(s)
 
-                for line in handle:
-                    s = line.decode("utf-8")
-                    data.append(s)
-
-        return data
+            return data
+        except iexceptions.DataObjectDoesNotExist:
+            raise IrodsException("Cannot read file: not found")
 
     # TO FIX: not implemented
     def open(self, absolute_path, destination):
