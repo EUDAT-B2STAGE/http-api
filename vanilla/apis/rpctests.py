@@ -26,44 +26,49 @@ class RPC(EndpointResource):
         # from irods.models import User
         # results = self.rpc.query(User.name).all()
         # log.pp(self.rpc)
-        # print("IRODS", self.rpc)
         home = "/%s/home/%s" % (self.rpc.zone, self.rpc.username)
+        print("IRODS", self.rpc, home)
 
-        dirname = home + "/pippo"
-        # dirname2 = home + "/clarabella"
-        filename = home + "/pippo/pluto.txt"
-        filename2 = home + "/pippo/topolino.txt"
-        # filename3 = home + "/pippo/paperino.txt"
+        from b2handle.searcher import Searcher
+        print("TEST B2HANDLE", Searcher)
 
-        self.create_empty(dirname, directory=True, ignore_existing=True)
-        self.create_empty(filename, directory=False, ignore_existing=True)
+        # dirname = home + "/pippo"
+        # # dirname2 = home + "/clarabella"
+        # filename = home + "/pippo/pluto.txt"
+        # filename2 = home + "/pippo/topolino.txt"
+        # # filename3 = home + "/pippo/paperino.txt"
 
-        self.set_inheritance(dirname, inheritance=True, recursive=False)
-        self.set_permissions(dirname, "read", "guest", recursive=True)
-        self.set_permissions(filename, "write", "guest", recursive=False)
+        # self.create_empty(dirname, directory=True, ignore_existing=True)
+        # self.create_empty(filename, directory=False, ignore_existing=True)
 
-        self.copy(filename, filename2, recursive=False, force=True)
-        # self.copy(dirname, dirname2, recursive=True, force=False)
+        # self.set_inheritance(dirname, inheritance=True, recursive=False)
+        # self.set_permissions(dirname, "read", "guest", recursive=True)
+        # self.set_permissions(filename, "write", "guest", recursive=False)
 
-        # self.move(filename2, filename3)
+        # self.copy(filename, filename2, recursive=False, force=True)
+        # # self.copy(dirname, dirname2, recursive=True, force=False)
 
-        self.write_file_content(filename, "pippo pluto e topolino\nE Orazio?")
-        self.open(filename, "/tmp/mytext.txt")
-        self.save("/tmp/mytext.txt", home + "/prova.txt", force=True)
+        # # self.move(filename2, filename3)
 
-        out = self.get_file_content(home + "/prova.txt")
+        # self.write_file_content(filename, "pippo pluto e topolino\nE Orazio?")
+        # self.open(filename, "/tmp/mytext.txt")
+        # self.save("/tmp/mytext.txt", home + "/prova.txt", force=True)
 
-        out = self.list(path=home, recursive=True, detailed=True, acl=True)
+        # out = self.get_file_content(home + "/prova.txt")
 
-        out = self.get_user_info("guest")
-        out = str(self.user_has_group("guest", "public2"))
-        _, out = self.check_user_exists("guest", "public2")
+        # out = self.list(path=home, recursive=True, detailed=True, acl=True)
 
-        out, _ = self.get_metadata(filename)
-        print(out.get("PID"))
-        self.remove(filename)
-        self.remove(dirname, recursive=True)
-        return out
+        # out = self.get_user_info("guest")
+        # out = str(self.user_has_group("guest", "public2"))
+        # _, out = self.check_user_exists("guest", "public2")
+
+        # out, _ = self.get_metadata(filename)
+        # print(out.get("PID"))
+        # self.remove(filename)
+        # self.remove(dirname, recursive=True)
+        # return out
+
+        return "Hello"
 
 # ##################################
 # ##################################
