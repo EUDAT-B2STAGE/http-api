@@ -9,6 +9,9 @@ Refactor:
      ✔ remove boot file? @done (17-04-03 17:35)
      ☐ fix/check commands for debug, development and production @current
 ☐ rpc? @mattia
+☐ builds
+ ☐ swagger-ui
+ ☐ proxy?
 ☐ move all authentication parts inside flask_ext
 ☐ compose V3 YAMLs final check
   - debug

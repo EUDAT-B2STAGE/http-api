@@ -109,16 +109,6 @@ services:
 
   ####################
   ## move into DEBUG
-    networks:
-      flasknet:
-        aliases:
-          - ${FLASK_HOST}
-      dbnet:
-      inet:
-    depends_on:
-      - sql
-      - graphdb
-      - icat
   ## move into DEBUG
   ####################
 
@@ -129,11 +119,12 @@ services:
       # set this inside the MODE yaml files you want to use
       FLASK_DEBUG: 1
       DEBUG_LEVEL: VERY_VERBOSE
-      # APP_MODE: debug
+      APP_MODE: debug
       ##############################
 
       # project/package/prefix name
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
@@ -177,7 +168,7 @@ services:
       # Uploads dir
       - tmpuploads:/uploads
       # JWT tokens secret
-      - jwt_tokens:/jwt_tokens
+      - jwttokens:/${JWT_APP_SECRETS}
       # B2ACCESS dev certificates
       - ./certs:/usr/local/share/ca-certificates
       # Base code
@@ -231,14 +222,14 @@ services:
   #   # THIS FILE WAS MOVED INSIDE THE DOCKEFILE
   #   #   - ./confs/nginx.conf:/etc/nginx/nginx.conf
 
-  # #############
-  # # Client interface if using swagger
-  # swagclient:
-  #   image: eudatb2stage/swagger-ui:latest
-  #   # environment:
-  #   #   API_URL: "http://localhost/swagger-ui/"
-  #   # ports:
-  #   #   - 80:80
+  #############
+  # Client interface if using swagger
+  swagclient:
+# TO FIX: move the build in here
+    image: eudatb2stage/swagger-ui:latest
+# TO FIX: network?
+    # environment:
+    #   API_URL: "http://localhost/swagger-ui/"
 
 #################################
 volumes:
@@ -260,7 +251,7 @@ volumes:
     driver: local
   tmpuploads:
     driver: local
-  jwt_tokens:
+  jwttokens:
     driver: local
   sslcerts:
     driver: local

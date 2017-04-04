@@ -22,33 +22,26 @@ then
     exit 1
 fi
 
-# TO BE COMPLETED!
+# Defaults
+if [ -z APP_MODE ]; then
+    APP_MODE="debug"
+fi
+APIUSERID=$(id -u $APIUSER)
 
-# # Check irods at startup
-# until  psql -h $POSTGRES_HOST -U $POSTGRES_USER $IRODS_DB -c "\d" 1> /dev/null 2> /dev/null;
-# do
-#   >&2 echo "irods is unavailable - sleeping"
-#   sleep 1
-# done
-
-# # Is it init time?
-# checkirods=$(ls /etc/irods/)
-# if [ "$checkirods" == "" ]; then
-
-    # INIT
-
-    # Fix sqllite permissions?
+# IF INIT is necessary
+secret_file="$JWT_APP_SECRETS/secret.key"
+if [ ! -f "$secret_file" ]; then
+    echo "First time access"
 
     # Create the secret to enable security on JWT tokens
-    mkdir -p /jwt_tokens
-    head -c 24 /dev/urandom > /jwt_tokens/secret.key
-    # chown -R 999 /jwt_tokens
+    mkdir -p $JWT_APP_SECRETS
+    head -c 24 /dev/urandom > $secret_file
+    chown -R $APIUSERID $JWT_APP_SECRETS
 
-# else
+    # question: should we fix sqllite permissions?
+    # answer: we are using postgresql also in development
 
-#     echo "Launching"
-
-# fi
+fi
 
 #####################
 # Extra scripts
@@ -61,9 +54,20 @@ for f in `ls $dedir`; do
     echo
 done
 
+#####################
 # Completed
 echo "REST API backend server is ready"
-sleep infinity
-# sleep 10000d
-# whoami
+
+if [ "$app_mode" == 'production' ]; then
+    echo "launching uwsgi workers"
+    echo "TO DO!"
+    exit 1
+elif [ "$app_mode" == 'development' ]; then
+    echo "launching flask"
+    rapydo
+else
+    echo "Debug mode"
+    sleep infinity
+fi
+
 exit 0

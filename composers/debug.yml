@@ -4,25 +4,34 @@ services:
 
   rest:
     environment:
-      APP_MODE: debug
-      # DEBUG_LEVEL: VERBOSE
+      FLASK_DEBUG: 1
       DEBUG_LEVEL: VERY_VERBOSE
-    # volumes:
-    #   - restlitedb:/dbs
+      APP_MODE: debug
+    networks:
+      flasknet:
+        aliases:
+          - ${FLASK_HOST}
+      dbnet:
+      inet:
+    depends_on:
+      - sql
+      - icat
+      # - graphdb
     ports:
       - 8080:5000
+    # volumes:
+    #   - restlitedb:/dbs
 
   # graphdb:
   #   ports:
   #     - 9090:7474
 
-# TO FIX
   # sqladmin:
   #   # volumes:
   #   #   - restlitedb:/dbs
   #   ports:
   #     - 8888:8888
 
-  # swagclient:
-  #   ports:
-  #     - 80:80
+  swagclient:
+    ports:
+      - 80:80

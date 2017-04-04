@@ -112,12 +112,7 @@ if [ "$warnings" != "" ]; then
     exit 1
 fi
 
-# echo "DEBUG"
-# exit 1
-
-# make_tests="$compose_run exec rest ./tests.sh"
 #####################
-
 # Check prerequisites
 coms="docker $compose"
 for com in $coms;
@@ -162,7 +157,7 @@ if [ "$1" == "push" ]; then
     fi
 
     if [ "$2" != "force" ]; then
-        echo "TO BE FIXED"
+        echo "TO BE FIXED..."
         exit 1
         # testlogs="/tmp/tests.log"
         # echo "Running tests before pushing..."
@@ -215,50 +210,6 @@ fi
 networks=`$ncom ls | awk '{print $2}' | grep "^$cprefix"`
 volumes=`$vcom ls | awk '{print $NF}' | grep "^$cprefix"`
 
-# #echo -e "VOLUMES are\n*$volumes*"
-# if [ "$volumes"  == "" ]; then
-#     if [ "$1" != "init" ]; then
-#         echo "Please init this project."
-#         echo "You may do so by running:"
-#         echo "\$ $0 init"
-#         exit 1
-#     fi
-# fi
-
-################################
-# EXECUTE OPTIONS
-
-# # Init your stack
-# if [ "$1" == "init" ]; then
-
-#     echo "WARNING: Removing old containers/volumes if any"
-#     echo "(Sleeping some seconds to let you stop in case you made a mistake)"
-#     sleep 5
-
-#     ###########################
-#     echo "Containers stop & rm"
-#     $compose_run stop
-#     $compose_run rm -f
-#     if [ "$volumes"  != "" ]; then
-#         echo "Destroy volumes:"
-#         docker volume rm $volumes
-#     fi
-#     if [ "$networks"  != "" ]; then
-#         echo "Destroy networks:"
-#         docker network rm $networks
-#     fi
-
-#     echo "READY TO INIT"
-#     $compose_run up icat rest
-#     if [ "$?" == "0" ]; then
-#         echo ""
-#         echo "Your project is ready to be used."
-#         echo "Everytime you need to start just run:"
-#         echo "\$ $0 DEBUG"
-#         echo ""
-#     fi
-#     exit 0
-
 # Verify the status
 if [ "$1" == "check" ]; then
     echo "Stack status:"
@@ -283,11 +234,23 @@ elif [ "$1" == "clean" ]; then
     echo "REMOVE DATA"
     echo "are you really sure?"
     sleep 5
+
+    echo "Removing containers"
     $compose_run stop
     $compose_run rm -f
+
+    echo "Removing networks"
+    for network in $networks;
+    do
+        # echo "Removing $network"
+        $ncom rm $network
+        sleep 1
+    done
+
+    echo "Removing volumes"
     for volume in $volumes;
     do
-        echo "Remove $volume volume"
+        # echo "Removing $volume"
         $vcom rm $volume
         sleep 1
     done

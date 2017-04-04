@@ -32,33 +32,23 @@ RUN pip3 install --upgrade \
     --force-reinstall --no-cache-dir -r requirements.txt
 
 ###################
-# TODO: decide about a main user recipe for containers
+# Adding gsi as gssapi available mechanism for RPC
+COPY gsi.conf /etc/gss/mech.d/
+# main user for launching the apis
 ENV APIUSER developer
 ENV CERTDIR /opt/certificates
 # Emulating irods user creation. See http://j.mp/2lGPqlq
 RUN useradd -r -M -d $CERTDIR/home -s /bin/bash -p ! $APIUSER
-# Adding gsi as gssapi available mechanism for RPC
-COPY gsi.conf /etc/gss/mech.d/
-
-# TO FIX: on the irods side?
-# usermod -m -d  username
 
 ###################
-# Closing entrypoint
-
-RUN mkdir /code
-WORKDIR /code
-RUN mkdir /docker-entrypoint.d/
-COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-ENTRYPOINT ["docker-entrypoint"]
-CMD ["rest"]
-
+# variables
 ENV PAGER less
 ENV TERM=xterm-256color
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 ENV PYTHONIOENCODING="utf-8"
 ENV FLASK_PORT 5000
+ENV JWT_APP_SECRETS /jwts
 EXPOSE $FLASK_PORT
 
 ######################
@@ -73,3 +63,13 @@ RUN echo "Entrylevel" && \
     echo "echo\necho 'Run Flask server as ($APIUSER) with the command:'\necho '$ rapydo'" >> /root/.bashrc && \
     echo "echo\necho 'Run tests also with:\n$ testapi [test.FOLDER]\n'\n" \
     >> /root/.bashrc
+
+###################
+# closing entrypoint
+
+RUN mkdir /code
+WORKDIR /code
+RUN mkdir /docker-entrypoint.d/
+COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["rest"]
