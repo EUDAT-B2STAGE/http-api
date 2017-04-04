@@ -11,6 +11,7 @@ Flask-OAuthlib
 Flask-RESTful
 Flask-SQLAlchemy
 Flask-Injector
+flask-shell-ipython
 httpie
 ipython
 neomodel

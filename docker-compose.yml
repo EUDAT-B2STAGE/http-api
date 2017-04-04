@@ -107,22 +107,30 @@ services:
     # command: ./boot
     # working_dir: /code
 
+  ####################
+  ## move into DEBUG
     networks:
       flasknet:
         aliases:
           - ${FLASK_HOST}
       dbnet:
       inet:
-
     depends_on:
       - sql
       - graphdb
       - icat
+  ## move into DEBUG
+  ####################
 
     environment:
-      # set this variable with docker-compose debug/production extensions
-      APP_MODE: debug
-      # DEBUG_LEVEL: DEBUG
+
+      FLASK_APP: run.py
+      ##############################
+      # set this inside the MODE yaml files you want to use
+      FLASK_DEBUG: 1
+      DEBUG_LEVEL: VERY_VERBOSE
+      # APP_MODE: debug
+      ##############################
 
       # project/package/prefix name
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
@@ -143,12 +151,14 @@ services:
       ALCHEMY_USER: ${ALCHEMY_USER}
       ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
       ALCHEMY_DB: ${ALCHEMY_API_DB}
+
       # # neo connection
       # GRAPHDB_ENABLE: 1
       # GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
       # GRAPHDB_HOST: ${GRAPHDB_HOST}
       # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
       # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+      #
       # irods configuration
       IRODS_ENABLE: 1
       IRODS_EXTERNAL: ${IRODS_EXTERNAL}

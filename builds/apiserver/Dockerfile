@@ -49,19 +49,27 @@ COPY gsi.conf /etc/gss/mech.d/
 RUN mkdir /code
 WORKDIR /code
 RUN mkdir /docker-entrypoint.d/
-RUN echo "alias httpapi=\"su -p \$APIUSER -c 'export HOME=/tmp; cd /code; python run.py'\"" >> /root/.bash_aliases
-RUN echo "alias testapi=\"su -p \$APIUSER -c 'cd /code; nose2 -F '\"" >> /root/.bash_aliases
-
 COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["rest"]
+
 ENV PAGER less
 ENV TERM=xterm-256color
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
 ENV PYTHONIOENCODING="utf-8"
-# Flask port
-EXPOSE 5000
+ENV FLASK_PORT 5000
+EXPOSE $FLASK_PORT
 
+######################
+# alias
+RUN echo "alias dev=\"HOME=/tmp su -p \$APIUSER\"" >> /root/.bash_aliases
+RUN echo "alias rapydo=\"su -p \$APIUSER -c 'export HOME=/tmp; cd /code; flask run --with-threads -h 0.0.0.0 -p $FLASK_PORT '\"" >> /root/.bash_aliases
+RUN echo "alias testapi=\"su -p \$APIUSER -c 'cd /code; nose2 -F '\"" >> /root/.bash_aliases
+
+######################
+# instructions
 RUN echo "Entrylevel" && \
-    echo "echo\necho 'Run Flask server as ($APIUSER) with the command:'\necho '$ httpapi'" >> /root/.bashrc && \
+    echo "echo\necho 'Run Flask server as ($APIUSER) with the command:'\necho '$ rapydo'" >> /root/.bashrc && \
     echo "echo\necho 'Run tests also with:\n$ testapi [test.FOLDER]\n'\n" \
     >> /root/.bashrc

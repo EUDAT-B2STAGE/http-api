@@ -1,21 +1,20 @@
 
 Refactor:
 
-☐ backend pull now that init does not exists anymore?
-  it looks it already does so?
-☐ args and debug
-   ☐ flask command
-     ☐ threaded option?
-   ☐ clean after
-     ☐ remove boot file?
-     ☐ fix commands for debug, development and production
+✘ backend pull now that init does not exists anymore? @cancelled (17-04-03 17:30)
+✔ args and debug @done (17-04-03 17:35)
+   ✔ flask command @done (17-04-03 17:35)
+     ✔ threaded option? @done (17-04-04 00:09)
+   ✔ clean after @done (17-04-04 00:09)
+     ✔ remove boot file? @done (17-04-03 17:35)
+     ☐ fix/check commands for debug, development and production @current
+☐ rpc? @mattia
+☐ move all authentication parts inside flask_ext
 ☐ compose V3 YAMLs final check
   - debug
   - development
   - production
-☐ move authentication all inside flask_ext
 ☐ get_object() and set_object() fix
-☐ rpc? @mattia
 ☐ swagger
   ☐ new ui 3.0 with react
 
