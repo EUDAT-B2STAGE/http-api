@@ -5,7 +5,9 @@ import re
 from functools import lru_cache
 
 from irods.manager.access_manager import AccessManager
+from irods.manager.user_manager import UserManager
 from irods.access import iRODSAccess
+from irods.models import User, UserGroup
 from irods import exception as iexceptions
 from rapydo.exceptions import RestApiException
 
@@ -34,7 +36,7 @@ class RPC(EndpointResource):
         # dirname2 = home + "/clarabella"
         filename = home + "/pippo/pluto.txt"
         filename2 = home + "/pippo/topolino.txt"
-        filename3 = home + "/pippo/paperino.txt"
+        # filename3 = home + "/pippo/paperino.txt"
 
         self.create_empty(dirname, directory=True, ignore_existing=True)
         self.create_empty(filename, directory=False, ignore_existing=True)
@@ -51,8 +53,11 @@ class RPC(EndpointResource):
         self.write_file_content(filename, "pippo pluto e topolino\nE Orazio?")
         out = self.get_file_content(filename)
 
-        # out = self.list(
-        #     path=dirname, recursive=True, detailed=True, acl=True)
+        # out = self.list(path=home, recursive=True, detailed=True, acl=True)
+
+        out = self.get_user_info("guest")
+        out = str(self.user_has_group("guest", "public2"))
+        _, out = self.check_user_exists("guest", "public2")
 
         self.remove(filename)
         self.remove(dirname, recursive=True)
@@ -128,9 +133,6 @@ class RPC(EndpointResource):
                 row["object_type"] = "collection"
                 if detailed:
                     row["owner"] = "-"
-                    # row["owner"] = coll.owner_name
-                    # row["created"] = coll.create_time
-                    # row["last_modified"] = coll.modify_time
                 if acl:
                     acl = self.get_permissions(coll)
                     row["acl"] = acl["ACL"]
@@ -430,6 +432,57 @@ class RPC(EndpointResource):
                     "Cannot set inheritance: collection not found")
         return False
 
+    def get_current_user(self):
+        return self.rpc.username
+
+    @lru_cache(maxsize=4)
+    def get_user_info(self, username=None):
+
+        if username is None:
+            username = self.get_current_user()
+        try:
+            users = UserManager(self.rpc)
+            user = users.get(username)
+            data = {}
+            data["id"] = user.id
+            data["name"] = user.name
+            data["type"] = user.type
+            data["zone"] = user.zone
+            # data["info"] = ""
+            # data["comment"] = ""
+            # data["create time"] = ""
+            # data["modify time"] = ""
+            data["account"] = user.manager.sess.pool.account.__dict__
+
+            results = self.rpc.query(UserGroup.name).filter(
+                User.name == user.name).get_results()
+            groups = []
+            for obj in results:
+                for _, grp in obj.items():
+                    groups.append(grp)
+
+            data['groups'] = groups
+            return data
+        except iexceptions.UserDoesNotExist:
+            return None
+
+    def user_has_group(self, username, groupname):
+        info = self.get_user_info(username)
+        if info is None:
+            return False
+        if 'groups' not in info:
+            return False
+        return groupname in info['groups']
+
+    def check_user_exists(self, username, checkGroup=None):
+        userdata = self.get_user_info(username)
+        if userdata is None:
+            return False, "User %s does not exist" % username
+        if checkGroup is not None:
+            if checkGroup not in userdata['groups']:
+                return False, "User %s is not in group %s" %\
+                    (username, checkGroup)
+        return True, "OK"
 
 # ####################################################
 # ####################################################
@@ -519,50 +572,6 @@ class RPC(EndpointResource):
         output = self.basic_icom(com)
         print("ENV IS", output)
         return output
-
-    @lru_cache(maxsize=4)
-    def get_user_info(self, username=None):
-        # TO FIX: should we cache this method?
-        com = 'iuserinfo'
-        args = []
-        if username is not None:
-            args.append(username)
-        output = self.basic_icom(com, args)
-
-        if username is not None:
-            reg_exp = "User %s does not exist\." % username
-            if re.search(reg_exp, output):
-                return None
-
-        # parse if info is about current user
-        data = {}
-        groups = []
-        reg_exp = r"([^\s]+)\s*:\s+([^\s]+)\n"
-        for key, value in re.findall(reg_exp, output):
-            if key == 'group':
-                groups.append(value)
-            else:
-                data[key] = value
-        data['groups'] = groups
-        # from beeprint import pp
-        # pp(data)
-        return data
-
-    def user_has_group(self, username, groupname):
-        info = self.get_user_info(username)
-        if info is None:
-            return False
-        if 'groups' not in info:
-            return False
-        return groupname in info['groups']
-
-    def check_user_exists(self, username, checkGroup=None):
-        userdata = self.get_user_info(username)
-        if userdata is None:
-            return False, "User %s does not exist" % username
-        if checkGroup not in userdata['groups']:
-            return False, "User %s is not in group %s" % (username, checkGroup)
-        return True, "OK"
 
     def current_location(self, ifile):
         """
@@ -707,10 +716,6 @@ class RPC(EndpointResource):
 
     def get_default_user(self):
         return IRODS_DEFAULT_USER
-
-    def get_current_user(self):
-        userdata = self.get_user_info()
-        return userdata['name']
 
     @staticmethod
     def get_translated_user(self, user):
