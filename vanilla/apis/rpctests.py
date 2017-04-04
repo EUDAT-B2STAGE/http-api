@@ -53,12 +53,14 @@ class RPC(EndpointResource):
 
         out = self.get_file_content(home + "/prova.txt")
 
-        # out = self.list(path=home, recursive=True, detailed=True, acl=True)
+        out = self.list(path=home, recursive=True, detailed=True, acl=True)
 
-        # out = self.get_user_info("guest")
-        # out = str(self.user_has_group("guest", "public2"))
-        # _, out = self.check_user_exists("guest", "public2")
+        out = self.get_user_info("guest")
+        out = str(self.user_has_group("guest", "public2"))
+        _, out = self.check_user_exists("guest", "public2")
 
+        out, _ = self.get_metadata(filename)
+        print(out.get("PID"))
         self.remove(filename)
         self.remove(dirname, recursive=True)
         return out
@@ -492,6 +494,24 @@ class RPC(EndpointResource):
                 return False, "User %s is not in group %s" %\
                     (username, checkGroup)
         return True, "OK"
+
+    def get_metadata(self, path):
+
+        try:
+            obj = self.rpc.data_objects.get(path)
+
+            data = {}
+            units = {}
+            for meta in obj.metadata.items():
+
+                name = meta.name
+
+                data[name] = meta.value
+                units[name] = meta.units
+
+            return data, units
+        except iexceptions.DataObjectDoesNotExist:
+            raise IrodsException("Cannot extra metadata, object not found")
 
 # ####################################################
 # ####################################################
