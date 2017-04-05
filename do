@@ -238,21 +238,22 @@ elif [ "$1" == "clean" ]; then
     echo "Removing containers"
     $compose_run stop
     $compose_run rm -f
+    echo
+    sleep 1
 
     echo "Removing networks"
     for network in $networks;
     do
         # echo "Removing $network"
         $ncom rm $network
-        sleep 1
     done
+    sleep 1
 
     echo "Removing volumes"
     for volume in $volumes;
     do
         # echo "Removing $volume"
         $vcom rm $volume
-        sleep 1
     done
     exit 0
 
@@ -279,7 +280,7 @@ elif [ "$1" == "httpapi_restart" ]; then
 
 elif [ "$1" == "api_test" ]; then
     echo "Opening a shell for nose2 tests"
-    $compose_run exec rest /bin/bash -c "su -p developer -c ./tests.sh"
+    $compose_run exec rest /bin/bash -c "testwithcoverage"
     exit $?
 
 elif [ "$1" == "client_shell" ]; then

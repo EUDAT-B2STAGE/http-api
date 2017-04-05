@@ -8,9 +8,6 @@ services:
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
     networks:
-      flasknet:
-        aliases:
-          - ${FLASK_HOST}
       dbnet:
       inet:
     depends_on:
@@ -22,9 +19,9 @@ services:
     # volumes:
     #   - restlitedb:/dbs
 
-  # graphdb:
-  #   ports:
-  #     - 9090:7474
+  swagclient:
+    ports:
+      - 80:80
 
   # sqladmin:
   #   # volumes:
@@ -32,6 +29,6 @@ services:
   #   ports:
   #     - 8888:8888
 
-  swagclient:
-    ports:
-      - 80:80
+  # graphdb:
+  #   ports:
+  #     - 9090:7474

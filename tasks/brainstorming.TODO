@@ -1,45 +1,50 @@
 
 Refactor:
 
-✘ backend pull now that init does not exists anymore? @cancelled (17-04-03 17:30)
-✔ args and debug @done (17-04-03 17:35)
-   ✔ flask command @done (17-04-03 17:35)
-     ✔ threaded option? @done (17-04-04 00:09)
-   ✔ clean after @done (17-04-04 00:09)
-     ✔ remove boot file? @done (17-04-03 17:35)
-     ☐ fix/check commands for debug, development and production @current
-☐ rpc? @mattia
-☐ builds
- ☐ swagger-ui
+☐ flask binary
+ - development @current
+   ☐ proxy
+ - production
+   ☐ uwsgi
+   HOME=/tmp for user develop
+☐ give error if exception in flask extension?
+
+travis ci:
+  check the logs
+  - skip irods?
+
+getinstance:
+✔ rpc? @mattia @done (17-04-04 14:29)
+  ☐ advanced connectors
+    ☐ celery?
+      server.py
+      ☐ enable_security
+      ☐ worker_mode
+      ☐ do tests even if you don't use it
+  ☐ check detect.py tofix and todo
+    also clean rapydo.services python folder...
+
+builds:
+ ✔ swagger-ui @done (17-04-05 06:47)
  ☐ proxy?
+  ☐ letsencrypt automatic
 ☐ move all authentication parts inside flask_ext
 ☐ compose V3 YAMLs final check
   - debug
   - development
   - production
 ☐ get_object() and set_object() fix
-☐ swagger
-  ☐ new ui 3.0 with react
 
 ☐ unittests
   ✔ remove all @done (17-03-22 11:55)
   ☐ fix base
   ☐ fix eudat
-✔ base connectors @done (17-03-22 00:34)
-☐ advanced connectors
-  ☐ celery?
-    server.py
-    ☐ enable_security
-    ☐ worker_mode
-☐ check detect.py tofix and todo
-  also clean rapydo.services python folder...
 ☐ docker builds: templates repo
-☐ letsencrypt automatic
-☐ use "flask" command from bash
-  ☐ export variables
 ☐ release a PyPi package
   ☐ with documentation
   https://pythonhosted.org/
+☐ swagger
+  ☐ new ui 3.0 with react
 
 
 

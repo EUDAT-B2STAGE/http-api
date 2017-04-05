@@ -78,43 +78,43 @@ services:
     depends_on:
       - sql
 
-  #############
-  # GRAPHdb neo4j
-  graphdb:
-    image: neo4j:3.1
-    hostname: ${GRAPHDB_HOST}
-    environment:
-      NEO4J_AUTH: neo4j/${GRAPHDB_PASSWORD}
-      # Other parameters?
-      #NEO4J_HEAP_MEMORY
-      #NEO4J_CACHE_MEMORY
-    networks:
-      dbnet:
-        aliases:
-          - ${GRAPHDB_HOST}
-    volumes:
-        - graphdata:/data
+  # #############
+  # # GRAPHdb neo4j
+  # graphdb:
+  #   image: neo4j:3.1
+  #   hostname: ${GRAPHDB_HOST}
+  #   environment:
+  #     NEO4J_AUTH: neo4j/${GRAPHDB_PASSWORD}
+  #     # Other parameters?
+  #     #NEO4J_HEAP_MEMORY
+  #     #NEO4J_CACHE_MEMORY
+  #   networks:
+  #     dbnet:
+  #       aliases:
+  #         - ${GRAPHDB_HOST}
+  #   volumes:
+  #       - graphdata:/data
 
   #############
   # iRODS iCAT server for EUDAT B2safe
   rest:
     hostname: api
-    # image: eudatb2stage/apiserver:neo4j3
     build: ./builds/apiserver
     image: apiserver:rapydo
-    # user: ${IRODS_USER}
-    # user: ${APIUSER}
     # command: ./boot
     # working_dir: /code
-
-  ####################
-  ## move into DEBUG
-  ## move into DEBUG
-  ####################
-
+    networks:
+      flasknet:
+        aliases:
+          - ${FLASK_HOST}
     environment:
 
       FLASK_APP: run.py
+      # base the user/role mechanism on some database
+      AUTH_ENABLE: 1
+      # putting this here because it should not be configurable in .env
+      AUTH_SERVICE: sqlalchemy
+
       ##############################
       # set this inside the MODE yaml files you want to use
       FLASK_DEBUG: 1
@@ -129,11 +129,6 @@ services:
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
 
-      # base the user/role mechanism on some database
-      AUTH_ENABLE: 1
-      # putting this here because it should not be configurable in .env
-      AUTH_SERVICE: sqlalchemy
-
       # db access
       ALCHEMY_ENABLE: 1
       ALCHEMY_EXTERNAL: ${ALCHEMY_EXTERNAL}
@@ -143,13 +138,6 @@ services:
       ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
       ALCHEMY_DB: ${ALCHEMY_API_DB}
 
-      # # neo connection
-      # GRAPHDB_ENABLE: 1
-      # GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
-      # GRAPHDB_HOST: ${GRAPHDB_HOST}
-      # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
-      # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
-      #
       # irods configuration
       IRODS_ENABLE: 1
       IRODS_EXTERNAL: ${IRODS_EXTERNAL}
@@ -162,21 +150,28 @@ services:
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
 
+      # # neo connection
+      # GRAPHDB_ENABLE: 1
+      # GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
+      # GRAPHDB_HOST: ${GRAPHDB_HOST}
+      # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+
     volumes:
-      # SHARED
-      - sharedcerts:/opt/certificates
+      # Base code
+      - ./backend:/code
+      # Vanilla code
+      - ./vanilla:/code/${COMPOSE_PROJECT_NAME}
+      # Tests
+      - ./vanilla/tests:/code/test/custom
       # Uploads dir
       - tmpuploads:/uploads
       # JWT tokens secret
       - jwttokens:/${JWT_APP_SECRETS}
+      # SHARED
+      - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
       - ./certs:/usr/local/share/ca-certificates
-      # Base code
-      - ./backend:/code
-      # Vanilla code
-      - ./vanilla:/code/eudat
-      # Tests
-      - ./vanilla/tests:/code/test/custom
 
   #############
   # REST API client
@@ -191,7 +186,7 @@ services:
       - ./vanilla:/code/custom
     environment:
       APP_HOST: ${FLASK_HOST}
-      APP_PORT: 5000
+      APP_PORT: 5000 # uhm...
     networks:
       flasknet:
     depends_on:
@@ -233,10 +228,6 @@ services:
 volumes:
   sharedcerts:
     driver: local
-  restlitedb:
-    driver: local
-  graphdata:
-    driver: local
   sqldata:
     driver: local
   etcconf:
@@ -253,6 +244,10 @@ volumes:
     driver: local
   sslcerts:
     driver: local
+  # restlitedb:
+  #   driver: local
+  # graphdata:
+  #   driver: local
 
 networks:
   dbnet:

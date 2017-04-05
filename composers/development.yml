@@ -6,7 +6,14 @@ services:
     environment:
       APP_MODE: development
       DEBUG_LEVEL: DEBUG
+    networks:
+      dbnet:
+      inet:
+    depends_on:
+      - sql
+      - icat
 
+# TO FIX
   proxy:
     volumes:
       - ./confs/dev_proxy.conf:/etc/nginx/sites-enabled/development

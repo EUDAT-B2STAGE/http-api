@@ -1,7 +1,7 @@
 language: python
 sudo: required
 python:
-  - "3.6"
+  - "3.6.1"
 services:
   - docker
 
@@ -28,10 +28,20 @@ install:
 script:
   - docker -v
   - docker-compose -v
+
+  # Download latest things
   - ./do update
-  - chmod o+w backend # needed to let the system create files with test coverage
+
+  # needed to let the system create files with test coverage
+  - chmod o+w backend
+
+  # build all images
   - ./do buildall
+
+  # start the debug environment
   - ./do DEBUG
+
+  # uhm
   - ./do api_test
 
 after_success:

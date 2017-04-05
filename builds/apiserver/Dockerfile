@@ -55,7 +55,8 @@ EXPOSE $FLASK_PORT
 # alias
 RUN echo "alias dev=\"HOME=/tmp su -p \$APIUSER\"" >> /root/.bash_aliases
 RUN echo "alias rapydo=\"su -p \$APIUSER -c 'export HOME=/tmp; cd /code; flask run --with-threads -h 0.0.0.0 -p $FLASK_PORT '\"" >> /root/.bash_aliases
-RUN echo "alias testapi=\"su -p \$APIUSER -c 'cd /code; nose2 -F '\"" >> /root/.bash_aliases
+RUN echo "alias testapi=\"su -p \$APIUSER -c 'export HOME=/tmp; cd /code; nose2 -F '\"" >> /root/.bash_aliases
+RUN echo "#!/bin/bash\\nsu -p \$APIUSER -c 'export HOME=/tmp; cd /code; ./tests.sh'" > /usr/local/bin/testwithcoverage && chmod +x /usr/local/bin/testwithcoverage
 
 ######################
 # instructions
