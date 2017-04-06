@@ -11,17 +11,13 @@ services:
       dbnet:
       inet:
     depends_on:
-      - sql
+      - graphdb
       - icat
-      # - graphdb
+      # - sql
     ports:
       - 8080:5000
     # volumes:
     #   - restlitedb:/dbs
-
-  swagclient:
-    ports:
-      - 80:80
 
   # sqladmin:
   #   # volumes:
@@ -29,6 +25,10 @@ services:
   #   ports:
   #     - 8888:8888
 
-  # graphdb:
-  #   ports:
-  #     - 9090:7474
+  graphdb:
+    ports:
+      - 9090:7474
+
+  swagclient:
+    ports:
+      - 80:80

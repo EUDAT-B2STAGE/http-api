@@ -53,5 +53,6 @@ ENV PAGER less
 ENV TERM=xterm-256color
 ENV HISTCONTROL ignoreboth:erasedups
 RUN echo "echo -e '\\nCall the client with the command:'" >> $BASHRC \
+    && echo "echo -e '$ http $APP_HOST:$APP_PORT/api/status\\n'" >> $BASHRC \
     # && echo "echo -e '$ queryapi\\n'" >> $BASHRC \
     && echo "echo -e '$ . /code/queryapi [help]\\n'" >> $BASHRC

@@ -78,22 +78,22 @@ services:
     depends_on:
       - sql
 
-  # #############
-  # # GRAPHdb neo4j
-  # graphdb:
-  #   image: neo4j:3.1
-  #   hostname: ${GRAPHDB_HOST}
-  #   environment:
-  #     NEO4J_AUTH: neo4j/${GRAPHDB_PASSWORD}
-  #     # Other parameters?
-  #     #NEO4J_HEAP_MEMORY
-  #     #NEO4J_CACHE_MEMORY
-  #   networks:
-  #     dbnet:
-  #       aliases:
-  #         - ${GRAPHDB_HOST}
-  #   volumes:
-  #       - graphdata:/data
+  #############
+  # GRAPHdb neo4j
+  graphdb:
+    image: neo4j:3.1.3
+    hostname: ${GRAPHDB_HOST}
+    environment:
+      NEO4J_AUTH: neo4j/${GRAPHDB_PASSWORD}
+      # Other parameters?
+      #NEO4J_HEAP_MEMORY
+      #NEO4J_CACHE_MEMORY
+    networks:
+      dbnet:
+        aliases:
+          - ${GRAPHDB_HOST}
+    volumes:
+        - graphdata:/data
 
   #############
   # iRODS iCAT server for EUDAT B2safe
@@ -113,7 +113,8 @@ services:
       # base the user/role mechanism on some database
       AUTH_ENABLE: 1
       # putting this here because it should not be configurable in .env
-      AUTH_SERVICE: sqlalchemy
+      # AUTH_SERVICE: sqlalchemy
+      AUTH_SERVICE: neo4j
 
       ##############################
       # set this inside the MODE yaml files you want to use
@@ -129,14 +130,14 @@ services:
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
 
-      # db access
-      ALCHEMY_ENABLE: 1
-      ALCHEMY_EXTERNAL: ${ALCHEMY_EXTERNAL}
-      ALCHEMY_HOST: ${ALCHEMY_HOST}
-      ALCHEMY_PORT: ${ALCHEMY_PORT}
-      ALCHEMY_USER: ${ALCHEMY_USER}
-      ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
-      ALCHEMY_DB: ${ALCHEMY_API_DB}
+      # # db access
+      # ALCHEMY_ENABLE: 1
+      # ALCHEMY_EXTERNAL: ${ALCHEMY_EXTERNAL}
+      # ALCHEMY_HOST: ${ALCHEMY_HOST}
+      # ALCHEMY_PORT: ${ALCHEMY_PORT}
+      # ALCHEMY_USER: ${ALCHEMY_USER}
+      # ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
+      # ALCHEMY_DB: ${ALCHEMY_API_DB}
 
       # irods configuration
       IRODS_ENABLE: 1
@@ -150,12 +151,12 @@ services:
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
 
-      # # neo connection
-      # GRAPHDB_ENABLE: 1
-      # GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
-      # GRAPHDB_HOST: ${GRAPHDB_HOST}
-      # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
-      # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+      # neo connection
+      GRAPHDB_ENABLE: 1
+      GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
+      GRAPHDB_HOST: ${GRAPHDB_HOST}
+      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
 
     volumes:
       # Base code
@@ -236,17 +237,17 @@ volumes:
     driver: local
   irodsvar:
     driver: local
-  eudatopt:
-    driver: local
   tmpuploads:
     driver: local
   jwttokens:
     driver: local
-  sslcerts:
+  graphdata:
     driver: local
-  # restlitedb:
+  # sslcerts:
   #   driver: local
-  # graphdata:
+  # eudatopt:
+  #   driver: local
+  # restlitedb:
   #   driver: local
 
 networks:

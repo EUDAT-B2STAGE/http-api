@@ -1,8 +1,7 @@
 
 Refactor:
-
 ☐ flask binary
- - development @current
+ - development
    ☐ proxy
  - production
    ☐ uwsgi
@@ -14,15 +13,16 @@ travis ci:
   - skip irods?
 
 getinstance:
-✔ rpc? @mattia @done (17-04-04 14:29)
-  ☐ advanced connectors
-    ☐ celery?
-      server.py
-      ☐ enable_security
-      ☐ worker_mode
-      ☐ do tests even if you don't use it
-  ☐ check detect.py tofix and todo
-    also clean rapydo.services python folder...
+☐ advanced connectors
+  ☐ celery?
+    server.py
+    ☐ enable_security
+    ☐ worker_mode
+    ☐ do tests even if you don't use it
+  ☐ check detect.py
+  - tofix and todo
+    ☐ OPTIONAL service
+  - also clean a little bit rapydo.services python folder
 
 builds:
  ✔ swagger-ui @done (17-04-05 06:47)
