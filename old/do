@@ -146,6 +146,8 @@ if [ -z "$2" -o "$2" != "init" ]; then
     fi
 fi
 
+source .env
+
 #############################
 # DEFAULTS FILES
 
