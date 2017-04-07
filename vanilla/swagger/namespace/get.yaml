@@ -33,4 +33,5 @@ single:
     #   default: false
   responses:
     '200':
-      description: The list of objects related to the requested path (or file content if download is activated)
+      description: Returns the digital object information or file content if download is activated
+                   or the list of objects related to the requested path (PID is returned if available)
