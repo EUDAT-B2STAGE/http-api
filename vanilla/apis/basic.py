@@ -12,6 +12,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 """
 
 import os
+import time
 from flask import request, current_app
 from eudat.apis.commons import EudatEndpoint, PRODUCTION
 from rapydo.services.uploader import Uploader
@@ -89,7 +90,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         if self._args.get('download'):
             # TO FIX: problem with swagger-ui boolean?
-            print("TEST!")
             if is_collection:
                 return self.send_errors(
                     'collection', 'Recursive download is not allowed')
@@ -152,6 +152,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     "path does not exists or you don't have privileges",
                     code=hcodes.HTTP_BAD_NOTFOUND)
 
+        # Get PID and Checksum
+        out, _ = icom.get_metadata(path)
+        pid = out.get("PID")
+        checksum = out.get("checksum")
+
         # Set the right context to each element
         response = []
         for filename, metadata in data.items():
@@ -160,6 +165,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 filename: {
                     'metadata': metadata,
                     metadata['object_type']: filename,
+                    metadata['PID']: pid,
+                    metadata['checksum']: checksum,
                     'path': collection,
                     'location': self.b2safe_location(collection),
                     'link': self.httpapi_location(
@@ -280,7 +287,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             .upload(subfolder=r.username, force=force)
 
         # Check if upload response is success
-## TO FIX: custom split of a custom response
+#  TO FIX: custom split of a custom response
 # this piece of code does not work with a custom response
 # if it changes the main blocks of the json root;
 # the developer should be able to provide a 'custom_split' on this
@@ -344,8 +351,21 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             #     ipath
             # )
 
+            if self._args.get('pid'):
+                # Shall we get the timeout from user?
+                timeout = time.time() + 60  # 1 minute from now
+                pid = ''
+                while True:
+                    out, _ = icom.get_metadata(path)
+                    pid = out.get('PID')
+                    if pid != '' or time.time() > timeout:
+                        break
+                    time.sleep(2)
+
             content = {
                 'location': self.b2safe_location(ipath),
+                'PID': out.get('PID'),
+                'EUDAT/CHECKSUM': out.get('EUDAT/CHECKSUM'),
                 'filename': filename,
                 'path': path,
                 'link': self.httpapi_location(request.url, ipath, path)
