@@ -52,7 +52,9 @@ class RPC(EndpointResource):
         out = str(icom.user_has_group("guest", "public2"))
         _, out = icom.check_user_exists("guest", "public2")
 
-        # out, _ = icom.get_metadata(filename)
+        meta = {'PID': '/123/45678901', 'EUDAT/CHECKSUM': 'md5md5md5md5md5'}
+        icom.set_metadata(filename, **meta)
+        out, _ = icom.get_metadata(filename)
         # print(out.get("PID"))
         icom.remove(filename)
         icom.remove(dirname, recursive=True)
