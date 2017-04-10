@@ -11,14 +11,12 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 """
 
-from __future__ import absolute_import
-
-from ..rest.definition import EndpointResource
-from commons import htmlcodes as hcodes
-from commons.logs import get_logger
-
+from rapydo.rest.definition import EndpointResource
+from rapydo.utils import htmlcodes as hcodes
 from b2handle.handleclient import EUDATHandleClient
 from b2handle import handleexceptions
+
+from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 
@@ -48,14 +46,18 @@ class PIDEndpoint(EndpointResource):
             errorMessage = "B2HANDLE: %s" % str(
                 e)
             log.critical(errorMessage)
-            return self.send_errors(message=errorMessage, code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(
+                message=errorMessage, code=hcodes.HTTP_BAD_REQUEST)
         except handleexceptions.HandleNotFoundException as e:
             errorMessage = "B2HANDLE: %s" % str(
                 e)
             log.critical(errorMessage)
-            return self.send_errors(message=errorMessage, code=hcodes.HTTP_BAD_NOTFOUND)
+            return self.send_errors(
+                message=errorMessage, code=hcodes.HTTP_BAD_NOTFOUND)
         if value is None:
-            return self.send_errors(message='B2HANDLE empty value returned', code=hcodes.HTTP_BAD_NOTFOUND)
+            return self.send_errors(
+                message='B2HANDLE empty value returned',
+                code=hcodes.HTTP_BAD_NOTFOUND)
 
         #################
         # If downlaod is True, trigger file download
