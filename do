@@ -202,7 +202,8 @@ if [ "$1" == "update" ]; then
     # Note: images must be updated after pulling the code
     # otherwise we won't know if new images are requested
     echo "Updating (all) docker images to latest release"
-    $compose_all pull
+    docker-compose pull
+    docker-compose build
     echo "Done"
     exit 0
 fi
