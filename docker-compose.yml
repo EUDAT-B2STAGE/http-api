@@ -113,8 +113,8 @@ services:
       # base the user/role mechanism on some database
       AUTH_ENABLE: 1
       # putting this here because it should not be configurable in .env
-      # AUTH_SERVICE: sqlalchemy
-      AUTH_SERVICE: neo4j
+      AUTH_SERVICE: sqlalchemy
+      # AUTH_SERVICE: neo4j
 
       ##############################
       # set this inside the MODE yaml files you want to use
@@ -130,14 +130,14 @@ services:
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
 
-      # # db access
-      # ALCHEMY_ENABLE: 1
-      # ALCHEMY_EXTERNAL: ${ALCHEMY_EXTERNAL}
-      # ALCHEMY_HOST: ${ALCHEMY_HOST}
-      # ALCHEMY_PORT: ${ALCHEMY_PORT}
-      # ALCHEMY_USER: ${ALCHEMY_USER}
-      # ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
-      # ALCHEMY_DB: ${ALCHEMY_API_DB}
+      # db access
+      ALCHEMY_ENABLE: 1
+      ALCHEMY_EXTERNAL: ${ALCHEMY_EXTERNAL}
+      ALCHEMY_HOST: ${ALCHEMY_HOST}
+      ALCHEMY_PORT: ${ALCHEMY_PORT}
+      ALCHEMY_USER: ${ALCHEMY_USER}
+      ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
+      ALCHEMY_DB: ${ALCHEMY_API_DB}
 
       # irods configuration
       IRODS_ENABLE: 1
@@ -151,12 +151,13 @@ services:
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
 
-      # neo connection
-      GRAPHDB_ENABLE: 1
-      GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
-      GRAPHDB_HOST: ${GRAPHDB_HOST}
-      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
-      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+      # # neo connection
+      # GRAPHDB_ENABLE: 0
+      # # GRAPHDB_ENABLE: 1
+      # GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
+      # GRAPHDB_HOST: ${GRAPHDB_HOST}
+      # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
 
     volumes:
       # Base code

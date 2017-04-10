@@ -1,18 +1,21 @@
 
 Refactor:
+
 ✘ lru cache in detect? @cancelled (17-04-10 17:07)
+✔ give error if exception in flask extension? @done (17-04-10 17:10)
 ☐ injectors
   ☐ check sqlalchemy
     ☐ auth
+☐ call extensions with specific arguments @important
 ☐ flask binary
+ - debug
+   ☐ sqladmin image
  - development
    ☐ proxy
  - production
    ☐ uwsgi (install in requirements. also nginx?)
    HOME=/tmp for user develop
  - launch test
-✔ give error if exception in flask extension? @done (17-04-10 17:10)
-☐ call extensions with specific arguments
 ☐ programmatically Injectors?
   in detect.py
 
