@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# core_branch="master"
 # TO BE FIXED when completing the branch
-core_branch="last_refactor"
+core_branch="letsencrypt"
+# core_branch="master"
+core_branch_backend="last_refactor"
+# core_branch_backend="master"
 
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
@@ -66,6 +68,8 @@ compose_all="$compose_base -f composers/debug.yml -f composers/development.yml -
 
 # Production mode
 if [ "$1" == "PRODUCTION" ]; then
+
+## TO FIX
 
     # # Check for REAL certificates
     # if [ ! -f "./certs/nginx.key" -o ! -f "./certs/nginx.crt" ];
@@ -194,6 +198,7 @@ fi
 # Update your code
 if [ "$1" == "update" ]; then
     echo "Pulling main repo"
+# TO FIX
     git pull
     echo "Pulling submodule"
     cd $subdir
@@ -202,7 +207,10 @@ if [ "$1" == "update" ]; then
     # Note: images must be updated after pulling the code
     # otherwise we won't know if new images are requested
     echo "Updating (all) docker images to latest release"
-    $compose_all pull
+    # $compose_all pull
+# TO FIX
+    docker-compose pull
+    docker-compose build
     echo "Done"
     exit 0
 fi
