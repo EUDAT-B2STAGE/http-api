@@ -1,7 +1,8 @@
 language: python
 sudo: required
+# https://docs.travis-ci.com/user/languages/python/#Choosing-Python-versions-to-test-against
 python:
-  - "3.6.1"
+  - "3.6"
 services:
   - docker
 
