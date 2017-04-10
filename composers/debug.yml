@@ -28,6 +28,7 @@ services:
   graphdb:
     ports:
       - 9090:7474
+      - 7687:7687
 
   swagclient:
     ports:
