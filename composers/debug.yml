@@ -19,11 +19,11 @@ services:
     # volumes:
     #   - restlitedb:/dbs
 
-  # sqladmin:
-  #   # volumes:
-  #   #   - restlitedb:/dbs
-  #   ports:
-  #     - 8888:8888
+  sqladmin:
+    # volumes:
+    #   - restlitedb:/dbs
+    ports:
+      - 8888:8888
 
   # graphdb:
   #   ports:

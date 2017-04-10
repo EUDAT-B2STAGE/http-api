@@ -141,7 +141,7 @@ else
     git clone https://github.com/EUDAT-B2STAGE/http-api-base.git $subdir
     cd $subdir
     # Go into the current branch
-    git checkout $core_branch
+    git checkout $core_branch_backend
     # print latest commit
     echo "Check latest commit"
     git log -n 1
@@ -178,7 +178,7 @@ if [ "$1" == "push" ]; then
 
     echo "Pushing submodule"
     cd $subdir
-    git push
+    git push origin $core_branch_backend
     cd ..
 
     # Save a snapshot of current submodule
@@ -190,7 +190,7 @@ if [ "$1" == "push" ]; then
     echo "Pushing main repo"
     git add $submodule_tracking
     git commit
-    git push
+    git push $core_branch
     echo "Completed"
     exit 0
 fi
@@ -198,11 +198,10 @@ fi
 # Update your code
 if [ "$1" == "update" ]; then
     echo "Pulling main repo"
-# TO FIX
-    git pull
+    git pull origin $core_branch
     echo "Pulling submodule"
     cd $subdir
-    git pull
+    git pull origin $core_branch_backend
     cd ..
     # Note: images must be updated after pulling the code
     # otherwise we won't know if new images are requested
@@ -322,7 +321,7 @@ then
 
     echo "Docker stack: booting"
 
-    if [ "$2" == "sql_admin" ]; then
+    if [ "$2" == "sqladmin" ]; then
         echo "Administration for relational databases"
         $compose_run up sqladmin
         exit 0

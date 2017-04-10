@@ -194,14 +194,13 @@ services:
     depends_on:
       - rest
 
-  # #############
-  # # Database administration
-  # sqladmin:
-  # # This docker image let you access sqllite/postgres/mysql
-  # # with a phpmyadmin-like web page
-  #   image: eudatb2stage/sqladminer:latest
-  #   # links:
-  #   #   - sql:db
+  #############
+  # Database administration
+  sqladmin:
+    build: ./builds/sqladmin
+    image: sqladminer:rapydo
+    networks:
+      dbnet:
 
   # #############
   # # Nginx proxy
@@ -247,8 +246,6 @@ volumes:
   # sslcerts:
   #   driver: local
   # eudatopt:
-  #   driver: local
-  # restlitedb:
   #   driver: local
 
 networks:
