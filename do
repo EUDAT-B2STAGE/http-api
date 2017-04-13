@@ -274,7 +274,7 @@ elif [ "$1" == "irestart" ]; then
     exit 0
 
 elif [ "$1" == "irods_shell" ]; then
-    $compose_run exec $irodscontainer --user irods bash
+    $compose_run exec $irodscontainer bash
     exit 0
 
 elif [ "$1" == "server_shell" ]; then
@@ -344,6 +344,7 @@ then
         $compose_run rm -f
     fi
 
+    # $compose_run up $restcontainer
     $compose_run up -d $restcontainer
     status="$?"
 

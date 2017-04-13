@@ -55,15 +55,18 @@ EXPOSE $FLASK_PORT
 # alias
 RUN echo "alias dev=\"HOME=/tmp su -p \$APIUSER\"" >> /root/.bash_aliases
 RUN echo "alias testapi=\"su -p \$APIUSER -c 'export HOME=/tmp; cd /code; nose2 -F '\"" >> /root/.bash_aliases
+
 RUN echo "#!/bin/bash\\nsu -p \$APIUSER -c 'export HOME=/tmp; cd /code; ./tests.sh'" > /usr/local/bin/testwithcoverage && chmod +x /usr/local/bin/testwithcoverage
 RUN echo "#!/bin/bash\\nsu -p \$APIUSER -c 'export HOME=/tmp; cd /code; flask run --with-threads -h 0.0.0.0 -p $FLASK_PORT '" > /usr/local/bin/rapydo && chmod +x /usr/local/bin/rapydo
+RUN echo "#!/bin/bash\\nsu -p \$APIUSER -c 'export HOME=/tmp; cd /code; FLASK_DEBUG=0 ./manage.py init'" > /usr/local/bin/initialize && chmod +x /usr/local/bin/initialize
 
 ######################
 # instructions
 RUN echo "Entrylevel" && \
     echo "echo\necho 'Run Flask server as ($APIUSER) with the command:'\necho '$ rapydo'" >> /root/.bashrc && \
     echo "echo\necho 'Run tests also with:\n$ testapi [test.FOLDER]\n'\n" \
-    >> /root/.bashrc
+        >> /root/.bashrc \
+    && echo "echo\necho '$ python run.py'" > /tmp/.bashrc
 
 ###################
 # closing entrypoint

@@ -41,6 +41,17 @@ if [ ! -f "$secret_file" ]; then
     # question: should we fix sqllite permissions?
     # answer: we are using postgresql also in development
 
+    echo "Wait for services"
+    sleep 5
+    echo "Init flask app"
+    initialize
+    if [ "$?" == "0" ]; then
+        echo
+    else
+        echo "Failed to startup flask!"
+        exit 1
+    fi
+
 fi
 
 #####################

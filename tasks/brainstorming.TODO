@@ -1,14 +1,10 @@
 
 Refactor:
 
-✘ lru cache in detect? @cancelled (17-04-10 17:07)
-✔ give error if exception in flask extension? @done (17-04-10 17:10)
-✔ injectors @done (17-04-10 23:08)
-  ✔ check sqlalchemy @done (17-04-10 23:08)
-    ✔ auth @done (17-04-10 23:08)
-☐ programmatically Injectors?
-  in detect.py
+✔ programmatically Injectors? @done (17-04-12 07:08)
 ☐ flask binary
+ ✔ bug on sqlalchemy and neo with flask run @unclear @done (17-04-13 09:56)
+ ☐ custom destroy
  ✔ debug @done (17-04-10 23:47)
    ✔ sqladmin image @done (17-04-10 23:47)
  - development
@@ -18,23 +14,20 @@ Refactor:
    HOME=/tmp for user develop
  - launch test
 ☐ call extensions with specific arguments @important
-
-
-travis ci:
-  check the logs
-  - skip irods?
-
-getinstance:
+☐ travis error on certificate host?
 ☐ advanced connectors
   ☐ celery?
     server.py
     ☐ enable_security
     ☐ worker_mode
     ☐ do tests even if you don't use it
-  ☐ check detect.py
-  - tofix and todo
-    ☐ OPTIONAL service
-  - also clean a little bit rapydo.services python folder
+  ✔ check detect.py @done (17-04-12 07:19)
+  ✔ tofix and todo @done (17-04-12 07:19)
+    ✔ OPTIONAL service @done (17-04-12 07:19)
+☐ clean a little bit rapydo.services python folder
+✘ get_object() and set_object() fix @cancelled (17-04-12 07:19)
+
+
 
 builds:
  ✔ swagger-ui @done (17-04-05 06:47)
@@ -45,7 +38,6 @@ builds:
   - debug
   - development
   - production
-☐ get_object() and set_object() fix
 
 ☐ unittests
   ✔ remove all @done (17-03-22 11:55)
