@@ -2,9 +2,13 @@
 Refactor:
 
 ✔ programmatically Injectors? @done (17-04-12 07:08)
+✔ travis error on certificate host? @done (17-04-13 12:07)
 ☐ flask binary
  ✔ bug on sqlalchemy and neo with flask run @unclear @done (17-04-13 09:56)
- ☐ custom destroy
+ ✔ custom init @done (17-04-13 17:22)
+ ✔ custom destroy @done (17-04-13 17:39)
+ ☐ app lock
+   (e.g. if init or destroy already running)
  ✔ debug @done (17-04-10 23:47)
    ✔ sqladmin image @done (17-04-10 23:47)
  - development
@@ -13,19 +17,19 @@ Refactor:
    ☐ uwsgi (install in requirements. also nginx?)
    HOME=/tmp for user develop
  - launch test
-☐ call extensions with specific arguments @important
-☐ travis error on certificate host?
+☐ call extensions with specific arguments
+  mattia
+☐ extensions
+   ☐ external
 ☐ advanced connectors
   ☐ celery?
     server.py
-    ☐ enable_security
     ☐ worker_mode
     ☐ do tests even if you don't use it
   ✔ check detect.py @done (17-04-12 07:19)
   ✔ tofix and todo @done (17-04-12 07:19)
     ✔ OPTIONAL service @done (17-04-12 07:19)
 ☐ clean a little bit rapydo.services python folder
-✘ get_object() and set_object() fix @cancelled (17-04-12 07:19)
 
 
 
