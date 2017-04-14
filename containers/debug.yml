@@ -31,6 +31,8 @@ backend:
 frontend:
   ports:
     - 80:5000
+  environment:
+    BACKEND_PORT: 8081
 
 gdb:
   ports:
