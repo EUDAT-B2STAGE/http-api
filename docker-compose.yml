@@ -132,7 +132,6 @@ services:
 
       # db access
       ALCHEMY_ENABLE: 1
-      ALCHEMY_EXTERNAL: ${ALCHEMY_EXTERNAL}
       ALCHEMY_HOST: ${ALCHEMY_HOST}
       ALCHEMY_PORT: ${ALCHEMY_PORT}
       ALCHEMY_USER: ${ALCHEMY_USER}
@@ -141,7 +140,6 @@ services:
 
       # irods configuration
       IRODS_ENABLE: 1
-      IRODS_EXTERNAL: ${IRODS_EXTERNAL}
       IRODS_HOST: ${IRODS_HOST}
       IRODS_PORT: ${IRODS_PORT}
       IRODS_USER: ${IRODS_USER}
@@ -154,7 +152,6 @@ services:
       # # neo connection
       # GRAPHDB_ENABLE: 0
       # # GRAPHDB_ENABLE: 1
-      # GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
       # GRAPHDB_HOST: ${GRAPHDB_HOST}
       # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
       # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}

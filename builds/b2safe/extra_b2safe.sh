@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # GSI & certificates
-add-irods-X509 guest
 add-irods-X509 rodsminer admin
+add-irods-X509 guest
 
 # # More?
 # echo "Extra!"

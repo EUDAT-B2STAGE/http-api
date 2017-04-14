@@ -26,6 +26,7 @@ if [ ! -s "$CERTDIR/host/hostcert.pem" ]; then
     mkdir -p /var/lib/irods/.globus
     ln -s /opt/certificates/host/hostkey.pem /var/lib/irods/.globus/
     ln -s /opt/certificates/host/hostcert.pem /var/lib/irods/.globus/
+    echo "Created host certificate"
 fi
 
 ##############################
