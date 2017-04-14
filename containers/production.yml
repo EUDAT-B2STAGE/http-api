@@ -1,21 +1,35 @@
 
+#######################
+# Link services inside API
+
 backend:
   user: root
   command: init
-  # command: sleep infinity
-  environment:
-    - UWSGI_MASTER=/tmp/uwsgi/starter.ini
-    - NGINX_ACTIVE=true
   volumes:
+    - ..:/code/${COMPOSE_PROJECT_NAME}
     - ../containers/wsgi:/tmp/uwsgi
-    # - nginx_empty_sites:/etc/nginx/sites-enabled
     - ../containers/nginx_internal:/etc/nginx/conf.d
-    # - ./app:/code
+  environment:
+    APP_MODE: production
+    DEBUG_LEVEL: INFO
+    VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+    UWSGI_MASTER: /tmp/uwsgi/starter.ini
+    NGINX_ACTIVE: true
 
-frontend:
-  # command: sleep infinity
+    # base the user/role mechanism on some database
+    AUTH_ENABLE: 1
+    # putting this here because it should not be configurable in .env
+    AUTH_SERVICE: neo4j
+
+    # # neo connection
+    GRAPHDB_ENABLE: 1
+    GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
+    GRAPHDB_HOST: ${GRAPHDB_HOST}
+    GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+    GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+
   links:
-    - backend:myapi
+    - gdb:gdb
 
 proxy:
   volumes:
@@ -27,3 +41,15 @@ proxy:
   ports:
     - 80:80
     - 443:443
+
+gdb:
+  ports:
+  - 9090:7474
+
+    links:
+        - mygraph:gdb
+        # Redis db (as a queue) should be called queue
+        # - redqueue:queue
+        # RabbitMQ used as broken, shold be called queue too??
+        - rabbit:queue
+        - swagger:swagger

@@ -6,9 +6,12 @@
 
 #############################
 # Other variables
+
+source .env
+
 compose_com="docker-compose"
 webbuild="bower"
-volume_prefix="rapydo_${1}"
+volume_prefix="rapydo_${COMPOSE_PROJECT_NAME}"
 fronted_container="frontend"
 backend_container="backend"
 backend_repo="backend"
@@ -44,37 +47,21 @@ do
     fi
 done
 
-# // TO FIX:
-# also for do.py
-compose_com="docker-compose --project-name $1"
+# TO FIX: also for do.py
+compose_com="docker-compose --project-name $COMPOSE_PROJECT_NAME"
 #############################
 
 if [ "$1" != "help" ]; then
-
-    if [ -z "$1" ]; then
-        # echo "Please specify one configuration to use."
-        # echo "Available configurations:"
-        # for i in `ls custom`;
-        # do
-        #     name=`echo $i | sed "s/\.yml//"`
-        #     echo -e "\t$name"
-        # done
-        echo "We should use the new 'do.py' instead"
-        exit 1
-    elif [ "$1" != "help" ]; then
-        echo "### SELECTED BLUEPRINT: [$1]"
-        echo ""
-    fi
 
     #############################
     # Check compose stack existence
     backendyaml="backend/docker-compose.yml"
     frontendyaml="frontend/docker-compose.yml"
 
-    if [ -z $3 ]; then
+    if [ -z $2 ]; then
         mode="debug"
     else
-        mode="$3"
+        mode="$2"
     fi
 
 ## VERY IMPORTANT !!!
@@ -91,13 +78,13 @@ if [ "$1" != "help" ]; then
         echo "Configuration is corrupted!!"
         exit 1
     fi
-    filecustom="containers/${1}/$mode.yml"
-    if [ ! -f "$filecustom" ]; then
-        echo "File '$filecustom' not found!"
-        echo "You might start up copying 'demo.yml'."
-        exit 1
-    fi
-    files="-f $backendyaml -f $frontendyaml -f $filebase -f $filecustom"
+    # filecustom="containers/${1}/$mode.yml"
+    # if [ ! -f "$filecustom" ]; then
+    #     echo "File '$filecustom' not found!"
+    #     echo "You might start up copying 'demo.yml'."
+    #     exit 1
+    # fi
+    files="-f $backendyaml -f $frontendyaml -f $filebase"
 
     # Remove previous configuration
     #echo "Clean configuration files"
@@ -106,7 +93,7 @@ if [ "$1" != "help" ]; then
     # fi
 fi
 
-if [ "$1" == "help" -o -z "$2" ]; then
+if [ "$1" == "help" -o -z "$1" ]; then
     echo "Usage: $0 BLUEPRINT COMMAND [OPTIONS]"
     echo ""
     echo "Available list of COMMANDs:"
@@ -134,19 +121,18 @@ fi
 
 #############################
 # Check libs
-if [ -z "$2" -o "$2" != "init" ]; then
+if [ -z "$1" -o "$1" != "init" ]; then
     libs="libs/bower_components"
     out=`ls $libs 2> /dev/null | wc -m | tr -d ' '`
     if [ "$out" == "0" ]; then
         echo ""
         echo "[ERROR] You are missing JS libraries!"
         echo "Please run:"
-        echo "$0 $1 init"
+        echo "$0 init"
         exit 1
     fi
 fi
 
-source .env
 
 #############################
 # DEFAULTS FILES
@@ -158,7 +144,6 @@ if [ ! -s "$check" ]; then
     echo "File '$check' not found or empty..."
     exit 1
 fi
-# echo "$1" > $blueprintconf
 
 # Frontend
 check="js/routing.extra.js"
@@ -174,7 +159,7 @@ fi
 bcom="$compose_com -f backend/docker-compose.yml -f frontend/docker-compose.yml run --rm $webbuild bower install"
 
 # First time install
-if [ "$2" == "init" ]; then
+if [ "$1" == "init" ]; then
 
     echo -e "ACTION: Project init\n"
     #git remote add private
@@ -195,18 +180,18 @@ if [ "$2" == "init" ]; then
     $bcom
     echo "Completed"
 # Logs
-elif [ "$2" == "logs" ]; then
+elif [ "$1" == "logs" ]; then
 
     $compose_com $files logs -f
 
-elif [ "$2" == "status" ]; then
+elif [ "$1" == "status" ]; then
     echo -e "ACTION: Status check\n"
 
-elif [ "$2" == "graceful" ]; then
+elif [ "$1" == "graceful" ]; then
     echo -e "ACTION: Start\n"
     $compose_com $files up -d $services
 
-elif [ "$2" == "restart" ]; then
+elif [ "$1" == "restart" ]; then
     echo -e "ACTION: Reboot\n"
     echo "Cleaning project containers (if any)"
     $compose_com $files stop
@@ -214,18 +199,18 @@ elif [ "$2" == "restart" ]; then
     echo "Starting up"
     $compose_com $files up -d $services
 
-elif [ "$2" == "stop" ]; then
+elif [ "$1" == "stop" ]; then
     echo -e "ACTION: Stop\n"
     echo "Freezing services"
     $compose_com $files stop
 
-elif [ "$2" == "remove" ]; then
+elif [ "$1" == "remove" ]; then
     echo -e "ACTION: Removal\n"
     echo "Destroying services"
     $compose_com $files stop
     $compose_com $files rm -f
 
-elif [ "$2" == "clean" ]; then
+elif [ "$1" == "clean" ]; then
 
     echo -e "ACTION: Total removal\n"
     echo "Destroying (forever) containers & volumes. Are you really sure?"
@@ -239,21 +224,21 @@ elif [ "$2" == "clean" ]; then
     done
     echo ""
 
-elif [ "$2" == "backend" ]; then
-    echo "Opening a shell inside the $2 container"
+elif [ "$1" == "backend" ]; then
+    echo "Opening a shell inside the $1 container"
     echo "(If in debug mode, run Flask with './boot devel')"
     echo ""
     $compose_com $files exec $backend_container bash
     exit 0
 
-elif [ "$2" == "frontend" ]; then
-    echo "Opening a shell inside the $2 container"
+elif [ "$1" == "frontend" ]; then
+    echo "Opening a shell inside the $1 container"
     echo "(If in debug mode, run Flask with './boot devel')"
     echo ""
     $compose_com $files exec $fronted_container bash
     exit 0
 
-elif [ "$2" == "test_backend" ]; then
+elif [ "$1" == "test_backend" ]; then
 
     echo "Running tests"
     $compose_com $files exec $backend_container ./tests.sh
@@ -264,11 +249,11 @@ elif [ "$2" == "test_backend" ]; then
     echo "Well done"
     exit 0
 
-elif [ "$2" == "sql" ]; then
+elif [ "$1" == "sql" ]; then
     echo "Launch adminer for SQL servers"
     $compose_com run --rm --service-ports sqladmin
 
-elif [ "$2" == "push" ]; then
+elif [ "$1" == "push" ]; then
 
     echo "Running tests"
     # Add nohup?
@@ -306,7 +291,7 @@ elif [ "$2" == "push" ]; then
     exit 0
 
 # Update repos, packages and images
-elif [ "$2" == "update" ]; then
+elif [ "$1" == "update" ]; then
 
     $compose_com $files pull
     current=`pwd`
@@ -330,21 +315,21 @@ elif [ "$2" == "update" ]; then
     exit 0
 
 # Bower install
-elif [ "$2" == "bower" ]; then
+elif [ "$1" == "bower" ]; then
 
-    if [ "$3" != "" ]; then
-        bcom="${bcom} $3 --save"
-        echo "Install package(s): $3"
+    if [ "$2" != "" ]; then
+        bcom="${bcom} $2 --save"
+        echo "Install package(s): $2"
     fi
     $bcom
 # Angularjs tests
-elif [ "$2" == "karma" ]; then
+elif [ "$1" == "karma" ]; then
 
     echo "Opening shell for nodejs"
-    $compose_com run --rm $2 bash
+    $compose_com run --rm $1 bash
     exit 0
 else
-    echo "Unknown command '$2'. Ask for help:"
+    echo "Unknown command '$1'. Ask for help:"
     echo ""
     echo "$0 help"
     exit 0
@@ -352,24 +337,24 @@ fi
 
 # Final check up
 if [ "$?" == "0" ]; then
-    if [ "$2" == "init" ]; then
+    if [ "$1" == "init" ]; then
         echo ""
         echo "You may launch containers now. Use:"
-        echo "$0 $1 restart"
+        echo "$0 restart"
         echo ""
     else
-        echo "[$1] configuration. Status:"
+        echo "[$COMPOSE_PROJECT_NAME] configuration. Status:"
         $compose_com $files ps
         echo ""
         echo "Available volumes for current configuration:"
         docker volume ls | grep $volume_prefix
     fi
 
-    if [ "$2" == 'restart' -o "$2" == 'graceful' ]; then
+    if [ "$1" == 'restart' -o "$1" == 'graceful' ]; then
         echo ""
         echo "Access containers with:"
-        echo "$0 $1 backend"
+        echo "$0 backend"
         echo "and/or"
-        echo "$0 $1 frontend"
+        echo "$0 frontend"
     fi
 fi
