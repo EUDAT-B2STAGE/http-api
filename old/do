@@ -152,20 +152,19 @@ source .env
 # DEFAULTS FILES
 
 # Backend
-file="$1.yaml"
+file="project_configuration.yaml"
 check="specs/$file"
 if [ ! -s "$check" ]; then
     echo "File '$check' not found or empty..."
-    echo "Please create it to define APIs endpoints."
     exit 1
 fi
 # echo "$1" > $blueprintconf
 
 # Frontend
-check="js/$1"
+check="js/routing.extra.js"
 if [ ! "$(ls -A $check 2> /dev/null)" ]; then
     echo "Directory '$check' not found or empty..."
-    echo "Please create it to define AngularJS code."
+    echo "Please create at least your custom routing."
     exit 1
 fi
 
