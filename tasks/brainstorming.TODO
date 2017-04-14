@@ -4,7 +4,8 @@ Refactor:
 ☐ bug rpc travis
  ✔ check if service is internal @important @done (17-04-14 14:46)
  ✔ sleep before irods init if internal @done (17-04-14 14:49)
-☐ retry timeout progressive
+✔ retry timeout progressive @done (17-04-14 15:05)
+✔ remove blueprint @done (17-04-14 15:10)
 ☐ flask binary
  ✘ app lock @cancelled (17-04-14 14:49)
  ✔ debug @done (17-04-10 23:47)

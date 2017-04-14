@@ -50,7 +50,7 @@ ALL_COMMAND=""
 # Read credentials from current files
 
 dfile="/code/core/rapydo/confs/defaults.yaml"
-cfile="/code/custom/specs/eudat.yaml"
+cfile="/code/custom/specs/project_configuration.yaml"
 jpath="variables.python.backend.credentials"
 
 # Custom
