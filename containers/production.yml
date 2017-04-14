@@ -42,14 +42,6 @@ proxy:
     - 80:80
     - 443:443
 
-gdb:
-  ports:
-  - 9090:7474
-
-    links:
-        - mygraph:gdb
-        # Redis db (as a queue) should be called queue
-        # - redqueue:queue
-        # RabbitMQ used as broken, shold be called queue too??
-        - rabbit:queue
-        - swagger:swagger
+# gdb:
+#   ports:
+#   - 9090:7474
