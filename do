@@ -354,34 +354,38 @@ then
     if [ "$status" == "0" ]; then
         $compose_run exec $restcontainer update-ca-certificates
         echo ""
-        echo "To access the flask api container:"
-        echo "$0 server_shell"
-        echo ""
-        echo "To query the api server (if running) use the client container:"
-        echo "$0 client_shell"
-
-        path="/api/status"
-
-        if [ "$1" == "PRODUCTION" ]; then
-            echo "/ # http --follow --verify /tmp/cert.crt awesome.docker$path"
-        elif [ "$1" == "DEVELOPMENT" ]; then
-            echo "/ # http GET http://apiserver$path"
-        else
-            # echo "/ # http GET apiserver:5000$path"
-            echo 
-        fi
-        echo ""
 
         if [ "$2" == "await" ]; then
-            echo "Waiting for initialization completion"
-            initps="some"
-            while [ "$initps" != "" ];
+            echo "Startup"
+            initps=""
+            while [ "$initps" == "" ];
             do
-                initps=$(docker-compose exec rest ps ax --forest | grep initialize)
-                echo "awaiting"
-                sleep 10
+                echo "in progress..."
+                sleep 5
+
+                # initps=$(docker-compose exec rest ps ax --forest | grep initialize)
+                initps=$(docker-compose exec rest ls /${JWT_APP_SECRETS}/initialized 2>/dev/null)
             done
+        else
+            echo ""
+            echo "To access the flask api container:"
+            echo "$0 server_shell"
+            echo ""
+            echo "To query the api server (if running) use the client container:"
+            echo "$0 client_shell"
+
+            path="/api/status"
+
+            if [ "$1" == "PRODUCTION" ]; then
+                echo "/ # http --follow --verify /tmp/cert.crt awesome.docker$path"
+            elif [ "$1" == "DEVELOPMENT" ]; then
+                echo "/ # http GET http://apiserver$path"
+            else
+                # echo "/ # http GET apiserver:5000$path"
+                echo 
+            fi
         fi
+        echo ""
 
     fi
 

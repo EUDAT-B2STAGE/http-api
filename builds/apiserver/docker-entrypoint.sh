@@ -53,6 +53,10 @@ if [ ! -f "$secret_file" ]; then
 fi
 
 #####################
+# Sync after init with compose call from outside
+touch /${JWT_APP_SECRETS}/initialized
+
+#####################
 # Extra scripts
 dedir="/docker-entrypoint.d"
 for f in `ls $dedir`; do
