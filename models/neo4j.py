@@ -10,7 +10,7 @@ Imports and models have to be defined/used AFTER normal Graphdb connection.
 
 from __future__ import absolute_import
 from neomodel import StringProperty, \
-    StructuredNode, RelationshipTo, RelationshipFrom
+    StructuredNode, RelationshipFrom  # , RelationshipTo
 import logging
 
 logger = logging.getLogger(__name__)
