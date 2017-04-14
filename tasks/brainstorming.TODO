@@ -1,16 +1,12 @@
 
 Refactor:
 
-✔ bug on sqlalchemy and neo with flask run @unclear @done (17-04-13 09:56)
 ☐ bug rpc travis
  ✔ check if service is internal @important @done (17-04-14 14:46)
- ☐ sleep before irods init if internal
+ ✔ sleep before irods init if internal @done (17-04-14 14:49)
 ☐ retry timeout progressive
 ☐ flask binary
- ✔ custom init @done (17-04-13 17:22)
- ✔ custom destroy @done (17-04-13 17:39)
- ☐ app lock
-   (e.g. if init or destroy already running)
+ ✘ app lock @cancelled (17-04-14 14:49)
  ✔ debug @done (17-04-10 23:47)
  - development
    ☐ proxy

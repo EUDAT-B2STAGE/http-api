@@ -39,8 +39,8 @@ script:
   # build all images
   - ./do buildall
 
-  # start the debug environment
-  - ./do DEBUG
+  # start the debug environment, and wait for initialization
+  - ./do DEBUG await
 
   # uhm
   - ./do api_test

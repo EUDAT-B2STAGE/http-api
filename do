@@ -367,9 +367,22 @@ then
         elif [ "$1" == "DEVELOPMENT" ]; then
             echo "/ # http GET http://apiserver$path"
         else
-            echo "/ # http GET apiserver:5000$path"
+            # echo "/ # http GET apiserver:5000$path"
+            echo 
         fi
         echo ""
+
+        if [ "$2" == "await" ]; then
+            echo "Waiting for initialization completion"
+            initps="some"
+            while [ "$initps" != "" ];
+            do
+                initps=$(docker-compose exec rest ps ax --forest | grep initialize)
+                echo "awaiting"
+                sleep 10
+            done
+        fi
+
     fi
 
     echo "Boot completed"
