@@ -4,7 +4,7 @@
 
 backend:
   volumes:
-      - ..:/code/custom
+    - ..:/code/${COMPOSE_PROJECT_NAME}
   environment:
     APP_MODE: debug
     DEBUG_LEVEL: VERBOSE
