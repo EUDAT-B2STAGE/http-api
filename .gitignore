@@ -9,10 +9,6 @@
 # notebooks
 .ipynb_checkpoints
 
-# user custom configs
-specs/blueprint.init
-frontend/config/angular/blueprint.json
-
 # data
 uploads
 

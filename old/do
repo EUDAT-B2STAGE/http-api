@@ -2,7 +2,7 @@
 
 #############################
 # Defaults
-blueprintconf="specs/blueprint.init"
+# blueprintconf="specs/blueprint.init"
 
 #############################
 # Other variables
@@ -101,9 +101,9 @@ if [ "$1" != "help" ]; then
 
     # Remove previous configuration
     #echo "Clean configuration files"
-    if [ -f "../$blueprintconf" ]; then
-        rm ../$blueprintconf
-    fi
+    # if [ -f "../$blueprintconf" ]; then
+    #     rm ../$blueprintconf
+    # fi
 fi
 
 if [ "$1" == "help" -o -z "$2" ]; then
@@ -159,9 +159,7 @@ if [ ! -s "$check" ]; then
     echo "Please create it to define APIs endpoints."
     exit 1
 fi
-# echo "{ \"$1\": \"$file\" }" > $blueprintconf
-# echo "{ \"blueprint\": \"$1\" }" > $blueprintconf
-echo "$1" > $blueprintconf
+# echo "$1" > $blueprintconf
 
 # Frontend
 check="js/$1"
