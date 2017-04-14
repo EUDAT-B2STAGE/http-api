@@ -197,20 +197,21 @@ fi
 
 # Update your code
 if [ "$1" == "update" ]; then
+
     echo "Pulling main repo"
     git pull origin $core_branch
     echo "Pulling submodule"
     cd $subdir
     git pull origin $core_branch_backend
     cd ..
+
     # Note: images must be updated after pulling the code
-    # otherwise we won't know if new images are requested
-    echo "Updating (all) docker images to latest release"
-    # $compose_all pull
-# TO FIX
-    docker-compose pull
-    docker-compose build
+    echo "Updating docker images"
+    docker-compose pull --parallel --ignore-pull-failures
+    ./do build4test
+
     echo "Done"
+
     exit 0
 fi
 
@@ -310,6 +311,10 @@ elif [ "$1" == "buildall" ]; then
     $compose_run build --pull
     exit 0
 
+elif [ "$1" == "build4test" ]; then
+    $compose_run build --pull sql icat rest
+    exit 0
+
 elif [ "$1" == "buildone" ]; then
     $compose_run build $2
     exit 0
@@ -382,7 +387,7 @@ then
                 echo "/ # http GET http://apiserver$path"
             else
                 # echo "/ # http GET apiserver:5000$path"
-                echo 
+                echo
             fi
         fi
         echo ""

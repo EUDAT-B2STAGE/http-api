@@ -12,10 +12,6 @@ RUN apk update && apk upgrade && apk add \
     jq \
     && rm -rf /var/cache/apk/*
 
-# # Install pip
-# RUN wget -q https://bootstrap.pypa.io/get-pip.py \
-#     && python3 get-pip.py && rm *.py
-
 # Install python packages
 RUN pip --no-cache-dir install --upgrade \
     pip httpie http-prompt pyyaml

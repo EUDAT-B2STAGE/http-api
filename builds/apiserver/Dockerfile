@@ -23,12 +23,13 @@ RUN apt-get update && apt-get install -y \
 ###################
 # PIP
 
+COPY requirements.txt /tmp/
 WORKDIR /tmp
-RUN wget -q https://bootstrap.pypa.io/get-pip.py \
+
+RUN wget --no-check-certificate https://bootstrap.pypa.io/get-pip.py \
     && python get-pip.py && rm *.py
 
-COPY requirements.txt /tmp/
-RUN pip3 install --upgrade \
+RUN pip install --upgrade \
     --force-reinstall --no-cache-dir -r requirements.txt
 
 ###################

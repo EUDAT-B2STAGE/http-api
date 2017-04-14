@@ -1,6 +1,6 @@
 
 # PROXY that accepts challenges
-FROM nginx:1.12-alpine
+FROM nginx:1.11.13-alpine
 MAINTAINER "Paolo D'Onorio De Meo <p.donorio.demeo@gmail.it>"
 
 RUN apk update && \

@@ -1,22 +1,9 @@
 
 Refactor:
 
-✔ call extensions with specific arguments @done (17-04-14 15:30)
-  mattia
-  ✔ rpc @done (17-04-14 15:30)
-✔ extensions @done (17-04-14 15:30)
-   ✔ external @done (17-04-14 15:30)
-✔ advanced connectors @done (17-04-14 15:31)
-  ✔ celery? @done (17-04-14 15:31)
-    server.py
-    ✔ worker_mode @done (17-04-14 15:30)
-  ✔ check detect.py @done (17-04-12 07:19)
-  ✔ tofix and todo @done (17-04-12 07:19)
-    ✔ OPTIONAL service @done (17-04-12 07:19)
-
 ☐ unittests
   ✔ remove all @done (17-03-22 11:55)
-  ☐ fix base
+  ✔ fix base @done (17-04-14 23:04)
   ☐ fix eudat
 ☐ swagger 2 markdown (and PDF/html)
    ☐ seadatanet endpoints

@@ -1,5 +1,5 @@
 
-FROM nginx:1.11.12-alpine
+FROM nginx:1.11.13-alpine
 MAINTAINER "Paolo D'Onorio De Meo <p.donoriodemeo@cineca.it>"
 
 RUN apk update && apk add wget
