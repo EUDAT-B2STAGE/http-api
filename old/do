@@ -94,7 +94,7 @@ if [ "$1" != "help" ]; then
 fi
 
 if [ "$1" == "help" -o -z "$1" ]; then
-    echo "Usage: $0 BLUEPRINT COMMAND [OPTIONS]"
+    echo "Usage: $0 COMMAND [OPTIONS]"
     echo ""
     echo "Available list of COMMANDs:"
     echo ""
