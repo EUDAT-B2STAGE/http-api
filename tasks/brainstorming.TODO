@@ -10,11 +10,12 @@ Refactor:
    ☐ dockerfile
    https://github.com/yewton/dockerfiles/tree/master/swagger2html
 ☐ flask binary
- - development
-   ☐ proxy
+ ✔ development @done (17-04-15 13:17)
+   ✔ proxy @done (17-04-15 13:17)
  - production
    ☐ uwsgi (install in requirements. also nginx?)
    HOME=/tmp with user develop
+ - nginx variables from os env?
 
 ☐ clean a little bit rapydo.services python folder
 ☐ travis for backend

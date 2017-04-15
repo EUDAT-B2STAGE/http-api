@@ -3,9 +3,13 @@ version: '3'
 services:
 
   proxy:
+    environment:
+      DOMAIN: ${PROJECT_DOMAIN}
+      MODE: ${LETSENCRYPT_MODE}
     volumes:
       # SSL / HTTPS
       - ./confs/prod_proxy.conf:/etc/nginx/sites-enabled/production
+      - sslcerts:/etc/letsencrypt
     ports:
       - 80:80
       - 443:443

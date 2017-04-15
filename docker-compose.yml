@@ -31,7 +31,7 @@ services:
     # deploy:
     #   replicas: 1
     networks:
-      dbnet:
+      db_net:
         aliases:
           - ${ALCHEMY_HOST}
 
@@ -71,10 +71,10 @@ services:
       - ./builds/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
 
     networks:
-      inet:
+      i_net:
         aliases:
           - ${IRODS_HOST}
-      dbnet:
+      db_net:
     depends_on:
       - sql
 
@@ -89,7 +89,7 @@ services:
       #NEO4J_HEAP_MEMORY
       #NEO4J_CACHE_MEMORY
     networks:
-      dbnet:
+      db_net:
         aliases:
           - ${GRAPHDB_HOST}
     volumes:
@@ -104,7 +104,7 @@ services:
     # command: ./boot
     # working_dir: /code
     networks:
-      flasknet:
+      app_net:
         aliases:
           - ${FLASK_HOST}
     environment:
@@ -173,23 +173,27 @@ services:
       - ./certs:/usr/local/share/ca-certificates
 
   #############
-  # REST API client
-  # (wget, curl, httpie, http-prompt)
+  # Nginx proxy
+  proxy:
+    build: ./builds/sslproxy
+    image: nginx:rapydo
+    hostname: reverseproxy
+    networks:
+      proxy_net:
+        aliases:
+          - ${PROXY_HOST}
+      app_net:
+    depends_on:
+      - rest
 
+  #############
+  # REST API client (wget, curl, httpie, http-prompt)
   client:
     build: ./builds/apiclient
     image: apiclient:rapydo
-    # image: eudatb2stage/apiclient
     volumes:
       - ./backend:/code/core
       - ./vanilla:/code/custom
-    environment:
-      APP_HOST: ${FLASK_HOST}
-      APP_PORT: 5000 # uhm...
-    networks:
-      flasknet:
-    depends_on:
-      - rest
 
   #############
   # Database administration
@@ -197,23 +201,7 @@ services:
     build: ./builds/sqladmin
     image: sqladminer:rapydo
     networks:
-      dbnet:
-
-  # #############
-  # # Nginx proxy
-  # proxy:
-  #   build: ./builds/sslproxy
-  #   image: nginx:rapydo
-  #   # OLD: using the official image directly with no letsencrypt
-  #   # image: nginx:1.11-alpine
-  #   hostname: iamaproxy
-  #   environment:
-  #     DOMAIN: justatest.io
-  #     MODE: "--staging"
-  #   volumes:
-  #     - sslcerts:/etc/letsencrypt
-  #   # THIS FILE WAS MOVED INSIDE THE DOCKEFILE
-  #   #   - ./confs/nginx.conf:/etc/nginx/nginx.conf
+      db_net:
 
   #############
   # Client interface if using swagger
@@ -246,13 +234,15 @@ volumes:
   #   driver: local
 
 networks:
-  dbnet:
+  # default:
+  i_net:
+  app_net:
+  proxy_net:
+  db_net:
     # driver: bridge
     ipam:
       driver: default
       config:
         # Note: use this configuration to match inside internal rules
         # TO FIX: make this an env variable
-        - subnet: 172.1.0.0/16
-  inet:
-  flasknet:
+        - subnet: ${DB_SUBNET}/16

@@ -71,11 +71,11 @@ done
 # Completed
 echo "REST API backend server is ready"
 
-if [ "$app_mode" == 'production' ]; then
+if [ "$APP_MODE" == 'production' ]; then
     echo "launching uwsgi workers"
     echo "TO DO!"
     exit 1
-elif [ "$app_mode" == 'development' ]; then
+elif [ "$APP_MODE" == 'development' ]; then
     echo "launching flask"
     rapydo
 else

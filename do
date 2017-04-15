@@ -291,11 +291,6 @@ elif [ "$1" == "api_test" ]; then
     $compose_run exec rest /bin/bash -c "testwithcoverage"
     exit $?
 
-elif [ "$1" == "client_shell" ]; then
-    echo "Opening a client shell"
-    $compose_run run --rm --no-deps $clientcontainer bash
-    exit 0
-
 # Handle the right logs
 elif [ "$1" == "logs" ]; then
     $compose_run logs -f -t --tail="10"
@@ -330,6 +325,10 @@ then
         echo "Administration for relational databases"
         $compose_run up sqladmin
         exit 0
+    elif [ "$2" == "client_shell" ]; then
+        echo "Opening a client shell"
+        $compose_run run --rm $clientcontainer bash
+        exit 0
     elif [ "$2" == "swagger" ]; then
         if [ "$1" != "DEBUG" ]; then
             echo "Swagger should run only in debug mode"
@@ -342,15 +341,17 @@ then
         echo ""
         $compose_run up swagclient
         exit 0
-    fi
     elif [ "$2" == "restart" ]; then
         echo "Clean previous containers"
         $compose_run stop
         $compose_run rm -f
     fi
 
-    # $compose_run up $restcontainer
-    $compose_run up -d $restcontainer
+    if [ "$1" == "DEBUG" ]; then
+        $compose_run up -d $restcontainer
+    else
+        $compose_run up -d $proxycontainer
+    fi
     status="$?"
 
     echo "Stack processes:"
@@ -367,8 +368,6 @@ then
             do
                 echo "in progress..."
                 sleep 5
-
-                # initps=$(docker-compose exec rest ps ax --forest | grep initialize)
                 initps=$(docker-compose exec rest ls /${JWT_APP_SECRETS}/initialized 2>/dev/null)
             done
         else
@@ -377,17 +376,13 @@ then
             echo "$0 server_shell"
             echo ""
             echo "To query the api server (if running) use the client container:"
-            echo "$0 client_shell"
+            echo "$0 $1 client_shell"
 
             path="/api/status"
 
             if [ "$1" == "PRODUCTION" ]; then
+# THIS IS TO BE FIXED...
                 echo "/ # http --follow --verify /tmp/cert.crt awesome.docker$path"
-            elif [ "$1" == "DEVELOPMENT" ]; then
-                echo "/ # http GET http://apiserver$path"
-            else
-                # echo "/ # http GET apiserver:5000$path"
-                echo
             fi
         fi
         echo ""
@@ -397,8 +392,8 @@ then
     echo "Boot completed"
     exit 0
 
+else
+    echo "Unknown operation '$1'!"
+    echo "Use \"$0 help\" to see available commands "
+    exit 1
 fi
-
-echo "Unknown operation '$1'!"
-echo "Use \"$0 help\" to see available commands "
-exit 1

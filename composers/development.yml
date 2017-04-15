@@ -2,26 +2,42 @@
 version: '3'
 services:
 
+  proxy:
+    volumes:
+      # no SSL
+      - ./confs/dev_proxy.conf:/etc/nginx/sites-enabled/development
+    ports:
+      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}
+
   rest:
     environment:
-      APP_MODE: development
+      FLASK_DEBUG: 1
       DEBUG_LEVEL: DEBUG
+      # DEBUG_LEVEL: VERBOSE
+      APP_MODE: development
     networks:
-      dbnet:
-      inet:
+      db_net:
+      i_net:
     depends_on:
       - sql
       - icat
 
-# TO FIX
-  proxy:
-    volumes:
-      - ./confs/dev_proxy.conf:/etc/nginx/sites-enabled/development
-    ports:
-      - 80:80
-    links:
-        - rest:restapi
+  client:
+    environment:
+      APP_HOST: ${PROXY_HOST}
+      APP_PORT: ${PROXY_DEV_PORT}
+    networks:
+      proxy_net:
+    depends_on:
+      - proxy
 
   # graphdb:
   #   ports:
   #     - 9090:7474
+  #     - 7687:7687
+
+# networks:
+#   app_net:
+#     ipam:
+#       config:
+#         - subnet: ${FLASK_SUBNET}/16
