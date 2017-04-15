@@ -11,39 +11,40 @@ services:
       - ./confs/prod_proxy.conf:/etc/nginx/sites-enabled/production
       - sslcerts:/etc/letsencrypt
     ports:
-      - 80:80
-      - 443:443
+      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
+      - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
 
   rest:
-    user: root
-    # set the home to the main internal 'irods' unix user
-    # otherwise `uwsgi` will try to write inside the /root homedir
-    command: /bin/bash -c "HOME=/home/irods init"
-    # command: sleep infinity
+    # user: root
+    # # set the home to the main internal 'irods' unix user
+    # # otherwise `uwsgi` will try to write inside the /root homedir
+    # command: /bin/bash -c "HOME=/home/irods init"
+    # # command: sleep infinity
     environment:
       APP_MODE: production
       DEBUG_LEVEL: INFO
-  ##################
-  # Enable debug in our first prototype
-
-  ## TO BE REMOVED
-      API_DEBUG: "true"
-  ## TO BE REMOVED
-  ##################
-      UWSGI_MASTER: /tmp/uwsgi/uwsgi_starter.ini
       NGINX_ACTIVE: "True"
-    volumes:
-      - ./confs/uwsgi:/tmp/uwsgi
-      - ./confs/nginx_internal:/etc/nginx/conf.d
-    # ports:
-    #   - 8080:8080
+      # UWSGI_MASTER: /tmp/uwsgi/uwsgi_starter.ini
+    # volumes:
+    #   - ./confs/uwsgi:/tmp/uwsgi
+    #   # - ./confs/nginx_internal:/etc/nginx/conf.d
+    expose:
+      - 8080
 
-  # # if using self signed certificates
-  # # and trying to test locally:
+  # # # if using self signed certificates
+  # # # and trying to test locally:
   # client:
-  #   volumes:
-  #     # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
-  #     - sslcerts:/tmp/certs
-  #   links:
-  #     - proxy:awesome.docker
-  #     # - proxy:USEYOURDOMAINNAME
+  #   environment:
+  #     APP_HOST: ${PROXY_HOST}
+  #     APP_PORT: ${PROXY_DEV_PORT}
+  #   networks:
+  #     proxy_net:
+  #   depends_on:
+  #     - proxy
+  # # client:
+  # #   volumes:
+  # #     # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
+  # #     - sslcerts:/tmp/certs
+  # #   links:
+  # #     - proxy:awesome.docker
+  # #     # - proxy:USEYOURDOMAINNAME

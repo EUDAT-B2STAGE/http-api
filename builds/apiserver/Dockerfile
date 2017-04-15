@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     # build dependencies for gssapi plugin (GSI and irods)
     build-essential libkrb5-dev python3.6-dev \
     libglobus-gssapi-gsi-dev \
+    nginx \
     # make this version the official python for anyone
     && cd /usr/bin && ln -s python3.6 python \
     && apt-get autoremove && apt-get clean \
@@ -40,6 +41,22 @@ ENV APIUSER developer
 ENV CERTDIR /opt/certificates
 # Emulating irods user creation. See http://j.mp/2lGPqlq
 RUN useradd -r -M -d $CERTDIR/home -s /bin/bash -p ! $APIUSER
+
+###################
+# UWSGI
+ENV UWSGI_LOGS /var/log/uwsgi
+ENV UWSGI_RUN /var/run/uwsgi
+ENV MYUWSGI_HOME /tmp/uwsgi
+RUN mkdir -p $UWSGI_LOGS
+RUN mkdir -p $UWSGI_RUN
+RUN chown -R www-data:www-data $UWSGI_LOGS $UWSGI_RUN
+COPY nginx_uwsgi.conf /etc/nginx/sites-available/default
+ENV UWSGI_MASTER ${MYUWSGI_HOME}/uwsgi_starter.ini
+COPY uwsgi.ini ${UWSGI_MASTER}
+COPY launch_uwsgi.sh /usr/local/bin/myuwsgi
+RUN chmod +x /usr/local/bin/myuwsgi
+# # remove nginx defaults
+# RUN rm -rf /etc/nginx/sites-enabled
 
 ###################
 # variables

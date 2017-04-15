@@ -69,33 +69,6 @@ compose_all="$compose_base -f composers/debug.yml -f composers/development.yml -
 # Production mode
 if [ "$1" == "PRODUCTION" ]; then
 
-## TO FIX
-
-    # # Check for REAL certificates
-    # if [ ! -f "./certs/nginx.key" -o ! -f "./certs/nginx.crt" ];
-    # then
-
-        # # REAL CERTIFICATES
-        # echo "Warning: no real certificates..."
-        # echo ""
-        # echo "To create them you may use the free Letsencrypt service:"
-        # echo "https://letsencrypt.org/"
-        # echo ""
-        # # exit 1
-        # sleep 2
-
-        if [ ! -f "./certs/nginx-selfsigned.key" -o ! -f "./certs/nginx-selfsigned.crt" ];
-        then
-            # SELF SIGNED CERTIFICATES
-            echo "Missing certificates."
-
-            echo "To generate self_signed files right now:"
-            echo "./confs/create_self_signed_ssl.sh"
-            exit 1
-        fi
-
-    # fi
-
     compose_run="$compose_base -f composers/production.yml"
 
 # Development mode

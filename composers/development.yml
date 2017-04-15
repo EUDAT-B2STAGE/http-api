@@ -15,12 +15,6 @@ services:
       DEBUG_LEVEL: DEBUG
       # DEBUG_LEVEL: VERBOSE
       APP_MODE: development
-    networks:
-      db_net:
-      i_net:
-    depends_on:
-      - sql
-      - icat
 
   client:
     environment:

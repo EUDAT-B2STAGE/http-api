@@ -7,14 +7,8 @@ services:
       FLASK_DEBUG: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
-    depends_on:
-      # - graphdb
-      - icat
-      - sql
     ports:
-      - 8080:5000
-    # volumes:
-    #   - restlitedb:/dbs
+      - 8080:${FLASK_DEFAULT_PORT}
 
   client:
     environment:

@@ -103,10 +103,18 @@ services:
     image: apiserver:rapydo
     # command: ./boot
     # working_dir: /code
+    #
     networks:
       app_net:
         aliases:
           - ${FLASK_HOST}
+      db_net:
+      i_net:
+    depends_on:
+      # - graphdb
+      - icat
+      - sql
+
     environment:
 
       FLASK_APP: run.py
@@ -228,10 +236,8 @@ volumes:
     driver: local
   graphdata:
     driver: local
-  # sslcerts:
-  #   driver: local
-  # eudatopt:
-  #   driver: local
+  sslcerts:
+    driver: local
 
 networks:
   # default:
