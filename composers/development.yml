@@ -19,7 +19,7 @@ services:
   client:
     environment:
       APP_HOST: ${PROXY_HOST}
-      APP_PORT: ${PROXY_DEV_PORT}
+      APP_PORT: :${PROXY_DEV_PORT}
     networks:
       proxy_net:
     depends_on:

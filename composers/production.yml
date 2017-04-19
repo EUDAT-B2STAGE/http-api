@@ -15,36 +15,26 @@ services:
       - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
 
   rest:
-    # user: root
-    # # set the home to the main internal 'irods' unix user
-    # # otherwise `uwsgi` will try to write inside the /root homedir
-    # command: /bin/bash -c "HOME=/home/irods init"
-    # # command: sleep infinity
+    # command: sleep infinity
     environment:
       APP_MODE: production
       DEBUG_LEVEL: INFO
       NGINX_ACTIVE: "True"
-      # UWSGI_MASTER: /tmp/uwsgi/uwsgi_starter.ini
-    # volumes:
-    #   - ./confs/uwsgi:/tmp/uwsgi
-    #   # - ./confs/nginx_internal:/etc/nginx/conf.d
     expose:
       - 8080
 
-  # # # if using self signed certificates
-  # # # and trying to test locally:
-  # client:
-  #   environment:
-  #     APP_HOST: ${PROXY_HOST}
-  #     APP_PORT: ${PROXY_DEV_PORT}
-  #   networks:
-  #     proxy_net:
-  #   depends_on:
-  #     - proxy
-  # # client:
-  # #   volumes:
-  # #     # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
-  # #     - sslcerts:/tmp/certs
-  # #   links:
-  # #     - proxy:awesome.docker
-  # #     # - proxy:USEYOURDOMAINNAME
+  # if using self signed certificates
+  # and trying to test locally:
+  client:
+    environment:
+      APP_HOST: --verify /tmp/certs/real/fullchain1.pem https://${PROJECT_DOMAIN}
+      APP_PORT:
+      DOMAIN: ${PROJECT_DOMAIN}
+      PROXY_HOST: ${PROXY_HOST}
+    networks:
+      proxy_net:
+    depends_on:
+      - proxy
+    volumes:
+      # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
+      - sslcerts:/tmp/certs

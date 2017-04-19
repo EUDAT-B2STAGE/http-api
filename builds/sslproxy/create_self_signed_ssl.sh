@@ -1,11 +1,11 @@
 #!/bin/bash
+set -e
 
-# Where to store key and cert files
-# TO FIX: use this inside the nginx container
-key="./certs/nginx-selfsigned.key"
-cert="./certs/nginx-selfsigned.crt"
+# # Where to store key and cert files
+# key=${CERTDIR}/privkey1.pem
+# cert=${CERTDIR}/fullchain1.pem
 
-command="openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $key -out $cert"
+command="openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $CERTKEY -out $CERTCHAIN"
 
 # Input values required by the command:
 #        Country Name (2 letter code) [AU]:
@@ -16,16 +16,13 @@ command="openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $key -out $
 #        Common Name (e.g. server FQDN or YOUR name) []:
 #        Email Address []:
 
-
-# The most important line is the one that requests the Common Name (e.g. server FQDN or YOUR name).
-# You need to enter the domain name associated with your server or, more likely, your server's public IP address.
-
 country='IT'
 state='Rome'
 locality='Rome'
 organization='CINECA'
 organization_unit='SCAI'
-common_name='awesome.docker'
+common_name=$DOMAIN
+# common_name='apiserver.dockerized.io'
 email='user@nomail.org'
 
 $command 2> /dev/null << EOF

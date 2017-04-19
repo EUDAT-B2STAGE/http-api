@@ -14,7 +14,12 @@ fi
 #
 ######################################
 
-echo "hello"
+if [ "$API_PORT" == "" ]; then
+    ip=$(host -4 myproxy.dockerized.io | grep 'has address' | awk '{print $NF}')
+    # echo "Found ip *$ip*"
+    echo "$ip $DOMAIN" >> /etc/hosts
+    echo "updated hosts with $DOMAIN"
+fi
 
 
 #####################
@@ -30,6 +35,7 @@ done
 
 # Completed
 echo "Client for HTTP API is ready"
-sleep infinity
-# whoami
+# bash -c "su - $GUEST_USER"
+bash -c "su $GUEST_USER"
+echo "Client closed"
 exit 0

@@ -272,7 +272,13 @@ elif [ "$1" == "logs" ]; then
 # SSL certificates in production with letsencrypt
 elif [ "$1" == "letsencrypt" ]; then
     echo "Creating new letsencrypt certificates"
-    $compose_run exec proxy /updatecertificates
+    $compose_run exec $proxycontainer \
+        /bin/bash -c "updatecertificates"
+    exit 0
+
+elif [ "$1" == "check_certificate" ]; then
+    $compose_run exec $proxycontainer \
+        /bin/bash -c "openssl x509 -in \$CERTCHAIN  -noout -subject"
     exit 0
 
 elif [ "$1" == "buildall" ]; then
@@ -300,7 +306,8 @@ then
         exit 0
     elif [ "$2" == "client_shell" ]; then
         echo "Opening a client shell"
-        $compose_run run --rm $clientcontainer bash
+        $compose_run run --rm $clientcontainer
+        # $compose_run run --rm $clientcontainer bash
         exit 0
     elif [ "$2" == "swagger" ]; then
         if [ "$1" != "DEBUG" ]; then
@@ -331,8 +338,9 @@ then
     $compose_run ps
 
     if [ "$status" == "0" ]; then
-        $compose_run exec $restcontainer update-ca-certificates
-        echo ""
+
+        # $compose_run exec $restcontainer update-ca-certificates
+        # echo ""
 
         if [ "$2" == "await" ]; then
             echo "Startup"
@@ -353,10 +361,9 @@ then
 
             path="/api/status"
 
-            if [ "$1" == "PRODUCTION" ]; then
-# THIS IS TO BE FIXED...
-                echo "/ # http --follow --verify /tmp/cert.crt awesome.docker$path"
-            fi
+            # if [ "$1" == "PRODUCTION" ]; then
+            #     echo "/ # http --follow --verify /tmp/cert.crt awesome.docker$path"
+            # fi
         fi
         echo ""
 

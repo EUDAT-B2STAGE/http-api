@@ -1,14 +1,11 @@
 
 FROM python:3.6-alpine
-# FROM alpine:edge
-
 MAINTAINER "Paolo D'Onorio De Meo <p.donoriodemeo@cineca.it>"
-# Note:
-# This is image is intended to be as small as possible
 
+###################################
 RUN apk update && apk upgrade && apk add \
-    bash less vim \
-    curl wget git \
+    bash less vim git \
+    curl wget bind-tools \
     jq \
     && rm -rf /var/cache/apk/*
 
@@ -23,24 +20,11 @@ RUN git clone https://github.com/fadado/jqt.git /tmp/jqt \
 ENV PATH $PATH:/tmp/jqt/bin
 
 ###################################
-RUN mkdir -p /code/client
-WORKDIR /code/client
-RUN mkdir /docker-entrypoint.d/
-COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-ENTRYPOINT ["docker-entrypoint"]
-CMD ["client"]
-
 # Handle a guest user
 ENV GUEST_USER developer
 ENV GUEST_UID 1000
 ENV GUEST_SHELL /bin/bash
 RUN adduser -s $GUEST_SHELL -u $GUEST_UID -D -h /home/$GUEST_USER $GUEST_USER
-
-# Script for automatic creation of a token
-COPY client_init.sh /code/gettoken
-COPY query_api.sh /code/queryapi
-# RUN echo -e "#!/bin/bash\nsource /code/queryapi $1\n" > /usr/bin/queryapi \
-#     && chmod +x /usr/bin/queryapi
 
 # Use the new user
 USER $GUEST_USER
@@ -49,6 +33,20 @@ ENV PAGER less
 ENV TERM=xterm-256color
 ENV HISTCONTROL ignoreboth:erasedups
 RUN echo "echo -e '\\nCall the client with the command:'" >> $BASHRC \
-    && echo "echo -e '$ http \$APP_HOST:\$APP_PORT/api/status\\n'" >> $BASHRC \
+    && echo "echo -e '$ http \$APP_HOST\$APP_PORT/api/status\\n'" >> $BASHRC \
     # && echo "echo -e '$ queryapi\\n'" >> $BASHRC \
     && echo "echo -e '$ . /code/queryapi [help]\\n'" >> $BASHRC
+
+###################################
+USER root
+
+RUN mkdir -p /code/client
+WORKDIR /code/client
+# Script for automatic creation of a token
+COPY client_init.sh /code/gettoken
+COPY query_api.sh /code/queryapi
+
+RUN mkdir /docker-entrypoint.d/
+COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["client"]

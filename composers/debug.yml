@@ -13,7 +13,7 @@ services:
   client:
     environment:
       APP_HOST: ${FLASK_HOST}
-      APP_PORT: ${FLASK_DEFAULT_PORT}
+      APP_PORT: :${FLASK_DEFAULT_PORT}
     networks:
       app_net:
     depends_on:

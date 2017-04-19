@@ -14,18 +14,17 @@ Refactor:
    ✔ proxy @done (17-04-15 13:17)
  - production
    - container rest
-     ✔ add uwsgi, nginx and set developer user @done (17-04-16 00:17)
-     ✘ check how to start uwsgi only after flask first init @cancelled (17-04-16 00:29)
-     launch_uwsgi
      ☐ check_if_user_defaults
      flask_auth.py end of file and implement in authentication
        ☐ how to change base admin?
    - container proxy
-     ☐ create certs if do not exist
-     ☐ move script in build
-☐ nginx variables from os env?
-☐ compose V3 YAMLs final check
+     ✔ entrypoint to add @done (17-04-19 16:21)
+       ✔ move script in build @done (17-04-16 00:38)
+       ✔ create certs if do not exist @done (17-04-19 16:21)
+     ☐ check back online
+✔ compose V3 YAMLs final check @done (17-04-19 16:22)
 ☐ move all authentication parts inside flask_ext
+☐ nginx variables from os env?
 
 ☐ clean a little bit rapydo.services python folder
 ☐ travis for backend

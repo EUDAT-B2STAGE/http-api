@@ -38,6 +38,9 @@ if [ ! -f "$secret_file" ]; then
     head -c 24 /dev/urandom > $secret_file
     chown -R $APIUSERID $JWT_APP_SECRETS
 
+    # certificates for b2access
+    update-ca-certificates
+
     # question: should we fix sqllite permissions?
     # answer: we are using postgresql also in development
 
@@ -72,7 +75,7 @@ done
 echo "REST API backend server is ready"
 
 if [ "$APP_MODE" == 'production' ]; then
-    # sleep infinity
+    echo "launching uwsgi"
     myuwsgi
 elif [ "$APP_MODE" == 'development' ]; then
     echo "launching flask"
