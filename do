@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# TO BE FIXED when completing the branch
-core_branch="letsencrypt"
+# TO FIX: when completing refactor
 # core_branch="master"
-core_branch_backend="last_refactor"
 # core_branch_backend="master"
+core_branch="letsencrypt"
+core_branch_backend="last_refactor"
 
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
@@ -34,11 +34,11 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo -e "update:\tPull updated code and images"
     echo ""
     echo -e "***Modes***:"
-    echo -e "DEBUG:\tREST API server should be launched using container shell"
-    echo -e "DEVELOPMENT:\tREST API server with Flask WSGI and Debug"
-    echo -e "PRODUCTION:\tREST API server with Gunicorn behind nginx proxy"
+    echo -e "DEBUG:\tREST API server will be launched opening a container shell"
+    echo -e "DEVELOPMENT:\tREST API server executed with Flask WSGI and Debug"
+    echo -e "PRODUCTION:\tREST API server with uWSGI+nginx behind nginx proxy"
     echo ""
-    echo -e "[Mode:DEBUG|DEVELOPMENT|PRODUCTION] [restart|sqladmin|swagger]:\tLaunch the Docker stack using one of the modes available"
+    echo -e "[Mode:DEBUG|DEVELOPMENT|PRODUCTION] [client_shell|restart|sqladmin|swagger]:\n\tLaunch the Docker stack using one of the modes available"
     echo -e "logs:\tAttach to all container logs"
     exit 0
 fi

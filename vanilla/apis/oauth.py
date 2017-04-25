@@ -10,8 +10,10 @@ from flask import url_for, session, current_app
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
 
-from eudat.apis.commons import EudatEndpoint
-from rapydo.confs import PRODUCTION, DEBUG as ENVVAR_DEBUG
+from eudat.apis.common.b2stage import EudatEndpoint
+from eudat.apis.common import PRODUCTION
+
+from rapydo.confs import DEBUG as ENVVAR_DEBUG
 from rapydo.services.oauth2clients import decorate_http_request
 from rapydo.services.irods.client import IrodsException, Certificates
 from rapydo.services.detect import IRODS_EXTERNAL
@@ -317,6 +319,8 @@ class B2accesProxyEndpoint(B2accessUtilities):
     Allow refreshing current proxy (if invalid)
     using the stored b2access token (if still valid)
     """
+
+    _only_check_proxy = True
 
     def post(self):
 

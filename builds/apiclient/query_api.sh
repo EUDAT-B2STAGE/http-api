@@ -23,7 +23,7 @@ fi
 
 ######################################
 if [ -z "$SERVER" ]; then
-    export SERVER="$APP_HOST:$APP_PORT"
+    export SERVER="$APP_HOST$APP_PORT"
 fi
 alive=$(http GET $SERVER/api/status 2>&1 1> /dev/null)
 if [ "$?" != "0" ]; then

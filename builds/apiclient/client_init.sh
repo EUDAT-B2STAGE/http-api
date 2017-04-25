@@ -5,7 +5,9 @@ if [ -z "$CREDENTIALS" ]; then
     return
 fi
 
-export SERVER="$APP_HOST:$APP_PORT"
+# NOTE: this has been modified
+# export SERVER="$APP_HOST:$APP_PORT"
+export SERVER="$APP_HOST$APP_PORT"
 echo "Using server $SERVER"
 
 echo "Login"

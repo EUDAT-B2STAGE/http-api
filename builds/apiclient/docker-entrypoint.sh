@@ -15,10 +15,12 @@ fi
 ######################################
 
 if [ "$API_PORT" == "" ]; then
-    ip=$(host -4 myproxy.dockerized.io | grep 'has address' | awk '{print $NF}')
-    # echo "Found ip *$ip*"
-    echo "$ip $DOMAIN" >> /etc/hosts
-    echo "updated hosts with $DOMAIN"
+    if [ "$DOMAIN" != "" ]; then
+        ip=$(host -4 myproxy.dockerized.io | grep 'has address' | awk '{print $NF}')
+        # echo "Found ip *$ip*"
+        echo "$ip $DOMAIN" >> /etc/hosts
+        echo "updated hosts with $DOMAIN"
+    fi
 fi
 
 

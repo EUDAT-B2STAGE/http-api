@@ -1,40 +1,54 @@
 
-Refactor:
+Beta release:
 
 ☐ unittests
   ✔ remove all @done (17-03-22 11:55)
   ✔ fix base @done (17-04-14 23:04)
+    ✔ missing user's conf in sqlalchemy @bug @done (17-04-21 00:18)
   ☐ fix eudat
-☐ swagger 2 markdown (and PDF/html)
-   ☐ seadatanet endpoints
-   ☐ dockerfile
-   https://github.com/yewton/dockerfiles/tree/master/swagger2html
+    - common
+    - basic
+    - oauth
+    - extended
+☐ fix do branches
+
+Refactor:
+
+☐ release a PyPi package
+ ☐ first real rapydo release
+ yeahi
+ ☐ separate utils
+ (logs, bash, and similar)
+  ☐ with documentation?
+  https://pythonhosted.org/
+
+More:
+
 ☐ flask binary
  ✔ development @done (17-04-15 13:17)
    ✔ proxy @done (17-04-15 13:17)
  - production
+   ✔ container proxy @done (17-04-20 12:36)
+     ✔ entrypoint to add @done (17-04-19 16:21)
+       ✔ move script in build @done (17-04-16 00:38)
+       ✔ create certs if do not exist @done (17-04-19 16:21)
+     ✔ check back online @done (17-04-20 12:36)
    - container rest
      ☐ check_if_user_defaults
      flask_auth.py end of file and implement in authentication
        ☐ how to change base admin?
-   - container proxy
-     ✔ entrypoint to add @done (17-04-19 16:21)
-       ✔ move script in build @done (17-04-16 00:38)
-       ✔ create certs if do not exist @done (17-04-19 16:21)
-     ☐ check back online
 ✔ compose V3 YAMLs final check @done (17-04-19 16:22)
 ☐ move all authentication parts inside flask_ext
 ☐ nginx variables from os env?
-
+☐ swagger 2 markdown (and PDF/html)
+   ☐ seadatanet endpoints
+   ☐ dockerfile
+   https://github.com/yewton/dockerfiles/tree/master/swagger2html
 ☐ clean a little bit rapydo.services python folder
 ☐ travis for backend
   ☐ how to do tests for backend on services that are not used in vanilla?
-
 ☐ docker builds
   - templates repo update
-☐ release a PyPi package
-  ☐ with documentation
-  https://pythonhosted.org/
 ☐ swagger ui
  ☐ 2.8 booleans and ID
  ☐ 3.0 (with react)

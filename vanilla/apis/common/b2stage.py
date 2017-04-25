@@ -6,100 +6,88 @@ Common functions for EUDAT endpoints
 
 import os
 import re
-
-from attr import s as AttributedModel, ib as attribute
 from rapydo.rest.definition import EndpointResource
-from rapydo.services.irods.client import IRODS_DEFAULT_USER
-# TO FIX: do not import from detect anymore with the new service providers
-from rapydo.services.detect import IRODS_EXTERNAL
-from rapydo.confs import PRODUCTION, API_URL
+from rapydo.confs import API_URL
 
+############
+# TO FIX
+# from rapydo.services.irods.client import IRODS_DEFAULT_USER
+IRODS_DEFAULT_USER = 'guest'
+# from rapydo.services.detect import IRODS_EXTERNAL
+IRODS_EXTERNAL = False
+############
+
+from eudat.apis.common import (
+    CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
+    IRODS_PROTOCOL, HTTP_PROTOCOL, PRODUCTION,
+    InitObj
+)
 from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 
-# TO FIX: move into global configuration across containers (e.g. nginx)
-CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
-CURRENT_HTTPAPI_SERVER = 'b2stage.cineca.it'
-
-IRODS_PROTOCOL = 'irods'
-CURRENT_PROTOCOL = 'http'
-if PRODUCTION:
-    CURRENT_PROTOCOL = 'https'
-
-
-########################
-#  A class with attributes
-########################
-@AttributedModel
-class InitObj(object):
-    """
-    A pythonic way to handle a method response with different features.
-    Here's the list of needed attributes:
-    """
-
-    # User info
-    username = attribute(default=None)
-    extuser_object = attribute(default=None)
-    # Service handlers
-    icommands = attribute(default=None)
-    db_handler = attribute(default=None)
-    # Verify certificates or normal credentials
-    is_proxy = attribute(default=False)
-    valid_credentials = attribute(default=False)
-    # Save errors to report
-    errors = attribute(default=None)
-
-
-########################
-#  Extend normal API to init EUDAT B2STAGE API services
-########################
 
 class EudatEndpoint(EndpointResource):
+    """
+        Extend normal API to init
+        all necessary EUDAT B2STAGE API services
+    """
 
+    _r = None  # main resources handler
     _path_separator = '/'
     _post_delimiter = '?'
+    _only_check_proxy = False
 
-    def init_endpoint(self, only_check_proxy=False):
+    def __init__(self):
+        # call the original Endpoint Resource init
+        super(EudatEndpoint, self).__init__()
+        # init EUDAT endpoint resources
+        self._r = self.init_endpoint()
+        # log.pp(r)
+        if self._r.errors is not None:
+            return self.send_errors(errors=self._r.errors)
+
+    def init_endpoint(self):
+
+        return InitObj()
+
+        # TO FIX: use it only if setted before init in class
+        proxy = False
+
+        # TO FIX: Get the irods user; either from oauth otherwise using default
+        iuser = IRODS_DEFAULT_USER
 
         # main object to handle token and oauth2 things
-        auth = self.auth
-
-        # Get the irods user
-        # (either from oauth or using default)
-        iuser = IRODS_DEFAULT_USER
-        use_proxy = False
-        intuser, extuser = auth.oauth_from_local(self.get_current_user())
+        intuser, extuser = self.auth.oauth_from_local(self.get_current_user())
         # If we have an "external user" we are using b2access oauth2
         if extuser is not None:
             iuser = extuser.irodsuser
-            use_proxy = True
+            proxy = True
 
-        # TO FIX: implement rpc wrapper
-        # icom = self.global_get_service('irods', user=iuser, proxy=use_proxy)
-        icom = self.rpc
+        # TO FIX
+        # icom = self.global_get_service('irods', user=iuser, proxy=proxy)
+        icom = self.get_service_instance('irods', user=iuser, proxy=proxy)
 
         # Verify if irods certificates are ok
         try:
             # icd and ipwd do not give error with wrong certificates...
             # so the minimum command is ils inside the home dir
             icom.list()
-            if only_check_proxy:
-                return InitObj(is_proxy=use_proxy, valid_credentials=True)
+            if self._only_check_proxy:
+                return InitObj(is_proxy=proxy, valid_credentials=True)
         except Exception as e:
 
             # Init the error and use it in above cases
             error = str(e)
 
-            if only_check_proxy:
+            if self._only_check_proxy:
                 if not IRODS_EXTERNAL:
                     # You need admin icommands to fix
-                    icom = self.rpc
-                    # icom = self.global_get_service('irods', become_admin=True)
-                return InitObj(icommands=icom, is_proxy=use_proxy,
+                    icom = self.get_service_instance('irods', become_admin=True)
+                return InitObj(icommands=icom, is_proxy=proxy,
                                valid_credentials=False, extuser_object=extuser)
 
-            if use_proxy:
+            if proxy:
 
                 re1 = r':\s+(Error reading[^\:\n]+:[^\n]+\n[^\n]+)\n'
                 re2 = r'proxy credential:\s+([^\s]+)\s+' \
@@ -138,7 +126,7 @@ class EudatEndpoint(EndpointResource):
             extuser_object=extuser,
             icommands=icom,
             db_handler=sql,
-            is_proxy=use_proxy
+            is_proxy=proxy
         )
 
     def httpapi_location(self, url, ipath, remove_suffix=None):
@@ -170,7 +158,7 @@ class EudatEndpoint(EndpointResource):
                     port = server[server.find(':') + 1:]
                 server = '%s:%s' % ('apiserver', port)
 
-        return "%s://%s" % (CURRENT_PROTOCOL, server)
+        return "%s://%s" % (HTTP_PROTOCOL, server)
 
     def b2safe_location(self, ipath):
         return '%s:///%s/%s' % (
