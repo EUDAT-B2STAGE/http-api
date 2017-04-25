@@ -61,8 +61,6 @@ log.warning("Custom response: TO BE DEVELOPED AGAIN!")
 
 #     pass
 
-#     print("TEST_06: Eudat custom response")
-
 #     if defined_content is None:
 #         defined_content = {}
 #     elif not isinstance(defined_content, dict):

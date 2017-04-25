@@ -12,6 +12,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 """
 
 import os
+import irods
 import time
 from flask import request, current_app
 
@@ -34,36 +35,34 @@ log = get_logger(__name__)
 class BasicEndpoint(Uploader, EudatEndpoint):
 
     @decorate.catch_error(
-        exception=IrodsException, error_code=hcodes.HTTP_BAD_NOTFOUND,
-        exception_label='B2SAFE')
+        exception=IrodsException,
+        error_code=hcodes.HTTP_BAD_NOTFOUND, exception_label='B2SAFE')
     def get(self, irods_location=None):
         """ Download file from filename """
 
+        data = {}
+
         if irods_location is None:
-            return self.send_errors('location', 'Missing filepath inside URI',
-                                    code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(
+                'Location: missing filepath inside URI',
+                code=hcodes.HTTP_BAD_REQUEST)
         irods_location = self.fix_location(irods_location)
 
         ###################
-        # BASIC INIT
-
-        # # get the base objects
-        # r = self.init_endpoint()
-        # # log.pp(r)
-        # if r.errors is not None:
-        #     return self.send_errors(errors=r.errors)
-        icom = self._r.icommands
-        return "Hello World"
+        # Init EUDAT endpoint resources
+        r = self.init_endpoint()
+        if r.errors is not None:
+            return self.send_errors(errors=r.errors)
 
         # get parameters with defaults
+        icom = r.icommands
         path, resource, filename, force = \
             self.get_file_parameters(icom, path=irods_location)
 
-        # NOTE: this command will give irods error
-        # if the current user does not have permissions
         is_collection = icom.is_collection(path)
-
-        data = {}
+        # Check if it's not a collection because the object does not exist
+        if not is_collection:
+            icom.dataobject_exists(path)
 
         ###################
         # DOWNLOAD a specific file
@@ -77,7 +76,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             if filename is None:
                 filename = self.filename_from_path(path)
-            abs_file = self.absolute_upload_file(filename, self._r.username)
+            abs_file = self.absolute_upload_file(filename, r.username)
 
             # TODO: decide if we want to use a cache when streaming
             # what about nginx caching?
@@ -85,13 +84,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             # Make sure you remove any cached version to get a fresh obj
             try:
                 os.remove(abs_file)
-            except:
+            except BaseException:
                 pass
             # Execute icommand (transfer data to cache)
             icom.open(path, abs_file)
             # Download the file from local fs
             filecontent = super().download(
-                filename, subfolder=self._r.username, get=True)
+                filename, subfolder=r.username, get=True)
             # Remove local file
             os.remove(abs_file)
             # Stream file content
@@ -107,7 +106,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # DIRECTORY
         if is_collection:
             collection = path
-            data = icom.list_as_json(root=path)
+            data = icom.list(path=collection)
             if len(data) < 1:
                 data = EMPTY_RESPONSE
             # Print content list if it's a collection
@@ -116,7 +115,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             collection = icom.get_collection_from_path(path)
             current_filename = path[len(collection) + 1:]
-            filelist = icom.list_as_json(root=collection)
+            filelist = icom.list(path=collection)
             data = EMPTY_RESPONSE
             for filename, metadata in filelist.items():
                 if filename == current_filename:
@@ -134,14 +133,19 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     code=hcodes.HTTP_BAD_NOTFOUND)
 
         # Get PID and Checksum
-        out, _ = icom.get_metadata(path)
+        try:
+            out, _ = icom.get_metadata(path)
+        except irods.exception.CollectionDoesNotExist:
+            out = {}
         pid = out.get("PID")
         checksum = out.get("checksum")
 
         # Set the right context to each element
         response = []
         for filename, metadata in data.items():
+
             metadata.pop('path')
+
             response.append({
                 filename: {
                     'metadata': metadata,
@@ -191,7 +195,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 #         # BASIC INIT
 
 #         # get the base objects
-#         self._r = self.init_endpoint()
+#         r = self.init_endpoint()
 #         # log.pp(r)
 #         if r.errors is not None:
 #             return self.send_errors(errors=r.errors)

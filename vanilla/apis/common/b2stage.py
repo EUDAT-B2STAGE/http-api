@@ -7,16 +7,8 @@ Common functions for EUDAT endpoints
 import os
 import re
 from rapydo.rest.definition import EndpointResource
+from rapydo.services.detect import detector
 from rapydo.confs import API_URL
-
-############
-# TO FIX
-# from rapydo.services.irods.client import IRODS_DEFAULT_USER
-IRODS_DEFAULT_USER = 'guest'
-# from rapydo.services.detect import IRODS_EXTERNAL
-IRODS_EXTERNAL = False
-############
-
 from eudat.apis.common import (
     CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
     IRODS_PROTOCOL, HTTP_PROTOCOL, PRODUCTION,
@@ -25,6 +17,7 @@ from eudat.apis.common import (
 from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
+IRODS_VARS = detector.services_classes.get('irods').variables
 
 
 class EudatEndpoint(EndpointResource):
@@ -38,34 +31,20 @@ class EudatEndpoint(EndpointResource):
     _post_delimiter = '?'
     _only_check_proxy = False
 
-    def __init__(self):
-        # call the original Endpoint Resource init
-        super(EudatEndpoint, self).__init__()
-        # init EUDAT endpoint resources
-        self._r = self.init_endpoint()
-        # log.pp(r)
-        if self._r.errors is not None:
-            return self.send_errors(errors=self._r.errors)
-
     def init_endpoint(self):
 
-        return InitObj()
-
-        # TO FIX: use it only if setted before init in class
-        proxy = False
-
-        # TO FIX: Get the irods user; either from oauth otherwise using default
-        iuser = IRODS_DEFAULT_USER
-
         # main object to handle token and oauth2 things
-        intuser, extuser = self.auth.oauth_from_local(self.get_current_user())
+        user = self.get_current_user()
+        intuser, extuser = self.auth.oauth_from_local(user)
+
         # If we have an "external user" we are using b2access oauth2
-        if extuser is not None:
+        if extuser is None:
+            iuser = IRODS_VARS.get('default_user')
+            proxy = False
+        else:
             iuser = extuser.irodsuser
             proxy = True
 
-        # TO FIX
-        # icom = self.global_get_service('irods', user=iuser, proxy=proxy)
         icom = self.get_service_instance('irods', user=iuser, proxy=proxy)
 
         # Verify if irods certificates are ok
@@ -81,9 +60,10 @@ class EudatEndpoint(EndpointResource):
             error = str(e)
 
             if self._only_check_proxy:
-                if not IRODS_EXTERNAL:
+                if not IRODS_VARS.get('external'):
+                    # TO FIX
                     # You need admin icommands to fix
-                    icom = self.get_service_instance('irods', become_admin=True)
+                    icom = self.get_service_instance('irods', be_admin=True)
                 return InitObj(icommands=icom, is_proxy=proxy,
                                valid_credentials=False, extuser_object=extuser)
 
@@ -99,7 +79,7 @@ class EudatEndpoint(EndpointResource):
                 if len(mall) > 0:
                     m = mall.pop()
                     return InitObj(
-                        errors={'Failed credentials': m.replace('\n', '')})
+                        errors='Failed credentials: ' + m.replace('\n', ''))
 
                 pattern = re.compile(re2)
                 mall = pattern.findall(error)
@@ -109,14 +89,13 @@ class EudatEndpoint(EndpointResource):
                         % (m[1], m[2], m[3])
                     error += "To refresh the proxy make '%s' on URI '%s'" \
                         % ("POST", "/auth/proxy")
-                    return InitObj(
-                        errors={'Expired proxy credential': error})
+                    return InitObj(errors='Expired proxy credential: ' + error)
 
-            return InitObj(
-                errors={'Invalid proxy credential': error})
+            # return InitObj(errors={'Invalid proxy credential': error})
+            return InitObj(errors=error)
 
         # SQLALCHEMY connection
-        sql = self.db
+        sql = self.get_service_instance('sqlalchemy')
         user = intuser.email
 
         #####################################

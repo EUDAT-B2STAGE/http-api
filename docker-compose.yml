@@ -55,6 +55,7 @@ services:
       IRODS_ZONE: ${IRODS_ZONE}
       IRODS_DB: "${IRODS_DB}"
       IRODS_USER: ${IRODS_USER}
+      # TO FIX: use docker secrets in the future
       IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
 
     # # Open irods port to Outside world
@@ -155,6 +156,7 @@ services:
       IRODS_HOME: ${IRODS_HOME}
       IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
+      IRODS_DEFAULT_USER: ${IRODS_DEFAULT_USER}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
 
       # # neo connection

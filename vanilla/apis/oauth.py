@@ -179,7 +179,7 @@ class B2accessUtilities(EudatEndpoint):
         else:
             # irods admin user handler
             admin_icom = self.rpc
-            # admin_icom = self.global_get_service('irods', become_admin=True)
+            # admin_icom = self.global_get_service('irods', be_admin=True)
 
             if user_exists:
                 # recover the old/current one
