@@ -7,9 +7,8 @@ Run single test:
 nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
 """
 
-# import io
-# import json
-# import logging
+import io
+import json
 from test import RestTestsAuthenticatedBase
 from rapydo.utils.logs import get_logger
 
@@ -30,140 +29,141 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_00_NO_TEST(self):
         pass
 
-    # def tearDown(self):
+    def tearDown(self):
 
-    #     log.debug('### Cleaning custom data ###\n')
-    #     # Clean all test data
-    #     endpoint = self._api_uri + self._main_endpoint
-    #     r = self.app.delete(endpoint, data=dict(debugclean='True'),
-    #                         headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        log.debug('### Cleaning custom data ###\n')
 
-    #     super().tearDown()
+        # Clean all test data
+        endpoint = self._api_uri + self._main_endpoint
+        r = self.app.delete(endpoint, data=dict(debugclean='True'),
+                            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-    # def test_01_POST_create_test_directory(self):
-    #     """ Test directory creation: POST """
+        super().tearDown()
 
-    #     log.info('*** Testing POST')
-    #     # Create a directory
-    #     endpoint = self._api_uri + self._main_endpoint
-    #     r = self.app.post(endpoint, data=dict(path=self._irods_path),
-    #                       headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+    def test_01_POST_create_test_directory(self):
+        """ Test directory creation: POST """
 
-    #     # Overwrite a directory
-    #     params = json.dumps(dict({'force': True, 'path': self._irods_path}))
-    #     r = self.app.post(endpoint, data=params,
-    #                       headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        log.info('*** Testing POST')
+        # Create a directory
+        endpoint = self._api_uri + self._main_endpoint
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-    #     # Overwrite a directory w/o force flag
-    #     r = self.app.post(endpoint, data=dict(path=self._irods_path),
-    #                       headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+        # Overwrite a directory
+        params = json.dumps(dict({'force': True, 'path': self._irods_path}))
+        r = self.app.post(endpoint, data=params,
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-    #     # Create a directory in a non existing path
-    #     r = self.app.post(endpoint, data=dict(path=self._invalid_irods_path),
-    #                       headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+        # Overwrite a directory w/o force flag
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
-    #     # Create a directory w/o passing a path
-    #     r = self.app.post(endpoint, headers=self.__class__.auth_header)
-    #     self.assertEqual(
-    #         r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
+        # Create a directory in a non existing path
+        r = self.app.post(endpoint, data=dict(path=self._invalid_irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
-    # def test_02_PUT_upload_entity(self):
-    #     """ Test file upload: PUT """
+        # Create a directory w/o passing a path
+        r = self.app.post(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(
+            r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
-    #     ###################################################
-    #     # I need to upload some data to test the DELETE..
-    #     # Create a directory
-    #     endpoint = self._api_uri + self._main_endpoint
-    #     r = self.app.post(endpoint, data=dict(path=self._irods_path),
-    #                       headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-    #     ###################################################
+    def test_02_PUT_upload_entity(self):
+        """ Test file upload: PUT """
 
-    #     log.info('*** Testing PUT')
-    #     # Upload entity in test folder
-    #     endpoint = self._api_uri + self._main_endpoint + self._irods_path
-    #     r = self.app.put(endpoint, data=dict(
-    #                      file=(io.BytesIO(b"a test"), self._test_filename)),
-    #                      headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        ###################################################
+        # I need to upload some data to test the DELETE..
+        # Create a directory
+        endpoint = self._api_uri + self._main_endpoint
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        ###################################################
 
-    #     # Overwrite entity in test folder
-    #     r = self.app.put(endpoint, data=dict(
-    #                      file=(io.BytesIO(b"this is a test"),
-    #                            self._test_filename), force='True'),
-    #                      headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        log.info('*** Testing PUT')
+        # Upload entity in test folder
+        endpoint = self._api_uri + self._main_endpoint + self._irods_path
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"a test"), self._test_filename)),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-    #     # Overwrite entity in test folder w/o force flag
-    #     r = self.app.put(endpoint, data=dict(
-    #                      file=(io.BytesIO(b"this is a test"),
-    #                            self._test_filename)),
-    #                      headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+        # Overwrite entity in test folder
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename), force='True'),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-    #     # Upload entity w/o passing a file
-    #     r = self.app.put(endpoint, headers=self.__class__.auth_header)
-    #     self.assertEqual(
-    #         r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
+        # Overwrite entity in test folder w/o force flag
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename)),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
-    #     # Upload entity in a non existing path
-    #     endpoint = self._api_uri + \
-    #         self._main_endpoint + self._invalid_irods_path
-    #     r = self.app.put(endpoint, data=dict(
-    #                      file=(io.BytesIO(b"this is a test"),
-    #                            self._test_filename)),
-    #                      headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+        # Upload entity w/o passing a file
+        r = self.app.put(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(
+            r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
-    # def test_03_GET_entities(self):
-    #     """ Test the entity listingend retrieval: GET """
+        # Upload entity in a non existing path
+        endpoint = self._api_uri + \
+            self._main_endpoint + self._invalid_irods_path
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename)),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
-    #     log.info('*** Testing GET')
-    #     # GET non existing entity
-    #     endpoint = (self._api_uri + self._main_endpoint +
-    #                 self._irods_path + '/' + self._test_filename + 'NOTEXISTS')
-    #     r = self.app.get(endpoint, headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+    def test_03_GET_entities(self):
+        """ Test the entity listingend retrieval: GET """
 
-    #     ###################################################
-    #     # I need to upload some data to test the DELETE..
-    #     # Create a directory
-    #     endpoint = self._api_uri + self._main_endpoint
-    #     r = self.app.post(endpoint, data=dict(path=self._irods_path),
-    #                       headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        log.info('*** Testing GET')
+        # GET non existing entity
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + self._test_filename + 'NOTEXISTS')
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
-    #     # Upload entity in test folder
-    #     endpoint = self._api_uri + self._main_endpoint + self._irods_path
-    #     r = self.app.put(endpoint, data=dict(
-    #                      file=(io.BytesIO(b"this is a test"),
-    #                            self._test_filename)),
-    #                      headers=self.__class__.auth_header)
-    #     ###################################################
+        ###################################################
+        # I need to upload some data to test the DELETE..
+        # Create a directory
+        endpoint = self._api_uri + self._main_endpoint
+        r = self.app.post(endpoint, data=dict(path=self._irods_path),
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-    #     # Obtain entity metadata
-    #     endpoint = (self._api_uri + self._main_endpoint +
-    #                 self._irods_path + '/' + self._test_filename)
-    #     r = self.app.get(endpoint, headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # Upload entity in test folder
+        endpoint = self._api_uri + self._main_endpoint + self._irods_path
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"this is a test"),
+                               self._test_filename)),
+                         headers=self.__class__.auth_header)
+        ###################################################
 
-    #     # Get list of entities in a directory
-    #     endpoint = self._api_uri + self._main_endpoint + self._irods_path
-    #     r = self.app.get(endpoint, headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # Obtain entity metadata
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + self._test_filename)
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-    #     # Download an entity
-    #     endpoint = (self._api_uri + self._main_endpoint +
-    #                 self._irods_path + '/' + self._test_filename)
-    #     r = self.app.get(endpoint, data=dict(download='True'),
-    #                      headers=self.__class__.auth_header)
-    #     self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-    #     self.assertEqual(r.data, b'this is a test')
+        # Get list of entities in a directory
+        endpoint = self._api_uri + self._main_endpoint + self._irods_path
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        # Download an entity
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + self._test_filename)
+        r = self.app.get(endpoint, data=dict(download='True'),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        self.assertEqual(r.data, b'this is a test')
 
     # def test_04_PATCH_rename(self):
     #     """ Test directory creation: POST """

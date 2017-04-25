@@ -1,3 +1,4 @@
+#!/bin/bash
 
 if [ -z "$CREDENTIALS" ]; then
     echo "No credentials provided via environment!"
@@ -33,3 +34,4 @@ else
     echo '$ http GET $SERVER/auth/profile "$AUTH"'
 fi
 echo ""
+

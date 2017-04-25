@@ -7,17 +7,15 @@ Common functions for EUDAT endpoints
 import os
 import re
 from rapydo.rest.definition import EndpointResource
-from rapydo.services.detect import detector
 from rapydo.confs import API_URL
 from eudat.apis.common import (
     CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
     IRODS_PROTOCOL, HTTP_PROTOCOL, PRODUCTION,
-    InitObj
+    IRODS_VARS, InitObj
 )
 from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
-IRODS_VARS = detector.services_classes.get('irods').variables
 
 
 class EudatEndpoint(EndpointResource):
@@ -108,36 +106,44 @@ class EudatEndpoint(EndpointResource):
             is_proxy=proxy
         )
 
-    def httpapi_location(self, url, ipath, remove_suffix=None):
+    # def httpapi_location(self, url, ipath, remove_suffix=None):
+    def httpapi_location(self, ipath, remove_suffix=None):
         """ URI for retrieving with GET method """
 
-        # remove from current request any parameters
-        if self._post_delimiter in url:
-            url = url[:url.index(self._post_delimiter)]
+        # if remove_suffix is not None and uri_path.endswith(remove_suffix):
+        #     uri_path = uri_path.replace(remove_suffix, '')
 
-        split_point = url.find(API_URL)
+        return '%s://%s/%s' % (
+            HTTP_PROTOCOL, CURRENT_HTTPAPI_SERVER,
+            ipath.strip(self._path_separator))
 
-        # TO FIX: # Does this add by mistake a character?
-        uri = self.api_server_uri(url[:split_point])
+    #     # remove from current request any parameters
+    #     if self._post_delimiter in url:
+    #         url = url[:url.index(self._post_delimiter)]
 
-        uri_path = url[split_point:]
-        if remove_suffix is not None and uri_path.endswith(remove_suffix):
-            uri_path = uri_path.replace(remove_suffix, '')
-        return uri + uri_path + ipath.rstrip(self._path_separator)
+    #     split_point = url.find(API_URL)
 
-    def api_server_uri(self, url):
-        server = url.replace('http://', '')
-        if PRODUCTION:
-            server = CURRENT_HTTPAPI_SERVER
-        else:
-            # Fix docker internal net with the link name
-            if server.startswith('172.1.0'):
-                port = ''
-                if ':' in url:
-                    port = server[server.find(':') + 1:]
-                server = '%s:%s' % ('apiserver', port)
+    #     # TO FIX: # Does this add by mistake a character?
+    #     uri = self.api_server_uri(url[:split_point])
 
-        return "%s://%s" % (HTTP_PROTOCOL, server)
+    #     uri_path = url[split_point:]
+    #     if remove_suffix is not None and uri_path.endswith(remove_suffix):
+    #         uri_path = uri_path.replace(remove_suffix, '')
+    #     return uri + uri_path + ipath.rstrip(self._path_separator)
+
+    # def api_server_uri(self, url):
+    #     server = url.replace('http://', '')
+    #     if PRODUCTION:
+    #         server = CURRENT_HTTPAPI_SERVER
+    #     else:
+    #         # Fix docker internal net with the link name
+    #         if server.startswith('172.1.0'):
+    #             port = ''
+    #             if ':' in url:
+    #                 port = server[server.find(':') + 1:]
+    #             server = '%s:%s' % ('apiserver', port)
+
+        # return "%s://%s" % (HTTP_PROTOCOL, server)
 
     def b2safe_location(self, ipath):
         return '%s:///%s/%s' % (

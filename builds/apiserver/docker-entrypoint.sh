@@ -36,7 +36,7 @@ if [ ! -f "$secret_file" ]; then
     # Create the secret to enable security on JWT tokens
     mkdir -p $JWT_APP_SECRETS
     head -c 24 /dev/urandom > $secret_file
-    chown -R $APIUSERID $JWT_APP_SECRETS
+    chown -R $APIUSERID $JWT_APP_SECRETS $UPLOAD_PATH
 
     # certificates for b2access
     update-ca-certificates

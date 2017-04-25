@@ -134,6 +134,8 @@ services:
 
       # project/package/prefix name
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      PROJECT_DOMAIN: ${PROJECT_DOMAIN}
+      UPLOAD_PATH: ${UPLOAD_PATH}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
@@ -174,7 +176,7 @@ services:
       # Tests
       - ./vanilla/tests:/code/test/custom
       # Uploads dir
-      - tmpuploads:/uploads
+      - tmpuploads:${UPLOAD_PATH}
       # JWT tokens secret
       - jwttokens:/${JWT_APP_SECRETS}
       # SHARED
