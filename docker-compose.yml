@@ -102,9 +102,6 @@ services:
     hostname: api
     build: ./builds/apiserver
     image: apiserver:rapydo
-    # command: ./boot
-    # working_dir: /code
-    #
     networks:
       app_net:
         aliases:

@@ -56,13 +56,15 @@ More:
  ☐ 3.0 (with react)
 
 
-
-
-
-
-
-
-
+With SWAGGER enabled:
+  - general error catching with old decorator
+  - decorate catch error?
+  - check boolean defaults from swagger ui
+  - method to convert types
+    swagger.py: paramtype == 'int'
+    definition.py: current_params.items
+  - check if one endpoint definition with two different ids (error)
+  - decorated api_method: report_generic_error ?
 
 --- ✄ -----------------------
 
