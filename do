@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # TO FIX: when completing refactor
-# core_branch="master"
-# core_branch_backend="master"
+#core_branch="master"
 core_branch="letsencrypt"
-core_branch_backend="last_refactor"
+#core_branch_backend="last_refactor"
+core_branch_backend="master"
 
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
