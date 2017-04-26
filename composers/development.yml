@@ -1,26 +1,37 @@
 
-rest:
-  environment:
-    APP_MODE: development
-    DEBUG_LEVEL: DEBUG
-  links:
-    # IRODS MUST BE CALLED rodserver
-    - icat:rodserver
-    # # GRAPHDB MUST BE CALLED gdb
-    # - graphdb:gdb
+version: '3'
+services:
 
-proxy:
-  volumes:
-    - ./confs/dev_proxy.conf:/etc/nginx/sites-enabled/development
-  ports:
-    - 80:80
-  links:
-      - rest:restapi
+  proxy:
+    volumes:
+      # no SSL
+      - ./confs/dev_proxy.conf:/etc/nginx/sites-enabled/development
+    ports:
+      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}
 
-apitests:
-  links:
-    - proxy:apiserver
+  rest:
+    environment:
+      FLASK_DEBUG: 1
+      DEBUG_LEVEL: DEBUG
+      # DEBUG_LEVEL: VERBOSE
+      APP_MODE: development
 
-# graphdb:
-#   ports:
-#     - 9090:7474
+  client:
+    environment:
+      APP_HOST: ${PROXY_HOST}
+      APP_PORT: :${PROXY_DEV_PORT}
+    networks:
+      proxy_net:
+    depends_on:
+      - proxy
+
+  # graphdb:
+  #   ports:
+  #     - 9090:7474
+  #     - 7687:7687
+
+# networks:
+#   app_net:
+#     ipam:
+#       config:
+#         - subnet: ${FLASK_SUBNET}/16

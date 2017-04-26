@@ -4,39 +4,45 @@
 Custom method to initialize mixed services which rely on each other
 """
 
-# from __future__ import absolute_import
-
-from commons.services import get_instance_from_services
-from commons.logs import get_logger
+# TO FIX
+from rapydo.services import get_instance_from_services
+from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 
 
-def init(internal_services, enable_security):
+def init(internal_services=None):
 
-    if enable_security:
-        icom = get_instance_from_services(internal_services, 'irods')
-        graph = get_instance_from_services(internal_services, 'neo4j')
+    log.warning("Custom MIXED SERVICES INIT: to be fixed")
+    get_instance_from_services(internal_services, 'irods')
+    return
 
-        users = graph.User.nodes.all()
+    # # TO FIX: use injector
+    # icom = get_instance_from_services(internal_services, 'irods')
+    # graph = get_instance_from_services(internal_services, 'neo4j')
 
-        # Only available one user, the default one?
-        if len(users) == 1:
-            userobj = users.pop()
-            associated = userobj.associated.all()
+    icom = None
+    graph = None
 
-            # Link default user to default irods users
-            if len(associated) < 2:
-                irodsusers = graph.IrodsUser.get_or_create(
-                    {'username': icom.get_current_user(),
-                        'default_user': False},
-                    {'username': icom.get_default_user(),
-                        'default_user': True},
-                )
-                for irodsuser in irodsusers:
-                    if irodsuser not in associated:
-                        userobj.associated.connect(irodsuser)
+    users = graph.User.nodes.all()
 
-            log.info("Mixed irods and graph users")
-    else:
-        pass
+    # Only available one user, the default one?
+    if len(users) == 1:
+        userobj = users.pop()
+        associated = userobj.associated.all()
+
+        # Link default user to default irods users
+        if len(associated) < 2:
+            irodsusers = graph.IrodsUser.get_or_create(
+                {'username': icom.get_current_user(),
+                    'default_user': False},
+                {'username': icom.get_default_user(),
+                    'default_user': True},
+            )
+            for irodsuser in irodsusers:
+                if irodsuser not in associated:
+                    userobj.associated.connect(irodsuser)
+
+        log.info("Mixed irods and graph users")
+
+    return

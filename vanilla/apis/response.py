@@ -7,11 +7,10 @@ WARNING: TO BE REDEFINED.
 
 """
 
-# from __future__ import absolute_import
-
-from commons.logs import get_logger
 # from ..base import ExtendedApiResource
-# from .. import decorators as decorate
+# from rapydo.rest.definition import EndpointResource
+# from rapydo import decorators as decorate
+from rapydo.utils import get_logger
 
 log = get_logger(__name__)
 
@@ -61,8 +60,6 @@ log.warning("Custom response: TO BE DEVELOPED AGAIN!")
 # ## TO BE REDEFINED
 
 #     pass
-
-#     print("TEST_06: Eudat custom response")
 
 #     if defined_content is None:
 #         defined_content = {}

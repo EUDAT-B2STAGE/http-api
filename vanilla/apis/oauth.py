@@ -4,21 +4,22 @@
 B2SAFE HTTP REST API endpoints.
 """
 
-from __future__ import absolute_import
-
 import json
 from datetime import datetime as dt
 from flask import url_for, session, current_app
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
-from commons import PRODUCTION, DEBUG as ENVVAR_DEBUG
-from ..services.oauth2clients import decorate_http_request
-from ..services.irods.client import IrodsException, Certificates
-from ..services.detect import IRODS_EXTERNAL
-from .. import decorators as decorate
-from .commons import EudatEndpoint
-from commons import htmlcodes as hcodes
-from commons.logs import get_logger
+
+from eudat.apis.common.b2stage import EudatEndpoint
+from eudat.apis.common import PRODUCTION
+
+from rapydo.confs import DEBUG as ENVVAR_DEBUG
+from rapydo.services.oauth2clients import decorate_http_request
+from rapydo.services.irods.client import IrodsException, Certificates
+from rapydo.services.detect import IRODS_EXTERNAL
+from rapydo import decorators as decorate
+from rapydo.utils import htmlcodes as hcodes
+from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 
@@ -45,7 +46,6 @@ class B2accessUtilities(EudatEndpoint):
         b2a_token = None
 
         try:
-
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
             log.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
@@ -178,7 +178,8 @@ class B2accessUtilities(EudatEndpoint):
         # In case we are using dockerized iRODS/B2SAFE
         else:
             # irods admin user handler
-            admin_icom = self.global_get_service('irods', become_admin=True)
+            admin_icom = self.rpc
+            # admin_icom = self.global_get_service('irods', be_admin=True)
 
             if user_exists:
                 # recover the old/current one
@@ -219,7 +220,7 @@ class OauthLogin(B2accessUtilities):
     #     exception_label='Server side B2ACCESS misconfiguration')
     def get(self):
 
-        auth = self.global_get('custom_auth')
+        auth = self.auth
         b2access = self.create_b2access_client(auth)
 
         authorized_uri = url_for('authorize', _external=True)
@@ -255,7 +256,7 @@ class Authorize(B2accessUtilities):
         """
 
         # Get b2access token
-        auth = self.global_get('custom_auth')
+        auth = self.auth
         b2access = self.create_b2access_client(auth, decorate=True)
         b2access_token, b2access_errors = self.request_b2access_token(b2access)
         if b2access_token is None:
@@ -275,7 +276,7 @@ class Authorize(B2accessUtilities):
 
         # iRODS related
         # NOTE: this irods client uses default admin to find the related user
-        icom = self.global_get_service('irods')
+        icom = self.rpc
         uid = self.username_from_unity(curuser.data.get('unity:persistent'))
         irods_user = self.set_irods_username(icom, auth, extuser, uid)
         if irods_user is None:
@@ -319,6 +320,8 @@ class B2accesProxyEndpoint(B2accessUtilities):
     using the stored b2access token (if still valid)
     """
 
+    _only_check_proxy = True
+
     def post(self):
 
         ##########################
@@ -338,7 +341,7 @@ class B2accesProxyEndpoint(B2accessUtilities):
                 log.debug("Current user does not use a proxy")
                 return {"Skipped": "Not using a certificate proxy."}
 
-        auth = self.global_get('custom_auth')
+        auth = self.auth
         proxy_file = self.obtain_proxy_certificate(auth, r.extuser_object)
 
         # check for errors

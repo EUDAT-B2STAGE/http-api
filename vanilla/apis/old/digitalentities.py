@@ -7,8 +7,6 @@ A digital entity is
 ...
 """
 
-from __future__ import absolute_import
-
 import os
 from .commons import EudatEndpoint
 from ..services.uploader import Uploader

@@ -1,0 +1,13 @@
+
+# The name of the REST class
+class: PIDEndpoint
+# The python file where your REST class is located
+# (inside the 'restapi/confs/custom' dir)
+file: extended
+
+mapping:
+  all: "/pids"
+  single: "/pids/<path:pid>"
+labels:
+  - eudat
+  - pids

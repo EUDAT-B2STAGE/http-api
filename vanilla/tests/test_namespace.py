@@ -7,15 +7,15 @@ Run single test:
 nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
 """
 
-from __future__ import absolute_import
-
 import io
-# import logging
-from restapi.jsonify import json
-from .. import RestTestsAuthenticatedBase
-from commons.logs import get_logger
+import json
+from test import RestTestsAuthenticatedBase
+from rapydo.utils.logs import get_logger
 
-__author__ = 'Roberto Mucci (r.mucci@cineca.it)'
+__authors__ = [
+    'Roberto Mucci (r.mucci@cineca.it)',
+    "Paolo D'Onorio De Meo <p.donoriodemeo@cineca.it>",
+]
 
 log = get_logger(__name__)
 
@@ -32,6 +32,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def tearDown(self):
 
         log.debug('### Cleaning custom data ###\n')
+
         # Clean all test data
         endpoint = self._api_uri + self._main_endpoint
         r = self.app.delete(endpoint, data=dict(debugclean='True'),
@@ -64,7 +65,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Create a directory in a non existing path
         r = self.app.post(endpoint, data=dict(path=self._invalid_irods_path),
                           headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
         # Create a directory w/o passing a path
         r = self.app.post(endpoint, headers=self.__class__.auth_header)
@@ -117,7 +118,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
                          file=(io.BytesIO(b"this is a test"),
                                self._test_filename)),
                          headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
     def test_03_GET_entities(self):
         """ Test the entity listingend retrieval: GET """
@@ -293,4 +294,3 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = self._api_uri + self._main_endpoint
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
-

@@ -1,6 +1,10 @@
 #!/bin/bash
 
-core_branch="master"
+# TO FIX: when completing refactor
+#core_branch="master"
+core_branch="letsencrypt"
+#core_branch_backend="last_refactor"
+core_branch_backend="master"
 
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
@@ -9,8 +13,8 @@ echo ""
 
 if [ "$1" == "help" -o -z "$1" ]; then
     echo "Available commands:"
-    echo ""
-    echo -e "init:\t\tStartup your repository code, containers and volumes"
+    # echo ""
+    # echo -e "init:\t\tStartup your repository code, containers and volumes"
     echo ""
     echo -e "check:\tCheck the stack status"
     echo -e "stop:\tFreeze your containers stack"
@@ -30,11 +34,11 @@ if [ "$1" == "help" -o -z "$1" ]; then
     echo -e "update:\tPull updated code and images"
     echo ""
     echo -e "***Modes***:"
-    echo -e "DEBUG:\tREST API server should be launched using container shell"
-    echo -e "DEVELOPMENT:\tREST API server with Flask WSGI and Debug"
-    echo -e "PRODUCTION:\tREST API server with Gunicorn behind nginx proxy"
+    echo -e "DEBUG:\tREST API server will be launched opening a container shell"
+    echo -e "DEVELOPMENT:\tREST API server executed with Flask WSGI and Debug"
+    echo -e "PRODUCTION:\tREST API server with uWSGI+nginx behind nginx proxy"
     echo ""
-    echo -e "[Mode:DEBUG|DEVELOPMENT|PRODUCTION] [restart|sqladmin|swagger]:\tLaunch the Docker stack using one of the modes available"
+    echo -e "[Mode:DEBUG|DEVELOPMENT|PRODUCTION] [client_shell|restart|sqladmin|swagger]:\n\tLaunch the Docker stack using one of the modes available"
     echo -e "logs:\tAttach to all container logs"
     exit 0
 fi
@@ -46,45 +50,24 @@ submodule_tracking="submodules.current.commit"
 irodscontainer="icat"
 restcontainer="rest"
 proxycontainer="proxy"
-clientcontainer="apitests"
+clientcontainer="client"
 vcom="docker volume"
-vprefix="httpapi_"
-cprefix=`basename $(pwd) | tr -d '-'`
+ncom="docker network"
+
+source .env
+# cprefix=`basename $(pwd) | tr -d '-'`
+cprefix=$COMPOSE_PROJECT_NAME
 
 compose_base="docker-compose -f docker-compose.yml"
-compose_all="$compose_base -f composers/init.yml -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
+compose_all="$compose_base -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
+# compose_all="$compose_base -f composers/init.yml -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
 
-# Init mode
-if [ "$1" == "init" ]; then
-    compose_run="$compose_base -f composers/init.yml"
+# # Init mode
+# if [ "$1" == "init" ]; then
+#     compose_run="$compose_base -f composers/init.yml"
 
 # Production mode
-elif [ "$1" == "PRODUCTION" ]; then
-
-    # # Check for REAL certificates
-    # if [ ! -f "./certs/nginx.key" -o ! -f "./certs/nginx.crt" ];
-    # then
-
-        # # REAL CERTIFICATES
-        # echo "Warning: no real certificates..."
-        # echo ""
-        # echo "To create them you may use the free Letsencrypt service:"
-        # echo "https://letsencrypt.org/"
-        # echo ""
-        # # exit 1
-        # sleep 2
-
-        if [ ! -f "./certs/nginx-selfsigned.key" -o ! -f "./certs/nginx-selfsigned.crt" ];
-        then
-            # SELF SIGNED CERTIFICATES
-            echo "Missing certificates."
-
-            echo "To generate self_signed files right now:"
-            echo "./confs/create_self_signed_ssl.sh"
-            exit 1
-        fi
-
-    # fi
+if [ "$1" == "PRODUCTION" ]; then
 
     compose_run="$compose_base -f composers/production.yml"
 
@@ -98,9 +81,15 @@ else
 
 fi
 
-make_tests="$compose_run exec rest ./tests.sh"
 #####################
+warnings=$($compose_run config -q 2>&1)
+if [ "$warnings" != "" ]; then
+    echo "Failed to validate compose files:"
+    echo $warnings
+    exit 1
+fi
 
+#####################
 # Check prerequisites
 coms="docker $compose"
 for com in $coms;
@@ -123,11 +112,9 @@ if [ "$(ls -A $subdir)" ]; then
 else
     echo "Inizialitazion for the http-api-base submodule"
     git clone https://github.com/EUDAT-B2STAGE/http-api-base.git $subdir
-    # git submodule init
-    # git submodule update --remote
     cd $subdir
     # Go into the current branch
-    git checkout $core_branch
+    git checkout $core_branch_backend
     # print latest commit
     echo "Check latest commit"
     git log -n 1
@@ -147,22 +134,24 @@ if [ "$1" == "push" ]; then
     fi
 
     if [ "$2" != "force" ]; then
-        testlogs="/tmp/tests.log"
-        echo "Running tests before pushing..."
-        $make_tests > $testlogs
-        if [ "$?" == "0" ]; then
-            echo "Test are fine!"
-        else
-            echo "Failed, to test... (see $testlogs file)"
-            echo "Fix errors before pushing, or run again with:"
-            echo "$0 $1 force"
-            exit 1
-        fi
+        echo "TO BE FIXED..."
+        exit 1
+        # testlogs="/tmp/tests.log"
+        # echo "Running tests before pushing..."
+        # $make_tests > $testlogs
+        # if [ "$?" == "0" ]; then
+        #     echo "Test are fine!"
+        # else
+        #     echo "Failed, to test... (see $testlogs file)"
+        #     echo "Fix errors before pushing, or run again with:"
+        #     echo "$0 $1 force"
+        #     exit 1
+        # fi
     fi
 
     echo "Pushing submodule"
     cd $subdir
-    git push
+    git push origin $core_branch_backend
     cd ..
 
     # Save a snapshot of current submodule
@@ -174,69 +163,36 @@ if [ "$1" == "push" ]; then
     echo "Pushing main repo"
     git add $submodule_tracking
     git commit
-    git push
+    git push $core_branch
     echo "Completed"
     exit 0
 fi
 
 # Update your code
 if [ "$1" == "update" ]; then
+
     echo "Pulling main repo"
-    git pull
+    git pull origin $core_branch
     echo "Pulling submodule"
     cd $subdir
-    git pull
+    git pull origin $core_branch_backend
     cd ..
+
     # Note: images must be updated after pulling the code
-    # otherwise we won't know if new images are requested
-    echo "Updating (all) docker images to latest release"
-    $compose_all pull
+    echo "Updating docker images"
+    docker-compose pull --parallel --ignore-pull-failures
+    ./do build4test
+
     echo "Done"
+
     exit 0
 fi
 
-# Check if init has been executed
-
-volumes=`$vcom ls | awk '{print $NF}' | grep "^$vprefix"`
-#echo -e "VOLUMES are\n*$volumes*"
-if [ "$volumes"  == "" ]; then
-    if [ "$1" != "init" ]; then
-        echo "Please init this project."
-        echo "You may do so by running:"
-        echo "\$ $0 init"
-        exit 1
-    fi
-fi
-
-################################
-# EXECUTE OPTIONS
-
-# Init your stack
-if [ "$1" == "init" ]; then
-    echo "WARNING: Removing old containers/volumes if any"
-    echo "(Sleeping some seconds to let you stop in case you made a mistake)"
-    sleep 7
-    echo "Containers stopping"
-    $compose_run stop
-    echo "Containers deletion"
-    $compose_run rm -f
-    if [ "$volumes"  != "" ]; then
-        echo "Destroy volumes:"
-        docker volume rm $volumes
-    fi
-    echo "READY TO INIT"
-    $compose_run up icat rest
-    if [ "$?" == "0" ]; then
-        echo ""
-        echo "Your project is ready to be used."
-        echo "Everytime you need to start just run:"
-        echo "\$ $0 DEBUG"
-        echo ""
-    fi
-    exit 0
+networks=`$ncom ls | awk '{print $2}' | grep "^$cprefix"`
+volumes=`$vcom ls | awk '{print $NF}' | grep "^$cprefix"`
 
 # Verify the status
-elif [ "$1" == "check" ]; then
+if [ "$1" == "check" ]; then
     echo "Stack status:"
     $compose_run ps
     exit 0
@@ -259,13 +215,26 @@ elif [ "$1" == "clean" ]; then
     echo "REMOVE DATA"
     echo "are you really sure?"
     sleep 5
+
+    echo "Removing containers"
     $compose_run stop
     $compose_run rm -f
+    echo
+    sleep 1
+
+    echo "Removing networks"
+    for network in $networks;
+    do
+        # echo "Removing $network"
+        $ncom rm $network
+    done
+    sleep 1
+
+    echo "Removing volumes"
     for volume in $volumes;
     do
-        echo "Remove $volume volume"
+        # echo "Removing $volume"
         $vcom rm $volume
-        sleep 1
     done
     exit 0
 
@@ -275,7 +244,7 @@ elif [ "$1" == "addiuser" ]; then
     exit 0
 
 elif [ "$1" == "irestart" ]; then
-    $compose_run exec $irodscontainer /irestart
+    $compose_run exec $irodscontainer service irods restart
     exit 0
 
 elif [ "$1" == "irods_shell" ]; then
@@ -287,25 +256,41 @@ elif [ "$1" == "server_shell" ]; then
     exit 0
 
 elif [ "$1" == "httpapi_restart" ]; then
-    # docker restart $vprefix${restcontainer}_1
     $compose_run restart $restcontainer
     exit 0
 
 elif [ "$1" == "api_test" ]; then
     echo "Opening a shell for nose2 tests"
-    $make_tests
+    $compose_run exec rest /bin/bash -c "testwithcoverage"
     exit $?
-
-elif [ "$1" == "client_shell" ]; then
-    echo "Opening a client shell"
-
-    TERM=xterm-256color $compose_run exec $clientcontainer bash
-    # docker exec -e CREDENTIALS="$CRED" -it ${cprefix}_${clientcontainer}_1 bash
-    exit 0
 
 # Handle the right logs
 elif [ "$1" == "logs" ]; then
     $compose_run logs -f -t --tail="10"
+    exit 0
+
+# SSL certificates in production with letsencrypt
+elif [ "$1" == "letsencrypt" ]; then
+    echo "Creating new letsencrypt certificates"
+    $compose_run exec $proxycontainer \
+        /bin/bash -c "updatecertificates"
+    exit 0
+
+elif [ "$1" == "check_certificate" ]; then
+    $compose_run exec $proxycontainer \
+        /bin/bash -c "openssl x509 -in \$CERTCHAIN  -noout -subject"
+    exit 0
+
+elif [ "$1" == "buildall" ]; then
+    $compose_run build --pull
+    exit 0
+
+elif [ "$1" == "build4test" ]; then
+    $compose_run build --pull sql icat rest
+    exit 0
+
+elif [ "$1" == "buildone" ]; then
+    $compose_run build $2
     exit 0
 fi
 
@@ -315,9 +300,14 @@ then
 
     echo "Docker stack: booting"
 
-    if [ "$2" == "sql_admin" ]; then
+    if [ "$2" == "sqladmin" ]; then
         echo "Administration for relational databases"
         $compose_run up sqladmin
+        exit 0
+    elif [ "$2" == "client_shell" ]; then
+        echo "Opening a client shell"
+        $compose_run run --rm $clientcontainer
+        # $compose_run run --rm $clientcontainer bash
         exit 0
     elif [ "$2" == "swagger" ]; then
         if [ "$1" != "DEBUG" ]; then
@@ -331,50 +321,59 @@ then
         echo ""
         $compose_run up swagclient
         exit 0
-    fi
     elif [ "$2" == "restart" ]; then
         echo "Clean previous containers"
         $compose_run stop
         $compose_run rm -f
     fi
 
-    # # Checks?
-    # if [ "$1" == "PRODUCTION" ]; then
-    # fi
-
-    # The client container always has the best link to access the server
-    $compose_run up -d $clientcontainer
+    if [ "$1" == "DEBUG" ]; then
+        $compose_run up -d $restcontainer
+    else
+        $compose_run up -d $proxycontainer
+    fi
     status="$?"
 
     echo "Stack processes:"
     $compose_run ps
 
     if [ "$status" == "0" ]; then
-        $compose_run exec --user root rest update-ca-certificates
-        echo ""
-        echo "To access the flask api container:"
-        echo "$0 server_shell"
-        echo ""
-        echo "To query the api server (if running) use the client container:"
-        echo "$0 client_shell"
 
-        path="/api/status"
+        # $compose_run exec $restcontainer update-ca-certificates
+        # echo ""
 
-        if [ "$1" == "PRODUCTION" ]; then
-            echo "/ # http --follow --verify /tmp/cert.crt awesome.docker$path"
-        elif [ "$1" == "DEVELOPMENT" ]; then
-            echo "/ # http GET http://apiserver$path"
+        if [ "$2" == "await" ]; then
+            echo "Startup"
+            initps=""
+            while [ "$initps" == "" ];
+            do
+                echo "in progress..."
+                sleep 5
+                initps=$(docker-compose exec rest ls /${JWT_APP_SECRETS}/initialized 2>/dev/null)
+            done
         else
-            echo "/ # http GET apiserver:5000$path"
+            echo ""
+            echo "To access the flask api container:"
+            echo "$0 server_shell"
+            echo ""
+            echo "To query the api server (if running) use the client container:"
+            echo "$0 $1 client_shell"
+
+            path="/api/status"
+
+            # if [ "$1" == "PRODUCTION" ]; then
+            #     echo "/ # http --follow --verify /tmp/cert.crt awesome.docker$path"
+            # fi
         fi
         echo ""
+
     fi
 
     echo "Boot completed"
     exit 0
 
+else
+    echo "Unknown operation '$1'!"
+    echo "Use \"$0 help\" to see available commands "
+    exit 1
 fi
-
-echo "Unknown operation '$1'!"
-echo "Use \"$0 help\" to see available commands "
-exit 1

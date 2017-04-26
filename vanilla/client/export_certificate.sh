@@ -1,70 +1,57 @@
-#############################################
-
+# #############################################
 # This script keeps track of efforts done in
 # trying to make the X509 normal/proxy certificates
 # hand-made or from b2access work
 # onto the dockerized version of b2safe
 
-#############################################
-# Become guest (normal certificates)
+# #############################################
+# # Install proxy and CA for b2access dev
 
-export IRODS_USER_NAME=guest
-export IRODS_HOST=rodserver
-export IRODS_PORT=1247
-export IRODS_AUTHENTICATION_SCHEME=gsi
-export IRODS_ZONE=tempZone
-export IRODS_HOME=/tempZone/home/guest
+# # copy certificates
+# cadir="/opt/certificates/caauth"
+# certdir="certs"
+# irods_container="eudatapi_icat_1"
+# docker cp $certdir/b2access.ca.pem $irods_container:$cadir
+# docker cp $certdir/b2access.ca.signing_policy $irods_container:$cadir
+# docker cp $certdir/test.pem $irods_container:/tmp
 
-export X509_USER_CERT=/opt/certificates/guest/usercert.pem
-export X509_USER_KEY=/opt/certificates/guest/userkey.pem
-export X509_CERT_DIR=/opt/certificates/caauth
+# # root inside icat for b2access caauth
+# docker exec -it --user root $irods_container bash
+# cd /opt/certificates/caauth
+# caid=$(openssl x509 -in b2access.ca.pem -hash -noout)
+# echo $caid
+# cp b2access.ca.pem ${caid}.0
+# cp b2access.ca.signing_policy ${caid}.signing_policy
+# chown -R irods:irods /opt/certificates /tmp/*
+# cp /opt/certificates/caauth/$caid* /etc/grid-security/certificates/
+# exit
 
-exit
+# # irods admin to add new user with proxy
+# docker exec -it $irods_container bash
+# export GSI_USER=paolo
+# mkdir /opt/certificates/$GSI_USER
+# certout=/opt/certificates/$GSI_USER/test
+# cp /tmp/test.pem /opt/certificates/$GSI_USER/test
+# iadmin mkuser $GSI_USER rodsuser
+# iadmin aua $GSI_USER \
+#     "$(openssl x509 -in $certout -noout -subject | sed 's/subject= //')"
+# iadmin lua
+# exit
 
-#############################################
-# Install proxy and CA for b2access dev
+# export X509_CERT_DIR=/etc/grid-security/certificates
 
-# copy certificates
-cadir="/opt/certificates/caauth"
-certdir="certs"
-irods_container="eudatapi_icat_1"
-docker cp $certdir/b2access.ca.pem $irods_container:$cadir
-docker cp $certdir/b2access.ca.signing_policy $irods_container:$cadir
-docker cp $certdir/test.pem $irods_container:/tmp
+# # Become this new user inside rest api
+# docker exec -it eudatapi_rest_1 bash
 
-# root inside icat for b2access caauth
-docker exec -it --user root $irods_container bash
-cd /opt/certificates/caauth
-caid=$(openssl x509 -in b2access.ca.pem -hash -noout)
-echo $caid
-cp b2access.ca.pem ${caid}.0
-cp b2access.ca.signing_policy ${caid}.signing_policy
-chown -R irods:irods /opt/certificates /tmp/*
-cp /opt/certificates/caauth/$caid* /etc/grid-security/certificates/
-exit
-
-# irods admin to add new user with proxy
-docker exec -it $irods_container bash
-export GSI_USER=paolo
-mkdir /opt/certificates/$GSI_USER
-certout=/opt/certificates/$GSI_USER/test
-cp /tmp/test.pem /opt/certificates/$GSI_USER/test
-iadmin mkuser $GSI_USER rodsuser
-iadmin aua $GSI_USER \
-    "$(openssl x509 -in $certout -noout -subject | sed 's/subject= //')"
-iadmin lua
-exit
-
-# Become this new user inside rest api
-docker exec -it eudatapi_rest_1 bash
-export MYUSER="0a646980c779"
+MYUSER="guest"
+# MYUSER="rodsminer"
 export IRODS_USER_NAME=$MYUSER
 export IRODS_HOST=rodserver
 export IRODS_PORT=1247
 export IRODS_AUTHENTICATION_SCHEME=gsi
 export IRODS_ZONE=tempZone
 export IRODS_HOME=/tempZone/home/$MYUSER
-export X509_CERT_DIR=/opt/certificates/caauth
-export X509_USER_PROXY=/opt/certificates/$MYUSER/userproxy.crt
-# export X509_USER_PROXY=/opt/certificates/$MYUSER/test
-ils
+export X509_CERT_DIR=/opt/certificates/simple_ca
+export X509_USER_CERT=/opt/certificates/$MYUSER/usercert.pem
+export X509_USER_KEY=/opt/certificates/$MYUSER/userkey.pem
+ils $IRODS_HOME
