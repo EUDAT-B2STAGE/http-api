@@ -133,7 +133,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         out = {}
         try:
             out, _ = icom.get_metadata(path)
-        except BaseException:
+        except IrodsException:
             pass
 
         # Set the right context to each element
@@ -321,7 +321,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             if self._args.get('pid'):
                 try:
                     out, _ = icom.get_metadata(path)
-                except BaseException:
+                except IrodsException:
                     pass
 
             content = {
@@ -341,41 +341,40 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
         PATCH a record. E.g. change only the filename to a resource.
         """
-        pass
 
-#         if irods_location is None:
-#             return self.send_errors('Location: missing filepath inside URI',
-#                                     code=hcodes.HTTP_BAD_REQUEST)
-#         irods_location = self.fix_location(irods_location)
+        if irods_location is None:
+            return self.send_errors('Location: missing filepath inside URI',
+                                    code=hcodes.HTTP_BAD_REQUEST)
+        irods_location = self.fix_location(irods_location)
 
-#         ###################
-#         # BASIC INIT
-#         r = self.init_endpoint()
-#         if r.errors is not None:
-#             return self.send_errors(errors=r.errors)
-#         icom = r.icommands
-#         # Note: ignore resource, get new filename as 'newname'
-#         path, _, newfile, force = \
-#             self.get_file_parameters(icom, path=irods_location, newfile=True)
+        ###################
+        # BASIC INIT
+        r = self.init_endpoint()
+        if r.errors is not None:
+            return self.send_errors(errors=r.errors)
+        icom = r.icommands
+        # Note: ignore resource, get new filename as 'newname'
+        path, _, newfile, force = \
+            self.get_file_parameters(icom, path=irods_location, newfile=True)
 
-#         if newfile is None or newfile.strip() == '':
-#             return self.send_errors(
-#                 'New filename missing; use the 'newname' JSON parameter",
-#                 code=hcodes.HTTP_BAD_REQUEST)
+        if newfile is None or newfile.strip() == '':
+            return self.send_errors(
+                "New filename missing; use the 'newname' JSON parameter",
+                code=hcodes.HTTP_BAD_REQUEST)
 
-#         # Get the base directory
-#         collection = icom.get_collection_from_path(irods_location)
-#         # Set the new absolute path
-#         newpath = icom.get_absolute_path(newfile, root=collection)
-#         # Move in irods
-#         icom.move(irods_location, newpath)
+        # Get the base directory
+        collection = icom.get_collection_from_path(irods_location)
+        # Set the new absolute path
+        newpath = icom.get_absolute_path(newfile, root=collection)
+        # Move in irods
+        icom.move(irods_location, newpath)
 
-#         return {
-#             'location': self.b2safe_location(newpath),
-#             'filename': newfile,
-#             'path': collection,
-#             'link': self.httpapi_location(newpath, irods_location)
-#         }
+        return {
+            'location': self.b2safe_location(newpath),
+            'filename': newfile,
+            'path': collection,
+            'link': self.httpapi_location(newpath, irods_location)
+        }
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def delete(self, irods_location=None):
@@ -411,55 +410,36 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     log.debug("Removed %s" % obj['name'])
                 return "Cleaned"
 
-#         # Note: this check is not at the beginning to allow the clean operation
-#         if irods_location is None:
-#             return self.send_errors('Location: missing filepath inside URI',
-#                                     code=hcodes.HTTP_BAD_REQUEST)
-#         irods_location = self.fix_location(irods_location)
-        pass
+        # Note: this check is not at the beginning to allow the clean operation
+        if irods_location is None:
+            return self.send_errors('Location: missing filepath inside URI',
+                                    code=hcodes.HTTP_BAD_REQUEST)
+        irods_location = self.fix_location(irods_location)
 
-#         ########################################
-#         # # Get the dataobject from the graph
-#         # graph = self.neo
-#         # dataobj_node = graph.DigitalEntity.nodes.get(id=uuid)
-#         # collection_node = dataobj_node.belonging.all().pop()
+        ########################################
+        # Remove from irods (only files and empty directories)
+        is_recursive = False
+        if icom.is_collection(irods_location):
+            if not icom.list(irods_location):
+                # nb: recursive option is necessary to remove a collection
+                is_recursive = True
+            else:
+                log.info("list:  %i", len(icom.list(path=irods_location)))
+                return self.send_errors(
+                    'Directory is not empty',
+                    code=hcodes.HTTP_BAD_REQUEST)
+        else:
+            # Print file details/sys metadata if it's a specific file
+            try:
+                # data = icom.meta_sys_list(irods_location)
+                data = icom.get_metadata(path=irods_location)
+            except IrodsException:
+                # if a path that does not exist
+                return self.send_errors(
+                    "Path does not exists or you don't have privileges",
+                    code=hcodes.HTTP_BAD_NOTFOUND)
 
-#         # ipath = icom.get_irods_path(
-#         #     collection_node.path, dataobj_node.filename)
+        icom.remove(irods_location, recursive=is_recursive, resource=resource)
+        log.info("Removed %s", irods_location)
 
-#         # # Remove from graph:
-#         # # Delete with neomodel the dataobject
-#         # try:
-#         #     dataobj_node.delete()
-#         # except graph.DigitalEntity.DoesNotExist:
-#         #     return self.send_errors('Not found: %s' % uuid)
-
-#         # # Delete collection if not linked to any dataobject anymore?
-#         # if len(collection_node.belongs.all()) < 1:
-#         #     collection_node.delete()
-
-#         ########################################
-#         # Remove from irods (only files and empty directories)
-#         is_recursive = False
-#         if icom.is_collection(irods_location):
-#             if not icom.list_as_json(root=irods_location):
-#                 # nb: recursive option is necessary to remove a collection
-#                 is_recursive = True
-#             else:
-#                 log.info("list:  %i", len(icom.list(path=irods_location)))
-#                 return self.send_errors(
-#                     'Directory is not empty',
-#                     code=hcodes.HTTP_BAD_REQUEST)
-#         else:
-#             # Print file details/sys metadata if it's a specific file
-#             data = icom.meta_sys_list(irods_location)
-#             # if a path that does not exist
-#             if len(data) < 1:
-#                 return self.send_errors(
-#                     "Path does not exists or you don't have privileges",
-#                     code=hcodes.HTTP_BAD_NOTFOUND)
-
-#         icom.remove(irods_location, recursive=is_recursive, resource=resource)
-#         log.info("Removed %s", irods_location)
-
-#         return {'removed': irods_location}
+        return {'removed': irods_location}

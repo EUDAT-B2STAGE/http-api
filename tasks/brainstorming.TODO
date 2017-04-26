@@ -7,11 +7,11 @@ Beta release:
     ✔ missing user's conf in sqlalchemy @bug @done (17-04-21 00:18)
   ☐ fix eudat
     ✔ common @done (17-04-26 01:56)
-    - basic
+    ✔ basic @done (17-04-26 09:13)
       ✔ GET, POST, PUT @done (17-04-26 01:56)
-      - PATCH, DELETE
-    - oauth
+      ✔ PATCH, DELETE @done (17-04-26 09:13)
     - extended
+    - oauth
 ☐ fix do branches
 
 Refactor:

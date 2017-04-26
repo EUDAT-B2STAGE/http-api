@@ -15,7 +15,6 @@ IRODS_VARS = detector.services_classes.get('irods').variables
 
 CURRENT_B2SAFE_SERVER = IRODS_VARS.get('host')
 # CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
-# TO FIX: this is DOMAIN in os/detect
 CURRENT_HTTPAPI_SERVER = detector.get_global_var('PROJECT_DOMAIN')
 # CURRENT_HTTPAPI_SERVER = 'b2stage.cineca.it'
 

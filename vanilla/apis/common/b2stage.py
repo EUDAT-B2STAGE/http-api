@@ -7,12 +7,12 @@ Common functions for EUDAT endpoints
 import os
 import re
 from rapydo.rest.definition import EndpointResource
-from rapydo.confs import API_URL
 from eudat.apis.common import (
     CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
-    IRODS_PROTOCOL, HTTP_PROTOCOL, PRODUCTION,
+    IRODS_PROTOCOL, HTTP_PROTOCOL,  # PRODUCTION,
     IRODS_VARS, InitObj
 )
+# from rapydo.confs import API_URL
 from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
@@ -36,14 +36,24 @@ class EudatEndpoint(EndpointResource):
         intuser, extuser = self.auth.oauth_from_local(user)
 
         # If we have an "external user" we are using b2access oauth2
+        # Var 'proxy' is referring to proxy certificate or normal certificate
         if extuser is None:
-            iuser = IRODS_VARS.get('default_user')
+            # TODO: a more well thought user mapping
+            # when not using B2ACCESS
+            iuser = IRODS_VARS.get('guest_user')
+            ipass = None
+            # iuser = IRODS_VARS.get('user')
+            # ipass = IRODS_VARS.get('password')
+
             proxy = False
         else:
             iuser = extuser.irodsuser
+            ipass = None
             proxy = True
 
-        icom = self.get_service_instance('irods', user=iuser, proxy=proxy)
+        icom = self.get_service_instance(
+            service_name='irods',
+            user=iuser, password=ipass, proxy=proxy)
 
         # Verify if irods certificates are ok
         try:

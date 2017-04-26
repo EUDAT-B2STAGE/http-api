@@ -18,6 +18,7 @@ if [ "$1" == "help" ]; then
     echo -e "\t - update PATH FILE"
     echo -e "\t - download PATH"
     echo -e "\t - remove PATH"
+    echo -e "\t - clean"
     return
 fi
 
