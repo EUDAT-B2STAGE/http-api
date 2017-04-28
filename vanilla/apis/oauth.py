@@ -13,10 +13,15 @@ from urllib3.exceptions import HTTPError
 from eudat.apis.common.b2stage import EudatEndpoint
 from eudat.apis.common import PRODUCTION
 
+# TO FIX: FROM MATTIA: added DEBUG in rapydo/conds
 from rapydo.confs import DEBUG as ENVVAR_DEBUG
 from rapydo.services.oauth2clients import decorate_http_request
-from rapydo.services.irods.client import IrodsException, Certificates
-from rapydo.services.detect import IRODS_EXTERNAL
+# from rapydo.services.irods.client import IrodsException, Certificates
+from flask_ext.flask_irods.client import IrodsException
+from rapydo.utils.certificates import Certificates
+
+# TO FIX: FROM MATTIA: added IRODS_EXTERNAL below in the code (not tested)
+# from rapydo.services.detect import IRODS_EXTERNAL
 from rapydo import decorators as decorate
 from rapydo.utils import htmlcodes as hcodes
 from rapydo.utils.logs import get_logger
@@ -170,6 +175,8 @@ class B2accessUtilities(EudatEndpoint):
         # Does this user exist?
         user_exists = irods_user is not None and icom.user_exists(irods_user)
 
+        # TO FIX: FROM MATTIA: to be test (i don't how to reach this check)
+        IRODS_EXTERNAL = icom.variables['external']
         # Production / Real B2SAFE and irods instance
         if IRODS_EXTERNAL:
             # log.error("No iRODS user related to your certificate")
