@@ -1,0 +1,13 @@
+
+#depends_on:
+#  - TESTING_MODE
+class: MetadataEndpoint
+file: internal
+mapping:
+  #all: "/metadata"
+  single: "/metadata/<path:irods_location>"
+ids:
+  irods_location: the filesystem path to your digital entities/objects
+labels:
+  - eudat
+  - internal
