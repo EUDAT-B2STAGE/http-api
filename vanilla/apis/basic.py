@@ -120,23 +120,21 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         response = []
         for filename, metadata in data.items():
 
+            if metadata.get('PID') is not None:
+                metadata['PID'] = out.get("PID")
+            if metadata.get('EUDAT/CHECKSUM') is not None:
+                metadata['EUDAT/CHECKSUM'] = out.get("EUDAT/CHECKSUM")
+
             metadata.pop('path')
             content = {
                 'metadata': metadata,
                 metadata['object_type']: filename,
-                # metadata['PID']: out.get("PID"),
-                # metadata['checksum']: out.get("checksum"),
                 'path': collection,
                 'location': self.b2safe_location(collection),
                 'link': self.httpapi_location(
                     icom.get_absolute_path(filename, root=collection),
                     remove_suffix=irods_location)
             }
-
-            if metadata.get('PID') is not None:
-                metadata['PID']: out.get("PID")
-            if metadata.get('checksum') is not None:
-                metadata['checksum']: out.get("checksum")
 
             response.append({filename: content})
 
