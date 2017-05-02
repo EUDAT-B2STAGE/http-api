@@ -72,27 +72,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 return self.send_errors(
                     'Collection: recursive download is not allowed')
 
-            if filename is None:
-                filename = self.filename_from_path(path)
-            abs_file = self.absolute_upload_file(filename, r.username)
-
-            # TODO: decide if we want to use a cache when streaming
-            # what about nginx caching?
-
-            # Make sure you remove any cached version to get a fresh obj
-            try:
-                os.remove(abs_file)
-            except BaseException:
-                pass
-            # Execute icommand (transfer data to cache)
-            icom.open(path, abs_file)
-            # Download the file from local fs
-            filecontent = super().download(
-                filename, subfolder=r.username, get=True)
-            # Remove local file
-            os.remove(abs_file)
-            # Stream file content
-            return filecontent
+            return self.download_object(r, path)
 
         ###################
         # DATA LISTING

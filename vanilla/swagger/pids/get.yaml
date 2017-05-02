@@ -6,7 +6,7 @@ common:
       in: query
       type: string
   custom:
-    authentication: false
+    authentication: true
     authorized:
       - normal_user
 
