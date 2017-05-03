@@ -1,51 +1,61 @@
-
+version: '3'
 #######################
 # Link services inside API
 
-backend:
-  volumes:
-    - ..:/code/${COMPOSE_PROJECT_NAME}
-  environment:
-    APP_MODE: debug
-    DEBUG_LEVEL: VERBOSE
-    VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+services:
+  backend:
+    volumes:
+      - ..:/code/${COMPOSE_PROJECT_NAME}
+    environment:
+      APP_MODE: debug
+      DEBUG_LEVEL: VERBOSE
+      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
 
-    # base the user/role mechanism on some database
-    AUTH_ENABLE: 1
-    # putting this here because it should not be configurable in .env
-    AUTH_SERVICE: neo4j
+      # base the user/role mechanism on some database
+      AUTH_ENABLE: 1
+      # putting this here because it should not be configurable in .env
+      AUTH_SERVICE: neo4j
 
-    AUTH_REGISTER_FAILED_LOGIN: ${AUTH_REGISTER_FAILED_LOGIN}
-    AUTH_FORCE_FIRST_PASSWORD_CHANGE: ${AUTH_FORCE_FIRST_PASSWORD_CHANGE}
-    AUTH_VERIFY_PASSWORD_STRENGTH: ${AUTH_VERIFY_PASSWORD_STRENGTH}
-    AUTH_MAX_PASSWORD_VALIDITY: ${AUTH_MAX_PASSWORD_VALIDITY}
-    AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER: ${AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER}
-    AUTH_MAX_LOGIN_ATTEMPTS: ${AUTH_MAX_LOGIN_ATTEMPTS}
-    AUTH_SECOND_FACTOR_AUTHENTICATION: ${AUTH_SECOND_FACTOR_AUTHENTICATION}
+      AUTH_REGISTER_FAILED_LOGIN: ${AUTH_REGISTER_FAILED_LOGIN}
+      AUTH_FORCE_FIRST_PASSWORD_CHANGE: ${AUTH_FORCE_FIRST_PASSWORD_CHANGE}
+      AUTH_VERIFY_PASSWORD_STRENGTH: ${AUTH_VERIFY_PASSWORD_STRENGTH}
+      AUTH_MAX_PASSWORD_VALIDITY: ${AUTH_MAX_PASSWORD_VALIDITY}
+      AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER: ${AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER}
+      AUTH_MAX_LOGIN_ATTEMPTS: ${AUTH_MAX_LOGIN_ATTEMPTS}
+      AUTH_SECOND_FACTOR_AUTHENTICATION: ${AUTH_SECOND_FACTOR_AUTHENTICATION}
 
-    # # neo connection
-    GRAPHDB_ENABLE: 1
-    GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
-    GRAPHDB_HOST: ${GRAPHDB_HOST}
-    GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
-    GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+      # # neo connection
+      GRAPHDB_ENABLE: 1
+      GRAPHDB_EXTERNAL: ${GRAPHDB_EXTERNAL}
+      GRAPHDB_HOST: ${GRAPHDB_HOST}
+      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
 
-  ports:
-    - 8081:5000
+    ports:
+      - 8081:5000
 
-  links:
-    - gdb:gdb
+    networks:
+      graph_net:
+    depends_on:
+      - gdb
 
-frontend:
-  ports:
-    - 80:5000
-  environment:
-    BACKEND_PORT: 8081
+  frontend:
+    ports:
+      - 80:5000
+    environment:
+      BACKEND_PORT: 8081
 
-gdb:
-  ports:
-  - 9090:7474
+  gdb:
+    ports:
+    - 9090:7474
+    networks:
+      graph_net:
+        aliases:
+          - ${GRAPHDB_HOST}
 
-swagger:
-  ports:
-    - 7777:80
+  swagger:
+    ports:
+      - 7777:80
+
+networks:
+  graph_net:
