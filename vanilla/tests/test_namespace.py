@@ -161,14 +161,19 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-        # Download an entity
+         # Obtain EUDAT entity metadata (not present)
         endpoint = (self._api_uri + self._main_endpoint +
                     self._irods_path + '/' + self._test_filename)
-        r = self.app.get(endpoint, data=dict(download='True'),
-                         headers=self.__class__.auth_header)
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        self.assertEqual(r.data, b'this is a test')
+        data = json.loads(r.get_data(as_text=True))
 
+        self.assertEqual(
+            data['Response']['data'][0][self._test_filename]['metadata']['PID'],
+             None)
+        self.assertEqual(
+            data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
+             None)
         
         # Add EUDAT metadata
         params = json.dumps(dict({'PID': pid, 'EUDAT/CHECKSUM': checksum}))
@@ -191,6 +196,14 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(
             data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
              checksum)
+
+        # Download an entity
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + self._test_filename)
+        r = self.app.get(endpoint, data=dict(download='True'),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        self.assertEqual(r.data, b'this is a test')
         
     def test_04_PATCH_rename(self):
         """ Test directory creation: POST """
