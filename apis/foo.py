@@ -5,35 +5,38 @@ An endpoint example
 """
 
 from rapydo.rest.definition import EndpointResource
-from rapydo.services.detect import SQL_AVAILABLE, GRAPHDB_AVAILABLE
+# from rapydo.services.detect import SQL_AVAILABLE, GRAPHDB_AVAILABLE
+from rapydo.services.detect import detector
 
 from rapydo.utils.logs import get_logger
 
-logger = get_logger(__name__)
+log = get_logger(__name__)
 
 
 #####################################
 class JustATest(EndpointResource):
 
     def get(self):
-        logger.warning("Received a test HTTP request")
+        log.warning("Received a test HTTP request")
         return self.force_response('Hello world!')
 
 
 #####################################
-if SQL_AVAILABLE:
+# if SQL_AVAILABLE:
+if detector.check_availability('sqlalchemy'):
 
     class SqlEndPoint(EndpointResource):
 
         def get(self):
             sql = self.global_get_service('sql')
             print(sql)
-            logger.warning("a call")
+            log.warning("a call")
             return self.force_response('Hello world!')
 
 
 #####################################
-if GRAPHDB_AVAILABLE:
+# if GRAPHDB_AVAILABLE:
+if detector.check_availability('neo4j'):
 
     class GraphEndPoint(EndpointResource):
 
@@ -42,5 +45,5 @@ if GRAPHDB_AVAILABLE:
             user = self.get_current_user()
             graph = self.global_get_service('neo4j')
             print(graph)
-            logger.warning("a call")
+            log.warning("a call")
             return self.force_response('Hello world, %s!' % user)
