@@ -207,7 +207,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.force_response(content, code=status)
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+# TO FIX
+    # @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, irods_location=None):
         """
         Handle file upload. Test on docker client shell with:

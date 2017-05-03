@@ -28,17 +28,18 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     _irods_home = '/tempZone/home/guest'
     _irods_path = '/tempZone/home/guest/test'
     _invalid_irods_path = '/tempZone/home/x/guest/test'
-    _test_filename = 'test.pdf'
+    _test_pdf_filename = 'test.pdf'
+    _test_filename = 'test.txt'
 
     def tearDown(self):
 
         log.debug('### Cleaning custom data ###\n')
 
-        # Clean all test data
-        endpoint = self._api_uri + self._main_endpoint
-        r = self.app.delete(endpoint, data=dict(debugclean='True'),
-                            headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # # Clean all test data
+        # endpoint = self._api_uri + self._main_endpoint
+        # r = self.app.delete(endpoint, data=dict(debugclean='True'),
+        #                     headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         super().tearDown()
 
@@ -124,78 +125,46 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_03_GET_entities(self):
         """ Test the entity listingend retrieval: GET """
 
-        pid = '123/123456789'
-        checksum = 'md5md5md5md5'
+        # pid = '123/123456789'
+        # checksum = 'md5md5md5md5'
+        STRANGE_BSTRING = "£$%&($)/(*é:_§°:#".encode()
+        # STRANGE_BSTRING = "£$%&($)/(*é:_§°:#".encode('utf-8')
+        # STRANGE_BSTRING = b"£$%&($)/(*é:_§°:#"
+        # STRANGE_BSTRING = b"normal"
 
-        log.info('*** Testing GET')
-        # GET non existing entity
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename + 'NOTEXISTS')
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        # log.info('*** Testing GET')
+        # # GET non existing entity
+        # endpoint = (self._api_uri + self._main_endpoint +
+        #             self._irods_path + '/' + self._test_filename + 'NOTEXISTS')
+        # r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
-        ###################################################
-        # I need to upload some data..
-        # Create a directory
-        endpoint = self._api_uri + self._main_endpoint
-        r = self.app.post(endpoint, data=dict(path=self._irods_path),
-                          headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # ###################################################
+        # # I need to upload some data..
+        # # Create a directory
+        # endpoint = self._api_uri + self._main_endpoint
+        # r = self.app.post(endpoint, data=dict(path=self._irods_path),
+        #                   headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Upload entity in test folder
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
         r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(b"this is a test"),
+                         file=(io.BytesIO(STRANGE_BSTRING),
                                self._test_filename)),
                          headers=self.__class__.auth_header)
-        ###################################################
+        # ###################################################
 
-        # Obtain entity metadata
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename)
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # # Get list of entities in a directory
+        # endpoint = self._api_uri + self._main_endpoint + self._irods_path
+        # r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-        # Get list of entities in a directory
-        endpoint = self._api_uri + self._main_endpoint + self._irods_path
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-
-         # Obtain EUDAT entity metadata (not present)
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename)
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        data = json.loads(r.get_data(as_text=True))
-
-        self.assertEqual(
-            data['Response']['data'][0][self._test_filename]['metadata']['PID'],
-             None)
-        self.assertEqual(
-            data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
-             None)
-        
-        # Add EUDAT metadata
-        params = json.dumps(dict({'PID': pid, 'EUDAT/CHECKSUM': checksum}))
-        endpoint = (self._api_uri + self._metadata_endpoint + self._irods_path +
-                 '/' + self._test_filename)
-        r = self.app.patch(endpoint, data=params, 
-                           headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC) 
-
-        # Obtain EUDAT entity metadata
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename)
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        data = json.loads(r.get_data(as_text=True))
-
-        self.assertEqual(
-            data['Response']['data'][0][self._test_filename]['metadata']['PID'],
-             pid)
-        self.assertEqual(
-            data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
-             checksum)
+        # # Obtain entity metadata
+        # endpoint = (self._api_uri + self._main_endpoint +
+        #             self._irods_path + '/' + self._test_filename)
+        # r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Download an entity
         endpoint = (self._api_uri + self._main_endpoint +
@@ -203,8 +172,46 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         r = self.app.get(endpoint, data=dict(download='True'),
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        self.assertEqual(r.data, b'this is a test')
-        
+        self.assertEqual(r.data, STRANGE_BSTRING)
+
+        print("\n\n\nUHM")
+
+        # # Obtain EUDAT entity metadata (not present)
+        # endpoint = (self._api_uri + self._main_endpoint +
+        #             self._irods_path + '/' + self._test_filename)
+        # r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # data = json.loads(r.get_data(as_text=True))
+
+        # self.assertEqual(
+        #     data['Response']['data'][0][self._test_filename]['metadata']['PID'],
+        #      None)
+        # self.assertEqual(
+        #     data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
+        #      None)
+
+        # # Add EUDAT metadata
+        # params = json.dumps(dict({'PID': pid, 'EUDAT/CHECKSUM': checksum}))
+        # endpoint = (self._api_uri + self._metadata_endpoint + self._irods_path +
+        #          '/' + self._test_filename)
+        # r = self.app.patch(endpoint, data=params,
+        #                    headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        # # Obtain EUDAT entity metadata
+        # endpoint = (self._api_uri + self._main_endpoint +
+        #             self._irods_path + '/' + self._test_filename)
+        # r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # data = json.loads(r.get_data(as_text=True))
+
+        # self.assertEqual(
+        #     data['Response']['data'][0][self._test_filename]['metadata']['PID'],
+        #      pid)
+        # self.assertEqual(
+        #     data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
+        #      checksum)
+
     def test_04_PATCH_rename(self):
         """ Test directory creation: POST """
 
