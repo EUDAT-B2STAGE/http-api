@@ -23,6 +23,7 @@ log = get_logger(__name__)
 class TestDigitalObjects(RestTestsAuthenticatedBase):
 
     _main_endpoint = '/namespace'
+    _metadata_endpoint = '/metadata'
     _irods_test_name = 'test'
     _irods_home = '/tempZone/home/guest'
     _irods_path = '/tempZone/home/guest/test'
@@ -123,6 +124,9 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_03_GET_entities(self):
         """ Test the entity listingend retrieval: GET """
 
+        pid = '123/123456789'
+        checksum = 'md5md5md5md5'
+
         log.info('*** Testing GET')
         # GET non existing entity
         endpoint = (self._api_uri + self._main_endpoint +
@@ -131,7 +135,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
         ###################################################
-        # I need to upload some data to test the DELETE..
+        # I need to upload some data..
         # Create a directory
         endpoint = self._api_uri + self._main_endpoint
         r = self.app.post(endpoint, data=dict(path=self._irods_path),
@@ -165,6 +169,29 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         self.assertEqual(r.data, b'this is a test')
 
+        
+        # Add EUDAT metadata
+        params = json.dumps(dict({'PID': pid, 'EUDAT/CHECKSUM': checksum}))
+        endpoint = (self._api_uri + self._metadata_endpoint + self._irods_path +
+                 '/' + self._test_filename)
+        r = self.app.patch(endpoint, data=params, 
+                           headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC) 
+
+        # Obtain EUDAT entity metadata
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + self._test_filename)
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = json.loads(r.get_data(as_text=True))
+
+        self.assertEqual(
+            data['Response']['data'][0][self._test_filename]['metadata']['PID'],
+             pid)
+        self.assertEqual(
+            data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
+             checksum)
+        
     def test_04_PATCH_rename(self):
         """ Test directory creation: POST """
 
