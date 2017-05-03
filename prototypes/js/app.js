@@ -4,7 +4,7 @@ angular.module('myapp', [
 ]).controller('MyController',
   function($scope, $http) {
 
-    var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZTM4NDhlODMtZmMyMi00MTA3LWI4MDctMzQwM2MyNmZhMWFiIiwiaHB3ZCI6bnVsbCwiaWF0IjoxNDkzNzg0NDE5LCJuYmYiOjE0OTM3ODQ0MTksImV4cCI6MTQ5NjM3NjQxOSwianRpIjoiMmI2MTYxMWItNmQ1Ni00Y2IzLWE4NjItZTJhOTE1N2U5ZmFkIn0.yfSnAOehr8G90qqCQNrDcLmQGZuMReD87gwCl6u60C8';
+    var token = '';
     var request = {
         method: 'GET', url: 'http://localhost:8080/auth/profile',
         headers: {
