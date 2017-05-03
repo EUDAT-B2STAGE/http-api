@@ -12,6 +12,7 @@ from rapydo.utils.logs import get_logger
 log = get_logger(__name__)
 
 IRODS_VARS = detector.services_classes.get('irods').variables
+IRODS_EXTERNAL = IRODS_VARS.get('external', False)
 
 CURRENT_B2SAFE_SERVER = IRODS_VARS.get('host')
 # CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
