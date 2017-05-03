@@ -9,8 +9,8 @@ services:
       # command: init
       volumes:
         - ..:/code/${COMPOSE_PROJECT_NAME}
-        - ../containers/wsgi:/tmp/uwsgi
-        - ../containers/nginx_internal:/etc/nginx/conf.d
+        - ../confs/wsgi:/tmp/uwsgi
+        - ../confs/nginx_backend:/etc/nginx/conf.d
       environment:
         - APP_MODE=production
         - DEBUG_LEVEL=INFO
