@@ -47,7 +47,8 @@ services:
 
   gdb:
     ports:
-    - 9090:7474
+      - 9090:7474
+      - 7687:7687
     networks:
       graph_net:
         aliases:

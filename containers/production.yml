@@ -68,12 +68,13 @@ services:
         - frontend
 
     gdb:
-        # ports:
-        #     - 9090:7474
-        networks:
-            graph_net:
-                aliases:
-                    - ${GRAPHDB_HOST}
+      # ports:
+      #   - 9090:7474
+      #   - 7687:7687
+      networks:
+        graph_net:
+          aliases:
+            - ${GRAPHDB_HOST}
 
 volumes:
   letsencrypt_certs:
