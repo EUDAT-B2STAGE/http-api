@@ -13,6 +13,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 from flask import request, current_app
 from flask_ext.flask_irods.client import IrodsException
+from eudat.apis.common import CURRENT_HTTPAPI_SERVER, PRODUCTION
 from eudat.apis.common.b2stage import EudatEndpoint
 
 from rapydo.services.uploader import Uploader
@@ -63,35 +64,37 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                 message='B2HANDLE empty value returned',
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
-        
         # If downlaod is True, trigger file download
         parameters = self.get_input()
         if (parameters.download and 'true' in parameters.download):
 
-            from rapydo.confs import get_api_url
-            api_url = get_api_url()
+            api_url = CURRENT_HTTPAPI_SERVER
 
-            #For testing pourpose, then to be removed
-            value = 'apiserver.dockerized.io:5000/api/namespace/tempZone/home/guest/gettoken'
-            #value = 'apiserver.dockerized.io:5000/api/namespace/tempZone/home/guest/invalid'
+            # TODO: check download in debugging mode
+            # if not PRODUCTION:
+            #     # For testing pourpose, then to be removed
+            #     value = CURRENT_HTTPAPI_SERVER + \
+            #         '/api/namespace/tempZone/home/guest/gettoken'
 
             # If local HTTP-API perform a direct download
             # TO FIX: the following code can be improved
             route = api_url + 'api/namespace/'
-            route = route.replace('http://' , '')
-            
-            if (value.startswith(route)): 
+            # route = route.replace('http://', '')
+
+            if (value.startswith(route)):
                 value = value.replace(route, '/')
                 r = self.init_endpoint()
                 if r.errors is not None:
                     return self.send_errors(errors=r.errors)
-                icom = r.icommands
                 value = self.download_object(r, value)
             else:
                 # Perform a request to an external service?
-                return self.send_errors(
-                message='PID was correctly resolved in \'' + value + 
-                '\', but can not be downloaded by this HTTP-API server \'' +
-                route + '\'', code=hcodes.HTTP_BAD_UNAUTHORIZED)
+                return self.send_warnings(
+                    {'url': value},
+                    errors=[
+                        "Data-object can't be downloaded by current " +
+                        "HTTP-API server '%s'" % api_url
+                    ]
+                )
 
-        return value
+        return {'url': value}

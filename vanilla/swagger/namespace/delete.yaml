@@ -18,11 +18,11 @@ all:
       description: Clean completed
 single:
   summary: Delete an entity
-  parameters:
-    - name: file delete
-      in: body
-      schema:
-        $ref: "#/definitions/FileDelete"
+  # parameters:
+  #   - name: file delete resource
+  #     in: body
+  #     schema:
+  #       $ref: "#/definitions/FileDelete"
   responses:
     '200':
       description: File name updated

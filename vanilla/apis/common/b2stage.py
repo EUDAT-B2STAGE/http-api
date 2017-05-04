@@ -62,15 +62,14 @@ class EudatEndpoint(EndpointResource):
             icom.list()
             if self._only_check_proxy:
                 return InitObj(is_proxy=proxy, valid_credentials=True)
-        except Exception as e:
-
+        except BaseException as e:
             # Init the error and use it in above cases
             error = str(e)
 
             if self._only_check_proxy:
                 if not IRODS_VARS.get('external'):
-                    # TO FIX
-                    # You need admin icommands to fix
+                    # TODO: enable automatic regeneration
+                    log.critical("TO BE COMPLETED")
                     icom = self.get_service_instance('irods', be_admin=True)
                 return InitObj(icommands=icom, is_proxy=proxy,
                                valid_credentials=False, extuser_object=extuser)
@@ -99,8 +98,7 @@ class EudatEndpoint(EndpointResource):
                         % ("POST", "/auth/proxy")
                     return InitObj(errors='Expired proxy credential: ' + error)
 
-            # return InitObj(errors={'Invalid proxy credential': error})
-            return InitObj(errors=error)
+            return InitObj(errors=[error])
 
         # SQLALCHEMY connection
         sql = self.get_service_instance('sqlalchemy')

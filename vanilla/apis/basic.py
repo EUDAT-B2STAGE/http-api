@@ -12,8 +12,6 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 """
 
 import os
-import irods
-import time
 from flask import request, current_app
 
 from eudat.apis.common import PRODUCTION
@@ -21,7 +19,6 @@ from eudat.apis.common.b2stage import EudatEndpoint
 
 from rapydo.services.uploader import Uploader
 from flask_ext.flask_irods.client import IrodsException
-# from ..services.irods.translations import Irods2Graph
 from rapydo.utils import htmlcodes as hcodes
 from rapydo import decorators as decorate
 from rapydo.utils.logs import get_logger
@@ -207,8 +204,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.force_response(content, code=status)
 
-# TO FIX
-    # @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, irods_location=None):
         """
         Handle file upload. Test on docker client shell with:
@@ -410,8 +406,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             # Print file details/sys metadata if it's a specific file
             try:
-                # data = icom.meta_sys_list(irods_location)
-                data = icom.get_metadata(path=irods_location)
+                icom.get_metadata(path=irods_location)
             except IrodsException:
                 # if a path that does not exist
                 return self.send_errors(
