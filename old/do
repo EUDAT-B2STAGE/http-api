@@ -183,6 +183,28 @@ elif [ "$1" == "logs" ]; then
 
     $compose_com $files logs -f
 
+# SSL certificates in production with letsencrypt
+elif [ "$1" == "letsencrypt" ]; then
+    echo "Creating new letsencrypt certificates"
+    $compose_com $files exec $proxycontainer /bin/bash -c "updatecertificates"
+    exit 0
+
+elif [ "$1" == "check_certificate" ]; then
+    $compose_com $files exec $proxycontainer /bin/bash -c "openssl x509 -in \$CERTCHAIN  -noout -subject"
+    exit 0
+
+elif [ "$1" == "buildall" ]; then
+    $compose_com $files build --pull
+    exit 0
+
+elif [ "$1" == "build4test" ]; then
+    $compose_com $files build --pull sql icat rest
+    exit 0
+
+elif [ "$1" == "buildone" ]; then
+    $compose_com $files build $3
+    exit 0
+ 
 elif [ "$1" == "status" ]; then
     echo -e "ACTION: Status check\n"
 
