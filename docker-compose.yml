@@ -180,6 +180,9 @@ services:
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
       - ./certs:/usr/local/share/ca-certificates
+      # TEMPORARY!!
+      # mount irods code to develop patches
+      - ./rpc:/usr/local/lib/python3.6/dist-packages/irods
 
   #############
   # Nginx proxy

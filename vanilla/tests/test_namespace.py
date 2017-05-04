@@ -127,10 +127,11 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         # pid = '123/123456789'
         # checksum = 'md5md5md5md5'
-        STRANGE_BSTRING = "£$%&($)/(*é:_§°:#".encode()
+        # STRANGE_BSTRING = "£$%&($)/(*é:_§°:#".encode()
         # STRANGE_BSTRING = "£$%&($)/(*é:_§°:#".encode('utf-8')
         # STRANGE_BSTRING = b"£$%&($)/(*é:_§°:#"
         # STRANGE_BSTRING = b"normal"
+        STRANGE_BSTRING = "normal".encode()
 
         # log.info('*** Testing GET')
         # # GET non existing entity

@@ -1,6 +1,7 @@
 
 # Skip submodules
 backend
+rpc
 
 # Skip self-signed certificates
 certs/nginx-selfsigned*
