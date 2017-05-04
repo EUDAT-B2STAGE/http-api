@@ -157,7 +157,7 @@ class B2accessUtilities(EudatEndpoint):
         # Does this user exist?
         irods_user = icom.get_user_from_dn(user.certificate_dn)
         user_exists = irods_user is not None
-        # print("TEST IRODS USER", irods_user, user, unityid)
+        print("TEST IRODS USER", irods_user, user, unityid)
 
         if not user_exists:
             if IRODS_EXTERNAL:
@@ -169,8 +169,8 @@ class B2accessUtilities(EudatEndpoint):
                 ###########################
                 # Using dockerized iRODS/B2SAFE
                 irods_user = unityid
-            # DEMO FIX
-                return irods_user
+            # # DEMO FIX
+            #     return irods_user
 
                 iadmn = self.get_service_instance(
                     service_name='irods', be_admin=True)
@@ -189,7 +189,7 @@ class B2accessUtilities(EudatEndpoint):
                         dn=user.certificate_dn,
                         zone=irods_user_data['zone']
                     )
-                    print("modify", iadmn.list_user_attributes(irods_user))
+                print("modify", iadmn.list_user_attributes(irods_user))
 
                 # TO FIX: WHAT WAS THIS?
                 # current_dn = tmp.splitlines()[0].strip().split(" ", 1)[1]
