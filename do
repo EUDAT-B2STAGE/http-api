@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# TO FIX: when completing refactor
-#core_branch="master"
-core_branch="pids"
+core_branch="master"
 #core_branch_backend="last_refactor"
 core_branch_backend="master"
 

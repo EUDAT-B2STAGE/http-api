@@ -6,17 +6,15 @@ B2SAFE HTTP REST API endpoints.
 
 import json
 from datetime import datetime as dt
-from flask import url_for, session, current_app
+from flask import url_for, session
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
-
 from eudat.apis.common.b2stage import EudatEndpoint
-from eudat.apis.common import PRODUCTION
-
-from rapydo.confs import DEBUG as ENVVAR_DEBUG
+from eudat.apis.common import PRODUCTION, IRODS_EXTERNAL
 from rapydo.services.oauth2clients import decorate_http_request
-from rapydo.services.irods.client import IrodsException, Certificates
-from rapydo.services.detect import IRODS_EXTERNAL
+# from rapydo.services.irods.client import IrodsException, Certificates
+from flask_ext.flask_irods.client import IrodsException
+from rapydo.utils.certificates import Certificates
 from rapydo import decorators as decorate
 from rapydo.utils import htmlcodes as hcodes
 from rapydo.utils.logs import get_logger
@@ -57,10 +55,6 @@ class B2accessUtilities(EudatEndpoint):
         if resp is None:
             return (b2a_token, ('B2ACCESS denied', 'Uknown error'))
 
-        DEBUG_PRINT = current_app.config['DEBUG'] or ENVVAR_DEBUG
-        if DEBUG_PRINT:
-            log.pp(resp)  # DEBUG
-
         b2a_token = resp.get('access_token')
         if b2a_token is None:
             log.critical("No token received")
@@ -98,10 +92,7 @@ class B2accessUtilities(EudatEndpoint):
         if error:
             return None, None, errstring
 
-        DEBUG_PRINT = current_app.config['DEBUG'] or ENVVAR_DEBUG
-        if DEBUG_PRINT:
-            # Attributes you find: http://j.mp/b2access_profile_attributes
-            log.pp(current_user)  # DEBUG
+        # Attributes you find: http://j.mp/b2access_profile_attributes
 
         # Store b2access information inside the db
         intuser, extuser = \
@@ -150,8 +141,7 @@ class B2accessUtilities(EudatEndpoint):
         # Call the oauth2 object requesting a certificate
         if self._certs is None:
             self._certs = Certificates()
-        prod = PRODUCTION and (ENVVAR_DEBUG is None or not ENVVAR_DEBUG)
-        proxy_file = self._certs.make_proxy_from_ca(b2accessCA, prod=prod)
+        proxy_file = self._certs.proxy_from_ca(b2accessCA, prod=PRODUCTION)
 
         # Save the proxy filename into the database
         if proxy_file is not None:
@@ -161,49 +151,62 @@ class B2accessUtilities(EudatEndpoint):
 
         return proxy_file
 
-    def set_irods_username(self, icom, auth, extuser, unityid='eudat_guest'):
+    def set_irods_username(self, icom, auth, user, unityid='eudat_guest'):
         """ Find out what is the irods username and save it """
 
-        # irods_user = icom.get_translated_user(external.email)  # OLD
-        irods_user = icom.get_user_from_dn(extuser.certificate_dn)  # NEW
-
         # Does this user exist?
-        user_exists = irods_user is not None and icom.user_exists(irods_user)
+        irods_user = icom.get_user_from_dn(user.certificate_dn)
+        user_exists = irods_user is not None
+        print("TEST IRODS USER", irods_user, user, unityid)
 
-        # Production / Real B2SAFE and irods instance
-        if IRODS_EXTERNAL:
-            # log.error("No iRODS user related to your certificate")
-            if not user_exists:
+        if not user_exists:
+            if IRODS_EXTERNAL:
+                ###########################
+                # Production / Real B2SAFE and irods instance
+                log.error("No iRODS user related to your certificate")
                 return None
-        # In case we are using dockerized iRODS/B2SAFE
-        else:
-            # irods admin user handler
-            admin_icom = self.rpc
-            # admin_icom = self.global_get_service('irods', be_admin=True)
-
-            if user_exists:
-                # recover the old/current one
-                tmp = admin_icom.admin('lua', irods_user)
-                current_dn = tmp.splitlines()[0].strip().split(" ", 1)[1]
-                # remove the old one
-                admin_icom.admin('rua', irods_user, current_dn)
             else:
+                ###########################
+                # Using dockerized iRODS/B2SAFE
                 irods_user = unityid
+            # # DEMO FIX
+            #     return irods_user
 
-                # Add (as normal) user inside irods
-                admin_icom.create_user(irods_user, admin=False)
+                iadmn = self.get_service_instance(
+                    service_name='irods', be_admin=True)
 
-            # Add DN to user access possibility
-            admin_icom.admin('aua', irods_user, extuser.certificate_dn)
+                # User may exist without dn/certificate
+                if not iadmn.query_user_exists(irods_user):
+                    # Add (as normal) user inside irods
+                    iadmn.create_user(irods_user, admin=False)
 
-        # Update db to save the irods user related to this extuser account
-        auth.associate_object_to_attr(extuser, 'irodsuser', irods_user)
+                irods_user_data = iadmn.list_user_attributes(irods_user)
+                print("PAOLO", irods_user_data, user.certificate_dn)
+                if irods_user_data['dn'] is None:
+                    # Add DN to user access possibility
+                    iadmn.modify_user_dn(
+                        irods_user,
+                        dn=user.certificate_dn,
+                        zone=irods_user_data['zone']
+                    )
+                print("modify", iadmn.list_user_attributes(irods_user))
 
-        # Copy certificate in the dedicated path, and update db info
-        if self._certs is None:
-            self._certs = Certificates()
-        crt = self._certs.save_proxy_cert(extuser.proxyfile, irods_user)
-        auth.associate_object_to_attr(extuser, 'proxyfile', crt)
+                # TO FIX: WHAT WAS THIS?
+                # current_dn = tmp.splitlines()[0].strip().split(" ", 1)[1]
+                # # remove the old one
+                # iadmn.admin('rua', irods_user, current_dn)
+
+        print("TO FIX")
+
+        # # Update db to save the irods user related to this user account
+        # auth.associate_object_to_attr(user, 'irodsuser', irods_user)
+        pass
+
+        # # Copy certificate in the dedicated path, and update db info
+        # if self._certs is None:
+        #     self._certs = Certificates()
+        # crt = self._certs.save_proxy_cert(user.proxyfile, irods_user)
+        # auth.associate_object_to_attr(user, 'proxyfile', crt)
 
         return irods_user
 
@@ -246,7 +249,7 @@ class Authorize(B2accessUtilities):
     and to store the proxyfile.
     """
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    # @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self):
         """
         Get the data for upcoming operations.
@@ -276,13 +279,14 @@ class Authorize(B2accessUtilities):
 
         # iRODS related
         # NOTE: this irods client uses default admin to find the related user
-        icom = self.rpc
+        admin_icom = self.get_service_instance(
+            service_name='irods', be_admin=True)
         uid = self.username_from_unity(curuser.data.get('unity:persistent'))
-        irods_user = self.set_irods_username(icom, auth, extuser, uid)
+        irods_user = self.set_irods_username(admin_icom, auth, extuser, uid)
         if irods_user is None:
             return self.send_errors(
                 "Failed to set irods user from: %s/%s" % (uid, extuser))
-        user_home = icom.get_user_home(irods_user)
+        user_home = admin_icom.get_user_home(irods_user)
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
