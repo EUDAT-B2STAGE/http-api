@@ -22,7 +22,7 @@ log = get_logger(__name__)
 
 class TestDigitalObjects(RestTestsAuthenticatedBase):
 
-    _main_endpoint = '/namespace'
+    _main_endpoint = '/registered'
     _metadata_endpoint = '/metadata'
     _irods_test_name = 'test'
     _irods_home = '/tempZone/home/guest'

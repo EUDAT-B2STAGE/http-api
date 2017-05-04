@@ -9,5 +9,6 @@ mapping:
 ids:
   irods_location: the filesystem path to your digital entities/objects
 labels:
-  - eudat
-  - internal
+  - helpers
+  # - eudat
+  # - internal
