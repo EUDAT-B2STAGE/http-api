@@ -9,14 +9,11 @@ services:
       # command: init
       volumes:
         - ..:/code/${COMPOSE_PROJECT_NAME}
-        # - ../confs/wsgi:/tmp/uwsgi
-        # - ../confs/nginx_backend:/etc/nginx/conf.d
       environment:
         - APP_MODE=production
         - DEBUG_LEVEL=INFO
         - VANILLA_PACKAGE=${COMPOSE_PROJECT_NAME}
-        # - UWSGI_MASTER=/tmp/uwsgi/starter.ini
-        # - NGINX_ACTIVE=true
+        - NGINX_ACTIVE=true
 
         # base the user/role mechanism on some database
         - AUTH_ENABLE=1
