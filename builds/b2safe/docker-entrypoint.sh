@@ -55,10 +55,6 @@ if [ "$checkirods" == "" ]; then
         exit 1
     fi
 
-    # Cleanup
-    echo "Cleaning temporary files"
-    rm -rf /tmp/*
-
 else
     # NO: launch irods
     echo "Already installed. Launching..."

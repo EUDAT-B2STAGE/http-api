@@ -12,7 +12,6 @@ from urllib3.exceptions import HTTPError
 from eudat.apis.common.b2stage import EudatEndpoint
 from eudat.apis.common import PRODUCTION, IRODS_EXTERNAL
 from rapydo.services.oauth2clients import decorate_http_request
-# from rapydo.services.irods.client import IrodsException, Certificates
 from flask_ext.flask_irods.client import IrodsException
 from rapydo.utils.certificates import Certificates
 from rapydo import decorators as decorate
@@ -47,18 +46,18 @@ class B2accessUtilities(EudatEndpoint):
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
             log.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
-            return (b2a_token, ('Server misconfiguration', 'oauth2 failed'))
+            return (b2a_token, 'Server misconfiguration: oauth2 failed')
         except Exception as e:
             # raise e  # DEBUG
             log.critical("Failed to get authorized @B2access: %s" % str(e))
-            return (b2a_token, ('B2ACCESS denied', 'oauth2: %s' % e))
+            return (b2a_token, 'B2ACCESS denied. oauth2: %s' % e)
         if resp is None:
-            return (b2a_token, ('B2ACCESS denied', 'Uknown error'))
+            return (b2a_token, 'B2ACCESS denied: unknown error')
 
         b2a_token = resp.get('access_token')
         if b2a_token is None:
             log.critical("No token received")
-            return (b2a_token, ('B2ACCESS', 'Empty token'))
+            return (b2a_token, 'B2ACCESS: empty token')
         log.info("Received token: '%s'" % b2a_token)
         return (b2a_token, tuple())
 
@@ -157,7 +156,6 @@ class B2accessUtilities(EudatEndpoint):
         # Does this user exist?
         irods_user = icom.get_user_from_dn(user.certificate_dn)
         user_exists = irods_user is not None
-        print("TEST IRODS USER", irods_user, user, unityid)
 
         if not user_exists:
             if IRODS_EXTERNAL:
@@ -169,8 +167,6 @@ class B2accessUtilities(EudatEndpoint):
                 ###########################
                 # Using dockerized iRODS/B2SAFE
                 irods_user = unityid
-            # # DEMO FIX
-            #     return irods_user
 
                 iadmn = self.get_service_instance(
                     service_name='irods', be_admin=True)
@@ -181,32 +177,22 @@ class B2accessUtilities(EudatEndpoint):
                     iadmn.create_user(irods_user, admin=False)
 
                 irods_user_data = iadmn.list_user_attributes(irods_user)
-                print("PAOLO", irods_user_data, user.certificate_dn)
-                if irods_user_data['dn'] is None:
+                if irods_user_data.get('dn') is None:
                     # Add DN to user access possibility
                     iadmn.modify_user_dn(
                         irods_user,
                         dn=user.certificate_dn,
                         zone=irods_user_data['zone']
                     )
-                print("modify", iadmn.list_user_attributes(irods_user))
 
-                # TO FIX: WHAT WAS THIS?
-                # current_dn = tmp.splitlines()[0].strip().split(" ", 1)[1]
-                # # remove the old one
-                # iadmn.admin('rua', irods_user, current_dn)
+        # Update db to save the irods user related to this user account
+        auth.associate_object_to_attr(user, 'irodsuser', irods_user)
 
-        print("TO FIX")
-
-        # # Update db to save the irods user related to this user account
-        # auth.associate_object_to_attr(user, 'irodsuser', irods_user)
-        pass
-
-        # # Copy certificate in the dedicated path, and update db info
-        # if self._certs is None:
-        #     self._certs = Certificates()
-        # crt = self._certs.save_proxy_cert(user.proxyfile, irods_user)
-        # auth.associate_object_to_attr(user, 'proxyfile', crt)
+        # Copy certificate in the dedicated path, and update db info
+        if self._certs is None:
+            self._certs = Certificates()
+        crt = self._certs.save_proxy_cert(user.proxyfile, irods_user)
+        auth.associate_object_to_attr(user, 'proxyfile', crt)
 
         return irods_user
 
@@ -218,9 +204,9 @@ class OauthLogin(B2accessUtilities):
     to ask the current user for authorization/token.
     """
 
-    # @decorate.catch_error(
-    #     exception=RuntimeError,
-    #     exception_label='Server side B2ACCESS misconfiguration')
+    @decorate.catch_error(
+        exception=RuntimeError,
+        exception_label='Server side B2ACCESS misconfiguration')
     def get(self):
 
         auth = self.auth
@@ -249,7 +235,7 @@ class Authorize(B2accessUtilities):
     and to store the proxyfile.
     """
 
-    # @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self):
         """
         Get the data for upcoming operations.
@@ -261,9 +247,9 @@ class Authorize(B2accessUtilities):
         # Get b2access token
         auth = self.auth
         b2access = self.create_b2access_client(auth, decorate=True)
-        b2access_token, b2access_errors = self.request_b2access_token(b2access)
+        b2access_token, b2access_error = self.request_b2access_token(b2access)
         if b2access_token is None:
-            return self.send_errors(*b2access_errors)
+            return self.send_errors(message=b2access_error)
 
         # B2access user info
         curuser, intuser, extuser = \

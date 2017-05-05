@@ -68,7 +68,6 @@ services:
       - irodshome:/home/irods
       - irodsvar:/var/lib/irods
       - sharedcerts:/opt/certificates
-      # - eudatopt:/opt
       - ./builds/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
 
     networks:
@@ -180,9 +179,9 @@ services:
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
       - ./certs:/usr/local/share/ca-certificates
-      # TEMPORARY!!
+# TODO: comment this before the beta
       # mount irods code to develop patches
-      - ./rpc/irods:/usr/local/lib/python3.6/dist-packages/irods
+      - ./prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
   #############
   # Nginx proxy
@@ -203,6 +202,10 @@ services:
   client:
     build: ./builds/apiclient
     image: apiclient:rapydo
+    environment:
+      MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
     volumes:
       - ./backend:/code/core
       - ./vanilla:/code/custom

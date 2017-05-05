@@ -36,5 +36,4 @@ services:
     depends_on:
       - proxy
     volumes:
-      # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
       - sslcerts:/tmp/certs

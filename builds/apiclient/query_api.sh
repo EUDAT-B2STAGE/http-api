@@ -33,7 +33,6 @@ if [ "$?" != "0" ]; then
 fi
 
 ######################################
-IHOME="/tempZone/home/guest"
 
 #####################
 # ## HOW TO FORCE TESTING ON OUTSIDE SERVER
@@ -75,7 +74,6 @@ if [ "$AUTH" == '' ]; then
 
     echo "Generating authentication token"
     . /code/gettoken 2>&1 1> /dev/null
-
     echo "Token available as \$TOKEN"
     echo ""
 fi
@@ -86,8 +84,8 @@ if [ "$SERVER" == '' ]; then
     echo ""
     return
 fi
-
-ENDPOINT="$SERVER/api/namespace"
+ENDPOINT="$SERVER/api/$MAIN_ENDPOINT"
+IHOME="/$IRODS_ZONE/home/$IRODS_GUEST_USER"
 
 ######################################
 function api_call()
