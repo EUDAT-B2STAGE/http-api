@@ -6,8 +6,8 @@ class: BasicEndpoint
 file: basic
 
 mapping:
-  all: "/namespace"
-  single: "/namespace/<path:irods_location>"
+  all: "/registered"
+  single: "/registered/<path:irods_location>"
 # schema:
 #   # expose: False
 #   expose: True
@@ -16,4 +16,4 @@ ids:
   irods_location: the filesystem path to your digital entities/objects
 labels:
   - eudat
-  - namespace
+  - registered

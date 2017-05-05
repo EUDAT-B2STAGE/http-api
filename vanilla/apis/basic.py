@@ -12,8 +12,6 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 """
 
 import os
-import irods
-import time
 from flask import request, current_app
 
 from eudat.apis.common import PRODUCTION
@@ -21,7 +19,6 @@ from eudat.apis.common.b2stage import EudatEndpoint
 
 from rapydo.services.uploader import Uploader
 from flask_ext.flask_irods.client import IrodsException
-# from ..services.irods.translations import Irods2Graph
 from rapydo.utils import htmlcodes as hcodes
 from rapydo import decorators as decorate
 from rapydo.utils.logs import get_logger
@@ -72,27 +69,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 return self.send_errors(
                     'Collection: recursive download is not allowed')
 
-            if filename is None:
-                filename = self.filename_from_path(path)
-            abs_file = self.absolute_upload_file(filename, r.username)
-
-            # TODO: decide if we want to use a cache when streaming
-            # what about nginx caching?
-
-            # Make sure you remove any cached version to get a fresh obj
-            try:
-                os.remove(abs_file)
-            except BaseException:
-                pass
-            # Execute icommand (transfer data to cache)
-            icom.open(path, abs_file)
-            # Download the file from local fs
-            filecontent = super().download(
-                filename, subfolder=r.username, get=True)
-            # Remove local file
-            os.remove(abs_file)
-            # Stream file content
-            return filecontent
+            return self.download_object(r, path)
 
         ###################
         # DATA LISTING
@@ -140,23 +117,21 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         response = []
         for filename, metadata in data.items():
 
+            if metadata.get('PID') is not None:
+                metadata['PID'] = out.get("PID")
+            if metadata.get('EUDAT/CHECKSUM') is not None:
+                metadata['EUDAT/CHECKSUM'] = out.get("EUDAT/CHECKSUM")
+
             metadata.pop('path')
             content = {
                 'metadata': metadata,
                 metadata['object_type']: filename,
-                # metadata['PID']: out.get("PID"),
-                # metadata['checksum']: out.get("checksum"),
                 'path': collection,
                 'location': self.b2safe_location(collection),
                 'link': self.httpapi_location(
                     icom.get_absolute_path(filename, root=collection),
                     remove_suffix=irods_location)
             }
-
-            if metadata.get('PID') is not None:
-                metadata['PID']: out.get("PID")
-            if metadata.get('checksum') is not None:
-                metadata['checksum']: out.get("checksum")
 
             response.append({filename: content})
 
@@ -431,8 +406,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             # Print file details/sys metadata if it's a specific file
             try:
-                # data = icom.meta_sys_list(irods_location)
-                data = icom.get_metadata(path=irods_location)
+                icom.get_metadata(path=irods_location)
             except IrodsException:
                 # if a path that does not exist
                 return self.send_errors(

@@ -6,8 +6,10 @@ project:
 
 tags:
   eudat: all endpoints associated to EUDAT services
-  namespace: upload, list and download objects
   b2access: request and refresh authorization from the B2ACCESS service
+  registered: upload, download, list and delete objects
+  pids: resolve and download data from EUDAT Persistente IDentifier
+  # internal: for internal testing purpose only
 
 # TO FIX: define here a variable
 # that tells the server what the domain will be

@@ -2,7 +2,7 @@
 # The name of the REST class
 class: PIDEndpoint
 # The python file where your REST class is located
-# (inside the 'restapi/confs/custom' dir)
+# (inside the 'vanilla/apis/' dir)
 file: extended
 
 mapping:

@@ -1,9 +1,8 @@
 #!/bin/bash
 
 core_branch="master"
-#core_branch="letsencrypt"
-core_branch_backend="master"
 #core_branch_backend="last_refactor"
+core_branch_backend="master"
 
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
@@ -45,6 +44,7 @@ fi
 #####################
 # Confs
 subdir="backend"
+rpcdir="rpc"
 submodule_tracking="submodules.current.commit"
 irodscontainer="icat"
 restcontainer="rest"
@@ -118,6 +118,13 @@ else
     echo "Check latest commit"
     git log -n 1
     cd ..
+fi
+
+if [ "$(ls -A $rpcdir)" ]; then
+    echo "Rpc already exists" > /dev/null
+else
+    echo "Inizialitazion rpc"
+    git clone https://github.com/pdonorio/python-irodsclient.git $rpcdir
 fi
 
 # Update the remote github repos

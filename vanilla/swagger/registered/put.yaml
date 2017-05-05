@@ -16,16 +16,16 @@ single:
       type: file
       # custom:
       #   type: dict
-    - name: resource
-      in: query
-      type: string
-      description: iRODS resource
+    # - name: resource
+    #   in: query
+    #   type: string
+    #   description: iRODS resource
     - name: force
       in: query
       type: boolean
       # default: false
       description: force action even if getting warnings
-      name: pid
+    - name: pid
       in: query
       type: boolean
       description: Returns PID in the JSON response

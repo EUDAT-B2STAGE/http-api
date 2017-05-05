@@ -22,12 +22,14 @@ log = get_logger(__name__)
 
 class TestDigitalObjects(RestTestsAuthenticatedBase):
 
-    _main_endpoint = '/namespace'
+    _main_endpoint = '/registered'
+    _metadata_endpoint = '/metadata'
     _irods_test_name = 'test'
     _irods_home = '/tempZone/home/guest'
     _irods_path = '/tempZone/home/guest/test'
     _invalid_irods_path = '/tempZone/home/x/guest/test'
-    _test_filename = 'test.pdf'
+    _test_pdf_filename = 'test.pdf'
+    _test_filename = 'test.txt'
 
     def tearDown(self):
 
@@ -45,6 +47,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         """ Test directory creation: POST """
 
         log.info('*** Testing POST')
+
         # Create a directory
         endpoint = self._api_uri + self._main_endpoint
         r = self.app.post(endpoint, data=dict(path=self._irods_path),
@@ -123,6 +126,11 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_03_GET_entities(self):
         """ Test the entity listingend retrieval: GET """
 
+        pid = '123/123456789'
+        checksum = 'md5md5md5md5'
+        # STRANGE_BSTRING = b"normal"
+        STRANGE_BSTRING = "£$%&($)/(*é:_§°:#".encode()
+
         log.info('*** Testing GET')
         # GET non existing entity
         endpoint = (self._api_uri + self._main_endpoint +
@@ -131,7 +139,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
         ###################################################
-        # I need to upload some data to test the DELETE..
+        # I need to upload some data..
         # Create a directory
         endpoint = self._api_uri + self._main_endpoint
         r = self.app.post(endpoint, data=dict(path=self._irods_path),
@@ -141,19 +149,19 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Upload entity in test folder
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
         r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(b"this is a test"),
+                         file=(io.BytesIO(STRANGE_BSTRING),
                                self._test_filename)),
                          headers=self.__class__.auth_header)
-        ###################################################
+        # ###################################################
+
+        # Get list of entities in a directory
+        endpoint = self._api_uri + self._main_endpoint + self._irods_path
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Obtain entity metadata
         endpoint = (self._api_uri + self._main_endpoint +
                     self._irods_path + '/' + self._test_filename)
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-
-        # Get list of entities in a directory
-        endpoint = self._api_uri + self._main_endpoint + self._irods_path
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
@@ -163,7 +171,43 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         r = self.app.get(endpoint, data=dict(download='True'),
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        self.assertEqual(r.data, b'this is a test')
+        self.assertEqual(r.data, STRANGE_BSTRING)
+
+        # Obtain EUDAT entity metadata (not present)
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + self._test_filename)
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = json.loads(r.get_data(as_text=True))
+
+        self.assertEqual(
+            data['Response']['data'][0][self._test_filename]['metadata']['PID'],
+             None)
+        self.assertEqual(
+            data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
+             None)
+
+        # Add EUDAT metadata
+        params = json.dumps(dict({'PID': pid, 'EUDAT/CHECKSUM': checksum}))
+        endpoint = (self._api_uri + self._metadata_endpoint + self._irods_path +
+                 '/' + self._test_filename)
+        r = self.app.patch(endpoint, data=params,
+                           headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        # Obtain EUDAT entity metadata
+        endpoint = (self._api_uri + self._main_endpoint +
+                    self._irods_path + '/' + self._test_filename)
+        r = self.app.get(endpoint, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = json.loads(r.get_data(as_text=True))
+
+        self.assertEqual(
+            data['Response']['data'][0][self._test_filename]['metadata']['PID'],
+             pid)
+        self.assertEqual(
+            data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
+             checksum)
 
     def test_04_PATCH_rename(self):
         """ Test directory creation: POST """

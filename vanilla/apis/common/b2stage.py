@@ -62,15 +62,14 @@ class EudatEndpoint(EndpointResource):
             icom.list()
             if self._only_check_proxy:
                 return InitObj(is_proxy=proxy, valid_credentials=True)
-        except Exception as e:
-
+        except BaseException as e:
             # Init the error and use it in above cases
             error = str(e)
 
             if self._only_check_proxy:
                 if not IRODS_VARS.get('external'):
-                    # TO FIX
-                    # You need admin icommands to fix
+                    # TODO: enable automatic regeneration
+                    log.critical("TO BE COMPLETED")
                     icom = self.get_service_instance('irods', be_admin=True)
                 return InitObj(icommands=icom, is_proxy=proxy,
                                valid_credentials=False, extuser_object=extuser)
@@ -99,8 +98,7 @@ class EudatEndpoint(EndpointResource):
                         % ("POST", "/auth/proxy")
                     return InitObj(errors='Expired proxy credential: ' + error)
 
-            # return InitObj(errors={'Invalid proxy credential': error})
-            return InitObj(errors=error)
+            return InitObj(errors=[error])
 
         # SQLALCHEMY connection
         sql = self.get_service_instance('sqlalchemy')
@@ -262,3 +260,35 @@ class EudatEndpoint(EndpointResource):
             "Parameters [file{%s}, path{%s}, res{%s}, force{%s}]"
             % (filename, path, resource, force))
         return path, resource, filename, force
+
+    def download_object(self, r, path):
+        icom = r.icommands
+        username = r.username
+        path, resource, filename, force = \
+                    self.get_file_parameters(icom, path=path)
+        is_collection = icom.is_collection(path)
+        if is_collection:
+            return self.send_errors(
+                'Collection: recursive download is not allowed')
+
+        if filename is None:
+                filename=self.filename_from_path(path)
+        abs_file=self.absolute_upload_file(filename, username)
+
+        # TODO: decide if we want to use a cache when streaming
+        # what about nginx caching?
+
+        # Make sure you remove any cached version to get a fresh obj
+        try:
+            os.remove(abs_file)
+        except:
+            pass
+        # Execute icommand (transfer data to cache)
+        icom.open(path, abs_file)
+        # Download the file from local fs
+        filecontent=self.download(
+            filename, subfolder=username, get=True)
+        # Remove local file
+        os.remove(abs_file)
+        # Stream file content
+        return filecontent

@@ -22,3 +22,9 @@ FileDelete:
 #     resource:
 #       type: string
 #       # description: yep
+
+# ForceObject:
+#   properties:
+#     force:
+#       type: boolean
+#       default: false

@@ -11,6 +11,7 @@ Flask-OAuthlib
 Flask-RESTful
 Flask-SQLAlchemy
 flask_injector==v0.9.0
+gssapi
 injector==0.12.0
 flask-shell-ipython
 httpie
@@ -27,7 +28,7 @@ swagger-spec-validator
 uWSGI
 uwsgitop
 urllib3
-
-gssapi
-git+https://github.com/pdonorio/python-irodsclient.git@python3
 git+https://github.com/EUDAT-B2STAGE/B2HANDLE.git@master
+
+#git+https://github.com/irods/python-irodsclient.git@master
+git+https://github.com/pdonorio/python-irodsclient.git@master
