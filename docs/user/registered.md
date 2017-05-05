@@ -1,5 +1,5 @@
 
-# Namespace APIs
+# Registered APIs
 
 >Note: According to the EUDAT Data Architecture B2SAFE is part of the registered data domain, where digital objects are stored and managed in such a way that data carrying associated descriptive metadata is discoverable and can be referred to or retrieved using persistent identifiers.
 >For the time being B2SAFE object registration policies are not applied to a specific path, but can be configured to trigger the registration in any available paths. Therefore the B2STAGE HTTP-API can not guarantee that an uploaded file will be registered by B2SAFE.
@@ -45,15 +45,15 @@ $ curl \
             {
                 "filename.txt": {
                     "dataobject": "filename.txt",
-                    "link": "<http_server:port>/tempZone/home/guest/filename.txt",
-                    "location": "irods:///rodserver.dockerized.io/tempZone/home/filename.txt",
+                    "link": "<http_server:port>/api/registered/path/to/directory/filename.txt",
+                    "location": "irods:///rodserver.dockerized.io/path/to/directory/filename.txt",
                     "metadata": {
                         "EUDAT/CHECKSUM": null,
                         "PID": null,
                         "name": "filename.txt",
                         "object_type": "dataobject"
                     },
-                    "path": "/tempZone/home/guest"
+                    "path": "path/to/directory"
                 }
             }
         ],
@@ -89,37 +89,46 @@ $ curl \
 ```json
 {
   "Meta": {
-    "data_type": "<class 'dict'>", 
+    "data_type": "<class 'list'>", 
     "elements": 2, 
     "errors": 0, 
     "status": 200
   }, 
   "Response": {
-    "data": {
-      "myfile.txt": {
-        "acl": null, 
-        "acl_inheritance": null, 
-        "content_length": "4248", 
-        "last_modified": "2016-11-23.15:23", 
-        "name": "myfile.txt", 
-        "object_type": "dataobject", 
-        "owner": "username", 
-        "path": ""
+    "data": [
+      {
+        "filename.txt": {
+          "dataobject": "filename.txt", 
+          "link": "<http_server:port>/api/registered/path/to/directory/filename.txt", 
+          "location": "irods:///rodserver.dockerized.io/path/to/directory/", 
+          "metadata": {
+            "EUDAT/CHECKSUM": null, 
+            "PID": null, 
+            "name": "filename.txt", 
+            "object_type": "dataobject"
+          }, 
+          "path": "/path/to/directory"
+        }
       }, 
-      "myfile2.txt": {
-        "acl": null, 
-        "acl_inheritance": null, 
-        "content_length": "2617", 
-        "last_modified": "2016-11-23.15:12", 
-        "name": "myfile2.txt", 
-        "object_type": "dataobject", 
-        "owner": "username", 
-        "path": ""
+      {
+        "test": {
+          "dataobject": "test", 
+          "link": "<http_server:port>/api/registered/path/to/directory/test", 
+          "location": "irods:///rodserver.dockerized.io/path/to/directory", 
+          "metadata": {
+            "EUDAT/CHECKSUM": null, 
+            "PID": null, 
+            "name": "test", 
+            "object_type": "dataobject"
+          }, 
+          "path": "/path/to/directory"
+        }
       }
-    }, 
+    ], 
     "errors": null
   }
 }
+
 ```
 
 
@@ -146,30 +155,30 @@ $ curl -X PUT \
 $ curl -X PUT \
   -H "Authorization: Bearer <auth_token>" \
   -F file=@myfile2.txt \
-  <http_server:port>/api/registered/path/to/directory/filename?force=true 
+  <http_server:port>/api/registered/path/to/directory/filename.txt?force=true 
 ```
 ##### Response
 ```json
 {
-  "Meta": {
-    "data_type": "<class 'dict'>", 
-    "elements": 5, 
-    "errors": 0, 
-    "status": 200
-  }, 
-  "Response": {
-    "data": {
-      "filename": "myfile", 
-      "link": "http://172.17.0.4:5000/api/registered/path/to/directory/myfile.txt", 
-      "location": "irods:///b2safe.cineca.it/path/to/directory/myfile.txt", 
-      "path": "/path/to/directory/myfile.txt", 
-      "resources": [
-        "myResc"
-      ]
-    }, 
-    "errors": null
-  }
+    "Meta": {
+        "data_type": "<class 'dict'>",
+        "elements": 6,
+        "errors": 0,
+        "status": 200
+    },
+    "Response": {
+        "data": {
+            "EUDAT/CHECKSUM": null,
+            "PID": null,
+            "filename": "filename.txt",
+            "link": "<http_server:port>/api/registered/path/to/directory/filename.txt",
+            "location": "irods:///rodserver.dockerized.io/path/to/directory/filename.txt",
+            "path": "/tempZone/home/guest"
+        },
+        "errors": null
+    }
 }
+
 ```
 
 
@@ -200,13 +209,14 @@ $ curl -X POST \
   }, 
   "Response": {
     "data": {
-      "link": "http://<http_server:port>/api/registered/path/to/directory/new_directory", 
-      "location": "irods:///b2safe.cineca.it/path/to/directory/new_directory", 
-      "path": "/path/to/directory/new_directory"
+      "link": "<http_server:port>/api/registered/path/to/directory/new_directory", 
+      "location": "irods:///rodserver.dockerized.io//path/to/directory/new_directory", 
+      "path": "/path/to/directory/new_directory
     }, 
     "errors": null
   }
 }
+
 ```
 
 ---
@@ -294,7 +304,7 @@ curl -X PATCH \
   "Response": {
     "data": {
       "filename": "filename2", 
-      "link": "http://<http_server:port>/api/registered/path/to/directory/filename2", 
+      "link": "<http_server:port>/api/registered/path/to/directory/filename2", 
       "location": "irods:///b2safe.cineca.it/path/to/directory/filename2", 
       "path": "/path/to/directory"
     }, 
@@ -329,7 +339,7 @@ curl -X PATCH \
   "Response": {
     "data": {
       "filename": "test1", 
-      "link": "http://<http_server:port>/api/registered/path/to/directory2", 
+      "link": "<http_server:port>/api/registered/path/to/directory2", 
       "location": "irods:///b2safe.cineca.it/path/to/directory2", 
       "path": "/path/to"
     }, 
