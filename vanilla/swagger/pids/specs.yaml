@@ -8,6 +8,8 @@ file: extended
 mapping:
   all: "/pids"
   single: "/pids/<path:pid>"
+ids:
+  pid: the EUDAT PID to be resolved
 labels:
   - eudat
   - pids
