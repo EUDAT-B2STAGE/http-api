@@ -72,17 +72,8 @@ done
 
 #####################
 # Completed
-echo "REST API backend server is ready"
-
-if [ "$APP_MODE" == 'production' ]; then
-    echo "launching uwsgi"
-    myuwsgi
-elif [ "$APP_MODE" == 'development' ]; then
-    echo "launching flask"
-    rapydo
-else
-    echo "Debug mode"
-    sleep infinity
-fi
-
+echo "Worker is ready"
+sleep infinity
+# sleep 10000d
+# whoami
 exit 0
