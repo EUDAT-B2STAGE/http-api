@@ -17,6 +17,7 @@ RUN apt-get update -qq && apt-get install -y \
         ## fix the plugin error at irods installation time
         libxml2 \
         ## GSI and Grid FTP dependencies
+        globus-proxy-utils \
         globus-gsi-cert-utils-progs globus-simple-ca \
     # clean
     && apt-get clean autoclean && apt-get autoremove -y && \
