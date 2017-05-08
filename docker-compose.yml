@@ -109,8 +109,8 @@ services:
       i_net:
     depends_on:
       # - graphdb
-      - icat
       - sql
+      # - icat  # only for debug
 
     environment:
 
