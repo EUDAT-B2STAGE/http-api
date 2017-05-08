@@ -123,7 +123,7 @@ fi
 if [ "$(ls -A $prcdir)" ]; then
     echo "Rpc already exists" > /dev/null
 else
-    echo "Inizialitazion rpc"
+    echo "Inizialitazion official 'python-irodsclient'"
     git clone https://github.com/pdonorio/python-irodsclient.git $prcdir
 fi
 

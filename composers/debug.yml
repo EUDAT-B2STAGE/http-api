@@ -12,7 +12,7 @@ services:
     ports:
       - 8080:${FLASK_DEFAULT_PORT}
     depends_on:
-      - icat
+      - icat  # to be commented if you need to test external b2safe
       - sql
 
   client:

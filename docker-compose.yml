@@ -152,6 +152,7 @@ services:
       IRODS_USER: ${IRODS_USER}
       IRODS_ZONE: ${IRODS_ZONE}
       IRODS_HOME: ${IRODS_HOME}
+      IRODS_DN: ${IRODS_DN}
       IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
@@ -181,9 +182,8 @@ services:
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
       - ./certs:/usr/local/share/ca-certificates
-# TODO: comment this before the beta
-      # mount irods code to develop patches
-      - ./prc/irods:/usr/local/lib/python3.6/dist-packages/irods
+      # # mount irods code to develop patches
+      # - ./prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
   #############
   # Nginx proxy
