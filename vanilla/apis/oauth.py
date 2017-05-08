@@ -136,11 +136,12 @@ class B2accessUtilities(EudatEndpoint):
 
         # Create the object for accessing certificates in B2ACCESS
         b2accessCA = auth._oauth2.get('b2accessCA')
+        b2access_prod = auth._oauth2.get('prod')
 
         # Call the oauth2 object requesting a certificate
         if self._certs is None:
             self._certs = Certificates()
-        proxy_file = self._certs.proxy_from_ca(b2accessCA, prod=PRODUCTION)
+        proxy_file = self._certs.proxy_from_ca(b2accessCA, prod=b2access_prod)
 
         # Save the proxy filename into the database
         if proxy_file is not None:

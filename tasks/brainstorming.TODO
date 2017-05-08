@@ -1,59 +1,46 @@
 
-Beta release:
+- copy new .env
+- remove icat from debug.yml and set sleep infinity as rest command
+- launch debug
+- manual: docker-entrypoint rest
+- 130.186.13.110 eudat-dmp1 in /etc/hosts
+- export IRODS_HOST=eudat-dmp1
+- copy pdonorio certs in /opt/certificates/pdonorio and set permissions
+- copy 467aa3eb.* in /opt/certificates/simple_ca
+- update-ca-certificates and set hosts in docker-entrypoint for production...
+
+
+  --- ✄ -----------------------
+
+After refactor:
 
 ☐ unittests
-  ✔ remove all @done (17-03-22 11:55)
-  ✔ fix base @done (17-04-14 23:04)
-    ✔ missing user's conf in sqlalchemy @bug @done (17-04-21 00:18)
-  ☐ fix eudat
-    ✔ common @done (17-04-26 01:56)
-    ✔ basic @done (17-04-26 09:13)
-      ✔ GET, POST, PUT @done (17-04-26 01:56)
-      ✔ PATCH, DELETE @done (17-04-26 09:13)
-    - extended
-    - oauth
-☐ fix do branches
-
-Refactor:
-
+  - swagger ui
+   2.8 booleans and ID
+   3.0 (with react)
 ☐ release a PyPi package
- ☐ first real rapydo release
- yeahi
- ☐ separate utils
+ - separate utils
  (logs, bash, and similar)
-  ☐ with documentation?
+ - with documentation
   https://pythonhosted.org/
+
+  --- ✄ -----------------------
 
 More:
 
 ☐ flask binary
- ✔ development @done (17-04-15 13:17)
-   ✔ proxy @done (17-04-15 13:17)
- - production
-   ✔ container proxy @done (17-04-20 12:36)
-     ✔ entrypoint to add @done (17-04-19 16:21)
-       ✔ move script in build @done (17-04-16 00:38)
-       ✔ create certs if do not exist @done (17-04-19 16:21)
-     ✔ check back online @done (17-04-20 12:36)
-   - container rest
-     ☐ check_if_user_defaults
-     flask_auth.py end of file and implement in authentication
-       ☐ how to change base admin?
-✔ compose V3 YAMLs final check @done (17-04-19 16:22)
+ ☐ check_if_user_defaults
+ flask_auth.py end of file and implement in authentication
+   ☐ how to change base admin?
 ☐ move all authentication parts inside flask_ext
-☐ nginx variables from os env?
 ☐ swagger 2 markdown (and PDF/html)
    ☐ seadatanet endpoints
    ☐ dockerfile
    https://github.com/yewton/dockerfiles/tree/master/swagger2html
-☐ clean a little bit rapydo.services python folder
 ☐ travis for backend
   ☐ how to do tests for backend on services that are not used in vanilla?
 ☐ docker builds
   - templates repo update
-☐ swagger ui
- ☐ 2.8 booleans and ID
- ☐ 3.0 (with react)
 
 
 With SWAGGER enabled:
