@@ -15,8 +15,11 @@ services:
       DEBUG_LEVEL: DEBUG
       # DEBUG_LEVEL: VERBOSE
       APP_MODE: development
+      # EUDAT RELATED
+      B2ACCESS_ENV: development
     depends_on:
       - icat
+      - sql
 
   client:
     environment:
