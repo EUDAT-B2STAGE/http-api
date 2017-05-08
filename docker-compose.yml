@@ -109,8 +109,8 @@ services:
       i_net:
     depends_on:
       # - graphdb
+      - icat
       - sql
-      # - icat  # only for debug
 
     environment:
 
@@ -163,6 +163,8 @@ services:
       # GRAPHDB_HOST: ${GRAPHDB_HOST}
       # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
       # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+       
+      HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS}
 
     volumes:
       # Base code

@@ -11,15 +11,17 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 """
 
-from flask import request, current_app
+import os
+# from flask import request, current_app
 from flask_ext.flask_irods.client import IrodsException
-from eudat.apis.common import CURRENT_HTTPAPI_SERVER, PRODUCTION
+# from eudat.apis.common import CURRENT_HTTPAPI_SERVER, PRODUCTION
 from eudat.apis.common.b2stage import EudatEndpoint
 
 from rapydo.services.uploader import Uploader
 from rapydo.utils import htmlcodes as hcodes
 from rapydo import decorators as decorate
 from b2handle.handleclient import EUDATHandleClient
+from b2handle.clientcredentials import PIDClientCredentials
 from b2handle import handleexceptions
 
 from rapydo.utils.logs import get_logger
@@ -44,13 +46,21 @@ class PIDEndpoint(Uploader, EudatEndpoint):
         # Perform B2HANDLE request: retrieve URL from handle
         ###################
         value = None
-        client = EUDATHandleClient.instantiate_for_read_access()
+        credentials_file = os.environ.get('HANDLE_CREDENTIALS')
+        if credentials_file and os.path.isfile(credentials_file):
+            cred = PIDClientCredentials.load_from_JSON(credentials_file)
+            client = EUDATHandleClient.instantiate_with_credentials(cred)
+        else:
+            if credentials_file and not os.path.isfile(credentials_file):
+                log.critical("B2HANDLE credentials file not found %s",
+                            credentials_file)
+            client = EUDATHandleClient.instantiate_for_read_access()
         try:
             value = client.get_value_from_handle(pid, "URL")
             log.info("B2HANDLE response: %s", value)
         except handleexceptions.HandleSyntaxError as e:
             errorMessage = "B2HANDLE: %s" % str(e)
-            log.critical(errorMessage)
+            log.warning(errorMessage)
             return self.send_errors(
                 message=errorMessage, code=hcodes.HTTP_BAD_REQUEST)
         except handleexceptions.HandleNotFoundException as e:
