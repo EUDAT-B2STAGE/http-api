@@ -63,8 +63,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # DOWNLOAD a specific file
         ###################
 
-        if self._args.get('download'):
-            # TO FIX: problem with swagger-ui boolean?
+        if self._args.download and 'true' in self._args.download.lower():
+            log.pp(self._args.download)
             if is_collection:
                 return self.send_errors(
                     'Collection: recursive download is not allowed')

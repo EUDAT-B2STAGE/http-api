@@ -75,8 +75,7 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
         # If downlaod is True, trigger file download
-        parameters = self.get_input()
-        if (parameters.download and 'true' in parameters.download):
+        if self._args.download and 'true' in self._args.download.lower():
 
             api_url = CURRENT_HTTPAPI_SERVER
 
