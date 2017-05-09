@@ -44,7 +44,7 @@ fi
 #####################
 # Confs
 subdir="backend"
-rpcdir="rpc"
+prcdir="prc"
 submodule_tracking="submodules.current.commit"
 irodscontainer="icat"
 restcontainer="rest"
@@ -120,11 +120,11 @@ else
     cd ..
 fi
 
-if [ "$(ls -A $rpcdir)" ]; then
+if [ "$(ls -A $prcdir)" ]; then
     echo "Rpc already exists" > /dev/null
 else
-    echo "Inizialitazion rpc"
-    git clone https://github.com/pdonorio/python-irodsclient.git $rpcdir
+    echo "Inizialitazion official 'python-irodsclient'"
+    git clone https://github.com/pdonorio/python-irodsclient.git $prcdir
 fi
 
 # Update the remote github repos

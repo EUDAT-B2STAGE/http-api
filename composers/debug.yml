@@ -7,8 +7,13 @@ services:
       FLASK_DEBUG: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
+      # EUDAT RELATED
+      B2ACCESS_ENV: development
     ports:
       - 8080:${FLASK_DEFAULT_PORT}
+    depends_on:
+      - icat  # to be commented if you need to test external b2safe
+      - sql
 
   client:
     environment:

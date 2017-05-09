@@ -7,19 +7,11 @@ Code to implement the /api/internal endpoint
 
 """
 
-import os
-import irods
-import time
-import json
-from flask import request, current_app
-
-from eudat.apis.common import PRODUCTION
 from eudat.apis.common.b2stage import EudatEndpoint
-
-from flask_ext.flask_irods.client import IrodsException
-
-from rapydo.utils import htmlcodes as hcodes
+from eudat.apis.common import CURRENT_MAIN_ENDPOINT
 from rapydo import decorators as decorate
+from flask_ext.flask_irods.client import IrodsException
+from rapydo.utils import htmlcodes as hcodes
 from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
@@ -46,7 +38,7 @@ class MetadataEndpoint(EudatEndpoint):
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
         icom = r.icommands
-        
+
         path, resource, filename, force = \
             self.get_file_parameters(icom, path=irods_location)
 
@@ -54,17 +46,22 @@ class MetadataEndpoint(EudatEndpoint):
         pid = self._args.get('PID')
         if pid:
             dct['PID'] = pid
+        else:
+            return self.send_errors('PID: missing parameter in JSON input')
 
         checksum = self._args.get('EUDAT/CHECKSUM')
         if checksum:
             dct['EUDAT/CHECKSUM'] = checksum
 
+        out = None
         if dct:
             icom.set_metadata(irods_location, **dct)
             out, _ = icom.get_metadata(irods_location)
 
         return {
-            'metadata' : out,
+            'metadata': out,
             'location': filename,
-            'link': self.httpapi_location(irods_location)
+            'link': self.httpapi_location(
+                irods_location, api_path=CURRENT_MAIN_ENDPOINT
+            )
         }

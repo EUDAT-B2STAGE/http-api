@@ -14,7 +14,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 import os
 from flask import request, current_app
 
-from eudat.apis.common import PRODUCTION
+from eudat.apis.common import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from eudat.apis.common.b2stage import EudatEndpoint
 
 from rapydo.services.uploader import Uploader
@@ -63,13 +63,14 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # DOWNLOAD a specific file
         ###################
 
-        if self._args.get('download'):
-            # TO FIX: problem with swagger-ui boolean?
-            if is_collection:
-                return self.send_errors(
-                    'Collection: recursive download is not allowed')
-
-            return self.download_object(r, path)
+        # If downlaod is True, trigger file download
+        if hasattr(self._args, 'download'):
+            if self._args.download and 'true' in self._args.download.lower():
+                if is_collection:
+                    return self.send_errors(
+                        'Collection: recursive download is not allowed')
+                else:
+                    return self.download_object(r, path)
 
         ###################
         # DATA LISTING
@@ -130,6 +131,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 'location': self.b2safe_location(collection),
                 'link': self.httpapi_location(
                     icom.get_absolute_path(filename, root=collection),
+                    api_path=CURRENT_MAIN_ENDPOINT,
                     remove_suffix=irods_location)
             }
 
@@ -181,6 +183,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ###################
         # Create Directory
+        if force:
+            # TODO: implement recursion
+            return self.send_errors(
+                'Recursive collection creations has not yet been implemented',
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+            )
 
         # Create directory if not exists
         ipath = icom.create_empty(
@@ -199,7 +207,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         content = {
             'location': self.b2safe_location(path),
             'path': path,
-            'link': self.httpapi_location(path)
+            'link': self.httpapi_location(path, api_path=CURRENT_MAIN_ENDPOINT)
         }
 
         return self.force_response(content, code=status)
@@ -305,7 +313,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 'EUDAT/CHECKSUM': out.get('EUDAT/CHECKSUM'),
                 'filename': filename,
                 'path': path,
-                'link': self.httpapi_location(ipath, path)
+                'link': self.httpapi_location(
+                    ipath,
+                    api_path=CURRENT_MAIN_ENDPOINT,
+                    remove_suffix=path)
             }
 
         # log.pp(content)
@@ -348,7 +359,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             'location': self.b2safe_location(newpath),
             'filename': newfile,
             'path': collection,
-            'link': self.httpapi_location(newpath, irods_location)
+            'link': self.httpapi_location(
+                newpath,
+                api_path=CURRENT_MAIN_ENDPOINT,
+                remove_suffix=irods_location
+            )
         }
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')

@@ -11,15 +11,17 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 """
 
-from flask import request, current_app
+import os
+# from flask import request, current_app
 from flask_ext.flask_irods.client import IrodsException
-from eudat.apis.common import CURRENT_HTTPAPI_SERVER, PRODUCTION
+from eudat.apis.common import CURRENT_HTTPAPI_SERVER  # , PRODUCTION
 from eudat.apis.common.b2stage import EudatEndpoint
 
 from rapydo.services.uploader import Uploader
 from rapydo.utils import htmlcodes as hcodes
 from rapydo import decorators as decorate
 from b2handle.handleclient import EUDATHandleClient
+from b2handle.clientcredentials import PIDClientCredentials
 from b2handle import handleexceptions
 
 from rapydo.utils.logs import get_logger
@@ -44,13 +46,21 @@ class PIDEndpoint(Uploader, EudatEndpoint):
         # Perform B2HANDLE request: retrieve URL from handle
         ###################
         value = None
-        client = EUDATHandleClient.instantiate_for_read_access()
+        credentials_file = os.environ.get('HANDLE_CREDENTIALS')
+        if credentials_file and os.path.isfile(credentials_file):
+            cred = PIDClientCredentials.load_from_JSON(credentials_file)
+            client = EUDATHandleClient.instantiate_with_credentials(cred)
+        else:
+            if credentials_file and not os.path.isfile(credentials_file):
+                log.critical("B2HANDLE credentials file not found %s",
+                            credentials_file)
+            client = EUDATHandleClient.instantiate_for_read_access()
         try:
             value = client.get_value_from_handle(pid, "URL")
             log.info("B2HANDLE response: %s", value)
         except handleexceptions.HandleSyntaxError as e:
             errorMessage = "B2HANDLE: %s" % str(e)
-            log.critical(errorMessage)
+            log.warning(errorMessage)
             return self.send_errors(
                 message=errorMessage, code=hcodes.HTTP_BAD_REQUEST)
         except handleexceptions.HandleNotFoundException as e:
@@ -65,36 +75,36 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
         # If downlaod is True, trigger file download
-        parameters = self.get_input()
-        if (parameters.download and 'true' in parameters.download):
+        if hasattr(self._args, 'download'):
+            if self._args.download and 'true' in self._args.download.lower():
 
-            api_url = CURRENT_HTTPAPI_SERVER
+                api_url = CURRENT_HTTPAPI_SERVER
 
-            # TODO: check download in debugging mode
-            # if not PRODUCTION:
-            #     # For testing pourpose, then to be removed
-            #     value = CURRENT_HTTPAPI_SERVER + \
-            #         '/api/namespace/tempZone/home/guest/gettoken'
+                # TODO: check download in debugging mode
+                # if not PRODUCTION:
+                #     # For testing pourpose, then to be removed
+                #     value = CURRENT_HTTPAPI_SERVER + \
+                #         '/api/namespace/tempZone/home/guest/gettoken'
 
-            # If local HTTP-API perform a direct download
-            # TO FIX: the following code can be improved
-            route = api_url + 'api/namespace/'
-            # route = route.replace('http://', '')
+                # If local HTTP-API perform a direct download
+                # TO FIX: the following code can be improved
+                route = api_url + 'api/namespace/'
+                # route = route.replace('http://', '')
 
-            if (value.startswith(route)):
-                value = value.replace(route, '/')
-                r = self.init_endpoint()
-                if r.errors is not None:
-                    return self.send_errors(errors=r.errors)
-                value = self.download_object(r, value)
-            else:
-                # Perform a request to an external service?
-                return self.send_warnings(
-                    {'url': value},
-                    errors=[
-                        "Data-object can't be downloaded by current " +
-                        "HTTP-API server '%s'" % api_url
-                    ]
-                )
+                if (value.startswith(route)):
+                    value = value.replace(route, '/')
+                    r = self.init_endpoint()
+                    if r.errors is not None:
+                        return self.send_errors(errors=r.errors)
+                    value = self.download_object(r, value)
+                else:
+                    # Perform a request to an external service?
+                    return self.send_warnings(
+                        {'url': value},
+                        errors=[
+                            "Data-object can't be downloaded by current " +
+                            "HTTP-API server '%s'" % api_url
+                        ]
+                    )
 
-        return {'url': value}
+            return {'url': value}

@@ -1,13 +1,21 @@
 
-export IRODS_HOST=rodserver
+# USER
+export IRODS_USER_NAME=guest
+# export IRODS_USER_NAME=0a646980c779
+
+# STANDARD
+export IRODS_HOST=rodserver.dockerized.io
 export IRODS_PORT=1247
 export IRODS_ZONE_NAME=tempZone
 export IRODS_AUTHENTICATION_SCHEME=GSI
-export IRODS_AUTHSCHEME=GSI
-export X509_CERT_DIR=/opt/certificates/caauth
+export IRODS_HOME=/$IRODS_ZONE_NAME/home/$IRODS_USER_NAME
+export X509_CERT_DIR=/opt/certificates/simple_ca
 
-USER=guest
-export IRODS_USER_NAME=$USER
-export IRODS_HOME=/tempZone/home/$USER
-export X509_USER_CERT=/opt/certificates/$USER/usercert.pem
-export X509_USER_KEY=/opt/certificates/$USER/userkey.pem
+# OR NORMAL PROXY
+export X509_USER_CERT=/opt/certificates/$IRODS_USER_NAME/usercert.pem
+export X509_USER_KEY=/opt/certificates/$IRODS_USER_NAME/userkey.pem
+
+# PROXY CERTIFICATE
+export X509_USER_PROXY=/opt/certificates/$IRODS_USER_NAME/userproxy.crt
+export X509_USER_CERT=$X509_USER_PROXY
+export X509_USER_KEY=$X509_USER_PROXY

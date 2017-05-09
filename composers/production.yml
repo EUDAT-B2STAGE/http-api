@@ -20,6 +20,11 @@ services:
       APP_MODE: production
       DEBUG_LEVEL: INFO
       NGINX_ACTIVE: "True"
+      # EUDAT RELATED
+      # B2ACCESS_ENV: production
+      B2ACCESS_ENV: development  # to be fixed
+    depends_on:
+      - sql
     expose:
       - 8080
 
@@ -36,5 +41,4 @@ services:
     depends_on:
       - proxy
     volumes:
-      # - ./certs/nginx-selfsigned.crt:/tmp/cert.crt
       - sslcerts:/tmp/certs

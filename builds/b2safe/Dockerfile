@@ -17,6 +17,7 @@ RUN apt-get update -qq && apt-get install -y \
         ## fix the plugin error at irods installation time
         libxml2 \
         ## GSI and Grid FTP dependencies
+        globus-proxy-utils \
         globus-gsi-cert-utils-progs globus-simple-ca \
     # clean
     && apt-get clean autoclean && apt-get autoremove -y && \
@@ -46,12 +47,21 @@ RUN apt-get update && apt-get install -y \
 # OTHER OPERATIONS
 
 ENV TERM xterm-256color
+
 # certificates
 ENV CERTDIR /opt/certificates
-RUN mkdir -p $CERTDIR/simple_ca
+ENV CADIR $CERTDIR/simple_ca
+RUN mkdir -p $CADIR
 COPY add_irods_x509.sh /usr/local/bin/add-irods-X509
 COPY switch_gsi_user.sh /usr/local/bin/switch-gsi
 RUN echo "alias berods='HOME=/var/lib/irods su -p irods'" >> /root/.bash_aliases
+
+# add certification authorities
+ENV B2ACCESS_CAS /tmp/b2access_certificates
+COPY b2access_certificates/b2access.ca.dev.pem $B2ACCESS_CAS/
+COPY b2access_certificates/b2access.ca.dev.signing_policy $B2ACCESS_CAS/
+COPY b2access_certificates/b2access.ca.prod.pem $B2ACCESS_CAS/
+COPY b2access_certificates/b2access.ca.prod.signing_policy $B2ACCESS_CAS/
 
 ###################
 # VOLUMES

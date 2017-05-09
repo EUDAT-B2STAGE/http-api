@@ -68,7 +68,6 @@ services:
       - irodshome:/home/irods
       - irodsvar:/var/lib/irods
       - sharedcerts:/opt/certificates
-      # - eudatopt:/opt
       - ./builds/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
 
     networks:
@@ -108,10 +107,10 @@ services:
           - ${FLASK_HOST}
       db_net:
       i_net:
-    depends_on:
-      # - graphdb
-      - icat
-      - sql
+    # depends_on:
+    #   # - graphdb
+    #   - icat
+    #   - sql
 
     environment:
 
@@ -134,6 +133,7 @@ services:
       PROJECT_DOMAIN: ${PROJECT_DOMAIN}
       UPLOAD_PATH: ${UPLOAD_PATH}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
@@ -153,6 +153,7 @@ services:
       IRODS_USER: ${IRODS_USER}
       IRODS_ZONE: ${IRODS_ZONE}
       IRODS_HOME: ${IRODS_HOME}
+      IRODS_DN: ${IRODS_DN}
       IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
@@ -164,6 +165,8 @@ services:
       # GRAPHDB_HOST: ${GRAPHDB_HOST}
       # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
       # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+
+      HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS}
 
     volumes:
       # Base code
@@ -180,9 +183,8 @@ services:
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
       - ./certs:/usr/local/share/ca-certificates
-      # TEMPORARY!!
-      # mount irods code to develop patches
-      - ./rpc/irods:/usr/local/lib/python3.6/dist-packages/irods
+      # # mount irods code to develop patches
+      # - ./prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
   #############
   # Nginx proxy
@@ -203,6 +205,10 @@ services:
   client:
     build: ./builds/apiclient
     image: apiclient:rapydo
+    environment:
+      MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
     volumes:
       - ./backend:/code/core
       - ./vanilla:/code/custom
