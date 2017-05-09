@@ -14,7 +14,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 import os
 # from flask import request, current_app
 from flask_ext.flask_irods.client import IrodsException
-# from eudat.apis.common import CURRENT_HTTPAPI_SERVER, PRODUCTION
+from eudat.apis.common import CURRENT_HTTPAPI_SERVER  # , PRODUCTION
 from eudat.apis.common.b2stage import EudatEndpoint
 
 from rapydo.services.uploader import Uploader
@@ -75,8 +75,7 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
         # If downlaod is True, trigger file download
-        parameters = self.get_input()
-        if (parameters.download and 'true' in parameters.download):
+        if self._args.download and 'true' in self._args.download.lower():
 
             api_url = CURRENT_HTTPAPI_SERVER
 
