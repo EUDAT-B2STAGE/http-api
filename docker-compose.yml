@@ -133,6 +133,7 @@ services:
       PROJECT_DOMAIN: ${PROJECT_DOMAIN}
       UPLOAD_PATH: ${UPLOAD_PATH}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}

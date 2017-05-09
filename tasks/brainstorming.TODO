@@ -7,7 +7,7 @@
 - export IRODS_HOST=eudat-dmp1
 - copy pdonorio certs in /opt/certificates/pdonorio and set permissions
 - copy 467aa3eb.* in /opt/certificates/simple_ca
-- update-ca-certificates and set hosts in docker-entrypoint for production...
+- b2handle?
 
 
   --- ✄ -----------------------

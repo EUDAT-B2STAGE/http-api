@@ -114,44 +114,22 @@ class EudatEndpoint(EndpointResource):
             is_proxy=proxy
         )
 
-    # def httpapi_location(self, url, ipath, remove_suffix=None):
-    def httpapi_location(self, ipath, remove_suffix=None):
+    def httpapi_location(self, ipath, api_path=None, remove_suffix=None):
         """ URI for retrieving with GET method """
+
+        # TODO: check and clean 'remove_suffix parameter'
 
         # if remove_suffix is not None and uri_path.endswith(remove_suffix):
         #     uri_path = uri_path.replace(remove_suffix, '')
 
-        return '%s://%s/%s' % (
-            HTTP_PROTOCOL, CURRENT_HTTPAPI_SERVER,
+        if api_path is None:
+            api_path = ''
+        else:
+            api_path = "/%s" % api_path.lstrip('/')
+
+        return '%s://%s%s/%s' % (
+            HTTP_PROTOCOL, CURRENT_HTTPAPI_SERVER, api_path,
             ipath.strip(self._path_separator))
-
-    #     # remove from current request any parameters
-    #     if self._post_delimiter in url:
-    #         url = url[:url.index(self._post_delimiter)]
-
-    #     split_point = url.find(API_URL)
-
-    #     # TO FIX: # Does this add by mistake a character?
-    #     uri = self.api_server_uri(url[:split_point])
-
-    #     uri_path = url[split_point:]
-    #     if remove_suffix is not None and uri_path.endswith(remove_suffix):
-    #         uri_path = uri_path.replace(remove_suffix, '')
-    #     return uri + uri_path + ipath.rstrip(self._path_separator)
-
-    # def api_server_uri(self, url):
-    #     server = url.replace('http://', '')
-    #     if PRODUCTION:
-    #         server = CURRENT_HTTPAPI_SERVER
-    #     else:
-    #         # Fix docker internal net with the link name
-    #         if server.startswith('172.1.0'):
-    #             port = ''
-    #             if ':' in url:
-    #                 port = server[server.find(':') + 1:]
-    #             server = '%s:%s' % ('apiserver', port)
-
-        # return "%s://%s" % (HTTP_PROTOCOL, server)
 
     def b2safe_location(self, ipath):
         return '%s:///%s/%s' % (
