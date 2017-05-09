@@ -132,7 +132,7 @@ class EudatEndpoint(EndpointResource):
             ipath.strip(self._path_separator))
 
     def b2safe_location(self, ipath):
-        return '%s:///%s/%s' % (
+        return '%s://%s/%s' % (
             IRODS_PROTOCOL, CURRENT_B2SAFE_SERVER,
             ipath.strip(self._path_separator))
 
