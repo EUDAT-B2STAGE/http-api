@@ -11,7 +11,7 @@ The complete description of the operation you can perform is available in:
 - the [registered api](registered.md) page
 - the [pids api](pids.md) page
 
-To send any kind of requests to the B2STAGE HTTP-API an *authentication token*is needed: vist this the [Authentication documentation](authentication.md) for further details.
+To send any kind of requests to the B2STAGE HTTP-API an *authentication token* is needed: vist this the [Authentication documentation](authentication.md) for further details.
 
 ## Send API request example
 An example of API request is the following: 
