@@ -75,35 +75,36 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
         # If downlaod is True, trigger file download
-        if self._args.download and 'true' in self._args.download.lower():
+        if hasattr(self._args, 'download'):
+            if self._args.download and 'true' in self._args.download.lower():
 
-            api_url = CURRENT_HTTPAPI_SERVER
+                api_url = CURRENT_HTTPAPI_SERVER
 
-            # TODO: check download in debugging mode
-            # if not PRODUCTION:
-            #     # For testing pourpose, then to be removed
-            #     value = CURRENT_HTTPAPI_SERVER + \
-            #         '/api/namespace/tempZone/home/guest/gettoken'
+                # TODO: check download in debugging mode
+                # if not PRODUCTION:
+                #     # For testing pourpose, then to be removed
+                #     value = CURRENT_HTTPAPI_SERVER + \
+                #         '/api/namespace/tempZone/home/guest/gettoken'
 
-            # If local HTTP-API perform a direct download
-            # TO FIX: the following code can be improved
-            route = api_url + 'api/namespace/'
-            # route = route.replace('http://', '')
+                # If local HTTP-API perform a direct download
+                # TO FIX: the following code can be improved
+                route = api_url + 'api/namespace/'
+                # route = route.replace('http://', '')
 
-            if (value.startswith(route)):
-                value = value.replace(route, '/')
-                r = self.init_endpoint()
-                if r.errors is not None:
-                    return self.send_errors(errors=r.errors)
-                value = self.download_object(r, value)
-            else:
-                # Perform a request to an external service?
-                return self.send_warnings(
-                    {'url': value},
-                    errors=[
-                        "Data-object can't be downloaded by current " +
-                        "HTTP-API server '%s'" % api_url
-                    ]
-                )
+                if (value.startswith(route)):
+                    value = value.replace(route, '/')
+                    r = self.init_endpoint()
+                    if r.errors is not None:
+                        return self.send_errors(errors=r.errors)
+                    value = self.download_object(r, value)
+                else:
+                    # Perform a request to an external service?
+                    return self.send_warnings(
+                        {'url': value},
+                        errors=[
+                            "Data-object can't be downloaded by current " +
+                            "HTTP-API server '%s'" % api_url
+                        ]
+                    )
 
-        return {'url': value}
+            return {'url': value}

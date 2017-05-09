@@ -63,13 +63,14 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # DOWNLOAD a specific file
         ###################
 
-        if self._args.download and 'true' in self._args.download.lower():
-            log.pp(self._args.download)
-            if is_collection:
-                return self.send_errors(
-                    'Collection: recursive download is not allowed')
-
-            return self.download_object(r, path)
+        # If downlaod is True, trigger file download
+        if hasattr(self._args, 'download'):
+            if self._args.download and 'true' in self._args.download.lower():
+                if is_collection:
+                    return self.send_errors(
+                        'Collection: recursive download is not allowed')
+                else:
+                    return self.download_object(r, path)
 
         ###################
         # DATA LISTING
