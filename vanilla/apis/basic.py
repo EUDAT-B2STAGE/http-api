@@ -182,6 +182,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ###################
         # Create Directory
+        if force:
+            # TODO: implement recursion
+            return self.send_errors(
+                'Recursive collection creations has not yet been implemented',
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+            )
 
         # Create directory if not exists
         ipath = icom.create_empty(
