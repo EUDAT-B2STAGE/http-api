@@ -187,7 +187,7 @@ $ curl -X PUT \
 | Parameter | Type | Description
 |-----------|------|-------------
 | path (required) | string | Absolute directory path to be created 
-| force | bool | Force recursive creation
+<!-- | force | bool | Force recursive creation -->
 
 ##### Example
 ```bash
@@ -195,7 +195,7 @@ $ curl -X PUT \
 $ curl -X POST \
   -H "Authorization: Bearer <auth_token>" \
   -H "Content-Type: application/json" \
-  -d '{"path":"/path/to/directory/new_directory", "force"="false"}' \
+  -d '{"path":"/path/to/directory/new_directory"' \
   <http_server:port>/api/registered
 ```
 ##### Response
