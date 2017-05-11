@@ -45,7 +45,8 @@ class PIDEndpoint(Uploader, EudatEndpoint):
         ###################
         # Perform B2HANDLE request: retrieve URL from handle
         ###################
-        value = None
+        URL_value = None
+        CHECKSUM_value = None
         credentials_file = os.environ.get('HANDLE_CREDENTIALS')
         if credentials_file and os.path.isfile(credentials_file):
             cred = PIDClientCredentials.load_from_JSON(credentials_file)
@@ -53,11 +54,13 @@ class PIDEndpoint(Uploader, EudatEndpoint):
         else:
             if credentials_file and not os.path.isfile(credentials_file):
                 log.critical("B2HANDLE credentials file not found %s",
-                            credentials_file)
+                             credentials_file)
             client = EUDATHandleClient.instantiate_for_read_access()
         try:
-            value = client.get_value_from_handle(pid, "URL")
-            log.info("B2HANDLE response: %s", value)
+            URL_value = client.get_URL_value_from_handle(pid, "URL")
+            CHECKSUM_value = client.get_URL_value_from_handle(
+                                 pid, "EUDAT/CHECKSUM")
+            log.info("B2HANDLE response: %s", URL_value)
         except handleexceptions.HandleSyntaxError as e:
             errorMessage = "B2HANDLE: %s" % str(e)
             log.warning(errorMessage)
@@ -69,9 +72,9 @@ class PIDEndpoint(Uploader, EudatEndpoint):
             log.critical(errorMessage)
             return self.send_errors(
                 message=errorMessage, code=hcodes.HTTP_BAD_NOTFOUND)
-        if value is None:
+        if URL_value is None:
             return self.send_errors(
-                message='B2HANDLE empty value returned',
+                message='B2HANDLE empty URL_value returned',
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
         # If downlaod is True, trigger file download
@@ -83,28 +86,29 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                 # TODO: check download in debugging mode
                 # if not PRODUCTION:
                 #     # For testing pourpose, then to be removed
-                #     value = CURRENT_HTTPAPI_SERVER + \
+                #     URL_value = CURRENT_HTTPAPI_SERVER + \
                 #         '/api/namespace/tempZone/home/guest/gettoken'
 
                 # If local HTTP-API perform a direct download
                 # TO FIX: the following code can be improved
-                route = api_url + 'api/namespace/'
+                route = api_url + 'api/registered/'
                 # route = route.replace('http://', '')
 
-                if (value.startswith(route)):
-                    value = value.replace(route, '/')
+                if (URL_value.startswith(route)):
+                    URL_value = URL_value.replace(route, '/')
                     r = self.init_endpoint()
                     if r.errors is not None:
                         return self.send_errors(errors=r.errors)
-                    value = self.download_object(r, value)
+                    URL_value = self.download_object(r, URL_value)
                 else:
                     # Perform a request to an external service?
                     return self.send_warnings(
-                        {'url': value},
+                        {'url': URL_value},
                         errors=[
                             "Data-object can't be downloaded by current " +
                             "HTTP-API server '%s'" % api_url
                         ]
                     )
-
-            return {'url': value}
+            return URL_value
+        else:
+            return {'url': URL_value, 'EUDAT/CHECKSUM': CHECKSUM_value}
