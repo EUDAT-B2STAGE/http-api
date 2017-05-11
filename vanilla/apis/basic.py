@@ -311,7 +311,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             #        pass
 
             # Get iRODS checksum
-            obj = icom.get_dataobject(path)
+            obj = icom.get_dataobject(ipath)
             checksum = obj.checksum
 
             content = {
