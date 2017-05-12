@@ -47,32 +47,68 @@ class PIDEndpoint(Uploader, EudatEndpoint):
         ###################
         URL_value = None
         CHECKSUM_value = None
+
         credentials_file = os.environ.get('HANDLE_CREDENTIALS')
-        if credentials_file and os.path.isfile(credentials_file):
-            cred = PIDClientCredentials.load_from_JSON(credentials_file)
-            client = EUDATHandleClient.instantiate_with_credentials(cred)
-        else:
-            if credentials_file and not os.path.isfile(credentials_file):
+        credentials_found = False
+        GenericHandleError_received = False
+
+        if credentials_file:
+            if os.path.isfile(credentials_file):
+                credentials_found = true
+            else:
                 log.critical("B2HANDLE credentials file not found %s",
                              credentials_file)
+
+        if credentials_found:
+            cred = PIDClientCredentials.load_from_JSON(credentials_file)
+            client = EUDATHandleClient.instantiate_with_credentials(cred)
+            try:
+                URL_value = client.get_value_from_handle(pid, "URL")
+                CHECKSUM_value = client.get_value_from_handle(
+                    pid, "EUDAT/CHECKSUM")
+                log.info("B2HANDLE response. URL: %s, EUDAT/CHECKSUM: %s",
+                         URL_value, CHECKSUM_value)
+            except handleexceptions.HandleSyntaxError as e:
+                errorMessage = "B2HANDLE: %s" % str(e)
+                log.warning(errorMessage)
+                return self.send_errors(
+                    message=errorMessage, code=hcodes.HTTP_BAD_REQUEST)
+            except handleexceptions.HandleNotFoundException as e:
+                errorMessage = "B2HANDLE: %s" % str(e)
+                log.critical(errorMessage)
+                return self.send_errors(
+                    message=errorMessage, code=hcodes.HTTP_BAD_NOTFOUND)
+            except handleexceptions.GenericHandleError as e:
+                errorMessage = "B2HANDLE: %s" % str(e)
+                log.warning(errorMessage)
+                GenericHandleError_received = True
+
+        if ((GenericHandleError_received and credentials_found) or
+                not credentials_found):
+            log.info("Trying to resolve PID without credentials...")
             client = EUDATHandleClient.instantiate_for_read_access()
-        try:
-            URL_value = client.get_value_from_handle(pid, "URL")
-            CHECKSUM_value = client.get_value_from_handle(
-                pid, "EUDAT/CHECKSUM")
-            log.info("B2HANDLE response. URL: %s, EUDAT/CHECKSUM: %s",
-                     URL_value, CHECKSUM_value)
-        except handleexceptions.HandleSyntaxError as e:
-            errorMessage = "B2HANDLE: %s" % str(e)
-            log.warning(errorMessage)
-            return self.send_errors(
-                message=errorMessage, code=hcodes.HTTP_BAD_REQUEST)
-        except handleexceptions.HandleNotFoundException as e:
-            errorMessage = "B2HANDLE: %s" % str(
-                e)
-            log.critical(errorMessage)
-            return self.send_errors(
-                message=errorMessage, code=hcodes.HTTP_BAD_NOTFOUND)
+            try:
+                URL_value = client.get_value_from_handle(pid, "URL")
+                CHECKSUM_value = client.get_value_from_handle(
+                    pid, "EUDAT/CHECKSUM")
+                log.info("B2HANDLE response. URL: %s, EUDAT/CHECKSUM: %s",
+                         URL_value, CHECKSUM_value)
+            except handleexceptions.HandleSyntaxError as e:
+                errorMessage = "B2HANDLE: %s" % str(e)
+                log.warning(errorMessage)
+                return self.send_errors(
+                    message=errorMessage, code=hcodes.HTTP_BAD_REQUEST)
+            except handleexceptions.HandleNotFoundException as e:
+                errorMessage = "B2HANDLE: %s" % str(e)
+                log.critical(errorMessage)
+                return self.send_errors(
+                    message=errorMessage, code=hcodes.HTTP_BAD_NOTFOUND)
+            except handleexceptions.HandleAuthenticationError as e:
+                errorMessage = "B2HANDLE: %s" % str(e)
+                log.critical(errorMessage)
+                return self.send_errors(
+                    message=errorMessage, code=hcodes.HTTP_BAD_UNAUTHORIZED)
+
         if URL_value is None:
             return self.send_errors(
                 message='B2HANDLE empty URL_value returned',
@@ -112,4 +148,4 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                     )
             return URL_value
         else:
-            return {'url': URL_value, 'EUDAT/CHECKSUM': CHECKSUM_value}
+            return {'URL': URL_value, 'EUDAT/CHECKSUM': CHECKSUM_value}
