@@ -185,9 +185,6 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(
             data['Response']['data'][0][self._test_filename]['metadata']['PID'],
              None)
-        self.assertEqual(
-            data['Response']['data'][0][self._test_filename]['metadata']['checksum'],
-            None)
 
         # Add EUDAT metadata
         params = json.dumps(dict({'PID': pid}))
