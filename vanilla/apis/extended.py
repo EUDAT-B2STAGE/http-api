@@ -36,7 +36,8 @@ class PIDEndpoint(Uploader, EudatEndpoint):
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, pid=None):
-        """ Get file from pid """
+        """ Get metadata or file from pid """
+
         if pid is None:
             return self.send_errors(
                 message='Missing PID inside URI',
@@ -54,7 +55,7 @@ class PIDEndpoint(Uploader, EudatEndpoint):
 
         if credentials_file:
             if os.path.isfile(credentials_file):
-                credentials_found = true
+                credentials_found = True
             else:
                 log.critical("B2HANDLE credentials file not found %s",
                              credentials_file)
