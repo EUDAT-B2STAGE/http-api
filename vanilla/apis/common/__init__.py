@@ -50,5 +50,6 @@ class InitObj(object):
     # Verify certificates or normal credentials
     is_proxy = attribute(default=False)
     valid_credentials = attribute(default=False)
+    refreshed = attribute(default=False)
     # Save errors to report
     errors = attribute(default=None)
