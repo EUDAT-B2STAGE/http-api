@@ -27,18 +27,20 @@ $ curl \
 {
     "Meta": {
         "data_type": "<class 'dict'>",
-        "elements": 1,
+        "elements": 2,
         "errors": 0,
         "status": 200
     },
     "Response": {
         "data": {
-            "url": "<http_server:port>/api/registered/tempZone/home/guest/test.txt"
+            "EUDAT/CHECKSUM": '123456789',
+            "URL": "<http_server:port>/api/registered/tempZone/home/guest/test.txt"
         },
         "errors": null
     }
 }
 ```
+
 
 ### Resolve PID and download object
 ##### Example

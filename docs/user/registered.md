@@ -46,10 +46,10 @@ $ curl \
                 "filename.txt": {
                     "dataobject": "filename.txt",
                     "link": "<http_server:port>/api/registered/path/to/directory/filename.txt",
-                    "location": "irods:///rodserver.dockerized.io/path/to/directory/filename.txt",
+                    "location": "irods://rodserver.dockerized.io/path/to/directory/filename.txt",
                     "metadata": {
-                        "EUDAT/CHECKSUM": null,
-                        "PID": null,
+                        "PID": '123/1234567890',
+                        "checksum": '123456789',
                         "name": "filename.txt",
                         "object_type": "dataobject"
                     },
@@ -100,10 +100,10 @@ $ curl \
         "filename.txt": {
           "dataobject": "filename.txt", 
           "link": "<http_server:port>/api/registered/path/to/directory/filename.txt", 
-          "location": "irods:///rodserver.dockerized.io/path/to/directory/", 
+          "location": "irods://rodserver.dockerized.io/path/to/directory/", 
           "metadata": {
-            "EUDAT/CHECKSUM": null, 
-            "PID": null, 
+            "PID": "123/1234567890", 
+            "checksum": "1234567890", 
             "name": "filename.txt", 
             "object_type": "dataobject"
           }, 
@@ -114,10 +114,10 @@ $ curl \
         "test": {
           "dataobject": "test", 
           "link": "<http_server:port>/api/registered/path/to/directory/test", 
-          "location": "irods:///rodserver.dockerized.io/path/to/directory", 
+          "location": "irods://rodserver.dockerized.io/path/to/directory", 
           "metadata": {
-            "EUDAT/CHECKSUM": null, 
             "PID": null, 
+            "checksum": "9876543210", , 
             "name": "test", 
             "object_type": "dataobject"
           }, 
@@ -168,11 +168,10 @@ $ curl -X PUT \
     },
     "Response": {
         "data": {
-            "EUDAT/CHECKSUM": null,
-            "PID": null,
+            "checksum": '123456789',
             "filename": "filename.txt",
             "link": "<http_server:port>/api/registered/path/to/directory/filename.txt",
-            "location": "irods:///rodserver.dockerized.io/path/to/directory/filename.txt",
+            "location": "irods://rodserver.dockerized.io/path/to/directory/filename.txt",
             "path": "/tempZone/home/guest"
         },
         "errors": null
@@ -210,7 +209,7 @@ $ curl -X POST \
   "Response": {
     "data": {
       "link": "<http_server:port>/api/registered/path/to/directory/new_directory", 
-      "location": "irods:///rodserver.dockerized.io//path/to/directory/new_directory", 
+      "location": "irods://rodserver.dockerized.io/path/to/directory/new_directory", 
       "path": "/path/to/directory/new_directory
     }, 
     "errors": null
@@ -305,7 +304,7 @@ curl -X PATCH \
     "data": {
       "filename": "filename2", 
       "link": "<http_server:port>/api/registered/path/to/directory/filename2", 
-      "location": "irods:///b2safe.cineca.it/path/to/directory/filename2", 
+      "location": "irods://b2safe.cineca.it/path/to/directory/filename2", 
       "path": "/path/to/directory"
     }, 
     "errors": null
@@ -340,7 +339,7 @@ curl -X PATCH \
     "data": {
       "filename": "test1", 
       "link": "<http_server:port>/api/registered/path/to/directory2", 
-      "location": "irods:///b2safe.cineca.it/path/to/directory2", 
+      "location": "irods://b2safe.cineca.it/path/to/directory2", 
       "path": "/path/to"
     }, 
     "errors": null
