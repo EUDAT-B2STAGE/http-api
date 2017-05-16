@@ -24,12 +24,6 @@ single:
       description: activate file downloading (if path is a single file)
       in: query
       type: boolean
-      # default: false
-    # - name: force
-    #   description: force action even if getting warnings
-    #   in: query
-    #   type: boolean
-    #   default: false
   responses:
     '200':
       description: Returns the digital object information or file content if download is activated
