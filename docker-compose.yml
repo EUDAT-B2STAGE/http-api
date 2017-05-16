@@ -99,6 +99,7 @@ services:
   # iRODS iCAT server for EUDAT B2safe
   rest:
     hostname: api
+    # command: sleep infinity
     build: ./builds/apiserver
     image: apiserver:rapydo
     networks:

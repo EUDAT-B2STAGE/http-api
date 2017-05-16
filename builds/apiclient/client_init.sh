@@ -19,6 +19,7 @@ if [ "$TOKEN" == "" ]; then
 elif [ "$TOKEN" == "null" ]; then
     echo ""
     echo "Invalid credentials"
+    TOKEN=""
 else
     echo "Logged"
     export AUTH="Authorization:Bearer $TOKEN"

@@ -74,6 +74,13 @@ if [ "$AUTH" == '' ]; then
 
     echo "Generating authentication token"
     . /code/gettoken 2>&1 1> /dev/null
+    if [ "$TOKEN" == "" ]; then
+        echo "Authentication failed!"
+        echo "Debug with:"
+        echo ". /code/gettoken"
+        return
+    fi
+
     echo "Token available as \$TOKEN"
     echo ""
 fi
