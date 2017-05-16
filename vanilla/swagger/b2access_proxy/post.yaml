@@ -2,7 +2,7 @@
 authproxy:
   custom:
     authentication: true
-  summary: Refresh B2ACCESS authorization
+  summary: Check and/or refresh current B2ACCESS proxy credentials
   responses:
     '200':
-      description: token object refreshed
+      description: refresh status
