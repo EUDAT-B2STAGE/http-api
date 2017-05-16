@@ -1,25 +1,25 @@
 
-common:
-  parameters:
-    - name: PID
-      description: EUDAT PID
-      in: query
-      type: string
+#common:
+  #parameters:
+  #  - name: PID
+  #    description: EUDAT PID
+  #    in: query
+  #    type: string
+
+
+#all:
+#  # TO FIX: decide if this option is allowed
+#summary: Advice that PID is required inside URI
+#  responses:
+#    '400':
+#      description: Missing PID inside URI
+
+mypid:
+  summary: Resolve the input PID and retrieve a digital object information or download it or list a collection
   custom:
     authentication: true
     authorized:
       - normal_user
-
-all:
-  # TO FIX: decide if this option is allowed
-  summary: Advice that PID is required inside URI
-  responses:
-    '400':
-      description: Missing PID inside URI
-
-single:
-  summary: Resolve the input PID and retrieve a single digital object information
-           or download it or list a collection
   parameters:
     - name: download
       description: Activate file downloading (if PID points to a single file)
