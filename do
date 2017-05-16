@@ -296,7 +296,11 @@ elif [ "$1" == "build4test" ]; then
     exit 0
 
 elif [ "$1" == "buildone" ]; then
-    $compose_run build $2
+    if [ "$3" == "force" ]; then
+        $compose_run build --pull --no-cache $2
+    else
+        $compose_run build $2
+    fi
     exit 0
 fi
 
