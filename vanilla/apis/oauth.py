@@ -1,205 +1,23 @@
 # -*- coding: utf-8 -*-
 
 """
-B2SAFE HTTP REST API endpoints.
+OAUTH inside EUDAT services
 """
 
-import json
-from datetime import datetime as dt
-from flask import url_for, session
-from flask_oauthlib.client import OAuthResponse
-from urllib3.exceptions import HTTPError
-from eudat.apis.common.b2stage import EudatEndpoint
-from eudat.apis.common import PRODUCTION, IRODS_EXTERNAL
-from rapydo.services.oauth2clients import decorate_http_request
+from flask import url_for
 from flask_ext.flask_irods.client import IrodsException
-from rapydo.utils.certificates import Certificates
 from rapydo import decorators as decorate
 from rapydo.utils import htmlcodes as hcodes
+from eudat.apis.common import PRODUCTION
+# from eudat.apis.common.b2access import B2accessUtilities
+from eudat.apis.common.b2stage import EudatEndpoint
 from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 
 
-###############################
-# Classes
-
-class B2accessUtilities(EudatEndpoint):
-    """ All utilities to use B2ACCESS """
-    _certs = None
-
-    def create_b2access_client(self, auth, decorate=False):
-        """ Create the b2access Flask oauth2 object """
-
-        b2access = auth._oauth2.get('b2access')
-        # B2ACCESS requires some fixes to make authorization work...
-        if decorate:
-            decorate_http_request(b2access)
-        return b2access
-
-    def request_b2access_token(self, b2access):
-        """ Use b2access client to get a token for all necessary operations """
-        resp = None
-        b2a_token = None
-
-        try:
-            resp = b2access.authorized_response()
-        except json.decoder.JSONDecodeError as e:
-            log.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
-            return (b2a_token, 'Server misconfiguration: oauth2 failed')
-        except Exception as e:
-            # raise e  # DEBUG
-            log.critical("Failed to get authorized @B2access: %s" % str(e))
-            return (b2a_token, 'B2ACCESS denied. oauth2: %s' % e)
-        if resp is None:
-            return (b2a_token, 'B2ACCESS denied: unknown error')
-
-        b2a_token = resp.get('access_token')
-        if b2a_token is None:
-            log.critical("No token received")
-            return (b2a_token, 'B2ACCESS: empty token')
-        log.info("Received token: '%s'" % b2a_token)
-        return (b2a_token, tuple())
-
-    def get_b2access_user_info(self, auth, b2access, b2access_token):
-        """ Get user info from current b2access token """
-
-        # To use the b2access token with oauth2 client
-        # We have to save it into session
-        session['b2access_token'] = (b2access_token, '')
-
-        # Calling with the oauth2 client
-        current_user = b2access.get('userinfo')
-
-        error = True
-        if current_user is None:
-            errstring = "Empty response from B2ACCESS"
-        elif not isinstance(current_user, OAuthResponse):
-            errstring = "Invalid response from B2ACCESS"
-        elif current_user.status > hcodes.HTTP_TRESHOLD:
-            log.error("Bad status: %s" % str(current_user._resp))
-            if current_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
-                errstring = "B2ACCESS token obtained is unauthorized..."
-            else:
-                errstring = "B2ACCESS token obtained failed with %s" \
-                    % current_user.status
-        elif isinstance(current_user._resp, HTTPError):
-            errstring = "Error from B2ACCESS: %s" % current_user._resp
-        else:
-            error = False
-
-        if error:
-            return None, None, errstring
-
-        # Attributes you find: http://j.mp/b2access_profile_attributes
-
-        # Store b2access information inside the db
-        intuser, extuser = \
-            auth.store_oauth2_user(current_user, b2access_token)
-        # In case of error this account already existed...
-        if intuser is None:
-            error = "Failed to store access info"
-            if extuser is not None:
-                error = extuser
-            return None, None, error
-
-        log.info("Stored access info")
-
-        # Get token expiration time
-        response = b2access.get('tokeninfo')
-        timestamp = response.data.get('exp')
-
-        timestamp_resolution = 1
-        # timestamp_resolution = 1e3
-
-        # Convert into datetime object and save it inside db
-        tok_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
-        auth.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
-
-        return current_user, intuser, extuser
-
-    def obtain_proxy_certificate(self, auth, extuser):
-        """
-        Ask B2ACCESS a valid proxy certificate to access irods data.
-
-        Note: this certificates lasts 12 hours.
-        """
-
-        # To use the b2access token with oauth2 client
-        # We have to save it into session
-        key = 'b2access_token'
-        if key not in session or session.get(key, None) is None:
-            session[key] = (extuser.token, '')
-
-        # # invalidate token, for debug purpose
-        # session[key] = ('ABC', '')
-
-        # Create the object for accessing certificates in B2ACCESS
-        b2accessCA = auth._oauth2.get('b2accessCA')
-        b2access_prod = auth._oauth2.get('prod')
-
-        # Call the oauth2 object requesting a certificate
-        if self._certs is None:
-            self._certs = Certificates()
-        proxy_file = self._certs.proxy_from_ca(b2accessCA, prod=b2access_prod)
-
-        # Save the proxy filename into the database
-        if proxy_file is not None:
-            auth.store_proxy_cert(extuser, proxy_file)
-        else:
-            log.pp(b2accessCA, "Failed oauth2")
-
-        return proxy_file
-
-    def set_irods_username(self, icom, auth, user, unityid='eudat_guest'):
-        """ Find out what is the irods username and save it """
-
-        # Does this user exist?
-        irods_user = icom.get_user_from_dn(user.certificate_dn)
-        user_exists = irods_user is not None
-
-        if not user_exists:
-            if IRODS_EXTERNAL:
-                ###########################
-                # Production / Real B2SAFE and irods instance
-                log.error("No iRODS user related to your certificate")
-                return None
-            else:
-                ###########################
-                # Using dockerized iRODS/B2SAFE
-                irods_user = unityid
-
-                iadmn = self.get_service_instance(
-                    service_name='irods', be_admin=True)
-
-                # User may exist without dn/certificate
-                if not iadmn.query_user_exists(irods_user):
-                    # Add (as normal) user inside irods
-                    iadmn.create_user(irods_user, admin=False)
-
-                irods_user_data = iadmn.list_user_attributes(irods_user)
-                if irods_user_data.get('dn') is None:
-                    # Add DN to user access possibility
-                    iadmn.modify_user_dn(
-                        irods_user,
-                        dn=user.certificate_dn,
-                        zone=irods_user_data['zone']
-                    )
-
-        # Update db to save the irods user related to this user account
-        auth.associate_object_to_attr(user, 'irodsuser', irods_user)
-
-        # Copy certificate in the dedicated path, and update db info
-        if self._certs is None:
-            self._certs = Certificates()
-        crt = self._certs.save_proxy_cert(user.proxyfile, irods_user)
-        auth.associate_object_to_attr(user, 'proxyfile', crt)
-
-        return irods_user
-
-
-#######################################
-class OauthLogin(B2accessUtilities):
+# class OauthLogin(B2accessUtilities):
+class OauthLogin(EudatEndpoint):
     """
     Endpoint which redirects to B2ACCESS server online,
     to ask the current user for authorization/token.
@@ -228,8 +46,8 @@ class OauthLogin(B2accessUtilities):
         return self.force_response(response)
 
 
-#######################################
-class Authorize(B2accessUtilities):
+# class Authorize(B2accessUtilities):
+class Authorize(EudatEndpoint):
     """
     Previous endpoint will redirect here if authorization was granted.
     Use the B2ACCESS token to retrieve info about the user,
@@ -304,53 +122,34 @@ class Authorize(B2accessUtilities):
         )
 
 
-#######################################
-class B2accesProxyEndpoint(B2accessUtilities):
+class B2accesProxyEndpoint(EudatEndpoint):
     """
     Allow refreshing current proxy (if invalid)
     using the stored b2access token (if still valid)
     """
 
-    _only_check_proxy = True
-
     def post(self):
 
         ##########################
         # get the response
-        r = self.init_endpoint(only_check_proxy=True)
-        # log.pp(r)
+        r = self.init_endpoint()  # only_check_proxy=True)
+        log.pp(r)
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
 
         ##########################
         # verify what happened
         if r.valid_credentials:
-            if r.is_proxy:
+            if r.refreshed:
+                return {"Expired": "New proxy was generated."}
+            elif r.is_proxy:
                 log.debug("A valid proxy already exists")
-                return {"Completed": "Current proxy is still valid."}
+                return {"Verified": "Current proxy is valid."}
             else:
                 log.debug("Current user does not use a proxy")
                 return {"Skipped": "Not using a certificate proxy."}
 
-        auth = self.auth
-        proxy_file = self.obtain_proxy_certificate(auth, r.extuser_object)
-
-        # check for errors
-        if proxy_file is None:
-            return self.send_errors(
-                "B2ACCESS proxy",
-                "B2ACCESS current Token is invalid or expired. " +
-                "Please request a new one at /auth/askauth.",
-                code=hcodes.HTTP_BAD_UNAUTHORIZED)
-
-        irods_user = self.set_irods_username(
-            r.icommands, auth, r.extuser_object, r.extuser_object.unity)
-        if irods_user is None:
-            return self.send_errors(
-                "Failed to set irods user from: %s" % r.extuser_object)
-        log.info("Refreshed with a new proxy: %s" % proxy_file)
-
-        return {"Completed": "New proxy was generated."}
+        return {"Info": "Unknown status."}
 
 
 #######################################

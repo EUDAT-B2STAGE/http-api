@@ -5,8 +5,8 @@ Common functions for EUDAT endpoints
 """
 
 import os
-import re
-from rapydo.rest.definition import EndpointResource
+# from rapydo.rest.definition import EndpointResource
+from eudat.apis.common.b2access import B2accessUtilities
 from eudat.apis.common import (
     CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
     IRODS_PROTOCOL, HTTP_PROTOCOL,  # PRODUCTION,
@@ -18,7 +18,8 @@ from rapydo.utils.logs import get_logger
 log = get_logger(__name__)
 
 
-class EudatEndpoint(EndpointResource):
+# class EudatEndpoint(EndpointResource):
+class EudatEndpoint(B2accessUtilities):
     """
         Extend normal API to init
         all necessary EUDAT B2STAGE API services
@@ -27,7 +28,6 @@ class EudatEndpoint(EndpointResource):
     _r = None  # main resources handler
     _path_separator = '/'
     _post_delimiter = '?'
-    _only_check_proxy = False
 
     def init_endpoint(self):
 
@@ -42,10 +42,9 @@ class EudatEndpoint(EndpointResource):
             # when not using B2ACCESS
             iuser = IRODS_VARS.get('guest_user')
             ipass = None
+            proxy = False
             # iuser = IRODS_VARS.get('user')
             # ipass = IRODS_VARS.get('password')
-
-            proxy = False
         else:
             iuser = extuser.irodsuser
             ipass = None
@@ -53,52 +52,35 @@ class EudatEndpoint(EndpointResource):
 
         icom = self.get_service_instance(
             service_name='irods',
-            user=iuser, password=ipass, proxy=proxy)
+            user=iuser, password=ipass, proxy=proxy,
+            # avoid connection errors in the extension
+            # and handle them now
+            only_check_proxy=True
+        )
+
+        refreshed = False
 
         # Verify if irods certificates are ok
         try:
             # icd and ipwd do not give error with wrong certificates...
             # so the minimum command is ils inside the home dir
             icom.list()
-            if self._only_check_proxy:
-                return InitObj(is_proxy=proxy, valid_credentials=True)
-        except BaseException as e:
-            # Init the error and use it in above cases
-            error = str(e)
-
-            if self._only_check_proxy:
-                if not IRODS_VARS.get('external'):
-                    # TODO: enable automatic regeneration
-                    log.critical("TO BE COMPLETED")
-                    icom = self.get_service_instance('irods', be_admin=True)
-                return InitObj(icommands=icom, is_proxy=proxy,
-                               valid_credentials=False, extuser_object=extuser)
+            # TODO: doublecheck if list is the best option with PRC
 
             if proxy:
+                log.debug("Current proxy certificate is valid")
 
-                re1 = r':\s+(Error reading[^\:\n]+:[^\n]+\n[^\n]+)\n'
-                re2 = r'proxy credential:\s+([^\s]+)\s+' \
-                    + r'with subject:\s+([^\n]+)\s+' \
-                    + r'expired\s+([0-9]+)\s+([^\s]+)\s+ago'
-
-                pattern = re.compile(re1)
-                mall = pattern.findall(error)
-                if len(mall) > 0:
-                    m = mall.pop()
-                    return InitObj(
-                        errors='Failed credentials: ' + m.replace('\n', ''))
-
-                pattern = re.compile(re2)
-                mall = pattern.findall(error)
-                if len(mall) > 0:
-                    m = mall.pop()
-                    error = "'%s' became invalid %s %s ago. " \
-                        % (m[1], m[2], m[3])
-                    error += "To refresh the proxy make '%s' on URI '%s'" \
-                        % ("POST", "/auth/proxy")
-                    return InitObj(errors='Expired proxy credential: ' + error)
-
-            return InitObj(errors=[error])
+        except BaseException as e:
+            log.warning("Catched exception %s" % type(e))
+            if proxy:
+                obj = self.check_proxy_certificate(extuser, e)
+                if obj is None:
+                    refreshed = True
+                else:
+                    # Case of error to be printed
+                    return obj
+            else:
+                raise e
 
         # SQLALCHEMY connection
         sql = self.get_service_instance('sqlalchemy')
@@ -107,11 +89,9 @@ class EudatEndpoint(EndpointResource):
         #####################################
         log.very_verbose("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
         return InitObj(
-            username=user,
-            extuser_object=extuser,
-            icommands=icom,
-            db_handler=sql,
-            is_proxy=proxy
+            username=user, extuser_object=extuser,
+            icommands=icom, db_handler=sql,
+            valid_credentials=True, is_proxy=proxy, refreshed=refreshed
         )
 
     def httpapi_location(self, ipath, api_path=None, remove_suffix=None):
@@ -169,10 +149,8 @@ class EudatEndpoint(EndpointResource):
     def complete_path(self, path, filename=None):
         """ Make sure you have a path with no trailing slash """
         path = path.rstrip('/')
-        # print("PATH 1", path)
         if filename is not None:
             path += '/' + filename.rstrip('/')
-        # print("PATH 2", path)
         return path
 
     def get_file_parameters(self, icom,
@@ -202,6 +180,9 @@ class EudatEndpoint(EndpointResource):
         # so that we can give an error
         if path is None or not os.path.isabs(path):
             return [None] * 4
+
+        if isinstance(path, str):
+            path = path.rstrip(self._path_separator)
 
         ############################
 
@@ -243,15 +224,15 @@ class EudatEndpoint(EndpointResource):
         icom = r.icommands
         username = r.username
         path, resource, filename, force = \
-                    self.get_file_parameters(icom, path=path)
+            self.get_file_parameters(icom, path=path)
         is_collection = icom.is_collection(path)
         if is_collection:
             return self.send_errors(
                 'Collection: recursive download is not allowed')
 
         if filename is None:
-                filename=self.filename_from_path(path)
-        abs_file=self.absolute_upload_file(filename, username)
+                filename = self.filename_from_path(path)
+        abs_file = self.absolute_upload_file(filename, username)
 
         # TODO: decide if we want to use a cache when streaming
         # what about nginx caching?
@@ -259,13 +240,12 @@ class EudatEndpoint(EndpointResource):
         # Make sure you remove any cached version to get a fresh obj
         try:
             os.remove(abs_file)
-        except:
+        except BaseException:
             pass
         # Execute icommand (transfer data to cache)
         icom.open(path, abs_file)
         # Download the file from local fs
-        filecontent=self.download(
-            filename, subfolder=username, get=True)
+        filecontent = self.download(filename, subfolder=username, get=True)
         # Remove local file
         os.remove(abs_file)
         # Stream file content

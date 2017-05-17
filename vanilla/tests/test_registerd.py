@@ -130,7 +130,6 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         """ Test the entity listingend retrieval: GET """
 
         pid = '123/123456789'
-        checksum = 'md5md5md5md5'
         # STRANGE_BSTRING = b"normal"
         STRANGE_BSTRING = "£$%&($)/(*é:_§°:#".encode()
 
@@ -186,12 +185,9 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(
             data['Response']['data'][0][self._test_filename]['metadata']['PID'],
              None)
-        self.assertEqual(
-            data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
-             None)
 
         # Add EUDAT metadata
-        params = json.dumps(dict({'PID': pid, 'EUDAT/CHECKSUM': checksum}))
+        params = json.dumps(dict({'PID': pid}))
         endpoint = (self._api_uri + self._metadata_endpoint + self._irods_path +
                  '/' + self._test_filename)
         r = self.app.patch(endpoint, data=params,
@@ -208,9 +204,9 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(
             data['Response']['data'][0][self._test_filename]['metadata']['PID'],
              pid)
-        self.assertEqual(
-            data['Response']['data'][0][self._test_filename]['metadata']['EUDAT/CHECKSUM'],
-             checksum)
+        # Uncomment when iRODS forces checksum calculation
+        #self.assertIsNotNone(
+        #    data['Response']['data'][0][self._test_filename]['metadata']['checksum'])
 
     def test_04_PATCH_rename(self):
         """ Test directory creation: POST """

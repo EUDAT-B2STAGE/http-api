@@ -36,6 +36,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """ Download file from filename """
 
         data = {}
+        checksum = None
 
         if irods_location is None:
             return self.send_errors(
@@ -57,13 +58,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         is_collection = icom.is_collection(path)
         # Check if it's not a collection because the object does not exist
         if not is_collection:
-            icom.dataobject_exists(path)
+            icom.get_dataobject(path)
 
         ###################
         # DOWNLOAD a specific file
         ###################
 
-        # If downlaod is True, trigger file download
+        # If download is True, trigger file download
         if hasattr(self._args, 'download'):
             if self._args.download and 'true' in self._args.download.lower():
                 if is_collection:
@@ -107,22 +108,27 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     "Path does not exists or you don't have privileges",
                     code=hcodes.HTTP_BAD_NOTFOUND)
 
-        # Get PID and Checksum
-        out = {}
-        try:
-            out, _ = icom.get_metadata(path)
-        except IrodsException:
-            pass
-
         # Set the right context to each element
         response = []
         for filename, metadata in data.items():
 
-            if metadata.get('PID') is not None:
-                metadata['PID'] = out.get("PID")
-            if metadata.get('EUDAT/CHECKSUM') is not None:
-                metadata['EUDAT/CHECKSUM'] = out.get("EUDAT/CHECKSUM")
+            # Get iRODS checksum
+            file_path = os.path.join(collection, filename)
+            try:
+                obj = icom.get_dataobject(file_path)
+                checksum = obj.checksum
+            except IrodsException:
+                checksum = None
 
+            # Get PID
+            out = {}
+            try:
+                out, _ = icom.get_metadata(path)
+            except IrodsException:
+                pass
+
+            metadata['PID'] = out.get("PID")
+            metadata['checksum'] = checksum
             metadata.pop('path')
             content = {
                 'metadata': metadata,
@@ -300,17 +306,21 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             # TODO: rethink this as asyncronous operation
             # e.g. celery task
-            out = {}
-            if self._args.get('pid'):
-                try:
-                    out, _ = icom.get_metadata(path)
-                except IrodsException:
-                    pass
+            #out = {}
+            #if self._args.get('pid'):
+            #    try:
+            #        out, _ = icom.get_metadata(path)
+            #    except IrodsException:
+            #        pass
+
+            # Get iRODS checksum
+            obj = icom.get_dataobject(ipath)
+            checksum = obj.checksum
 
             content = {
                 'location': self.b2safe_location(ipath),
-                'PID': out.get('PID'),
-                'EUDAT/CHECKSUM': out.get('EUDAT/CHECKSUM'),
+                #'PID': out.get('PID'),
+                'checksum': checksum,
                 'filename': filename,
                 'path': path,
                 'link': self.httpapi_location(

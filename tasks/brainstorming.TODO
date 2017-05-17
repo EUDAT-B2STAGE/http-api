@@ -1,16 +1,4 @@
 
-- copy new .env
-- remove icat from debug.yml and set sleep infinity as rest command
-- launch debug
-- manual: docker-entrypoint rest
-- 130.186.13.110 eudat-dmp1 in /etc/hosts
-- export IRODS_HOST=eudat-dmp1
-- copy pdonorio certs in /opt/certificates/pdonorio and set permissions
-- copy 467aa3eb.* in /opt/certificates/simple_ca
-- b2handle?
-
-
-  --- ✄ -----------------------
 
 After refactor:
 
