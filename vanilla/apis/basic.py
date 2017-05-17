@@ -58,7 +58,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         is_collection = icom.is_collection(path)
         # Check if it's not a collection because the object does not exist
         if not is_collection:
-            icom.dataobject_exists(path)
+            icom.get_dataobject(path)
 
         ###################
         # DOWNLOAD a specific file
@@ -114,8 +114,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             # Get iRODS checksum
             file_path = os.path.join(collection, filename)
-            obj = icom.get_dataobject(file_path)
-            checksum = obj.checksum
+            try:
+                obj = icom.get_dataobject(file_path)
+                checksum = obj.checksum
+            except IrodsException:
+                checksum = None
 
             # Get PID
             out = {}

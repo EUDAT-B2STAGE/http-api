@@ -155,7 +155,8 @@ if [ "$1" == 'create' -o "$1" == "$ALL_COMMAND" ]; then
 
     echo "Create directory $path [POST]"
 
-    api_call result POST "$path" "force=True"
+    # api_call result POST "$path" "force=True"
+    api_call result POST "$path"
     # http://stackoverflow.com/a/9640736/2114395
     if [ "$result" -gt "$MIN_INVALID_STATUS" ]; then return; fi
 fi
