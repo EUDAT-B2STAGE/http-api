@@ -12,7 +12,6 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 """
 
 import os
-# from flask import request, current_app
 from flask_ext.flask_irods.client import IrodsException
 from eudat.apis.common import CURRENT_HTTPAPI_SERVER  # , PRODUCTION
 from eudat.apis.common.b2stage import EudatEndpoint
@@ -43,8 +42,12 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                 message='Missing PID inside URI',
                 code=hcodes.HTTP_BAD_REQUEST)
 
+        # parse query parameters
+        self.get_input()
+
         ###################
         # Perform B2HANDLE request: retrieve URL from handle
+        # TO FIX: move the PID part inside a http-api-base class
         ###################
         URL_value = None
         CHECKSUM_value = None
@@ -116,37 +119,37 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
         # If downlaod is True, trigger file download
-        if (hasattr(self._args, 'download') and
-            self._args.download and 'true' in self._args.download.lower()):
+        if (hasattr(self._args, 'download')):
+            if self._args.download and 'true' in self._args.download.lower():
 
-            api_url = CURRENT_HTTPAPI_SERVER
+                api_url = CURRENT_HTTPAPI_SERVER
 
-            # TODO: check download in debugging mode
-            # if not PRODUCTION:
-            #     # For testing pourpose, then to be removed
-            #     URL_value = CURRENT_HTTPAPI_SERVER + \
-            #         '/api/namespace/tempZone/home/guest/gettoken'
+                # TODO: check download in debugging mode
+                # if not PRODUCTION:
+                #     # For testing pourpose, then to be removed
+                #     URL_value = CURRENT_HTTPAPI_SERVER + \
+                #         '/api/namespace/tempZone/home/guest/gettoken'
 
-            # If local HTTP-API perform a direct download
-            # TO FIX: the following code can be improved
-            route = api_url + 'api/registered/'
-            # route = route.replace('http://', '')
+                # If local HTTP-API perform a direct download
+                # TO FIX: the following code can be improved
+                route = api_url + 'api/registered/'
+                # route = route.replace('http://', '')
 
-            if (URL_value.startswith(route)):
-                URL_value = URL_value.replace(route, '/')
-                r = self.init_endpoint()
-                if r.errors is not None:
-                    return self.send_errors(errors=r.errors)
-                URL_value = self.download_object(r, URL_value)
-            else:
-                # Perform a request to an external service?
-                return self.send_warnings(
-                    {'url': URL_value},
-                    errors=[
-                        "Data-object can't be downloaded by current " +
-                        "HTTP-API server '%s'" % api_url
+                if (URL_value.startswith(route)):
+                    URL_value = URL_value.replace(route, '/')
+                    r = self.init_endpoint()
+                    if r.errors is not None:
+                        return self.send_errors(errors=r.errors)
+                    URL_value = self.download_object(r, URL_value)
+                else:
+                    # Perform a request to an external service?
+                    return self.send_warnings(
+                        {'URL': URL_value},
+                        errors=[
+                            "Data-object can't be downloaded by current " +
+                            "HTTP-API server '%s'" % api_url
                         ]
                     )
-            return URL_value
-        else:
-            return {'URL': URL_value, 'EUDAT/CHECKSUM': CHECKSUM_value}
+                return URL_value
+
+        return {'URL': URL_value, 'EUDAT/CHECKSUM': CHECKSUM_value}

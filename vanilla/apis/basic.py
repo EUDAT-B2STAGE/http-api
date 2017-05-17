@@ -64,7 +64,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # DOWNLOAD a specific file
         ###################
 
-        # If downlaod is True, trigger file download
+        # If download is True, trigger file download
         if hasattr(self._args, 'download'):
             if self._args.download and 'true' in self._args.download.lower():
                 if is_collection:
