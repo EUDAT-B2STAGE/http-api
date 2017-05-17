@@ -181,6 +181,9 @@ class EudatEndpoint(B2accessUtilities):
         if path is None or not os.path.isabs(path):
             return [None] * 4
 
+        if isinstance(path, str):
+            path = path.rstrip(self._path_separator)
+
         ############################
 
         filename = None
