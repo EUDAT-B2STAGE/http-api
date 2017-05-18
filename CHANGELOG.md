@@ -1,15 +1,52 @@
-
-# *next*: v0.3-alpha
-**due date**: Feb 28, 2017
-**milestone**: to be defined
+# v0.3.2-beta (*next*)
+**due date**: May 30, 2017
+**milestone**: [beta version 3](https://github.com/EUDAT-B2STAGE/http-api/milestone/6)
 
 ## features
-- User testing
-- Participating in adding Python3 support into irods python official client
-- Bug fixes
 
+- shorter token
+- more unittests
+- performances?
+- bug fixes
 
-# *next*: v0.2-alpha
+---
+
+# v0.3.1-beta (*current*)
+**due date**: May 15, 2017
+**milestone**: [beta version 2](https://github.com/EUDAT-B2STAGE/http-api/milestone/5?closed=1)
+
+## features
+
+- [#39] automatical refresh of B2ACCESS certificate proxy 
+- [#45] pids endpoint 
+- [#54] checksum in metadata 
+- First regular milestone reached in two weeks
+
+---
+
+# v0.3.0-beta
+**due date**: Apr 30, 2017
+**milestone**: none
+
+## features
+- Contributing to [prc](https://github.com/irods/python-irodsclient) irods driver for python ([python 3 support](https://github.com/irods/python-irodsclient/pull/62) and [gsi integration](https://github.com/irods/python-irodsclient/pull/57))
+- Refactor of the core (now called [RAPyDo](https://github.com/rapydo)):
+    - docker-compose yaml format v3
+         - custom configuration moved into one place
+         - switched to docker builds for images
+    - services injections as flask extensions
+    - services detection with compose v3 variables
+- Integration of `prc` as flask extension inside RAPyDo services
+- EPIC PID and `B2HANDLE` first integration
+- `Letsencrypt` automatization with a dedicated proxy docker build
+- Branch dedicated to a community [use case](https://github.com/EUDAT-B2STAGE/http-api/tree/mongo)
+- Starting the integration of [gitbook](https://rapydo.gitbooks.io/rapydo/content/) for the documentation
+- User (development) testing
+- Lots of bug fixes 
+
+---
+
+# v0.2-alpha
 **commit**: 643ed4a
 **due date**: Jan 20, 2017
 **milestone**: [Consolidations](https://github.com/EUDAT-B2STAGE/http-api/milestone/4)
@@ -24,7 +61,9 @@
 - Global better logging
 - Various bug fixes
 
-# *current*: v0.1-alpha
+---
+
+# v0.1-alpha
 **commit**: 0e8d084
 **date**: Nov 25, 2016
 
