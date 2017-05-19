@@ -1,0 +1,8 @@
+
+class: NewEndpoint
+file: newendpoint
+
+mapping:
+  new: "/newendpoint"
+labels:
+  - new
