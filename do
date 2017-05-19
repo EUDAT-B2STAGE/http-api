@@ -45,43 +45,53 @@ fi
 subdir="backend"
 prcdir="prc"
 prcbranch="b2stage"
-submodule_tracking="submodules.current.commit"
+
+sqlcontainer="sql"
 irodscontainer="icat"
-# restcontainer="rest"
 restcontainer="backend"
 proxycontainer="proxy"
 clientcontainer="client"
+
 vcom="docker volume"
 ncom="docker network"
+submodule_tracking="submodules.current.commit"
 
 # cprefix=`basename $(pwd) | tr -d '-'`
 source .env
 cprefix=$COMPOSE_PROJECT_NAME
 
 compose_dir="containers"
-compose_base="docker-compose -f backend/docker-compose.yml -f $compose_dir/commons.yml"
-compose_all="$compose_base -f $compose_dir/debug.yml -f $compose_dir/development.yml -f $compose_dir/production.yml "
+compose_base="docker-compose -f backend/docker-compose.yml"
+compose_extended="$compose_base -f $compose_dir/commons.yml"
+compose_all="$compose_extended -f $compose_dir/debug.yml -f $compose_dir/development.yml -f $compose_dir/production.yml "
 
 # Production mode
 if [ "$1" == "PRODUCTION" ]; then
-    compose_run="$compose_base -f $compose_dir/production.yml"
+    compose_run="$compose_extended -f $compose_dir/production.yml"
 # Development mode
 elif [ "$1" == "DEVELOPMENT" ]; then
-    compose_run="$compose_base -f $compose_dir/development.yml"
+    compose_run="$compose_extended -f $compose_dir/development.yml"
 # Normal / debug mode
 else
-    compose_run="$compose_base -f $compose_dir/debug.yml"
+    compose_run="$compose_extended -f $compose_dir/debug.yml"
 fi
 # # Init mode
 # if [ "$1" == "init" ]; then
 #     compose_run="$compose_base -f $compose_dir/init.yml"
 
 #####################
-warnings=$($compose_run config -q 2>&1)
-if [ "$warnings" != "" ]; then
-    echo "Failed to validate compose files:"
-    echo $warnings
-    exit 1
+if [ "$(ls -A $subdir)" ]; then
+    echo "Submodule already exists" > /dev/null
+else
+    echo "Inizialitazion for the http-api-base submodule"
+    git clone https://github.com/EUDAT-B2STAGE/http-api-base.git $subdir
+    cd $subdir
+    # Go into the current branch
+    git checkout $core_branch_backend
+    # print latest commit
+    echo "Check latest commit"
+    git log -n 1
+    cd ..
 fi
 
 #####################
@@ -102,18 +112,11 @@ do
     fi
 done
 
-if [ "$(ls -A $subdir)" ]; then
-    echo "Submodule already exists" > /dev/null
-else
-    echo "Inizialitazion for the http-api-base submodule"
-    git clone https://github.com/EUDAT-B2STAGE/http-api-base.git $subdir
-    cd $subdir
-    # Go into the current branch
-    git checkout $core_branch_backend
-    # print latest commit
-    echo "Check latest commit"
-    git log -n 1
-    cd ..
+warnings=$($compose_run config -q 2>&1)
+if [ "$warnings" != "" ]; then
+    echo "Failed to validate compose files:"
+    echo $warnings
+    exit 1
 fi
 
 # Update the remote github repos
@@ -128,37 +131,23 @@ if [ "$1" == "push" ]; then
         exit 1
     fi
 
-    if [ "$2" != "force" ]; then
-        echo "TO BE FIXED..."
-        exit 1
-        # testlogs="/tmp/tests.log"
-        # echo "Running tests before pushing..."
-        # $make_tests > $testlogs
-        # if [ "$?" == "0" ]; then
-        #     echo "Test are fine!"
-        # else
-        #     echo "Failed, to test... (see $testlogs file)"
-        #     echo "Fix errors before pushing, or run again with:"
-        #     echo "$0 $1 force"
-        #     exit 1
-        # fi
-    fi
-
     echo "Pushing submodule"
     cd $subdir
     git push origin $core_branch_backend
     cd ..
 
-    # Save a snapshot of current submodule
-    echo "Save submodule status"
-    echo -e \
-        $(cd $subdir && git log -n 1 --oneline --no-color)"\n"$(cd $subdir && git branch --no-color) \
-        > $submodule_tracking
+    # NOT VERY USEFUL?
+    # # Save a snapshot of current submodule
+    # echo "Save submodule status"
+    # echo -e \
+    #     $(cd $subdir && git log -n 1 --oneline --no-color)"\n"$(cd $subdir && git branch --no-color) \
+    #     > $submodule_tracking
 
-    echo "Pushing main repo"
-    git add $submodule_tracking
-    git commit
-    git push $core_branch
+    # echo "Pushing main repo"
+    # git add $submodule_tracking
+    # git commit
+
+    git push origin $core_branch
     echo "Completed"
     exit 0
 fi
@@ -175,7 +164,7 @@ if [ "$1" == "update" ]; then
 
     # Note: images must be updated after pulling the code
     echo "Updating docker images"
-    docker-compose pull --parallel --ignore-pull-failures
+    $compose_base pull --parallel --ignore-pull-failures
     ./do build4test
 
     echo "Done"
@@ -285,7 +274,7 @@ elif [ "$1" == "buildall" ]; then
     exit 0
 
 elif [ "$1" == "build4test" ]; then
-    $compose_run build --pull sql icat $restcontainer
+    $compose_run build --pull $sqlcontainer $irodscontainer $restcontainer
     exit 0
 
 elif [ "$1" == "buildone" ]; then
