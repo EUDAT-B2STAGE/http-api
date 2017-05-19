@@ -45,6 +45,7 @@ fi
 # Confs
 subdir="backend"
 prcdir="prc"
+prcbranch="b2stage"
 submodule_tracking="submodules.current.commit"
 irodscontainer="icat"
 restcontainer="rest"
@@ -57,28 +58,23 @@ source .env
 # cprefix=`basename $(pwd) | tr -d '-'`
 cprefix=$COMPOSE_PROJECT_NAME
 
+compose_dir="containers"
 compose_base="docker-compose -f docker-compose.yml"
-compose_all="$compose_base -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
-# compose_all="$compose_base -f composers/init.yml -f composers/debug.yml -f composers/development.yml -f composers/production.yml "
-
-# # Init mode
-# if [ "$1" == "init" ]; then
-#     compose_run="$compose_base -f composers/init.yml"
+compose_all="$compose_base -f $compose_dir/debug.yml -f $compose_dir/development.yml -f $compose_dir/production.yml "
 
 # Production mode
 if [ "$1" == "PRODUCTION" ]; then
-
-    compose_run="$compose_base -f composers/production.yml"
-
+    compose_run="$compose_base -f $compose_dir/production.yml"
 # Development mode
 elif [ "$1" == "DEVELOPMENT" ]; then
-    compose_run="$compose_base -f composers/development.yml"
-
+    compose_run="$compose_base -f $compose_dir/development.yml"
 # Normal / debug mode
 else
     compose_run="$compose_base -f composers/debug.yml"
-
 fi
+# # Init mode
+# if [ "$1" == "init" ]; then
+#     compose_run="$compose_base -f $compose_dir/init.yml"
 
 #####################
 warnings=$($compose_run config -q 2>&1)
@@ -125,6 +121,9 @@ if [ "$(ls -A $prcdir)" ]; then
 else
     echo "Inizialitazion official 'python-irodsclient'"
     git clone https://github.com/pdonorio/python-irodsclient.git $prcdir
+    cd $prcdir
+    git checkout $prcbranch
+    cd ..
 fi
 
 # Update the remote github repos

@@ -8,7 +8,7 @@ services:
       MODE: ${LETSENCRYPT_MODE}
     volumes:
       # SSL / HTTPS
-      - ./confs/prod_proxy.conf:/etc/nginx/sites-enabled/production
+      - ./confs/nginx/production.conf:/etc/nginx/sites-enabled/production
       - sslcerts:/etc/letsencrypt
     ports:
       - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
