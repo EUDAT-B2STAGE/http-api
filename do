@@ -1,8 +1,7 @@
 #!/bin/bash
 
-core_branch="master"
-#core_branch_backend="last_refactor"
-core_branch_backend="master"
+core_branch="0.3.2"
+core_branch_backend="merging_eudat"
 
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
