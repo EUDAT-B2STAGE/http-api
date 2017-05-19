@@ -2,14 +2,7 @@
 version: '3'
 services:
 
-  proxy:
-    volumes:
-      # no SSL
-      - ./confs/nginx/development.conf:/etc/nginx/sites-enabled/development
-    ports:
-      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}
-
-  rest:
+  backend:
     environment:
       FLASK_DEBUG: 1
       DEBUG_LEVEL: DEBUG
@@ -20,6 +13,13 @@ services:
     depends_on:
       - icat
       - sql
+
+  proxy:
+    volumes:
+      # no SSL
+      - ./confs/nginx/development.conf:/etc/nginx/sites-enabled/development
+    ports:
+      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}
 
   client:
     environment:

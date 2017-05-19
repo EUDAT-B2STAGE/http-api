@@ -2,19 +2,7 @@
 version: '3'
 services:
 
-  proxy:
-    environment:
-      DOMAIN: ${PROJECT_DOMAIN}
-      MODE: ${LETSENCRYPT_MODE}
-    volumes:
-      # SSL / HTTPS
-      - ./confs/nginx/production.conf:/etc/nginx/sites-enabled/production
-      - sslcerts:/etc/letsencrypt
-    ports:
-      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
-      - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
-
-  rest:
+  backend:
     # command: sleep infinity
     environment:
       APP_MODE: production
@@ -27,6 +15,18 @@ services:
       - sql
     expose:
       - 8080
+
+  proxy:
+    environment:
+      DOMAIN: ${PROJECT_DOMAIN}
+      MODE: ${LETSENCRYPT_MODE}
+    volumes:
+      # SSL / HTTPS
+      - ./confs/nginx/production.conf:/etc/nginx/sites-enabled/production
+      - sslcerts:/etc/letsencrypt
+    ports:
+      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
+      - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
 
   # if using self signed certificates
   # and trying to test locally:

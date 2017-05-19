@@ -48,18 +48,19 @@ prcdir="prc"
 prcbranch="b2stage"
 submodule_tracking="submodules.current.commit"
 irodscontainer="icat"
-restcontainer="rest"
+# restcontainer="rest"
+restcontainer="backend"
 proxycontainer="proxy"
 clientcontainer="client"
 vcom="docker volume"
 ncom="docker network"
 
-source .env
 # cprefix=`basename $(pwd) | tr -d '-'`
+source .env
 cprefix=$COMPOSE_PROJECT_NAME
 
 compose_dir="containers"
-compose_base="docker-compose -f docker-compose.yml"
+compose_base="docker-compose -f backend/docker-compose.yml -f $compose_dir/commons.yml"
 compose_all="$compose_base -f $compose_dir/debug.yml -f $compose_dir/development.yml -f $compose_dir/production.yml "
 
 # Production mode
@@ -70,7 +71,7 @@ elif [ "$1" == "DEVELOPMENT" ]; then
     compose_run="$compose_base -f $compose_dir/development.yml"
 # Normal / debug mode
 else
-    compose_run="$compose_base -f composers/debug.yml"
+    compose_run="$compose_base -f $compose_dir/debug.yml"
 fi
 # # Init mode
 # if [ "$1" == "init" ]; then
@@ -116,20 +117,10 @@ else
     cd ..
 fi
 
-if [ "$(ls -A $prcdir)" ]; then
-    echo "Rpc already exists" > /dev/null
-else
-    echo "Inizialitazion official 'python-irodsclient'"
-    git clone https://github.com/pdonorio/python-irodsclient.git $prcdir
-    cd $prcdir
-    git checkout $prcbranch
-    cd ..
-fi
-
 # Update the remote github repos
 if [ "$1" == "push" ]; then
 
-    check_container=`$compose_run ps rest | grep -i exit`
+    check_container=`$compose_run ps $restcontainer | grep -i exit`
     if [ "$check_container" != "" ]; then
         echo "Please make sure that Flask container server is running"
         echo "You may try with the command:"
@@ -266,12 +257,16 @@ elif [ "$1" == "httpapi_restart" ]; then
 
 elif [ "$1" == "api_test" ]; then
     echo "Opening a shell for nose2 tests"
-    $compose_run exec rest /bin/bash -c "testwithcoverage"
+    $compose_run exec $restcontainer /bin/bash -c "testwithcoverage"
     exit $?
 
 # Handle the right logs
 elif [ "$1" == "logs" ]; then
-    $compose_run logs -f -t --tail="10"
+    service=""
+    if [ "$2" != "" ]; then
+        service=$2
+    fi
+    $compose_run logs -f -t --tail="10" $service
     exit 0
 
 # SSL certificates in production with letsencrypt
@@ -291,7 +286,7 @@ elif [ "$1" == "buildall" ]; then
     exit 0
 
 elif [ "$1" == "build4test" ]; then
-    $compose_run build --pull sql icat rest
+    $compose_run build --pull sql icat $restcontainer
     exit 0
 
 elif [ "$1" == "buildone" ]; then
@@ -303,7 +298,22 @@ elif [ "$1" == "buildone" ]; then
     exit 0
 fi
 
+###################################
+# PRC DEVELOPMENT
+###################################
+if [ "$(ls -A $prcdir)" ]; then
+    echo "PRC already exists"
+else
+    echo "Inizialitazion official 'python-irodsclient'"
+    git clone https://github.com/pdonorio/python-irodsclient.git $prcdir
+    cd $prcdir
+    git checkout $prcbranch
+    cd ..
+fi
+
+###################################
 # Boot up
+###################################
 if [ "$1" == "DEBUG" -o "$1" == "DEVELOPMENT" -o "$1" == "PRODUCTION" ];
 then
 
@@ -311,7 +321,7 @@ then
 
     if [ "$2" == "sqladmin" ]; then
         echo "Administration for relational databases"
-        $compose_run up sqladmin
+        $compose_run up --timeout 5 sqladmin
         exit 0
     elif [ "$2" == "client_shell" ]; then
         echo "Opening a client shell"
@@ -328,7 +338,7 @@ then
         local_url="http://localhost:8080/api/specs"
         echo "open \"$swagger_url?url=$local_url\""
         echo ""
-        $compose_run up swagclient
+        $compose_run up --timeout 5 swagclient
         exit 0
     elif [ "$2" == "restart" ]; then
         echo "Clean previous containers"
@@ -337,9 +347,9 @@ then
     fi
 
     if [ "$1" == "DEBUG" ]; then
-        $compose_run up -d $restcontainer
+        $compose_run up -d --timeout 5 $restcontainer
     else
-        $compose_run up -d $proxycontainer
+        $compose_run up -d --timeout 5 $proxycontainer
     fi
     status="$?"
 
@@ -358,7 +368,7 @@ then
             do
                 echo "in progress..."
                 sleep 5
-                initps=$(docker-compose exec rest ls /${JWT_APP_SECRETS}/initialized 2>/dev/null)
+                initps=$(docker-compose exec $restcontainer ls /${JWT_APP_SECRETS}/initialized 2>/dev/null)
             done
         else
             echo ""

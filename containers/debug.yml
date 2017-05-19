@@ -2,7 +2,7 @@
 version: '3'
 services:
 
-  rest:
+  backend:
     environment:
       FLASK_DEBUG: 1
       DEBUG_LEVEL: VERY_VERBOSE
@@ -22,7 +22,7 @@ services:
     networks:
       app_net:
     depends_on:
-      - rest
+      - backend
 
   sqladmin:
     # volumes:
