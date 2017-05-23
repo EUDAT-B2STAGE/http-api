@@ -12,6 +12,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 """
 
 import os
+import time
 from flask import request, current_app
 
 from eudat.apis.common import PRODUCTION, CURRENT_MAIN_ENDPOINT
@@ -208,7 +209,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             log.info("Created irods collection: %s", ipath)
 
-        # TO FIX: Should this status be No response?
+        # TOFIX: Should this status be No response?
         status = hcodes.HTTP_OK_BASIC
         content = {
             'location': self.b2safe_location(path),
@@ -256,7 +257,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         response = super(BasicEndpoint, self) \
             .upload(subfolder=r.username, force=force)
 
-#  TO FIX: custom split of a custom response
+#  TOFIX: custom split of a custom response
 # this piece of code does not work with a custom response
 # if it changes the main blocks of the json root;
 # the developer should be able to provide a 'custom_split'
@@ -304,14 +305,30 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             if filename is None:
                 filename = self.filename_from_path(path)
 
-            # TODO: rethink this as asyncronous operation
-            # e.g. celery task
-            #out = {}
-            #if self._args.get('pid'):
-            #    try:
-            #        out, _ = icom.get_metadata(path)
-            #    except IrodsException:
-            #        pass
+            pid_found = True
+            out = {}
+            pid_parameter = self._args.get('pid')
+            if pid_parameter and 'true' in pid_parameter.lower():
+                # Shall we get the timeout from user?
+                pid_found = False
+                timeout = time.time() + 10  # seconds from now
+                pid = ''
+                while True:
+                    out, _ = icom.get_metadata(path)
+                    pid = out.get('PID')
+                    if pid is not None or time.time() > timeout:
+                        break
+                    time.sleep(2)
+                if not pid:
+                    error_message = \
+                        ("Timeout waiting for PID from B2SAFE:"
+                         " the object registration maybe in progress."
+                         " File correctly uploaded.")
+                    log.warning(error_message)
+                    status = hcodes.HTTP_OK_ACCEPTED
+                    errors = [error_message]
+                else:
+                    pid_found = True
 
             # Get iRODS checksum
             obj = icom.get_dataobject(ipath)
@@ -319,7 +336,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             content = {
                 'location': self.b2safe_location(ipath),
-                #'PID': out.get('PID'),
+                'PID': out.get('PID'),
                 'checksum': checksum,
                 'filename': filename,
                 'path': path,
@@ -330,7 +347,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             }
 
         # log.pp(content)
-        return self.force_response(content, errors=errors, code=status)
+        if pid_found:
+            return self.force_response(content, errors=errors, code=status)
+        else:
+            return self.send_warnings(content,
+                                      errors=errors,
+                                      code=hcodes.HTTP_OK_ACCEPTED)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def patch(self, irods_location=None):
