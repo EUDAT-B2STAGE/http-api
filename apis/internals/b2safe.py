@@ -62,7 +62,7 @@ class MetaDataObject(EndpointResource):
 
 #         #######################
 #         #######################
-# # // TO FIX: request a 'user' parameter
+# # // TOFIX: request a 'user' parameter
 #         # User
 #         myuser = None
 #         userobj = self.get_current_user()
@@ -86,7 +86,7 @@ class MetaDataObject(EndpointResource):
 #         #######################
 #         # Create UUID
 #         myid = getUUID()
-# # // TO FIX: request a 'location' parameter
+# # // TOFIX: request a 'location' parameter
 #         mylocation = 'noprotocol:///%s/%s/TOBEDEFINED' % (myuser, myid)
 #         dobj = graph.DataObject(id=myid, location=mylocation)
 #         dobj.save()

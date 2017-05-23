@@ -1,7 +1,7 @@
 #!/bin/bash
 
 conf='/var/lib/postgresql/data/pg_hba.conf'
-## TO FIX: from an environment variable
+## TOFIX: from an environment variable
 net="172.1.0.0/16"
 ## http://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html
 

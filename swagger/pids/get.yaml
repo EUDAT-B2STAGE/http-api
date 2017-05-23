@@ -8,7 +8,7 @@
 
 
 #all:
-#  # TO FIX: decide if this option is allowed
+#  # TOFIX: decide if this option is allowed
 #summary: Advice that PID is required inside URI
 #  responses:
 #    '400':

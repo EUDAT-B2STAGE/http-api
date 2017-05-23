@@ -1,6 +1,6 @@
 
 # Skip submodules
-backend
+backend/*
 prc
 
 # Skip self-signed certificates

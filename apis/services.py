@@ -4,7 +4,7 @@
 Custom method to initialize mixed services which rely on each other
 """
 
-# TO FIX
+# TOFIX
 from rapydo.services import get_instance_from_services
 from rapydo.utils.logs import get_logger
 
@@ -17,7 +17,7 @@ def init(internal_services=None):
     get_instance_from_services(internal_services, 'irods')
     return
 
-    # # TO FIX: use injector
+    # # TOFIX: use injector
     # icom = get_instance_from_services(internal_services, 'irods')
     # graph = get_instance_from_services(internal_services, 'neo4j')
 

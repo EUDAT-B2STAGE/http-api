@@ -27,7 +27,7 @@ class User(UserBase):
 # setattr(User, 'name', StringProperty())
 # setattr(User, 'surname', StringProperty())
 
-## // TO FIX:
+## // TOFIX:
 # should we consider roles?
     # _fields_to_show = {
     #     'role_1': ['name'],
@@ -39,7 +39,7 @@ class User(UserBase):
 ##############################################################################
 
 
-## // TO FIX: connect IrodsUser to Authenticated user ?
+## // TOFIX: connect IrodsUser to Authenticated user ?
 
 class IrodsUser(StructuredNode):
     username = StringProperty(unique_index=True)

@@ -11,7 +11,7 @@ tags:
   pids: resolve and download data from EUDAT Persistente IDentifier
   # internal: for internal testing purpose only
 
-# TO FIX: define here a variable
+# TOFIX: define here a variable
 # that tells the server what the domain will be
 
 # variables:

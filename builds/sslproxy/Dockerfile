@@ -9,7 +9,7 @@ RUN apk update && \
     && rm -rf /var/cache/apk/*
 
 WORKDIR /tmp
-# TO FIX: choose the right directory for installation
+# TOFIX: choose the right directory for installation
 ENV ACMEDIR /acme
 ENV ACMEV "2.6.8"
 

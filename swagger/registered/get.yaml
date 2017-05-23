@@ -11,7 +11,7 @@ common:
       - normal_user
 
 # all:
-#   # TO FIX: decide if this option is allowed
+#   # TOFIX: decide if this option is allowed
 #   summary: Get data from the current user home page
 #   responses:
 #     '200':

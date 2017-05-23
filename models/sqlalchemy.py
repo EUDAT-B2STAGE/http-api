@@ -5,7 +5,7 @@
 from rapydo.models.sqlalchemy import db, ExternalAccounts  # , User
 
 # # Add (inject) attributes to User
-# ## TO FIX: should this already be there or what?
+# ## TOFIX: should this already be there or what?
 # setattr(User, 'name', db.Column(db.String(255)))
 # setattr(User, 'surname', db.Column(db.String(255)))
 

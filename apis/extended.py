@@ -47,7 +47,7 @@ class PIDEndpoint(Uploader, EudatEndpoint):
 
         ###################
         # Perform B2HANDLE request: retrieve URL from handle
-        # TO FIX: move the PID part inside a http-api-base class
+        # TOFIX: move the PID part inside a http-api-base class
         ###################
         URL_value = None
         CHECKSUM_value = None
@@ -131,7 +131,7 @@ class PIDEndpoint(Uploader, EudatEndpoint):
                 #         '/api/namespace/tempZone/home/guest/gettoken'
 
                 # If local HTTP-API perform a direct download
-                # TO FIX: the following code can be improved
+                # TOFIX: the following code can be improved
                 route = api_url + 'api/registered/'
                 # route = route.replace('http://', '')
 

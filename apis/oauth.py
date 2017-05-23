@@ -97,7 +97,7 @@ class Authorize(EudatEndpoint):
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
 
-        # # TO FIX: Workout a better way to get the host in this example
+        # # TOFIX: Workout a better way to get the host in this example
         # uri = self.httpapi_location(
         #     request.url.replace("/auth/authorize", ''),
         #     API_URL + "/namespace" + user_home
@@ -105,7 +105,7 @@ class Authorize(EudatEndpoint):
         # get_example = "curl -H 'Authorization: %s %s' %s" \
         #     % ('Bearer', local_token, uri)
 
-        # TO FIX: Create a method to reply with standard Bearer oauth response
+        # TOFIX: Create a method to reply with standard Bearer oauth response
         # return self.send_credentials(local_token, extra, metas)
 
         return self.force_response(

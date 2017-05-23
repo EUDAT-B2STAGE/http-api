@@ -208,7 +208,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             log.info("Created irods collection: %s", ipath)
 
-        # TO FIX: Should this status be No response?
+        # TOFIX: Should this status be No response?
         status = hcodes.HTTP_OK_BASIC
         content = {
             'location': self.b2safe_location(path),
@@ -256,7 +256,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         response = super(BasicEndpoint, self) \
             .upload(subfolder=r.username, force=force)
 
-#  TO FIX: custom split of a custom response
+#  TOFIX: custom split of a custom response
 # this piece of code does not work with a custom response
 # if it changes the main blocks of the json root;
 # the developer should be able to provide a 'custom_split'

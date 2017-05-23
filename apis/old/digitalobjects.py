@@ -119,7 +119,7 @@ class CollectionEndpoint(ExtendedApiResource):
 #         graph = self.global_get_service('neo4j')
 
 #     ##########
-# ## // TO FIX!!
+# ## // TOFIX!!
 # # List collections and dataobjects only linked to current user :)
 
 #         # auth = self.global_get('custom_auth')

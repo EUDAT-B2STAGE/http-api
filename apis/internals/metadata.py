@@ -16,7 +16,7 @@ from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
 
-# TO FIX: Use the correct irods user from the token,
+# TOFIX: Use the correct irods user from the token,
 # instead of IRODS_DEFAULT_USER
 irods_tmp_user = IRODS_DEFAULT_USER
 

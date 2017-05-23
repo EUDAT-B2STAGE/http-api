@@ -18,7 +18,7 @@ all:
     #   type: string
     #   description: iRODS resource
 
-    # TO FIX: move this parameter into body
+    # TOFIX: move this parameter into body
     # # - name: force
     # #   in: body
     # #   type: boolean
