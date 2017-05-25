@@ -1,0 +1,48 @@
+
+# FIXME: move from backend into RAPyDo
+
+variables:
+  python:
+    repos:
+      backend:
+        branch: master
+        online_url: https://github.com/rapydo/http-api.git
+        path: backend
+        if: true
+      build-templates:
+        branch: master
+        online_url: https://github.com/rapydo/build-templates.git
+        path: builds_base
+        if: true
+      frontend:
+        branch: master
+        # online_url: https://github.com/rapydo/node-ui.git
+        online_url: https://github.com/rapydo/angularjs-on-flask.git
+        path: frontend
+        if: $$frontend
+    backend:
+      branch: master
+      credentials:
+        username: user@nomail.org
+        password: test
+        roles:
+          user: normal_user
+          internal: staff_user
+          admin: admin_root
+          default: normal_user
+    frontend:
+      enable: false
+      branch: master
+
+project:
+  title: REST HTTP-API server with Python, Flask and Docker
+  version: v0.1
+  description: No description yet
+
+tags:
+  specifications: JSON with SWAGGER standards for any REST client
+  base: endpoints for base operations
+  helpers: tools for checking status and privileges
+  authentication: log in and out of the REST API
+  profiles: set and view profile for current credentials
+  open_sessions: manage authorized sessions

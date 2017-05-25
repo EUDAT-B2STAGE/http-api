@@ -14,13 +14,14 @@ tags:
 # FIXME: define here a variable
 # that tells the server what the domain will be
 
-# TODO: set this variables to be rapydo compliant
-variables:
-  python:
-    repos:
-      backend:
-        # branch: merging_eudat
-        branch: master
+# # TODO: set this variables to be rapydo compliant
+# variables:
+#   python:
+#     frontend:
+#       enable: True
+#     # repos:
+#     #   backend:
+#     #     branch: merging_eudat
 
 #         backend:
 #             credentials:
