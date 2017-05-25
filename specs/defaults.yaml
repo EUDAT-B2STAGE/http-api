@@ -4,6 +4,11 @@
 variables:
   python:
     repos:
+      rapydo:
+        branch: master
+        online_url: https://github.com/rapydo/core.git
+        path: .
+        if: true
       backend:
         branch: master
         online_url: https://github.com/rapydo/http-api.git
