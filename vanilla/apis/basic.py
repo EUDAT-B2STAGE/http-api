@@ -124,7 +124,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             # Get PID
             out = {}
             try:
-                out, _ = icom.get_metadata(path)
+                out, _ = icom.get_metadata(file_path)
             except IrodsException:
                 pass
 
