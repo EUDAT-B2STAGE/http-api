@@ -105,7 +105,7 @@ class DigitalEntityEndpoint(Uploader, EudatEndpoint):
 
         abs_file = self.absolute_upload_file(myname, user)
 
-# // TOFIX:
+# FIXME:
 # decide if we want to use a cache, and how
 # note: maybe nginx instead of our own
         # Make sure you remove any cached version to get a fresh obj

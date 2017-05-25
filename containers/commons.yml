@@ -33,14 +33,14 @@ services:
       - irodshome:/home/irods
       - irodsvar:/var/lib/irods
       - sharedcerts:/opt/certificates
-      - ../builds/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
+      - ../builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why
     # ports:
     #     - 1247:1247
 
-  sql:
+  postgres:
     environment:
       POSTGRES_USER: "${ALCHEMY_USER}"
       POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
@@ -117,7 +117,7 @@ services:
       HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS}
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
 
-  client:
+  restclient:
     environment:
       IRODS_ZONE: ${IRODS_ZONE}
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}

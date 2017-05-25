@@ -1,7 +1,7 @@
 
 project:
   title: EUDAT-B2STAGE HTTP-API server
-  version: v0.2-alpha
+  version: v0.4-beta
   description: Processing files in different EUDAT domains
 
 tags:
@@ -11,25 +11,61 @@ tags:
   pids: resolve and download data from EUDAT Persistente IDentifier
   # internal: for internal testing purpose only
 
-# TOFIX: define here a variable
+# FIXME: define here a variable
 # that tells the server what the domain will be
 
-# variables:
-#   python:
-#     backend:
-#       # Note: if modify user/pw you need to set Roles too
-#       credentials:
-#         username: itsakindof@magic.orc
-#         password: itsmagic
-#         roles:
-#           user: normal_user
-#           internal: staff_user
-#           admin: admin_root
-#           default: normal_user
+# TODO: set this variables to be rapydo compliant
+variables:
+  python:
+    repos:
+      backend:
+        # branch: merging_eudat
+        branch: master
 
-## IF USING A FRONTEND
-# bower_components:
-#   lib-name:
-#   - file.js
-#   - file.css
-# css: []
+#         backend:
+#             credentials:
+#                 username: "user@nomail.org"
+#                 password: "test"
+#                 roles:
+#                   user: normal_user
+#                   internal: staff_user
+#                   admin: admin_root
+#                   default: normal_user
+#     containers:
+#         users:
+#             backend: "root"
+#             # backend: "irods"
+#         authentication:
+#             service: "neo4j"
+#             # service: "relationaldb"
+#             username: "user@nomail.org"
+#             password: "test"
+
+#         authentication_service: "neo4j"
+
+#         # services:
+#         #     relationaldb:
+#         #         remove_data_at_init_time: "false"
+#         #     neo4j:
+#         #         password: "chooseapassword"
+
+#         # external_services:
+#         #     irods:
+#         #         host: "irods.host.com"
+#         #         port: "1247"
+#         #         username: "irods_user"
+#         #         password: "irods_pwd"
+
+#     js:
+#         # index_state_name: "welcome"
+#         # index_template": "welcome.html"
+#         load_timeout": "800"
+
+#     bower_components:
+#         lib-name:
+#             - file.js
+#             - file.css
+#     css:
+#         - file
+#     js:
+#         - file
