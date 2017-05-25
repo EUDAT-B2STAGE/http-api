@@ -1,6 +1,3 @@
-################
-# submodules
-
 /backend
 /frontend
 
@@ -11,6 +8,7 @@
 
 # data
 uploads
+tmp_files
 
 # bower
 libs/bower_components

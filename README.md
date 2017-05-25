@@ -1,3 +1,1 @@
-# rapydo
-
-Just do `$ ./do`
+Rapydo base to be forked and customized (vanilla code)
