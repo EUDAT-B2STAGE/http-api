@@ -11,18 +11,13 @@ tags:
   pids: resolve and download data from EUDAT Persistente IDentifier
   # internal: for internal testing purpose only
 
-# FIXME: define here a variable
-# that tells the server what the domain will be
-
-# # TODO: set this variables to be rapydo compliant
 # variables:
-#   python:
-#     frontend:
-#       enable: True
-#     # repos:
-#     #   backend:
-#     #     branch: merging_eudat
+#     js:
+#         index_state_name: "welcome"
+#         index_template": "welcome.html"
+#         load_timeout": "800"
 
+#     python:
 #         backend:
 #             credentials:
 #                 username: "user@nomail.org"
@@ -44,23 +39,18 @@ tags:
 
 #         authentication_service: "neo4j"
 
-#         # services:
-#         #     relationaldb:
-#         #         remove_data_at_init_time: "false"
-#         #     neo4j:
-#         #         password: "chooseapassword"
+#         services:
+#             relationaldb:
+#                 remove_data_at_init_time: "false"
+#             neo4j:
+#                 password: "chooseapassword"
 
-#         # external_services:
-#         #     irods:
-#         #         host: "irods.host.com"
-#         #         port: "1247"
-#         #         username: "irods_user"
-#         #         password: "irods_pwd"
-
-#     js:
-#         # index_state_name: "welcome"
-#         # index_template": "welcome.html"
-#         load_timeout": "800"
+#         external_services:
+#             irods:
+#                 host: "irods.host.com"
+#                 port: "1247"
+#                 username: "irods_user"
+#                 password: "irods_pwd"
 
 #     bower_components:
 #         lib-name:

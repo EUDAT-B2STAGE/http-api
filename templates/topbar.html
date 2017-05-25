@@ -1,0 +1,45 @@
+
+<nav class="navbar navbar-default" ng-if="!main.avoidTheToolbar" ng-class="main.toolbarBgColor">
+  <div class="container-fluid">
+
+    <div class="navbar-header">
+<!-- 
+      <a class="navbar-brand" href="#">
+        <img alt="Brand" src="...">
+      </a>
+ -->
+      <h3>
+        <a ui-sref='public.welcome'>
+          {{ myproject }}
+        </a>
+      </h3>
+    </div>
+
+  <div class="collapse navbar-collapse">
+
+    <ul class="nav navbar-nav navbar-right">
+
+      <li>
+        <a href ui-sref="logged.profile" ng-if="logged">
+          <i uib-tooltip='Enter profile {{profile.email}}' tooltip-placement='bottom' class="material-icons">people</i>
+        </a>
+      </li>
+
+      <!-- login/logout buttons -->
+      <li>
+      <a href ui-sref="public.login" ng-if="!logged">
+        Login
+      </a>
+
+      <a href ui-sref="logged.logout" ng-if="logged">
+      <i class='material-icons' uib-tooltip='Logout' tooltip-placement='bottom'>exit_to_app</i>
+      </a>
+      </li>
+
+    </ul>
+  </div>
+
+
+  </div>
+
+</nav>

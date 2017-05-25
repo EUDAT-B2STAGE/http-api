@@ -1,0 +1,11 @@
+depends_on:
+  - SQL_AVAILABLE
+file: foo
+class: SqlEndPoint
+schema:
+  expose: true
+mapping:
+  helloworld: "/sql"
+labels:
+  - example
+  - helloworld

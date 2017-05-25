@@ -1,0 +1,9 @@
+file: foo
+class: JustATest
+schema:
+  expose: true
+mapping:
+  helloworld: "/helloworld"
+labels:
+  - example
+  - helloworld

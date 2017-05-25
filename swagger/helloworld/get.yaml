@@ -1,0 +1,10 @@
+common:
+  custom:
+    authentication: false
+
+helloworld:
+  summary: Unauthenticated hello world 
+  responses:
+    '200':
+      description: Hello world returned 
+

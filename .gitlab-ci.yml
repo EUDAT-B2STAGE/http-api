@@ -1,0 +1,22 @@
+image: python:3.4
+
+
+variables:
+  DOCKER_COMPOSE_VERSION: 1.7.0
+
+before_script:
+  - curl -fsSL https://get.docker.com/ | sh
+  - docker -v
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - mv docker-compose /usr/local/bin
+  - pip install coveralls
+  - pip install python-coveralls
+
+stages:
+  - tests
+
+script:
+  stage: tests
+  script:
+   - docker-compose -f containers/docker-compose.yml exec backend ./tests.sh

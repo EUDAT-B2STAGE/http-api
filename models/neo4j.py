@@ -5,10 +5,11 @@ Graph DB abstraction from neo4j server.
 These are custom models (project dependent).
 """
 
+from __future__ import absolute_import
 from neomodel import StringProperty, BooleanProperty, JSONProperty, \
     StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
 
-from rapydo.models.neo4j import User as UserBase
+from ..neo4j import User as UserBase
 
 # from common.logs import get_logger
 # logger = logging.get_logger(__name__)
@@ -27,7 +28,7 @@ class User(UserBase):
 # setattr(User, 'name', StringProperty())
 # setattr(User, 'surname', StringProperty())
 
-## FIXME:
+## // TO FIX:
 # should we consider roles?
     # _fields_to_show = {
     #     'role_1': ['name'],
@@ -39,7 +40,7 @@ class User(UserBase):
 ##############################################################################
 
 
-## FIXME: connect IrodsUser to Authenticated user ?
+## // TO FIX: connect IrodsUser to Authenticated user ?
 
 class IrodsUser(StructuredNode):
     username = StringProperty(unique_index=True)
