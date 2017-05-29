@@ -35,7 +35,7 @@ services:
       - 8081:5000
 
     networks:
-      graph_net:
+      db_net:
     depends_on:
       - neo4j
 
@@ -50,13 +50,10 @@ services:
       - 9090:7474
       - 7687:7687
     networks:
-      graph_net:
+      db_net:
         aliases:
           - ${GRAPHDB_HOST}
 
   swaggerui:
     ports:
       - 7777:80
-
-networks:
-  graph_net:
