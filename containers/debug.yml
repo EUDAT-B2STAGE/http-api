@@ -37,7 +37,7 @@ services:
     networks:
       graph_net:
     depends_on:
-      - gdb
+      - neo4j
 
   frontend:
     ports:
@@ -45,7 +45,7 @@ services:
     environment:
       BACKEND_PORT: 8081
 
-  gdb:
+  neo4j:
     ports:
       - 9090:7474
       - 7687:7687
@@ -54,7 +54,7 @@ services:
         aliases:
           - ${GRAPHDB_HOST}
 
-  swagger:
+  swaggerui:
     ports:
       - 7777:80
 

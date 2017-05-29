@@ -41,7 +41,7 @@ services:
           aliases:
             - ${API_HOST}
       depends_on:
-        - gdb
+        - neo4j
       expose:
         - 8080
 
@@ -67,7 +67,7 @@ services:
         - backend
         - frontend
 
-    gdb:
+    neo4j:
       # ports:
       #   - 9090:7474
       #   - 7687:7687
