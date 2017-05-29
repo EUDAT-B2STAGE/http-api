@@ -1,0 +1,3 @@
+# Customize this file to include compose configurations common to bluprints
+version: '3'
+
