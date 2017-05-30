@@ -14,18 +14,12 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 
-  # # update docker-compose
-  # - sudo rm /usr/local/bin/docker-compose
-  # - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  # - chmod +x docker-compose
-  # - sudo mv docker-compose /usr/local/bin
-
 install:
   # note: this will also upgrade docker compose
   - pip install --upgrade -r requirements.txt
 
 # before_script:
-#   - chmod o+w backend
+#   - sleep 1
 
 script:
   - docker -v
@@ -33,9 +27,7 @@ script:
   - rapydo --version
 
   # Clone, download, build
-  # - ./do update
   - rapydo init
-  - rapydo check
 
   # needed to let the system create files with test coverage
   - chmod o+w backend
@@ -44,8 +36,7 @@ script:
   - rapydo build
 
   # start the debug environment, and wait for initialization
-  - rapydo start
-  # - ./do DEBUG await
+  - rapydo control start
 
   # launch all unittests
   - sleep 20
