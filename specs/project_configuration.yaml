@@ -9,6 +9,8 @@ variables:
         load_timeout": "800"
 
     python: 
+        frontend:
+          enable: true
         backend: 
             credentials: 
                 username: "user@nomail.org"

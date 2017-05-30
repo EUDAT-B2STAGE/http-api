@@ -3,78 +3,42 @@ version: '3'
 # Link services inside API
 
 services:
-    backend:
+  backend:
+    environment:
+      - APP_MODE=production
+      - DEBUG_LEVEL=INFO
+      - NGINX_ACTIVE=true
 
-      user: root
-      # command: init
-      volumes:
-        - ..:/code/${COMPOSE_PROJECT_NAME}
-      environment:
-        - APP_MODE=production
-        - DEBUG_LEVEL=INFO
-        - VANILLA_PACKAGE=${COMPOSE_PROJECT_NAME}
-        - NGINX_ACTIVE=true
+    networks:
+      proxy_net:
+        aliases:
+          - ${API_HOST}
 
-        # base the user/role mechanism on some database
-        - AUTH_ENABLE=1
-        # putting this here because it should not be configurable in .env
-        - AUTH_SERVICE=neo4j
+    expose:
+      - 8080
 
-        - AUTH_REGISTER_FAILED_LOGIN=${AUTH_REGISTER_FAILED_LOGIN}
-        - AUTH_FORCE_FIRST_PASSWORD_CHANGE=${AUTH_FORCE_FIRST_PASSWORD_CHANGE}
-        - AUTH_VERIFY_PASSWORD_STRENGTH=${AUTH_VERIFY_PASSWORD_STRENGTH}
-        - AUTH_MAX_PASSWORD_VALIDITY=${AUTH_MAX_PASSWORD_VALIDITY}
-        - AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER=${AUTH_DISABLE_UNUSED_CREDENTIALS_AFTER}
-        - AUTH_MAX_LOGIN_ATTEMPTS=${AUTH_MAX_LOGIN_ATTEMPTS}
-        - AUTH_SECOND_FACTOR_AUTHENTICATION=${AUTH_SECOND_FACTOR_AUTHENTICATION}
+  frontend:
+    environment:
+      APP_MODE: production
+    networks:
+      proxy_net:
+        aliases:
+          - html
 
-        # # neo connection
-        - GRAPHDB_ENABLE=1
-        - GRAPHDB_EXTERNAL=${GRAPHDB_EXTERNAL}
-        - GRAPHDB_HOST=${GRAPHDB_HOST}
-        - GRAPHDB_PORT=${GRAPHDB_BOLT_PORT}
-        - GRAPHDB_PASSWORD=${GRAPHDB_PASSWORD}
+  proxy:
+    volumes:
+      - letsencrypt_certs:/etc/letsencrypt
+      - ssl_dhparam:/etc/nginx/ssl/
+    environment:
+      DOMAIN: ${PROJECT_DOMAIN}
+      MODE: ${LETSENCRYPT_MODE}
 
-      networks:
-        db_net:
-        proxy_net:
-          aliases:
-            - ${API_HOST}
-      depends_on:
-        - neo4j
-      expose:
-        - 8080
-
-    frontend:
-      networks:
-        proxy_net:
-          aliases:
-            - html
-
-    proxy:
-      volumes:
-        - letsencrypt_certs:/etc/letsencrypt
-        - ssl_dhparam:/etc/nginx/ssl/
-      environment:
-        DOMAIN: ${PROJECT_DOMAIN}
-        MODE: ${LETSENCRYPT_MODE}
-      networks:
-        proxy_net:
-      ports:
-        - 80:80
-        - 443:443
-      depends_on:
-        - backend
-        - frontend
-
-    neo4j:
-      # ports:
-      #   - 9090:7474
-      #   - 7687:7687
-      networks:
-        db_net:
-          aliases:
-            - ${GRAPHDB_HOST}
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - backend
+      - frontend
 
 volumes:
   letsencrypt_certs:
@@ -82,5 +46,5 @@ volumes:
   ssl_dhparam:
     driver: local
 
-networks:
-    proxy_net:
+# networks:
+#   proxy_net:
