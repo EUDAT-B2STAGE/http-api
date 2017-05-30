@@ -1,7 +1,9 @@
 #!/bin/bash
 
-core_branch="0.3.2"
-core_branch_backend="merging_eudat"
+## TO BE ELIMINATED ##
+
+core_branch="0.4"
+core_branch_backend="master"
 
 echo "# ############################################ #"
 echo -e "\t\tEUDAT HTTP API development"
@@ -50,7 +52,7 @@ sqlcontainer="sql"
 irodscontainer="icat"
 restcontainer="backend"
 proxycontainer="proxy"
-clientcontainer="client"
+clientcontainer="restclient"
 
 vcom="docker volume"
 ncom="docker network"
@@ -84,7 +86,7 @@ if [ "$(ls -A $subdir)" ]; then
     echo "Submodule already exists" > /dev/null
 else
     echo "Inizialitazion for the http-api-base submodule"
-    git clone https://github.com/EUDAT-B2STAGE/http-api-base.git $subdir
+    git clone https://github.com/rapydo/httpapi.git $subdir
     cd $subdir
     # Go into the current branch
     git checkout $core_branch_backend
@@ -313,6 +315,7 @@ then
         exit 0
     elif [ "$2" == "client_shell" ]; then
         echo "Opening a client shell"
+        echo "$compose_run run --rm $clientcontainer"
         $compose_run run --rm $clientcontainer
         # $compose_run run --rm $clientcontainer bash
         exit 0

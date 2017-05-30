@@ -1,0 +1,7 @@
+
+coveralls
+python-coveralls
+pip
+
+#rapydo-controller
+https://testpypi.python.org/packages/52/3a/837dafb34fc54ebb0256d14d08e557d01eaff310503dcfd8994cdab4841c/rapydo_controller-0.3.dev1.tar.gz#md5=5c6d977320b2baaf9d82e4fd01ea11a4
