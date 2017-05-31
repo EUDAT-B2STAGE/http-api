@@ -11,52 +11,43 @@ tags:
   pids: resolve and download data from EUDAT Persistente IDentifier
   # internal: for internal testing purpose only
 
-# variables:
-#     js:
-#         index_state_name: "welcome"
-#         index_template": "welcome.html"
-#         load_timeout": "800"
-
-#     python:
-#         backend:
-#             credentials:
-#                 username: "user@nomail.org"
-#                 password: "test"
-#                 roles:
-#                   user: normal_user
-#                   internal: staff_user
-#                   admin: admin_root
-#                   default: normal_user
-#     containers:
-#         users:
-#             backend: "root"
-#             # backend: "irods"
-#         authentication:
-#             service: "neo4j"
-#             # service: "relationaldb"
-#             username: "user@nomail.org"
-#             password: "test"
-
-#         authentication_service: "neo4j"
-
-#         services:
-#             relationaldb:
-#                 remove_data_at_init_time: "false"
-#             neo4j:
-#                 password: "chooseapassword"
-
-#         external_services:
-#             irods:
-#                 host: "irods.host.com"
-#                 port: "1247"
-#                 username: "irods_user"
-#                 password: "irods_pwd"
-
-#     bower_components:
-#         lib-name:
-#             - file.js
-#             - file.css
-#     css:
-#         - file
-#     js:
-#         - file
+variables:
+  env:
+    COMPOSE_PROJECT_NAME: eudat
+    PROJECT_DOMAIN: myserver.mydomain.dev
+    # LETSENCRYPT_MODE:
+    API_MAIN_ENDPOINT: registered
+    # sqlalchemy:
+    # ALCHEMY_ENGINE: postgresql
+    ALCHEMY_USER: rods
+    ALCHEMY_PASSWORD: thisismypassword
+    ALCHEMY_API_DB: SQL_API
+    ALCHEMY_DBS: 'ICAT SQL_API'
+    # neo4j:
+    GRAPHDB_PASSWORD: wakeupneo
+    # LOCAL iRODS server VERSION
+    IRODS_DB: ICAT
+    IRODS_AUTHSCHEME: GSI
+    IRODS_USER: irods
+    # IRODS_PASSWORD: irods  # if external
+    IRODS_GUEST_USER: guest
+    IRODS_DEFAULT_ADMIN_USER: rodsminer
+    IRODS_ZONE: tempZone
+    IRODS_HOME: home
+    IRODS_DN:
+    ## B2ACCESS
+    B2ACCESS_ACCOUNT: httpapi
+    # B2ACCESS_ACCOUNT: b2stage_httpapi
+    B2ACCESS_SECRET: SETYOURSECRETKEY
+    # EPIC HANDLE credentials
+    HANDLE_BASE: "https://url.to.epic/handles/"
+    # HANDLE_USER:
+    # HANDLE_PREFIX:
+    # HANDLE_PASS:
+    HANDLE_CREDENTIALS: /tmp
+    # HANDLE_CREDENTIALS: /home/ubuntu/b2handle_cred/credentials
+    ##: OTHERs / FIXED
+    FLASK_SUBNET: 175.1.0.0
+    FLASK_FIXED_IP: 175.1.0.10
+    UPLOAD_PATH: /uploads
+    FULL_JWT: false

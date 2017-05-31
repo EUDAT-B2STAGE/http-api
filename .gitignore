@@ -1,4 +1,5 @@
 env_prototype
+.env
 
 # Skip submodules
 backend/*
