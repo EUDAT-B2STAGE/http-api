@@ -7,6 +7,7 @@ services:
     environment:
       APP_MODE: debug
       DEBUG_LEVEL: VERBOSE
+      ACTIVATE: 1
     ports:
       - 8081:5000
 
@@ -16,6 +17,7 @@ services:
     environment:
       APP_MODE: debug
       BACKEND_PORT: 8081
+      ACTIVATE: 1
 
   neo4j:
     ports:
