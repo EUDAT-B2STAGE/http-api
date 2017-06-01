@@ -1,23 +1,38 @@
-/backend
-/frontend
-/builds_base
-.env
-
-################
-
-# notebooks
-.ipynb_checkpoints
+########################
+##  Your custom data  ##
+########################
 
 # data
 uploads
 tmp_files
 
-# bower
+#################
+##  Submodules ##
+#################
+
+/backend
+/frontend
+/builds_base
+
+############################################
+##  Dynamically created file and folders  ##
+############################################
+
+.env
 libs/bower_components
 
-# Sublime text
-*.sublime-*
+###################################
+##  Temporary and miscellaneous  ##
+###################################
 
+*.log
+
+# notebooks
+.ipynb_checkpoint
+s
+# Sublime text
+*.sublime-
+*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -25,7 +40,17 @@ __pycache__/
 # C extensions
 *.so
 
-# Distribution / packaging
+# Sphinx documentation
+docs/_build/
+
+# Translations
+*.mo
+*.pot
+
+################################
+##  Distribution / packaging  ##
+################################
+
 .Python
 env/
 build/
@@ -53,7 +78,13 @@ var/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# PyBuilder
+target/
+
+###################################
+## Unit test / coverage reports  ##
+###################################
+
 htmlcov/
 .tox/
 .coverage
@@ -62,16 +93,3 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
