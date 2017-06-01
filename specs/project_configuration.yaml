@@ -3,53 +3,27 @@ project:
   title: My project
   description: Title of my project
 variables:
-    js:
-        # index_state_name: "welcome"
-        # index_template": "welcome.html"
-        load_timeout": "800"
+  env:
+    COMPOSE_PROJECT_NAME: rapydo
+    PROJECT_DOMAIN: localhost
+  backend: 
+    credentials: 
+      username: "user@nomail.org"
+      password: "test"
+      roles:
+        user: normal_user
+        internal: staff_user
+        admin: admin_root
+        default: normal_user
+  frontend:
+    enable: true
+  containers: 
+    users:
+      backend: "root"
+    authentication:
+      service: "neo4j"
+      # service: "relationaldb"
+      username: "user@nomail.org"
+      password: "test"
 
-    python: 
-        frontend:
-          enable: true
-        backend: 
-            credentials: 
-                username: "user@nomail.org"
-                password: "test"
-                roles:
-                  user: normal_user
-                  internal: staff_user
-                  admin: admin_root
-                  default: normal_user
-    containers: 
-        users:
-            backend: "root"
-            # backend: "irods"
-        authentication:
-            service: "neo4j"
-            # service: "relationaldb"
-            username: "user@nomail.org"
-            password: "test"
-
-        authentication_service: "neo4j"
-
-        # services:
-        #     relationaldb:
-        #         remove_data_at_init_time: "false"
-        #     neo4j:
-        #         password: "chooseapassword"
-
-        # external_services:
-        #     irods:
-        #         host: "irods.host.com"
-        #         port: "1247"
-        #         username: "irods_user"
-        #         password: "irods_pwd"
-
-    # bower_components:
-    #     lib-name:
-    #         - file.js
-    #         - file.css
-    # css:
-    #     - file
-    # js:
-    #     - file
+    authentication_service: "neo4j"
