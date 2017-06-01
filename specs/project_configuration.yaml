@@ -4,7 +4,7 @@ project:
   description: Title of my project
 variables:
   env:
-    COMPOSE_PROJECT_NAME: rapydo
+    COMPOSE_PROJECT_NAME: rapydodemo
     PROJECT_DOMAIN: localhost
     GRAPHDB_PASSWORD: chooseapassword
   backend: 
