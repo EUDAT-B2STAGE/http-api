@@ -1,6 +1,7 @@
 /backend
 /frontend
 /builds_base
+.env
 
 ################
 
