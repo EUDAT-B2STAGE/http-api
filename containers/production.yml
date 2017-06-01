@@ -3,6 +3,15 @@ version: '3'
 # Link services inside API
 
 services:
+  proxy:
+    environment:
+      ACTIVATE: 1
+    volumes:
+      - ../confs/nginx/production.conf:/etc/nginx/sites-enabled/production
+    depends_on:
+      - backend
+      - frontend
+
   backend:
     environment:
       - APP_MODE=production
@@ -10,12 +19,13 @@ services:
       - NGINX_ACTIVE=true
 
     networks:
+      worker_net:
       proxy_net:
         aliases:
-          - ${API_HOST}
+          - ${FLASK_HOST}
+    depends_on:
+      - neo4j
 
-    expose:
-      - 8080
 
   frontend:
     environment:
@@ -24,27 +34,3 @@ services:
       proxy_net:
         aliases:
           - html
-
-  proxy:
-    volumes:
-      - letsencrypt_certs:/etc/letsencrypt
-      - ssl_dhparam:/etc/nginx/ssl/
-    environment:
-      DOMAIN: ${PROJECT_DOMAIN}
-      MODE: ${LETSENCRYPT_MODE}
-
-    ports:
-      - 80:80
-      - 443:443
-    depends_on:
-      - backend
-      - frontend
-
-volumes:
-  letsencrypt_certs:
-    driver: local
-  ssl_dhparam:
-    driver: local
-
-# networks:
-#   proxy_net:
