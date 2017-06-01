@@ -31,8 +31,8 @@ libs/bower_components
 .ipynb_checkpoint
 s
 # Sublime text
-*.sublime-
-*
+*.sublime-*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
