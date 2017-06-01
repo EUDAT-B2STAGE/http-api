@@ -6,6 +6,7 @@ variables:
   env:
     COMPOSE_PROJECT_NAME: rapydo
     PROJECT_DOMAIN: localhost
+    GRAPHDB_PASSWORD: chooseapassword
   backend: 
     credentials: 
       username: "user@nomail.org"

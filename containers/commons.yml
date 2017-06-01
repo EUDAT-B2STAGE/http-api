@@ -29,6 +29,10 @@ services:
     depends_on:
       - neo4j
 
+  neo4j:
+    environment:
+      NEO4J_AUTH: neo4j/${GRAPHDB_PASSWORD}
+
 # volumes:
 #   ...
 
