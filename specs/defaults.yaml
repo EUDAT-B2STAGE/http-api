@@ -39,6 +39,8 @@ variables:
       some: var
     enable: false
     branch: master
+  js:
+    load_timeout: '800'
   env:
     # COMPOSE_PROJECT_NAME: $PLACEHOLDER
     API_MAIN_ENDPOINT: status
