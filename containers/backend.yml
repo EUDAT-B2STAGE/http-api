@@ -65,9 +65,8 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
       # Rapydo repos
-      - ../backend/rapydo:/usr/local/lib/python3.6/site-packages/rapydo
-      # - ../backend/flask_ext:/usr/local/lib/python3.6/site-packages/
-      - ../utilities/rapydo/utils:/usr/local/lib/python3.6/site-packages/rapydo/utils
+      - ../backend/rapydo:/usr/local/lib/python3.6/dist-packages/rapydo
+      - ../utilities/rapydo/utils:/usr/local/lib/python3.6/dist-packages/rapydo/utils
       # Vanilla code
       - ../scripts:/code
       - ../backend/test:/code/test  # should this be called 'tests'?
@@ -165,7 +164,7 @@ services:
     build: ../builds_base/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:template
     # hostname: celworker
-    # command: celery worker -c 1 -A flask_ext.flask_celery.worker.celery_app
+    # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
     user: root
     working_dir: /code
     environment:

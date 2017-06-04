@@ -3,7 +3,7 @@
 from rapydo.rest.definition import EndpointResource
 from rapydo import decorators as decorate
 from rapydo.utils.logs import get_logger
-from flask_ext.flask_irods.client import IrodsException
+from rapydo.flask_ext.flask_irods.client import IrodsException
 log = get_logger(__name__)
 
 

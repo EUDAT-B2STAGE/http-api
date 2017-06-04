@@ -18,7 +18,7 @@ from eudat.apis.common import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from eudat.apis.common.b2stage import EudatEndpoint
 
 from rapydo.services.uploader import Uploader
-from flask_ext.flask_irods.client import IrodsException
+from rapydo.flask_ext.flask_irods.client import IrodsException
 from rapydo.utils import htmlcodes as hcodes
 from rapydo import decorators as decorate
 from rapydo.utils.logs import get_logger

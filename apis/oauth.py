@@ -5,9 +5,9 @@ OAUTH inside EUDAT services
 """
 
 from flask import url_for
-from flask_ext.flask_irods.client import IrodsException
+from rapydo.flask_ext.flask_irods.client import IrodsException
 from rapydo import decorators as decorate
-from rapydo.utils import htmlcodes as hcodes
+# from rapydo.utils import htmlcodes as hcodes
 from eudat.apis.common import PRODUCTION
 # from eudat.apis.common.b2access import B2accessUtilities
 from eudat.apis.common.b2stage import EudatEndpoint
