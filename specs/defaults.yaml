@@ -2,11 +2,17 @@
 # FIXME: move from backend into RAPyDo
 
 variables:
+  # TODO: move this subrepos in a dedicated subfolder like `components`?
   repos:
     rapydo:
       branch: master
       online_url: https://github.com/rapydo/core.git
       path: .
+      if: true
+    utils:
+      branch: master
+      online_url: https://github.com/rapydo/utils.git
+      path: utilities
       if: true
     backend:
       branch: master
@@ -59,6 +65,13 @@ variables:
     PROXY_PROD_PORT: 443
     LETSENCRYPT_MODE: --staging
     FULL_JWT: true
+
+# controller:
+#   commands:
+#     name: letsencrypt
+#     command: updatecertificates
+#     service: proxy
+#     user: root
 
 project:
   name: rapydo

@@ -5,7 +5,8 @@ env_prototype
 backend/*
 builds_base/*
 frontend/*
-prc
+utilities/*
+prc/*
 
 # Skip self-signed certificates
 certs/nginx-selfsigned*

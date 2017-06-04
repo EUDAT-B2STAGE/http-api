@@ -4,6 +4,13 @@ project:
   version: v0.4-beta
   description: Processing files in different EUDAT domains
 
+# controller:
+#   commands:
+#     name: letsencrypt
+#     command: updatecertificates
+#     service: proxy
+#     user: root
+
 tags:
   eudat: all endpoints associated to EUDAT services
   b2access: request and refresh authorization from the B2ACCESS service
@@ -12,6 +19,24 @@ tags:
   # internal: for internal testing purpose only
 
 variables:
+  repos:
+    # rapydo:
+    #   branch: package
+    backend:
+      branch: package
+      online_url: https://github.com/rapydo/http-api.git
+      path: backend
+      if: true
+    build-templates:
+      branch: package
+      online_url: https://github.com/rapydo/build-templates.git
+      path: builds_base
+      if: true
+    irods-client:
+      branch: master
+      online_url: https://github.com/irods/python-irodsclient.git
+      path: prc
+      if: true
   env:
     COMPOSE_PROJECT_NAME: eudat
     PROJECT_DOMAIN: myserver.mydomain.dev

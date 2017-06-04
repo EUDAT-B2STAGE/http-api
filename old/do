@@ -1,44 +1,112 @@
 #!/bin/bash
 
-#############################
-# Defaults
-# blueprintconf="specs/blueprint.init"
+## TO BE ELIMINATED ##
 
-#############################
-# Other variables
+core_branch="0.4"
+core_branch_backend="master"
 
-source .env
-
-compose_com="docker-compose"
-webbuild="bower"
-volume_prefix="${COMPOSE_PROJECT_NAME}"
-fronted_container="frontend"
-backend_container="backend"
-backend_repo="backend"
-frontend_repo="frontend"
-# backend_git="https://github.com/mdantonio/http-api-base"
-backend_git="https://github.com/EUDAT-B2STAGE/http-api-base"
-frontend_git="https://github.com/mdantonio/angularjs-on-flask"
-services="$backend_container $fronted_container"
-submodule_tracking="submodules.current.commit"
-
-
-#############################
 echo "# ############################################ #"
-echo -e "\t\tRestangulask"
+echo -e "\t\tEUDAT HTTP API development"
 echo "# ############################################ #"
 echo ""
 
+if [ "$1" == "help" -o -z "$1" ]; then
+    echo "Available commands:"
+    # echo ""
+    # echo -e "init:\t\tStartup your repository code, containers and volumes"
+    echo ""
+    echo -e "check:\tCheck the stack status"
+    echo -e "stop:\tFreeze your containers stack"
+    echo -e "remove:\tRemove all containers"
+    echo -e "clean:\tRemove containers and volumes (BE CAREFUL!)"
+    echo ""
+    echo -e "irestart:\tRestart the main iRODS iCAT service instance"
+    echo -e "addiuser:\tAdd a new certificated user to irods"
+    echo -e "irods_shell:\tOpen a shell inside the iRODS iCAT server container"
+    echo ""
+    echo -e "client_shell:\tOpen a shell to test API endpoints"
+    echo -e "server_shell:\tOpen a shell inside the Flask server container"
+    echo -e "httpapi_restart:\tRelaunch only the HTTP Flask server "
+    echo -e "api_test:\tRun tests with nose (+ coverage)"
+    echo ""
+    echo -e "push:\tPush code to github"
+    echo -e "update:\tPull updated code and images"
+    echo ""
+    echo -e "***Modes***:"
+    echo -e "DEBUG:\tREST API server will be launched opening a container shell"
+    echo -e "DEVELOPMENT:\tREST API server executed with Flask WSGI and Debug"
+    echo -e "PRODUCTION:\tREST API server with uWSGI+nginx behind nginx proxy"
+    echo ""
+    echo -e "[Mode:DEBUG|DEVELOPMENT|PRODUCTION] [client_shell|restart|sqladmin|swagger]:\n\tLaunch the Docker stack using one of the modes available"
+    echo -e "logs:\tAttach to all container logs"
+    exit 0
+fi
+
+#####################
+# Confs
+subdir="backend"
+prcdir="prc"
+prcbranch="b2stage"
+
+sqlcontainer="sql"
+irodscontainer="icat"
+restcontainer="backend"
+proxycontainer="proxy"
+clientcontainer="restclient"
+
+vcom="docker volume"
+ncom="docker network"
+submodule_tracking="submodules.current.commit"
+
+# cprefix=`basename $(pwd) | tr -d '-'`
+source .env
+cprefix=$COMPOSE_PROJECT_NAME
+
+compose_dir="containers"
+compose_base="docker-compose -f backend/docker-compose.yml"
+compose_extended="$compose_base -f $compose_dir/commons.yml"
+compose_all="$compose_extended -f $compose_dir/debug.yml -f $compose_dir/development.yml -f $compose_dir/production.yml "
+
+# Production mode
+if [ "$1" == "PRODUCTION" ]; then
+    compose_run="$compose_extended -f $compose_dir/production.yml"
+# Development mode
+elif [ "$1" == "DEVELOPMENT" ]; then
+    compose_run="$compose_extended -f $compose_dir/development.yml"
+# Normal / debug mode
+else
+    compose_run="$compose_extended -f $compose_dir/debug.yml"
+fi
+# # Init mode
+# if [ "$1" == "init" ]; then
+#     compose_run="$compose_base -f $compose_dir/init.yml"
+
+#####################
+if [ "$(ls -A $subdir)" ]; then
+    echo "Submodule already exists" > /dev/null
+else
+    echo "Inizialitazion for the http-api-base submodule"
+    git clone https://github.com/rapydo/httpapi.git $subdir
+    cd $subdir
+    # Go into the current branch
+    git checkout $core_branch_backend
+    # print latest commit
+    echo "Check latest commit"
+    git log -n 1
+    cd ..
+fi
+
 #####################
 # Check prerequisites
-coms="docker $compose_com"
+coms="docker $compose"
 for com in $coms;
 do
     dcheck=`which $com`
     if [ "$dcheck" == "" ]; then
-        echo "Please, install $com to use this project."
+        echo "Please install $com to use this project"
         exit 1
     fi
+
     dcheck=`$com ps 2>&1 | grep -i "cannot connect"`
     if [ "$dcheck" != "" ]; then
         echo "Please check if your Docker daemon is running"
@@ -46,336 +114,276 @@ do
     fi
 done
 
-# TO FIX: also for do.py
-compose_com="docker-compose --project-name $COMPOSE_PROJECT_NAME"
-#############################
-
-if [ "$1" != "help" ]; then
-
-    #############################
-    # Check compose stack existence
-    backendyaml="backend/docker-compose.yml"
-    frontendyaml="frontend/docker-compose.yml"
-
-    if [ -z $2 ]; then
-        mode="debug"
-    else
-        mode="$2"
-    fi
-
-## VERY IMPORTANT !!!
-    echo "### SELECTED MODE: [$mode]"
-    export SELECTED_APP_MODE=$mode
-    if [ "$mode" == "production" ]; then
-        services="proxy"
-    fi
-
-    filebase="containers/$mode.yml"
-    if [ ! -f "$filebase" ]; then
-        echo "File '$filebase' not found!"
-        echo ""
-        echo "Configuration is corrupted!!"
-        exit 1
-    fi
-    # filecustom="containers/${1}/$mode.yml"
-    # if [ ! -f "$filecustom" ]; then
-    #     echo "File '$filecustom' not found!"
-    #     echo "You might start up copying 'demo.yml'."
-    #     exit 1
-    # fi
-    files="-f $backendyaml -f $frontendyaml -f $filebase"
-
-    # Remove previous configuration
-    #echo "Clean configuration files"
-    # if [ -f "../$blueprintconf" ]; then
-    #     rm ../$blueprintconf
-    # fi
-fi
-
-if [ "$1" == "help" -o -z "$1" ]; then
-    echo "Usage: $0 COMMAND [OPTIONS]"
-    echo ""
-    echo "Available list of COMMANDs:"
-    echo ""
-    echo -e "init:\t\tStartup your repository code, containers and volumes"
-    echo -e "graceful:\tTry to bring up only missing containers"
-    echo -e "restart:\t(Re)Launch the Docker stack"
-    echo -e "status:\tCheck the stack status"
-    echo -e "stop:\tFreeze your containers stack"
-    echo -e "remove:\tRemove all containers"
-    echo -e "clean:\tRemove containers and volumes (BE CAREFUL!)"
-    echo ""
-    echo -e "backend:\tOpen a shell inside the Flask REST API server container"
-    echo -e "test_backend:\tLaunch python tests with nose2"
-    echo -e "frontend:\tOpen a shell inside the Flask REST API server container"
-    echo -e "sql:\tLaunch a sqladminer on port 8888"
-    echo -e "bower:\tInstall all libraries or only the one specified"
-    echo -e "karma:\tA shell to test angularjs code"
-    echo ""
-    echo -e "push:\tPush code to github"
-    echo -e "update:\tPull both updated code and docker images"
-    echo ""
-    exit 0
-fi
-
-#############################
-# Check libs
-if [ -z "$1" -o "$1" != "init" ]; then
-    libs="libs/bower_components"
-    out=`ls $libs 2> /dev/null | wc -m | tr -d ' '`
-    if [ "$out" == "0" ]; then
-        echo ""
-        echo "[ERROR] You are missing JS libraries!"
-        echo "Please run:"
-        echo "$0 init"
-        exit 1
-    fi
-fi
-
-
-#############################
-# DEFAULTS FILES
-
-# Backend
-file="project_configuration.yaml"
-check="specs/$file"
-if [ ! -s "$check" ]; then
-    echo "File '$check' not found or empty..."
+warnings=$($compose_run config -q 2>&1)
+if [ "$warnings" != "" ]; then
+    echo "Failed to validate compose files:"
+    echo $warnings
     exit 1
 fi
 
-# Frontend
-check="js/routing.extra.js"
-if [ ! "$(ls -A $check 2> /dev/null)" ]; then
-    echo "Directory '$check' not found or empty..."
-    echo "Please create at least your custom routing."
-    exit 1
-fi
+# Update the remote github repos
+if [ "$1" == "push" ]; then
 
-
-#############################
-# Run services
-bcom="$compose_com -f backend/docker-compose.yml -f frontend/docker-compose.yml run --rm $webbuild bower install"
-
-# First time install
-if [ "$1" == "init" ]; then
-
-    echo -e "ACTION: Project init\n"
-    #git remote add private
-    #git@gitlab.hpc.cineca.it:mdantoni/telethon_repo.git
-
-    #echo "Download docker images"
-    #$compose_com $files pull
-    if [ ! -d "$backend_repo" ]; then
-        echo "Clone backend"
-        git clone $backend_git $backend_repo
-    fi
-    if [ ! -d "$frontend_repo" ]; then
-        echo "Clone frontned"
-        git clone $frontend_git $frontend_repo
-    fi
-
-    echo "Build bower packages (Javascript libraries)"
-    $bcom
-    echo "Completed"
-# Logs
-elif [ "$1" == "logs" ]; then
-
-    $compose_com $files logs -f
-
-# SSL certificates in production with letsencrypt
-elif [ "$1" == "letsencrypt" ]; then
-    echo "Creating new letsencrypt certificates"
-    $compose_com $files exec $proxycontainer /bin/bash -c "updatecertificates"
-    exit 0
-
-elif [ "$1" == "check_certificate" ]; then
-    $compose_com $files exec $proxycontainer /bin/bash -c "openssl x509 -in \$CERTCHAIN  -noout -subject"
-    exit 0
-
-elif [ "$1" == "buildall" ]; then
-    $compose_com $files build --pull
-    exit 0
-
-elif [ "$1" == "build4test" ]; then
-    $compose_com $files build --pull sql icat rest
-    exit 0
-
-elif [ "$1" == "buildone" ]; then
-    $compose_com $files build $3
-    exit 0
- 
-elif [ "$1" == "status" ]; then
-    echo -e "ACTION: Status check\n"
-
-elif [ "$1" == "graceful" ]; then
-    echo -e "ACTION: Start\n"
-    $compose_com $files up -d $services
-
-elif [ "$1" == "restart" ]; then
-    echo -e "ACTION: Reboot\n"
-    echo "Cleaning project containers (if any)"
-    $compose_com $files stop
-    $compose_com $files rm -f
-    echo "Starting up"
-    $compose_com $files up -d $services
-
-elif [ "$1" == "stop" ]; then
-    echo -e "ACTION: Stop\n"
-    echo "Freezing services"
-    $compose_com $files stop
-
-elif [ "$1" == "remove" ]; then
-    echo -e "ACTION: Removal\n"
-    echo "Destroying services"
-    $compose_com $files stop
-    $compose_com $files rm -f
-
-elif [ "$1" == "clean" ]; then
-
-    echo -e "ACTION: Total removal\n"
-    echo "Destroying (forever) containers & volumes. Are you really sure?"
-    sleep 5
-    $compose_com $files stop
-    $compose_com $files rm -f
-    for volume in `docker volume ls -q | grep $volume_prefix`;
-    do
-        docker volume rm $volume
-        echo "Removed volume: $volume"
-    done
-    echo ""
-
-elif [ "$1" == "backend" ]; then
-    echo "Opening a shell inside the $1 container"
-    echo "(If in debug mode, run Flask with './boot devel')"
-    echo ""
-    $compose_com $files exec $backend_container bash
-    exit 0
-
-elif [ "$1" == "frontend" ]; then
-    echo "Opening a shell inside the $1 container"
-    echo "(If in debug mode, run Flask with './boot devel')"
-    echo ""
-    $compose_com $files exec $fronted_container bash
-    exit 0
-
-elif [ "$1" == "test_backend" ]; then
-
-    echo "Running tests"
-    $compose_com $files exec $backend_container ./tests.sh
-    if [ "$?" != "0" ]; then
-        echo "Tests failed!"
-        exit 1
-    fi
-    echo "Well done"
-    exit 0
-
-elif [ "$1" == "sql" ]; then
-    echo "Launch adminer for SQL servers"
-    $compose_com run --rm --service-ports sqladmin
-
-elif [ "$1" == "push" ]; then
-
-    echo "Running tests"
-    # Add nohup?
-    $compose_com $files exec $backend_container ./tests.sh
-    if [ "$?" != "0" ]; then
-        echo "Tests are failing. Push was stopped"
+    check_container=`$compose_run ps $restcontainer | grep -i exit`
+    if [ "$check_container" != "" ]; then
+        echo "Please make sure that Flask container server is running"
+        echo "You may try with the command:"
+        echo "$0 DEBUG"
+        echo ""
         exit 1
     fi
 
     echo "Pushing submodule"
-    cd $backend_repo
-    git push
-    if [ $? != "0" ]; then
-        echo "Failed to push backend"
-        exit 1
-    fi
+    cd $subdir
+    git push origin $core_branch_backend
     cd ..
 
-    # Save a snapshot of current submodule
-    echo "Save submodule status"
-    echo -e \
-        $(cd $submodule_repo && git log -n 1 --oneline --no-color)"\n"$(cd $submodule_repo && git branch --no-color) \
-        > $submodule_tracking
+    # NOT VERY USEFUL?
+    # # Save a snapshot of current submodule
+    # echo "Save submodule status"
+    # echo -e \
+    #     $(cd $subdir && git log -n 1 --oneline --no-color)"\n"$(cd $subdir && git branch --no-color) \
+    #     > $submodule_tracking
 
-    echo "Pushing main repo"
-    git add $submodule_tracking
-    git commit && echo "Commit has been done"
+    # echo "Pushing main repo"
+    # git add $submodule_tracking
+    # git commit
 
-    # Push to all repos setted
-    for repo in `git remote`;
-    do
-        git push $repo
-    done
-
-    exit 0
-
-# Update repos, packages and images
-elif [ "$1" == "update" ]; then
-
-    $compose_com $files pull
-    current=`pwd`
-
-    echo "Pulling main repo"
-    git pull
-
-    echo "Pulling backend"
-    cd $backend_repo
-    git pull
-    cd ..
-
-    echo "Pulling frontend"
-    cd $frontend_repo
-    git pull
-    cd ..
-
-    echo "Updating libs"
-    $bcom
-
-    exit 0
-
-# Bower install
-elif [ "$1" == "bower" ]; then
-
-    if [ "$2" != "" ]; then
-        bcom="${bcom} $2 --save"
-        echo "Install package(s): $2"
-    fi
-    $bcom
-# Angularjs tests
-elif [ "$1" == "karma" ]; then
-
-    echo "Opening shell for nodejs"
-    $compose_com run --rm $1 bash
-    exit 0
-else
-    echo "Unknown command '$1'. Ask for help:"
-    echo ""
-    echo "$0 help"
+    git push origin $core_branch
+    echo "Completed"
     exit 0
 fi
 
-# Final check up
-if [ "$?" == "0" ]; then
-    if [ "$1" == "init" ]; then
-        echo ""
-        echo "You may launch containers now. Use:"
-        echo "$0 restart"
-        echo ""
+# Update your code
+if [ "$1" == "update" ]; then
+
+    echo "Pulling main repo"
+    git pull origin $core_branch
+    echo "Pulling submodule"
+    cd $subdir
+    git pull origin $core_branch_backend
+    cd ..
+
+    # Note: images must be updated after pulling the code
+    echo "Updating docker images"
+    $compose_base pull --parallel --ignore-pull-failures
+    ./do build4test
+
+    echo "Done"
+
+    exit 0
+fi
+
+networks=`$ncom ls | awk '{print $2}' | grep "^$cprefix"`
+volumes=`$vcom ls | awk '{print $NF}' | grep "^$cprefix"`
+
+# Verify the status
+if [ "$1" == "check" ]; then
+    echo "Stack status:"
+    $compose_run ps
+    exit 0
+
+# Freeze containers
+elif [ "$1" == "stop" ]; then
+    echo "Freezing the stack"
+    $compose_run stop
+    exit 0
+
+# Remove all containers
+elif [ "$1" == "remove" ]; then
+    echo "REMOVE CONTAINERS"
+    $compose_run stop
+    $compose_run rm -f
+    exit 0
+
+# Destroy everything: containers and data saved so far
+elif [ "$1" == "clean" ]; then
+    echo "REMOVE DATA"
+    echo "are you really sure?"
+    sleep 5
+
+    echo "Removing containers"
+    $compose_run stop
+    $compose_run rm -f
+    echo
+    sleep 1
+
+    echo "Removing networks"
+    for network in $networks;
+    do
+        # echo "Removing $network"
+        $ncom rm $network
+    done
+    sleep 1
+
+    echo "Removing volumes"
+    for volume in $volumes;
+    do
+        # echo "Removing $volume"
+        $vcom rm $volume
+    done
+    exit 0
+
+elif [ "$1" == "addiuser" ]; then
+    echo "Adding a new certificated iRODS user:"
+    $compose_run exec $irodscontainer /addusercert $2
+    exit 0
+
+elif [ "$1" == "irestart" ]; then
+    $compose_run exec $irodscontainer service irods restart
+    exit 0
+
+elif [ "$1" == "irods_shell" ]; then
+    $compose_run exec $irodscontainer bash
+    exit 0
+
+elif [ "$1" == "server_shell" ]; then
+    $compose_run exec $restcontainer bash
+    exit 0
+
+elif [ "$1" == "httpapi_restart" ]; then
+    $compose_run restart $restcontainer
+    exit 0
+
+elif [ "$1" == "api_test" ]; then
+    echo "Opening a shell for nose2 tests"
+    $compose_run exec $restcontainer /bin/bash -c "testwithcoverage"
+    exit $?
+
+# Handle the right logs
+elif [ "$1" == "logs" ]; then
+    service=""
+    if [ "$2" != "" ]; then
+        service=$2
+    fi
+    $compose_run logs -f -t --tail="10" $service
+    exit 0
+
+# SSL certificates in production with letsencrypt
+elif [ "$1" == "letsencrypt" ]; then
+    echo "Creating new letsencrypt certificates"
+    $compose_run exec $proxycontainer \
+        /bin/bash -c "updatecertificates"
+    exit 0
+
+elif [ "$1" == "check_certificate" ]; then
+    $compose_run exec $proxycontainer \
+        /bin/bash -c "openssl x509 -in \$CERTCHAIN  -noout -subject"
+    exit 0
+
+elif [ "$1" == "buildall" ]; then
+    $compose_run build --pull
+    exit 0
+
+elif [ "$1" == "build4test" ]; then
+    $compose_run build --pull $sqlcontainer $irodscontainer $restcontainer
+    exit 0
+
+elif [ "$1" == "buildone" ]; then
+    if [ "$3" == "force" ]; then
+        $compose_run build --pull --no-cache $2
     else
-        echo "[$COMPOSE_PROJECT_NAME] configuration. Status:"
-        $compose_com $files ps
+        $compose_run build $2
+    fi
+    exit 0
+fi
+
+###################################
+# PRC DEVELOPMENT
+###################################
+if [ "$(ls -A $prcdir)" ]; then
+    echo "PRC already exists"
+else
+    echo "Inizialitazion official 'python-irodsclient'"
+    git clone https://github.com/pdonorio/python-irodsclient.git $prcdir
+    cd $prcdir
+    git checkout $prcbranch
+    cd ..
+fi
+
+###################################
+# Boot up
+###################################
+if [ "$1" == "DEBUG" -o "$1" == "DEVELOPMENT" -o "$1" == "PRODUCTION" ];
+then
+
+    echo "Docker stack: booting"
+
+    if [ "$2" == "sqladmin" ]; then
+        echo "Administration for relational databases"
+        $compose_run up --timeout 5 sqladmin
+        exit 0
+    elif [ "$2" == "client_shell" ]; then
+        echo "Opening a client shell"
+        echo "$compose_run run --rm $clientcontainer"
+        $compose_run run --rm $clientcontainer
+        # $compose_run run --rm $clientcontainer bash
+        exit 0
+    elif [ "$2" == "swagger" ]; then
+        if [ "$1" != "DEBUG" ]; then
+            echo "Swagger should run only in debug mode"
+            exit 1
+        fi
+        echo "Note: with your browser"
+        swagger_url="http://localhost/swagger-ui/"
+        local_url="http://localhost:8080/api/specs"
+        echo "open \"$swagger_url?url=$local_url\""
         echo ""
-        echo "Available volumes for current configuration:"
-        docker volume ls | grep $volume_prefix
+        $compose_run up --timeout 5 swagclient
+        exit 0
+    elif [ "$2" == "restart" ]; then
+        echo "Clean previous containers"
+        $compose_run stop
+        $compose_run rm -f
     fi
 
-    if [ "$1" == 'restart' -o "$1" == 'graceful' ]; then
-        echo ""
-        echo "Access containers with:"
-        echo "$0 backend"
-        echo "and/or"
-        echo "$0 frontend"
+    if [ "$1" == "DEBUG" ]; then
+        $compose_run up -d --timeout 5 $restcontainer
+    else
+        $compose_run up -d --timeout 5 $proxycontainer
     fi
+    status="$?"
+
+    echo "Stack processes:"
+    $compose_run ps
+
+    if [ "$status" == "0" ]; then
+
+        # $compose_run exec $restcontainer update-ca-certificates
+        # echo ""
+
+        if [ "$2" == "await" ]; then
+            echo "Startup"
+            initps=""
+            while [ "$initps" == "" ];
+            do
+                echo "in progress..."
+                sleep 5
+                initps=$(docker-compose exec $restcontainer ls /${JWT_APP_SECRETS}/initialized 2>/dev/null)
+            done
+        else
+            echo ""
+            echo "To access the flask api container:"
+            echo "$0 server_shell"
+            echo ""
+            echo "To query the api server (if running) use the client container:"
+            echo "$0 $1 client_shell"
+
+            path="/api/status"
+
+            # if [ "$1" == "PRODUCTION" ]; then
+            #     echo "/ # http --follow --verify /tmp/cert.crt awesome.docker$path"
+            # fi
+        fi
+        echo ""
+
+    fi
+
+    echo "Boot completed"
+    exit 0
+
+else
+    echo "Unknown operation '$1'!"
+    echo "Use \"$0 help\" to see available commands "
+    exit 1
 fi
