@@ -34,13 +34,13 @@ script:
   - rapydo build
 
   # start the debug environment, and wait for initialization
-  - rapydo control start
-  - sleep 20
+  - rapydo control start && sleep 20
+  - rapydo --services backend log
 
   # launch all unittests
   - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
 
-  # # client shell?
+  # # if client shell needed
   # rapydo --services restclient shell --user developer
 
 after_success:
