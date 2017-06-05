@@ -34,9 +34,10 @@ This project is based on the [RAPyDo framework](https://github.com/rapydo)
 
 ## Documentation
 
-- [User documentation](docs/user/user.md)
-- [Admin operations](docs/deploy/deploy.md)
-- [Developing](docs/development/development.md)
+- [User](docs/user/user.md)
+- [Developer](docs/development/development.md)
+- [Deploy](docs/deploy/deploy.md)
+
 
 
 
