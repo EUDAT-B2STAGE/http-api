@@ -29,7 +29,7 @@ libs/bower_components
 
 # notebooks
 .ipynb_checkpoint
-s
+
 # Sublime text
 *.sublime-*
 
