@@ -34,8 +34,9 @@ This project is based on the [HTTP-API base](https://github.com/EUDAT-B2STAGE/ht
 ## Documentation
 
 - [User](docs/user/user.md)
-- [Deploy](docs/deploy/deploy.md)
 - [Developer](docs/development/development.md)
+- [Deploy](docs/deploy/deploy.md)
+
 
 
 
