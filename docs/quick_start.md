@@ -8,6 +8,9 @@ Up and running in five minutes:
 git clone https://github.com/EUDAT-B2STAGE/http-api.git
 cd http-api
 
+# install the controller and other libs
+pip3 install --upgrade -r requirements.txt
+
 # check the framework
 rapydo check
 
