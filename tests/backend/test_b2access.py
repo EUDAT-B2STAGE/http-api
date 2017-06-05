@@ -1,17 +1,16 @@
 
 # import vcr
-import requests
+# import requests
 # import json
 
-from rapydo.tests.utilities import TestUtilities
+# from rapydo.tests.utilities import TestUtilities
+# from rapydo.tests.utilities import (
+#     AUTH_URI,
+#     # OK, NO_CONTENT, PARTIAL, BAD_REQUEST, FORBIDDEN, NOTFOUND, CONFLICT
+#     FOUND
+# )
 
-from rapydo.tests.utilities import (
-    AUTH_URI,
-    # OK, NO_CONTENT, PARTIAL, BAD_REQUEST, FORBIDDEN, NOTFOUND, CONFLICT
-    FOUND
-)
-
-
+from test import RestTestsAuthenticatedBase
 from rapydo.utils.logs import get_logger
 
 log = get_logger(__name__)
@@ -25,7 +24,8 @@ log = get_logger(__name__)
 # )
 
 
-class TestB2Access(TestUtilities):
+# class TestB2Access(TestUtilities):
+class TestB2Access(RestTestsAuthenticatedBase):
 
     # @my_vcr.use_cassette('mytest.yaml')
     # cassette file will have the same name as the test function and will be

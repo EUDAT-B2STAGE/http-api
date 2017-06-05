@@ -33,9 +33,12 @@ if [ "$?" == "0" ]; then
     # Custom tests from the developer, if available
     $com $option/custom --log-capture
     if [ "$?" == "0" ]; then
-        # Print coverage if everything went well so far
-        $com $cov_options $cov_reports 2> /tmp/logfile.txt
-        grep "platform linux" -A 1000 /tmp/logfile.txt
+
+        echo "Done"
+        # # Print coverage if everything went well so far
+        # $com $cov_options $cov_reports 2> /tmp/logfile.txt
+        # grep "platform linux" -A 1000 /tmp/logfile.txt
+
     else
         exit $?
     fi
