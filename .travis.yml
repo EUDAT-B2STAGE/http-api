@@ -35,9 +35,9 @@ script:
 
   # start the debug environment, and wait for initialization
   - rapydo control start
+  - sleep 20
 
   # launch all unittests
-  - sleep 20
   - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
 
   # # client shell?
