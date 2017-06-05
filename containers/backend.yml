@@ -253,12 +253,11 @@ services:
     image: ${COMPOSE_PROJECT_NAME}/restclient:template
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
+      ACTIVATE: 0
     volumes:
       # TOFIX
-      - ../backend:/code/core
       - ..:/code/custom
-    environment:
-      ACTIVATE: 0
+      # - ../backend:/code/core
 
 
   ###################
