@@ -53,7 +53,7 @@ services:
   ###  MAIN CONTAINER  ###
   ########################
   backend:
-    command: sleep infinity
+    # command: sleep infinity
     build: ../builds_base/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:template
     hostname: restapi
@@ -68,8 +68,13 @@ services:
       - ../backend/rapydo:/usr/local/lib/python3.6/dist-packages/rapydo
       - ../utilities/rapydo/utils:/usr/local/lib/python3.6/dist-packages/rapydo/utils
       # Vanilla code
+  ##################
+  # FIXME
       - ../scripts:/code
+      - ../backend/rapydo/swagger:/code/rapydo/swagger
+      - ../backend/rapydo/models/swagger.yaml:/code/rapydo/models/swagger.yaml
       - ../backend/test:/code/test  # should this be called 'tests'?
+  ##################
       - ..:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}

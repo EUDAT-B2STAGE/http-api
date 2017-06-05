@@ -1,6 +1,9 @@
 env_prototype
 .env
 
+# patches / fixes / workaround
+scripts/rapydo
+
 # Skip submodules
 backend/*
 builds_base/*
