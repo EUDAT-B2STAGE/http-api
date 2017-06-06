@@ -37,6 +37,19 @@ variables:
       online_url: https://github.com/irods/python-irodsclient.git
       path: prc
       if: true
+  # frontend:
+  #   enable: true
+  # containers:
+  #   users:
+  #     backend: "root"
+  #   authentication:
+  #     service: "neo4j"
+  #     # service: "relationaldb"
+  #     username: "user@nomail.org"
+  #     password: "test"
+
+  #   authentication_service: "neo4j"
+
   env:
     COMPOSE_PROJECT_NAME: eudat
     # PROJECT_DOMAIN: myserver.mydomain.dev  # deprecated
