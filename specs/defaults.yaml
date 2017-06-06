@@ -47,6 +47,7 @@ variables:
     branch: master
   env:
     # COMPOSE_PROJECT_NAME: $PLACEHOLDER
+    # PROJECT_DOMAIN: myserver.mydomain.dev  # deprecated
     API_MAIN_ENDPOINT: status
     DB_SUBNET: 172.1.0.0  # FIXME: see issue
     JWT_APP_SECRETS: /jwt_tokens
@@ -66,12 +67,14 @@ variables:
     LETSENCRYPT_MODE: --staging
     FULL_JWT: true
 
-# controller:
-#   commands:
-#     name: letsencrypt
-#     command: updatecertificates
-#     service: proxy
-#     user: root
+controller:
+  commands:
+    ssl_certificates:
+      name: letsencrypt
+      description: Issue a production certificate with service Letsencrypt
+      command: updatecertificates
+      service: proxy
+      user: root
 
 project:
   name: rapydo

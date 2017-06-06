@@ -23,12 +23,12 @@ variables:
     # rapydo:
     #   branch: package
     backend:
-      branch: package
+      branch: package # FIXME
       online_url: https://github.com/rapydo/http-api.git
       path: backend
       if: true
     build-templates:
-      branch: package
+      branch: package # FIXME
       online_url: https://github.com/rapydo/build-templates.git
       path: builds_base
       if: true
@@ -39,7 +39,7 @@ variables:
       if: true
   env:
     COMPOSE_PROJECT_NAME: eudat
-    PROJECT_DOMAIN: myserver.mydomain.dev
+    # PROJECT_DOMAIN: myserver.mydomain.dev  # deprecated
     # LETSENCRYPT_MODE:
     API_MAIN_ENDPOINT: registered
     # sqlalchemy:

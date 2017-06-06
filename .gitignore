@@ -1,5 +1,7 @@
-env_prototype
 .env
+.projectrc
+# only eudat
+env_prototype
 
 # patches / fixes / workaround
 scripts/rapydo
