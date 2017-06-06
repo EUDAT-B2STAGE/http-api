@@ -68,7 +68,7 @@ $ curl \
 ##### Example
 ```bash
 # Download 'filename.txt'
-$ curl \
+$ curl -o localFileName \
   -H "Authorization: Bearer <auth_token>" \
   <http_server:port>/api/registered/path/to/directory/filename.txt?download=true 
 ```
