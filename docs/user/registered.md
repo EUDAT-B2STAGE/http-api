@@ -23,7 +23,7 @@ The examples in this section use cURL commands. For information about cURL, see 
 ---
 
 ## **GET**
-### Obtain entity metadata
+### Obtain entity metadata (with PID, if available)
 ##### Example
 ```bash
 # Get 'filename.txt' metadata
@@ -142,6 +142,7 @@ $ curl \
 |-----------|------|-------------
 | file (required) | string | Name of the local file to be uploaded
 | force | bool | Force overwrite
+| pid | bool | Return PID (synchronous)
 
 ##### Examples
 ```bash
@@ -168,6 +169,7 @@ $ curl -X PUT \
     },
     "Response": {
         "data": {
+            "PID": null,
             "checksum": '123456789',
             "filename": "filename.txt",
             "link": "<http_server:port>/api/registered/path/to/directory/filename.txt",

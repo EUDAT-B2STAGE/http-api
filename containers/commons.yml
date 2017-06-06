@@ -1,0 +1,123 @@
+version: '3'
+
+volumes:
+  sharedcerts:
+    driver: local
+  etcconf:
+    driver: local
+  irodshome:
+    driver: local
+  irodsvar:
+    driver: local
+  tmpuploads:
+    driver: local
+
+services:
+
+  icat:
+    environment:
+      POSTGRES_HOST: "${ALCHEMY_HOST}"
+      POSTGRES_USER: "${ALCHEMY_USER}"
+      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
+      # port??
+      IRODS_HOST: "${IRODS_HOST}"
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_DB: "${IRODS_DB}"
+      IRODS_USER: ${IRODS_USER}
+      # TOFIX: use docker secrets in the future
+      IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
+
+    volumes:
+      - etcconf:/etc
+      - irodshome:/home/irods
+      - irodsvar:/var/lib/irods
+      - sharedcerts:/opt/certificates
+      - ../builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
+
+    # # Open irods port to Outside world
+    # ## CAREFULL: don't uncomment the two lines below if you don't know why
+    # ports:
+    #     - 1247:1247
+
+  postgres:
+    environment:
+      POSTGRES_USER: "${ALCHEMY_USER}"
+      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
+      POSTGRES_DBS: ${ALCHEMY_DBS}
+
+  backend:
+    volumes:
+      # Uploads dir
+      - tmpuploads:${UPLOAD_PATH}
+      # SHARED
+      - sharedcerts:/opt/certificates
+      # B2ACCESS dev certificates
+      - ../certs:/usr/local/share/ca-certificates
+      # # mount irods code to develop patches
+      # - ./prc/irods:/usr/local/lib/python3.6/dist-packages/irods
+    networks:
+      i_net:
+
+    environment:
+      FLASK_APP: run.py
+      # base the user/role mechanism on some database
+      AUTH_ENABLE: 1
+      # putting this here because it should not be configurable in .env
+      AUTH_SERVICE: sqlalchemy
+      # AUTH_SERVICE: neo4j
+
+      ##############################
+      # set this inside the MODE yaml files you want to use
+      FLASK_DEBUG: 1
+      DEBUG_LEVEL: VERY_VERBOSE
+      APP_MODE: debug
+      ##############################
+
+      # project/package/prefix name
+      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      PROJECT_DOMAIN: ${PROJECT_DOMAIN}
+      UPLOAD_PATH: ${UPLOAD_PATH}
+      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
+      # app credentials to work inside the b2access environment
+      B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
+      B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
+
+      # db access
+      ALCHEMY_ENABLE: 1
+      ALCHEMY_HOST: ${ALCHEMY_HOST}
+      ALCHEMY_PORT: ${ALCHEMY_PORT}
+      ALCHEMY_USER: ${ALCHEMY_USER}
+      ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
+      ALCHEMY_DB: ${ALCHEMY_API_DB}
+
+      # irods configuration
+      IRODS_ENABLE: 1
+      IRODS_HOST: ${IRODS_HOST}
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_HOME: ${IRODS_HOME}
+      IRODS_DN: ${IRODS_DN}
+      IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
+      # Use this one if EXTERNAL?
+      # IRODS_PASSWORD: ${IRODS_PASSWORD}
+      IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
+      IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
+
+      # # neo connection
+      # GRAPHDB_ENABLE: 0
+      # # GRAPHDB_ENABLE: 1
+      # GRAPHDB_HOST: ${GRAPHDB_HOST}
+      # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+
+      HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS}
+      AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
+
+  restclient:
+    environment:
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}

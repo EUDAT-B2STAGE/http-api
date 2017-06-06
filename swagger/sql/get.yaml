@@ -1,0 +1,10 @@
+common:
+  custom:
+    authentication: true
+
+helloworld:
+  summary: Hello world authenticated with sql db
+  responses:
+    '200':
+      description: Hello world returned 
+

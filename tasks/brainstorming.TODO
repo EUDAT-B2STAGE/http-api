@@ -1,34 +1,15 @@
 
-
-After refactor:
-
-☐ unittests
-  - swagger ui
-   2.8 booleans and ID
-   3.0 (with react)
-☐ release a PyPi package
- - separate utils
- (logs, bash, and similar)
- - with documentation
-  https://pythonhosted.org/
-
   --- ✄ -----------------------
 
-More:
-
+☐ swagger 2 markdown (and PDF/html)
+   ☐ seadatanet endpoints
+   ☐ dockerfile
+   https://github.com/yewton/dockerfiles/tree/master/swagger2html
 ☐ flask binary
  ☐ check_if_user_defaults
  flask_auth.py end of file and implement in authentication
    ☐ how to change base admin?
 ☐ move all authentication parts inside flask_ext
-☐ swagger 2 markdown (and PDF/html)
-   ☐ seadatanet endpoints
-   ☐ dockerfile
-   https://github.com/yewton/dockerfiles/tree/master/swagger2html
-☐ travis for backend
-  ☐ how to do tests for backend on services that are not used in vanilla?
-☐ docker builds
-  - templates repo update
 
 
 With SWAGGER enabled:

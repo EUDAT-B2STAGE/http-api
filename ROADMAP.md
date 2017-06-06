@@ -93,7 +93,7 @@ To be discussed
 [//]: # (    + add one example of api call with curl inside login output Meta)
 [//]: # (- allow configuration files/options)
 [//]: # (    + set at docker level across containers)
-[//]: # (- Look into `TO FIX` labeled notes inside the code)
+[//]: # (- Look into `TOFIX` labeled notes inside the code)
 [//]: # (- GraphDB neo4j)
 [//]: # (    + test bolt native driver)
 [//]: # (    + write Eudat models used in B2SAFE metadata parser)

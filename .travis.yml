@@ -1,46 +1,47 @@
+
 language: python
 sudo: required
 # https://docs.travis-ci.com/user/languages/python/#Choosing-Python-versions-to-test-against
 python:
-  - "3.6"
+  - "3.6.1"
 services:
   - docker
-
-env:
-  DOCKER_COMPOSE_VERSION: 1.11.2
 
 before_install:
   # update docker
   - sudo apt-get update
   - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 
-  # update docker-compose
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
-
 install:
-  - pip install coveralls python-coveralls --upgrade
+  # note: this will also upgrade docker compose
+  - pip install --upgrade -r requirements.txt
 
 # before_script:
-#   - chmod o+w backend
+#   - sleep 1
 
 script:
   - docker -v
   - docker-compose -v
+  - rapydo --version
 
-  # Clone, download, build
-  - ./do update
+  # Clone subrepos
+  - rapydo init
 
   # needed to let the system create files with test coverage
   - chmod o+w backend
 
+  # build docker images
+  - rapydo build
+
   # start the debug environment, and wait for initialization
-  - ./do DEBUG await
+  - rapydo control start && sleep 20
+  - rapydo --services backend log
 
   # launch all unittests
-  - ./do api_test
+  - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
+
+  # # if client shell needed
+  # rapydo --services restclient shell --user developer
 
 after_success:
   - coveralls

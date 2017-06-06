@@ -4,8 +4,10 @@
 This guide describes the B2STAGE HTTP-API operations, related request, response structures and error codes.
 
 The alpha release of the B2STAGE HTTP-API allows user to perform the following operations on B2SAFE:
-- list, upload, rename, download and delete files (objects in iRODS) 
-- create, rename and delete directories (collection in iRODS).
+- uploading an object on B2SAFE obtaining the checksum and the EUDAT PID;
+- downloading an object from B2SAFE either passing the B2SAFE path or EUDAT PID;
+- listing, renaming and deleting objects on B2SAFE;
+- resolve EUDAT PIDS getting URL and EUDAT/CHECKSUM.
 
 The complete description of the operation you can perform is available in:
 - the [registered api](registered.md) page

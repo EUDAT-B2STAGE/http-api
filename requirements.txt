@@ -1,0 +1,14 @@
+
+##PACKAGING
+pip
+setuptools
+
+##UNITTESTS
+#nose2
+coveralls
+python-coveralls
+
+##RAPYDO
+rapydo-controller
+#docker-compose
+#rapydo-utils

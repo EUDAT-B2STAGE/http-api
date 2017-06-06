@@ -1,7 +1,15 @@
+env_prototype
+.env
+
+# patches / fixes / workaround
+scripts/rapydo
 
 # Skip submodules
-backend
-prc
+backend/*
+builds_base/*
+frontend/*
+utilities/*
+prc/*
 
 # Skip self-signed certificates
 certs/nginx-selfsigned*
@@ -10,10 +18,12 @@ certs/*cineca*
 # Skip any data
 data
 
+# Sublime text
+*.sublime-*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
 
 # C extensions
 *.so
@@ -55,7 +65,6 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
-.hypothesis/
 
 # Translations
 *.mo

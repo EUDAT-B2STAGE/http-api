@@ -1,0 +1,42 @@
+
+version: '3'
+services:
+
+  backend:
+    environment:
+      FLASK_DEBUG: 1
+      DEBUG_LEVEL: DEBUG
+      # DEBUG_LEVEL: VERBOSE
+      APP_MODE: development
+      # EUDAT RELATED
+      B2ACCESS_ENV: development
+    depends_on:
+      - icat
+      - sql
+
+  proxy:
+    volumes:
+      # no SSL
+      - ./confs/nginx/development.conf:/etc/nginx/sites-enabled/development
+    ports:
+      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}
+
+  client:
+    environment:
+      APP_HOST: ${PROXY_HOST}
+      APP_PORT: :${PROXY_DEV_PORT}
+    networks:
+      proxy_net:
+    depends_on:
+      - proxy
+
+  # graphdb:
+  #   ports:
+  #     - 9090:7474
+  #     - 7687:7687
+
+# networks:
+#   app_net:
+#     ipam:
+#       config:
+#         - subnet: ${FLASK_SUBNET}/16

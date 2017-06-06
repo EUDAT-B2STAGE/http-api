@@ -1,17 +1,27 @@
-# v0.3.2-beta (*next*)
-**due date**: May 30, 2017
+
+# v0.4.1-beta (*next*)
+**due date**: June 20, 2017
+**milestone**: [beta version 4](https://github.com/EUDAT-B2STAGE/http-api/milestone/7)
+
+## features
+
+- more unittests
+- performances?
+
+# v0.4.0-beta (*current*)
+**due date**: June 05, 2017
 **milestone**: [beta version 3](https://github.com/EUDAT-B2STAGE/http-api/milestone/6)
 
 ## features
 
-- shorter token
-- more unittests
-- performances?
-- bug fixes
+- shorter token [#57]
+- rapydo compliant [#60]
+- put operation returning the PID [#61]
+- bug fixes [#59]
 
 ---
 
-# v0.3.1-beta (*current*)
+# v0.3.1-beta
 **due date**: May 15, 2017
 **milestone**: [beta version 2](https://github.com/EUDAT-B2STAGE/http-api/milestone/5?closed=1)
 
