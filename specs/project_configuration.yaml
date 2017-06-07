@@ -23,21 +23,16 @@ variables:
   repos:
     # rapydo:
     #   branch: package
-    backend:
-      branch: package # FIXME
-      online_url: https://github.com/rapydo/http-api.git
-      path: backend
-      if: true
-    build-templates:
-      branch: package # FIXME
-      online_url: https://github.com/rapydo/build-templates.git
-      path: builds_base
-      if: true
     irods-client:
       branch: master
       online_url: https://github.com/irods/python-irodsclient.git
       path: prc
       if: true
+    # backend:
+    #   branch: somebranch
+    #   online_url: https://github.com/rapydo/http-api.git
+    #   path: backend
+    #   if: true
   # frontend:
   #   enable: true
   # containers:

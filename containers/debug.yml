@@ -20,6 +20,8 @@ services:
     depends_on:
       - icat  # to be commented if you need to test external b2safe
       - postgres
+    # volumes:
+    #   - ../prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
   restclient:
     environment:
