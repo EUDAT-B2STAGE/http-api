@@ -1,15 +1,16 @@
 
 project:
   title: EUDAT-B2STAGE HTTP-API server
-  version: v0.4-beta
+  version: v0.4.1-beta
   description: Processing files in different EUDAT domains
 
-# controller:
-#   commands:
-#     name: letsencrypt
-#     command: updatecertificates
-#     service: proxy
-#     user: root
+controller:
+  commands:
+    irods_restart:
+      description: Try to restart the current iCAT server instance
+      command: service irods restart
+      service: icat
+      user: root
 
 tags:
   eudat: all endpoints associated to EUDAT services

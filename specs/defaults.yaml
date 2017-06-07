@@ -81,15 +81,6 @@ variables:
     # AUTH_MAX_LOGIN_ATTEMPTS: 0
     # AUTH_SECOND_FACTOR_AUTHENTICATION: None
 
-controller:
-  commands:
-    ssl_certificates:
-      name: letsencrypt
-      description: Issue a production certificate with service Letsencrypt
-      command: updatecertificates
-      service: proxy
-      user: root
-
 project:
   name: rapydo
   title: REST HTTP-API server with Python, Flask and Docker
