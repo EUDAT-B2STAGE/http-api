@@ -5,7 +5,6 @@ An endpoint example
 """
 
 from rapydo.rest.definition import EndpointResource
-# from rapydo.services.detect import SQL_AVAILABLE, GRAPHDB_AVAILABLE
 from rapydo.services.detect import detector
 
 from rapydo.utils.logs import get_logger

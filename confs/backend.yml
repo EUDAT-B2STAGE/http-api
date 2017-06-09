@@ -61,7 +61,7 @@ services:
     environment:
       # TODO: active or not
       ACTIVATE: 0
-      FLASK_APP: run.py
+      FLASK_APP: rapydo/__main__.py
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
@@ -244,6 +244,14 @@ services:
       db_net:
     environment:
       ACTIVATE: 0
+
+  # mongoui:
+  #   links:
+  #     - mongodb:mongo
+  #   ports:
+  #     - 8081:8081
+  #   environment:
+  #     ACTIVATE: 0
 
   #############
   # REST API client (wget, curl, httpie, http-prompt)

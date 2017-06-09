@@ -9,7 +9,7 @@ git clone https://github.com/EUDAT-B2STAGE/http-api.git
 cd http-api
 
 # install the controller and other libs
-pip3 install --upgrade -r requirements.txt
+pip3 install --upgrade -r projects/eudat/requirements.txt
 
 # check the framework
 rapydo check
@@ -24,7 +24,7 @@ rapydo control start
 rapydo --services backend shell --command rapydo
 
 # client
-rapydo --services restclient shell --user developer
+rapydo --services restclient shell
 
 # clean everything
 rapydo clean --rm-volumes  # very DANGEROUS!

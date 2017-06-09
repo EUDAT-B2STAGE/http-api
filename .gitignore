@@ -8,37 +8,28 @@ uploads
 tmp_files
 
 # Skip self-signed certificates
-certs/nginx-selfsigned*
-certs/*cineca*
+data/certs/nginx-selfsigned*
+data/certs/*cineca*
 
 #################
 ##  Submodules ##
 #################
 
-/backend
-/frontend
-/builds_base
-/utilities
-/prc
+/submodules
 
 ############################################
 ##  Dynamically created file and folders  ##
 ############################################
 
 .projectrc
-libs/bower_components
+frontend/eudat/libs/bower_components
 .env
-# only eudat
-env_prototype
 
 ###################################
 ##  Temporary and miscellaneous  ##
 ###################################
 
 *.log
-
-# patches / fixes / workaround
-scripts/rapydo
 
 # notebooks
 .ipynb_checkpoint

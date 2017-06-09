@@ -6,6 +6,8 @@ python:
   - "3.6.1"
 services:
   - docker
+env:
+  - PROJECT=eudat
 
 before_install:
   # update docker
@@ -14,7 +16,7 @@ before_install:
 
 install:
   # note: this will also upgrade docker compose
-  - pip install --upgrade -r requirements.txt
+  - pip install --upgrade -r projects/$PROJECT/requirements.txt
 
 # before_script:
 #   - sleep 1
@@ -28,22 +30,29 @@ script:
   # Clone subrepos
   - rapydo init
 
-  # needed to let the system create files with test coverage
-  - chmod o+w backend
+  # FIRST THING PULL LATEST VERSION OF rapydo/core
+  # NOTE: this is a fork from rapydo/core
+  # - git fetch upstream && git merge upstream master
+
+  # # needed to let the system create files with test coverage
+  # - chmod o+w -R submodules
 
   # build docker images
   - rapydo build
 
   # start the debug environment, and wait for initialization
-  - rapydo control start && sleep 10
+# FIXME: with workaround
+  - rapydo control start && sleep 30
   - rapydo --services postgres log
   - rapydo --services backend log
 
   # launch all unittests
-  - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
+  # - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
+# FIXME: check if working like this
+  - rapydo --services backend shell --command testwithcoverage
 
   # # if client shell needed
-  # rapydo --services restclient shell --user developer
+  # rapydo --services restclient shell
 
-after_success:
-  - coveralls
+# after_success:
+#   - coveralls

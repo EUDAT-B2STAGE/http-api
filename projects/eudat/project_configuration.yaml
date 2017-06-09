@@ -35,16 +35,15 @@ variables:
     #   if: true
   # frontend:
   #   enable: true
-  # containers:
-  #   users:
-  #     backend: "root"
-  #   authentication:
-  #     service: "neo4j"
-  #     # service: "relationaldb"
-  #     username: "user@nomail.org"
-  #     password: "test"
-
-  #   authentication_service: "neo4j"
+  containers:
+    authentication:
+      service: "mongo"
+      # service: "relationaldb"
+      username: "user@nomail.org"
+      password: "test"
+    authentication_service: "mongo"
+    # users:
+    #   backend: "root"
 
   env:
     COMPOSE_PROJECT_NAME: eudat
