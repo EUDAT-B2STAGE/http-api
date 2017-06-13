@@ -35,6 +35,7 @@ networks:
   app_net:
   proxy_net:
   worker_net:
+  ftp_net:
   db_net:
     # driver: bridge
     ipam:
@@ -106,13 +107,12 @@ services:
     environment:
       DOMAIN: ${PROJECT_DOMAIN}
       MODE: ${LETSENCRYPT_MODE}
+      ACTIVATE: 0
     depends_on:
       # NOTE: you have to rewrite all depends_on in a new yml file
       # at the moment they do not cumulate
       - backend
       # - frontend
-    environment:
-      ACTIVATE: 0
 
   ###################
   ###  DATABASES  ###
@@ -133,8 +133,7 @@ services:
           - ${ALCHEMY_HOST}
 
   neo4j:
-    # image: neo4j:3.2.0
-    image: neo4j:3.1
+    image: neo4j:3.2.1
     volumes:
       - graphdata:/data
     networks:
@@ -276,6 +275,8 @@ services:
       ACTIVATE: 0
       PUBLICHOST: ${PROJECT_DOMAIN}
       ADDED_FLAGS: -d -d
+    networks:
+      ftp_net:
 
   ######################################################
   ###  iRODS iCAT server (usually for EUDAT B2safe)  ###

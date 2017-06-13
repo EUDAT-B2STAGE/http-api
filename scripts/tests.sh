@@ -35,6 +35,7 @@ if [ "$?" == "0" ]; then
     if [ "$?" == "0" ]; then
 
         echo "Done"
+        # FIXME: coverage report on travis
         # # Print coverage if everything went well so far
         # $com $cov_options $cov_reports 2> /tmp/logfile.txt
         # grep "platform linux" -A 1000 /tmp/logfile.txt

@@ -22,6 +22,7 @@ install:
 script:
   - docker -v
   - docker-compose -v
+  - pip freeze | grep rapydo-
   - rapydo --version
 
   # Clone subrepos
@@ -34,7 +35,8 @@ script:
   - rapydo build
 
   # start the debug environment, and wait for initialization
-  - rapydo control start && sleep 20
+  - rapydo control start && sleep 10
+  - rapydo --services postgres log
   - rapydo --services backend log
 
   # launch all unittests

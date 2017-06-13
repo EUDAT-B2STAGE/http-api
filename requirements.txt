@@ -9,6 +9,6 @@ coveralls
 python-coveralls
 
 ##RAPYDO
-rapydo-controller
+rapydo-controller==0.2.1
 #docker-compose
 #rapydo-utils

@@ -121,15 +121,23 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             except IrodsException:
                 checksum = None
 
-            # Get PID
+            # Get B2SAFE metadata
             out = {}
             try:
                 out, _ = icom.get_metadata(file_path)
             except IrodsException:
                 pass
 
-            metadata['PID'] = out.get("PID")
             metadata['checksum'] = checksum
+            metadata['PID'] = out.get("PID")
+
+            # Shell we add B2SAFE metadata only if present?
+            metadata['EUDAT/FIXED_CONTENT'] = out.get("EUDAT/FIXED_CONTENT")
+            metadata['EUDAT/REPLICA'] = out.get("EUDAT/REPLICA")
+            metadata['EUDAT/FIO'] = out.get("EUDAT/FIO")
+            metadata['EUDAT/ROR'] = out.get("EUDAT/ROR")
+            metadata['EUDAT/PARENT'] = out.get("EUDAT/PARENT")
+
             metadata.pop('path')
             content = {
                 'metadata': metadata,
