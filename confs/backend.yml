@@ -55,32 +55,28 @@ services:
   ########################
   backend:
     # command: sleep infinity
-    build: ../builds_base/backend
+    build: ../submodules/builds_base/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:template
     hostname: restapi
     environment:
-      # TODO: active or not
-      ACTIVATE: 0
-      FLASK_APP: rapydo/__main__.py
+      ACTIVATE: 0  # TODO: active or not
+      FLASK_APP: ${COMPOSE_PROJECT_NAME}/__main__.py
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
+      # Custom configuration
+      - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/${COMPOSE_PROJECT_NAME}/confs/project_configuration.yaml
       # Rapydo repos
-      - ../backend/rapydo:/usr/local/lib/python3.6/dist-packages/rapydo
-      - ../utilities/rapydo/utils:/usr/local/lib/python3.6/dist-packages/rapydo/utils
+      - ../submodules/backend/rapydo:/usr/local/lib/python3.6/dist-packages/rapydo
+      - ../submodules/utilities/rapydo/utils:/usr/local/lib/python3.6/dist-packages/rapydo/utils
       # Vanilla code
-  ##################
-  # FIXME
-      - ../scripts:/code
-      - ../backend/rapydo/swagger:/code/rapydo/swagger
-      - ../backend/rapydo/models/swagger.yaml:/code/rapydo/models/swagger.yaml
-      - ../backend/test:/code/test  # should this be called 'tests'?
-  ##################
-      - ..:/code/${COMPOSE_PROJECT_NAME}
+      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
-      # Tests
-      - ../tests/backend:/code/test/custom
+      # # Tests
+      # FIXME: change how they are mounted?
+      # - ../submodules/backend/tests:/code/tests
+      # - ../projects/${COMPOSE_PROJECT_NAME}/backend/tests:/code/tests/custom
     networks:
       app_net:
         aliases:
@@ -90,7 +86,7 @@ services:
 
   ##############################
   proxy:
-    build: ../builds_base/proxy
+    build: ../submodules/builds_base/proxy
     image: ${COMPOSE_PROJECT_NAME}/proxy:template
     hostname: reverseproxy
     volumes:
@@ -121,7 +117,7 @@ services:
     image: postgres:9.6
     volumes:
       - sqldata:/var/lib/postgresql/data
-      - ../builds_base/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+      - ../submodules/builds_base/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
       ACTIVATE: 0
       POSTGRES_USER: "${PLACEHOLDER}"
@@ -165,7 +161,7 @@ services:
   #########################
 
   celery:
-    build: ../builds_base/celery
+    build: ../submodules/builds_base/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:template
     # hostname: celworker
     # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
@@ -176,9 +172,11 @@ services:
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
-      - ..:/code/${COMPOSE_PROJECT_NAME}
+      # FIXME: UHM, what is this?
       # Base code
-      - ../backend:/code
+      - ../submodules/backend:/code
+      # Vanilla code
+      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
     networks:
@@ -201,7 +199,7 @@ services:
       ACTIVATE: 0
 
   flower:
-    build: ../builds_base/celery
+    build: ../submodules/builds_base/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:template
     hostname: flower
     user: root
@@ -230,7 +228,7 @@ services:
   ### Client interfaces  ###
   ##########################
   swaggerui:
-    build: ../builds_base/swaggerui
+    build: ../submodules/builds_base/swaggerui
     image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
     environment:
       ACTIVATE: 0
@@ -238,7 +236,7 @@ services:
   # This docker image let you access sqllite/postgres/mysql
   # with a phpmyadmin-like web page
   sqladmin:
-    build: ../builds_base/sqladmin
+    build: ../submodules/builds_base/sqladmin
     image: ${COMPOSE_PROJECT_NAME}/sqladmin:template
     networks:
       db_net:
@@ -256,15 +254,15 @@ services:
   #############
   # REST API client (wget, curl, httpie, http-prompt)
   restclient:
-    build: ../builds_base/restclient
+    build: ../submodules/builds_base/restclient
     image: ${COMPOSE_PROJECT_NAME}/restclient:template
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       ACTIVATE: 0
     volumes:
-      # TOFIX
-      - ..:/code/custom
-      # - ../backend:/code/core
+      # - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/custom
+      - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yml
+      - ../submodules/utilities/rapydo/utils/defaults.yaml:/code/base.yml
 
 
   ###################
@@ -272,7 +270,7 @@ services:
   ###################
   ftp:
     # image: stilliard/pure-ftpd:latest
-    build: ../builds_base/ftp
+    build: ../submodules/builds_base/ftp
     image: ${COMPOSE_PROJECT_NAME}/ftp:template
     volumes:
       - pureftpd:/etc/pure-ftpd/passwd
@@ -291,7 +289,7 @@ services:
   ######################################################
   icat:
     # B2safe instance on irods
-    build: ../builds_base/icat
+    build: ../submodules/builds_base/icat
     image: ${COMPOSE_PROJECT_NAME}/icat:template
     # image: b2safe:rapydo
     hostname: ${IRODS_HOST}

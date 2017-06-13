@@ -224,7 +224,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
         Handle file upload. Test on docker client shell with:
         http --form PUT $SERVER/api/resources/tempZone/home/guest/test \
-            file@/tmp/gettoken force=True "$AUTH"
+            file@SOMEFILE force=True "$AUTH"
         Note to devs: iRODS does not allow to iput on more than one resource.
         To put the second one you need the irepl command,
         which will assure that we have a replica on all resources...

@@ -17,7 +17,7 @@ services:
   proxy:
     volumes:
       # no SSL
-      - ../containers/confs/nginx/development.conf:/etc/nginx/sites-enabled/development
+      - ../confs/nginx/development.conf:/etc/nginx/sites-enabled/development
     ports:
       - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}
 

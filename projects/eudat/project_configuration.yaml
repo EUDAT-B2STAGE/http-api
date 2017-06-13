@@ -28,11 +28,11 @@ variables:
       online_url: https://github.com/irods/python-irodsclient.git
       path: prc
       if: true
-    # backend:
-    #   branch: somebranch
-    #   online_url: https://github.com/rapydo/http-api.git
-    #   path: backend
-    #   if: true
+    backend:
+      branch: scaffold  # FIXME: pull request :)
+      online_url: https://github.com/rapydo/http-api.git
+      path: backend
+      if: true
   # frontend:
   #   enable: true
   containers:

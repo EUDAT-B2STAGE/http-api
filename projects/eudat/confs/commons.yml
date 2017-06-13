@@ -33,7 +33,7 @@ services:
       - irodshome:/home/irods
       - irodsvar:/var/lib/irods
       - sharedcerts:/opt/certificates
-      - ../builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
+      - ../submodules/builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why
@@ -53,19 +53,18 @@ services:
       # SHARED
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
-      - ../certs:/usr/local/share/ca-certificates
+      - ../../../data/certs:/usr/local/share/ca-certificates
       # # mount irods code to develop patches
-      # - ./prc/irods:/usr/local/lib/python3.6/dist-packages/irods
+      # - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
     networks:
       i_net:
 
     environment:
-      FLASK_APP: run.py
       # base the user/role mechanism on some database
       AUTH_ENABLE: 1
       # putting this here because it should not be configurable in .env
-      # AUTH_SERVICE: sqlalchemy
-      AUTH_SERVICE: mongo
+      # AUTH_SERVICE: mongo  # FIXME
+      AUTH_SERVICE: sqlalchemy
 
       ##############################
       # set this inside the MODE yaml files you want to use
