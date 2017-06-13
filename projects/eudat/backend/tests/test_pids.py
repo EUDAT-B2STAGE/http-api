@@ -7,9 +7,9 @@ Run single test:
 nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
 """
 
-import io
+# import io
 import json
-from test import RestTestsAuthenticatedBase
+from tests import RestTestsAuthenticatedBase
 from rapydo.utils.logs import get_logger
 
 __authors__ = [
@@ -35,7 +35,7 @@ class TestPids(RestTestsAuthenticatedBase):
 
         pid = '11100/33ac01fc-6850-11e5-b66e-e41f13eb32b2'
         worng_pid = '11100/33ac01fc-6850-11e5-XXXX-e41f13eb3212'
-        
+
         # GET URL from PID
         endpoint = (self._api_uri + self._main_endpoint +
                     '/' + pid)

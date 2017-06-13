@@ -29,7 +29,7 @@ services:
 
   restclient:
     environment:
-      # ACTIVATE: 1
+      ACTIVATE: 1
       APP_HOST: ${FLASK_HOST}
       APP_PORT: :${FLASK_DEFAULT_PORT}
     networks:

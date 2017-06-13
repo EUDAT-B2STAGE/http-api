@@ -34,25 +34,16 @@ script:
   # NOTE: this is a fork from rapydo/core
   # - git fetch upstream && git merge upstream master
 
-  # # needed to let the system create files with test coverage
-  # - chmod o+w -R submodules
-
-  # build docker images
-  - rapydo build
-
   # start the debug environment, and wait for initialization
-# FIXME: with workaround
-  - rapydo control start && sleep 30
-  - rapydo --services postgres log
-  - rapydo --services backend log
+  - rapydo control start
+  - sleep 60 && rapydo --services backend shell --command initialize
+  # - rapydo --services postgres log
+  # - rapydo --services backend log
 
   # launch all unittests
-  # - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
-# FIXME: check if working like this
   - rapydo --services backend shell --command testwithcoverage
-
-  # # if client shell needed
-  # rapydo --services restclient shell
+  # - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
 
 # after_success:
+# TODO: fix problems with computing coverage
 #   - coveralls

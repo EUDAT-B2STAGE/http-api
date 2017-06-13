@@ -57,9 +57,10 @@ services:
     # command: sleep infinity
     build: ../submodules/builds_base/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:template
-    hostname: restapi
+    # hostname: restapi
+    hostname: rapydo_server
     environment:
-      ACTIVATE: 0  # TODO: active or not
+      ACTIVATE: 0  # activate me inside your Blueprint
       FLASK_APP: ${COMPOSE_PROJECT_NAME}/__main__.py
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
@@ -73,10 +74,9 @@ services:
       - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
-      # # Tests
-      # FIXME: change how they are mounted?
-      # - ../submodules/backend/tests:/code/tests
-      # - ../projects/${COMPOSE_PROJECT_NAME}/backend/tests:/code/tests/custom
+      # Unit tests
+      - ../submodules/backend/tests:/code/tests
+      - ../projects/${COMPOSE_PROJECT_NAME}/backend/tests:/code/tests/custom
     networks:
       app_net:
         aliases:
@@ -256,11 +256,11 @@ services:
   restclient:
     build: ../submodules/builds_base/restclient
     image: ${COMPOSE_PROJECT_NAME}/restclient:template
+    hostname: rapydo_client
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       ACTIVATE: 0
     volumes:
-      # - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/custom
       - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yml
       - ../submodules/utilities/rapydo/utils/defaults.yaml:/code/base.yml
 

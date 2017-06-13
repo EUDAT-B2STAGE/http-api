@@ -9,7 +9,7 @@ nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
 
 import io
 import json
-from test import RestTestsAuthenticatedBase
+from tests import RestTestsAuthenticatedBase
 from rapydo.utils.logs import get_logger
 
 __authors__ = [
