@@ -15,7 +15,11 @@ data/certs/*cineca*
 ##  Submodules ##
 #################
 
-/submodules
+submodules/utilities
+submodules/builds_base
+submodules/backend
+submodules/frontend
+submodules/prc
 
 ############################################
 ##  Dynamically created file and folders  ##

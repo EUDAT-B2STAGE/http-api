@@ -26,10 +26,9 @@ script:
   # - docker-compose -v
   # - rapydo --version
   - pip search rapydo- && pip freeze | grep docker && pip freeze | grep requests
-  # Try a fix for ValueError: Timeout value connect was Timeout( PROBLEM
+  # BUG FIX: ValueError: Timeout value connect was Timeout
   - pip install requests==2.11.1
-  # a first test
-  - rapydo check
+
   # Clone subrepos
   - rapydo init
 
