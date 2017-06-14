@@ -20,6 +20,8 @@ tags:
   # internal: for internal testing purpose only
 
 variables:
+  # frontend:
+  #   enable: true
   repos:
     irods-client:
       branch: master
@@ -36,18 +38,6 @@ variables:
       online_url: https://github.com/rapydo/build-templates.git
       path: builds_base
       if: true
-  # frontend:
-  #   enable: true
-  containers:
-    authentication:
-      username: "user@nomail.org"
-      password: "test"
-      #########################
-      # FIXME: WHAT IS THIS?
-      # service: "relationaldb"
-      service: "mongo"
-    authentication_service: "mongo"
-      #########################
 
   env:
     COMPOSE_PROJECT_NAME: eudat
