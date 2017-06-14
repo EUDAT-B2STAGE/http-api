@@ -11,5 +11,6 @@ python-coveralls
 
 ##RAPYDO
 rapydo-controller==0.3.0
+#urllib3
 #docker-compose
 #rapydo-utils
