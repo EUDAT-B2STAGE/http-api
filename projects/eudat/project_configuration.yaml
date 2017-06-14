@@ -41,8 +41,8 @@ variables:
 
   env:
     COMPOSE_PROJECT_NAME: eudat
-    # AUTH_SERVICE: sqlalchemy
-    AUTH_SERVICE: mongo
+    AUTH_SERVICE: sqlalchemy
+    # AUTH_SERVICE: mongo
     API_MAIN_ENDPOINT: registered
     # PROJECT_DOMAIN: myserver.mydomain.dev  # deprecated
     # LETSENCRYPT_MODE:
