@@ -10,7 +10,7 @@ coveralls
 python-coveralls
 
 ##RAPYDO
-rapydo-controller==0.3.0
+rapydo-controller==0.3.1
 #urllib3
 #docker-compose
 #rapydo-utils

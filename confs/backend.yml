@@ -70,9 +70,6 @@ services:
     volumes:
       # Custom configuration
       - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/${COMPOSE_PROJECT_NAME}/confs/project_configuration.yaml
-      # Rapydo repos
-      - ../submodules/backend/rapydo:/usr/local/lib/python3.6/dist-packages/rapydo
-      - ../submodules/utilities/rapydo/utils:/usr/local/lib/python3.6/dist-packages/rapydo/utils
       # Vanilla code
       - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
