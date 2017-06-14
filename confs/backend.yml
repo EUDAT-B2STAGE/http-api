@@ -64,6 +64,9 @@ services:
       FLASK_APP: ${COMPOSE_PROJECT_NAME}/__main__.py
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      # base the user/role mechanism on some database
+      AUTH_ENABLE: 0
+      # AUTH_SERVICE: ${AUTH_SERVICE}
     volumes:
       # Custom configuration
       - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/${COMPOSE_PROJECT_NAME}/confs/project_configuration.yaml
@@ -198,7 +201,11 @@ services:
     environment:
       ACTIVATE: 0
 
-  flower:
+  ##########################
+  ### SERVICE INTERFACES ###
+  ##########################
+
+  celeryui:
     build: ../submodules/builds_base/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:template
     hostname: flower
@@ -223,33 +230,29 @@ services:
     depends_on:
       - rabbit
 
-
-  ##########################
-  ### Client interfaces  ###
-  ##########################
   swaggerui:
     build: ../submodules/builds_base/swaggerui
     image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
     environment:
       ACTIVATE: 0
 
-  # This docker image let you access sqllite/postgres/mysql
-  # with a phpmyadmin-like web page
-  sqladmin:
-    build: ../submodules/builds_base/sqladmin
-    image: ${COMPOSE_PROJECT_NAME}/sqladmin:template
+  sqlalchemyui:
+    build: ../submodules/builds_base/sqlalchemyui
+    image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
+    # NOTE: this image let you access sqllite/postgres/mysql
+    # with a phpmyadmin-like web page
     networks:
       db_net:
     environment:
       ACTIVATE: 0
 
-  # mongoui:
-  #   links:
-  #     - mongodb:mongo
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     ACTIVATE: 0
+  mongoui:
+    image: mongo-express:0.40.0
+    environment:
+      ACTIVATE: 0
+      ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
+    networks:
+      db_net:
 
   #############
   # REST API client (wget, curl, httpie, http-prompt)

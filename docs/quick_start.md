@@ -13,7 +13,7 @@ cd http-api
 pip3 install --upgrade -r projects/eudat/requirements.txt
 
 # check the framework
-rapydo check
+rapydo --force_env check --skip_heavy_git_ops
 
 # fix what is missing from above
 rapydo init

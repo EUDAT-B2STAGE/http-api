@@ -62,9 +62,7 @@ services:
     environment:
       # base the user/role mechanism on some database
       AUTH_ENABLE: 1
-      # putting this here because it should not be configurable in .env
-      # AUTH_SERVICE: mongo  # FIXME
-      AUTH_SERVICE: sqlalchemy
+      AUTH_SERVICE: ${AUTH_SERVICE}
 
       ##############################
       # set this inside the MODE yaml files you want to use

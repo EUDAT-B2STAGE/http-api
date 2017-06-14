@@ -37,21 +37,19 @@ services:
     depends_on:
       - backend
 
-  sqladmin:
-    # volumes:
-    #   - restlitedb:/dbs
-    ports:
-      - 8888:8888
-    # environment:
-    #   ACTIVATE: 1
-
   # graphdb:
   #   ports:
   #     - 9090:7474
   #     - 7687:7687
 
+  sqlalchemyui:
+    # volumes:
+    #   - restlitedb:/dbs
+    ports:
+      - 80:8888
   swaggerui:
     ports:
       - 80:80
-    # environment:
-    #   ACTIVATE: 1
+  mongoui:
+    ports:
+      - 80:8081

@@ -21,8 +21,6 @@ tags:
 
 variables:
   repos:
-    # rapydo:
-    #   branch: package
     irods-client:
       branch: master
       online_url: https://github.com/irods/python-irodsclient.git
@@ -33,31 +31,38 @@ variables:
       online_url: https://github.com/rapydo/http-api.git
       path: backend
       if: true
+    build-templates:
+      branch: scaffold
+      online_url: https://github.com/rapydo/build-templates.git
+      path: builds_base
+      if: true
   # frontend:
   #   enable: true
   containers:
     authentication:
-      service: "mongo"
-      # service: "relationaldb"
       username: "user@nomail.org"
       password: "test"
+      #########################
+      # FIXME: WHAT IS THIS?
+      # service: "relationaldb"
+      service: "mongo"
     authentication_service: "mongo"
-    # users:
-    #   backend: "root"
+      #########################
 
   env:
     COMPOSE_PROJECT_NAME: eudat
+    # AUTH_SERVICE: sqlalchemy
+    AUTH_SERVICE: mongo
+    API_MAIN_ENDPOINT: registered
     # PROJECT_DOMAIN: myserver.mydomain.dev  # deprecated
     # LETSENCRYPT_MODE:
-    API_MAIN_ENDPOINT: registered
+
     # sqlalchemy:
-    # ALCHEMY_ENGINE: postgresql
+    ALCHEMY_ENGINE: postgresql
     ALCHEMY_USER: rods
     ALCHEMY_PASSWORD: thisismypassword
     ALCHEMY_API_DB: SQL_API
     ALCHEMY_DBS: 'ICAT SQL_API'
-    # neo4j:
-    GRAPHDB_PASSWORD: wakeupneo
     # LOCAL iRODS server VERSION
     IRODS_DB: ICAT
     IRODS_AUTHSCHEME: GSI
@@ -68,10 +73,13 @@ variables:
     IRODS_ZONE: tempZone
     IRODS_HOME: home
     IRODS_DN:
+    # # neo4j:
+    # GRAPHDB_PASSWORD: wakeupneo
     ## B2ACCESS
     B2ACCESS_ACCOUNT: httpapi
     # B2ACCESS_ACCOUNT: b2stage_httpapi
-    B2ACCESS_SECRET: SETYOURSECRETKEY
+    # B2ACCESS_SECRET: SETYOURSECRETKEY
+    B2ACCESS_SECRET: XqT@h2emo44pc&
     # EPIC HANDLE credentials
     HANDLE_BASE: "https://url.to.epic/handles/"
     # HANDLE_USER:
