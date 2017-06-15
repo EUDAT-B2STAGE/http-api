@@ -28,16 +28,16 @@ variables:
       online_url: https://github.com/irods/python-irodsclient.git
       path: prc
       if: true
-    backend:
-      branch: scaffold  # FIXME: pull request :)
-      online_url: https://github.com/rapydo/http-api.git
-      path: backend
-      if: true
-    build-templates:
-      branch: scaffold
-      online_url: https://github.com/rapydo/build-templates.git
-      path: builds_base
-      if: true
+    # backend:
+    #   branch: scaffold
+    #   online_url: https://github.com/rapydo/http-api.git
+    #   path: backend
+    #   if: true
+    # build-templates:
+    #   branch: scaffold
+    #   online_url: https://github.com/rapydo/build-templates.git
+    #   path: builds_base
+    #   if: true
 
   env:
     COMPOSE_PROJECT_NAME: eudat
