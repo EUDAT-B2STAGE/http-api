@@ -1,8 +1,11 @@
 
 language: python
 sudo: required
-# https://docs.travis-ci.com/user/languages/python/#Choosing-Python-versions-to-test-against
+# group: legacy
+# TO BE TESTED
+dist: trusty
 python:
+  # - "3.5-dev"
   - "3.6.1"
 services:
   - docker
