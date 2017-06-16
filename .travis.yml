@@ -1,11 +1,16 @@
 
 language: python
 sudo: required
-# https://docs.travis-ci.com/user/languages/python/#Choosing-Python-versions-to-test-against
+# group: legacy
+# TO BE TESTED
+dist: trusty
 python:
+  # - "3.5-dev"
   - "3.6.1"
 services:
   - docker
+env:
+  - PROJECT=eudat
 
 before_install:
   # update docker
@@ -14,34 +19,36 @@ before_install:
 
 install:
   # note: this will also upgrade docker compose
-  - pip install --upgrade -r requirements.txt
+  - pip install --upgrade -r projects/$PROJECT/requirements.txt
 
 # before_script:
 #   - sleep 1
 
 script:
   - docker -v
-  - docker-compose -v
-  - rapydo --version
+  # - docker-compose -v
+  # - rapydo --version
+  - pip search rapydo- && pip freeze | grep docker && pip freeze | grep requests
+  # BUG FIX: ValueError: Timeout value connect was Timeout
+  - pip install requests==2.11.1
 
   # Clone subrepos
   - rapydo init
 
-  # needed to let the system create files with test coverage
-  - chmod o+w backend
-
-  # build docker images
-  - rapydo build
+  # FIRST THING PULL LATEST VERSION OF rapydo/core
+  # NOTE: this is a fork from rapydo/core
+  # - git fetch upstream && git merge upstream master
 
   # start the debug environment, and wait for initialization
-  - rapydo control start && sleep 20
-  - rapydo --services backend log
+  - rapydo control start
+  - sleep 60 && rapydo --services backend shell --command initialize
+  # - rapydo --services postgres log
+  # - rapydo --services backend log
 
   # launch all unittests
-  - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
+  - rapydo --services backend shell --command testwithcoverage
+  # - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
 
-  # # if client shell needed
-  # rapydo --services restclient shell --user developer
-
-after_success:
-  - coveralls
+# after_success:
+# TODO: fix problems with computing coverage
+#   - coveralls

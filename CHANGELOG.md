@@ -1,14 +1,24 @@
 
-# v0.4.1-beta (*next*)
-**due date**: June 20, 2017
+# v0.5.1-beta (*next*)
+**due date**: June 30, 2017
+**milestone**: [beta version 5](https://github.com/EUDAT-B2STAGE/http-api/milestone/8)
+
+## features
+
+- performances
+- more unittests
+
+# v0.5.0-beta (*current*)
+**due date**: June 15, 2017
 **milestone**: [beta version 4](https://github.com/EUDAT-B2STAGE/http-api/milestone/7)
 
 ## features
 
-- more unittests
-- performances?
+- Cleaner scaffold as a rapydo project (see the [rapydo issue](https://github.com/rapydo/issues/issues/23#issuecomment-307377366))
+- B2SAFE metadata [#65]
+- Bug fixes
 
-# v0.4.0-beta (*current*)
+# v0.4.0-beta
 **due date**: June 05, 2017
 **milestone**: [beta version 3](https://github.com/EUDAT-B2STAGE/http-api/milestone/6)
 

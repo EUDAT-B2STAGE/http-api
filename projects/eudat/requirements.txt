@@ -1,0 +1,16 @@
+###CI necessary file for Travis
+
+##PACKAGING
+pip
+setuptools
+
+##UNITTESTS
+#nose2
+coveralls
+python-coveralls
+
+##RAPYDO
+rapydo-controller==0.3.4
+#urllib3
+#docker-compose
+#rapydo-utils

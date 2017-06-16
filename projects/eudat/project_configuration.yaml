@@ -1,0 +1,83 @@
+
+project:
+  title: EUDAT-B2STAGE HTTP-API server
+  version: v0.4.1-beta
+  description: Processing files in different EUDAT domains
+
+controller:
+  commands:
+    irods_restart:
+      description: Try to restart the current iCAT server instance
+      command: service irods restart
+      service: icat
+      user: root
+
+tags:
+  eudat: all endpoints associated to EUDAT services
+  b2access: request and refresh authorization from the B2ACCESS service
+  registered: upload, download, list and delete objects
+  pids: resolve and download data from EUDAT Persistente IDentifier
+  # internal: for internal testing purpose only
+
+variables:
+  # frontend:
+  #   enable: true
+  repos:
+    irods-client:
+      branch: master
+      online_url: https://github.com/irods/python-irodsclient.git
+      path: prc
+      if: true
+    # backend:
+    #   branch: scaffold
+    #   online_url: https://github.com/rapydo/http-api.git
+    #   path: backend
+    #   if: true
+    # build-templates:
+    #   branch: scaffold
+    #   online_url: https://github.com/rapydo/build-templates.git
+    #   path: builds_base
+    #   if: true
+
+  env:
+    COMPOSE_PROJECT_NAME: eudat
+    AUTH_SERVICE: sqlalchemy
+    # AUTH_SERVICE: mongo
+    API_MAIN_ENDPOINT: registered
+    # PROJECT_DOMAIN: myserver.mydomain.dev  # deprecated
+    # LETSENCRYPT_MODE:
+
+    # sqlalchemy:
+    ALCHEMY_ENGINE: postgresql
+    ALCHEMY_USER: rods
+    ALCHEMY_PASSWORD: thisismypassword
+    ALCHEMY_API_DB: SQL_API
+    ALCHEMY_DBS: 'ICAT SQL_API'
+    # LOCAL iRODS server VERSION
+    IRODS_DB: ICAT
+    IRODS_AUTHSCHEME: GSI
+    IRODS_USER: irods
+    # IRODS_PASSWORD: irods  # if external
+    IRODS_GUEST_USER: guest
+    IRODS_DEFAULT_ADMIN_USER: rodsminer
+    IRODS_ZONE: tempZone
+    IRODS_HOME: home
+    IRODS_DN:
+    # # neo4j:
+    # GRAPHDB_PASSWORD: wakeupneo
+    ## B2ACCESS
+    B2ACCESS_ACCOUNT: httpapi
+    # B2ACCESS_ACCOUNT: b2stage_httpapi
+    B2ACCESS_SECRET: SETYOURSECRETKEY
+    # EPIC HANDLE credentials
+    HANDLE_BASE: "https://url.to.epic/handles/"
+    # HANDLE_USER:
+    # HANDLE_PREFIX:
+    # HANDLE_PASS:
+    HANDLE_CREDENTIALS: /tmp
+    # HANDLE_CREDENTIALS: /home/ubuntu/b2handle_cred/credentials
+    ##: OTHERs / FIXED
+    FLASK_SUBNET: 175.1.0.0
+    FLASK_FIXED_IP: 175.1.0.10
+    UPLOAD_PATH: /uploads
+    FULL_JWT: false
