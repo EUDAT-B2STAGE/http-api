@@ -1,22 +1,33 @@
 version: '3'
+
+volumes:
+  sslcerts:
+    driver: local
+
 services:
 
   backend:
-    # command: sleep infinity
+    command: sleep infinity
     environment:
+      ACTIVATE: 1
       APP_MODE: production
-      DEBUG_LEVEL: INFO
+      #DEBUG_LEVEL: INFO
+      DEBUG_LEVEL: VERY_VERBOSE
       NGINX_ACTIVE: "True"
       # EUDAT RELATED
       # B2ACCESS_ENV: production
-      B2ACCESS_ENV: development  # to be fixed
+      B2ACCESS_ENV: development  # FIXME: step to production soon
     depends_on:
-      - sql
+      # - icat
+      - postgres
     expose:
       - 8080
+    volumes:
+      - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
 
   proxy:
     environment:
+      ACTIVATE: 1
       DOMAIN: ${PROJECT_DOMAIN}
       MODE: ${LETSENCRYPT_MODE}
     volumes:
@@ -31,6 +42,7 @@ services:
   # and trying to test locally:
   restclient:
     environment:
+      ACTIVATE: 0 # change for debugging
       APP_HOST: --verify /tmp/certs/real/fullchain1.pem https://${PROJECT_DOMAIN}
       APP_PORT:
       DOMAIN: ${PROJECT_DOMAIN}

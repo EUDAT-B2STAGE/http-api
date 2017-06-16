@@ -4,6 +4,7 @@ services:
 
   backend:
     environment:
+      ACTIVATE: 1
       FLASK_DEBUG: 1
       DEBUG_LEVEL: DEBUG
       # DEBUG_LEVEL: VERBOSE
@@ -12,9 +13,11 @@ services:
       B2ACCESS_ENV: development
     depends_on:
       - icat
-      - sql
+      - postgres
 
   proxy:
+    environment:
+      ACTIVATE: 1
     volumes:
       # no SSL
       - ../confs/nginx/development.conf:/etc/nginx/sites-enabled/development
