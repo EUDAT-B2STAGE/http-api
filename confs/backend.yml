@@ -61,7 +61,8 @@ services:
     hostname: rapydo_server
     environment:
       ACTIVATE: 0  # activate me inside your Blueprint
-      FLASK_APP: ${COMPOSE_PROJECT_NAME}/__main__.py
+      FLASK_APP: ${COMPOSE_PROJECT_NAME}/${PYTHON_MAIN_FILE}.py
+      UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       # base the user/role mechanism on some database

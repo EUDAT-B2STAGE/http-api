@@ -12,14 +12,14 @@ cd http-api
 # install the controller and other libs
 pip3 install --upgrade -r projects/eudat/requirements.txt
 
-# check the framework
-rapydo --force_env check --skip_heavy_git_ops
+- check the framework
+rapydo check --skip-heavy-git-ops
 
 # fix what is missing from above
 rapydo init
 
 # run containers in background
-rapydo control start
+rapydo --force-env control start
 
 # WARNING: TEMPORARY FIX
 sleep 10 && rapydo --services backend shell --command initialize

@@ -41,34 +41,46 @@ variables:
 
   env:
     COMPOSE_PROJECT_NAME: eudat
-    # AUTH_SERVICE: sqlalchemy
-    AUTH_SERVICE: mongo
+    AUTH_SERVICE: sqlalchemy
+    # AUTH_SERVICE: mongo
     API_MAIN_ENDPOINT: registered
-    # PROJECT_DOMAIN: myserver.mydomain.dev  # deprecated
-    # LETSENCRYPT_MODE:
+    PROJECT_DOMAIN: myserver.mydomain.dev
+    # LETSENCRYPT_MODE: --staging
+    LETSENCRYPT_MODE:
 
     # sqlalchemy:
     ALCHEMY_ENGINE: postgresql
     ALCHEMY_USER: rods
-    ALCHEMY_PASSWORD: thisismypassword
     ALCHEMY_API_DB: SQL_API
     ALCHEMY_DBS: 'ICAT SQL_API'
-    # LOCAL iRODS server VERSION
+    ALCHEMY_PASSWORD: oemedoironod
+
     IRODS_DB: ICAT
     IRODS_AUTHSCHEME: GSI
+
+    # LOCAL iRODS server VERSION
     IRODS_USER: irods
-    # IRODS_PASSWORD: irods  # if external
+    # IRODS_PASSWORD: irods  # if external, change also backend.yaml
     IRODS_GUEST_USER: guest
     IRODS_DEFAULT_ADMIN_USER: rodsminer
     IRODS_ZONE: tempZone
     IRODS_HOME: home
     IRODS_DN:
+
+    # IRODS_HOST: eudat-dmp1
+    # IRODS_USER: pdonorio
+    # IRODS_GUEST_USER: pdonorio
+    # IRODS_DEFAULT_ADMIN_USER: pdonorio
+    # IRODS_ZONE: cinecaDMPZone1
+    # IRODS_HOME: home
+    # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/eudat-dmp1.novalocal"
+
     # # neo4j:
     # GRAPHDB_PASSWORD: wakeupneo
     ## B2ACCESS
     B2ACCESS_ACCOUNT: httpapi
     # B2ACCESS_ACCOUNT: b2stage_httpapi
-    B2ACCESS_SECRET: SETYOURSECRETKEY
+    B2ACCESS_SECRET: XqT@h2emo44pc&
     # EPIC HANDLE credentials
     HANDLE_BASE: "https://url.to.epic/handles/"
     # HANDLE_USER:

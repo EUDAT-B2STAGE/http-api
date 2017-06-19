@@ -19,9 +19,9 @@ services:
       - 8080:${FLASK_DEFAULT_PORT}
 
     depends_on:
-      - icat # to be commented if you need to test external b2safe
+      - icat
       - postgres
-      - mongodb
+      # - mongodb
     volumes:
       # Rapydo repos
       - ../submodules/backend/rapydo:/usr/local/lib/python3.6/dist-packages/rapydo
