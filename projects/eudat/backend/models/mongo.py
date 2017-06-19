@@ -12,3 +12,5 @@ class Testing(MongoModel):
     class Meta:
         connection_alias = 'mytest'
         # write_concern = WriteConcern(j=True)
+
+# FIXME: two fields are missing in ExternalAccounts

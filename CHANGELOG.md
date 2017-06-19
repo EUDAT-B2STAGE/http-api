@@ -1,14 +1,23 @@
 
-# v0.5.1-beta (*next*)
+# v0.5.2-beta (*next*)
+**due date**: July 15, 2017
+**milestone**: [beta version 6](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
+
+## features
+- linking
+    - b2access production
+    - b2safe production
+
+# v0.5.1-beta (*current*)
 **due date**: June 30, 2017
-**milestone**: [beta version 5](https://github.com/EUDAT-B2STAGE/http-api/milestone/8)
+**milestone**: [beta version 5](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
 
 ## features
 
 - performances
 - more unittests
 
-# v0.5.0-beta (*current*)
+# v0.5.0-beta
 **due date**: June 15, 2017
 **milestone**: [beta version 4](https://github.com/EUDAT-B2STAGE/http-api/milestone/7)
 
