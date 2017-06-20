@@ -14,6 +14,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 import os
 import time
 from flask import request, current_app
+from werkzeug import secure_filename
 
 from eudat.apis.common import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from eudat.apis.common.b2stage import EudatEndpoint
@@ -253,106 +254,101 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         path, resource, filename, force = \
             self.get_file_parameters(icom, path=irods_location)
 
-        # Disable directory creation for PUT method
-        if 'file' not in request.files:
-            return self.send_errors(
-                'Directory creation is forbidden for this method; ' +
-                'Please use the POST method for this operation',
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
-            )
-
-        # Normal upload: inside the host tmp folder
-        response = super(BasicEndpoint, self) \
-            .upload(subfolder=r.username, force=force)
 
 #  TOFIX: custom split of a custom response
 # this piece of code does not work with a custom response
 # if it changes the main blocks of the json root;
 # the developer should be able to provide a 'custom_split'
 
-        # Check if upload response is success
+
+        ############################
+        # Upload file inside irods
+
+        if 'file' not in request.files:
+            return self.force_response(errors={
+                "Missing file": "No files specified"})
+
+        myfile = request.files['file']
+
+        if not self.allowed_file(myfile.filename):
+            return self.force_response(errors={
+                "Wrong extension": "File extension not allowed"})
+        filename = secure_filename(myfile.filename)
+
+        original_filename = filename
+        filename = None
+
+        # Verify if the current path proposed from the user
+        # is indeed an existing collection in iRODS
+        if icom.is_collection(path):
+            # When should the original name be used?
+            # Only if the path specified is an existing irods collection
+            filename = original_filename
+
+        ipath = None
+        try:
+            # Handling (iRODS) path
+            ipath = self.complete_path(path, filename)
+            iout = icom.save_in_chunks(destination=ipath,
+                                       force=force,
+                                       resource=resource)
+            log.info("irods call %s", iout)
+            response = self.force_response({'filename': ipath},
+                                           code=hcodes.HTTP_OK_BASIC)
+        except Exception as e:
+            response = self.force_response(
+                errors={"Uploading failed": "{0}".format(e)},
+                code=hcodes.HTTP_SERVER_ERROR)
+
         content, errors, status = \
             self.explode_response(response, get_all=True)
 
         ###################
-        # If files uploaded
-        key_file = 'filename'
-        if isinstance(content, dict) and key_file in content:
+        # Reply to user
+        if filename is None:
+            filename = self.filename_from_path(path)
 
-            original_filename = content[key_file]
+        pid_found = True
+        out = {}
+        pid_parameter = self._args.get('pid')
+        if pid_parameter and 'true' in pid_parameter.lower():
+            print('dove cazzo stai?????????????????', path)
+            # Shall we get the timeout from user?
+            pid_found = False
+            timeout = time.time() + 10  # seconds from now
+            pid = ''
+            while True:
+                out, _ = icom.get_metadata(path)
+                pid = out.get('PID')
+                if pid is not None or time.time() > timeout:
+                    break
+                time.sleep(2)
+            if not pid:
+                error_message = \
+                    ("Timeout waiting for PID from B2SAFE:"
+                     " the object registration maybe in progress."
+                     " File correctly uploaded.")
+                log.warning(error_message)
+                status = hcodes.HTTP_OK_ACCEPTED
+                errors = [error_message]
+            else:
+                pid_found = True
 
-            abs_file = self.absolute_upload_file(original_filename, r.username)
-            log.info("File is '%s'" % abs_file)
+        # Get iRODS checksum
+        obj = icom.get_dataobject(ipath)
+        checksum = obj.checksum
 
-            ############################
-            # Move file inside irods
-
-            filename = None
-            # Verify if the current path proposed from the user
-            # is indeed an existing collection in iRODS
-            if icom.is_collection(path):
-                # When should the original name be used?
-                # Only if the path specified is an existing irods collection
-                filename = original_filename
-
-            ipath = None
-            try:
-                # Handling (iRODS) path
-                ipath = self.complete_path(path, filename)
-                iout = icom.save(
-                    abs_file,
-                    destination=ipath, force=force, resource=resource)
-                log.info("irods call %s", iout)
-            finally:
-                # Transaction rollback: remove local cache in any case
-                log.debug("Removing cache object")
-                os.remove(abs_file)
-
-            ###################
-            # Reply to user
-            if filename is None:
-                filename = self.filename_from_path(path)
-
-            pid_found = True
-            out = {}
-            pid_parameter = self._args.get('pid')
-            if pid_parameter and 'true' in pid_parameter.lower():
-                # Shall we get the timeout from user?
-                pid_found = False
-                timeout = time.time() + 10  # seconds from now
-                pid = ''
-                while True:
-                    out, _ = icom.get_metadata(path)
-                    pid = out.get('PID')
-                    if pid is not None or time.time() > timeout:
-                        break
-                    time.sleep(2)
-                if not pid:
-                    error_message = \
-                        ("Timeout waiting for PID from B2SAFE:"
-                         " the object registration maybe in progress."
-                         " File correctly uploaded.")
-                    log.warning(error_message)
-                    status = hcodes.HTTP_OK_ACCEPTED
-                    errors = [error_message]
-                else:
-                    pid_found = True
-
-            # Get iRODS checksum
-            obj = icom.get_dataobject(ipath)
-            checksum = obj.checksum
-
-            content = {
-                'location': self.b2safe_location(ipath),
-                'PID': out.get('PID'),
-                'checksum': checksum,
-                'filename': filename,
-                'path': path,
-                'link': self.httpapi_location(
-                    ipath,
-                    api_path=CURRENT_MAIN_ENDPOINT,
-                    remove_suffix=path)
-            }
+        content = {
+            'location': self.b2safe_location(ipath),
+            'PID': out.get('PID'),
+            'checksum': checksum,
+            'filename': filename,
+            'path': path,
+            'link': self.httpapi_location(
+                ipath,
+                api_path=CURRENT_MAIN_ENDPOINT,
+                remove_suffix=path)
+        }
 
         # log.pp(content)
         if pid_found:
