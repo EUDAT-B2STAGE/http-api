@@ -3,10 +3,8 @@
   "version": "0.2",
   "dependencies": {
     "angular": "1.5.5",
-    "angular-animate": "1.5.5",
-    "angular-sanitize": "1.5.5",
-    "angular-messages": "1.5.5",
-    "angular-aria": "1.5.5",
+    "angular-animate": "~1.4.8",
+    "angular-sanitize": "~1.4.8",
     "animate.css": "~3.4.0",
     "font-awesome": "~4.4.0",
     "angular-ui-router": "~0.2.15",
@@ -28,16 +26,18 @@
     "angular-bootstrap": "^2.3.1",
     "google-material-color": "^1.2.6",
     "google-material-icons": "^2.2.0",
-    "angular-messages": "^1.5.8",
-    "angular-aria": "^1.5.8",
+    "angular-messages": "1.5.5",
+    "angular-aria": "1.5.5",
     "angular-chips": "mdantonio/angular-chips#v2.0",
-    "angular-tablesort": "^1.4.0"
+    "angular-tablesort": "^1.4.0",
+    "angular-simple-logger": "^0.1.7",
+    "ui-leaflet": "^2.0.0"
+
   },
   "devDependencies": {
     "angular-mocks": "~1.5.5"
   },
   "resolutions": {
-    "angular": "^1.4.8",
     "moment": "~2.11.1",
     "angular-formly": "^8.4.0"
   }

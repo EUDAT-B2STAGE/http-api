@@ -1,0 +1,33 @@
+
+<div ng-controller='MapController as map'>
+<div class='row'>
+
+
+<div class='col-xs-8'>
+	<leaflet 
+		lf-center="center" 
+		event-broadcast="events"
+		markers="markers" 
+		height="640px" width="480px" 
+		id="mymap">
+
+	</leaflet>
+</div>
+
+
+<div class='col-xs-4'>
+NORTH LAT = {{a}}<br>
+NORTH LON = {{b}}<br>
+SOUTH LAT = {{c}}<br>
+SOUTH LON = {{d}}<br>
+<div>
+
+<table>
+<tr ng-repeat="(key, value) in map.data">
+	<td ng-repeat="(subkey, field) in value">{{field}}</td>
+</tr>
+</table>
+
+
+</div>
+</div>

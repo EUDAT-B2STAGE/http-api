@@ -5,17 +5,16 @@ angular.module('web').constant('customRoutes',
  {
 // JUST A TEST
 // Note: this will automatically check api online as not subchild of 'logged'
-    'test': {
-        url: "/test",
+    "public.welcome": {
+        url: "/welcome",
         views: {
-            "main": {
-                dir: 'blueprint',
-                // OR
-                //dir: 'base',
-                templateUrl: 'test.html',
+            "unlogged": {
+                dir: "blueprint",
+                templateUrl: 'welcome.html',
             }
         }
     },
+
 ///////////////
 // LOGGED TEST
 // Note: this will automatically check auth since is subchild of 'logged'
