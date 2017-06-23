@@ -135,6 +135,8 @@ $ curl \
 ## **PUT**
 ### Upload an entity **and trigger the registration in B2SAFE**
 
+Both Form and Streaming upload are supported. Streaming is faster and does load the file in memory on clinet side.
+
 > Notes: The entity registration depends on the policies adopted by the B2SAFE instance which the B2STAGE HTTP-API is connected to. This operation is idempotent.
 
 ##### Parameters
@@ -144,20 +146,39 @@ $ curl \
 | force | bool | Force overwrite
 | pid | bool | Return PID (synchronous)
 
-##### Examples
+##### Example: Form upload
 ```bash
-# Upload 'myfile.txt' in '/path/to/directory/filename'
+# Form upload 'myfile' in '/path/to/directory/filename'
 $ curl -X PUT \
   -H "Authorization: Bearer <auth_token>"
-  -F file=@myfile.txt \
-  <http_server:port>/api/registered/path/to/directory/filename \
+  -F file=@myfile \
+  <http_server:port>/api/registered/path/to/directory/filename
 
-# Overwrite 'myfile2.txt' as '/path/to/directory/filename'
+# Overwrite 'myfile2' as '/path/to/directory/filename'
 $ curl -X PUT \
   -H "Authorization: Bearer <auth_token>" \
-  -F file=@myfile2.txt \
-  <http_server:port>/api/registered/path/to/directory/filename.txt?force=true 
+  -F file=@myfile2 \
+  <http_server:port>/api/registered/path/to/directory/filename?force=true 
 ```
+##### Example: Streaming upload
+```bash
+# Streaming upload 'myfile' in '/path/to/directory/filename'
+$ curl -T file \
+  -H "Authorization: Bearer <auth_token>"
+  -H "Content-Type: application/octet-stream"
+  <http_server:port>/api/registered/path/to/directory/filename
+```
+##### Example: Streaming upload with python requests
+```python
+# Streaming upload 'myfile' in '/path/to/directory/filename'
+import requests
+
+headers = {"Authorization":"Bearer <token>", "Content-Type":"application/octet-stream"}
+
+with open('/tmp/file', 'rb') as f:
+    requests.put('<http_server:port>/api/registered/path/to/directory/filename', data=f, headers=headers)
+```
+
 ##### Response
 ```json
 {
@@ -171,9 +192,9 @@ $ curl -X PUT \
         "data": {
             "PID": null,
             "checksum": '123456789',
-            "filename": "filename.txt",
-            "link": "<http_server:port>/api/registered/path/to/directory/filename.txt",
-            "location": "irods://rodserver.dockerized.io/path/to/directory/filename.txt",
+            "filename": "filename",
+            "link": "<http_server:port>/api/registered/path/to/directory/filename",
+            "location": "irods://rodserver.dockerized.io/path/to/directory/filename",
             "path": "/tempZone/home/guest"
         },
         "errors": null
