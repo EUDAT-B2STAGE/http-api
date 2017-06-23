@@ -238,7 +238,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         To put the second one you need the irepl command,
         which will assure that we have a replica on all resources...
         """
+        # curl -v -X PUT --data-binary "@filename" apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova7 -H "$AUTH" -H "Content-Type: application/octet-stream"
+        # curl -T filename apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova15 -H "$AUTH" -H "Content-Type: application/octet-stream"
+        #print('Body: %s', request.get_data())
+        #request.get_data()
 
+        print('...........>request.mimetype', request.mimetype)
         if irods_location is None:
             return self.send_errors('Location: missing filepath inside URI',
                                     code=hcodes.HTTP_BAD_REQUEST)
@@ -260,10 +265,26 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 # if it changes the main blocks of the json root;
 # the developer should be able to provide a 'custom_split'
 
+        # print('PIPPOOOOOOOOOOOOO2')
+        # #myfile = request.files['file']
+        # #filename = secure_filename(myfile.filename)
+        # ############################
+        # # Upload file inside irods
+        # print('-.-.-.-.-.-->', tempfile.gettempdir())
+        # print('............->', request.stream)
+        # chunk = request.stream.read(1024)
+        # print('***********>request.stream chunk', chunk)
+        # print('PIPPOOOOOOOOOOOOO3')
 
-        ############################
-        # Upload file inside irods
+        
+        #filename = secure_filename(myfile.filename)
+        #chunk = myfile.read(1024)
+        #print('***********>myfile chink', chunk)
+        
 
+
+
+        '''
         if 'file' not in request.files:
             return self.force_response(errors={
                 "Missing file": "No files specified"})
@@ -277,6 +298,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         original_filename = filename
         filename = None
+        '''
 
         # Verify if the current path proposed from the user
         # is indeed an existing collection in iRODS
@@ -312,7 +334,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         out = {}
         pid_parameter = self._args.get('pid')
         if pid_parameter and 'true' in pid_parameter.lower():
-            print('dove cazzo stai?????????????????', path)
             # Shall we get the timeout from user?
             pid_found = False
             timeout = time.time() + 10  # seconds from now
