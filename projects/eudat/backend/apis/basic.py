@@ -237,13 +237,23 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         Note to devs: iRODS does not allow to iput on more than one resource.
         To put the second one you need the irepl command,
         which will assure that we have a replica on all resources...
-        """
-        # curl -v -X PUT --data-binary "@filename" apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova7 -H "$AUTH" -H "Content-Type: application/octet-stream"
-        # curl -T filename apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova15 -H "$AUTH" -H "Content-Type: application/octet-stream"
-        #print('Body: %s', request.get_data())
-        #request.get_data()
 
-        print('...........>request.mimetype', request.mimetype)
+        NB: to be able to read "request.stream", request should not be already
+        be conusmed before (for instance with request.data or request.get_json)
+
+        To stream upload with CURL:
+        curl -v -X PUT --data-binary "@filename" apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova -H "$AUTH" -H "Content-Type: application/octet-stream"
+        curl -T filename apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova -H "$AUTH" -H "Content-Type: application/octet-stream"
+
+        To stream upload with python requests:
+        import requests
+
+        headers = {"Authorization":"Bearer <token>", "Content-Type":"application/octet-stream"}
+
+        with open('/tmp/filename', 'rb') as f:
+            requests.put('http://localhost:8080/api/registered/tempZone/home/guest/prova', data=f, headers=headers)
+        """
+
         if irods_location is None:
             return self.send_errors('Location: missing filepath inside URI',
                                     code=hcodes.HTTP_BAD_REQUEST)
@@ -265,65 +275,77 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 # if it changes the main blocks of the json root;
 # the developer should be able to provide a 'custom_split'
 
-        # print('PIPPOOOOOOOOOOOOO2')
-        # #myfile = request.files['file']
-        # #filename = secure_filename(myfile.filename)
-        # ############################
-        # # Upload file inside irods
-        # print('-.-.-.-.-.-->', tempfile.gettempdir())
-        # print('............->', request.stream)
-        # chunk = request.stream.read(1024)
-        # print('***********>request.stream chunk', chunk)
-        # print('PIPPOOOOOOOOOOOOO3')
+        # Manage both form and streaming upload
+        isStreaming = False
+        if request.mimetype == 'application/octet-stream':
+            isStreaming = True
 
-        
-        #filename = secure_filename(myfile.filename)
-        #chunk = myfile.read(1024)
-        #print('***********>myfile chink', chunk)
-        
+        if not isStreaming:
+            # Form upload
 
+            # Normal upload: inside the host tmp folder
+            response = super(BasicEndpoint, self) \
+                .upload(subfolder=r.username, force=force)
 
+            # Check if upload response is success
+            content, errors, status = \
+                self.explode_response(response, get_all=True)
 
-        '''
-        if 'file' not in request.files:
-            return self.force_response(errors={
-                "Missing file": "No files specified"})
+            ###################
+            # If files uploaded
+            key_file = 'filename'
 
-        myfile = request.files['file']
+            if isinstance(content, dict) and key_file in content:
+                original_filename = content[key_file]
 
-        if not self.allowed_file(myfile.filename):
-            return self.force_response(errors={
-                "Wrong extension": "File extension not allowed"})
-        filename = secure_filename(myfile.filename)
+                abs_file = self.absolute_upload_file(original_filename,
+                                                     r.username)
+                log.info("File is '%s'" % abs_file)
 
-        original_filename = filename
-        filename = None
-        '''
+                ############################
+                # Move file inside irods
 
-        # Verify if the current path proposed from the user
-        # is indeed an existing collection in iRODS
-        if icom.is_collection(path):
-            # When should the original name be used?
-            # Only if the path specified is an existing irods collection
-            filename = original_filename
+                filename = None
+                # Verify if the current path proposed from the user
+                # is indeed an existing collection in iRODS
+                if icom.is_collection(path):
+                    # When should the original name be used?
+                    # Only if the path specified is an
+                    # existing irods collection
+                    filename = original_filename
 
-        ipath = None
-        try:
-            # Handling (iRODS) path
-            ipath = self.complete_path(path, filename)
-            iout = icom.save_in_chunks(destination=ipath,
-                                       force=force,
-                                       resource=resource)
-            log.info("irods call %s", iout)
-            response = self.force_response({'filename': ipath},
-                                           code=hcodes.HTTP_OK_BASIC)
-        except Exception as e:
-            response = self.force_response(
-                errors={"Uploading failed": "{0}".format(e)},
-                code=hcodes.HTTP_SERVER_ERROR)
+                ipath = None
+                try:
+                    # Handling (iRODS) path
+                    ipath = self.complete_path(path, filename)
+                    iout = icom.save(
+                        abs_file,
+                        destination=ipath, force=force, resource=resource)
+                    log.info("irods call %s", iout)
+                finally:
+                    # Transaction rollback: remove local cache in any case
+                    log.debug("Removing cache object")
+                    os.remove(abs_file)
+        else:
+            # Streaming upload
+            ipath = None
+            filename = None
+            try:
+                # Handling (iRODS) path
+                ipath = self.complete_path(path, filename)
+                iout = icom.save_in_streaming(destination=ipath,
+                                              force=force,
+                                              resource=resource)
+                log.info("irods call %s", iout)
+                response = self.force_response({'filename': ipath},
+                                               code=hcodes.HTTP_OK_BASIC)
+            except Exception as e:
+                response = self.force_response(
+                    errors={"Uploading failed": "{0}".format(e)},
+                    code=hcodes.HTTP_SERVER_ERROR)
 
-        content, errors, status = \
-            self.explode_response(response, get_all=True)
+            content, errors, status = \
+                self.explode_response(response, get_all=True)
 
         ###################
         # Reply to user
