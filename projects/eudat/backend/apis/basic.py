@@ -269,6 +269,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         path, resource, filename, force = \
             self.get_file_parameters(icom, path=irods_location)
 
+        ipath = None
 
 #  TOFIX: custom split of a custom response
 # this piece of code does not work with a custom response
@@ -314,7 +315,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     # existing irods collection
                     filename = original_filename
 
-                ipath = None
                 try:
                     # Handling (iRODS) path
                     ipath = self.complete_path(path, filename)
@@ -328,7 +328,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     os.remove(abs_file)
         else:
             # Streaming upload
-            ipath = None
             filename = None
             try:
                 # Handling (iRODS) path
@@ -353,45 +352,46 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             filename = self.filename_from_path(path)
 
         pid_found = True
-        out = {}
-        pid_parameter = self._args.get('pid')
-        if pid_parameter and 'true' in pid_parameter.lower():
-            # Shall we get the timeout from user?
-            pid_found = False
-            timeout = time.time() + 10  # seconds from now
-            pid = ''
-            while True:
-                out, _ = icom.get_metadata(path)
-                pid = out.get('PID')
-                if pid is not None or time.time() > timeout:
-                    break
-                time.sleep(2)
-            if not pid:
-                error_message = \
-                    ("Timeout waiting for PID from B2SAFE:"
-                     " the object registration maybe in progress."
-                     " File correctly uploaded.")
-                log.warning(error_message)
-                status = hcodes.HTTP_OK_ACCEPTED
-                errors = [error_message]
-            else:
-                pid_found = True
+        if not errors:
+            out = {}
+            pid_parameter = self._args.get('pid')
+            if pid_parameter and 'true' in pid_parameter.lower():
+                # Shall we get the timeout from user?
+                pid_found = False
+                timeout = time.time() + 10  # seconds from now
+                pid = ''
+                while True:
+                    out, _ = icom.get_metadata(path)
+                    pid = out.get('PID')
+                    if pid is not None or time.time() > timeout:
+                        break
+                    time.sleep(2)
+                if not pid:
+                    error_message = \
+                        ("Timeout waiting for PID from B2SAFE:"
+                         " the object registration maybe in progress."
+                         " File correctly uploaded.")
+                    log.warning(error_message)
+                    status = hcodes.HTTP_OK_ACCEPTED
+                    errors = [error_message]
+                else:
+                    pid_found = True
 
-        # Get iRODS checksum
-        obj = icom.get_dataobject(ipath)
-        checksum = obj.checksum
+            # Get iRODS checksum
+            obj = icom.get_dataobject(ipath)
+            checksum = obj.checksum
 
-        content = {
-            'location': self.b2safe_location(ipath),
-            'PID': out.get('PID'),
-            'checksum': checksum,
-            'filename': filename,
-            'path': path,
-            'link': self.httpapi_location(
-                ipath,
-                api_path=CURRENT_MAIN_ENDPOINT,
-                remove_suffix=path)
-        }
+            content = {
+                'location': self.b2safe_location(ipath),
+                'PID': out.get('PID'),
+                'checksum': checksum,
+                'filename': filename,
+                'path': path,
+                'link': self.httpapi_location(
+                    ipath,
+                    api_path=CURRENT_MAIN_ENDPOINT,
+                    remove_suffix=path)
+            }
 
         # log.pp(content)
         if pid_found:
