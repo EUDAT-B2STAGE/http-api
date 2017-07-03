@@ -1,9 +1,11 @@
 
 # Quick start
 
-Up and running in five minutes:
+## Download and deploy for development
+
 
 ```bash
+# up and running in 5 minutes
 
 # start from the latest release
 git clone https://github.com/EUDAT-B2STAGE/http-api.git
@@ -33,4 +35,22 @@ rapydo --services restclient shell --user developer
 # clean everything
 rapydo clean --rm-volumes  # very DANGEROUS!
 
+```
+
+
+## Squash branch
+
+```bash
+MYEXISTINGBRANCH='v0.1.0'
+BASEBRANCH='master'
+
+# start from the base branch (usually it's master)
+git checkout $BASEBRANCH
+# create a new branch for squashing
+git checkout -b ${MYEXISTINGBRANCH}-squashed
+# squash the differences between now and the feature branch
+git merge --squash $MYEXISTINGBRANCH
+# commit message will contain all commit messages so far
+git commit
+# you may/should change the content, at least top title and description
 ```
