@@ -231,7 +231,7 @@ class EudatEndpoint(B2accessUtilities):
                 'Collection: recursive download is not allowed')
 
         if filename is None:
-                filename = self.filename_from_path(path)
+            filename = self.filename_from_path(path)
         abs_file = self.absolute_upload_file(filename, username)
 
         # TODO: decide if we want to use a cache when streaming

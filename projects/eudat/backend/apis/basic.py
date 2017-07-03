@@ -59,8 +59,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         is_collection = icom.is_collection(path)
         # Check if it's not a collection because the object does not exist
-        if not is_collection:
-            icom.get_dataobject(path)
+        # do I need this??
+        # if not is_collection:
+        #     icom.get_dataobject(path)
 
         ###################
         # DOWNLOAD a specific file
@@ -73,7 +74,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     return self.send_errors(
                         'Collection: recursive download is not allowed')
                 else:
-                    return self.download_object(r, path)
+                    return icom.read_in_streaming(path)
 
         ###################
         # DATA LISTING
@@ -332,7 +333,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             try:
                 # Handling (iRODS) path
                 ipath = self.complete_path(path, filename)
-                iout = icom.save_in_streaming(destination=ipath,
+                iout = icom.write_in_streaming(destination=ipath,
                                               force=force,
                                               resource=resource)
                 log.info("irods call %s", iout)
