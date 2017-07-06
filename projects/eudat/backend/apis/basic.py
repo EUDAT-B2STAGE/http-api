@@ -278,11 +278,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 # the developer should be able to provide a 'custom_split'
 
         # Manage both form and streaming upload
-        isStreaming = False
-        if request.mimetype == 'application/octet-stream':
-            isStreaming = True
-
-        if not isStreaming:
+        # FIXME: @Mattia check this mime type
+        if request.mimetype != 'application/octet-stream':
             # Form upload
 
             # Normal upload: inside the host tmp folder
