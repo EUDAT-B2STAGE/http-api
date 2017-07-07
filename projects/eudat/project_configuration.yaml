@@ -1,7 +1,7 @@
 
 project:
   title: EUDAT-B2STAGE HTTP-API server
-  version: v0.5.0-beta
+  version: v0.5.1-beta
   description: Processing files in different EUDAT domains
 
 controller:
@@ -14,7 +14,7 @@ controller:
 
 tags:
   eudat: all endpoints associated to EUDAT services
-  b2access: request and refresh authorization from the B2ACCESS service
+  b2access: request/refresh authorization from B2ACCESS
   registered: upload, download, list and delete objects
   pids: resolve and download data from EUDAT Persistente IDentifier
   # internal: for internal testing purpose only

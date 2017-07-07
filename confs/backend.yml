@@ -68,6 +68,8 @@ services:
       # base the user/role mechanism on some database
       AUTH_ENABLE: 0
       # AUTH_SERVICE: ${AUTH_SERVICE}
+      # # if Unicode is complaining with print
+      # PYTHONIOENCODING: UTF-8
     volumes:
       # Custom configuration
       - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/${COMPOSE_PROJECT_NAME}/confs/project_configuration.yaml
