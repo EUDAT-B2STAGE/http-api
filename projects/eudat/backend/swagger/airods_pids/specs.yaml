@@ -1,0 +1,12 @@
+
+class: TestMongo1
+file: airods
+# baseuri: /api
+mapping:
+    
+  
+  mongoPidsData: /pids/data
+  mongoPidsMetaData: /pids/metadata
+  
+labels:
+  - epos discover & access to data (via PID)

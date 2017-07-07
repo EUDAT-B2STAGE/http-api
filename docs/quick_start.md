@@ -23,14 +23,24 @@ rapydo init
 # run containers in background
 rapydo start
 
-# WARNING: TEMPORARY FIX
-sleep 10 && rapydo --services backend shell --command initialize
-
+# operations inside backend
+rapydo shell backend
+$ initialize
+# develop separated scripts
+$ python3.6 eudat/project/filldb.py
 # launch http-api server 
-rapydo shell backend --command rapydo
+$ rapydo
 
 # now access a client into another shell
 rapydo shell restclient --user developer
+
+# access mongo admin web ui
+rapydo interfaces mongo
+# then open http://localhost
+
+# access a swagger web ui
+rapydo interfaces swagger
+# then open http://localhost:81/swagger-ui/?url=http://localhost:8080/api/specs
 
 # clean everything
 rapydo clean --rm-volumes  # very DANGEROUS!

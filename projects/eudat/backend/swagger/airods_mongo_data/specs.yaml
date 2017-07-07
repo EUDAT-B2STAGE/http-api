@@ -1,0 +1,12 @@
+
+class: TestMongo
+file: airods
+# baseuri: /api
+mapping:
+    
+  mongoData: "/statics/data"
+  
+
+  
+labels:
+  - epos discover & access to data (bounding box)

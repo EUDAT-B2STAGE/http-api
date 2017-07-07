@@ -1,0 +1,12 @@
+
+class: TestMongoMeta
+file: airods
+# baseuri: /api
+mapping:
+    
+  
+  mongoMetaData: "/statics/metadata"
+
+  
+labels:
+  - epos discover & access to data (bounding box)

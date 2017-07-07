@@ -21,7 +21,7 @@ services:
     depends_on:
       - icat
       - postgres
-      # - mongodb
+      - mongodb
     volumes:
       # Rapydo repos
       - ../submodules/backend/rapydo:/usr/local/lib/python3.6/dist-packages/rapydo
@@ -45,14 +45,14 @@ services:
   #     - 9090:7474
   #     - 7687:7687
 
+  mongoui:
+    ports:
+      - 80:8081
+  swaggerui:
+    ports:
+      - 81:80
   sqlalchemyui:
     # volumes:
     #   - restlitedb:/dbs
     ports:
-      - 80:8888
-  swaggerui:
-    ports:
-      - 80:80
-  mongoui:
-    ports:
-      - 80:8081
+      - 82:8888

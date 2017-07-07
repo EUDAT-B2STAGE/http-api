@@ -1,0 +1,43 @@
+#mongodata: /eposws/statics/data
+# (download data or retrieve PIDs list)
+
+common:
+    parameters:
+        
+        
+          # PID
+        - name: p
+          description: PID of DO
+          in: query
+          # @TODO: seems the type float is not allowed...?
+          type: string
+          #format: int32
+          
+
+        
+      
+
+mongoPidsData:
+    
+    summary: Get Data from iRODS via PID
+  
+    
+    responses:
+        '200':
+          description: something go right
+
+        '400':
+          description: something else go wrong
+
+
+mongoPidsMetaData:
+    
+    summary: Get MetaData from iRODS via PID
+  
+    
+    responses:
+        '200':
+          description: something go right
+
+        '400':
+          description: something else go wrong
