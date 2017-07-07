@@ -1,6 +1,6 @@
 
-# v0.5.2-beta (*next*)
-**due date**: July 15, 2017
+# v0.6.0-rc1 (*next*)
+**due date**: July 31, 2017
 **milestone**: [beta version 6](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
 
 ## features
@@ -9,7 +9,7 @@
     - b2safe production
 
 # v0.5.1-beta (*current*)
-**due date**: June 30, 2017
+**due date**: July 07, 2017
 **milestone**: [beta version 5](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
 
 ## features

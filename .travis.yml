@@ -1,9 +1,10 @@
 
 language: python
 sudo: required
+dist: trusty
+group: deprecated-2017Q2
 # group: legacy
 # TO BE TESTED
-dist: trusty
 python:
   # - "3.5-dev"
   - "3.6.1"
@@ -27,8 +28,11 @@ install:
 script:
   - docker -v
   # - docker-compose -v
+  - pip freeze | grep docker
   # - rapydo --version
-  - pip search rapydo- && pip freeze | grep docker && pip freeze | grep requests
+  - pip search rapydo-
+  # TODO: check this again
+  - pip freeze | grep requests
   # BUG FIX: ValueError: Timeout value connect was Timeout
   - pip install requests==2.11.1
 
@@ -40,13 +44,13 @@ script:
   # - git fetch upstream && git merge upstream master
 
   # start the debug environment, and wait for initialization
-  - rapydo control start
-  - sleep 60 && rapydo --services backend shell --command initialize
+  - rapydo start
+  - sleep 60 && rapydo shell backend --command initialize
   # - rapydo --services postgres log
   # - rapydo --services backend log
 
   # launch all unittests
-  - rapydo --services backend shell --command testwithcoverage
+  - rapydo shell backend --command testwithcoverage
   # - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
 
 # after_success:

@@ -40,19 +40,16 @@ services:
     depends_on:
       - backend
 
-  # graphdb:
-  #   ports:
-  #     - 9090:7474
-  #     - 7687:7687
-
+  swaggerui:
+    ports:
+      - 80:80
   sqlalchemyui:
     # volumes:
     #   - restlitedb:/dbs
     ports:
-      - 80:8888
-  swaggerui:
-    ports:
-      - 80:80
-  mongoui:
-    ports:
-      - 80:8081
+      - 81:8888
+
+  # graphdb:
+  #   ports:
+  #     - 9090:7474
+  #     - 7687:7687

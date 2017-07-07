@@ -14,6 +14,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 import os
 import time
 from flask import request, current_app
+from werkzeug import secure_filename
 
 from eudat.apis.common import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from eudat.apis.common.b2stage import EudatEndpoint
@@ -58,8 +59,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         is_collection = icom.is_collection(path)
         # Check if it's not a collection because the object does not exist
-        if not is_collection:
-            icom.get_dataobject(path)
+        # do I need this??
+        # if not is_collection:
+        #     icom.get_dataobject(path)
 
         ###################
         # DOWNLOAD a specific file
@@ -72,7 +74,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     return self.send_errors(
                         'Collection: recursive download is not allowed')
                 else:
-                    return self.download_object(r, path)
+                    return icom.read_in_streaming(path)
 
         ###################
         # DATA LISTING
@@ -236,6 +238,21 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         Note to devs: iRODS does not allow to iput on more than one resource.
         To put the second one you need the irepl command,
         which will assure that we have a replica on all resources...
+
+        NB: to be able to read "request.stream", request should not be already
+        be conusmed before (for instance with request.data or request.get_json)
+
+        To stream upload with CURL:
+        curl -v -X PUT --data-binary "@filename" apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova -H "$AUTH" -H "Content-Type: application/octet-stream"
+        curl -T filename apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova -H "$AUTH" -H "Content-Type: application/octet-stream"
+
+        To stream upload with python requests:
+        import requests
+
+        headers = {"Authorization":"Bearer <token>", "Content-Type":"application/octet-stream"}
+
+        with open('/tmp/filename', 'rb') as f:
+            requests.put('http://localhost:8080/api/registered/tempZone/home/guest/prova', data=f, headers=headers)
         """
 
         if irods_location is None:
@@ -253,67 +270,87 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         path, resource, filename, force = \
             self.get_file_parameters(icom, path=irods_location)
 
-        # Disable directory creation for PUT method
-        if 'file' not in request.files:
-            return self.send_errors(
-                'Directory creation is forbidden for this method; ' +
-                'Please use the POST method for this operation',
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
-            )
-
-        # Normal upload: inside the host tmp folder
-        response = super(BasicEndpoint, self) \
-            .upload(subfolder=r.username, force=force)
+        ipath = None
 
 #  TOFIX: custom split of a custom response
 # this piece of code does not work with a custom response
 # if it changes the main blocks of the json root;
 # the developer should be able to provide a 'custom_split'
 
-        # Check if upload response is success
-        content, errors, status = \
-            self.explode_response(response, get_all=True)
+        # Manage both form and streaming upload
+        # FIXME: @Mattia check this mime type
+        if request.mimetype != 'application/octet-stream':
+            # Form upload
 
-        ###################
-        # If files uploaded
-        key_file = 'filename'
-        if isinstance(content, dict) and key_file in content:
+            # Normal upload: inside the host tmp folder
+            response = super(BasicEndpoint, self) \
+                .upload(subfolder=r.username, force=force)
 
-            original_filename = content[key_file]
+            # Check if upload response is success
+            content, errors, status = \
+                self.explode_response(response, get_all=True)
 
-            abs_file = self.absolute_upload_file(original_filename, r.username)
-            log.info("File is '%s'" % abs_file)
+            ###################
+            # If files uploaded
+            key_file = 'filename'
 
-            ############################
-            # Move file inside irods
+            if isinstance(content, dict) and key_file in content:
+                original_filename = content[key_file]
 
+                abs_file = self.absolute_upload_file(original_filename,
+                                                     r.username)
+                log.info("File is '%s'" % abs_file)
+
+                ############################
+                # Move file inside irods
+
+                filename = None
+                # Verify if the current path proposed from the user
+                # is indeed an existing collection in iRODS
+                if icom.is_collection(path):
+                    # When should the original name be used?
+                    # Only if the path specified is an
+                    # existing irods collection
+                    filename = original_filename
+
+                try:
+                    # Handling (iRODS) path
+                    ipath = self.complete_path(path, filename)
+                    iout = icom.save(
+                        abs_file,
+                        destination=ipath, force=force, resource=resource)
+                    log.info("irods call %s", iout)
+                finally:
+                    # Transaction rollback: remove local cache in any case
+                    log.debug("Removing cache object")
+                    os.remove(abs_file)
+        else:
+            # Streaming upload
             filename = None
-            # Verify if the current path proposed from the user
-            # is indeed an existing collection in iRODS
-            if icom.is_collection(path):
-                # When should the original name be used?
-                # Only if the path specified is an existing irods collection
-                filename = original_filename
-
-            ipath = None
             try:
                 # Handling (iRODS) path
                 ipath = self.complete_path(path, filename)
-                iout = icom.save(
-                    abs_file,
-                    destination=ipath, force=force, resource=resource)
+                iout = icom.write_in_streaming(destination=ipath,
+                                              force=force,
+                                              resource=resource)
                 log.info("irods call %s", iout)
-            finally:
-                # Transaction rollback: remove local cache in any case
-                log.debug("Removing cache object")
-                os.remove(abs_file)
+                response = self.force_response({'filename': ipath},
+                                               code=hcodes.HTTP_OK_BASIC)
+            except Exception as e:
+                response = self.force_response(
+                    errors={"Uploading failed": "{0}".format(e)},
+                    code=hcodes.HTTP_SERVER_ERROR)
 
-            ###################
-            # Reply to user
-            if filename is None:
-                filename = self.filename_from_path(path)
+            content, errors, status = \
+                self.explode_response(response, get_all=True)
 
-            pid_found = True
+        ###################
+        # Reply to user
+        if filename is None:
+            filename = self.filename_from_path(path)
+
+        pid_found = True
+        if not errors:
             out = {}
             pid_parameter = self._args.get('pid')
             if pid_parameter and 'true' in pid_parameter.lower():

@@ -82,7 +82,6 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         """ Test file upload: PUT """
 
         ###################################################
-        # I need to upload some data to test the DELETE..
         # Create a directory
         endpoint = self._api_uri + self._main_endpoint
         r = self.app.post(endpoint, data=dict(path=self._irods_path),
@@ -95,6 +94,16 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
         r = self.app.put(endpoint, data=dict(
                          file=(io.BytesIO(b"a test"), self._test_filename)),
+                         headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
+        log.info('*** Testing PUT in streaming')
+        # Upload entity in test folder
+        endpoint = self._api_uri + self._main_endpoint + self._irods_path \
+            + '/filename'
+        r = self.app.put(endpoint, data=dict(
+                         file=(io.BytesIO(b"a test"))),
+                         content_type='application/octet-stream',
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
