@@ -1,9 +1,10 @@
 
 language: python
 sudo: required
+dist: trusty
+group: deprecated-2017Q2
 # group: legacy
 # TO BE TESTED
-dist: trusty
 python:
   # - "3.5-dev"
   - "3.6.1"
