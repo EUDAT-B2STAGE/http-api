@@ -17,9 +17,6 @@ function DataService($log, api, jsonapi_parser) {
         data['maxlon']="13.3";
         data['download']="false";
 
-	// test me:
-	// data['output']="json";
-
         return api.apiCall('statics/data', 'GET', data)
     }
 
