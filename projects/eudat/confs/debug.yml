@@ -28,6 +28,16 @@ services:
       - ../submodules/utilities/rapydo/utils:/usr/local/lib/python3.6/dist-packages/rapydo/utils
       - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
+  frontend:
+    environment:
+      APP_MODE: debug
+    ports:
+      - 80:5000
+    environment:
+      APP_MODE: debug
+      BACKEND_PORT: 8080
+      ACTIVATE: 1
+
   restclient:
     # build: ../projects/${COMPOSE_PROJECT_NAME}/builds/restclient
     # image: ${COMPOSE_PROJECT_NAME}/restclient:custom

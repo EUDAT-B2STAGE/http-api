@@ -36,6 +36,9 @@ services:
     ports:
       - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
       - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
+    depends_on:
+      - backend
+      - frontend
 
   # if using self signed certificates
   # and trying to test locally:
