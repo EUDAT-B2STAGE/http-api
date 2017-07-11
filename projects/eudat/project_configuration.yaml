@@ -81,7 +81,7 @@ variables:
     B2ACCESS_ACCOUNT: httpapi
     # B2ACCESS_ACCOUNT: b2stage_httpapi
     B2ACCESS_SECRET: XqT@h2emo44pc&
-    # EPIC HANDLE credentials
+    # EPIC HANDLE credentials
     HANDLE_BASE: "https://url.to.epic/handles/"
     # HANDLE_USER:
     # HANDLE_PREFIX:
