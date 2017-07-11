@@ -6,7 +6,7 @@ from pymongo.write_concern import WriteConcern
 from pymodm import MongoModel, fields
 
 # NOTE: this db is already existing on an empty mongodb
-MYDB = 'local'
+MYDB = 'wfcat'
 
 
 class Testing(MongoModel):

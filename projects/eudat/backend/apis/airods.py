@@ -23,13 +23,14 @@ log = get_logger(__name__)
 # RESPONSE2 = [{"pid" : "11099/qwoprerc-343536ssdfjs-34500-asdpwe94383" ,"metadata": {"dc:contributor" : "network operator","dcterms:dateAccepted" : "2017-03-06T11:35:07.114Z","dc:identifier" : "test/f2c3ea40-0260-11e7-9f93-0242ac110008","dc:type" : "seismic waveform","dc:subject" : "mSEED, waveform, quality","dcterms:isPartOf" : "wfmetadata_catalog","dc:title" : "INGV_Repository","dc:rights" : "open access","dc:format" : "MSEED","dcterms:available" : "available from now","dc:date" : "2017-03-06T11:35:07.114Z","dc:coverage:x" : "LAT_val","dc:publisher" : "INGV EIDA NODE","dc:creator" : "INGV EIDA NODE","dc:coverage:t:min" : "time_start_val","dc:coverage:t:max" : "time_end_val","dc:coverage:x" : "LAT_val","dc:coverage:y" : "LON_val","dc:coverage:z" : "ELE_val","fileId" : "IV.ARCI..HHN.D.2015.011","smean" : 587.6017203352374,"stdev" : 25154.453024673716,"rms" : 25161.315203149203,"fileId" : "IV.ARCI..HHN.D.2015.011","type" : "seismic","status" : "open","glen" : 27054.59,"enc" : "STEIM2","srate" : 100,"gmax" : 27054.59,"sta" : "ARCI","net" : "IV","cha" : "HHN","loc" : ""}}]
 
 
-class TestMongo(EndpointResource):
+class DataMongo(EndpointResource):
 
     def get(self):
         # mongohd = self.global_get_service('mongo', dbname='auth')
         mongohd = self.get_service_instance(
-            service_name='mongo', database='local')
+            service_name='mongo', database='wfcat')
         mongohd.Testing(onefield='justatest').save()
+        log.info("just a test - mongo insert")
 
         return "Hello world!"
         # log.info("just a test")
