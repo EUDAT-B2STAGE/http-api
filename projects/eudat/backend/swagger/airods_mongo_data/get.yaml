@@ -1,4 +1,4 @@
-#mongodata: /eposws/statics/data
+# endpoint: /api/statics/data
 # (download data or retrieve PIDs list)
 
 common:

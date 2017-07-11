@@ -1,4 +1,4 @@
-
+# endpoint: /api/statics/metadata
 class: TestMongoMeta
 file: airods
 # baseuri: /api
@@ -9,4 +9,4 @@ mapping:
 
   
 labels:
-  - epos discover & access to data (bounding box)
+  - epos discover and access to metadata -bounding box-

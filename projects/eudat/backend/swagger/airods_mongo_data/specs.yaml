@@ -1,5 +1,5 @@
-
-class: TestMongo
+# endpoint: /api/statics/data
+class: DataMongo
 file: airods
 # baseuri: /api
 mapping:
@@ -9,4 +9,4 @@ mapping:
 
   
 labels:
-  - epos discover & access to data (bounding box)
+  - epos discover and access to data -bounding box-
