@@ -8,6 +8,29 @@ function MapController($scope, $rootScope, $log, $timeout, noty, DataService, le
 {
 	var self = this;
 
+    self.search_fields = [
+        {
+          key: 'min_date',
+          type: 'datepicker',
+          templateOptions: {
+            type: 'date',
+            required: true,
+            label: 'Min date',
+            placeholder: 'Select date'
+          }
+        },
+        {
+          key: 'max_date',
+          type: 'datepicker',
+          templateOptions: {
+            type: 'date',
+            required: true,
+            label: 'Max date',
+            placeholder: 'Select date'
+          }
+        },
+    ]
+
     // Docs:
     // http://angular-ui.github.io/ui-leaflet/#!/examples/events
 
@@ -15,29 +38,45 @@ function MapController($scope, $rootScope, $log, $timeout, noty, DataService, le
     // Also reported here: https://github.com/tombatossals/angular-leaflet-directive/issues/49
     // Solution: force an invalidateSize after the page loading
 
-    DataService.searchBoundingBox().then(
-        function(out_data) {
-            var data = out_data.data[1];
+    self.search = function() {
+        if (!self.search_form.$valid) return false;
 
-            self.data = data
-            
-            for (var i=0; i<data.length; i++) {
-                var marker = data[i]
-                $scope.markers[i] = {
-                    lat: marker[2],
-                    lng: marker[3],
-                    message: marker[1],
-                    focus: false,
-                    draggable: false
+        var min_date = self.search_model['min_date'];
+        var max_date = self.search_model['max_date'];
+
+        if (typeof min_date  === 'undefined') {
+            noty.showError("Missing starting date");
+            return;
+        } 
+        if (typeof max_date  === 'undefined') {
+            noty.showError("Missing ending date");
+            return;
+        }
+
+        DataService.searchBoundingBox(min_date, max_date).then(
+            function(out_data) {
+                var data = out_data.data[1];
+
+                self.data = data
+                
+                for (var i=0; i<data.length; i++) {
+                    var marker = data[i]
+                    $scope.markers[i] = {
+                        lat: marker[2],
+                        lng: marker[3],
+                        message: marker[1],
+                        focus: false,
+                        draggable: false
+                    }
                 }
-            }
-            console.log($scope.markers);
+                console.log($scope.markers);
 
-            noty.extractErrors(out_data, noty.WARNING);
-        }, function(out_data) {
+                noty.extractErrors(out_data, noty.WARNING);
+            }, function(out_data) {
 
-            noty.extractErrors(out_data, noty.ERROR);
-        });
+                noty.extractErrors(out_data, noty.ERROR);
+            });
+    };
 
     leafletData.getMap("mymap").then(function(map) {
       $timeout(function() {
