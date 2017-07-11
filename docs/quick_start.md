@@ -1,7 +1,9 @@
 
 # Quick start
 
-## Download and deploy for development
+This is a reference page to quick start the HTTP API project.
+
+## Deploy for development
 
 A minimum set of operations to start developing within this repository:
 
@@ -27,30 +29,44 @@ rapydo start
 
 # operations inside backend
 rapydo shell backend
+# init all datas (e.g. authorization database)
 $ initialize
-# develop separated scripts
-$ python3.6 eudat/project/filldb.py
 # launch http-api server 
 $ rapydo
 
-# now access a client into another shell
+# now you may access a client from another shell and test the server
 rapydo shell restclient --user developer
+```
 
-# access mongo admin web ui
-rapydo interfaces sqlalchemy
-# then open http://localhost:81/adminer
+The client shell will give you instructions on how to test the server
 
+
+## Other operations
+
+### Launch UIs to explore data
+
+```bash
 # access a swagger web ui
 rapydo interfaces swagger
 # then open http://localhost:81/swagger-ui/?url=http://localhost:8080/api/specs
 
-# clean everything
-rapydo clean --rm-volumes  # very DANGEROUS!
-
+# access admin web ui
+rapydo interfaces sqlalchemy
+# then open http://localhost:81/adminer
 ```
 
 
-## Squash branch
+### Only for DEVELOPERS
+
+#### Remove everything
+
+```bash
+# clean everything
+rapydo clean --rm-volumes  # very DANGEROUS!
+```
+
+
+### Squash branch
 
 ```bash
 MYEXISTINGBRANCH='v0.1.0'

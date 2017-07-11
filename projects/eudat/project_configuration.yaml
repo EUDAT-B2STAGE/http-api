@@ -4,22 +4,83 @@ project:
   version: v0.5.1-beta
   description: Processing files in different EUDAT domains
 
-controller:
-  commands:
-    irods_restart:
-      description: Try to restart the current iCAT server instance
-      command: service irods restart
-      service: icat
-      user: root
-
-tags:
-  eudat: all endpoints associated to EUDAT services
-  b2access: request/refresh authorization from B2ACCESS
-  registered: upload, download, list and delete objects
-  pids: resolve and download data from EUDAT Persistente IDentifier
-  # internal: for internal testing purpose only
-
+###############################
+## Please CHECK VARIABLES here
+## before starting your project
+###############################
 variables:
+  env:
+
+    ###############################
+    ## Dockerized DB
+    # You may leave this like this in DEBUG mode
+    ALCHEMY_USER: rods
+    ALCHEMY_PASSWORD: chooseapasswordwisely
+    ALCHEMY_API_DB: SQL_API
+
+    ###############################
+    ## B2ACCESS
+    B2ACCESS_ACCOUNT: httpapi
+    # B2ACCESS_ACCOUNT: b2stage_httpapi
+    B2ACCESS_SECRET: SETYOURSECRETKEY
+
+    ###############################
+    ## LOCAL iRODS server VERSION
+    # You may leave this like this in DEBUG mode
+    IRODS_USER: irods
+    IRODS_GUEST_USER: guest
+    IRODS_DEFAULT_ADMIN_USER: rodsminer
+    IRODS_ZONE: tempZone
+    IRODS_HOME: home
+    IRODS_DN:
+
+    ###############################
+    ## PRODUCTION iRODS server VERSION
+
+    # IRODS_HOST: eudat-dmp1
+    # IRODS_USER: pdonorio
+    # IRODS_GUEST_USER: pdonorio
+    # IRODS_DEFAULT_ADMIN_USER: pdonorio
+    # IRODS_ZONE: cinecaDMPZone1
+    # IRODS_HOME: home
+    # IRODS_PASSWORD: SETTHISPASSWORDINPRODUCTION
+    # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/eudat-dmp1.novalocal"
+
+###############################
+## WARNING!! do not modify below
+## if you don't know what you are doing
+###############################
+
+    # COMPOSE_PROJECT_NAME: eudat
+    # PROJECT_DOMAIN: myserver.mydomain.dev
+    AUTH_SERVICE: sqlalchemy
+    # AUTH_SERVICE: mongo
+    API_MAIN_ENDPOINT: registered
+    # LETSENCRYPT_MODE: --staging
+    LETSENCRYPT_MODE:
+
+    IRODS_DB: ICAT
+    IRODS_AUTHSCHEME: GSI
+
+    # sqlalchemy fixed:
+    ALCHEMY_ENGINE: postgresql
+    ALCHEMY_DBS: 'ICAT SQL_API'
+
+    # # neo4j:
+    # GRAPHDB_PASSWORD: wakeupneo
+    # EPIC HANDLE credentials
+    HANDLE_BASE: "https://url.to.epic/handles/"
+    # HANDLE_USER:
+    # HANDLE_PREFIX:
+    # HANDLE_PASS:
+    HANDLE_CREDENTIALS: /tmp
+    # HANDLE_CREDENTIALS: /home/ubuntu/b2handle_cred/credentials
+    ##: OTHERs / FIXED
+    FLASK_SUBNET: 175.1.0.0
+    FLASK_FIXED_IP: 175.1.0.10
+    UPLOAD_PATH: /uploads
+    FULL_JWT: false
+
   # frontend:
   #   enable: true
   repos:
@@ -39,57 +100,18 @@ variables:
     #   path: builds_base
     #   if: true
 
-  env:
-    COMPOSE_PROJECT_NAME: eudat
-    AUTH_SERVICE: sqlalchemy
-    # AUTH_SERVICE: mongo
-    API_MAIN_ENDPOINT: registered
-    PROJECT_DOMAIN: myserver.mydomain.dev
-    # LETSENCRYPT_MODE: --staging
-    LETSENCRYPT_MODE:
+controller:
+  commands:
+    irods_restart:
+      description: Try to restart the current iCAT server instance
+      command: service irods restart
+      service: icat
+      user: root
 
-    # sqlalchemy:
-    ALCHEMY_ENGINE: postgresql
-    ALCHEMY_USER: rods
-    ALCHEMY_API_DB: SQL_API
-    ALCHEMY_DBS: 'ICAT SQL_API'
-    ALCHEMY_PASSWORD: oemedoironod
+tags:
+  eudat: all endpoints associated to EUDAT services
+  b2access: request/refresh authorization from B2ACCESS
+  registered: upload, download, list and delete objects
+  pids: resolve and download data from EUDAT Persistente IDentifier
+  # internal: for internal testing purpose only
 
-    IRODS_DB: ICAT
-    IRODS_AUTHSCHEME: GSI
-
-    # LOCAL iRODS server VERSION
-    IRODS_USER: irods
-    # IRODS_PASSWORD: irods  # if external, change also backend.yaml
-    IRODS_GUEST_USER: guest
-    IRODS_DEFAULT_ADMIN_USER: rodsminer
-    IRODS_ZONE: tempZone
-    IRODS_HOME: home
-    IRODS_DN:
-
-    # IRODS_HOST: eudat-dmp1
-    # IRODS_USER: pdonorio
-    # IRODS_GUEST_USER: pdonorio
-    # IRODS_DEFAULT_ADMIN_USER: pdonorio
-    # IRODS_ZONE: cinecaDMPZone1
-    # IRODS_HOME: home
-    # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/eudat-dmp1.novalocal"
-
-    # # neo4j:
-    # GRAPHDB_PASSWORD: wakeupneo
-    ## B2ACCESS
-    B2ACCESS_ACCOUNT: httpapi
-    # B2ACCESS_ACCOUNT: b2stage_httpapi
-    B2ACCESS_SECRET: SETYOURSECRETKEY
-    # EPIC HANDLE credentials
-    HANDLE_BASE: "https://url.to.epic/handles/"
-    # HANDLE_USER:
-    # HANDLE_PREFIX:
-    # HANDLE_PASS:
-    HANDLE_CREDENTIALS: /tmp
-    # HANDLE_CREDENTIALS: /home/ubuntu/b2handle_cred/credentials
-    ##: OTHERs / FIXED
-    FLASK_SUBNET: 175.1.0.0
-    FLASK_FIXED_IP: 175.1.0.10
-    UPLOAD_PATH: /uploads
-    FULL_JWT: false

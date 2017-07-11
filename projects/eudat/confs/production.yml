@@ -16,6 +16,7 @@ services:
       # EUDAT RELATED  # FIXME: still in development
       # B2ACCESS_ENV: production
       B2ACCESS_ENV: development
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
     depends_on:
       # - icat
       - postgres

@@ -25,7 +25,7 @@ services:
       IRODS_ZONE: ${IRODS_ZONE}
       IRODS_DB: "${IRODS_DB}"
       IRODS_USER: ${IRODS_USER}
-      # TOFIX: use docker secrets in the future
+      # FIXME: use docker secrets in the future
       IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
 
     volumes:

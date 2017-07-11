@@ -1,58 +1,36 @@
 
+#############################
+# config
 language: python
 sudo: required
 dist: trusty
 group: deprecated-2017Q2
-# group: legacy
-# TO BE TESTED
 python:
-  # - "3.5-dev"
-  - "3.6.1"
+    - 3.6.1
 services:
-  - docker
+    - docker
 env:
-  - PROJECT=eudat
+    - PROJECT=eudat
 
+#############################
+# installation
 before_install:
-  # update docker
-  - sudo apt-get update
-  - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
-
+    - sudo apt-get update
+    - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 install:
-  # note: this will also upgrade docker compose
-  - pip install --upgrade -r projects/$PROJECT/requirements.txt
+    - pip install --upgrade -r projects/$PROJECT/requirements.txt
 
-# before_script:
-#   - sleep 1
-
+#############################
+# do your things
 script:
-  - docker -v
-  # - docker-compose -v
-  - pip freeze | grep docker
-  # - rapydo --version
-  - pip search rapydo-
-  # TODO: check this again
-  - pip freeze | grep requests
-  # BUG FIX: ValueError: Timeout value connect was Timeout
-  - pip install requests==2.11.1
-
-  # Clone subrepos
-  - rapydo init
-
-  # FIRST THING PULL LATEST VERSION OF rapydo/core
-  # NOTE: this is a fork from rapydo/core
-  # - git fetch upstream && git merge upstream master
-
-  # start the debug environment, and wait for initialization
-  - rapydo start
-  - sleep 60 && rapydo shell backend --command initialize
-  # - rapydo --services postgres log
-  # - rapydo --services backend log
-
-  # launch all unittests
-  - rapydo shell backend --command testwithcoverage
-  # - rapydo --services backend shell --command "/bin/bash -c 'testwithcoverage'"
-
-# after_success:
-# TODO: fix problems with computing coverage
-#   - coveralls
+    - docker -v
+    - pip freeze | grep docker
+    - pip search rapydo-
+    - pip freeze | grep requests
+    - pip install requests==2.11.1
+    # TODO: write a .projectrc for --project option
+    - rapydo init
+    - rapydo start
+    # FIXME: check if sleep can be avoided
+    - sleep 60 && rapydo shell backend --command initialize
+    - rapydo shell backend --command testwithcoverage
