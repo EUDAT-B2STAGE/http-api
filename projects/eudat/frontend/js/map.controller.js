@@ -7,6 +7,10 @@ var app = angular.module('web').controller('MapController', MapController);
 function MapController($scope, $rootScope, $log, $timeout, noty, DataService, leafletMapEvents, leafletData)
 {
 	var self = this;
+    self.NE_lat = 0;
+    self.NE_lng = 0;
+    self.SW_lat = 0;
+    self.SW_lng = 0; 
 
     self.search_fields = [
         {
@@ -53,7 +57,11 @@ function MapController($scope, $rootScope, $log, $timeout, noty, DataService, le
             return;
         }
 
-        DataService.searchBoundingBox(min_date, max_date).then(
+        console.log(self.SW_lng);
+
+        DataService.searchBoundingBox(
+                min_date, max_date, self.NE_lat, self.NE_lng, self.SW_lat, self.SW_lng
+            ).then(
             function(out_data) {
                 var data = out_data.data[1];
 
@@ -123,10 +131,10 @@ function MapController($scope, $rootScope, $log, $timeout, noty, DataService, le
     $scope.$on('leafletDirectiveMap.mymap.moveend', function(event){
 		leafletData.getMap().then(function(map) {
 		    var bounds = map.getBounds();
-		    $scope.a = bounds._northEast.lat
-		    $scope.b = bounds._northEast.lng
-		    $scope.c = bounds._southWest.lat
-		    $scope.d = bounds._southWest.lng
+		    self.NE_lat = bounds._northEast.lat;
+		    self.NE_lng = bounds._northEast.lng;
+		    self.SW_lat = bounds._southWest.lat;
+		    self.SW_lng = bounds._southWest.lng;
 		});
     });
 
