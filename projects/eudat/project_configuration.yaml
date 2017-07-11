@@ -20,8 +20,8 @@ tags:
   # internal: for internal testing purpose only
 
 variables:
-  # frontend:
-  #   enable: true
+  frontend:
+    enable: true
   repos:
     irods-client:
       branch: master

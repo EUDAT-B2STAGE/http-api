@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+  frontend:
+    image: rapydo/frontend
+    command: ./boot
+    hostname: frontend
+    # TO FIX: fix all mounts!!
+    working_dir: /data/submodules/frontend
+    volumes:
+      # Main dir. It has to be the root directory, to make links work
+      - ..:/data
+      # Vanilla code
+      - ../projects/${COMPOSE_PROJECT_NAME}:/temporaryfix
+      # Configuration files
+      # - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/data/submodules/frontend/config/project_configuration.yaml
+      # SHARED WITH PROXY:
+      - ../submodules/frontend/js/angular:/data/submodules/frontend/felask/static/app/commons
+      - ../submodules/frontend/css:/data/submodules/frontend/felask/static/css/base
+      - ../submodules/frontend/fonts:/data/submodules/frontend/felask/static/fonts
+      - ../submodules/frontend/templates:/data/submodules/frontend/felask/static/app/templates/common
+      # js/css libraries installed via bower
+      - ../data/bower_components:/data/submodules/frontend/felask/static/bower
+      # js/css custom
+      - ../projects/${COMPOSE_PROJECT_NAME}/frontend/js:/data/submodules/frontend/felask/static/app/custom
+      - ../projects/${COMPOSE_PROJECT_NAME}/frontend/templates:/data/submodules/frontend/felask/static/app/templates/custom
+      - ../projects/${COMPOSE_PROJECT_NAME}/frontend/css:/data/submodules/frontend/felask/static/css/custom
+      - ../projects/${COMPOSE_PROJECT_NAME}/frontend/assets:/data/submodules/frontend/felask/static/assets
+
+  ###############################
+  # Make automatic to install libraries
+  bower:
+    image: pdonorio/jsdev
+    working_dir: /confs
+    volumes:
+      - ../data:/libs
+      - ../projects/${COMPOSE_PROJECT_NAME}/frontend/bower.json:/confs/bower.json
+
+  ###############################
+  proxy:
+    volumes:
+      # SHARED WITH FRONTEND:
+      - ../submodules/frontend/js/angular:/data/submodules/frontend/felask/static/app/commons
+      - ../submodules/frontend/css:/data/submodules/frontend/felask/static/css/base
+      - ../submodules/frontend/fonts:/data/submodules/frontend/felask/static/fonts
+      - ../submodules/frontend/templates:/data/submodules/frontend/felask/static/app/templates/common
+      # js/css libraries installed via bower
+      - ../data/bower_components:/data/submodules/frontend/felask/static/bower
+      # Custom css/js
+      - ../projects/${COMPOSE_PROJECT_NAME}/frontend/js:/data/submodules/frontend/felask/static/app/custom
+      - ../projects/${COMPOSE_PROJECT_NAME}/frontend/templates:/data/submodules/frontend/felask/static/app/templates/custom
+      - ../projects/${COMPOSE_PROJECT_NAME}/frontend/css:/data/submodules/frontend/felask/static/css/custom
+      - ../projects/${COMPOSE_PROJECT_NAME}/frontend/assets:/data/submodules/frontend/felask/static/assets
+
+  ###############################
+  # Make automatic to install libraries
+  # karma:
+  #     image: pdonorio/jsdev
+  #     working_dir: /data
+  #     volumes:
+  #         - ../data/bower_components:/data/bower_components
+  #         - ../jscode:/data
