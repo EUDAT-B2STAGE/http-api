@@ -16,23 +16,26 @@ A minimum set of operations to start developing within this repository:
 
 ```bash
 
-# start from the latest release
+###############
+# begin working from the latest release
 git clone https://github.com/EUDAT-B2STAGE/http-api.git
 cd http-api
 
-# install the controller and other libs
-# this might require admin privileges
+###############
+# OPTIONAL: use a virtual environment 
+# (this could avoid packages version conflicts)
+virtualenv b2stage
+source b2stage/bin/activate
+
+###############
+# complete first start
+
+# install and use the rapydo controller
+# note: it might require admin privileges
 (sudo) pip3 install --upgrade -r projects/eudat/requirements.txt
-
-# fix what is missing from above
+# init and run containers in background
 rapydo init
-
-# OPTIONAL: you may check the framework status
-rapydo check
-
-# run containers in background
 rapydo start && sleep 15 && echo "booted"
-
 # init all datas (e.g. authorization database) 
 rapydo shell backend --command initialize
 ```
@@ -165,4 +168,14 @@ git merge --squash $MYEXISTINGBRANCH
 # commit message will contain all commit messages so far
 git commit
 # you may/should change the content, at least top title and description
+```
+
+### hack the certificates volume
+
+This hack is necessary if you want to raw copy a CA certificate if your VM DN was produced with an internal certification authority.
+
+```bash
+path=`docker inspect $(docker volume ls -q | grep sharedcerts) | jq -r ".[0].Mountpoint"`
+sudo cp /PATH/TO/YOUR/CA/FILES/CA-CODE.* $path/simple_ca
+
 ```
