@@ -23,14 +23,14 @@ install:
 #############################
 # do your things
 script:
-    - docker -v
+    # check versions
+    - docker --version
+    - docker-compose --version
     - pip freeze | grep docker
     - pip search rapydo-
-    - pip freeze | grep requests
-    - pip install requests==2.11.1
-    # TODO: write a .projectrc for --project option
+
     - rapydo init
     - rapydo start
-    # FIXME: check if sleep can be avoided
+    # FIXME: avoid sleep with some real init here
     - sleep 60 && rapydo shell backend --command initialize
     - rapydo shell backend --command testwithcoverage

@@ -4,6 +4,8 @@
 **milestone**: [beta version 6](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
 
 ## features
+- easier production steps [#75]
+- benchmarks [#20]
 - linking
     - b2access production
     - b2safe production

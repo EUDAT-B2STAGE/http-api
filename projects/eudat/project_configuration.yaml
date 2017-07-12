@@ -74,7 +74,7 @@ variables:
     # HANDLE_PREFIX:
     # HANDLE_PASS:
     HANDLE_CREDENTIALS: /tmp
-    # HANDLE_CREDENTIALS: /home/ubuntu/b2handle_cred/credentials
+    HANDLE_CREDENTIALS_PROD: /opt/certificates/b2handle
     ##: OTHERs / FIXED
     FLASK_SUBNET: 175.1.0.0
     FLASK_FIXED_IP: 175.1.0.10

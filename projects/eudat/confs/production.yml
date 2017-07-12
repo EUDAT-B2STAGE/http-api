@@ -17,6 +17,7 @@ services:
       # B2ACCESS_ENV: production
       B2ACCESS_ENV: development
       IRODS_PASSWORD: ${IRODS_PASSWORD}
+      HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_PROD}
     depends_on:
       # - icat
       - postgres
@@ -24,6 +25,7 @@ services:
       - 8080
     volumes:
       - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
+      - ../data/b2handle:${HANDLE_CREDENTIALS_PROD}
 
   proxy:
     environment:
