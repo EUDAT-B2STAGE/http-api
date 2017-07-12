@@ -66,15 +66,16 @@ variables:
     ALCHEMY_ENGINE: postgresql
     ALCHEMY_DBS: 'ICAT SQL_API'
 
-    # # neo4j:
-    # GRAPHDB_PASSWORD: wakeupneo
-    # EPIC HANDLE credentials
+    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
     HANDLE_BASE: "https://url.to.epic/handles/"
     # HANDLE_USER:
     # HANDLE_PREFIX:
     # HANDLE_PASS:
-    HANDLE_CREDENTIALS: /tmp
-    HANDLE_CREDENTIALS_PROD: /opt/certificates/b2handle
+
+    # # neo4j:
+    # GRAPHDB_PASSWORD: wakeupneo
+    # EPIC HANDLE credentials
+
     ##: OTHERs / FIXED
     FLASK_SUBNET: 175.1.0.0
     FLASK_FIXED_IP: 175.1.0.10

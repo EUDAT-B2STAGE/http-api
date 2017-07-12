@@ -10,6 +10,7 @@ tmp_files
 # Skip self-signed certificates
 data/certs/nginx-selfsigned*
 data/certs/*cineca*
+data/secrets/secret_*
 
 #################
 ##  Submodules ##

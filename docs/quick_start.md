@@ -105,6 +105,15 @@ Last thing missing is giving the b2handle library real credentials to resolve PI
 cp PATH/TO/YOUR/CREDENTIALS/FILES/* data/b2handle/
 ```
 
+At this point the service should be completely functional.
+
+In case at some point you want to stop or remove containers you need to use the right 'mode' or thing would not work as expected:
+
+```bash
+rapydo --mode production remove
+# Note, the default option mimics 'rapydo --mode debug remove'
+```
+
 
 ## other operations
 
