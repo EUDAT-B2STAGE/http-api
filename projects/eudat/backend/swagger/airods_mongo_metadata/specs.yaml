@@ -1,5 +1,5 @@
 # endpoint: /api/statics/metadata
-class: TestMongoMeta
+class: MetaMongo
 file: airods
 # baseuri: /api
 mapping:

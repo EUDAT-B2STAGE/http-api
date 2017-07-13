@@ -4,7 +4,7 @@
 
 from rapydo.rest.definition import EndpointResource
 from rapydo.utils.logs import get_logger
-# import dateutil.parser
+import dateutil.parser
 # import json
 
 log = get_logger(__name__)
@@ -26,53 +26,107 @@ log = get_logger(__name__)
 class DataMongo(EndpointResource):
 
     def get(self):
-        # mongohd = self.global_get_service('mongo', dbname='auth')
+        # # --> important into mongo collections we must have:
+        # #     "_cls" : "eudat.models.mongo.wf_do"
         mongohd = self.get_service_instance(
             service_name='mongo', database='wfcat')
-        mongohd.Testing(onefield='justatest').save()
-        log.info("just a test - mongo insert")
+        # test:
+        #mongohd.Testing(onefield='justatest1').save()
+        #log.info("just a test - mongo insert")
+        #return "Hello world!"
+        
+        # real:
+        myargs = self.get_input()
+        print(myargs)
+        documentResult1 = []
+        
+        mycollection = mongohd.wf_do
+        
+        myStartDate = dateutil.parser.parse(myargs.get("start"))
+        myEndDate = dateutil.parser.parse(myargs.get("end"))
+        myLat = float(myargs.get("minlat"))
+        myLon = float(myargs.get("minlon"))
+        myLatX = float(myargs.get("maxlat"))
+        myLonX = float(myargs.get("maxlon"))
 
-        return "Hello world!"
-        # log.info("just a test")
-        # mongohd = self.global_get_service('mongo', dbname='auth')
-        # myargs = self.get_input()
-        # print(myargs)
-
-        # documentResult1 = []
-        # # --> important into mongo collections we must have:
-        # #     "_cls" : "commons.models.mongo.wf_do"
-
-        # # mongohd.wf_do(fileId='justatest').save() # write-test
-
-        # mycollection = mongohd.wf_do
-        # # log.pp(mongohd)
-        # myStartDate = dateutil.parser.parse(myargs.get("start"))
-        # myEndDate = dateutil.parser.parse(myargs.get("end"))
-        # myLat = float(myargs.get("minlat"))
-        # myLon = float(myargs.get("minlon"))
-        # myLatX = float(myargs.get("maxlat"))
-        # myLonX = float(myargs.get("maxlon"))
-
-        # myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
+        myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
         # #myfirstvalue = mongohd.wf_do.objects.all()
 
-        # for document in myfirstvalue:
-        #     myLine = [document.fileId,document.dc_identifier, document.dc_coverage_x, document.dc_coverage_y ]
-        #     documentResult1.append(myLine)
+        for document in myfirstvalue:
+             myLine = [document.fileId,document.dc_identifier, document.dc_coverage_x, document.dc_coverage_y ]
+             documentResult1.append(myLine)
 
-        # if myargs.get('download') == 'true':
+        if myargs.get('download') == 'true':
 
-        #     return("TEST! download ok")
+             return("TEST! download ok")
 
-        # else:
+        else:
 
-        #     return  ["total files to download: "+str(len(documentResult1)) +" format:< fileId - PID - Lat - Lon >",documentResult1]   # ,documentResult1
+             return  ["total files to download: "+str(len(documentResult1)) +" format:< fileId - PID - Lat - Lon >",documentResult1]   # ,documentResult1
 
 
-class TestMongoMeta(EndpointResource):
+class MetaMongo(EndpointResource):
 
     def get(self):
-        return "Hello world!"
+        #return "Hello world!"
+    
+    
+        # # --> important into mongo collections we must have:
+        # #     "_cls" : "eudat.models.mongo.wf_do"
+        mongohd = self.get_service_instance(
+            service_name='mongo', database='wfcat')
+        # test:
+        #mongohd.Testing(onefield='justatest1').save()
+        #log.info("just a test - mongo insert")
+        #return "Hello world!"
+        
+        # real:
+        myargs = self.get_input()
+        print(myargs)
+        documentResult1 = []
+        
+        mycollection = mongohd.wf_do
+        
+        myStartDate = dateutil.parser.parse(myargs.get("start"))
+        myEndDate = dateutil.parser.parse(myargs.get("end"))
+        myLat = float(myargs.get("minlat"))
+        myLon = float(myargs.get("minlon"))
+        myLatX = float(myargs.get("maxlat"))
+        myLonX = float(myargs.get("maxlon"))
+
+        myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
+        # #myfirstvalue = mongohd.wf_do.objects.all()
+        
+
+        for document in myfirstvalue:
+             myLine = {
+                "fileId" : document.fileId,
+                "dc_identifier" : document.dc_identifier, 
+                "dc_coverage_x" : document.dc_coverage_x, 
+                "dc_coverage_y" : document.dc_coverage_y,
+                "dc_coverage_z" : document.dc_coverage_z,
+                "dc_title" : document.dc_title,
+                "dc_subject" : document.dc_subject, 
+                "dc_creator" : document.dc_creator, 
+                "dc_contributor" : document.dc_contributor,
+                "dc_publisher" : document.dc_publisher,
+                "dc_type" : document.dc_type,
+                "dc_format" : document.dc_format, 
+                "dc_date" : document.dc_date, 
+                "dc_coverage_t_min" : document.dc_coverage_t_min,
+                "dc_coverage_t_max" : document.dc_coverage_t_max,
+                "dcterms_available" : document.dcterms_available, 
+                "dcterms_dateAccepted" : document.dcterms_dateAccepted, 
+                "dc_rights" : document.dc_rights,
+                "dcterms_isPartOf" : document.dcterms_isPartOf
+             }
+             documentResult1.append(myLine)
+
+        print ("result")
+        print (documentResult1)
+    
+        return [documentResult1] # ["total objects result:"] 
+    
         # log.info("just a test")
         # mongohd = self.global_get_service('mongo', dbname='auth')
         # myargs = self.get_input()
@@ -117,13 +171,4 @@ class TestMongoMeta(EndpointResource):
 
 
 
-class TestMongo1(EndpointResource):
 
-    def get(self):
-        return "Hello world!"
-        # log.info("just a test")
-        # mongohd = self.global_get_service('mongo', dbname='mytest')
-        # mongohd.Testing(onefield='justatest').save()
-        # # log.pp(mongohd)
-        # print(mongohd)
-        # return "it works!"
