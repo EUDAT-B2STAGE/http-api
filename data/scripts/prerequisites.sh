@@ -1,5 +1,9 @@
 #!/bin/bash
 
+USER_OPTION=""
+if [ ! "$TRAVIS" == "true" ]; then
+    USER_OPTION="--user"
+
 for existing in `pip3 list --format columns | grep rapydo | awk '{print $1}'`;
 do
     echo "removing: $existing"
@@ -15,5 +19,5 @@ fi
 for package in `cat projects/*/$files`;
 do
     echo "adding: $package"
-    pip3 install --user --upgrade $package
+    pip3 install $USER_OPTION --upgrade $package
 done
