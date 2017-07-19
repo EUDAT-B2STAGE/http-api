@@ -2,7 +2,7 @@
 
 """ CUSTOM Models for the relational database """
 
-from rapydo.models.sqlalchemy import db, ExternalAccounts  # , User
+from restapi.models.sqlalchemy import db, ExternalAccounts  # , User
 
 # # Add (inject) attributes to User
 # setattr(User, 'name', db.Column(db.String(255)))

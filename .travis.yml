@@ -6,31 +6,34 @@ sudo: required
 dist: trusty
 group: deprecated-2017Q2
 python:
-    - 3.6.1
+- 3.6.1
 services:
-    - docker
+- docker
 env:
-    - PROJECT=eudat
+- PROJECT=eudat
 
 #############################
 # installation
 before_install:
-    - sudo apt-get update
-    - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
+- sudo apt-get update
+- sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 install:
-    - pip install --upgrade -r projects/$PROJECT/requirements.txt
+- data/scripts/prerequisites.sh
 
 #############################
 # do your things
 script:
-    # check versions
-    - docker --version
-    - docker-compose --version
-    - pip freeze | grep docker
-    - pip search rapydo-
+# check versions
+- docker --version
+- docker-compose --version
+- pip freeze | grep docker
+- pip search rapydo-
 
-    - rapydo init
-    - rapydo start
-    # FIXME: avoid sleep with some real init here
-    - sleep 60 && rapydo shell backend --command initialize
-    - rapydo shell backend --command testwithcoverage
+- rapydo init
+- rapydo start && sleep 30  # sleep a few seconds to get the db initialized
+- rapydo shell backend --command 'restapi tests'
+
+# coverage within a docker container
+after_success:
+- docker cp ${PROJECT}_backend_1:/code/.coverage .
+- docker run -it -v $(pwd):/repo -w /repo $PROJECT/backend:template coveralls

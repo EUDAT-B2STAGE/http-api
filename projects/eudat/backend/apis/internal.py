@@ -9,10 +9,10 @@ Code to implement the /api/internal endpoint
 
 from eudat.apis.common.b2stage import EudatEndpoint
 from eudat.apis.common import CURRENT_MAIN_ENDPOINT
-from rapydo import decorators as decorate
-from rapydo.flask_ext.flask_irods.client import IrodsException
-from rapydo.utils import htmlcodes as hcodes
-from rapydo.utils.logs import get_logger
+from restapi import decorators as decorate
+from restapi.flask_ext.flask_irods.client import IrodsException
+from utilities import htmlcodes as hcodes
+from utilities.logs import get_logger
 
 log = get_logger(__name__)
 

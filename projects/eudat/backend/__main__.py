@@ -9,9 +9,9 @@ RESTful API Python 3 Flask server
 
 import os
 import better_exceptions as be
-from rapydo.confs import PRODUCTION
-from rapydo.utils.logs import get_logger
-from rapydo.server import create_app
+from restapi.confs import PRODUCTION
+from utilities.logs import get_logger
+from restapi.server import create_app
 
 log = get_logger(__name__)
 

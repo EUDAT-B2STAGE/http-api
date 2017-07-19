@@ -19,11 +19,11 @@ from werkzeug import secure_filename
 from eudat.apis.common import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from eudat.apis.common.b2stage import EudatEndpoint
 
-from rapydo.services.uploader import Uploader
-from rapydo.flask_ext.flask_irods.client import IrodsException
-from rapydo.utils import htmlcodes as hcodes
-from rapydo import decorators as decorate
-from rapydo.utils.logs import get_logger
+from restapi.services.uploader import Uploader
+from restapi.flask_ext.flask_irods.client import IrodsException
+from utilities import htmlcodes as hcodes
+from restapi import decorators as decorate
+from utilities.logs import get_logger
 
 log = get_logger(__name__)
 

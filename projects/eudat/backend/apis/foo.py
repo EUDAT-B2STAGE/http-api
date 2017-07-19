@@ -4,10 +4,10 @@
 An endpoint example
 """
 
-from rapydo.rest.definition import EndpointResource
-from rapydo.services.detect import detector
+from restapi.rest.definition import EndpointResource
+from restapi.services.detect import detector
 
-from rapydo.utils.logs import get_logger
+from utilities.logs import get_logger
 
 log = get_logger(__name__)
 

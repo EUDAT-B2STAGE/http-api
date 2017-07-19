@@ -22,11 +22,11 @@ services:
       - icat
       - postgres
       # - mongodb
-    volumes:
-      # Rapydo repos
-      - ../submodules/backend/rapydo:/usr/local/lib/python3.6/dist-packages/rapydo
-      - ../submodules/utilities/rapydo/utils:/usr/local/lib/python3.6/dist-packages/rapydo/utils
-      - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
+    # volumes:
+    #   # Rapydo repos
+    #   - ../submodules/backend/restapi:/usr/local/lib/python3.6/dist-packages/restapi
+    #   - ../submodules/utilities/utilities:/usr/local/lib/python3.6/dist-packages/utilities
+    #   # - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
   restclient:
     # build: ../projects/${COMPOSE_PROJECT_NAME}/builds/restclient

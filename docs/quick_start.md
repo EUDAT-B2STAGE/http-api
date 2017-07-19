@@ -1,5 +1,5 @@
 
-# Quick start
+# Quick start (FIXME: update to 0.5.2)
 
 This is a reference page to quick start the HTTP API project.
 
@@ -12,7 +12,9 @@ If you want to run in production the very first step should be to modify the con
 
 ## deploy
 
-A minimum set of operations to start developing within this repository:
+A minimum set of operations to start developing within this repository.
+
+Note that installations with the python package manager (`pip`) may require administration permissions. You may try to avoid this with the option `--user`.
 
 ```bash
 
@@ -23,7 +25,8 @@ cd http-api
 
 ###############
 # OPTIONAL: use a virtual environment 
-# (this could avoid packages version conflicts)
+# (this 'best practice' could avoid packages version conflicts)
+(sudo) pip3 install virtualenv
 virtualenv b2stage
 source b2stage/bin/activate
 
@@ -31,13 +34,12 @@ source b2stage/bin/activate
 # complete first start
 
 # install and use the rapydo controller
-# note: it might require admin privileges
 (sudo) pip3 install --upgrade -r projects/eudat/requirements.txt
 # init and run containers in background
 rapydo init
 rapydo start && sleep 15 && echo "booted"
 # init all datas (e.g. authorization database) 
-rapydo shell backend --command initialize
+rapydo shell backend --user developer --command 'restapi tests --initialize'
 ```
 
 ### DEVELOPMENT
@@ -45,10 +47,9 @@ rapydo shell backend --command initialize
 Follow this paragraph only if you plan to develop new features on the HTTP API.
 
 ```bash
-# operations inside backend
-rapydo shell backend
-# launch http-api server 
-$ rapydo
+# activate the restful http-api server 
+rapydo shell backend --user developer
+$ restapi launch
 
 # now you may access a client from another shell and test the server
 rapydo shell restclient --user developer
