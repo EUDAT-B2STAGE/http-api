@@ -19,6 +19,8 @@ before_install:
 - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 install:
 - data/scripts/prerequisites.sh
+# fix permissions for coverage to be computed
+- chmod -R o+Xw projects
 
 #############################
 # do your things
