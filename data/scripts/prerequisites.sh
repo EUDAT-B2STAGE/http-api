@@ -3,6 +3,7 @@
 USER_OPTION=""
 if [ ! "$TRAVIS" == "true" ]; then
     USER_OPTION="--user"
+fi
 
 for existing in `pip3 list --format columns | grep rapydo | awk '{print $1}'`;
 do
