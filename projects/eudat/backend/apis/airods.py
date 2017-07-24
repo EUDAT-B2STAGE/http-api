@@ -51,18 +51,29 @@ class DataMongo(EndpointResource):
 
         myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
         # #myfirstvalue = mongohd.wf_do.objects.all()
-
         for document in myfirstvalue:
-             myLine = [document.fileId,document.dc_identifier, document.dc_coverage_x, document.dc_coverage_y ]
-             documentResult1.append(myLine)
+                myLine = [document.fileId,document.dc_identifier,document.irods_path, document.dc_coverage_x, document.dc_coverage_y ]
+                documentResult1.append(myLine)
+
+        
 
         if myargs.get('download') == 'true':
-
-             return("TEST! download ok")
+            
+            icom = self.get_service_instance(service_name='irods') 
+            
+                
+            try:
+                for document in myfirstvalue:
+                    print(document.irods_path)
+                    icom.icom.read_in_streaming(document.irods_path)
+            except:
+                self.force_response('errore')
+            
+            return("download ok")
 
         else:
-
-             return  ["total files to download: "+str(len(documentResult1)) +" format:< fileId - PID - Lat - Lon >",documentResult1]   # ,documentResult1
+            
+            return  ["total files to download: "+str(len(documentResult1)) +" format:< fileId - PID - Lat - Lon >",documentResult1]   # ,documentResult1
 
 
 class MetaMongo(EndpointResource):
@@ -118,7 +129,8 @@ class MetaMongo(EndpointResource):
                 "dcterms_available" : document.dcterms_available, 
                 "dcterms_dateAccepted" : document.dcterms_dateAccepted, 
                 "dc_rights" : document.dc_rights,
-                "dcterms_isPartOf" : document.dcterms_isPartOf
+                "dcterms_isPartOf" : document.dcterms_isPartOf,
+                "irods_path" : document.irods_path
              }
              documentResult1.append(myLine)
 

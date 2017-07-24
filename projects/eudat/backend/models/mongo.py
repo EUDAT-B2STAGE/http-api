@@ -40,6 +40,7 @@ class wf_do(MongoModel):
     dc_rights = fields.CharField()
     dcterms_isPartOf = fields.CharField()
     fileId = fields.CharField()
+    irods_path = fields.CharField()
 
     class Meta:
         write_concern = WriteConcern(j=True)
