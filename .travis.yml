@@ -37,6 +37,4 @@ script:
 
 # coverage within a docker container
 after_success:
-- docker cp ${PROJECT}_backend_1:/code/.coverage .
-- ln -s projects/$PROJECT/backend $PROJECT
-- docker run -it -v $(pwd):/code $PROJECT/backend:template coveralls
+- rapydo --log-level VERBOSE coveralls
