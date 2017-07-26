@@ -37,4 +37,4 @@ script:
 
 # coverage within a docker container
 after_success:
-- rapydo --log-level VERBOSE coveralls
+- rapydo --log-level VERBOSE coverall
