@@ -17,5 +17,4 @@ services:
     volumes:
       - jwt_tokens:${JWT_APP_SECRETS}
       - ../:/repo
-      - ../confs/.coverage:/code/.coverage
-      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/repo/${COMPOSE_PROJECT_NAME}

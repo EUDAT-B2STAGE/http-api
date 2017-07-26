@@ -1,5 +1,4 @@
 
-#############################
 # config
 language: python
 sudo: required
@@ -12,28 +11,22 @@ services:
 env:
 - PROJECT=eudat
 
-#############################
 # installation
 before_install:
 - sudo apt-get update
 - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 install:
 - data/scripts/prerequisites.sh
-# fix permissions for coverage to be computed
-- chmod -R o+Xw projects
+- chmod -R o+Xw projects # fix permissions for coverage to be computed
 
-#############################
-# do your things
+# do things
 script:
-# check versions
-- docker --version
-- docker-compose --version
-- pip freeze | grep docker
-- pip search rapydo-
-
-- rapydo init
-- rapydo start && sleep 30  # sleep a few seconds to get the db initialized
-- rapydo shell backend --command 'restapi tests'
+# versions
+- docker --version && docker-compose --version
+- pip list --format columns | grep docker && pip search rapydo-
+# startup and launch tests
+- rapydo init && rapydo start
+- rapydo shell backend --command 'restapi tests --wait'
 
 # coverage within a docker container
 after_success:

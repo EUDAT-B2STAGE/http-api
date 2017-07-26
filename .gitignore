@@ -67,7 +67,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-#.coverage
+.coverage
 htmlcov
 
 # PyInstaller
