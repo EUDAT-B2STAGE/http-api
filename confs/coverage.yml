@@ -4,9 +4,12 @@ version: '3'
 services:
   coverage:
     command: coveralls
+    hostname: coveraging
     build: ../submodules/builds_base/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:template
     working_dir: /repo
+    environment:
+      JWT_APP_SECRETS: /code/.coverage  # little hack
     volumes:
       - ../:/repo
       - ../confs/.coverage:/code/.coverage
