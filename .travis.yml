@@ -1,9 +1,7 @@
-
-# config
 language: python
 sudo: required
-dist: trusty
-group: deprecated-2017Q2
+# dist: trusty
+# group: deprecated-2017Q2
 python:
 - 3.6.1
 services:
@@ -11,10 +9,10 @@ services:
 env:
 - PROJECT=eudat
 
-# installation
-before_install:
-- sudo apt-get update
-- sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
+# # installation
+# before_install:
+# - sudo apt-get update
+# - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 install:
 - data/scripts/prerequisites.sh
 - chmod -R o+Xw projects # fix permissions for coverage to be computed
