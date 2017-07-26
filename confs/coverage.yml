@@ -1,6 +1,10 @@
 
 version: '3'
 
+volumes:
+  jwt_tokens:
+    driver: local
+
 services:
   coverage:
     command: coveralls
@@ -9,8 +13,9 @@ services:
     image: ${COMPOSE_PROJECT_NAME}/backend:template
     working_dir: /repo
     environment:
-      JWT_APP_SECRETS: /code/.coverage  # little hack
+      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
+      - jwt_tokens:${JWT_APP_SECRETS}
       - ../:/repo
       - ../confs/.coverage:/code/.coverage
       - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
