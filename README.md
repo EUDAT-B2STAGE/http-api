@@ -9,9 +9,11 @@
 NOTE: the B2STAGE HTTP-API is an interface towards other EUDAT services which are subject to modifications and new developments, therefore the functionalities and the implementation will have to be changed accordingly. 
 
 
---
+---
+
 
 ## Objectives
+
 This project aims at developing a B2STAGE HTTP-API fot the EUDAT CDI.
 The primary goal is to allow users to ingest and retrieve data via a standard RESTful HTTP interface in order to:
 
@@ -24,56 +26,22 @@ The first development is focused on the interaction with B2SAFE, allowing users 
 Over the EUDAT2020 project other functionalities will be added: the development road map is available on the [EUDAT Wiki](https://confluence.csc.fi/display/EUDAT2/Service+building+roadmap)
 
 
+## Documentation
+
+- [Quick start](docs/user/user.md) for deploy and development
+- [User](docs/user/user.md) guide
+- [Developer](docs/development/development.md) instructions
+- [Deploy](docs/deploy/deploy.md) the server
+
 
 ## Implementation
-The API is implemented in Python 3 using the Flask framework (Flask can be used with most web-servers via the WSGI-standard).
-To facilitate and speed the development Docker will be used to automate the deployment of the software stack needed.
+
+This project is based on the open-source [RAPyDo framework](https://github.com/rapydo).
+
+The API server is implemented with the latest Python 3 release using the Flask core. To facilitate and speed the development Docker is the base environment to automate the creation and configuration of the software stack needed.
 The API interconnects with EUDAT services' native APIs or libraries.
-For B2SAFE (which is built on an iRODS as back end) the interface is implemented using the [python-irodsclient](https://github.com/irods/python-irodsclient).
 
-This project is based on the [RAPyDo framework](https://github.com/rapydo)
-
-
-
-## Documentation
-
-- [User](docs/user/user.md)
-- [Developer](docs/development/development.md)
-- [Deploy](docs/deploy/deploy.md)
-
-
-
-
-<!--
-## Documentation
-
-To be re-written.
--->
-
-<!--
-
-For a more detailed explanation and some deep understanding:
-
-** WARNING: the following pages are not yet updated **
-
-* [Preparing the environment](docs/preparation.md)
-* [Running the services](docs/running.md)
-* [Developing](docs/client.md)
-* [Admin operations](docs/admin.md)
-
--->
-
-<!--
-## Versions
-
-```
-$ ./do irods_shell
-
-irods@rodserver:~$ apt-cache showpkg irods-icat | grep -i versions -A 1
-Versions:
-4.1.8 (/var/lib/dpkg/status)
-```
--->
+To exchange data and metadata within the B2SAFE service (built on iRODS system as backend storage) the interface is implemented using the official [python-irodsclient](https://github.com/irods/python-irodsclient).
 
 <!--
 ## quick notes

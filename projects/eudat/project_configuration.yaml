@@ -1,7 +1,7 @@
 
 project:
   title: EUDAT-B2STAGE HTTP-API server
-  version: v0.5.1-beta
+  version: v0.6.0-rc1
   description: Processing files in different EUDAT domains
 
 ###############################
