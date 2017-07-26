@@ -37,13 +37,12 @@ networks:
   worker_net:
   ftp_net:
   db_net:
-    # driver: bridge
-    ipam:
-      driver: default
-      config:
-        # Note: use this configuration to match inside internal rules
-        # TOFIX: make this an env variable
-        - subnet: ${DB_SUBNET}/16
+    # # driver: bridge
+    # ipam:
+    #   driver: default
+    #   config:
+    #     # Note: use this configuration to match inside internal rules
+    #     - subnet: ${DB_SUBNET}/16
 
 # #####################
 # SERVICES
@@ -175,7 +174,7 @@ services:
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
-      # FIXME: UHM, what is this?
+      # FIXME: UHM, what is this @mattia?
       # Base code
       - ../submodules/backend:/code
       # Vanilla code

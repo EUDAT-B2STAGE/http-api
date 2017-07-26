@@ -104,10 +104,10 @@ services:
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
 
-      # mongodb connection
-      MONGO_ENABLE: 1
-      MONGO_HOST: ${MONGO_HOST}
-      MONGO_PORT: ${MONGO_PORT}
+      # # mongodb connection
+      # MONGO_ENABLE: 1
+      # MONGO_HOST: ${MONGO_HOST}
+      # MONGO_PORT: ${MONGO_PORT}
 
       # # neo connection
       # GRAPHDB_ENABLE: 0

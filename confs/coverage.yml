@@ -1,0 +1,13 @@
+
+version: '3'
+
+services:
+  coverage:
+    command: coveralls
+    build: ../submodules/builds_base/backend
+    image: ${COMPOSE_PROJECT_NAME}/backend:template
+    working_dir: /repo
+    volumes:
+      - ../:/repo
+      - ../confs/.coverage:/code/.coverage
+      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
