@@ -1,0 +1,9 @@
+common:
+  custom:
+    authentication: True
+
+b2safeproxy:
+  summary: authenticated b2safeproxy endpoint
+  responses:
+    '200':
+      description: "returning 'Hello World!' string"

@@ -17,31 +17,48 @@ log = get_logger(__name__)
 class B2safeProxy(EndpointResource):
 
     @decorate.catch_error()
-    def post(self):
+    def get(self):
         response = 'Hello world!'
+
+        #############
+        user = self.auth.get_user()
+        print("TEST PAOLO", user, user.id, user.uuid)
+        # recover the serialized session!
+        # self.irods.prc.deserialize ??
+
+        #############
+        return self.force_response(response)
+
+    @decorate.catch_error()
+    def post(self):
+
+        #############
         jargs = self.get_input()
         username = jargs.get('username')
         password = jargs.get('password')
 
-        #############
         if username is None or password is None:
             msg = "Missing username or password"
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
+        # #############
+        # security = HandleSecurity(self.auth)
+        # security.verify_blocked_username(username)
+
         #############
-        sql = self.get_service_instance('sqlalchemy')
         func = self.get_service_instance
         params = {
             'service_name': "irods",
             'user': username,
             'password': password,
         }
+        # we verify that irods connects with this credentials
         irods = get_and_verify_irods_session(func, params)
         if irods is None:
-            print("FAILED")
+            raise AttributeError("Failed to authenticate on B2SAFE")
         else:
-            print("TEST", sql, irods)
+            encoded_session = irods.rpc.serialize()
 
-        #############
-        return self.force_response(response)
+        token = self.auth.irods_user(username, encoded_session)
+        return {'token': token}
