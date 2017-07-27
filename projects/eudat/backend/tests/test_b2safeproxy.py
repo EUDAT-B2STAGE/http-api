@@ -13,34 +13,34 @@ log = get_logger(__name__)
 
 class TestB2safeProxy(RestTestsAuthenticatedBase):
 
-    """ Quickstart:
-    - setUp and tearDown methods before and after each test
-    - one method inside this class for each functionality to test
-    - decide the order with the name: test_NUMBER_METHOD_FUNCTIONALITY
-    """
-
     _main_endpoint = '/b2safeproxy'
+
+    def test_01_whatever(self):
+        """
+        # TODO: SOMETHING
+
+iadmin mkuser paolo rodsuser
+iadmin moduser paolo password tester
+
+http POST localhost:8080/auth/b2safeproxy username=paolo password=tester
+or
+nose2 -F tests.custom.test_b2safeproxy
+        """
+
+        endpoint = (self._auth_uri + self._main_endpoint)
+        log.info('*** Testing auth b2safe on %s' % endpoint)
+        r = self.app.post(
+            endpoint,
+            data=dict(username='paolo', password='tester')
+        )
+
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = json.loads(r.get_data(as_text=True))
+        # log.pp(data)
+        self.assertEqual(data['Response']['data'], 'Hello world!')
 
     # def tearDown(self):
     #     """ override original teardown if you create custom data """
 
     #     log.debug('### Cleaning custom data ###\n')
     #     super().tearDown()
-
-    def test_01_GET_public_PID(self):
-        """ Test directory creation: POST """
-
-        endpoint = (self._api_uri + self._main_endpoint)
-        log.info('*** Testing GET call on %s' % endpoint)
-
-        # If NO authorization required
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        # If authorization required
-        # r = self.app.get(endpoint, headers=self.__class__.auth_header)
-
-        # Assert what is right or wrong
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        data = json.loads(r.get_data(as_text=True))
-        # pretty print data obtained from API to check the content
-        # log.pp(data)
-        self.assertEqual(data['Response']['data'], 'Hello world!')

@@ -1,6 +1,7 @@
 
 file: b2safeproxy
 class: B2safeProxy
+baseuri: /auth
 schema:
   expose: true
 mapping:
