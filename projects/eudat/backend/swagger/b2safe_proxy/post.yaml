@@ -1,0 +1,9 @@
+common:
+  custom:
+    authentication: false
+
+b2safeproxy:
+  summary: Unauthenticated b2safeproxy endpoint
+  responses:
+    '200':
+      description: "returning 'Hello World!' string"

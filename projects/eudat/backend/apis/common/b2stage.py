@@ -156,9 +156,9 @@ class EudatEndpoint(B2accessUtilities):
     def get_file_parameters(self, icom,
                             path=None, filename=None, newfile=False):
         """
-        Note: the resource is a complicated parameter.
-        Resources are meant for (iRODS) replicas.
-        Adding or removing replicas require explicit irods commands.
+        NOTE: resource is a complicated parameter:
+        resources are meant for (iRODS) replicas;
+        adding or removing replicas require explicit irods commands.
         """
 
         # iuser = icom.get_current_user()

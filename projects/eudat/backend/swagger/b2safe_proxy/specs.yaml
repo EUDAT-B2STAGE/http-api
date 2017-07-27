@@ -1,0 +1,10 @@
+
+file: b2safeproxy
+class: B2safeProxy
+schema:
+  expose: true
+mapping:
+  b2safeproxy: "/b2safeproxy"
+labels:
+  - custom
+  - b2safe_proxy
