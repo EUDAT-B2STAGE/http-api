@@ -3,7 +3,15 @@ common:
     authentication: false
 
 b2safeproxy:
-  summary: Unauthenticated b2safeproxy endpoint
+  summary: Authenticate inside HTTP API with B2SAFE iRODS user
+  description: Normal credentials (username and password) login endpoint
+  parameters:
+    - name: irods_credentials
+      in: body
+      schema:
+        $ref: "#/definitions/Credentials"
   responses:
+    '401':
+      description: Invalid username or password for the current B2SAFE instance
     '200':
-      description: "returning 'Hello World!' string"
+      description: iRODS credentials provided are valid

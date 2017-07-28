@@ -4,10 +4,11 @@
 Login to B2SAFE directly
 """
 
+from restapi import decorators as decorate
 from restapi.rest.definition import EndpointResource
 from restapi.exceptions import RestApiException
 from restapi.flask_ext.flask_irods.client import get_and_verify_irods_session
-from restapi import decorators as decorate
+from restapi.services.detect import detector
 from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
@@ -23,8 +24,11 @@ class B2safeProxy(EndpointResource):
         #############
         user = self.auth.get_user()
         print("TEST PAOLO", user, user.id, user.uuid)
-        # recover the serialized session!
-        # self.irods.prc.deserialize ??
+
+        # recover the serialized session
+        prc = detector.services_classes.get('irods') \
+            .deserialize(user.session)
+        print("TEST", prc)
 
         #############
         return self.force_response(response)

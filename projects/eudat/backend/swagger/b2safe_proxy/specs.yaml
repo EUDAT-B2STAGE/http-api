@@ -7,5 +7,6 @@ schema:
 mapping:
   b2safeproxy: "/b2safeproxy"
 labels:
-  - custom
+  - eudat
   - b2safe_proxy
+  - authentication

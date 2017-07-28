@@ -3,7 +3,7 @@ common:
     authentication: True
 
 b2safeproxy:
-  summary: authenticated b2safeproxy endpoint
+  summary: Test HTTP API token obtained as a B2SAFE iRODS user
   responses:
     '200':
       description: "returning 'Hello World!' string"
