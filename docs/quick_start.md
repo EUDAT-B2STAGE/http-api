@@ -1,27 +1,80 @@
 
-# Quick start (FIXME: update to 0.5.2)
+# Quick start
 
-This is a reference page to quick start the HTTP API project.
-
-
-## first steps
-
-If you want to run in production the very first step should be to modify the configuration file with the relative path: 
-`projects/eudat/project_configuration.yaml`
+This is a reference page to quick start the HTTP API project. By reading this page you may also get an insight on how this project works.
 
 
-## deploy
+## Pre-requisites
 
-A minimum set of operations to start developing within this repository.
+In order to deploy this project you need to install the `RAPyDO controller` and use it to startup the services on a `Docker` environment with containers.
 
-Note that installations with the python package manager (`pip`) may require administration permissions. You may try to avoid this with the option `--user`.
+The following instruction are based on the hyphotesis that you will work on a `UNIX`-based OS. Any `Linux` distributions (Ubuntu, CentOS, Fedora, etc.) or any version of `Mac OSX` will do. Command line examples were heavily tested on `bash` terminal (version `4.4.0`, but also version `3.x` should work).
+
+Please note that for installing tools into your machine the suggested option is through your preferred OS package manager (e.g. `apt`, `yum`, `brew`, etc.).
+
+
+### controller
+
+- The `git` client. 
+ 
+Most of UNIX distributions have it already installed. If that is not that case then refer to the [official documentation]()
+
+- The `python 3.4+` interpreter installed together with its main package manager `pip3`.
+
+Most of distributions comes bundled with `python 2.7+`, which is not suitable for our project. Once again use a package manager, for example in ubuntu you would run:
 
 ```bash
+$ apt-get update
+$ apt-get install python3-pip
+```
 
-###############
-# begin working from the latest release
-git clone https://github.com/EUDAT-B2STAGE/http-api.git
-cd http-api
+
+### containers
+
+ADD ME FROM jupyter courses
+
+
+## Start-up
+
+Let's run things!
+
+
+### Cloning 
+
+To clone the working code:
+
+```bash
+$ VERSION=0.6.0 \
+    && git clone https://github.com/EUDAT-B2STAGE/http-api.git \
+    && cd http-api \
+    && git checkout $VERSION  
+
+# now you will have the current latest release (RC1)
+```
+
+
+### Configuration
+
+Now that you have all necessary software installed, before launching services you should consider editing the main configuration:
+
+[`projects/eudat/project_configuration.yaml`](projects/eudat/project_configuration.yaml)
+
+Here you can change at least the basic passwords, or configure access to external service (e.g. your own instance of iRODS/B2SAFE) for production.
+
+
+### Deploy
+
+UPTOHERE
+
+```bash
+# FIXME: new quickstart
+$ sudo data/scripts/prerequisites.sh # remove --user
+$ rapydo init / update
+$ rapydo start
+$ rapydo shell backend --command 'restapi launch'
+```
+
+```bash
 
 ###############
 # OPTIONAL: use a virtual environment 
@@ -103,7 +156,7 @@ rapydo --host $DOMAIN --mode production ssl-certificate
 
 If you check again the server should now be correctly certificated.
 
-Last thing missing is giving the b2handle library real credentials to resolve PIDs. You can do so by copying such files into the dedicated directory:
+5. Last thing missing is giving the b2handle library real credentials to resolve PIDs. You can do so by copying such files into the dedicated directory:
 
 ```bash
 cp PATH/TO/YOUR/CREDENTIALS/FILES/* data/b2handle/
@@ -111,11 +164,11 @@ cp PATH/TO/YOUR/CREDENTIALS/FILES/* data/b2handle/
 
 At this point the service should be completely functional.
 
-In case at some point you want to stop or remove containers you need to use the right 'mode' or thing would not work as expected:
+6. In case at some point you want to stop or remove containers you need to use the right 'mode' or thing would not work as expected:
 
 ```bash
 rapydo --mode production remove
-# Note, the default option mimics 'rapydo --mode debug remove'
+# NOTE: the default option mimics 'rapydo --mode debug remove'
 ```
 
 

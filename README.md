@@ -29,6 +29,9 @@ Over the EUDAT2020 project other functionalities will be added: the development 
 ## Documentation
 
 - [Quick start](docs/user/user.md) for deploy and development
+
+To be updated (not yet compatible with RC1):
+
 - [User](docs/user/user.md) guide
 - [Developer](docs/development/development.md) instructions
 - [Deploy](docs/deploy/deploy.md) the server
