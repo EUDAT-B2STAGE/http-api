@@ -23,12 +23,16 @@ class B2safeProxy(EndpointResource):
 
         #############
         user = self.auth.get_user()
-        print("TEST PAOLO", user, user.id, user.uuid)
+        if user.session is not None and len(user.session) > 0:
+            log.debug("Valid B2SAFE user: %s" % user.uuid)
+        else:
+            raise ValueError("This user is not registered inside B2SAFE")
 
-        # recover the serialized session
-        prc = detector.services_classes.get('irods') \
-            .deserialize(user.session)
-        print("TEST", prc)
+        icom = self.get_service_instance(
+            service_name='irods',
+            user_session=user,
+        )
+        print("Working with", icom)
 
         #############
         return self.force_response(response)

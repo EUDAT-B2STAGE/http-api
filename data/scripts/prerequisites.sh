@@ -1,8 +1,17 @@
 #!/bin/bash
 
-USER_OPTION=""
-if [ ! "$TRAVIS" == "true" ]; then
-    USER_OPTION="--user"
+vename="b2stage"
+myuser=$(whoami)
+
+# use virtualenv
+if [ $myuser != "root" ]; then
+    echo "You are not the administrator."
+    echo "Switching to a virtual environment."
+    echo ""
+    pip3 install --user virtualenv
+    ve="$HOME/.local/bin/virtualenv"
+    $ve $vename
+    source $vename/bin/activate
 fi
 
 for existing in `pip3 list --format columns | grep rapydo | awk '{print $1}'`;
@@ -20,5 +29,10 @@ fi
 for package in `cat projects/*/$files`;
 do
     echo "adding: $package"
-    pip3 install $USER_OPTION --upgrade $package
+    pip3 install --upgrade $package
 done
+
+if [ $myuser != "root" ]; then
+    echo "Please activate the environment with:"
+    echo "source $vename/bin/activate"
+fi

@@ -14,17 +14,25 @@ log = get_logger(__name__)
 class TestB2safeProxy(RestTestsAuthenticatedBase):
 
     _main_endpoint = '/b2safeproxy'
+    _irods_user = 'icatbetatester'
+    _irods_password = 'IAMABETATESTER'
+
+    def setUp(self):
+        super().setUp()
+        log.warning("Paolo START")
+
+        # iadmin mkuser paolo rodsuser
+        # iadmin moduser paolo password tester
+
+    def tearDown(self):
+        # log.debug('### Cleaning custom data ###\n')
+        log.warning("Paolo END")
+        super().tearDown()
 
     def test_01_whatever(self):
         """
-        # TODO: SOMETHING
-
-iadmin mkuser paolo rodsuser
-iadmin moduser paolo password tester
-
-http POST localhost:8080/auth/b2safeproxy username=paolo password=tester
-or
-nose2 -F tests.custom.test_b2safeproxy
+        To create a user and test it:
+        nose2 -F tests.custom.test_b2safeproxy
         """
 
         endpoint = (self._auth_uri + self._main_endpoint)
@@ -35,12 +43,17 @@ nose2 -F tests.custom.test_b2safeproxy
         )
 
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        data = json.loads(r.get_data(as_text=True))
-        # log.pp(data)
-        self.assertEqual(data['Response']['data'], 'Hello world!')
+        json_output = json.loads(r.get_data(as_text=True))
+        data = json_output.get('Response', {}).get('data', {})
+        key = 'token'
+        self.assertIn(key, data)
+        token = data.get(key)
+        print(token[0])
 
-    # def tearDown(self):
-    #     """ override original teardown if you create custom data """
+        # verify that token is valid
 
-    #     log.debug('### Cleaning custom data ###\n')
-    #     super().tearDown()
+        # verify that normal token from normal login is invalid
+
+        # verify wrong username or password
+
+        # verify random token

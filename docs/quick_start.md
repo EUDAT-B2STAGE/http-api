@@ -64,38 +64,20 @@ Here you can change at least the basic passwords, or configure access to externa
 
 ### Deploy
 
-UPTOHERE
-
 ```bash
-# FIXME: new quickstart
-$ sudo data/scripts/prerequisites.sh # remove --user
-$ rapydo init / update
-$ rapydo start
-$ rapydo shell backend --command 'restapi launch'
-```
-
-```bash
-
-###############
-# OPTIONAL: use a virtual environment 
-# (this 'best practice' could avoid packages version conflicts)
-(sudo) pip3 install virtualenv
-virtualenv b2stage
-source b2stage/bin/activate
-
-###############
-# complete first start
-
 # install and use the rapydo controller
-(sudo) pip3 install --upgrade -r projects/eudat/requirements.txt
-# init and run containers in background
-rapydo init
-rapydo start && sleep 15 && echo "booted"
-# init all datas (e.g. authorization database) 
-rapydo shell backend --user developer --command 'restapi tests --initialize'
+$ data/scripts/prerequisites.sh \
+    && pip3 install --upgrade -r projects/eudat/requirements.txt \
+    && rapydo init
+    && rapydo start
 ```
 
-### DEVELOPMENT
+
+### Development
+
+**UPTOHERE**
+
+$ rapydo shell backend --command 'restapi launch'
 
 Follow this paragraph only if you plan to develop new features on the HTTP API.
 
