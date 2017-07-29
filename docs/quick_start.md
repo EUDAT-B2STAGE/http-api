@@ -13,7 +13,7 @@ The following instruction are based on the hyphotesis that you will work on a `U
 Please note that for installing tools into your machine the suggested option is through your preferred OS package manager (e.g. `apt`, `yum`, `brew`, etc.).
 
 
-### controller
+### Base tools
 
 - The `git` client. 
  
@@ -24,22 +24,21 @@ Most of UNIX distributions have it already installed. If that is not that case t
 Most of distributions comes bundled with `python 2.7+`, which is not suitable for our project. Once again use a package manager, for example in ubuntu you would run:
 
 ```bash
-$ apt-get update
-$ apt-get install python3-pip
+$ apt-get update && apt-get install python3-pip
 ```
 
 
-### containers
+### Containers environment
 
-ADD ME FROM jupyter courses
-
-
-## Start-up
-
-Let's run things!
+TODO: add me from jupyter courses
 
 
-### Cloning 
+## Start-up the project
+
+Here's a step-by-step tutorial to work with the HTTP API project.
+
+
+### 1. cloning 
 
 To clone the working code:
 
@@ -53,7 +52,7 @@ $ VERSION=0.6.0 \
 ```
 
 
-### Configuration
+### 2. configure
 
 Now that you have all necessary software installed, before launching services you should consider editing the main configuration:
 
@@ -62,91 +61,101 @@ Now that you have all necessary software installed, before launching services yo
 Here you can change at least the basic passwords, or configure access to external service (e.g. your own instance of iRODS/B2SAFE) for production.
 
 
-### Deploy
+### 3. controller
+
+The controller is what let you manage the project without much effort.
+Here's what you need to use it:
 
 ```bash
 # install and use the rapydo controller
-$ data/scripts/prerequisites.sh \
-    && pip3 install --upgrade -r projects/eudat/requirements.txt \
-    && rapydo init
-    && rapydo start
+$ data/scripts/prerequisites.sh 
+# you have now the executable 'rapydo'
+$ rapydo --version
+# you can use also with his short alias 'do'
+$ do --help
 ```
 
+NOTE: python install binaries in `/usr/local/bin`. If you are not the admin/`root` user then the virtual environment is created and you may find the binary in `$HOME/.local/bin`. Make sure that the right one of these paths is in your `$PATH` variable, otherwise you end up with `command not found`.
 
-### Development
 
-**UPTOHERE**
+### 4. deploy initialization
 
-$ rapydo shell backend --command 'restapi launch'
-
-Follow this paragraph only if you plan to develop new features on the HTTP API.
+Your current project needs to be initialized. This step is needed only the first time you use the cloned repository.
 
 ```bash
-# activate the restful http-api server 
-rapydo shell backend --user developer
-$ restapi launch
-
-# now you may access a client from another shell and test the server
-rapydo shell restclient --user developer
+$ do init
 ```
 
-The client shell will give you instructions on how to test the server
+### 5. MODES
 
-In case you want to log with the only existing admin user:
+There are two main modes to work with the API server. The main one - called `debug` - is for developers: you are expected to test, debug and develop new code. The other options is mode `production`, suited for deploying your server in a real use case scenario on top of your already running `B2SAFE` instance.
+
+#### debug mode
+
+NOTE: follow this paragraph only if you plan to develop new features on the HTTP API.
+
+```bash
+################
+# bring up the docker containers in `debug` mode
+$ do start
+# NOTE: this above is equivalent to default value `do --mode debug start`
+
+# laungh the restful http-api server 
+$ do shell backend --command 'restapi launch'
+# or
+$ do shell backend 
+[container shell]$ restapi launch
+```
+
+```bash
+# NOTE: the two commands above can be used at once with 
+```
+
+
+```bash
+# now you may access a client from another shell and test the server
+$ do shell restclient
+```
+
+The client shell will give you further instructions on how to test the server. In case you want to log with the only existing admin user:
 
 - username: user@nomail.org
 - password: test
 
 
-### PRODUCTION
+#### production mode
 
-Follow this paragraph only if you plan to deploy the HTTP API server in production.
+NOTE: follow this paragraph only if you plan to deploy the HTTP API server in production.
 
-1. Before going into production you should kill all resources (if any) from development mode, which was used to initialize the container data volumes:
-
-```bash
-# erase all containers currently running
-rapydo remove
-# Note: this will not delete the persistent data inside docker volumes
-```
-
-2. Usually in production you have a domain name associated to your host IP (e.g. `b2stage.cineca.it` to 240.bla.bla.bla).
+Usually in production you have a domain name associated to your host IP (e.g. `b2stage.cineca.it` to 240.bla.bla.bla).
 You can just use 'localhost' if this is not the case.
 
 ```bash
-DOMAIN='b2stage.cineca.it'
+# define your domain
+$ DOMAIN='b2stage.cineca.it'
 # launch production mode
-rapydo --host $DOMAIN --mode production start
+$ do --host $DOMAIN --mode production start
 ```
 
-3. Now may access your IP or your domain and the HTTP API endpoints are online, protected by a proxy server. You can test this with:
+Now may access your IP or your domain and the HTTP API endpoints are online, protected by a proxy server. You can test this with:
 
 ```bash
 open $DOMAIN/api/status
 ```
 
-4. The current proxy certificate is self signed and is 'not secure' for all applications.
-This is why we need to produce one with the free `letsencrypt` service.
-
-Note: this step is possible only if you have a real domain associated to your host IP.
-
+Up to now the current SSL certificate is self signed and is 'not secure' for all applications. Your browser is probably complaining for this. This is why we need to produce one with the free `letsencrypt` service.
 
 ```bash
-# produce certificate with letsencrypt
-rapydo --host $DOMAIN --mode production ssl-certificate
+$ do --host $DOMAIN --mode production ssl-certificate
+#NOTE: this will work only if you have a real domain associated to your IP
 ```
 
-If you check again the server should now be correctly certificated.
+If you check again the server should now be correctly certificated. At this point the service should be completely functional.
 
-5. Last thing missing is giving the b2handle library real credentials to resolve PIDs. You can do so by copying such files into the dedicated directory:
 
-```bash
-cp PATH/TO/YOUR/CREDENTIALS/FILES/* data/b2handle/
-```
+#### use the right mode
 
-At this point the service should be completely functional.
-
-6. In case at some point you want to stop or remove containers you need to use the right 'mode' or thing would not work as expected:
+After starting things in production mode, in case at some point you want to stop or remove containers, you need to use the right 'mode' or thing would not work as expected:
 
 ```bash
 rapydo --mode production remove
@@ -156,7 +165,8 @@ rapydo --mode production remove
 
 ## other operations
 
-More helpers in debugging/developing the project
+Here we have more informations for further debugging/developing the project
+
 
 ### launch interfaces
 
@@ -177,33 +187,24 @@ rapydo interfaces sqlalchemy
 open http://$SERVER:81/adminer
 ```
 
+### add valid b2handle credentials
+
+To resolve non-public `PID`s prefixes for the `EPIC HANDLE` project we may leverage the `B2HANDLE` library providing existing credentials. 
+
+You can do so by copying such files into the dedicated directory:
+
+```bash
+cp PATH/TO/YOUR/CREDENTIALS/FILES/* data/b2handle/
+```
 
 ### destroy all
 
-If you need to clean everything you have in docker from this project
+If you need to clean everything you have stored in docker from this project:
 
 ```bash
-rapydo clean --rm-volumes  # very DANGEROUS!
-```
-
-
-### squash branch
-
-A better practice before pull requesting is to squash commits into a single one. Here's a guide on how to do so with git cli:
-
-```bash
-MYEXISTINGBRANCH='v0.1.0'
-BASEBRANCH='master'
-
-# start from the base branch (usually it's master)
-git checkout $BASEBRANCH
-# create a new branch for squashing
-git checkout -b ${MYEXISTINGBRANCH}-squashed
-# squash the differences between now and the feature branch
-git merge --squash $MYEXISTINGBRANCH
-# commit message will contain all commit messages so far
-git commit
-# you may/should change the content, at least top title and description
+# BE CAREFUL
+rapydo clean --rm-volumes  # very DANGEROUS, you lose all data!
+# BE CAREFUL
 ```
 
 ### hack the certificates volume
