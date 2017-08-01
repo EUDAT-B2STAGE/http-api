@@ -4,7 +4,21 @@
 This is a reference page to quick start the HTTP API project. By reading this page you may also get an insight on how this project works.
 
 
-## Pre-requisites
+## Feedback on the first Release Candidate
+
+To gather into one place the feedback of any user testing a deployed HTTP API server or the online prototype, we created a dedicated free chat room on gitter:
+
+https://gitter.im/EUDAT-B2STAGE/http-api
+
+Please feel free to report or comment to help us improve!
+
+
+## Using the prototype online
+
+If you don't want to deploy or develop the current project state, you may test online our [prototype](https://b2stage.cineca.it/api/status). If that is the case see the [dedicated instructions](prototype.md).
+
+
+## Deployment pre-requisites
 
 In order to deploy this project you need to install the `RAPyDO controller` and use it to startup the services on a `Docker` environment with containers.
 
@@ -158,10 +172,13 @@ NOTE: on the client image you have multiple tools installed for testing:
 
 #### production mode
 
-NOTE: follow this paragraph only if you plan to deploy the HTTP API server in production.
+Some important points before going further:
 
-Usually in production you have a domain name associated to your host IP (e.g. `b2stage.cineca.it` to 240.bla.bla.bla).
-You can just use 'localhost' if this is not the case.
+1. Please follow this paragraph only if you plan to deploy the HTTP API server in production
+2. Usually in production you have a domain name associated to your host IP (e.g. `b2stage.cineca.it` to 240.bla.bla.bla). But you can just use 'localhost' if this is not the case.
+3. You need a `B2ACCESS` account on the development server for the HTTP API application. Set the credentials [here](https://github.com/EUDAT-B2STAGE/http-api/blob/0.6.0/projects/eudat/project_configuration.yaml#L22-L26) otherwise the endpoint `/auth/askauth` would not work.  
+
+Deploying is very simple:
 
 ```bash
 # define your domain
