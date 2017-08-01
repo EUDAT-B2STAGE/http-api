@@ -3,15 +3,15 @@
 # import requests
 # import json
 
-# from rapydo.tests.utilities import TestUtilities
-# from rapydo.tests.utilities import (
+# from restapi.tests.utilities import TestUtilities
+# from restapi.tests.utilities import (
 #     AUTH_URI,
 #     # OK, NO_CONTENT, PARTIAL, BAD_REQUEST, FORBIDDEN, NOTFOUND, CONFLICT
 #     FOUND
 # )
 
 from tests import RestTestsAuthenticatedBase
-from rapydo.utils.logs import get_logger
+from utilities.logs import get_logger
 
 log = get_logger(__name__)
 # log.setLevel(logging.DEBUG)

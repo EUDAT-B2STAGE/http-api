@@ -13,10 +13,9 @@ services:
       APP_MODE: production
       DEBUG_LEVEL: INFO
       NGINX_ACTIVE: "True"
-      # EUDAT RELATED  # FIXME: still in development
-      # B2ACCESS_ENV: production
       B2ACCESS_ENV: development
-      IRODS_PASSWORD: ${IRODS_PASSWORD}
+      # EUDAT RELATED  # TODO: switch to production when B2ACCESS is ready
+      # B2ACCESS_ENV: production
     depends_on:
       # - icat
       - postgres
@@ -24,6 +23,7 @@ services:
       - 8080
     volumes:
       - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
+      - ../data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
 
   proxy:
     environment:

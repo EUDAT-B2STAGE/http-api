@@ -9,15 +9,15 @@ import json
 import gssapi
 from flask import session
 from datetime import datetime as dt
-from rapydo.rest.definition import EndpointResource
+from restapi.rest.definition import EndpointResource
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
 
-from rapydo.services.oauth2clients import decorate_http_request
-from rapydo.utils.certificates import Certificates
-from rapydo.utils import htmlcodes as hcodes
+from restapi.services.oauth2clients import decorate_http_request
+from utilities.certificates import Certificates
+from utilities import htmlcodes as hcodes
 from eudat.apis.common import IRODS_EXTERNAL, InitObj
-from rapydo.utils.logs import get_logger
+from utilities.logs import get_logger
 
 log = get_logger(__name__)
 

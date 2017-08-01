@@ -1,0 +1,12 @@
+
+file: b2safeproxy
+class: B2safeProxy
+baseuri: /auth
+schema:
+  expose: true
+mapping:
+  b2safeproxy: "/b2safeproxy"
+labels:
+  - eudat
+  - b2safe_proxy
+  - authentication

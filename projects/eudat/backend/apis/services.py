@@ -5,8 +5,8 @@ Custom method to initialize mixed services which rely on each other
 """
 
 # TOFIX
-from rapydo.services import get_instance_from_services
-from rapydo.utils.logs import get_logger
+from restapi.services import get_instance_from_services
+from utilities.logs import get_logger
 
 log = get_logger(__name__)
 

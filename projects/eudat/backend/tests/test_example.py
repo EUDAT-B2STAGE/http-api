@@ -9,8 +9,8 @@ Test  dataobjects endpoints
 # import json
 import unittest
 import logging
-from rapydo.server import create_app
-from rapydo.utils.logs import get_logger
+from restapi.server import create_app
+from utilities.logs import get_logger
 
 __author__ = "Paolo D'Onorio De Meo (GitHub@pdonorio)"
 

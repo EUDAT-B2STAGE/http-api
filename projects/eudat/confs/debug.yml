@@ -3,6 +3,8 @@ version: '3'
 services:
 
   backend:
+    # command: sleep 1234567890
+
     # build: ../../../builds/backend
     # # # Convention: use project/service:SOME_LABEL
     # # # where SOME_LABEL != template, e.g. "custom"
@@ -24,8 +26,8 @@ services:
       # - mongodb
     volumes:
       # Rapydo repos
-      - ../submodules/backend/rapydo:/usr/local/lib/python3.6/dist-packages/rapydo
-      - ../submodules/utilities/rapydo/utils:/usr/local/lib/python3.6/dist-packages/rapydo/utils
+      - ../submodules/backend/restapi:/usr/local/lib/python3.6/dist-packages/restapi
+      - ../submodules/utilities/utilities:/usr/local/lib/python3.6/dist-packages/utilities
       - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
   restclient:

@@ -1,7 +1,7 @@
 
 project:
   title: EUDAT-B2STAGE HTTP-API server
-  version: v0.5.1-beta
+  version: v0.6.0-rc1
   description: Processing files in different EUDAT domains
 
 ###############################
@@ -9,6 +9,7 @@ project:
 ## before starting your project
 ###############################
 variables:
+
   env:
 
     ###############################
@@ -32,7 +33,11 @@ variables:
     IRODS_DEFAULT_ADMIN_USER: rodsminer
     IRODS_ZONE: tempZone
     IRODS_HOME: home
+    # DN of your iRODS host with GSI plugin installed
+    # leave it empty if use (e.g. in debug) the dockerized iRODS instance
     IRODS_DN:
+    # NOTE: this must match ALCHEMY_PASSWORD if running in debug mode
+    IRODS_PASSWORD: chooseapasswordwisely
 
     ###############################
     ## PRODUCTION iRODS server VERSION
@@ -61,44 +66,40 @@ variables:
 
     IRODS_DB: ICAT
     IRODS_AUTHSCHEME: GSI
+    IRODS_CHUNKSIZE: 1048576
 
     # sqlalchemy fixed:
     ALCHEMY_ENGINE: postgresql
     ALCHEMY_DBS: 'ICAT SQL_API'
 
-    # # neo4j:
-    # GRAPHDB_PASSWORD: wakeupneo
-    # EPIC HANDLE credentials
+    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
     HANDLE_BASE: "https://url.to.epic/handles/"
     # HANDLE_USER:
     # HANDLE_PREFIX:
     # HANDLE_PASS:
-    HANDLE_CREDENTIALS: /tmp
-    # HANDLE_CREDENTIALS: /home/ubuntu/b2handle_cred/credentials
-    ##: OTHERs / FIXED
-    FLASK_SUBNET: 175.1.0.0
-    FLASK_FIXED_IP: 175.1.0.10
+
+    # # neo4j:
+    # GRAPHDB_PASSWORD: wakeupneo
+    # EPIC HANDLE credentials
+
+    # ##: OTHERs / FIXED
+    # FLASK_SUBNET: 175.1.0.0
+    # FLASK_FIXED_IP: 175.1.0.10
     UPLOAD_PATH: /uploads
     FULL_JWT: false
 
-  # frontend:
-  #   enable: true
   repos:
+    utils:
+      branch: 0.5.3
+    backend:
+      branch: 0.5.3
+    build-templates:
+      branch: 0.5.3
     irods-client:
-      branch: master
-      online_url: https://github.com/irods/python-irodsclient.git
+      branch: 0.5.3
+      online_url: https://github.com/pdonorio/python-irodsclient.git
       path: prc
       if: true
-    # backend:
-    #   branch: scaffold
-    #   online_url: https://github.com/rapydo/http-api.git
-    #   path: backend
-    #   if: true
-    # build-templates:
-    #   branch: scaffold
-    #   online_url: https://github.com/rapydo/build-templates.git
-    #   path: builds_base
-    #   if: true
 
 controller:
   commands:
@@ -115,3 +116,25 @@ tags:
   pids: resolve and download data from EUDAT Persistente IDentifier
   # internal: for internal testing purpose only
 
+# Keep track of releases and dependencies
+releases:
+  '0.5.1':
+    type: beta
+    rapydo: null
+    status: released
+  '0.5.2':
+    type: beta
+    rapydo: null
+    status: discontinued
+  '0.6.0':
+    type: RC1
+    rapydo: 0.5.3
+    status: released
+  '0.6.1':
+    type: RC1
+    rapydo: 0.6.0
+    status: developing
+  '0.7.0':
+    type: RC2
+    rapydo: null
+    status: todo

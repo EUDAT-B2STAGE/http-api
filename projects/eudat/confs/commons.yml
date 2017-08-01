@@ -19,14 +19,12 @@ services:
       POSTGRES_HOST: "${ALCHEMY_HOST}"
       POSTGRES_USER: "${ALCHEMY_USER}"
       POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
-      # port??
       IRODS_HOST: "${IRODS_HOST}"
       IRODS_PORT: ${IRODS_PORT}
       IRODS_ZONE: ${IRODS_ZONE}
       IRODS_DB: "${IRODS_DB}"
       IRODS_USER: ${IRODS_USER}
-      # FIXME: use docker secrets in the future
-      IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
 
     volumes:
       - etcconf:/etc
@@ -97,17 +95,15 @@ services:
       IRODS_ZONE: ${IRODS_ZONE}
       IRODS_HOME: ${IRODS_HOME}
       IRODS_DN: ${IRODS_DN}
-      IRODS_PASSWORD: ${ALCHEMY_PASSWORD}
-      # Use this one if EXTERNAL?
-      # IRODS_PASSWORD: ${IRODS_PASSWORD}
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
 
-      # mongodb connection
-      MONGO_ENABLE: 1
-      MONGO_HOST: ${MONGO_HOST}
-      MONGO_PORT: ${MONGO_PORT}
+      # # mongodb connection
+      # MONGO_ENABLE: 1
+      # MONGO_HOST: ${MONGO_HOST}
+      # MONGO_PORT: ${MONGO_PORT}
 
       # # neo connection
       # GRAPHDB_ENABLE: 0
@@ -116,8 +112,8 @@ services:
       # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
       # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
 
-      HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS}
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
+      HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json
 
   restclient:
     environment:

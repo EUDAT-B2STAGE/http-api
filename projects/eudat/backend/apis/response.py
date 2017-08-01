@@ -8,9 +8,9 @@ WARNING: TO BE REDEFINED.
 """
 
 # from ..base import ExtendedApiResource
-# from rapydo.rest.definition import EndpointResource
-# from rapydo import decorators as decorate
-from rapydo.utils import get_logger
+# from restapi.rest.definition import EndpointResource
+# from restapi import decorators as decorate
+from utilities import get_logger
 
 log = get_logger(__name__)
 

@@ -1,15 +1,30 @@
 
-# v0.6.0-rc1 (*next*)
-**due date**: July 31, 2017
-**milestone**: [beta version 6](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
+# v0.7.0-rc2 (*next*)
+**due date**: August 31th, 2017
+**milestone**: [release candidate 2](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
 
 ## features
-- linking
-    - b2access production
-    - b2safe production
+- B2safe based accounting for all endpoints #88
+- Upgrade an existing installation #87
+- Checklist for good projects #62
+- Connect prototype to production services #
+- Define a protocol to release production to be tested automatically #55
 
-# v0.5.1-beta (*current*)
-**due date**: July 07, 2017
+# v0.6.0-rc1 (*current*)
+**due date**: July 31th, 2017
+**milestone**: [release candidate 1](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
+
+## features
+- Access directly with B2SAFE credentials #83
+- Fix prerequisites installation #84
+- Coverage badge #76
+- Easier production mode #75
+- Data streaming #71
+- Get all B2SAFE Metadata #65
+- Bugs #59
+
+# v0.5.1-beta
+**due date**: July 07th, 2017
 **milestone**: [beta version 5](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
 
 ## features
@@ -18,43 +33,43 @@
 - more unittests
 
 # v0.5.0-beta
-**due date**: June 15, 2017
+**due date**: June 15th, 2017
 **milestone**: [beta version 4](https://github.com/EUDAT-B2STAGE/http-api/milestone/7)
 
 ## features
 
 - Cleaner scaffold as a rapydo project (see the [rapydo issue](https://github.com/rapydo/issues/issues/23#issuecomment-307377366))
-- B2SAFE metadata [#65]
+- B2SAFE metadata #65
 - Bug fixes
 
 # v0.4.0-beta
-**due date**: June 05, 2017
+**due date**: June 05th, 2017
 **milestone**: [beta version 3](https://github.com/EUDAT-B2STAGE/http-api/milestone/6)
 
 ## features
 
-- shorter token [#57]
-- rapydo compliant [#60]
-- put operation returning the PID [#61]
-- bug fixes [#59]
+- shorter token #57
+- rapydo compliant #60
+- put operation returning the PID #61
+- bug fixes #59
 
 ---
 
 # v0.3.1-beta
-**due date**: May 15, 2017
+**due date**: May 15th, 2017
 **milestone**: [beta version 2](https://github.com/EUDAT-B2STAGE/http-api/milestone/5?closed=1)
 
 ## features
 
-- [#39] automatical refresh of B2ACCESS certificate proxy 
-- [#45] pids endpoint 
-- [#54] checksum in metadata 
+- #39 automatical refresh of B2ACCESS certificate proxy 
+- #45 pids endpoint 
+- #54 checksum in metadata 
 - First regular milestone reached in two weeks
 
 ---
 
 # v0.3.0-beta
-**due date**: Apr 30, 2017
+**due date**: April 30th, 2017
 **milestone**: none
 
 ## features
@@ -77,7 +92,7 @@
 
 # v0.2-alpha
 **commit**: 643ed4a
-**due date**: Jan 20, 2017
+**due date**: January 20th, 2017
 **milestone**: [Consolidations](https://github.com/EUDAT-B2STAGE/http-api/milestone/4)
 
 ## features
@@ -94,7 +109,7 @@
 
 # v0.1-alpha
 **commit**: 0e8d084
-**date**: Nov 25, 2016
+**date**: November 25th, 2016
 
 ## features
 

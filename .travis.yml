@@ -1,36 +1,31 @@
-
-#############################
-# config
 language: python
 sudo: required
-dist: trusty
-group: deprecated-2017Q2
+# dist: trusty
+# group: deprecated-2017Q2
 python:
-    - 3.6.1
+- 3.6.1
 services:
-    - docker
+- docker
 env:
-    - PROJECT=eudat
+- PROJECT=eudat
 
-#############################
-# installation
-before_install:
-    - sudo apt-get update
-    - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
+# # installation
+# before_install:
+# - sudo apt-get update
+# - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 install:
-    - pip install --upgrade -r projects/$PROJECT/requirements.txt
+- data/scripts/prerequisites.sh
+- chmod -R o+Xw projects # fix permissions for coverage to be computed
 
-#############################
-# do your things
+# do things
 script:
-    - docker -v
-    - pip freeze | grep docker
-    - pip search rapydo-
-    - pip freeze | grep requests
-    - pip install requests==2.11.1
-    # TODO: write a .projectrc for --project option
-    - rapydo init
-    - rapydo start
-    # FIXME: check if sleep can be avoided
-    - sleep 60 && rapydo shell backend --command initialize
-    - rapydo shell backend --command testwithcoverage
+# versions
+- docker --version && docker-compose --version
+- pip list --format columns | grep docker && pip search rapydo-
+# startup and launch tests
+- rapydo init && rapydo start
+- rapydo shell backend --command 'restapi tests --wait'
+
+# coverage within a docker container
+after_success:
+- rapydo --log-level VERBOSE coverall

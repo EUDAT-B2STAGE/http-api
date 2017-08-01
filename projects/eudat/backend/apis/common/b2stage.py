@@ -5,15 +5,15 @@ Common functions for EUDAT endpoints
 """
 
 import os
-# from rapydo.rest.definition import EndpointResource
+# from restapi.rest.definition import EndpointResource
 from eudat.apis.common.b2access import B2accessUtilities
 from eudat.apis.common import (
     CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
     IRODS_PROTOCOL, HTTP_PROTOCOL,  # PRODUCTION,
     IRODS_VARS, InitObj
 )
-# from rapydo.confs import API_URL
-from rapydo.utils.logs import get_logger
+# from restapi.confs import API_URL
+from utilities.logs import get_logger
 
 log = get_logger(__name__)
 
@@ -156,9 +156,9 @@ class EudatEndpoint(B2accessUtilities):
     def get_file_parameters(self, icom,
                             path=None, filename=None, newfile=False):
         """
-        Note: the resource is a complicated parameter.
-        Resources are meant for (iRODS) replicas.
-        Adding or removing replicas require explicit irods commands.
+        NOTE: resource is a complicated parameter:
+        resources are meant for (iRODS) replicas;
+        adding or removing replicas require explicit irods commands.
         """
 
         # iuser = icom.get_current_user()
