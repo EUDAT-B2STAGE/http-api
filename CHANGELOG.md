@@ -39,7 +39,7 @@
 ## features
 
 - Cleaner scaffold as a rapydo project (see the [rapydo issue](https://github.com/rapydo/issues/issues/23#issuecomment-307377366))
-- B2SAFE metadata [#65]
+- B2SAFE metadata #65
 - Bug fixes
 
 # v0.4.0-beta
@@ -48,10 +48,10 @@
 
 ## features
 
-- shorter token [#57]
-- rapydo compliant [#60]
-- put operation returning the PID [#61]
-- bug fixes [#59]
+- shorter token #57
+- rapydo compliant #60
+- put operation returning the PID #61
+- bug fixes #59
 
 ---
 
@@ -61,9 +61,9 @@
 
 ## features
 
-- [#39] automatical refresh of B2ACCESS certificate proxy 
-- [#45] pids endpoint 
-- [#54] checksum in metadata 
+- #39 automatical refresh of B2ACCESS certificate proxy 
+- #45 pids endpoint 
+- #54 checksum in metadata 
 - First regular milestone reached in two weeks
 
 ---
