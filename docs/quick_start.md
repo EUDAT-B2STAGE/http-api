@@ -30,7 +30,29 @@ $ apt-get update && apt-get install python3-pip
 
 ### Containers environment
 
-TODO: add me from jupyter courses
+#### docker engine
+
+To install docker on a unix terminal you may use the [get docker script](https://get.docker.com):
+
+```
+# Install docker
+$ curl -fsSL get.docker.com -o get-docker.sh
+$ sh get-docker.sh
+```
+
+For Mac and Windows users dedicated applications were written: 
+
+- [Docker for Mac](https://www.docker.com/docker-mac)  
+- [Docker for Windows](https://www.docker.com/docker-windows)
+
+As alternative, the best way to get Docker ALL tools working
+is by using their [toolbox](https://www.docker.com/toolbox).
+
+#### docker compose
+
+`Compose` is a tool for docker written in Python. See the [official instructions](https://docs.docker.com/compose/install/) to install it.
+
+NOTE: compose comes bundled with the toolbox.
 
 
 ## Start-up the project
@@ -86,6 +108,8 @@ Your current project needs to be initialized. This step is needed only the first
 $ do init
 ```
 
+NOTE: with `RC1` there is no working `upgrade` process in place to make life easier if you already have this project cloned from a previous release. This is something important already in progress [here](https://github.com/EUDAT-B2STAGE/http-api/issues/87).
+
 ### 5. MODES
 
 There are two main modes to work with the API server. The main one - called `debug` - is for developers: you are expected to test, debug and develop new code. The other options is mode `production`, suited for deploying your server in a real use case scenario on top of your already running `B2SAFE` instance.
@@ -107,13 +131,17 @@ $ do shell backend
 [container shell]$ restapi launch
 ```
 
+NOTE: the block of commands above can be used at once with:
+
 ```bash
-# NOTE: the two commands above can be used at once with 
+$ do start --mode development
+# drawback: when the server fails at reloading, it crashes
 ```
 
 
+And now you may access a client for the API, from another shell and test the server:
+
 ```bash
-# now you may access a client from another shell and test the server
 $ do shell restclient
 ```
 
@@ -121,6 +149,11 @@ The client shell will give you further instructions on how to test the server. I
 
 - username: user@nomail.org
 - password: test
+
+NOTE: on the client image you have multiple tools installed for testing:
+- curl
+- httpie
+- http-prompt
 
 
 #### production mode
@@ -153,6 +186,7 @@ $ do --host $DOMAIN --mode production ssl-certificate
 If you check again the server should now be correctly certificated. At this point the service should be completely functional.
 
 
+<!--
 #### use the right mode
 
 After starting things in production mode, in case at some point you want to stop or remove containers, you need to use the right 'mode' or thing would not work as expected:
@@ -161,6 +195,7 @@ After starting things in production mode, in case at some point you want to stop
 rapydo --mode production remove
 # NOTE: the default option mimics 'rapydo --mode debug remove'
 ```
+-->
 
 
 ## other operations
