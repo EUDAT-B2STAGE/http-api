@@ -129,10 +129,10 @@ releases:
   '0.6.0':
     type: RC1
     rapydo: 0.5.3
-    status: developing
+    status: released
   '0.6.1':
     type: RC1
-    rapydo: null
+    rapydo: 0.6.0
     status: developing
   '0.7.0':
     type: RC2
