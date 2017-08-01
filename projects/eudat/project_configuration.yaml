@@ -82,24 +82,24 @@ variables:
     # GRAPHDB_PASSWORD: wakeupneo
     # EPIC HANDLE credentials
 
-    ##: OTHERs / FIXED
-    FLASK_SUBNET: 175.1.0.0
-    FLASK_FIXED_IP: 175.1.0.10
+    # ##: OTHERs / FIXED
+    # FLASK_SUBNET: 175.1.0.0
+    # FLASK_FIXED_IP: 175.1.0.10
     UPLOAD_PATH: /uploads
     FULL_JWT: false
 
   repos:
+    utils:
+      branch: 0.5.3
+    backend:
+      branch: 0.5.3
+    build-templates:
+      branch: 0.5.3
     irods-client:
-      branch: master
-      online_url: https://github.com/irods/python-irodsclient.git
+      branch: 0.5.3
+      online_url: https://github.com/pdonorio/python-irodsclient.git
       path: prc
       if: true
-    utils:
-      branch: 0.5.2
-    backend:
-      branch: 0.5.2
-    build-templates:
-      branch: 0.5.2
 
 controller:
   commands:
@@ -116,3 +116,25 @@ tags:
   pids: resolve and download data from EUDAT Persistente IDentifier
   # internal: for internal testing purpose only
 
+# Keep track of releases and dependencies
+releases:
+  '0.5.1':
+    type: beta
+    rapydo: null
+    status: released
+  '0.5.2':
+    type: beta
+    rapydo: null
+    status: discontinued
+  '0.6.0':
+    type: RC1
+    rapydo: 0.5.3
+    status: developing
+  '0.6.1':
+    type: RC1
+    rapydo: null
+    status: developing
+  '0.7.0':
+    type: RC2
+    rapydo: null
+    status: todo
