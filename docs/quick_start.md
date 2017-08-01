@@ -1,7 +1,7 @@
 
 # Quick start
 
-This is a reference page to quick start the HTTP API project. By reading this page you may also get an insight on how this project works.
+This is a reference page to quick start your knowledge of the HTTP API project; by reading this page you may get a first insight on how this project works.
 
 
 ## Feedback on the first Release Candidate
@@ -107,7 +107,8 @@ Here's what you need to use it:
 $ data/scripts/prerequisites.sh 
 # you have now the executable 'rapydo'
 $ rapydo --version
-# you can use also with his short alias 'do'
+# If you use a shell different from bash (e.g. zsh) 
+# you can try also the short alias 'do'
 $ do --help
 ```
 
@@ -119,7 +120,7 @@ NOTE: python install binaries in `/usr/local/bin`. If you are not the admin/`roo
 Your current project needs to be initialized. This step is needed only the first time you use the cloned repository.
 
 ```bash
-$ do init
+$ rapydo init
 ```
 
 NOTE: with `RC1` there is no working `upgrade` process in place to make life easier if you already have this project cloned from a previous release. This is something important already in progress [here](https://github.com/EUDAT-B2STAGE/http-api/issues/87).
@@ -135,20 +136,20 @@ NOTE: follow this paragraph only if you plan to develop new features on the HTTP
 ```bash
 ################
 # bring up the docker containers in `debug` mode
-$ do start
+$ rapydo start
 # NOTE: this above is equivalent to default value `do --mode debug start`
 
 # laungh the restful http-api server 
-$ do shell backend --command 'restapi launch'
+$ rapydo shell backend --command 'restapi launch'
 # or
-$ do shell backend 
+$ rapydo shell backend 
 [container shell]$ restapi launch
 ```
 
 NOTE: the block of commands above can be used at once with:
 
 ```bash
-$ do start --mode development
+$ rapydo start --mode development
 # drawback: when the server fails at reloading, it crashes
 ```
 
@@ -156,7 +157,7 @@ $ do start --mode development
 And now you may access a client for the API, from another shell and test the server:
 
 ```bash
-$ do shell restclient
+$ rapydo shell restclient
 ```
 
 The client shell will give you further instructions on how to test the server. In case you want to log with the only existing admin user:
@@ -184,7 +185,7 @@ Deploying is very simple:
 # define your domain
 $ DOMAIN='b2stage.cineca.it'
 # launch production mode
-$ do --host $DOMAIN --mode production start
+$ rapydo --host $DOMAIN --mode production start
 ```
 
 Now may access your IP or your domain and the HTTP API endpoints are online, protected by a proxy server. You can test this with:
@@ -196,26 +197,14 @@ open $DOMAIN/api/status
 Up to now the current SSL certificate is self signed and is 'not secure' for all applications. Your browser is probably complaining for this. This is why we need to produce one with the free `letsencrypt` service.
 
 ```bash
-$ do --host $DOMAIN --mode production ssl-certificate
+$ rapydo --host $DOMAIN --mode production ssl-certificate
 #NOTE: this will work only if you have a real domain associated to your IP
 ```
 
 If you check again the server should now be correctly certificated. At this point the service should be completely functional.
 
 
-<!--
-#### use the right mode
-
-After starting things in production mode, in case at some point you want to stop or remove containers, you need to use the right 'mode' or thing would not work as expected:
-
-```bash
-rapydo --mode production remove
-# NOTE: the default option mimics 'rapydo --mode debug remove'
-```
--->
-
-
-## other operations
+## Other operations
 
 Here we have more informations for further debugging/developing the project
 
