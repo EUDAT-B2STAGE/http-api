@@ -74,7 +74,7 @@ NOTE: compose comes bundled with the toolbox.
 Here's a step-by-step tutorial to work with the HTTP API project.
 
 
-### 1. cloning 
+### 1. cloning 
 
 To clone the working code:
 
@@ -88,7 +88,7 @@ $ VERSION=0.6.0 \
 ```
 
 
-### 2. configure
+### 2. configure
 
 Now that you have all necessary software installed, before launching services you should consider editing the main configuration:
 
