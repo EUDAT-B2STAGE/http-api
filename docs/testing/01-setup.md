@@ -118,9 +118,11 @@ To attach PIDs and simulate the replication we need to install the B2SAFE module
   HTTPS_VERIFY="False"
   MSIFREE_ENABLED=false
   ```
-  Configure B2SAFE:
+  Configure and install B2SAFE:
   ```sh
   source /etc/irods/service_account.config
+  cd /opt/eudat/b2safe/packaging/
+  ./install.sh
   exit
   ```
 - As *root* install missing python packages and the B2HANDLE library:
