@@ -188,3 +188,41 @@ To attach PIDs and simulate the replication we need to install the B2SAFE module
  rapydo shell icat
  tail -f /var/lib/irods/log/rodsLog.<DATE>
  ```
+## 3. Update of the test environment
+The HTTP API is denpending on the rapydo framework. Hence, when the HTTP API code base is updated the rapydo framework has to be updated too to the corresponding rapydo version.
+In the [project_configuration.yaml](https://github.com/EUDAT-B2STAGE/http-api/blob/0.6.0/projects/eudat/project_configuration.yaml) you will find a section that specifies which HTTP API version works with which rapydo version.
+The rapydo codebase is installed in a folder *~/http-api/submodules*.
+To update your current HTTP API do the following:
+
+1. Clean all docker images
+ ```sh
+ rapydo clean --rm-volumes
+ ```
+2. Remove the old code for rapydo in the *submodules* folder
+ ```sh
+ rm -r submodules/* -f
+ ```
+3. Pull the git repository and switch to the branch you would like to install (e.g. version 0.6.0)
+ ```sh
+ git pull
+ git checkout 0.6.0
+ git branch
+ ```
+4. Reinstall all docker images with the correct code base and start rapydo
+ ```sh
+ rapydo init
+ rapydo start
+ ```
+ To check whether the correct rapydo version is associated to the HTTP API you can check the current rapydo version with
+ ```sh
+ cd http-api/submodules/backend
+ git branch -a
+ ```
+ and copmare with the version that is required in either the *project_configuration.yaml* or the *requirements.txt*.
+
+5. Launch the HTTP API and the swagger endpoints
+ ```sh
+ rapydo shell backend --command 'restapi launch' &
+ rapydo interfaces swagger &
+ ```
+
