@@ -31,7 +31,9 @@ services:
       - irodshome:/home/irods
       - irodsvar:/var/lib/irods
       - sharedcerts:/opt/certificates
-      - ../submodules/builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
+      # NOTE: this is the script that adds GSI in our irods instance
+      - ../submodules/builds_base/icat/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      # - ../submodules/builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why
@@ -51,7 +53,7 @@ services:
       # SHARED
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
-      - ../../../data/certs:/usr/local/share/ca-certificates
+      - ../data/certs:/usr/local/share/ca-certificates
       # # mount irods code to develop patches
       # - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
     networks:
@@ -64,7 +66,7 @@ services:
 
       ##############################
       # set this inside the MODE yaml files you want to use
-      FLASK_DEBUG: 1
+      # FLASK_DEBUG: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
       ##############################
