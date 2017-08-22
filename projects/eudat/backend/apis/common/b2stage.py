@@ -29,6 +29,49 @@ class EudatEndpoint(B2accessUtilities):
     _path_separator = '/'
     _post_delimiter = '?'
 
+    def parse_gss_failure(self, error_object):
+
+        errors = error_object.errors.copy()
+
+        for error in errors:
+
+            log.warning("GSS failure:\n%s" % error)
+
+            if 'GSS failure' in error or \
+               ('Invalid credential' in error and ' GSS ' in error):
+
+                import re
+                new_error = None
+
+                if "Unable to verify remote side's credentials" in error:
+                    regexp = r'OpenSSL Error:.+:([^\n]+)'
+                    pattern = re.compile(regexp)
+                    match = pattern.search(error)
+                    new_error = 'B2ACCESS proxy not trusted by B2SAFE'
+                    if match:
+                        new_error += ': ' + match.group(1).strip()
+
+                # globus_sysconfig: Error with certificate filename
+                elif 'Error with certificate filename' in error:
+
+                    regexp = r'globus_[^\:]+:([^\n]+)'
+                    pattern = re.compile(regexp)
+                    matches = pattern.findall(error)
+
+                    if matches:
+                        print(matches)
+                        last_error = matches.pop()
+                        if 'is not a valid file' in last_error:
+                            if 'File does not exist' in last_error:
+                                new_error = 'B2ACCESS proxy file not found'
+                            else:
+                                new_error = 'B2ACCESS proxy file invalid'
+
+                if new_error is not None:
+                    error_object.errors = [new_error]
+
+        return error_object
+
     def init_endpoint(self):
 
         # main object to handle token and oauth2 things
@@ -38,7 +81,7 @@ class EudatEndpoint(B2accessUtilities):
         # If we have an "external user" we are using b2access oauth2
         # Var 'proxy' is referring to proxy certificate or normal certificate
         if extuser is None:
-            # TODO: a more well thought user mapping
+            # TODO: a more well-thought user mapping?
             # when not using B2ACCESS
             iuser = IRODS_VARS.get('guest_user')
             ipass = None
@@ -70,15 +113,18 @@ class EudatEndpoint(B2accessUtilities):
             if proxy:
                 log.debug("Current proxy certificate is valid")
 
+        # Catch exceptions on this irods test
+        # To manipulate the reply to be given to the user
         except BaseException as e:
             log.warning("Catched exception %s" % type(e))
+
             if proxy:
-                obj = self.check_proxy_certificate(extuser, e)
-                if obj is None:
+                error = self.check_proxy_certificate(extuser, e)
+                if error is None:
                     refreshed = True
                 else:
                     # Case of error to be printed
-                    return obj
+                    return self.parse_gss_failure(error)
             else:
                 raise e
 

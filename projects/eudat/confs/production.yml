@@ -11,18 +11,23 @@ services:
     environment:
       ACTIVATE: 1
       APP_MODE: production
+      FLASK_DEBUG: 0
       DEBUG_LEVEL: INFO
+      # DEBUG_LEVEL: VERY_VERBOSE
       NGINX_ACTIVE: "True"
+      ##################
+      # EUDAT RELATED
       B2ACCESS_ENV: development
-      # EUDAT RELATED  # TODO: switch to production when B2ACCESS is ready
+      # TODO: switch to production when B2ACCESS is ready
       # B2ACCESS_ENV: production
+      ##################
     depends_on:
       # - icat
       - postgres
     expose:
       - 8080
     volumes:
-      - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
+      # - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
       - ../data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
 
   proxy:
@@ -42,7 +47,10 @@ services:
   # and trying to test locally:
   restclient:
     environment:
+
+      # ACTIVATE: 1
       ACTIVATE: 0 # change for debugging
+
       APP_HOST: --verify /tmp/certs/real/fullchain1.pem https://${PROJECT_DOMAIN}
       APP_PORT:
       DOMAIN: ${PROJECT_DOMAIN}

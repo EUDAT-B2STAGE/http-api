@@ -14,32 +14,6 @@ volumes:
 
 services:
 
-  icat:
-    environment:
-      POSTGRES_HOST: "${ALCHEMY_HOST}"
-      POSTGRES_USER: "${ALCHEMY_USER}"
-      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
-      IRODS_HOST: "${IRODS_HOST}"
-      IRODS_PORT: ${IRODS_PORT}
-      IRODS_ZONE: ${IRODS_ZONE}
-      IRODS_DB: "${IRODS_DB}"
-      IRODS_USER: ${IRODS_USER}
-      IRODS_PASSWORD: ${IRODS_PASSWORD}
-
-    volumes:
-      - etcconf:/etc
-      - irodshome:/home/irods
-      - irodsvar:/var/lib/irods
-      - sharedcerts:/opt/certificates
-      # NOTE: this is the script that adds GSI in our irods instance
-      - ../submodules/builds_base/icat/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
-      # - ../submodules/builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
-
-    # # Open irods port to Outside world
-    # ## CAREFULL: don't uncomment the two lines below if you don't know why
-    # ports:
-    #     - 1247:1247
-
   postgres:
     environment:
       POSTGRES_USER: "${ALCHEMY_USER}"

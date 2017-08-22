@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# FIXME: switch to b2safe production
+# workaround for not having a B2SAFE with a domain name registered in DNS
+IP=""
+NAME=""
 
-# workaround for b2safe dev at cineca
-echo "130.186.13.110 eudat-dmp1" >> /etc/hosts
+if [ $(grep $IP /etc/hosts | wc -l) -ge "1" ];
+    echo "ip already fixed inside backend"
+else
+    echo "$IP $NAME" >> /etc/hosts
+fi

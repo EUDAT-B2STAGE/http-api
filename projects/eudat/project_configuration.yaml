@@ -1,7 +1,7 @@
 
 project:
   title: EUDAT-B2STAGE HTTP-API server
-  version: v0.6.0-rc1
+  version: v0.6.1-rc2
   description: Processing files in different EUDAT domains
 
 ###############################
@@ -67,6 +67,7 @@ variables:
     IRODS_DB: ICAT
     IRODS_AUTHSCHEME: GSI
     IRODS_CHUNKSIZE: 1048576
+    B2ACCESS_CAS: /tmp/certificates/b2access
 
     # sqlalchemy fixed:
     ALCHEMY_ENGINE: postgresql
@@ -90,14 +91,14 @@ variables:
 
   repos:
     utils:
-      branch: 0.5.3
+      branch: 0.5.4
     backend:
-      branch: 0.5.3
+      branch: 0.5.4
     build-templates:
-      branch: 0.5.3
+      branch: 0.5.4
     irods-client:
-      branch: 0.5.3
-      online_url: https://github.com/pdonorio/python-irodsclient.git
+      branch: master # python-irodsclient==0.7.0a0
+      online_url: https://github.com/irods/python-irodsclient.git
       path: prc
       if: true
 
@@ -131,10 +132,14 @@ releases:
     rapydo: 0.5.3
     status: released
   '0.6.1':
-    type: RC1
-    rapydo: 0.6.0
-    status: developing
-  '0.7.0':
     type: RC2
-    rapydo: null
+    rapydo: 0.5.4
+    status: developing
+  '0.6.2':
+    type: RC3
+    rapydo: 0.5.4
     status: todo
+  # '0.6.3':
+  #   type: RC4
+  #   rapydo: null
+  #   status: todo

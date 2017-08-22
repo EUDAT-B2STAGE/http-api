@@ -1,6 +1,8 @@
 
 version: '3'
+
 services:
+# NOTE: we are not expecting dockerized irods here
 
   backend:
     environment:

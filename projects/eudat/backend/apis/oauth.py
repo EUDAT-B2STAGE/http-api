@@ -89,8 +89,13 @@ class Authorize(EudatEndpoint):
         uid = self.username_from_unity(curuser.data.get('unity:persistent'))
         irods_user = self.set_irods_username(admin_icom, auth, extuser, uid)
         if irods_user is None:
+            log.warning(
+                "Mismatching external user inside B2SAFE" +
+                ": %s/%s" % (uid, extuser))
             return self.send_errors(
-                "Failed to set irods user from: %s/%s" % (uid, extuser))
+                "Current B2ACCESS credentials (%s) " % uid +
+                "do not match any user inside B2SAFE namespace"
+            )
         user_home = admin_icom.get_user_home(irods_user)
 
         # If all is well, give our local token to this validated user
