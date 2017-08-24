@@ -6,13 +6,15 @@ Common functions for EUDAT endpoints
 
 import os
 # from restapi.rest.definition import EndpointResource
+from restapi.exceptions import RestApiException
 from eudat.apis.common.b2access import B2accessUtilities
 from eudat.apis.common import (
     CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
-    IRODS_PROTOCOL, HTTP_PROTOCOL,  # PRODUCTION,
+    IRODS_PROTOCOL, HTTP_PROTOCOL, PRODUCTION,
     IRODS_VARS, InitObj
 )
 # from restapi.confs import API_URL
+from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -28,6 +30,115 @@ class EudatEndpoint(B2accessUtilities):
     _r = None  # main resources handler
     _path_separator = '/'
     _post_delimiter = '?'
+
+    def init_endpoint(self):
+
+        # Get user information from db, associated to token
+        # NOTE: user legenda
+        # internal_user = user internal to the API
+        # external_user = user from oauth (B2ACCESS)
+        internal_user = self.get_current_user()
+        log.debug("Token user: %s" % internal_user)
+
+        #################################
+        # decide which type of auth we are dealing with
+        # NOTE: icom = irods commands handler (official python driver PRC)
+
+        proxy = False
+        external_user = None
+        if internal_user.authmethod == 'credentials':
+            icom = self.irodsuser_from_b2stage(internal_user)
+        elif internal_user.authmethod == 'irods':
+            icom = self.irodsuser_from_b2safe(internal_user)
+        elif internal_user.authmethod == 'oauth2':
+            icom, external_user, proxy = \
+                self.irodsuser_from_b2access(internal_user)
+        else:
+            log.exit("Unknown credentials provided")
+
+        #################################
+        # Verify if irods certificates are ok
+        refreshed = False
+        try:
+            # icd and ipwd do not give error with wrong certificates...
+            # so the minimum command is ils inside the home dir
+            icom.list()
+            # TODO: doublecheck if list is the best option with PRC
+
+            if proxy:
+                log.debug("Current proxy certificate is valid")
+
+        # Catch exceptions on this irods test
+        # To manipulate the reply to be given to the user
+        except BaseException as e:
+            log.warning("Catched exception %s" % type(e))
+
+            if proxy:
+                error = self.check_proxy_certificate(external_user, e)
+                if error is None:
+                    refreshed = True
+                else:
+                    # Case of error to be printed
+                    return self.parse_gss_failure(error)
+            else:
+                raise e
+
+        #################################
+        # database connection
+        sql = self.get_service_instance('sqlalchemy')
+        # update user variable to account email, which should be always unique
+        user = internal_user.email
+
+        #####################################
+        log.very_verbose(
+            "Base objects for current requets [i{%s}, s{%s}, u {%s}]"
+            % (icom, sql, user))
+
+        return InitObj(
+            username=user, extuser_object=external_user,
+            icommands=icom, db_handler=sql,
+            valid_credentials=True, is_proxy=proxy, refreshed=refreshed
+        )
+
+    def irodsuser_from_b2access(self, internal_user):
+        """ Certificates X509 and authority delegation """
+        proxy = True
+        external_user = self.auth.oauth_from_local(internal_user)
+        return \
+            self.get_service_instance(
+                service_name='irods', only_check_proxy=True,
+                user=external_user.irodsuser, password=None, proxy=proxy,
+            ), \
+            external_user, \
+            proxy
+
+    def irodsuser_from_b2safe(self, user):
+
+        if user.session is not None and len(user.session) > 0:
+            log.debug("Validated B2SAFE user: %s" % user.uuid)
+        else:
+            msg = "Current credentials not registered inside B2SAFE"
+            raise RestApiException(
+                msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+
+        return self.get_service_instance(
+            service_name='irods', user_session=user)
+
+    def irodsuser_from_b2stage(self, internal_user):
+        """
+        Normal credentials (only available inside the HTTP API database)
+        aren't mapped to a real B2SAFE user.
+        We force the guest user if it's indicated in the configuration.
+        This usecase has to be avoided in production.
+        """
+
+        if PRODUCTION:
+            raise ValueError("Invalid authentication")
+
+        return self.get_service_instance(
+            service_name='irods', only_check_proxy=True,
+            user=IRODS_VARS.get('guest_user'), password=None, proxy=False,
+        )
 
     def parse_gss_failure(self, error_object):
 
@@ -71,74 +182,6 @@ class EudatEndpoint(B2accessUtilities):
                     error_object.errors = [new_error]
 
         return error_object
-
-    def init_endpoint(self):
-
-        # main object to handle token and oauth2 things
-        user = self.get_current_user()
-        intuser, extuser = self.auth.oauth_from_local(user)
-
-        # If we have an "external user" we are using b2access oauth2
-        # Var 'proxy' is referring to proxy certificate or normal certificate
-        if extuser is None:
-            # TODO: a more well-thought user mapping?
-            # when not using B2ACCESS
-            iuser = IRODS_VARS.get('guest_user')
-            ipass = None
-            proxy = False
-            # iuser = IRODS_VARS.get('user')
-            # ipass = IRODS_VARS.get('password')
-        else:
-            iuser = extuser.irodsuser
-            ipass = None
-            proxy = True
-
-        icom = self.get_service_instance(
-            service_name='irods',
-            user=iuser, password=ipass, proxy=proxy,
-            # avoid connection errors in the extension
-            # and handle them now
-            only_check_proxy=True
-        )
-
-        refreshed = False
-
-        # Verify if irods certificates are ok
-        try:
-            # icd and ipwd do not give error with wrong certificates...
-            # so the minimum command is ils inside the home dir
-            icom.list()
-            # TODO: doublecheck if list is the best option with PRC
-
-            if proxy:
-                log.debug("Current proxy certificate is valid")
-
-        # Catch exceptions on this irods test
-        # To manipulate the reply to be given to the user
-        except BaseException as e:
-            log.warning("Catched exception %s" % type(e))
-
-            if proxy:
-                error = self.check_proxy_certificate(extuser, e)
-                if error is None:
-                    refreshed = True
-                else:
-                    # Case of error to be printed
-                    return self.parse_gss_failure(error)
-            else:
-                raise e
-
-        # SQLALCHEMY connection
-        sql = self.get_service_instance('sqlalchemy')
-        user = intuser.email
-
-        #####################################
-        log.very_verbose("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
-        return InitObj(
-            username=user, extuser_object=extuser,
-            icommands=icom, db_handler=sql,
-            valid_credentials=True, is_proxy=proxy, refreshed=refreshed
-        )
 
     def httpapi_location(self, ipath, api_path=None, remove_suffix=None):
         """ URI for retrieving with GET method """

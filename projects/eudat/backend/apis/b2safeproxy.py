@@ -19,9 +19,11 @@ class B2safeProxy(EndpointResource):
     @decorate.catch_error()
     def get(self):
 
-        user = self.auth.get_user()
+        user = self.get_current_user()
+        log.debug("Token user: %s" % user)
+
         if user.session is not None and len(user.session) > 0:
-            log.debug("Valid B2SAFE user: %s" % user.uuid)
+            log.info("Valid B2SAFE user: %s" % user.uuid)
         else:
             msg = "This user is not registered inside B2SAFE"
             raise RestApiException(
