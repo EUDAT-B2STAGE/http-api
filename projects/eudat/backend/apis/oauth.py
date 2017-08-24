@@ -93,7 +93,7 @@ class Authorize(EudatEndpoint):
                 "Mismatching external user inside B2SAFE" +
                 ": %s/%s" % (uid, extuser))
             return self.send_errors(
-                "Current B2ACCESS credentials (%s) " % uid +
+                "Current B2ACCESS credentials (%s) " % extuser.certificate_dn +
                 "do not match any user inside B2SAFE namespace"
             )
         user_home = admin_icom.get_user_home(irods_user)

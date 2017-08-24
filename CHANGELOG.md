@@ -1,5 +1,12 @@
 
-# v0.7.0-rc2 (*next*)
+# v0.6.2-rc3 (*next*)
+**due date**: September 15th, 2017
+**milestone**: [release candidate 3](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
+
+## features
+- to be defined
+
+# v0.6.1-rc2 (*current*)
 **due date**: August 31th, 2017
 **milestone**: [release candidate 2](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
 
@@ -7,10 +14,10 @@
 - B2safe based accounting for all endpoints #88
 - Upgrade an existing installation #87
 - Checklist for good projects #62
-- Connect prototype to production services #
+- Connect prototype to production services #90
 - Define a protocol to release production to be tested automatically #55
 
-# v0.6.0-rc1 (*current*)
+# v0.6.0-rc1
 **due date**: July 31th, 2017
 **milestone**: [release candidate 1](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
 
