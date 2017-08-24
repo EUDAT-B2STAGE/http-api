@@ -95,12 +95,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             collection = icom.get_collection_from_path(path)
             current_filename = path[len(collection) + 1:]
-            filelist = icom.list(path=collection)
-            data = EMPTY_RESPONSE
-            for filename, metadata in filelist.items():
-                if filename == current_filename:
-                    data[filename] = metadata
-            # log.pp(data)
+
+            from contextlib import suppress
+            with suppress(IrodsException):
+                filelist = icom.list(path=collection)
+                data = EMPTY_RESPONSE
+                for filename, metadata in filelist.items():
+                    if filename == current_filename:
+                        data[filename] = metadata
+                # log.pp(data)
 
             # # Print file details/sys metadata if it's a specific file
             # data = icom.meta_sys_list(path)
@@ -108,8 +111,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             # if a path that does not exist
             if len(data) < 1:
                 return self.send_errors(
-                    "Path does not exists or you don't have privileges",
-                    code=hcodes.HTTP_BAD_NOTFOUND)
+                    "Path does not exists or you don't have privileges: %s"
+                    % path, code=hcodes.HTTP_BAD_NOTFOUND)
 
         # Set the right context to each element
         response = []

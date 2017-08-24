@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Login to B2SAFE directly
-"""
-
 from restapi import decorators as decorate
 from restapi.rest.definition import EndpointResource
 from restapi.exceptions import RestApiException
@@ -15,6 +11,7 @@ log = get_logger(__name__)
 
 
 class B2safeProxy(EndpointResource):
+    """ Login to B2SAFE: directly. """
 
     @decorate.catch_error()
     def get(self):
