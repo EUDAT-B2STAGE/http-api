@@ -352,8 +352,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if filename is None:
             filename = self.filename_from_path(path)
 
-        print("----------->{} {} {}".format(path, filename, ipath))
-        #ipath = self.complete_path(path, filename)
         pid_found = True
         if not errors:
             out = {}
