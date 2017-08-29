@@ -362,7 +362,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 timeout = time.time() + 10  # seconds from now
                 pid = ''
                 while True:
-                    out, _ = icom.get_metadata(path)
+                    out, _ = icom.get_metadata(ipath)
                     pid = out.get('PID')
                     if pid is not None or time.time() > timeout:
                         break
