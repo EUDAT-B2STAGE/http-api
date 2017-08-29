@@ -5,6 +5,7 @@ IP=""
 NAME=""
 
 if [ $(grep $IP /etc/hosts | wc -l) -ge "1" ];
+then
     echo "ip already fixed inside backend"
 else
     echo "$IP $NAME" >> /etc/hosts
