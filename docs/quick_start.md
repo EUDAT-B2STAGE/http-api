@@ -125,6 +125,15 @@ $ rapydo init
 
 NOTE: with `RC1` there is no working `upgrade` process in place to make life easier if you already have this project cloned from a previous release. This is something important already in progress [here](https://github.com/EUDAT-B2STAGE/http-api/issues/87).
 
+If you wish to __**manually upgrade**__:
+
+```bash
+rm -rf submodules/*
+rapydo init
+# select your mode based on the next paragraph
+rapydo --mode YOURMODE build
+```
+
 ### 5. MODES
 
 There are two main modes to work with the API server. The main one - called `debug` - is for developers: you are expected to test, debug and develop new code. The other options is mode `production`, suited for deploying your server in a real use case scenario on top of your already running `B2SAFE` instance.
