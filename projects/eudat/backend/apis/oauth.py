@@ -84,25 +84,25 @@ class Authorize(EudatEndpoint):
 
         # iRODS related
         # NOTE: this irods client uses default admin to find the related user
-        admin_icom = self.get_service_instance(
-            service_name='irods', be_admin=True)
-        uid = self.username_from_unity(curuser.data.get('unity:persistent'))
-        irods_user = self.set_irods_username(admin_icom, auth, extuser, uid)
+        iadmin = self.get_service_instance(service_name='irods', be_admin=True)
+        irods_user = self.set_irods_username(iadmin, auth, extuser)
+        # , uid)
         if irods_user is None:
-            log.warning(
-                "Mismatching external user inside B2SAFE" +
-                ": %s/%s" % (uid, extuser))
+            # uid = self.user_from_unity(curuser.data.get('unity:persistent'))
+            # log.warning(
+            #     "Mismatching external user inside B2SAFE" +
+            #     ": %s/%s" % (uid, extuser))
             return self.send_errors(
                 "Current B2ACCESS credentials (%s) " % extuser.certificate_dn +
                 "do not match any user inside B2SAFE namespace"
             )
-        user_home = admin_icom.get_user_home(irods_user)
+        user_home = iadmin.get_user_home(irods_user)
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
 
-        # # TOFIX: Workout a better way to get the host in this example
+        # FIXME: Workout a better way to get the host in this example
         # uri = self.httpapi_location(
         #     request.url.replace("/auth/authorize", ''),
         #     API_URL + "/namespace" + user_home
@@ -110,7 +110,7 @@ class Authorize(EudatEndpoint):
         # get_example = "curl -H 'Authorization: %s %s' %s" \
         #     % ('Bearer', local_token, uri)
 
-        # TOFIX: Create a method to reply with standard Bearer oauth response
+        # FIXME: Create a method to reply with standard Bearer oauth response
         # return self.send_credentials(local_token, extra, metas)
 
         return self.force_response(

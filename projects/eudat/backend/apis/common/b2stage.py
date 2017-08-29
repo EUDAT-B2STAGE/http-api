@@ -104,10 +104,12 @@ class EudatEndpoint(B2accessUtilities):
         """ Certificates X509 and authority delegation """
         proxy = True
         external_user = self.auth.oauth_from_local(internal_user)
+
         return \
             self.get_service_instance(
                 service_name='irods', only_check_proxy=True,
-                user=external_user.irodsuser, password=None, proxy=proxy,
+                user=external_user.irodsuser, password=None,
+                gss=proxy, proxy_file=external_user.proxyfile,
             ), \
             external_user, \
             proxy
@@ -135,9 +137,10 @@ class EudatEndpoint(B2accessUtilities):
         if PRODUCTION:
             raise ValueError("Invalid authentication")
 
+        # NOTE: this 'guest' irods mode is only for debugging purpose
         return self.get_service_instance(
             service_name='irods', only_check_proxy=True,
-            user=IRODS_VARS.get('guest_user'), password=None, proxy=False,
+            user=IRODS_VARS.get('guest_user'), password=None, gss=True,
         )
 
     def parse_gss_failure(self, error_object):
@@ -210,10 +213,10 @@ class EudatEndpoint(B2accessUtilities):
             irods_location = self._path_separator + irods_location
         return irods_location
 
-    @staticmethod
-    def username_from_unity(unity_persistent):
-        """ Take the last piece of the unity id """
-        return unity_persistent.split('-')[::-1][0]
+    # @staticmethod
+    # def user_from_unity(unity_persistent):
+    #     """ Take the last piece of the unity id """
+    #     return unity_persistent.split('-')[::-1][0]
 
     @staticmethod
     def splitall(path):
