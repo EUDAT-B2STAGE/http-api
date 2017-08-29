@@ -238,8 +238,6 @@ class B2accessUtilities(EndpointResource):
 
     def refresh_proxy_certificate(self, extuser):
 
-        icom = self.get_service_instance('irods', be_admin=True)
-
         auth = self.auth
         proxy_file = self.obtain_proxy_certificate(auth, extuser)
         # check for errors
@@ -248,7 +246,8 @@ class B2accessUtilities(EndpointResource):
         else:
             log.verbose("New proxy: %s" % proxy_file)
 
-        irods_user = self.set_irods_username(icom, auth, extuser)
+        iadmin = self.get_service_instance('irods', be_admin=True)
+        irods_user = self.set_irods_username(iadmin, auth, extuser)
         log.very_verbose("Updated %s" % irods_user)
 
         return True

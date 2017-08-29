@@ -62,5 +62,15 @@ class B2safeProxy(EndpointResource):
         else:
             encoded_session = irods.prc.serialize()
 
-        token = self.auth.irods_user(username, encoded_session)
-        return {'token': token}
+        token, irods_user = self.auth.irods_user(username, encoded_session)
+
+        iadmin = self.get_service_instance(service_name='irods', be_admin=True)
+        user_home = iadmin.get_user_home(irods_user)
+
+        return self.force_response(
+            defined_content={
+                'token': token,
+                'b2safe_user': irods_user,
+                'b2safe_home': user_home,
+            }
+        )
