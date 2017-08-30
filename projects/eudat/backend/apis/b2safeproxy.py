@@ -37,15 +37,23 @@ class B2safeProxy(EndpointResource):
     def post(self):
 
         #############
-        jargs = self.get_input()
-        username = jargs.get('username')
-        password = jargs.get('password')
+        from flask import request
+        auth = request.authorization
+
+        if auth is not None:
+            username = auth.username
+            password = auth.password
+        else:
+            jargs = self.get_input()
+            username = jargs.get('username')
+            password = jargs.get('password')
 
         if username is None or password is None:
             msg = "Missing username or password"
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
+        #############
         func = self.get_service_instance
         params = {
             'service_name': "irods",
@@ -67,6 +75,7 @@ class B2safeProxy(EndpointResource):
         iadmin = self.get_service_instance(service_name='irods', be_admin=True)
         user_home = iadmin.get_user_home(irods_user)
 
+        #############
         return self.force_response(
             defined_content={
                 'token': token,
