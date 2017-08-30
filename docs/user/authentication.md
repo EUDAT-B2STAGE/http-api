@@ -11,16 +11,6 @@ To manage B2STAGE HTTP-API authentication the following enpoints are available:
 2. /auth/proxy - *request a new proxy certificate*
 
 
-## Authentication flow
-To send any kind of requests to the B2STAGE HTTP-API an authentication token is needed:
-
-1. to request an authentication token follow the steps described ni the section [Authentication token](#authentication-token). If the request succeeds, the server returns an authentication token;
-
-2. once obtained a valid authentication token user can send HTTP requests to the B2STAGE http server including the token in the "Authorization: Bearer" header (see [Send API request](#send-api-request)).
-
-3. If an *Unauthorized (401)** error occurs, request another token (see point 1). If an *Internal Server Error (500)* with an "Expired proxy credential" error occurs, request a new proxy certificate (see [B2ACCESS CA Proxy Ceritificate](#b2access-ca-proxy-ceritificate))
-
-
 ## Authentication token 
 This operation is needed the very first time a user needs to get access to the B2STAGE HTTP-API and every time the B2ACCESS "access token" expires.
 
@@ -61,20 +51,7 @@ To get an authentication token:
 ```
 
 The token received (in our example:
-"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJocHdkIjpudWxsLCJleHAiOjE0ODI1NzQ2MjYsIm5iZiI6MTQ3OTk4MjYyNiwiaWF0IjoxNDc5OTgyNjI2LCJ1c2VyX2lkIjoiYjI3ZGM4ZDQtMWM4Yi00YjYxLWI2OWUtZjAzOWNlNGYyYjc2IiwianRpIjoiMDc0YjhiYmQtMDcwYy00MDQxLWJhN2UtMjRjZDE3NGZlODhhIn0.JQKXId5HocLF7FcHG5N8m_-aRxITw-XwfL33av5oQMY") is needed for each HTTP request (see [Send API request](#send-api-request)).
-
-
-## Send API request
-This section shows how to make a basic API call using the authentication  toeken. For a complete list of API, see the [User documentation](user.md).
-
-Every API request must contain a valid authentication token obtained using the [B2ACCESS Authorization](#b2access-authorization) process.
-An example of API request is the following: 
-
-```bash
-$ curl \
-  -H "Authorization: Bearer <auth_token>" \
-  <http_server:port>/api/status 
-```
+"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJocHdkIjpudWxsLCJleHAiOjE0ODI1NzQ2MjYsIm5iZiI6MTQ3OTk4MjYyNiwiaWF0IjoxNDc5OTgyNjI2LCJ1c2VyX2lkIjoiYjI3ZGM4ZDQtMWM4Yi00YjYxLWI2OWUtZjAzOWNlNGYyYjc2IiwianRpIjoiMDc0YjhiYmQtMDcwYy00MDQxLWJhN2UtMjRjZDE3NGZlODhhIn0.JQKXId5HocLF7FcHG5N8m_-aRxITw-XwfL33av5oQMY") is needed for each HTTP request 
 
 
 ## B2ACCESS CA Proxy Ceritificate
@@ -106,7 +83,7 @@ $ curl -X POST\
   <http_server:port>/auth/proxy 
 ```
 
-#### Response if th proxy was successfully generated
+#### Response if the proxy was successfully generated
 ```json
 {
   "Meta": {
