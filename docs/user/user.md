@@ -15,8 +15,8 @@ The complete description of the operation you can perform is available in:
 
 
 ## Authentication flow
-The HTTP-API supports two kind of authentication:
-- via B2ACCESS service (Oauth2 + proxy certificates);
+The HTTP-API supports two kinds of authentication:
+- via the B2ACCESS service (Oauth2 protocol + proxy certificates);
 - via local B2SAFE credentials (username and password).
 
 To send any kind of requests to the B2STAGE HTTP-API an authentication token is needed: 

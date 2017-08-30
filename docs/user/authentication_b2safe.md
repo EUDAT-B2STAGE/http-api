@@ -4,13 +4,10 @@ The B2STAGE HTTP-API supports authentiction using local B2SAFE credentials (user
 
 Therefore, to use the B2STAGE HTTP-API service, you need a B2SAFE user on the B2SAFE instance which the HTTP-API is connected to. Please refer to the B2SAFE service if you need one.
 
-To manage B2STAGE HTTP-API authentication the following enpoint is available:
+To obatin an access token using local B2SAFE credentilas the following enpoint is available:
 
 - /auth/b2safeproxy - *request an access token*
 
-
-## Authentication token 
-This operation is needed the to get an access token to access to the B2STAGE HTTP-API and every time the B2ACCESS "access token" expires.
 
 ## **GET**
 ### Obtain an access token

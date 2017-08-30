@@ -1,4 +1,4 @@
-# Authentication API
+# Authentication via the B2ACCESS service
 
 The B2STAGE HTTP-API uses the OAuth2 authorization framework to obtain limited access to B2ACCESS user accounts. It works by delegating user authentication to the service that hosts the user account (B2ACCESS), and authorizing third-party applications (B2STAGE HTTP-API) to access the user account. 
 
