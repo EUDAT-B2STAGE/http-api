@@ -14,10 +14,11 @@ requirements:
 # Configuration variables #
 ###########################
 
-USERNAME = 'paolobeta'
-PASSWORD = 'thisisalongerpassword'
+USERNAME = 'someuser'
+PASSWORD = 'yourpassword'
 
 LOG_LEVEL = 'info'  # or 'debug', 'verbose', 'very_verbose'
+# LOG_LEVEL = 'very_verbose'
 FILES_PATH = './data/files'
 
 LOCAL_HTTPAPI_URI = 'http://localhost:8080'
@@ -120,6 +121,25 @@ def login_api(uri, username, password):
     return out.get('token'), out.get('b2safe_home')
 
 
+def folder_content(folder_path):
+    import os
+    if not os.path.exists(folder_path):
+        log.exit("%s does not exist" % folder_path)
+
+    import glob
+    log.debug("Looking for directory '%s'" % FILES_PATH)
+    files = glob.glob(os.path.join(FILES_PATH, "*"))
+    if len(files) < 1:
+        log.exit("%s does not contain any file" % folder_path)
+
+    return files
+
+
+def stream_file(file_path):
+    with open(file_path, encoding='utf-8') as f:
+        print(f)
+
+
 #############
 #   MAIN    #
 #############
@@ -128,6 +148,7 @@ if __name__ == '__main__':
 
     # decide which HTTP API server you should query
     uri = REMOTE_HTTPAPI_URI
+    # uri = LOCAL_HTTPAPI_URI
 
     # check if HTTP API are alive and/or our connection is working
     call_api(uri)
@@ -142,5 +163,18 @@ if __name__ == '__main__':
     # list current files
     endpoint = BASIC_ENDPOINT + home_path
     content = call_api(uri, endpoint=endpoint, token=token)
-    log.info("Home dir content")
+    log.info("Home directory content:")
     log.pp(content)
+
+    ####################
+    # other operations
+
+    # avoid more operations if only listing
+    import sys
+    if len(sys.argv) > 1:
+        if '--list' == sys.argv[1]:
+            sys.exit(0)
+
+    # push files
+    for file in folder_content(FILES_PATH):
+        print(file)
