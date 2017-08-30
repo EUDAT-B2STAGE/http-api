@@ -308,7 +308,7 @@ $ curl -X DELETE \
 
 ##### Example
 ```bash
-# Rename teh file "path/to/directory/filename" in "path/to/directory/filename2"
+# Rename the file "path/to/directory/filename" in "path/to/directory/filename2"
 curl -X PATCH \
   -H "Authorization: Bearer <auth_token>" \
   -d '{"newname":"filename4"}' \
