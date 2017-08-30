@@ -9,6 +9,8 @@ requirements:
 - rapydo/utils
 """
 
+import os
+
 
 ###########################
 # Configuration variables #
@@ -85,14 +87,20 @@ def parse_api_output(req):
         return content
 
 
-def call_api(uri, endpoint=None, method='get', payload=None, token=None):
+def call_api(uri,
+             endpoint=None, method='get', payload=None, token=None, file=None):
+    """
+    Helper function based on 'requests' to easily call our HTTP API in Python
+    """
 
     if endpoint is None:
         endpoint = '/api/status'
-    headers = {'content-type': 'application/json'}
+
+    headers = {}
     if token is not None:
         headers['Authorization'] = "Bearer %s" % token
 
+    method = method.lower()
     import requests
     requests_callable = getattr(requests, method)
 
@@ -101,10 +109,39 @@ def call_api(uri, endpoint=None, method='get', payload=None, token=None):
         payload = json.dumps(payload)
 
     log.very_verbose('Calling %s on %s' % (method, endpoint))
-    request = requests_callable(
-        uri + endpoint,
-        headers=headers, timeout=10, data=payload)
-    log.very_verbose(request.url)
+    arguments = {
+        'url': uri + endpoint,
+        'headers': headers,
+        'timeout': 10,
+    }
+
+    if method == 'get':
+        arguments['params'] = payload
+    else:
+        arguments['data'] = payload
+
+    if file is not None:
+        if method != 'put':
+            log.exit("Cannot upload a file with method '%s'" % method)
+        else:
+            try:
+                fh = open(file, 'rb')
+            except Exception as e:
+                raise e
+            else:
+                name = os.path.basename(file)
+                arguments['files'] = {'file': (name, fh)}
+        headers['content-type']: 'application/octet-stream'
+    else:
+        headers['content-type']: 'application/json'
+
+    # call the api
+    try:
+        request = requests_callable(**arguments)
+    except requests.exceptions.ConnectionError as e:
+        log.exit("Connection failed:\n%s" % e)
+    else:
+        log.very_verbose("URL: %s" % request.url)
 
     out = parse_api_output(request)
     log.verbose("HTTP-API CALL[%s]: %s" % (method.upper(), out))
@@ -122,7 +159,6 @@ def login_api(uri, username, password):
 
 
 def folder_content(folder_path):
-    import os
     if not os.path.exists(folder_path):
         log.exit("%s does not exist" % folder_path)
 
@@ -133,6 +169,21 @@ def folder_content(folder_path):
         log.exit("%s does not contain any file" % folder_path)
 
     return files
+
+
+def parse_irods_listing(response, directory):
+    to_print = ''
+    home_content = []
+    for element in response:
+        name, obj = element.popitem()
+        home_content.append(name)
+        metadata = obj.get('metadata', {})
+        objtype = metadata.get('object_type')
+        to_print += "\n%s [%s]" % (name, objtype)
+
+    if len(home_content) > 0:
+        log.info("Directory %s current content: %s" % (directory, to_print))
+    return home_content
 
 
 def stream_file(file_path):
@@ -150,9 +201,16 @@ if __name__ == '__main__':
     uri = REMOTE_HTTPAPI_URI
     # uri = LOCAL_HTTPAPI_URI
 
+    ################
+    # ACTION: check status
+    ################
+
     # check if HTTP API are alive and/or our connection is working
     call_api(uri)
 
+    ################
+    # ACTION: LOGIN
+    ################
     # login to HTTP API or set your token from B2ACCESS web login
     token, home_path = login_api(uri, USERNAME, PASSWORD)
     # token = 'SOMEHASHSTRINGFROMB2ACCESS'
@@ -160,21 +218,67 @@ if __name__ == '__main__':
     log.debug('Home directory is: %s' % home_path)
     log.info("Logged in with token: %s..." % token[:20])
 
+    ################
+    # ACTION: get directory content
+    ################
+
     # list current files
-    endpoint = BASIC_ENDPOINT + home_path
-    content = call_api(uri, endpoint=endpoint, token=token)
-    log.info("Home directory content:")
-    log.pp(content)
+    response = call_api(uri, endpoint=BASIC_ENDPOINT + home_path, token=token)
+    home_content = parse_irods_listing(response, home_path)
 
     ####################
     # other operations
 
-    # avoid more operations if only listing
+    # avoid more operations if the user only requested listing
     import sys
     if len(sys.argv) > 1:
         if '--list' == sys.argv[1]:
             sys.exit(0)
 
-    # push files
-    for file in folder_content(FILES_PATH):
-        print(file)
+    # push files found in config dir
+    files = folder_content(FILES_PATH)
+    log.debug("Files to be pushed: %s" % files)
+
+    new_dir = 'test'
+    new_dir_path = os.path.join(home_path, new_dir)
+
+    if new_dir not in home_content:
+
+        ################
+        # ACTION: create directory
+        ################
+        response = call_api(
+            uri, endpoint=BASIC_ENDPOINT, token=token, method='post',
+            payload={'path': new_dir_path}
+        )
+        log.info("Created directory: %s" % response.get('path'))
+    else:
+        log.warning("Directory already exists: %s" % new_dir)
+
+    response = call_api(
+        uri, endpoint=BASIC_ENDPOINT + new_dir_path, token=token)
+    new_dir_content = parse_irods_listing(response, new_dir_path)
+
+    for file_path in files:
+
+        ################
+        # ACTION: upload one file
+        ################
+        if not os.path.basename(file_path) in new_dir_content:
+            response = call_api(
+                uri, endpoint=BASIC_ENDPOINT + new_dir_path, token=token,
+                method='put', file=file_path
+            )
+            log.info("Uploaded file: %s" % file_path)
+        else:
+            log.warning("File '%s' already existing in iRODS" % file_path)
+
+    ################
+    # ACTION: rename one file
+    ################
+    pass
+
+    ################
+    # ACTION: delete one file
+    ################
+    pass
