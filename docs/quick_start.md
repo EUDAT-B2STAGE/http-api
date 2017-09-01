@@ -128,10 +128,17 @@ NOTE: with `RC1` there is no working `upgrade` process in place to make life eas
 If you wish to __**manually upgrade**__:
 
 ```bash
+VERSION="0.6.1"
+git checkout $VERSION
+
+# supposely the rapydo framework has been updated, so you need to check:
 rm -rf submodules/*
+data/scripts/prerequisites.sh
 rapydo init
-# select your mode based on the next paragraph
-rapydo --mode YOURMODE build
+
+# update docker images with the new build templates in rapydo
+# NOTE: select your mode based on the next paragraph
+rapydo --mode YOURMODE build -r -f
 ```
 
 ### 5. MODES
@@ -211,6 +218,32 @@ $ rapydo --host $DOMAIN --mode production ssl-certificate
 ```
 
 If you check again the server should now be correctly certificated. At this point the service should be completely functional.
+
+In production it might be difficult to get informations if something goes wrong. If the server failed you have a couple of options to find out why:
+
+```bash
+# check any service on any mode
+$ rapydo --mode YOURMODE --service YOURSERVICE log
+# e.g. check all the logs from production, following new updates
+$ rapydo --mode production log --follow
+
+## if this is not enough:
+
+# check the backend as admin of the container
+$ rapydo shell --user root backend
+# look at the production WSGI logs
+less /var/log/uwsgi/*log
+
+## if you only get 'no app loaded' from uWSGI, 
+
+$ rapydo shell backend
+# launch by hand a server instance
+$ DEBUG_LEVEL=VERY_VERBOSE restapi launch
+# check if you get any error
+
+```
+
+Also please take a look at how to launch interfaces in the upcoming paragraph, in case there is a problem with the database or swagger.
 
 
 ## Other operations

@@ -13,7 +13,7 @@ To obatin an access token using local B2SAFE credentilas the following enpoint i
 ### Obtain an access token
 ##### Example
 ```bash
-$ curl <http_server:port>/api/b2safeproxy -d "username=<b2safe_username>&password=<b2safe_password>"
+$ curl <http_server:port>/auth/b2safeproxy -d "username=<b2safe_username>&password=<b2safe_password>"
 ```
 ##### Response
 ```json

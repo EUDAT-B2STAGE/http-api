@@ -275,13 +275,14 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ipath = None
 
-#  TOFIX: custom split of a custom response
-# this piece of code does not work with a custom response
-# if it changes the main blocks of the json root;
-# the developer should be able to provide a 'custom_split'
+        # FIXME: allow custom split of a custom response
+        # this piece of code does not work with a custom response
+        # if it changes the main blocks of the json root;
+        # the developer should be able to provide a 'custom_split'
 
         # Manage both form and streaming upload
         # FIXME: @Mattia check this mime type
+        # log.pp(request)
         if request.mimetype != 'application/octet-stream':
             # Form upload
 
@@ -422,6 +423,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # Note: ignore resource, get new filename as 'newname'
         path, _, newfile, force = \
             self.get_file_parameters(icom, path=irods_location, newfile=True)
+
+        if force:
+            return self.send_errors(
+                "This operation cannot be forced in B2SAFE iRODS data objects",
+                code=hcodes.HTTP_BAD_REQUEST)
 
         if newfile is None or newfile.strip() == '':
             return self.send_errors(
