@@ -223,7 +223,7 @@ To update your current HTTP API do the following:
  cd http-api/submodules/backend
  git branch -a
  ```
- and copmare with the version that is required in either the *project_configuration.yaml* or the *requirements.txt*.
+ and copmare with the version that is required in either the */http-api/projects/eudat/project_configuration.yaml* or the *requirements.txt*.
 
 5. Launch the HTTP API and the swagger endpoints
  ```sh
