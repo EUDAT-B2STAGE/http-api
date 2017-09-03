@@ -164,6 +164,14 @@ To attach PIDs and simulate the replication we need to install the B2SAFE module
       ]
    }
   ```
+  
+  Restart the iRODS server as root
+  ```sh
+  exit
+  service irods restart
+  berods
+  ```
+  
   Remove the previously created collection and run the B2SAFE replication again:
   ```sh
   irm -r t_coll
