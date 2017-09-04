@@ -22,36 +22,36 @@ variables:
     ###############################
     ## B2ACCESS
     B2ACCESS_ACCOUNT: httpapi
-    # B2ACCESS_ACCOUNT: b2stage_httpapi
     B2ACCESS_SECRET: SETYOURSECRETKEY
 
     ###############################
     ## LOCAL iRODS server VERSION
-    # You may leave this like this in DEBUG mode
+    # NOTE: intended for DEBUG mode, to be commented in PRODUCTION
     IRODS_USER: irods
-    IRODS_GUEST_USER: guest
-    IRODS_DEFAULT_ADMIN_USER: rodsminer
+    IRODS_GUEST_USER: guest              # intended to work only with GSI
+    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
     IRODS_ZONE: tempZone
     IRODS_HOME: home
-    # DN of your iRODS host with GSI plugin installed
-    # leave it empty if use (e.g. in debug) the dockerized iRODS instance
-    IRODS_DN:
-    IRODS_AUTHSCHEME: credentials
-    # NOTE: this must match ALCHEMY_PASSWORD if running in debug mode
+    IRODS_AUTHSCHEME:   # to be auto-detected
+    # IRODS_AUTHSCHEME: credentials
+    # IRODS_AUTHSCHEME: GSI
     IRODS_PASSWORD: chooseapasswordwisely
+    # If empty it will be automatically computed within the docker network
+    IRODS_DN:
 
     ###############################
-    ## PRODUCTION iRODS server VERSION
+    ## PRODUCTION example: iRODS server VERSION
 
     # IRODS_HOST: eudat-dmp1
-    # IRODS_USER: pdonorio
-    # IRODS_GUEST_USER: pdonorio
-    # IRODS_DEFAULT_ADMIN_USER: pdonorio
     # IRODS_ZONE: cinecaDMPZone1
     # IRODS_HOME: home
+    # # You MUST provide user/password credentials to iquery users informations
     # IRODS_AUTHSCHEME: credentials
+    # IRODS_USER: httpapi
     # IRODS_PASSWORD: SETTHISPASSWORDINPRODUCTION
-    # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/eudat-dmp1.novalocal"
+    # # DN of your external iRODS host (with GSI plugin installed)
+    # # Needed for B2ACCESS certificates exchange
+    # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/yourhostname.com"
 
 ###############################
 ## WARNING!! do not modify below
@@ -135,12 +135,16 @@ releases:
   '0.6.1':
     type: RC2
     rapydo: 0.5.4
-    status: developing
+    status: released
   '0.6.2':
     type: RC3
-    rapydo: 0.5.4
+    rapydo: 0.5.5
+    status: developing
+  '0.6.3':
+    type: RC4
+    rapydo: null
     status: todo
-  # '0.6.3':
-  #   type: RC4
+  # '0.7.0':
+  #   type: RC5
   #   rapydo: null
   #   status: todo

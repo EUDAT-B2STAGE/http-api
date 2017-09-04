@@ -82,21 +82,15 @@ class Authorize(EudatEndpoint):
             return self.send_errors(
                 "B2ACCESS CA is down", "Could not get certificate files")
 
-        # iRODS related
-        # NOTE: this irods client uses default admin to find the related user
-        iadmin = self.get_service_instance(service_name='irods', be_admin=True)
-        irods_user = self.set_irods_username(iadmin, auth, extuser)
-        # , uid)
+        # iRODS informations: get/set from current B2ACCESS response
+        icom = self.get_service_instance(service_name='irods')
+        irods_user = self.set_irods_username(icom, auth, extuser)
         if irods_user is None:
-            # uid = self.user_from_unity(curuser.data.get('unity:persistent'))
-            # log.warning(
-            #     "Mismatching external user inside B2SAFE" +
-            #     ": %s/%s" % (uid, extuser))
             return self.send_errors(
                 "Current B2ACCESS credentials (%s) " % extuser.certificate_dn +
                 "do not match any user inside B2SAFE namespace"
             )
-        user_home = iadmin.get_user_home(irods_user)
+        user_home = icom.get_user_home(irods_user)
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))

@@ -164,9 +164,12 @@ class B2accessUtilities(EndpointResource):
                 return None
             # Using dockerized iRODS/B2SAFE
             else:
+
                 # NOTE: dockerized version does not know about the user
                 # because it has no sync script with B2ACCESS running
-                # FIXME: find a better username
+
+                # NOTE: mapping is for common 'eudat' user for all.
+                # Of course it's only for debugging purpose.
                 irods_user = 'eudat'
                 # irods_user = user.unity
 

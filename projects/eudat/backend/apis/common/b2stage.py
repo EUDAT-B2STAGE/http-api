@@ -131,13 +131,14 @@ class EudatEndpoint(B2accessUtilities):
         Normal credentials (only available inside the HTTP API database)
         aren't mapped to a real B2SAFE user.
         We force the guest user if it's indicated in the configuration.
-        This usecase has to be avoided in production.
+
+        NOTE: this usecase is to be avoided in production.
         """
 
         if PRODUCTION:
+            # 'guest' irods mode is only for debugging purpose
             raise ValueError("Invalid authentication")
 
-        # NOTE: this 'guest' irods mode is only for debugging purpose
         return self.get_service_instance(
             service_name='irods', only_check_proxy=True,
             user=IRODS_VARS.get('guest_user'), password=None, gss=True,

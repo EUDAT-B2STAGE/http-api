@@ -48,7 +48,8 @@ class B2safeProxy(EndpointResource):
             username = jargs.get('username')
             password = jargs.get('password')
 
-        if username is None or password is None:
+        if username is None or password is None or \
+           username.strip() == '' or password.strip() == '':
             msg = "Missing username or password"
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
@@ -72,8 +73,9 @@ class B2safeProxy(EndpointResource):
 
         token, irods_user = self.auth.irods_user(username, encoded_session)
 
-        iadmin = self.get_service_instance(service_name='irods', be_admin=True)
-        user_home = iadmin.get_user_home(irods_user)
+        # Get the default irods user just to compute current user home
+        ihandle = self.get_service_instance(service_name='irods')
+        user_home = ihandle.get_user_home(irods_user)
 
         #############
         return self.force_response(

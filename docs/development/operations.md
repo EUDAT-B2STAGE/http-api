@@ -30,13 +30,14 @@ rapydo shell restclient
 
 USER=paolobeta
 PASS=thisisalongerpassword
+SERVER="$APP_HOST$APP_PORT"
 
-http POST $APP_HOST$APP_PORT/auth/b2safeproxy username=$USER password=$PASS
+# http POST $SERVER/auth/b2safeproxy username=$USER password=$PASS
 
-# TOKEN=$(http POST localhost:8080/auth/b2safeproxy \
-#    username=$USER password=$PASS | jq .Response.data.token | tr -d '"')
+TOKEN=$(http POST $SERVER/auth/b2safeproxy \
+   username=$USER password=$PASS | jq .Response.data.token | tr -d '"')
 
-# http localhost:8080/auth/b2safeproxy Authorization:"Bearer $TOKEN"
+http $SERVER/auth/b2safeproxy Authorization:"Bearer $TOKEN"
 ```
 
 

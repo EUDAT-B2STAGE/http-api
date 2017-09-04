@@ -6,11 +6,11 @@ This is a reference page to quick start your knowledge of the HTTP API project; 
 
 ## Feedback on the first Release Candidate
 
-To gather into one place the feedback of any user testing a deployed HTTP API server or the online prototype, we created a dedicated free chat room on gitter:
+To gather into one place the feedback of any user testing a deployed HTTP API server or the online prototype, we created a dedicated free chat room on the `gitter` comunication platform:
 
 https://gitter.im/EUDAT-B2STAGE/http-api
 
-Please feel free to report or comment to help us improve!
+Please: feel free to report or comment to help us improve!
 
 
 ## Using the prototype online
