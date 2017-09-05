@@ -13,12 +13,10 @@ services:
       APP_MODE: production
       FLASK_DEBUG: 0
       DEBUG_LEVEL: INFO
-      # DEBUG_LEVEL: VERY_VERBOSE
       NGINX_ACTIVE: "True"
       ##################
       # EUDAT RELATED
       B2ACCESS_ENV: development
-      # TODO: switch to production when B2ACCESS is ready
       # B2ACCESS_ENV: production
       ##################
     depends_on:
@@ -27,8 +25,11 @@ services:
     expose:
       - 8080
     volumes:
-      # - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
       - ../data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
+      # # FIX missing IP / DNS
+      # - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
+      # # DEBUG modifications on submodules
+      # - ../submodules/backend/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 
   proxy:
     environment:

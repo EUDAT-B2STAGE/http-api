@@ -45,12 +45,12 @@ variables:
     # IRODS_HOST: eudat-dmp1
     # IRODS_ZONE: cinecaDMPZone1
     # IRODS_HOME: home
-    # # You MUST provide user/password credentials to iquery users informations
+    # # You MUST provide user/password credentials to iquery users informations
     # IRODS_AUTHSCHEME: credentials
     # IRODS_USER: httpapi
     # IRODS_PASSWORD: SETTHISPASSWORDINPRODUCTION
     # # DN of your external iRODS host (with GSI plugin installed)
-    # # Needed for B2ACCESS certificates exchange
+    # # Needed for B2ACCESS certificates exchange
     # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/yourhostname.com"
 
 ###############################

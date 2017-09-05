@@ -16,8 +16,12 @@ services:
       DEBUG_ENDPOINTS: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
+      #################
       # EUDAT RELATED
       B2ACCESS_ENV: development
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
+      IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
+      #################
     ports:
       - 8080:${FLASK_DEFAULT_PORT}
 
@@ -39,9 +43,9 @@ services:
       POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
       IRODS_HOST: "${IRODS_HOST}"
       IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
       IRODS_ZONE: ${IRODS_ZONE}
       IRODS_DB: "${IRODS_DB}"
-      IRODS_USER: ${IRODS_USER}
       IRODS_PASSWORD: ${IRODS_PASSWORD}
       B2ACCESS_CAS: ${B2ACCESS_CAS}
 

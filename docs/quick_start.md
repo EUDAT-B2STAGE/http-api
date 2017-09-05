@@ -233,13 +233,16 @@ $ rapydo --mode production log --follow
 $ rapydo shell --user root backend
 # look at the production WSGI logs
 less /var/log/uwsgi/*log
+# check processes
+ps aux --forest
+# here uwsgi (as developer) and nginx (as www-data) should be running 
 
 ## if you only get 'no app loaded' from uWSGI, 
 
 $ rapydo shell backend
 # launch by hand a server instance
 $ DEBUG_LEVEL=VERY_VERBOSE restapi launch
-# check if you get any error
+# check if you get any error in your output
 
 ```
 
@@ -285,14 +288,15 @@ cp PATH/TO/YOUR/CREDENTIALS/FILES/* data/b2handle/
 If you need to clean everything you have stored in docker from this project:
 
 ```bash
-# BE CAREFUL
-rapydo clean --rm-volumes  # very DANGEROUS, you lose all data!
-# BE CAREFUL
+# BE CAREFUL!
+rapydo clean --rm  # very DANGEROUS
+# With this command you lose all your current data!
 ```
 
 ### hack the certificates volume
 
-This hack is necessary if you want to raw copy a CA certificate if your VM DN was produced with an internal certification authority.
+This hack is necessary if you want to raw copy a Certification Authority credential. 
+It may be needed if your current B2SAFE host DN was produced with an internal certification authority which is not recognized from other clients.
 
 ```bash
 path=`docker inspect $(docker volume ls -q | grep sharedcerts) | jq -r ".[0].Mountpoint"`

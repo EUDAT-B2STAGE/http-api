@@ -1,14 +1,20 @@
 
-# v0.6.2-rc3 (*next*)
-**due date**: September 15th, 2017
-**milestone**: [release candidate 3](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
+# v0.7.0-rc4 (*future*)
+**due date**: October 15th, 2017
 
 ## features
 - to be defined
 
-# v0.6.1-rc2 (*current*)
+# v0.6.2-rc3 (*currently developed*)
+**due date**: September 15th, 2017
+**project**: [webinar](https://github.com/EUDAT-B2STAGE/http-api/projects/3)
+
+## features
+- to be defined
+
+# v0.6.1-rc2 (*latest stable*)
 **due date**: August 31th, 2017
-**milestone**: [release candidate 2](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
+**project**: [release candidate 2](https://github.com/EUDAT-B2STAGE/http-api/projects/4)
 
 ## features
 - B2safe based accounting for all endpoints #88
