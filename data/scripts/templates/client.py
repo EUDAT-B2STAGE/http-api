@@ -105,7 +105,7 @@ if __name__ == '__main__':
     for file_path in files:
 
         ################
-        # ACTION: upload one file
+        # ACTION: upload one file 
         ################
         if not os.path.basename(file_path) in new_dir_content:
             response = apiclient.call(
@@ -116,36 +116,36 @@ if __name__ == '__main__':
         else:
             log.warning("%s already exists in %s", file_path, new_dir_path)
 
+        file_name = file_path
+
     # list new dir again to see changes
     response = apiclient.call(uri, endpoint=new_dir_endpoint, token=token)
-    #new_dir_content = apiclient.parse_irods_listing(response, new_dir_path)
-    log.info("------------>", response)
-
-
+    new_dir_content = apiclient.parse_irods_listing(response, new_dir_path)
 
     ################
     # ACTION: resolve PID
     ################
-    pid = response.get('PID')
+
+    # Get uploaded file metadata
+    some_file = helpers.random_element(new_dir_content)
+    response = apiclient.call(
+        uri, endpoint=os.path.join(new_dir_endpoint, some_file), token=token)
+    
+    pid = response[0][some_file]['metadata']['PID']
     if pid:
         response = apiclient.call(
-        uri, endpoint=apiclient.ADVANCEND_ENDPOINT + pid, token=token)
-    home_content = apiclient.parse_irods_listing(response, home_path)
-
-
+        uri, endpoint=os.path.join(apiclient.ADVANCEND_ENDPOINT, pid), token=token)
+        log.info("PID resolved with URL: {} and EUDAT/CHECKSUM {}".
+                 format(response['URL'], response['EUDAT/CHECKSUM']))
     else:
         log.info("PID not found. PID endpoint skipped")
-
-    
-
-
 
 
     ################
     # ACTION: rename one file
     ################
 
-    some_file = helpers.random_element(new_dir_content)
+    #some_file = helpers.random_element(new_dir_content)
     new_name = helpers.random_name()
 
     log.verbose("Random name generated: %s", new_name)
