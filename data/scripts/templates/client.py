@@ -10,7 +10,6 @@ requirements:
 """
 
 import os
-import sys
 import better_exceptions as be
 from utilities import helpers
 from utilities import apiclient
@@ -21,7 +20,7 @@ from utilities import apiclient
 ###########################
 
 USERNAME = 'someuser'
-PASSWORD = 'mypassword'
+PASSWORD = 'YOURPASSWORD'
 FILES_PATH = './data/files'
 LOG_LEVEL = 'info'  # or 'debug', 'verbose', 'very_verbose'
 
@@ -73,8 +72,7 @@ if __name__ == '__main__':
     # other operations
 
     # avoid more operations if the user only requested listing
-    if '--list' in sys.argv:
-        sys.exit(0)
+    apiclient.check_cli_arg('list', exit=True)
 
     # push files found in config dir
     files = apiclient.folder_content(FILES_PATH)
@@ -179,11 +177,8 @@ if __name__ == '__main__':
     new_dir_content = apiclient.parse_irods_listing(response, new_dir_path)
 
     # avoid cleaning if not requested
-    # TODO: more generalized
-    if '--clean' not in sys.argv:
-        sys.exit(0)
-    else:
-        log.warning("Cleaning the whole directory for testing: %s", new_dir)
+    apiclient.check_cli_arg('clean', reverse=True, exit=True)
+    log.warning("Cleaning the whole directory for testing: %s", new_dir)
 
     ################
     # ACTION: delete directory
