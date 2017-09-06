@@ -43,12 +43,12 @@ class B2accessUtilities(EndpointResource):
         try:
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
-            log.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
+            log.critical("B2ACCESS empty:\n%s\nCheck your app credentials", e)
             return (b2a_token, 'Server misconfiguration: oauth2 failed')
         except Exception as e:
             # raise e  # DEBUG
-            log.critical("Failed to get authorized @B2access: %s" % str(e))
-            return (b2a_token, 'B2ACCESS denied. oauth2: %s' % e)
+            log.critical("Failed to get authorized in B2ACCESS: %s", e)
+            return (b2a_token, 'B2ACCESS OAUTH2 denied: %s' % e)
         if resp is None:
             return (b2a_token, 'B2ACCESS denied: unknown error')
 

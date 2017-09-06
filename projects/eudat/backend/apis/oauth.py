@@ -11,6 +11,7 @@ from restapi import decorators as decorate
 from eudat.apis.common import PRODUCTION
 # from eudat.apis.common.b2access import B2accessUtilities
 from eudat.apis.common.b2stage import EudatEndpoint
+from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -27,6 +28,15 @@ class OauthLogin(EudatEndpoint):
         exception=RuntimeError,
         exception_label='Server side B2ACCESS misconfiguration')
     def get(self):
+
+        from flask import request
+        # agent = request.headers.get('User-Agent')
+        # log.pp(request.user_agent.__dict__)
+        if request.user_agent.browser is None:
+            return self.send_errors(
+                "B2ACCESS authorization must be requested from a browser",
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+            )
 
         auth = self.auth
         b2access = self.create_b2access_client(auth)
