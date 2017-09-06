@@ -79,7 +79,7 @@ Here's a step-by-step tutorial to work with the HTTP API project.
 To clone the working code:
 
 ```bash
-$ VERSION=0.6.0 \
+$ VERSION=0.6.1 \
     && git clone https://github.com/EUDAT-B2STAGE/http-api.git \
     && cd http-api \
     && git checkout $VERSION  
@@ -193,7 +193,7 @@ Some important points before going further:
 
 1. Please follow this paragraph only if you plan to deploy the HTTP API server in production
 2. Usually in production you have a domain name associated to your host IP (e.g. `b2stage.cineca.it` to 240.bla.bla.bla). But you can just use 'localhost' if this is not the case.
-3. You need a `B2ACCESS` account on the development server for the HTTP API application. Set the credentials [here](https://github.com/EUDAT-B2STAGE/http-api/blob/0.6.0/projects/eudat/project_configuration.yaml#L22-L26) otherwise the endpoint `/auth/askauth` would not work.  
+3. You need a `B2ACCESS` account on the development server for the HTTP API application. Set the credentials [here](https://github.com/EUDAT-B2STAGE/http-api/blob/0.6.1/projects/eudat/project_configuration.yaml#L22-L26) otherwise the endpoint `/auth/askauth` would not work.  
 
 Deploying is very simple:
 

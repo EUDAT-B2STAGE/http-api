@@ -14,7 +14,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 import os
 import time
 from flask import request, current_app
-from werkzeug import secure_filename
+# from werkzeug import secure_filename
 
 from eudat.apis.common import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from eudat.apis.common.b2stage import EudatEndpoint
@@ -246,16 +246,25 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         be conusmed before (for instance with request.data or request.get_json)
 
         To stream upload with CURL:
-        curl -v -X PUT --data-binary "@filename" apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova -H "$AUTH" -H "Content-Type: application/octet-stream"
-        curl -T filename apiserver.dockerized.io:5000/api/registered/tempZone/home/guest/prova -H "$AUTH" -H "Content-Type: application/octet-stream"
+        curl -v -X PUT --data-binary "@filename" \
+          apiserver.dockerized.io:5000/api/registered/tempZone/home/guest  \
+          -H "$AUTH" -H "Content-Type: application/octet-stream"
+        curl -T filename \
+            apiserver.dockerized.io:5000/api/registered/tempZone/home/guest \
+            -H "$AUTH" -H "Content-Type: application/octet-stream"
 
         To stream upload with python requests:
         import requests
 
-        headers = {"Authorization":"Bearer <token>", "Content-Type":"application/octet-stream"}
+        headers = {
+            "Authorization":"Bearer <token>",
+            "Content-Type":"application/octet-stream"
+        }
 
         with open('/tmp/filename', 'rb') as f:
-            requests.put('http://localhost:8080/api/registered/tempZone/home/guest/prova', data=f, headers=headers)
+            requests.put(
+                'http://localhost:8080/api/registered' +
+                '/tempZone/home/guest/prova', data=f, headers=headers)
         """
 
         if irods_location is None:
@@ -274,6 +283,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             self.get_file_parameters(icom, path=irods_location)
 
         ipath = None
+        request.get_data()
 
         # FIXME: allow custom split of a custom response
         # this piece of code does not work with a custom response
@@ -281,10 +291,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # the developer should be able to provide a 'custom_split'
 
         # Manage both form and streaming upload
-        # FIXME: @Mattia check this mime type
-        # log.pp(request)
+        #################
+        # FORM UPLOAD
         if request.mimetype != 'application/octet-stream':
-            # Form upload
+            # TODO: double check if this is the right mimetype
 
             # Normal upload: inside the host tmp folder
             response = super(BasicEndpoint, self) \
@@ -320,6 +330,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 try:
                     # Handling (iRODS) path
                     ipath = self.complete_path(path, filename)
+                    log.verbose("Save into: %s", ipath)
                     iout = icom.save(
                         abs_file,
                         destination=ipath, force=force, resource=resource)
@@ -328,15 +339,16 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     # Transaction rollback: remove local cache in any case
                     log.debug("Removing cache object")
                     os.remove(abs_file)
+        #################
+        # STREAMING UPLOAD
         else:
-            # Streaming upload
             filename = None
+
             try:
                 # Handling (iRODS) path
                 ipath = self.complete_path(path, filename)
-                iout = icom.write_in_streaming(destination=ipath,
-                                              force=force,
-                                              resource=resource)
+                iout = icom.write_in_streaming(
+                    destination=ipath, force=force, resource=resource)
                 log.info("irods call %s", iout)
                 response = self.force_response({'filename': ipath},
                                                code=hcodes.HTTP_OK_BASIC)

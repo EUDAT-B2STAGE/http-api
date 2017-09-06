@@ -309,8 +309,8 @@ class EudatEndpoint(B2accessUtilities):
 
         ############################
         log.verbose(
-            "Parameters [file{%s}, path{%s}, res{%s}, force{%s}]"
-            % (filename, path, resource, force))
+            "Parsed: file(%s), path(%s), res(%s), force(%s)",
+            filename, path, resource, force)
         return path, resource, filename, force
 
     def download_object(self, r, path):
