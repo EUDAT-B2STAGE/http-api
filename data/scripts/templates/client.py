@@ -21,7 +21,7 @@ from utilities import apiclient
 ###########################
 
 USERNAME = 'someuser'
-PASSWORD = 'yourpassword'
+PASSWORD = 'mypassword'
 FILES_PATH = './data/files'
 LOG_LEVEL = 'info'  # or 'debug', 'verbose', 'very_verbose'
 
@@ -73,9 +73,8 @@ if __name__ == '__main__':
     # other operations
 
     # avoid more operations if the user only requested listing
-    if len(sys.argv) > 1:
-        if '--list' == sys.argv[1]:
-            sys.exit(0)
+    if '--list' in sys.argv:
+        sys.exit(0)
 
     # push files found in config dir
     files = apiclient.folder_content(FILES_PATH)
@@ -117,15 +116,36 @@ if __name__ == '__main__':
         else:
             log.warning("%s already exists in %s", file_path, new_dir_path)
 
+        file_name = file_path
+
     # list new dir again to see changes
     response = apiclient.call(uri, endpoint=new_dir_endpoint, token=token)
     new_dir_content = apiclient.parse_irods_listing(response, new_dir_path)
 
     ################
+    # ACTION: resolve PID
+    ################
+
+    # Get uploaded file metadata
+    some_file = helpers.random_element(new_dir_content)
+    response = apiclient.call(
+        uri, endpoint=os.path.join(new_dir_endpoint, some_file), token=token)
+
+    pid = response[0][some_file]['metadata']['PID']
+    if pid:
+        response = apiclient.call(
+            uri, token=token,
+            endpoint=os.path.join(apiclient.ADVANCEND_ENDPOINT, pid))
+        log.info("PID resolved with URL: {} and EUDAT/CHECKSUM {}".
+                 format(response['URL'], response['EUDAT/CHECKSUM']))
+    else:
+        log.info("PID not found. PID endpoint skipped")
+
+    ################
     # ACTION: rename one file
     ################
 
-    some_file = helpers.random_element(new_dir_content)
+    # some_file = helpers.random_element(new_dir_content)
     new_name = helpers.random_name()
 
     log.verbose("Random name generated: %s", new_name)
@@ -156,4 +176,30 @@ if __name__ == '__main__':
 
     # list new dir again to see changes
     response = apiclient.call(uri, endpoint=new_dir_endpoint, token=token)
-    apiclient.parse_irods_listing(response, new_dir_path)
+    new_dir_content = apiclient.parse_irods_listing(response, new_dir_path)
+
+    # avoid cleaning if not requested
+    # TODO: more generalized
+    if '--clean' not in sys.argv:
+        sys.exit(0)
+    else:
+        log.warning("Cleaning the whole directory for testing: %s", new_dir)
+
+    ################
+    # ACTION: delete directory
+    ################
+
+    # Remove all files
+    for file_name in new_dir_content:
+        response = apiclient.call(
+            uri, endpoint=os.path.join(new_dir_endpoint, file_name),
+            token=token, method='delete'
+        )
+        log.very_verbose("Cleaning: %s", file_name)
+
+    # Remove the empty directory
+    response = apiclient.call(
+        uri, endpoint=os.path.join(new_dir_endpoint),
+        token=token, method='delete'
+    )
+    log.info("Deleted directory: %s", new_dir_path)
