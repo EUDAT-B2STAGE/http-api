@@ -1,5 +1,5 @@
 
-## Development operations
+## Development operations
 
 A set of snippets that helped in the past.
 

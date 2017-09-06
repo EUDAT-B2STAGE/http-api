@@ -92,4 +92,3 @@ services:
   restclient:
     environment:
       IRODS_ZONE: ${IRODS_ZONE}
-      IRODS_GUEST_USER: ${IRODS_GUEST_USER}

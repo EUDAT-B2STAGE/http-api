@@ -74,6 +74,7 @@ services:
       ACTIVATE: 1
       APP_HOST: ${FLASK_HOST}
       APP_PORT: :${FLASK_DEFAULT_PORT}
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
     networks:
       app_net:
     depends_on:

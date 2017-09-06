@@ -28,7 +28,7 @@ services:
       - ../data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
       # # FIX missing IP / DNS
       # - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
-      # # DEBUG modifications on submodules
+      # # DEBUG modifications on submodules
       # - ../submodules/backend/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 
   proxy:
@@ -58,6 +58,7 @@ services:
       APP_PORT:
       DOMAIN: ${PROJECT_DOMAIN}
       PROXY_HOST: ${PROXY_HOST}
+      IRODS_GUEST_USER: ${IRODS_USER}
     networks:
       proxy_net:
     depends_on:
