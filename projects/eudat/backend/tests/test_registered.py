@@ -278,7 +278,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
                     self._irods_path + '/' + new_file_name)
         r = self.app.patch(endpoint, data=params,
                            headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
         # Rename non existing directory
         params = json.dumps(dict(newname=self._irods_path))
