@@ -20,8 +20,8 @@ from utilities import apiclient
 # Configuration variables #
 ###########################
 
-USERNAME = 'someuser'
-PASSWORD = 'yourpassword'
+USERNAME = 'muccix'
+PASSWORD = 'shortpw'
 FILES_PATH = './data/files'
 LOG_LEVEL = 'info'  # or 'debug', 'verbose', 'very_verbose'
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     files = apiclient.folder_content(FILES_PATH)
     log.debug("Files to be pushed: %s", files)
 
-    new_dir = 'test'
+    new_dir = 'test_http_api'
     new_dir_path = os.path.join(home_path, new_dir)
 
     if new_dir not in home_content:
@@ -156,3 +156,23 @@ if __name__ == '__main__':
     # list new dir again to see changes
     response = apiclient.call(uri, endpoint=new_dir_endpoint, token=token)
     apiclient.parse_irods_listing(response, new_dir_path)
+
+
+    ################
+    # ACTION: delete directory
+    ################
+    response = apiclient.call(
+        uri, endpoint=os.path.join(new_dir_endpoint),
+        token=token, method='delete'
+    )
+    log.info("Deleted directory: %s", new_dir_path)
+
+
+    ################
+    # ACTION: create directory again
+    ################
+    response = apiclient.call(
+        uri, endpoint=apiclient.BASIC_ENDPOINT, token=token, method='post',
+        payload={'path': new_dir_path}
+    )
+    log.info("Created directory: %s", response.get('path'))
