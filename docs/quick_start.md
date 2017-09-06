@@ -225,7 +225,7 @@ In production it might be difficult to get informations if something goes wrong.
 # check any service on any mode
 $ rapydo --mode YOURMODE --service YOURSERVICE log
 # e.g. check all the logs from production, following new updates
-$ rapydo --mode production log --follow
+# $ rapydo --mode production log --follow
 
 ## if this is not enough:
 

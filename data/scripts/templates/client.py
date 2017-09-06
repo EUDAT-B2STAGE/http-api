@@ -41,6 +41,7 @@ if __name__ == '__main__':
     # decide which HTTP API server you should query
     uri = REMOTE_HTTPAPI_URI
     # uri = LOCAL_HTTPAPI_URI
+    log.very_verbose('init log: %s\nURI [%s]', be, uri)
 
     ################
     # ACTION: check status
@@ -56,7 +57,6 @@ if __name__ == '__main__':
     token, home_path = apiclient.login(uri, USERNAME, PASSWORD)
     # token = 'SOMEHASHSTRINGFROMB2ACCESS'
     # path = '/tempZone/home/YOURUSER'
-    log.very_verbose('init log: %s', be)
     log.debug('Home directory is: %s', home_path)
     log.info("Logged in with token: %s...", token[:20])
 
@@ -81,7 +81,8 @@ if __name__ == '__main__':
     files = apiclient.folder_content(FILES_PATH)
     log.debug("Files to be pushed: %s", files)
 
-    new_dir = 'test'
+    new_dir = 'testing_httpapi'
+    # new_dir = helpers.random_name()
     new_dir_path = os.path.join(home_path, new_dir)
 
     if new_dir not in home_content:
