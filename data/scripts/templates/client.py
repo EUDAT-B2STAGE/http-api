@@ -118,7 +118,28 @@ if __name__ == '__main__':
 
     # list new dir again to see changes
     response = apiclient.call(uri, endpoint=new_dir_endpoint, token=token)
-    new_dir_content = apiclient.parse_irods_listing(response, new_dir_path)
+    #new_dir_content = apiclient.parse_irods_listing(response, new_dir_path)
+    log.info("------------>", response)
+
+
+
+    ################
+    # ACTION: resolve PID
+    ################
+    pid = response.get('PID')
+    if pid:
+        response = apiclient.call(
+        uri, endpoint=apiclient.ADVANCEND_ENDPOINT + pid, token=token)
+    home_content = apiclient.parse_irods_listing(response, home_path)
+
+
+    else:
+        log.info("PID not found. PID endpoint skipped")
+
+    
+
+
+
 
     ################
     # ACTION: rename one file
@@ -138,6 +159,7 @@ if __name__ == '__main__':
     # list new dir again to see changes
     response = apiclient.call(uri, endpoint=new_dir_endpoint, token=token)
     new_dir_content = apiclient.parse_irods_listing(response, new_dir_path)
+
 
     ################
     # ACTION: delete one file
