@@ -95,8 +95,12 @@ variables:
   #   credentials:
   #     username: someotheruser
   #     password: somepassword
+  #     # warning: do not change base roles for the database
   #     roles:
   #       user: normal_user
+  #       internal: staff_user
+  #       admin: admin_root
+  #       default: normal_user
 
   repos:
     utils:
@@ -126,7 +130,8 @@ tags:
   eudat: all endpoints associated to EUDAT services
   b2access: request/refresh authorization from B2ACCESS
   registered: upload, download, list and delete objects
-  pids: resolve and download data from EUDAT Persistente IDentifier
+  pids: resolve and download data from EUDAT Persistent IDentifier
+  b2safe: proxy access to irods b2safe credentials
   # internal: for internal testing purpose only
 
 # Keep track of releases and dependencies

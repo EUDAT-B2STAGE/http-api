@@ -7,10 +7,10 @@ Things we have been testing
 
 - b2access authorization
     + internal (DONE)
-    + external
+    + external (DONE)
 - b2safe proxy
     + internal (DONE)
-    + external
+    + external (DONE)
 - guest user
     + internal token (DONE)
     + production disabled (DONE)

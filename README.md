@@ -30,10 +30,15 @@ Over the EUDAT2020 project other functionalities will be added: the development 
 
 ## Documentation
 
+Documentation for the latest stable release:
+
 - [Quick start](docs/user/user.md) for deploy and development
 - [Deploy](docs/deploy/deploy.md) the server
 - [User](docs/user/user.md) guide
 - [Developer](docs/development/development.md) instructions
+
+Documentation for the current developed branch instead can be found 
+[here](https://github.com/EUDAT-B2STAGE/http-api/tree/0.6.2/docs).
 
 
 ## Implementation

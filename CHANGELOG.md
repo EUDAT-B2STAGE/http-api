@@ -1,9 +1,11 @@
 
-# v0.7.0-rc4 (*future*)
+# v0.7.0-rc4 (*near future*)
 **due date**: October 15th, 2017
 
 ## features
+
 - Connect prototype to production services #90
+- Checklist for good projects #62
 - to be defined
 
 # v0.6.2-rc3 (*currently developed*)
@@ -11,23 +13,32 @@
 **project**: [webinar](https://github.com/EUDAT-B2STAGE/http-api/projects/3)
 
 ## features
+
 - Define a protocol to release production to be tested automatically #55
 - to be defined
 
 # v0.6.1-rc2 (*latest stable*)
-**due date**: September 15th, 2017
+**due date**: September 9th, 2017
 **project**: [release candidate 2](https://github.com/EUDAT-B2STAGE/http-api/milestone/9)
 
 ## features
-- B2safe based accounting for all endpoints #88
-- Checklist for good projects #62
+
+- Access directly with B2SAFE credentials #83
 - Upgrade an existing installation #87
+- B2safe based accounting for all endpoints #88
+- Different response when calling `/auth/askauth` not from a browser #92
+- Certificates folder name b2access #94
+- Python client template #95
+- New bugs #96
+- Using curl option -u to pass b2safe credentials #97
+- Update documentation for authentication via b2safe credentials #98
 
 # v0.6.0-rc1
 **due date**: July 31th, 2017
 **milestone**: [release candidate 1](https://github.com/EUDAT-B2STAGE/http-api/milestone/3)
 
 ## features
+
 - Access directly with B2SAFE credentials #83
 - Fix prerequisites installation #84
 - Coverage badge #76

@@ -201,7 +201,7 @@ Deploying is very simple:
 # define your domain
 $ DOMAIN='b2stage.cineca.it'
 # launch production mode
-$ rapydo --host $DOMAIN --mode production start
+$ rapydo --hostname $DOMAIN --mode production start
 ```
 
 Now may access your IP or your domain and the HTTP API endpoints are online, protected by a proxy server. You can test this with:
@@ -213,7 +213,7 @@ open $DOMAIN/api/status
 Up to now the current SSL certificate is self signed and is 'not secure' for all applications. Your browser is probably complaining for this. This is why we need to produce one with the free `letsencrypt` service.
 
 ```bash
-$ rapydo --host $DOMAIN --mode production ssl-certificate
+$ rapydo --hostname $DOMAIN --mode production ssl-certificate
 #NOTE: this will work only if you have a real domain associated to your IP
 ```
 

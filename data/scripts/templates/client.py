@@ -20,7 +20,7 @@ from utilities import apiclient
 ###########################
 
 USERNAME = 'someuser'
-PASSWORD = 'YOURPASSWORD'
+PASSWORD = 'somepassword'
 FILES_PATH = './data/files'
 LOG_LEVEL = 'info'  # or 'debug', 'verbose', 'very_verbose'
 
@@ -38,8 +38,10 @@ log = apiclient.setup_logger(__name__, level_name=LOG_LEVEL)
 if __name__ == '__main__':
 
     # decide which HTTP API server you should query
-    uri = REMOTE_HTTPAPI_URI
-    # uri = LOCAL_HTTPAPI_URI
+    if apiclient.check_cli_arg('remote'):
+        uri = REMOTE_HTTPAPI_URI
+    else:
+        uri = LOCAL_HTTPAPI_URI
     log.very_verbose('init log: %s\nURI [%s]', be, uri)
 
     ################
@@ -52,8 +54,9 @@ if __name__ == '__main__':
     ################
     # ACTION: LOGIN
     ################
-    # login to HTTP API or set your token from B2ACCESS web login
+    # login to HTTP API with B2SAFE credentials
     token, home_path = apiclient.login(uri, USERNAME, PASSWORD)
+    # # or set your token from B2ACCESS web login
     # token = 'SOMEHASHSTRINGFROMB2ACCESS'
     # path = '/tempZone/home/YOURUSER'
     log.debug('Home directory is: %s', home_path)
@@ -67,6 +70,8 @@ if __name__ == '__main__':
     response = apiclient.call(
         uri, endpoint=apiclient.BASIC_ENDPOINT + home_path, token=token)
     home_content = apiclient.parse_irods_listing(response, home_path)
+    if len(home_content) < 1 and apiclient.check_cli_arg('list'):
+        log.warning("Home directory is empty")
 
     ####################
     # other operations
