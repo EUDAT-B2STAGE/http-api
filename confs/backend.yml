@@ -93,7 +93,7 @@ services:
     image: ${COMPOSE_PROJECT_NAME}/proxy:template
     hostname: reverseproxy
     volumes:
-      - letsencrypt_certs:/etc/letsencrypt
+      # - letsencrypt_certs:/etc/letsencrypt
       - ssl_dhparam:/etc/nginx/ssl/
     networks:
       proxy_net:
