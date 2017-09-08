@@ -8,7 +8,7 @@
 
 NOTE: the B2STAGE HTTP-API is an interface towards other EUDAT services which are subject to modifications and new developments, therefore the functionalities and the implementation will have to be changed accordingly. 
 
-Feedback on our first Release Candidate: [![Gitter](https://badges.gitter.im/EUDAT-B2STAGE/http-api.svg)](https://gitter.im/EUDAT-B2STAGE/http-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+Feedback on our current Release Candidate: [![Gitter](https://badges.gitter.im/EUDAT-B2STAGE/http-api.svg)](https://gitter.im/EUDAT-B2STAGE/http-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
 ---
