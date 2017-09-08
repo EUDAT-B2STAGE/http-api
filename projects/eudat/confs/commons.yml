@@ -14,30 +14,6 @@ volumes:
 
 services:
 
-  icat:
-    environment:
-      POSTGRES_HOST: "${ALCHEMY_HOST}"
-      POSTGRES_USER: "${ALCHEMY_USER}"
-      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
-      IRODS_HOST: "${IRODS_HOST}"
-      IRODS_PORT: ${IRODS_PORT}
-      IRODS_ZONE: ${IRODS_ZONE}
-      IRODS_DB: "${IRODS_DB}"
-      IRODS_USER: ${IRODS_USER}
-      IRODS_PASSWORD: ${IRODS_PASSWORD}
-
-    volumes:
-      - etcconf:/etc
-      - irodshome:/home/irods
-      - irodsvar:/var/lib/irods
-      - sharedcerts:/opt/certificates
-      - ../submodules/builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
-
-    # # Open irods port to Outside world
-    # ## CAREFULL: don't uncomment the two lines below if you don't know why
-    # ports:
-    #     - 1247:1247
-
   postgres:
     environment:
       POSTGRES_USER: "${ALCHEMY_USER}"
@@ -51,7 +27,7 @@ services:
       # SHARED
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
-      - ../../../data/certs:/usr/local/share/ca-certificates
+      - ../data/certs:/usr/local/share/ca-certificates
       # # mount irods code to develop patches
       # - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
     networks:
@@ -64,7 +40,7 @@ services:
 
       ##############################
       # set this inside the MODE yaml files you want to use
-      FLASK_DEBUG: 1
+      # FLASK_DEBUG: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
       ##############################
@@ -97,8 +73,6 @@ services:
       IRODS_DN: ${IRODS_DN}
       IRODS_PASSWORD: ${IRODS_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
-      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
-      IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
 
       # # mongodb connection
       # MONGO_ENABLE: 1
@@ -118,4 +92,3 @@ services:
   restclient:
     environment:
       IRODS_ZONE: ${IRODS_ZONE}
-      IRODS_GUEST_USER: ${IRODS_GUEST_USER}

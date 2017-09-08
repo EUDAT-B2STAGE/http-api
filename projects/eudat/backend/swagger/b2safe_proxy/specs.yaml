@@ -8,5 +8,6 @@ mapping:
   b2safeproxy: "/b2safeproxy"
 labels:
   - eudat
-  - b2safe_proxy
+  - b2safe
+  # - proxy
   - authentication

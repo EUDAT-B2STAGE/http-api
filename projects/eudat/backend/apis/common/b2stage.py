@@ -6,13 +6,15 @@ Common functions for EUDAT endpoints
 
 import os
 # from restapi.rest.definition import EndpointResource
+from restapi.exceptions import RestApiException
 from eudat.apis.common.b2access import B2accessUtilities
 from eudat.apis.common import (
     CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
-    IRODS_PROTOCOL, HTTP_PROTOCOL,  # PRODUCTION,
+    IRODS_PROTOCOL, HTTP_PROTOCOL, PRODUCTION,
     IRODS_VARS, InitObj
 )
 # from restapi.confs import API_URL
+from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -31,36 +33,32 @@ class EudatEndpoint(B2accessUtilities):
 
     def init_endpoint(self):
 
-        # main object to handle token and oauth2 things
-        user = self.get_current_user()
-        intuser, extuser = self.auth.oauth_from_local(user)
+        # Get user information from db, associated to token
+        # NOTE: user legenda
+        # internal_user = user internal to the API
+        # external_user = user from oauth (B2ACCESS)
+        internal_user = self.get_current_user()
+        log.debug("Token user: %s" % internal_user)
 
-        # If we have an "external user" we are using b2access oauth2
-        # Var 'proxy' is referring to proxy certificate or normal certificate
-        if extuser is None:
-            # TODO: a more well thought user mapping
-            # when not using B2ACCESS
-            iuser = IRODS_VARS.get('guest_user')
-            ipass = None
-            proxy = False
-            # iuser = IRODS_VARS.get('user')
-            # ipass = IRODS_VARS.get('password')
+        #################################
+        # decide which type of auth we are dealing with
+        # NOTE: icom = irods commands handler (official python driver PRC)
+
+        proxy = False
+        external_user = None
+        if internal_user.authmethod == 'credentials':
+            icom = self.irodsuser_from_b2stage(internal_user)
+        elif internal_user.authmethod == 'irods':
+            icom = self.irodsuser_from_b2safe(internal_user)
+        elif internal_user.authmethod == 'oauth2':
+            icom, external_user, proxy = \
+                self.irodsuser_from_b2access(internal_user)
         else:
-            iuser = extuser.irodsuser
-            ipass = None
-            proxy = True
+            log.exit("Unknown credentials provided")
 
-        icom = self.get_service_instance(
-            service_name='irods',
-            user=iuser, password=ipass, proxy=proxy,
-            # avoid connection errors in the extension
-            # and handle them now
-            only_check_proxy=True
-        )
-
-        refreshed = False
-
+        #################################
         # Verify if irods certificates are ok
+        refreshed = False
         try:
             # icd and ipwd do not give error with wrong certificates...
             # so the minimum command is ils inside the home dir
@@ -70,29 +68,124 @@ class EudatEndpoint(B2accessUtilities):
             if proxy:
                 log.debug("Current proxy certificate is valid")
 
+        # Catch exceptions on this irods test
+        # To manipulate the reply to be given to the user
         except BaseException as e:
             log.warning("Catched exception %s" % type(e))
+
             if proxy:
-                obj = self.check_proxy_certificate(extuser, e)
-                if obj is None:
+                error = self.check_proxy_certificate(external_user, e)
+                if error is None:
                     refreshed = True
                 else:
                     # Case of error to be printed
-                    return obj
+                    return self.parse_gss_failure(error)
             else:
                 raise e
 
-        # SQLALCHEMY connection
+        #################################
+        # database connection
         sql = self.get_service_instance('sqlalchemy')
-        user = intuser.email
+        # update user variable to account email, which should be always unique
+        user = internal_user.email
 
         #####################################
-        log.very_verbose("Base obj [i{%s}, s{%s}, u {%s}]" % (icom, sql, user))
+        log.very_verbose(
+            "Base objects for current requets [i{%s}, s{%s}, u {%s}]"
+            % (icom, sql, user))
+
         return InitObj(
-            username=user, extuser_object=extuser,
+            username=user, extuser_object=external_user,
             icommands=icom, db_handler=sql,
             valid_credentials=True, is_proxy=proxy, refreshed=refreshed
         )
+
+    def irodsuser_from_b2access(self, internal_user):
+        """ Certificates X509 and authority delegation """
+        proxy = True
+        external_user = self.auth.oauth_from_local(internal_user)
+
+        return \
+            self.get_service_instance(
+                service_name='irods', only_check_proxy=True,
+                user=external_user.irodsuser, password=None,
+                gss=proxy, proxy_file=external_user.proxyfile,
+            ), \
+            external_user, \
+            proxy
+
+    def irodsuser_from_b2safe(self, user):
+
+        if user.session is not None and len(user.session) > 0:
+            log.debug("Validated B2SAFE user: %s" % user.uuid)
+        else:
+            msg = "Current credentials not registered inside B2SAFE"
+            raise RestApiException(
+                msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+
+        return self.get_service_instance(
+            service_name='irods', user_session=user)
+
+    def irodsuser_from_b2stage(self, internal_user):
+        """
+        Normal credentials (only available inside the HTTP API database)
+        aren't mapped to a real B2SAFE user.
+        We force the guest user if it's indicated in the configuration.
+
+        NOTE: this usecase is to be avoided in production.
+        """
+
+        if PRODUCTION:
+            # 'guest' irods mode is only for debugging purpose
+            raise ValueError("Invalid authentication")
+
+        return self.get_service_instance(
+            service_name='irods', only_check_proxy=True,
+            user=IRODS_VARS.get('guest_user'), password=None, gss=True,
+        )
+
+    def parse_gss_failure(self, error_object):
+
+        errors = error_object.errors.copy()
+
+        for error in errors:
+
+            log.warning("GSS failure:\n%s" % error)
+
+            if 'GSS failure' in error or \
+               ('Invalid credential' in error and ' GSS ' in error):
+
+                import re
+                new_error = None
+
+                if "Unable to verify remote side's credentials" in error:
+                    regexp = r'OpenSSL Error:.+:([^\n]+)'
+                    pattern = re.compile(regexp)
+                    match = pattern.search(error)
+                    new_error = 'B2ACCESS proxy not trusted by B2SAFE'
+                    if match:
+                        new_error += ': ' + match.group(1).strip()
+
+                # globus_sysconfig: Error with certificate filename
+                elif 'Error with certificate filename' in error:
+
+                    regexp = r'globus_[^\:]+:([^\n]+)'
+                    pattern = re.compile(regexp)
+                    matches = pattern.findall(error)
+
+                    if matches:
+                        print(matches)
+                        last_error = matches.pop()
+                        if 'is not a valid file' in last_error:
+                            if 'File does not exist' in last_error:
+                                new_error = 'B2ACCESS proxy file not found'
+                            else:
+                                new_error = 'B2ACCESS proxy file invalid'
+
+                if new_error is not None:
+                    error_object.errors = [new_error]
+
+        return error_object
 
     def httpapi_location(self, ipath, api_path=None, remove_suffix=None):
         """ URI for retrieving with GET method """
@@ -121,10 +214,10 @@ class EudatEndpoint(B2accessUtilities):
             irods_location = self._path_separator + irods_location
         return irods_location
 
-    @staticmethod
-    def username_from_unity(unity_persistent):
-        """ Take the last piece of the unity id """
-        return unity_persistent.split('-')[::-1][0]
+    # @staticmethod
+    # def user_from_unity(unity_persistent):
+    #     """ Take the last piece of the unity id """
+    #     return unity_persistent.split('-')[::-1][0]
 
     @staticmethod
     def splitall(path):
@@ -216,8 +309,8 @@ class EudatEndpoint(B2accessUtilities):
 
         ############################
         log.verbose(
-            "Parameters [file{%s}, path{%s}, res{%s}, force{%s}]"
-            % (filename, path, resource, force))
+            "Parsed: file(%s), path(%s), res(%s), force(%s)",
+            filename, path, resource, force)
         return path, resource, filename, force
 
     def download_object(self, r, path):

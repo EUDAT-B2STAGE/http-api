@@ -18,6 +18,7 @@ data/secrets/secret_*
 ##  Submodules ##
 #################
 
+submodules/.backup
 submodules/utilities
 submodules/builds_base
 submodules/backend

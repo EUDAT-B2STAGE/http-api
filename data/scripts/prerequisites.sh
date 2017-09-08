@@ -36,3 +36,11 @@ if [ $myuser != "root" ]; then
     echo "Please activate the environment with:"
     echo "source $vename/bin/activate"
 fi
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+echo "======="
+echo
+link="https://github.com/EUDAT-B2STAGE/http-api/blob/$branch/docs/quick_start.md"
+echo "To work with this project please check first instructions:"
+echo $link
+echo

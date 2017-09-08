@@ -11,6 +11,7 @@ from restapi import decorators as decorate
 from eudat.apis.common import PRODUCTION
 # from eudat.apis.common.b2access import B2accessUtilities
 from eudat.apis.common.b2stage import EudatEndpoint
+from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -27,6 +28,15 @@ class OauthLogin(EudatEndpoint):
         exception=RuntimeError,
         exception_label='Server side B2ACCESS misconfiguration')
     def get(self):
+
+        from flask import request
+        # agent = request.headers.get('User-Agent')
+        # log.pp(request.user_agent.__dict__)
+        if request.user_agent.browser is None:
+            return self.send_errors(
+                "B2ACCESS authorization must be requested from a browser",
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+            )
 
         auth = self.auth
         b2access = self.create_b2access_client(auth)
@@ -82,22 +92,21 @@ class Authorize(EudatEndpoint):
             return self.send_errors(
                 "B2ACCESS CA is down", "Could not get certificate files")
 
-        # iRODS related
-        # NOTE: this irods client uses default admin to find the related user
-        admin_icom = self.get_service_instance(
-            service_name='irods', be_admin=True)
-        uid = self.username_from_unity(curuser.data.get('unity:persistent'))
-        irods_user = self.set_irods_username(admin_icom, auth, extuser, uid)
+        # iRODS informations: get/set from current B2ACCESS response
+        icom = self.get_service_instance(service_name='irods')
+        irods_user = self.set_irods_username(icom, auth, extuser)
         if irods_user is None:
             return self.send_errors(
-                "Failed to set irods user from: %s/%s" % (uid, extuser))
-        user_home = admin_icom.get_user_home(irods_user)
+                "Current B2ACCESS credentials (%s) " % extuser.certificate_dn +
+                "do not match any user inside B2SAFE namespace"
+            )
+        user_home = icom.get_user_home(irods_user)
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
 
-        # # TOFIX: Workout a better way to get the host in this example
+        # FIXME: Workout a better way to get the host in this example
         # uri = self.httpapi_location(
         #     request.url.replace("/auth/authorize", ''),
         #     API_URL + "/namespace" + user_home
@@ -105,7 +114,7 @@ class Authorize(EudatEndpoint):
         # get_example = "curl -H 'Authorization: %s %s' %s" \
         #     % ('Bearer', local_token, uri)
 
-        # TOFIX: Create a method to reply with standard Bearer oauth response
+        # FIXME: Create a method to reply with standard Bearer oauth response
         # return self.send_credentials(local_token, extra, metas)
 
         return self.force_response(

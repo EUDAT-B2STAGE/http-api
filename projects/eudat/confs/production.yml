@@ -11,19 +11,25 @@ services:
     environment:
       ACTIVATE: 1
       APP_MODE: production
+      FLASK_DEBUG: 0
       DEBUG_LEVEL: INFO
       NGINX_ACTIVE: "True"
+      ##################
+      # EUDAT RELATED
       B2ACCESS_ENV: development
-      # EUDAT RELATED  # TODO: switch to production when B2ACCESS is ready
       # B2ACCESS_ENV: production
+      ##################
     depends_on:
       # - icat
       - postgres
     expose:
       - 8080
     volumes:
-      - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
       - ../data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
+      # # FIX missing IP / DNS
+      # - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
+      # # DEBUG modifications on submodules
+      # - ../submodules/backend/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 
   proxy:
     environment:
@@ -34,6 +40,8 @@ services:
       # SSL / HTTPS
       - ../confs/nginx/production.conf:/etc/nginx/sites-enabled/production
       - sslcerts:/etc/letsencrypt
+      # 502 Bad Gateway
+      - ../projects/${COMPOSE_PROJECT_NAME}/builds/proxy/badgateway.html:/usr/share/nginx/html/custom_502.html
     ports:
       - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
       - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
@@ -42,11 +50,15 @@ services:
   # and trying to test locally:
   restclient:
     environment:
+
+      # ACTIVATE: 1
       ACTIVATE: 0 # change for debugging
+
       APP_HOST: --verify /tmp/certs/real/fullchain1.pem https://${PROJECT_DOMAIN}
       APP_PORT:
       DOMAIN: ${PROJECT_DOMAIN}
       PROXY_HOST: ${PROXY_HOST}
+      IRODS_GUEST_USER: ${IRODS_USER}
     networks:
       proxy_net:
     depends_on:

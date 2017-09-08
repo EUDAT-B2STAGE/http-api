@@ -13,10 +13,15 @@ services:
     environment:
       ACTIVATE: 1
       FLASK_DEBUG: 1
+      DEBUG_ENDPOINTS: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
+      #################
       # EUDAT RELATED
       B2ACCESS_ENV: development
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
+      IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
+      #################
     ports:
       - 8080:${FLASK_DEFAULT_PORT}
 
@@ -30,6 +35,38 @@ services:
       - ../submodules/utilities/utilities:/usr/local/lib/python3.6/dist-packages/utilities
       - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
+  icat:
+    environment:
+      ACTIVATE: 1
+      POSTGRES_HOST: "${ALCHEMY_HOST}"
+      POSTGRES_USER: "${ALCHEMY_USER}"
+      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
+      IRODS_HOST: "${IRODS_HOST}"
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_DB: "${IRODS_DB}"
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
+      B2ACCESS_CAS: ${B2ACCESS_CAS}
+
+    volumes:
+      - etcconf:/etc
+      - irodshome:/home/${IRODS_USER}
+      - irodsvar:/var/lib/${IRODS_USER}
+      - sharedcerts:/opt/certificates
+      # NOTE: this is the script that adds GSI in our irods instance
+      - ../submodules/builds_base/icat/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      # - ../submodules/builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
+      # # B2ACCESS dev and prod certificates
+      - ../submodules/builds_base/icat/b2access_certificates:${B2ACCESS_CAS}
+      # # B2ACCESS dev rest-of-the-chain certificates
+      # - ../data/certs:/usr/local/share/ca-certificates
+
+    # # Open irods port to Outside world
+    # ## CAREFULL: don't uncomment the two lines below if you don't know why
+    # ports:
+    #     - 1247:1247
+
   restclient:
     # build: ../projects/${COMPOSE_PROJECT_NAME}/builds/restclient
     # image: ${COMPOSE_PROJECT_NAME}/restclient:custom
@@ -37,6 +74,7 @@ services:
       ACTIVATE: 1
       APP_HOST: ${FLASK_HOST}
       APP_PORT: :${FLASK_DEFAULT_PORT}
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
     networks:
       app_net:
     depends_on:

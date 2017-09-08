@@ -64,6 +64,7 @@ services:
       UWSGI_APP: ${COMPOSE_PROJECT_NAME}.${PYTHON_MAIN_FILE}
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      DEBUG_ENDPOINTS: 0
       # base the user/role mechanism on some database
       AUTH_ENABLE: 0
       # AUTH_SERVICE: ${AUTH_SERVICE}
@@ -92,7 +93,7 @@ services:
     image: ${COMPOSE_PROJECT_NAME}/proxy:template
     hostname: reverseproxy
     volumes:
-      - letsencrypt_certs:/etc/letsencrypt
+      # - letsencrypt_certs:/etc/letsencrypt
       - ssl_dhparam:/etc/nginx/ssl/
     networks:
       proxy_net:

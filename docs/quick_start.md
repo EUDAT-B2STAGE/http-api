@@ -6,11 +6,11 @@ This is a reference page to quick start your knowledge of the HTTP API project; 
 
 ## Feedback on the first Release Candidate
 
-To gather into one place the feedback of any user testing a deployed HTTP API server or the online prototype, we created a dedicated free chat room on gitter:
+To gather into one place the feedback of any user testing a deployed HTTP API server or the online prototype, we created a dedicated free chat room on the `gitter` comunication platform:
 
 https://gitter.im/EUDAT-B2STAGE/http-api
 
-Please feel free to report or comment to help us improve!
+Please: feel free to report or comment to help us improve!
 
 
 ## Using the prototype online
@@ -74,12 +74,12 @@ NOTE: compose comes bundled with the toolbox.
 Here's a step-by-step tutorial to work with the HTTP API project.
 
 
-### 1. cloning 
+### 1. cloning 
 
 To clone the working code:
 
 ```bash
-$ VERSION=0.6.0 \
+$ VERSION=0.6.1 \
     && git clone https://github.com/EUDAT-B2STAGE/http-api.git \
     && cd http-api \
     && git checkout $VERSION  
@@ -88,7 +88,7 @@ $ VERSION=0.6.0 \
 ```
 
 
-### 2. configure
+### 2. configure
 
 Now that you have all necessary software installed, before launching services you should consider editing the main configuration:
 
@@ -124,6 +124,22 @@ $ rapydo init
 ```
 
 NOTE: with `RC1` there is no working `upgrade` process in place to make life easier if you already have this project cloned from a previous release. This is something important already in progress [here](https://github.com/EUDAT-B2STAGE/http-api/issues/87).
+
+If you wish to __**manually upgrade**__:
+
+```bash
+VERSION="0.6.1"
+git checkout $VERSION
+
+# supposely the rapydo framework has been updated, so you need to check:
+rm -rf submodules/*
+data/scripts/prerequisites.sh
+rapydo init
+
+# update docker images with the new build templates in rapydo
+# NOTE: select your mode based on the next paragraph
+rapydo --mode YOURMODE build -r -f
+```
 
 ### 5. MODES
 
@@ -177,7 +193,7 @@ Some important points before going further:
 
 1. Please follow this paragraph only if you plan to deploy the HTTP API server in production
 2. Usually in production you have a domain name associated to your host IP (e.g. `b2stage.cineca.it` to 240.bla.bla.bla). But you can just use 'localhost' if this is not the case.
-3. You need a `B2ACCESS` account on the development server for the HTTP API application. Set the credentials [here](https://github.com/EUDAT-B2STAGE/http-api/blob/0.6.0/projects/eudat/project_configuration.yaml#L22-L26) otherwise the endpoint `/auth/askauth` would not work.  
+3. You need a `B2ACCESS` account on the development server for the HTTP API application. Set the credentials [here](https://github.com/EUDAT-B2STAGE/http-api/blob/0.6.1/projects/eudat/project_configuration.yaml#L22-L26) otherwise the endpoint `/auth/askauth` would not work.  
 
 Deploying is very simple:
 
@@ -185,7 +201,7 @@ Deploying is very simple:
 # define your domain
 $ DOMAIN='b2stage.cineca.it'
 # launch production mode
-$ rapydo --host $DOMAIN --mode production start
+$ rapydo --hostname $DOMAIN --mode production start
 ```
 
 Now may access your IP or your domain and the HTTP API endpoints are online, protected by a proxy server. You can test this with:
@@ -197,11 +213,40 @@ open $DOMAIN/api/status
 Up to now the current SSL certificate is self signed and is 'not secure' for all applications. Your browser is probably complaining for this. This is why we need to produce one with the free `letsencrypt` service.
 
 ```bash
-$ rapydo --host $DOMAIN --mode production ssl-certificate
+$ rapydo --hostname $DOMAIN --mode production ssl-certificate
 #NOTE: this will work only if you have a real domain associated to your IP
 ```
 
 If you check again the server should now be correctly certificated. At this point the service should be completely functional.
+
+In production it might be difficult to get informations if something goes wrong. If the server failed you have a couple of options to find out why:
+
+```bash
+# check any service on any mode
+$ rapydo --mode YOURMODE --service YOURSERVICE log
+# e.g. check all the logs from production, following new updates
+# $ rapydo --mode production log --follow
+
+## if this is not enough:
+
+# check the backend as admin of the container
+$ rapydo shell --user root backend
+# look at the production WSGI logs
+less /var/log/uwsgi/*log
+# check processes
+ps aux --forest
+# here uwsgi (as developer) and nginx (as www-data) should be running 
+
+## if you only get 'no app loaded' from uWSGI, 
+
+$ rapydo shell backend
+# launch by hand a server instance
+$ DEBUG_LEVEL=VERY_VERBOSE restapi launch
+# check if you get any error in your output
+
+```
+
+Also please take a look at how to launch interfaces in the upcoming paragraph, in case there is a problem with the database or swagger.
 
 
 ## Other operations
@@ -243,14 +288,15 @@ cp PATH/TO/YOUR/CREDENTIALS/FILES/* data/b2handle/
 If you need to clean everything you have stored in docker from this project:
 
 ```bash
-# BE CAREFUL
-rapydo clean --rm-volumes  # very DANGEROUS, you lose all data!
-# BE CAREFUL
+# BE CAREFUL!
+rapydo clean --rm  # very DANGEROUS
+# With this command you lose all your current data!
 ```
 
 ### hack the certificates volume
 
-This hack is necessary if you want to raw copy a CA certificate if your VM DN was produced with an internal certification authority.
+This hack is necessary if you want to raw copy a Certification Authority credential. 
+It may be needed if your current B2SAFE host DN was produced with an internal certification authority which is not recognized from other clients.
 
 ```bash
 path=`docker inspect $(docker volume ls -q | grep sharedcerts) | jq -r ".[0].Mountpoint"`

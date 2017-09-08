@@ -43,12 +43,12 @@ class B2accessUtilities(EndpointResource):
         try:
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
-            log.critical("B2ACCESS empty:\n%s\nCheck app credentials" % e)
+            log.critical("B2ACCESS empty:\n%s\nCheck your app credentials", e)
             return (b2a_token, 'Server misconfiguration: oauth2 failed')
         except Exception as e:
             # raise e  # DEBUG
-            log.critical("Failed to get authorized @B2access: %s" % str(e))
-            return (b2a_token, 'B2ACCESS denied. oauth2: %s' % e)
+            log.critical("Failed to get authorized in B2ACCESS: %s", e)
+            return (b2a_token, 'B2ACCESS OAUTH2 denied: %s' % e)
         if resp is None:
             return (b2a_token, 'B2ACCESS denied: unknown error')
 
@@ -68,6 +68,7 @@ class B2accessUtilities(EndpointResource):
 
         # Calling with the oauth2 client
         current_user = b2access.get('userinfo')
+        # log.pp(current_user)
 
         error = True
         if current_user is None:
@@ -149,7 +150,7 @@ class B2accessUtilities(EndpointResource):
 
         return proxy_file
 
-    def set_irods_username(self, icom, auth, user, unityid='eudat_guest'):
+    def set_irods_username(self, icom, auth, user):
         """ Find out what is the irods username and save it """
 
         # Does this user exist?
@@ -157,32 +158,35 @@ class B2accessUtilities(EndpointResource):
         user_exists = irods_user is not None
 
         if not user_exists:
+            # Production / Real B2SAFE and irods instance
             if IRODS_EXTERNAL:
-                ###########################
-                # Production / Real B2SAFE and irods instance
-                log.error("No iRODS user related to your certificate")
+                log.error("No iRODS user related to certificate")
                 return None
+            # Using dockerized iRODS/B2SAFE
             else:
-                ###########################
-                # Using dockerized iRODS/B2SAFE
-                irods_user = unityid
 
-                iadmn = self.get_service_instance(
+                # NOTE: dockerized version does not know about the user
+                # because it has no sync script with B2ACCESS running
+
+                # NOTE: mapping is for common 'eudat' user for all.
+                # Of course it's only for debugging purpose.
+                irods_user = 'eudat'
+                # irods_user = user.unity
+
+                iadmin = self.get_service_instance(
                     service_name='irods', be_admin=True)
 
                 # User may exist without dn/certificate
-                if not iadmn.query_user_exists(irods_user):
+                if not iadmin.query_user_exists(irods_user):
                     # Add (as normal) user inside irods
-                    iadmn.create_user(irods_user, admin=False)
+                    iadmin.create_user(irods_user, admin=False)
 
-                irods_user_data = iadmn.list_user_attributes(irods_user)
+                irods_user_data = iadmin.list_user_attributes(irods_user)
                 if irods_user_data.get('dn') is None:
                     # Add DN to user access possibility
-                    iadmn.modify_user_dn(
+                    iadmin.modify_user_dn(
                         irods_user,
-                        dn=user.certificate_dn,
-                        zone=irods_user_data['zone']
-                    )
+                        dn=user.certificate_dn, zone=irods_user_data['zone'])
 
         # Update db to save the irods user related to this user account
         auth.associate_object_to_attr(user, 'irodsuser', irods_user)
@@ -190,7 +194,8 @@ class B2accessUtilities(EndpointResource):
         # Copy certificate in the dedicated path, and update db info
         if self._certs is None:
             self._certs = Certificates()
-        crt = self._certs.save_proxy_cert(user.proxyfile, irods_user)
+        crt = self._certs.save_proxy_cert(
+            user.proxyfile, unityid=user.unity, user=irods_user)
         auth.associate_object_to_attr(user, 'proxyfile', crt)
 
         return irods_user
@@ -236,9 +241,6 @@ class B2accessUtilities(EndpointResource):
 
     def refresh_proxy_certificate(self, extuser):
 
-        # TODO: check if this works with the external B2SAFE
-        icom = self.get_service_instance('irods', be_admin=True)
-
         auth = self.auth
         proxy_file = self.obtain_proxy_certificate(auth, extuser)
         # check for errors
@@ -247,8 +249,8 @@ class B2accessUtilities(EndpointResource):
         else:
             log.verbose("New proxy: %s" % proxy_file)
 
-        irods_user = self.set_irods_username(
-            icom, auth, extuser, extuser.unity)
+        iadmin = self.get_service_instance('irods', be_admin=True)
+        irods_user = self.set_irods_username(iadmin, auth, extuser)
         log.very_verbose("Updated %s" % irods_user)
 
         return True

@@ -4,7 +4,7 @@
 
 | build | coverage | quality | uptime | swagger |
 | --- | --- | --- | --- | --- |
-| [![Build Status](https://travis-ci.org/EUDAT-B2STAGE/http-api.svg)](https://travis-ci.org/EUDAT-B2STAGE/http-api) | [![Coverage Status](https://coveralls.io/repos/github/EUDAT-B2STAGE/http-api/badge.svg?branch=HEAD)](https://coveralls.io/github/EUDAT-B2STAGE/http-api?branch=HEAD) | [![Code Health](https://landscape.io/github/EUDAT-B2STAGE/http-api/master/landscape.svg?style=flat)](https://landscape.io/github/EUDAT-B2STAGE/http-api/master) | [![Uptime Robot](https://img.shields.io/uptimerobot/ratio/m778586640-4e31f2b00e90bce508dcdf33.svg?maxAge=2592000)](https://stats.uptimerobot.com/xGG9gTK3q) | [![Swagger validation](https://img.shields.io/swagger/valid/2.0/https/b2stage.cineca.it/api/specs.svg)](http://petstore.swagger.io/?url=https://b2stage.cineca.it/api/specs&docExpansion=none) |
+| [![Build Status](https://travis-ci.org/EUDAT-B2STAGE/http-api.svg?branch=master)](https://travis-ci.org/EUDAT-B2STAGE/http-api) | [![Coverage Status](https://coveralls.io/repos/github/EUDAT-B2STAGE/http-api/badge.svg?branch=master)](https://coveralls.io/github/EUDAT-B2STAGE/http-api?branch=master) | [![Code Health](https://landscape.io/github/EUDAT-B2STAGE/http-api/master/landscape.svg?style=flat)](https://landscape.io/github/EUDAT-B2STAGE/http-api/master) | [![Uptime Robot](https://img.shields.io/uptimerobot/ratio/m778586640-4e31f2b00e90bce508dcdf33.svg?maxAge=2592000)](https://stats.uptimerobot.com/xGG9gTK3q) | [![Swagger validation](https://img.shields.io/swagger/valid/2.0/https/b2stage.cineca.it/api/specs.svg)](http://petstore.swagger.io/?url=https://b2stage.cineca.it/api/specs&docExpansion=none) |
 
 NOTE: the B2STAGE HTTP-API is an interface towards other EUDAT services which are subject to modifications and new developments, therefore the functionalities and the implementation will have to be changed accordingly. 
 
@@ -30,13 +30,15 @@ Over the EUDAT2020 project other functionalities will be added: the development 
 
 ## Documentation
 
-- [Quick start](docs/quick_start.md) for deploy and development
+Documentation for the latest stable release:
 
-To be updated (not yet compatible with RC1):
-
+- [Quick start](docs/user/user.md) for deploy and development
+- [Deploy](docs/deploy/deploy.md) the server
 - [User](docs/user/user.md) guide
 - [Developer](docs/development/development.md) instructions
-- [Deploy](docs/deploy/deploy.md) the server
+
+Documentation for the current developed branch instead can be found 
+[here](https://github.com/EUDAT-B2STAGE/http-api/tree/0.6.2/docs).
 
 
 ## Implementation
