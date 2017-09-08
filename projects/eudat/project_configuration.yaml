@@ -35,6 +35,7 @@ variables:
     IRODS_AUTHSCHEME:   # to be auto-detected
     # IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
+    # NOTE: this must match ALCHEMY_PASSWORD if running in debug mode
     IRODS_PASSWORD: chooseapasswordwisely
     # If empty it will be automatically computed within the docker network
     IRODS_DN:
