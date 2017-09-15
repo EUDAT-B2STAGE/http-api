@@ -105,13 +105,13 @@ variables:
 
   repos:
     utils:
-      branch: 0.5.4
+      branch: 0.5.5
     backend:
-      branch: 0.5.4
+      branch: 0.5.5
     build-templates:
-      branch: 0.5.4
+      branch: 0.5.5
     # develop:
-    #   branch: 0.5.4
+    #   branch: 0.5.5
     #   if: true
     irods-client:
       branch: master # python-irodsclient==0.7.0a0
