@@ -7,16 +7,16 @@ version: '3'
 volumes:
   jwt_tokens:
     driver: local
-  rabbitdata:
-    driver: local
+  # rabbitdata:
+  #   driver: local
   sqldata:
     driver: local
-  graphdata:
-    driver: local
-  mongodata:
-    driver: local
-  pureftpd:
-    driver: local
+  # graphdata:
+  #   driver: local
+  # mongodata:
+  #   driver: local
+  # pureftpd:
+  #   driver: local
   letsencrypt_certs:
     driver: local
   ssl_dhparam:
@@ -35,7 +35,7 @@ networks:
   app_net:
   proxy_net:
   worker_net:
-  ftp_net:
+  # ftp_net:
   db_net:
     # # driver: bridge
     # ipam:
@@ -117,7 +117,8 @@ services:
   ###  DATABASES  ###
   ###################
   postgres:
-    image: postgres:9.6
+    # image: postgres:9.6
+    image: postgres:9.6.5-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
       - ../submodules/builds_base/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
@@ -131,104 +132,104 @@ services:
         aliases:
           - ${ALCHEMY_HOST}
 
-  neo4j:
-    image: neo4j:3.2.1
-    volumes:
-      - graphdata:/data
-    networks:
-      db_net:
-        aliases:
-          - ${GRAPHDB_HOST}
-    environment:
-      ACTIVATE: 0
-      NEO4J_AUTH: neo4j/${PLACEHOLDER}
-      # NEO4J_dbms_memory_pagecache_size: 2048M
-      # NEO4J_dbms_memory_heap_maxSize: 4096M
-    # ports:
-    #   - 9090:7474
-    #   - 7687:7687
+  # neo4j:
+  #   image: neo4j:3.2.2
+  #   # image: neo4j:3.2.3
+  #   # volumes:
+  #   #   - graphdata:/data
+  #   # networks:
+  #   #   db_net:
+  #   #     aliases:
+  #   #       - ${GRAPHDB_HOST}
+  #   environment:
+  #     ACTIVATE: 0
+  #     NEO4J_AUTH: neo4j/${PLACEHOLDER}
+  #     # NEO4J_dbms_memory_pagecache_size: 2048M
+  #     # NEO4J_dbms_memory_heap_maxSize: 4096M
+  #   # ports:
+  #   #   - 9090:7474
+  #   #   - 7687:7687
 
-  mongodb:
-    image: mongo:3.4
-    volumes:
-      - mongodata:/data/db
-    networks:
-      db_net:
-        aliases:
-          - ${MONGO_HOST}
-    environment:
-      ACTIVATE: 0
+  # mongodb:
+  #   image: mongo:3.4
+  #   # volumes:
+  #   #   - mongodata:/data/db
+  #   # networks:
+  #   #   db_net:
+  #   #     aliases:
+  #   #       - ${MONGO_HOST}
+  #   environment:
+  #     ACTIVATE: 0
 
   #########################
   ###  QUEUE MANAGEMENT ###
   #########################
 
-  celery:
-    build: ../submodules/builds_base/celery
-    image: ${COMPOSE_PROJECT_NAME}/celery:template
-    # hostname: celworker
-    # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
-    user: root
-    working_dir: /code
-    environment:
-      ACTIVATE: 0
-      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
-      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
-    volumes:
-      # FIXME: UHM, what is this @mattia?
-      # Base code
-      - ../submodules/backend:/code
-      # Vanilla code
-      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
-      # JWT tokens secret
-      - jwt_tokens:${JWT_APP_SECRETS}
-    networks:
-      db_net:
-      worker_net:
-    depends_on:
-      - rabbit
-      # - flower
+  # celery:
+  #   build: ../submodules/builds_base/celery
+  #   image: ${COMPOSE_PROJECT_NAME}/celery:template
+  #   # hostname: celworker
+  #   # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
+  #   user: root
+  #   working_dir: /code
+  #   environment:
+  #     ACTIVATE: 0
+  #     VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+  #     JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+  #   volumes:
+  #     # Base code
+  #     - ../submodules/backend:/code
+  #     # Vanilla code
+  #     - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+  #     # JWT tokens secret
+  #     - jwt_tokens:${JWT_APP_SECRETS}
+  #   networks:
+  #     db_net:
+  #     worker_net:
+  #   depends_on:
+  #     - rabbit
+  #     # - flower
 
-  rabbit:
-    image: rabbitmq:latest
-    hostname: rabbit
-    volumes:
-      - rabbitdata:/var/lib/rabbitmq
-    networks:
-      worker_net:
-        aliases:
-          - ${CELERY_BROKER_HOST}
-    environment:
-      ACTIVATE: 0
+  # rabbit:
+  #   image: rabbitmq:latest
+  #   hostname: rabbit
+  #   volumes:
+  #     - rabbitdata:/var/lib/rabbitmq
+  #   networks:
+  #     worker_net:
+  #       aliases:
+  #         - ${CELERY_BROKER_HOST}
+  #   environment:
+  #     ACTIVATE: 0
 
   ##########################
   ### SERVICE INTERFACES ###
   ##########################
 
-  celeryui:
-    build: ../submodules/builds_base/celery
-    image: ${COMPOSE_PROJECT_NAME}/celery:template
-    hostname: flower
-    user: root
-    working_dir: /code
-    command: start_flower
-    expose:
-      - 5555
-    ports:
-      - 5555:5555
-    environment:
-      ACTIVATE: 0
-      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
-      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
-    volumes:
-      - ..:/code/${COMPOSE_PROJECT_NAME}
-      - ../tmp_irods_certificates:/opt/certificates
-      - ../tmp_files:/uploads
-    networks:
-      db_net:
-      worker_net:
-    depends_on:
-      - rabbit
+  # celeryui:
+  #   build: ../submodules/builds_base/celery
+  #   image: ${COMPOSE_PROJECT_NAME}/celery:template
+  #   hostname: flower
+  #   user: root
+  #   working_dir: /code
+  #   command: start_flower
+  #   expose:
+  #     - 5555
+  #   ports:
+  #     - 5555:5555
+  #   environment:
+  #     ACTIVATE: 0
+  #     VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+  #     JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+  #   volumes:
+  #     - ..:/code/${COMPOSE_PROJECT_NAME}
+  #     - ../tmp_irods_certificates:/opt/certificates
+  #     - ../tmp_files:/uploads
+  #   networks:
+  #     db_net:
+  #     worker_net:
+  #   depends_on:
+  #     - rabbit
 
   swaggerui:
     build: ../submodules/builds_base/swaggerui
@@ -246,13 +247,13 @@ services:
     environment:
       ACTIVATE: 0
 
-  mongoui:
-    image: mongo-express:0.40.0
-    environment:
-      ACTIVATE: 0
-      ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
-    networks:
-      db_net:
+  # mongoui:
+  #   image: mongo-express:0.40.0
+  #   environment:
+  #     ACTIVATE: 0
+  #     ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
+  #   networks:
+  #     db_net:
 
   #############
   # REST API client (wget, curl, httpie, http-prompt)
@@ -271,21 +272,21 @@ services:
   ###################
   ### FTP SERVER  ###
   ###################
-  ftp:
-    # image: stilliard/pure-ftpd:latest
-    build: ../submodules/builds_base/ftp
-    image: ${COMPOSE_PROJECT_NAME}/ftp:template
-    volumes:
-      - pureftpd:/etc/pure-ftpd/passwd
-  # /etc/ssl/private/ A directory containing a single pure-ftpd.pem file
-  # with the server's SSL certificates for TLS support. Optional TLS is
-  # automatically enabled when the container finds this file on startup.
-    environment:
-      ACTIVATE: 0
-      PUBLICHOST: ${PROJECT_DOMAIN}
-      ADDED_FLAGS: -d -d
-    networks:
-      ftp_net:
+  # ftp:
+  #   # image: stilliard/pure-ftpd:latest
+  #   build: ../submodules/builds_base/ftp
+  #   image: ${COMPOSE_PROJECT_NAME}/ftp:template
+  #   volumes:
+  #     - pureftpd:/etc/pure-ftpd/passwd
+  # # /etc/ssl/private/ A directory containing a single pure-ftpd.pem file
+  # # with the server's SSL certificates for TLS support. Optional TLS is
+  # # automatically enabled when the container finds this file on startup.
+  #   environment:
+  #     ACTIVATE: 0
+  #     PUBLICHOST: ${PROJECT_DOMAIN}
+  #     ADDED_FLAGS: -d -d
+  #   networks:
+  #     ftp_net:
 
   ######################################################
   ###  iRODS iCAT server (usually for EUDAT B2safe)  ###

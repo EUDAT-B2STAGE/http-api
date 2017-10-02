@@ -18,9 +18,9 @@ data/b2handle/*.pem
 #################
 
 submodules/.backup
-submodules/utilities
-submodules/builds_base
-submodules/backend
+submodules/build-templates
+submodules/utils
+submodules/http-api
 submodules/frontend
 submodules/prc
 

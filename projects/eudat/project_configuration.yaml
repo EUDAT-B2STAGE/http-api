@@ -1,8 +1,9 @@
 
 project:
   title: EUDAT-B2STAGE HTTP-API server
-  version: v0.6.2-rc3
   description: Processing files in different EUDAT domains
+  version: v0.6.2-rc3
+  rapydo: 0.5.6
 
 ###############################
 ## Please CHECK VARIABLES here
@@ -104,15 +105,19 @@ variables:
   #       default: normal_user
 
   repos:
-    utils:
-      branch: 0.5.5
-    backend:
-      branch: 0.5.5
-    build-templates:
-      branch: 0.5.5
-    # develop:
-    #   branch: 0.5.5
-    #   if: true
+
+    ################
+  #   rapydo:
+  #     branch: 0.5.5
+  #   # HOW TO RECOVER TOOLS NAMES?
+  #   utils:
+  #     branch: __rapydo__
+  #   backend:
+  #     branch: __rapydo__
+  #   build-templates:
+  #     branch: __rapydo__
+
+    ################
     irods-client:
       branch: master # python-irodsclient==0.7.0a0
       online_url: https://github.com/irods/python-irodsclient.git
