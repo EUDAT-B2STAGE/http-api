@@ -283,7 +283,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             self.get_file_parameters(icom, path=irods_location)
 
         ipath = None
-        request.get_data()
 
         # FIXME: allow custom split of a custom response
         # this piece of code does not work with a custom response
