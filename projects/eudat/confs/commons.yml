@@ -62,6 +62,7 @@ services:
       ALCHEMY_USER: ${ALCHEMY_USER}
       ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
       ALCHEMY_DB: ${ALCHEMY_API_DB}
+      ALCHEMY_POOLSIZE: ${ALCHEMY_POOLSIZE}
 
       # irods configuration
       IRODS_ENABLE: 1
