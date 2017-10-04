@@ -28,7 +28,7 @@ submodules/prc
 ##  Dynamically created file and folders  ##
 ############################################
 
-.projectrc
+#.projectrc
 frontend/eudat/libs/bower_components
 .env
 projects/*/backend/confs/project_configuration.yaml
