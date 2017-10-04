@@ -1,30 +1,32 @@
 
-FileUpdate:
-  required:
-    - newname
-  properties:
-    resource:
-      type: string
-    newname:
-      type: string
-      description: iRODS resource
+definitions:
 
-FileDelete:
-  properties:
-    # debugclean:
-    #   type: string
-    #   description: Only for debug mode
-    resource:
-      type: string
+  FileUpdate:
+    required:
+      - newname
+    properties:
+      resource:
+        type: string
+      newname:
+        type: string
+        description: iRODS resource
 
-# FileObject:
-#   properties:
-#     resource:
-#       type: string
-#       # description: yep
+  FileDelete:
+    properties:
+      # debugclean:
+      #   type: string
+      #   description: Only for debug mode
+      resource:
+        type: string
 
-# ForceObject:
-#   properties:
-#     force:
-#       type: boolean
-#       default: false
+  # FileObject:
+  #   properties:
+  #     resource:
+  #       type: string
+  #       # description: yep
+
+  # ForceObject:
+  #   properties:
+  #     force:
+  #       type: boolean
+  #       default: false

@@ -31,11 +31,11 @@ volumes:
 
 networks:
   # default:
+  # worker_net:
+  # ftp_net:
   i_net:
   app_net:
   proxy_net:
-  worker_net:
-  # ftp_net:
   db_net:
     # # driver: bridge
     # ipam:
@@ -54,7 +54,7 @@ services:
   ########################
   backend:
     # command: sleep infinity
-    build: ../submodules/builds_base/backend
+    build: ../submodules/build-templates/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:template
     # hostname: restapi
     hostname: rapydo_server
@@ -78,7 +78,7 @@ services:
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
       # Unit tests
-      - ../submodules/backend/tests:/code/tests
+      - ../submodules/http-api/tests:/code/tests
       - ../projects/${COMPOSE_PROJECT_NAME}/backend/tests:/code/tests/custom
     networks:
       app_net:
@@ -89,7 +89,7 @@ services:
 
   ##############################
   proxy:
-    build: ../submodules/builds_base/proxy
+    build: ../submodules/build-templates/proxy
     image: ${COMPOSE_PROJECT_NAME}/proxy:template
     hostname: reverseproxy
     volumes:
@@ -121,7 +121,7 @@ services:
     image: postgres:9.6.5-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
-      - ../submodules/builds_base/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+      - ../submodules/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
     environment:
       ACTIVATE: 0
       POSTGRES_USER: "${PLACEHOLDER}"
@@ -166,7 +166,7 @@ services:
   #########################
 
   # celery:
-  #   build: ../submodules/builds_base/celery
+  #   build: ../submodules/build-templates/celery
   #   image: ${COMPOSE_PROJECT_NAME}/celery:template
   #   # hostname: celworker
   #   # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
@@ -178,7 +178,7 @@ services:
   #     JWT_APP_SECRETS: ${JWT_APP_SECRETS}
   #   volumes:
   #     # Base code
-  #     - ../submodules/backend:/code
+  #     - ../submodules/http-api:/code
   #     # Vanilla code
   #     - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
   #     # JWT tokens secret
@@ -207,7 +207,7 @@ services:
   ##########################
 
   # celeryui:
-  #   build: ../submodules/builds_base/celery
+  #   build: ../submodules/build-templates/celery
   #   image: ${COMPOSE_PROJECT_NAME}/celery:template
   #   hostname: flower
   #   user: root
@@ -232,13 +232,13 @@ services:
   #     - rabbit
 
   swaggerui:
-    build: ../submodules/builds_base/swaggerui
+    build: ../submodules/build-templates/swaggerui
     image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
     environment:
       ACTIVATE: 0
 
   sqlalchemyui:
-    build: ../submodules/builds_base/sqlalchemyui
+    build: ../submodules/build-templates/sqlalchemyui
     image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
@@ -258,14 +258,14 @@ services:
   #############
   # REST API client (wget, curl, httpie, http-prompt)
   restclient:
-    build: ../submodules/builds_base/restclient
+    build: ../submodules/build-templates/restclient
     image: ${COMPOSE_PROJECT_NAME}/restclient:template
     hostname: rapydo_client
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       ACTIVATE: 0
     volumes:
-      # - ../submodules/utilities/utilities/projects_defaults.yaml:/code/base.yml
+      # - ../submodules/utils/utilities/projects_defaults.yaml:/code/base.yml
       - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yml
 
 
@@ -274,7 +274,7 @@ services:
   ###################
   # ftp:
   #   # image: stilliard/pure-ftpd:latest
-  #   build: ../submodules/builds_base/ftp
+  #   build: ../submodules/build-templates/ftp
   #   image: ${COMPOSE_PROJECT_NAME}/ftp:template
   #   volumes:
   #     - pureftpd:/etc/pure-ftpd/passwd
@@ -293,7 +293,7 @@ services:
   ######################################################
   icat:
     # B2safe instance on irods
-    build: ../submodules/builds_base/icat
+    build: ../submodules/build-templates/icat
     image: ${COMPOSE_PROJECT_NAME}/icat:template
     # image: b2safe:rapydo
     hostname: ${IRODS_HOST}

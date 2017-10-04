@@ -29,7 +29,7 @@ services:
       # # FIX missing IP / DNS
       # - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
       # # DEBUG modifications on submodules
-      # - ../submodules/backend/restapi:/usr/local/lib/python3.6/dist-packages/restapi
+      # - ../submodules/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 
   proxy:
     environment:

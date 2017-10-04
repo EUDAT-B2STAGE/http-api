@@ -31,8 +31,9 @@ services:
       # - mongodb
     volumes:
       # Rapydo repos
-      - ../submodules/backend/restapi:/usr/local/lib/python3.6/dist-packages/restapi
-      - ../submodules/utilities/utilities:/usr/local/lib/python3.6/dist-packages/utilities
+# FIXME: change here (and everywhere else?) every build?
+      - ../submodules/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
+      - ../submodules/utils/utilities:/usr/local/lib/python3.6/dist-packages/utilities
       - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
   icat:
@@ -55,10 +56,10 @@ services:
       - irodsvar:/var/lib/${IRODS_USER}
       - sharedcerts:/opt/certificates
       # NOTE: this is the script that adds GSI in our irods instance
-      - ../submodules/builds_base/icat/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
-      # - ../submodules/builds_base/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
+      - ../submodules/build-templates/icat/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      # - ../submodules/build-templates/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
       # # B2ACCESS dev and prod certificates
-      - ../submodules/builds_base/icat/b2access_certificates:${B2ACCESS_CAS}
+      - ../submodules/build-templates/icat/b2access_certificates:${B2ACCESS_CAS}
       # # B2ACCESS dev rest-of-the-chain certificates
       # - ../data/certs:/usr/local/share/ca-certificates
 
