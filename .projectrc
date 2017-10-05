@@ -1,6 +1,6 @@
 #log-level: VERY_VERBOSE
 #log-level: VERBOSE
 mode: debug
-#mode: production
-#domain: b2stage.cineca.it
 project: eudat
+#mode: production
+#hostname: b2stage.cineca.it
