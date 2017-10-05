@@ -1,3 +1,6 @@
+# ###############################################
+# Copyright 2011-2017 EUDAT CDI - www.eudat.eu
+# ###############################################
 
 project:
   title: EUDAT-B2STAGE HTTP-API server

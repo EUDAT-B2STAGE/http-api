@@ -58,3 +58,7 @@ https://eudat.eu/services/userdoc/b2access-service-integration#B2ACCESS_Services
 
 https://eudat-aai.fz-juelich.de:8445/oauth-demo/get_token.jsp
 -->
+
+## Copyright
+
+Copyright 2011-2017 EUDAT CDI - www.eudat.eu
