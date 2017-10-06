@@ -32,7 +32,8 @@ variables:
     # Postgres configuration:
     ALCHEMY_USER: rods
     ALCHEMY_PASSWORD: chooseapasswordwisely
-    ALCHEMY_API_DB: SQL_API
+    ALCHEMY_DBS: ICAT
+    ALCHEMY_API_DB:
 
     # B2access certificates path
     B2ACCESS_CAS: /tmp/certificates/b2access
