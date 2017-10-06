@@ -66,13 +66,10 @@ releases:
     status: released
   '0.6.2':
     type: RC3
-    rapydo: 0.5.5
+    rapydo: 0.5.6
     status: developing
-  '0.6.3':
-    type: RC4
+  '1.0.0':
+    type: stable
+    # rapydo: 0.5.7
     rapydo: null
     status: todo
-  # '0.7.0':
-  #   type: RC5
-  #   rapydo: null
-  #   status: todo
