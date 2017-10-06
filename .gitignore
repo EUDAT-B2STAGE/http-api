@@ -29,7 +29,7 @@ submodules/prc
 ############################################
 
 #.projectrc
-frontend/eudat/libs/bower_components
+frontend/b2stage/libs/bower_components
 .env
 projects/*/backend/confs/project_configuration.yaml
 

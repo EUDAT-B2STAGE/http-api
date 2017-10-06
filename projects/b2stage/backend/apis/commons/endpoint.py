@@ -7,8 +7,8 @@ Common functions for EUDAT endpoints
 import os
 # from restapi.rest.definition import EndpointResource
 from restapi.exceptions import RestApiException
-from eudat.apis.common.b2access import B2accessUtilities
-from eudat.apis.common import (
+from b2stage.apis.commons.b2access import B2accessUtilities
+from b2stage.apis.commons import (
     CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
     IRODS_PROTOCOL, HTTP_PROTOCOL, PRODUCTION,
     IRODS_VARS, InitObj

@@ -7,8 +7,8 @@ Code to implement the /api/internal endpoint
 
 """
 
-from eudat.apis.common.b2stage import EudatEndpoint
-from eudat.apis.common import CURRENT_MAIN_ENDPOINT
+from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities import htmlcodes as hcodes

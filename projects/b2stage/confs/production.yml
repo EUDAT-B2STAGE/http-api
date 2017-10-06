@@ -27,7 +27,7 @@ services:
     volumes:
       - ../data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
       # # FIX missing IP / DNS
-      # - ../projects/eudat/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
+      # - ../projects/b2stage/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
       # # DEBUG modifications on submodules
       # - ../submodules/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 

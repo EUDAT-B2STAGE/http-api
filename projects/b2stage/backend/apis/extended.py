@@ -13,8 +13,8 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 import os
 from restapi.flask_ext.flask_irods.client import IrodsException
-from eudat.apis.common import CURRENT_HTTPAPI_SERVER  # , PRODUCTION
-from eudat.apis.common.b2stage import EudatEndpoint
+from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER  # , PRODUCTION
+from b2stage.apis.commons.endpoint import EudatEndpoint
 
 from restapi.services.uploader import Uploader
 from utilities import htmlcodes as hcodes

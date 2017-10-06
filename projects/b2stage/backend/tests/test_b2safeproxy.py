@@ -4,7 +4,6 @@
 Run unittests inside the RAPyDo framework
 """
 
-import json
 from tests import RestTestsAuthenticatedBase
 from utilities.logs import get_logger
 

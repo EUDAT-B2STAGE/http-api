@@ -16,7 +16,7 @@ from urllib3.exceptions import HTTPError
 from restapi.services.oauth2clients import decorate_http_request
 from utilities.certificates import Certificates
 from utilities import htmlcodes as hcodes
-from eudat.apis.common import IRODS_EXTERNAL, InitObj
+from b2stage.apis.commons import IRODS_EXTERNAL, InitObj
 from utilities.logs import get_logger
 
 log = get_logger(__name__)

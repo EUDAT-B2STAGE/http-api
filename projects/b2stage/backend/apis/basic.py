@@ -16,8 +16,8 @@ import time
 from flask import request, current_app
 # from werkzeug import secure_filename
 
-from eudat.apis.common import PRODUCTION, CURRENT_MAIN_ENDPOINT
-from eudat.apis.common.b2stage import EudatEndpoint
+from b2stage.apis.commons import PRODUCTION, CURRENT_MAIN_ENDPOINT
+from b2stage.apis.commons.endpoint import EudatEndpoint
 
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_irods.client import IrodsException

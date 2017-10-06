@@ -8,9 +8,9 @@ from flask import url_for
 from restapi.flask_ext.flask_irods.client import IrodsException
 from restapi import decorators as decorate
 # from utilities import htmlcodes as hcodes
-from eudat.apis.common import PRODUCTION
-# from eudat.apis.common.b2access import B2accessUtilities
-from eudat.apis.common.b2stage import EudatEndpoint
+from b2stage.apis.commons import PRODUCTION
+# from b2stage.apis.commons.b2access import B2accessUtilities
+from b2stage.apis.commons.endpoint import EudatEndpoint
 from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 

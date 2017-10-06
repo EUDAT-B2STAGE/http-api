@@ -7,7 +7,7 @@ python:
 services:
 - docker
 env:
-- PROJECT=eudat
+- PROJECT=b2stage
 
 # # installation
 # before_install:
