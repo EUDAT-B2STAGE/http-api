@@ -1,95 +1,60 @@
 version: '3'
 
 volumes:
-  sharedcerts:
-    driver: local
   etcconf:
+    driver: local
+  irodscerts:
     driver: local
   irodshome:
     driver: local
   irodsvar:
     driver: local
-  tmpuploads:
-    driver: local
 
 services:
-
   postgres:
     environment:
       POSTGRES_USER: "${ALCHEMY_USER}"
       POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
       POSTGRES_DBS: ${ALCHEMY_DBS}
-
-  backend:
+  icat:
+    environment:
+      ACTIVATE: 1
+      POSTGRES_HOST: "${ALCHEMY_HOST}"
+      POSTGRES_USER: "${ALCHEMY_USER}"
+      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
+      IRODS_HOST: "${IRODS_HOST}"
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_DB: "${IRODS_DB}"
+      IRODS_USER: ${IRODS_USER}
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
     volumes:
-      # Uploads dir
-      - tmpuploads:${UPLOAD_PATH}
-      # SHARED
-      - sharedcerts:/opt/certificates
-      # B2ACCESS dev certificates
-      - ../data/certs:/usr/local/share/ca-certificates
-      # # mount irods code to develop patches
-      # - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
+      - etcconf:/etc
+      - irodshome:/home/${IRODS_USER}
+      - irodsvar:/var/lib/${IRODS_USER}
+      - irodscerts:/opt/certificates
+    # # Open irods port to Outside world
+    # ports:
+    #     - 1247:1247
+  sqlalchemyui:
+    ports:
+      - 80:8888
+  iclient:
+    build: ../submodules/build-templates/icat
+    image: ${COMPOSE_PROJECT_NAME}/icat:template
+    hostname: iclient
+    command: sleep infinity
+    environment:
+      ACTIVATE: 1
+      IRODS_HOST: "${IRODS_HOST}"
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
+    volumes:
+      - irodshome:/home/${IRODS_USER}
+      - irodscerts:/opt/certificates
     networks:
       i_net:
-
-    environment:
-      # base the user/role mechanism on some database
-      AUTH_ENABLE: 1
-      AUTH_SERVICE: ${AUTH_SERVICE}
-
-      ##############################
-      # set this inside the MODE yaml files you want to use
-      # FLASK_DEBUG: 1
-      DEBUG_LEVEL: VERY_VERBOSE
-      APP_MODE: debug
-      ##############################
-
-      # project/package/prefix name
-      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
-      PROJECT_DOMAIN: ${PROJECT_DOMAIN}
-      UPLOAD_PATH: ${UPLOAD_PATH}
-      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
-      MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
-      # app credentials to work inside the b2access environment
-      B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
-      B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
-
-      # db access
-      ALCHEMY_ENABLE: 1
-      ALCHEMY_HOST: ${ALCHEMY_HOST}
-      ALCHEMY_PORT: ${ALCHEMY_PORT}
-      ALCHEMY_USER: ${ALCHEMY_USER}
-      ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
-      ALCHEMY_DB: ${ALCHEMY_API_DB}
-      ALCHEMY_POOLSIZE: ${ALCHEMY_POOLSIZE}
-
-      # irods configuration
-      IRODS_ENABLE: 1
-      IRODS_HOST: ${IRODS_HOST}
-      IRODS_PORT: ${IRODS_PORT}
-      IRODS_USER: ${IRODS_USER}
-      IRODS_ZONE: ${IRODS_ZONE}
-      IRODS_HOME: ${IRODS_HOME}
-      IRODS_DN: ${IRODS_DN}
-      IRODS_PASSWORD: ${IRODS_PASSWORD}
-      IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
-
-      # # mongodb connection
-      # MONGO_ENABLE: 1
-      # MONGO_HOST: ${MONGO_HOST}
-      # MONGO_PORT: ${MONGO_PORT}
-
-      # # neo connection
-      # GRAPHDB_ENABLE: 0
-      # # GRAPHDB_ENABLE: 1
-      # GRAPHDB_HOST: ${GRAPHDB_HOST}
-      # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
-      # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
-
-      AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
-      HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json
-
-  restclient:
-    environment:
-      IRODS_ZONE: ${IRODS_ZONE}
+    depends_on:
+      - icat

@@ -1,25 +1,8 @@
+version: '3'
 
 services:
 
   icat:
-    environment:
-      ACTIVATE: 1
-      POSTGRES_HOST: "${ALCHEMY_HOST}"
-      POSTGRES_USER: "${ALCHEMY_USER}"
-      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
-      IRODS_HOST: "${IRODS_HOST}"
-      IRODS_PORT: ${IRODS_PORT}
-      IRODS_ZONE: ${IRODS_ZONE}
-      IRODS_DB: "${IRODS_DB}"
-      IRODS_USER: ${IRODS_USER}
-      IRODS_PASSWORD: ${IRODS_PASSWORD}
-
-    volumes:
-      - etcconf:/etc
-      - irodshome:/home/${IRODS_USER}
-      - irodsvar:/var/lib/${IRODS_USER}
-      - irodscerts:/opt/certificates
-
-    # # Open irods port to Outside world
+    # Open irods port to Outside world
     ports:
         - 1247:1247
