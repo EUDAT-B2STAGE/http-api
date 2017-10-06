@@ -12,6 +12,7 @@ data/certs/nginx-selfsigned*
 data/certs/*cineca*
 data/secrets/secret_*
 data/b2handle/*.pem
+data/files/*
 
 #################
 ##  Submodules ##
