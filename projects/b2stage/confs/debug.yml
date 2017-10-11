@@ -88,7 +88,8 @@ services:
     # volumes:
     #   - restlitedb:/dbs
     ports:
-      - 81:8888
+      # - 81:8888
+      - 81:8080
 
   # graphdb:
   #   ports:

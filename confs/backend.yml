@@ -118,7 +118,9 @@ services:
   ###################
   postgres:
     # image: postgres:9.6
-    image: postgres:9.6.5-alpine
+    # image: postgres:9.6.5-alpine
+    image: postgres:10.0-alpine
+    restart: always
     volumes:
       - sqldata:/var/lib/postgresql/data
       - ../submodules/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
@@ -238,14 +240,18 @@ services:
       ACTIVATE: 0
 
   sqlalchemyui:
-    build: ../submodules/build-templates/sqlalchemyui
-    image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
+    image: adminer:4.3.1-standalone
+    # build: ../submodules/build-templates/sqlalchemyui
+    # image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
+    restart: always
     networks:
       db_net:
     environment:
       ACTIVATE: 0
+      # https://github.com/vrana/adminer/tree/master/designs
+      # ADMINER_DESIGN: brade
 
   # mongoui:
   #   image: mongo-express:0.40.0
