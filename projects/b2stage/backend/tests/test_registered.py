@@ -135,6 +135,22 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
+    def get_pid(self, response):
+
+        # data = json.loads(r.get_data(as_text=True))
+        data = self.get_content(response)
+
+        # get the only file in the response
+        data_object = data.pop().get(self._test_filename, {})
+        # check for metadata
+        key = 'metadata'
+        self.assertIn(key, data_object)
+        metadata = data_object.get(key)
+        # check for PID
+        key = 'PID'
+        self.assertIn(key, metadata)
+        return metadata.get(key)
+
     def test_03_GET_entities(self):
         """ Test the entity listingend retrieval: GET """
 
@@ -189,16 +205,15 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
                     self._irods_path + '/' + self._test_filename)
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        data = json.loads(r.get_data(as_text=True))
 
-        self.assertEqual(
-            data['Response']['data'][0][self._test_filename]['metadata']['PID'],
-             None)
+        response_pid = self.get_pid(r)
+        self.assertEqual(response_pid, None)
 
         # Add EUDAT metadata
         params = json.dumps(dict({'PID': pid}))
-        endpoint = (self._api_uri + self._metadata_endpoint + self._irods_path +
-                 '/' + self._test_filename)
+        endpoint = (
+            self._api_uri + self._metadata_endpoint +
+            self._irods_path + '/' + self._test_filename)
         r = self.app.patch(endpoint, data=params,
                            headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
@@ -208,13 +223,12 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
                     self._irods_path + '/' + self._test_filename)
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        data = json.loads(r.get_data(as_text=True))
 
-        self.assertEqual(
-            data['Response']['data'][0][self._test_filename]['metadata']['PID'],
-             pid)
+        response_pid = self.get_pid(r)
+        self.assertEqual(response_pid, pid)
+
         # Uncomment when iRODS forces checksum calculation
-        #self.assertIsNotNone(
+        # self.assertIsNotNone(
         #    data['Response']['data'][0][self._test_filename]['metadata']['checksum'])
 
     def test_04_PATCH_rename(self):
