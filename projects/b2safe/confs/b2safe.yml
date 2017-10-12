@@ -1,22 +1,18 @@
 
-#######################################
-# WORK IN PROGRESS
-#######################################
-
+version: '3'
 services:
 
   icat:
+    build: ../submodules/build-templates/b2safe
+    image: ${COMPOSE_PROJECT_NAME}/server:b2safe-mod
     environment:
       B2ACCESS_CAS: ${B2ACCESS_CAS}
 
     volumes:
-      # NOTE: this is the script that adds GSI in our irods instance
-      - ../submodules/build-templates/icat/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
-      - ../submodules/build-templates/icat/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
+      - ../submodules/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      - ../submodules/build-templates/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
       # B2ACCESS dev and prod certificates
-      - ../submodules/build-templates/icat/b2access_certificates:${B2ACCESS_CAS}
-      # # B2ACCESS dev rest-of-the-chain certificates
-      # - ../data/certs:/usr/local/share/ca-certificates
+      - ../submodules/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
 
     # Open irods port to Outside world
     ports:

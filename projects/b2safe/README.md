@@ -32,15 +32,17 @@ rapydo init
 ##################
 # Launch containers
 
-## NOTE: if this is the first time 
-## it would take some minutes to build images
+# Build the normal iRODS iCat image
+rapydo --project b2safe --mode only_irods build
+
+# launch the stack
 rapydo --project b2safe start
 # check
 rapydo --project b2safe status
 # verify the irods port working
 telnet localhost 1247
 ## NOTE: you should be able to connect from outside too
-## if you have no firewall blocking incoming connections on that port
+## (only if you have no firewall blocking incoming connections on that port)
 
 ##################
 # Use it!
