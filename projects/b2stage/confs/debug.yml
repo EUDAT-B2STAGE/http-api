@@ -86,7 +86,7 @@ services:
 
   # postgres:
   #   volumes:
-  #     - ../submodules/build-templates/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+  #     - ../submodules/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
   swaggerui:
     ports:
       - 80:80

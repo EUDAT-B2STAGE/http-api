@@ -117,10 +117,9 @@ services:
     # image: postgres:9.6
     # image: postgres:9.6.5-alpine
     image: postgres:10.0-alpine
-    restart: always
     volumes:
       - sqldata:/var/lib/postgresql/data
-      - ../submodules/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+      - ../submodules/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/init-db-and-users.sh:ro
     environment:
       ACTIVATE: 0
       POSTGRES_USER: "${PLACEHOLDER}"
@@ -242,7 +241,6 @@ services:
     image: adminer:4.3.1-standalone
     # build: ../submodules/build-templates/sqlalchemyui
     # image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
-    restart: always
     networks:
       db_net:
     environment:

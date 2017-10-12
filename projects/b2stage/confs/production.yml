@@ -8,6 +8,7 @@ services:
 
   backend:
     # command: sleep infinity
+    restart: always
     environment:
       ACTIVATE: 1
       APP_MODE: production
@@ -34,9 +35,11 @@ services:
     #   # - ../submodules/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 
   postgres:
+    restart: always
     # Activate a production ready configuration
     volumes:
-      - ../submodules/build-templates/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      # - ../submodules/build-templates/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      - ../submodules/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
 
   proxy:
     environment:
