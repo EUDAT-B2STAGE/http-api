@@ -33,6 +33,11 @@ services:
     #   # # DEBUG modifications on submodules
     #   # - ../submodules/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 
+  postgres:
+    # Activate a production ready configuration
+    volumes:
+      - ../submodules/build-templates/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+
   proxy:
     environment:
       ACTIVATE: 1

@@ -84,6 +84,9 @@ services:
     depends_on:
       - backend
 
+  # postgres:
+  #   volumes:
+  #     - ../submodules/build-templates/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
   swaggerui:
     ports:
       - 80:80
