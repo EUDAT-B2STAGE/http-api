@@ -30,8 +30,11 @@ services:
       - postgres
       # - mongodb
     volumes:
+      # Unit tests
+      - ../submodules/http-api/tests:/code/tests
+      - ../projects/${COMPOSE_PROJECT_NAME}/backend/tests:/code/tests/custom
       # Rapydo repos
-# FIXME: change here (and everywhere else?) every build?
+      # - ../projects/${COMPOSE_PROJECT_NAME}/confs/pytest.ini:/code/pytest.ini
       - ../submodules/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
       - ../submodules/utils/utilities:/usr/local/lib/python3.6/dist-packages/utilities
       - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods

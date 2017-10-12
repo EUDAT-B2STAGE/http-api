@@ -22,14 +22,16 @@ services:
     depends_on:
       # - icat
       - postgres
+    # talk only to proxy
     expose:
       - 8080
     volumes:
+      # B2HANDLE credentials to solve PID metadata in write mode
       - ../data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
-      # # FIX missing IP / DNS
-      # - ../projects/b2stage/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
-      # # DEBUG modifications on submodules
-      # - ../submodules/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
+    #   # FIX missing IP / DNS
+    #   - ../projects/b2stage/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
+    #   # # DEBUG modifications on submodules
+    #   # - ../submodules/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 
   proxy:
     environment:

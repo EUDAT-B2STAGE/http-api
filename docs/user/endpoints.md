@@ -3,6 +3,5 @@
 
 * [registered](registered.md)
 * [pids](pids.md)
-* workspace
-* digital entities
-* ...
+* workspace [WORK IN PROGRESS]
+
