@@ -37,7 +37,7 @@ rapydo init
 # Launch containers
 
 # Build the normal iRODS iCat image
-rapydo --project b2safe --mode only_irods build
+rapydo --project b2safe --mode simple_irods build
 
 # launch the stack
 rapydo --project b2safe start
