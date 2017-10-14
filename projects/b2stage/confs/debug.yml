@@ -21,6 +21,7 @@ services:
       B2ACCESS_ENV: development
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
       #################
     ports:
       - 8080:${FLASK_DEFAULT_PORT}

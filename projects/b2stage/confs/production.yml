@@ -17,8 +17,9 @@ services:
       NGINX_ACTIVE: "True"
       ##################
       # EUDAT RELATED
-      B2ACCESS_ENV: development
+      B2ACCESS_ENV: development  # try 'integration' server
       # B2ACCESS_ENV: production
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
       ##################
     depends_on:
       # - icat

@@ -2,7 +2,7 @@
 version: '3'
 
 services:
-# NOTE: we are not expecting dockerized irods here
+# NOTE: we are not expecting a dockerized irods here
 
   backend:
     environment:
@@ -11,8 +11,11 @@ services:
       DEBUG_LEVEL: DEBUG
       # DEBUG_LEVEL: VERBOSE
       APP_MODE: development
+      #################
       # EUDAT RELATED
       B2ACCESS_ENV: development
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
+      ##################
     depends_on:
       - icat
       - postgres
@@ -34,11 +37,6 @@ services:
       proxy_net:
     depends_on:
       - proxy
-
-  # graphdb:
-  #   ports:
-  #     - 9090:7474
-  #     - 7687:7687
 
 # networks:
 #   app_net:
