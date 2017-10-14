@@ -46,6 +46,10 @@ class EudatEndpoint(B2accessUtilities):
 
         proxy = False
         external_user = None
+
+        if internal_user is None:
+            raise AttributeError("Missing user association to token")
+
         if internal_user.authmethod == 'credentials':
             icom = self.irodsuser_from_b2stage(internal_user)
         elif internal_user.authmethod == 'irods':

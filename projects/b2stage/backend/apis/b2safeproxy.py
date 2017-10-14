@@ -13,7 +13,7 @@ log = get_logger(__name__)
 class B2safeProxy(EndpointResource):
     """ Login to B2SAFE: directly. """
 
-    anonymous_user = 'anonymous'
+    _anonymous_user = 'anonymous'
 
     @decorate.catch_error()
     def get(self):
@@ -50,7 +50,7 @@ class B2safeProxy(EndpointResource):
             username = jargs.get('username')
             password = jargs.get('password')
 
-        if username == self.anonymous_user:
+        if username == self._anonymous_user:
             password = 'WHATEVERYOUWANT:)'
 
         if username is None or password is None or \

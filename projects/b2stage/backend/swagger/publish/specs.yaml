@@ -1,0 +1,12 @@
+
+file: publish
+class: Publish
+schema:
+  expose: true
+mapping:
+  publish: "/publish/<path:irods_location>"
+ids:
+  irods_location: the filesystem path to your digital entities/objects
+labels:
+  - eudat
+  - publish

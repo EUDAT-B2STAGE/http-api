@@ -127,10 +127,10 @@ controller:
 tags:
   eudat: all endpoints associated to EUDAT services
   b2access: request/refresh authorization from B2ACCESS
+  b2safe: proxy access to irods b2safe credentials
   registered: upload, download, list and delete objects
   pids: resolve and download data from EUDAT Persistent IDentifier
-  b2safe: proxy access to irods b2safe credentials
-  # internal: for internal testing purpose only
+  publish: allow public access to data objects
 
 # Keep track of releases and dependencies
 releases:

@@ -26,5 +26,4 @@ single:
       type: boolean
   responses:
     '200':
-      description: Returns the digital object information or file content if download is activated
-                   or the list of objects related to the requested path (PID is returned if available)
+      description: "Returns the digital object information or file content if download is activated or the list of objects related to the requested path (PID is returned if available)"
