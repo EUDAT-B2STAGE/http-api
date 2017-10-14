@@ -310,6 +310,7 @@ services:
       IRODS_DB: ${PLACEHOLDER}
       IRODS_USER: ${PLACEHOLDER}
       IRODS_PASSWORD: ${PLACEHOLDER}
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
     networks:
       i_net:
         aliases:
