@@ -25,7 +25,9 @@ variables:
 
     ###############################
     ## B2ACCESS
-    B2ACCESS_ACCOUNT: httpapi
+    # B2ACCESS_ACCOUNT: httpapi # dev
+    B2ACCESS_ACCOUNT: httpapi_test # staging
+    # B2ACCESS_ACCOUNT: b2stage_httpapi # prod
     B2ACCESS_SECRET: SETYOURSECRETKEY
 
     ###############################
