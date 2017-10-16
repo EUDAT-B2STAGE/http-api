@@ -78,6 +78,7 @@ class PIDEndpoint(Uploader, EudatEndpoint):
     def handle_pid_fields(self, client, pid):
         """ Perform B2HANDLE request: retrieve URL from handle """
 
+        import requests
         data = {}
         try:
             for field in self.eudat_pid_fields:
@@ -92,7 +93,11 @@ class PIDEndpoint(Uploader, EudatEndpoint):
             return data, e, hcodes.HTTP_SERVER_ERROR
         except handleexceptions.HandleAuthenticationError as e:
             return data, e, hcodes.HTTP_BAD_UNAUTHORIZED
+        except requests.exceptions.ConnectionError as e:
+            log.warning("No connection available...")
+            return data, e, hcodes.HTTP_SERVER_ERROR
         except BaseException as e:
+            log.error("Generic:\n%s(%s)", e.__class__.__name__, e)
             return data, e, hcodes.HTTP_SERVER_ERROR
 
         return data, None, hcodes.HTTP_FOUND

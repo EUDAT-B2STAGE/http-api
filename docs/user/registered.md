@@ -117,7 +117,7 @@ $ curl \
           "location": "irods://rodserver.dockerized.io/path/to/directory", 
           "metadata": {
             "PID": null, 
-            "checksum": "9876543210", , 
+            "checksum": "9876543210",
             "name": "test", 
             "object_type": "dataobject"
           }, 
@@ -135,7 +135,7 @@ $ curl \
 ## **PUT**
 ### Upload an entity **and trigger the registration in B2SAFE**
 
-Both Form and Streaming upload are supported. Streaming is faster and does load the file in memory on clinet side.
+Both Form and Streaming upload are supported. Streaming is faster and does load the file in memory on client side.
 
 > Notes: The entity registration depends on the policies adopted by the B2SAFE instance which the B2STAGE HTTP-API is connected to. This operation is idempotent.
 
