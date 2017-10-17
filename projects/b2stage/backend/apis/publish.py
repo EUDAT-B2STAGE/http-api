@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-""" Publish a digital object as a public file for anyone """
+"""
+Publish a digital object as a public resource for anyone
+"""
 
 from utilities import htmlcodes as hcodes
 from b2stage.apis.commons.endpoint import EudatEndpoint
@@ -10,7 +12,6 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 
-# class Publish(EndpointResource):
 class Publish(EudatEndpoint):
 
     def base(self, irods_location):
@@ -39,19 +40,64 @@ class Publish(EudatEndpoint):
 
         return None, r, path
 
-    def check_published(self, acls, icom):
+    def single_path_check(self, icom, zone, abs_path, check=True):
+
+        permissions = icom.get_permissions(abs_path)
+        acls = permissions.get('ACL', [])
 
         published = False
-        current_zone = icom.get_current_zone()
-
-        for acl in acls:
-            acl_user, acl_zone, acl_mode = acl
-            if acl_zone == current_zone:
-                if acl_user == icom.anonymous_user:
+        for acl_user, acl_zone, acl_mode in acls:
+            if acl_zone == zone and acl_user == icom.anonymous_user:
+                if check:
                     if 'read' in acl_mode:
                         published = True
                         break
+
         return published
+
+    def single_permission(self, icom, ipath, permission=None):
+
+        icom.set_permissions(
+            ipath,
+            # NOTE: permission could be: read, write, null/None
+            permission=permission,
+            userOrGroup=icom.anonymous_user,
+        )  # , recursive=False)
+        # FIXME: should we publish recursively to subfiles and subfolders?
+        # NOTE: It looks dangerous to me
+
+    def publish_helper(self, icom, ipath, check_only=True, unpublish=False):
+
+        from utilities import path
+        current_zone = icom.get_current_zone()
+
+        # FIXME: do this with python path lib
+        ipath_steps = ipath.lstrip('/').split('/')
+
+        current_ipath = path.build()
+
+        for ipath_step in ipath_steps:
+
+            current_ipath = path.join(current_ipath, ipath_step)
+            # print("PUB STEP:", ipath_step, current_ipath)
+            if ipath_step == current_zone or ipath_step == 'home':
+                continue
+
+            # find out if already published
+            check = self.single_path_check(
+                icom, current_zone, str(current_ipath))
+            # if only checking
+            if check_only and not check:
+                return False
+            # otherwise you want to publish/unpublish this path
+            else:
+                str_path = str(current_ipath)
+                if unpublish:
+                    self.single_permission(icom, str_path, permission=None)
+                else:
+                    self.single_permission(icom, str_path, permission='read')
+
+        return True
 
     @decorate.catch_error()
     def get(self, irods_location):
@@ -63,12 +109,7 @@ class Publish(EudatEndpoint):
         icom = handler.icommands
         user = icom.get_current_user()
         log.info("user '%s' requested to check '%s'", user, path)
-
-        permissions = icom.get_permissions(path)
-        log.pp(permissions)
-
-        published = self.check_published(permissions.get('ACL', []), icom)
-        return {'published': published}
+        return {'published': self.publish_helper(icom, path)}
 
     @decorate.catch_error()
     def put(self, irods_location=None):
@@ -81,18 +122,12 @@ class Publish(EudatEndpoint):
         user = icom.get_current_user()
         log.info("user '%s' requested to publish '%s'", user, path)
 
-        # FIXME: it should be applied to all directories in path (from homedir)
-
         # if already set as the same don't do anything
-        permissions = icom.get_permissions(path)
-        # log.pp(permissions)
-        if not self.check_published(permissions.get('ACL', []), icom):
-            icom.set_permissions(
-                path,
-                permission='read',
-                userOrGroup=icom.anonymous_user,
-            )  # , recursive=False)
+        if not self.publish_helper(icom, path):
+            self.publish_helper(icom, path, check_only=False, unpublish=False)
 
+        # # If you'd like to check again:
+        # return {'published': self.publish_helper(icom, path)}
         return {'published': True}
 
     @decorate.catch_error()
@@ -104,13 +139,12 @@ class Publish(EudatEndpoint):
 
         icom = handler.icommands
         user = icom.get_current_user()
-        log.info("user '%s' requested to unpublish '%s'", user, path)
+        log.info("user '%s' requested to UNpublish '%s'", user, path)
 
-        # if already set as the same don't do anything
-        permissions = icom.get_permissions(path)
-        # log.pp(permissions)
-        if self.check_published(permissions.get('ACL', []), icom):
-            icom.set_permissions(
-                path, permission=None, userOrGroup=icom.anonymous_user,)
+        # if not already set as the same don't do anything
+        if self.publish_helper(icom, path):
+            self.publish_helper(icom, path, check_only=False, unpublish=True)
 
+        # # If you'd like to check again:
+        # return {'published': self.publish_helper(icom, path)}
         return {'published': False}
