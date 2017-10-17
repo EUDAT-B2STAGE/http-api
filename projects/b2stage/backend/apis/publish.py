@@ -70,32 +70,31 @@ class Publish(EudatEndpoint):
 
         from utilities import path
         current_zone = icom.get_current_zone()
-
-        # FIXME: do this with python path lib
-        ipath_steps = ipath.lstrip('/').split('/')
-
-        current_ipath = path.build()
+        ipath_steps = path.parts(ipath)
+        current = ''
 
         for ipath_step in ipath_steps:
 
-            current_ipath = path.join(current_ipath, ipath_step)
-            # print("PUB STEP:", ipath_step, current_ipath)
-            if ipath_step == current_zone or ipath_step == 'home':
+            current = path.join(current, ipath_step, return_str=True)
+            # print("PUB STEP:", ipath_step, current, len(current))
+
+            # to skip: root dir, zone and home
+            if len(ipath_step) == 1 \
+               or ipath_step == current_zone or ipath_step == 'home':
                 continue
 
             # find out if already published
             check = self.single_path_check(
-                icom, current_zone, str(current_ipath))
+                icom, current_zone, str(current))
             # if only checking
             if check_only and not check:
                 return False
             # otherwise you want to publish/unpublish this path
             else:
-                str_path = str(current_ipath)
                 if unpublish:
-                    self.single_permission(icom, str_path, permission=None)
+                    self.single_permission(icom, current, permission=None)
                 else:
-                    self.single_permission(icom, str_path, permission='read')
+                    self.single_permission(icom, current, permission='read')
 
         return True
 
