@@ -21,7 +21,7 @@ log = get_logger(__name__)
 
 class TestPids(RestTestsAuthenticatedBase):
 
-    _main_endpoint = '/pids'
+    _main_endpoint = '/pids/'
 
     # def tearDown(self):
 
@@ -39,7 +39,7 @@ class TestPids(RestTestsAuthenticatedBase):
         wrong_pid = pid.replace('6850', 'XXXX')
 
         # GET URL from PID
-        endpoint = (self._api_uri + self._main_endpoint + '/' + pid)
+        endpoint = self._api_uri + self._main_endpoint + pid
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         # data = json.loads(r.get_data(as_text=True))
@@ -47,8 +47,8 @@ class TestPids(RestTestsAuthenticatedBase):
         self.assertEqual(data.get('URL'), 'irods://%s' % pid_uri_path)
 
         # GET URL from non existing PID
-        endpoint = (self._api_uri + self._main_endpoint + '/' + wrong_pid)
+        endpoint = self._api_uri + self._main_endpoint + wrong_pid
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
-        # TODO: test right credentials using Travis secret variables
+        # TODO: we may test right credentials using Travis secret variables

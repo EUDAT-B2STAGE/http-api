@@ -60,7 +60,7 @@ class TestPublish(RestTestsAuthenticatedBase):
 
     def test_01_GET_check_if_published(self):
 
-        endpoint = (self._api_uri + self._main_endpoint)
+        endpoint = self._api_uri + self._main_endpoint
         log.info('*** Testing GET call on %s' % endpoint)
 
         # Current file is not published
@@ -70,7 +70,7 @@ class TestPublish(RestTestsAuthenticatedBase):
         data = self.get_content(r)
         assert data.get(self._main_key) is False
 
-        # Random file does not work
+        # Random file: does not work
         r = self.app.get(
             endpoint + self._ipath + 'wrong',
             headers=self.__class__.auth_header)
@@ -79,6 +79,7 @@ class TestPublish(RestTestsAuthenticatedBase):
         # log.pp(errors)
         assert 'not existing' in errors.pop().get('path')
 
+        # Some other user directory: does not work
         r = self.app.get(
             endpoint + self._no_permission_path,
             headers=self.__class__.auth_header)
@@ -87,11 +88,109 @@ class TestPublish(RestTestsAuthenticatedBase):
         # log.pp(errors)
         assert 'no permissions' in errors.pop().get('path')
 
-    # def test_02_POST_publish_dataobject(self):
-    #     pass
+    def test_02_PUT_publish_dataobject(self):
 
-    # def test_03_DELETE_unpublish_dataobject(self):
-    #     pass
+        endpoint = self._api_uri + self._main_endpoint
+        log.info('*** Testing PUT call on %s' % endpoint)
+
+        # Publish the file which was already uploaded
+        r = self.app.put(
+            endpoint + self._ipath,
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = self.get_content(r)
+        assert data.get(self._main_key) is True
+
+        # Current file is now published
+        r = self.app.get(
+            endpoint + self._ipath, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = self.get_content(r)
+        assert data.get(self._main_key) is True
+
+        # Current file can be accessed by anonymous with /api/registered
+        anonymous_endpoint = self._api_uri + self._register_endpoint
+        r = self.app.get(
+            anonymous_endpoint + self._ipath,
+            headers=self.__class__.auth_header_anonymous)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = self.get_content(r)
+        data_object = data.pop().get(self._filename, {})
+        key = 'metadata'
+        self.assertIn(key, data_object)
+        metadata = data_object.get(key)
+        self.assertEqual(metadata.get('name'), self._filename)
+        self.assertEqual(metadata.get('object_type'), 'dataobject')
+
+        # Random file: cannot unpublish
+        r = self.app.put(
+            endpoint + self._ipath + 'wrong',
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        errors = self.get_content(r, return_errors=True)
+        assert 'not existing' in errors.pop().get('path')
+
+    def test_03_POST_not_working(self):
+
+        endpoint = self._api_uri + self._main_endpoint
+        log.info('*** Testing POST call on %s' % endpoint)
+
+        # Post method should not exist and/or not working
+        r = self.app.post(
+            endpoint, data=dict(path=self._ipath),
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        r = self.app.post(
+            endpoint + '/some', data=dict(path=self._ipath),
+            headers=self.__class__.auth_header)
+        self.assertEqual(
+            r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
+
+    def test_04_DELETE_unpublish_dataobject(self):
+
+        endpoint = self._api_uri + self._main_endpoint
+        log.info('*** Testing DELETE call on %s' % endpoint)
+
+        # Publish the file which was already uploaded
+        r = self.app.put(
+            endpoint + self._ipath,
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = self.get_content(r)
+        assert data.get(self._main_key) is True
+
+        # Unpublish the file which was previously published
+        r = self.app.delete(
+            endpoint + self._ipath,
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = self.get_content(r)
+        assert data.get(self._main_key) is False
+
+        # Current file is now unpublished
+        r = self.app.get(
+            endpoint + self._ipath, headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = self.get_content(r)
+        assert data.get(self._main_key) is False
+
+        # Current file cannot be accessed by anonymous
+        anonymous_endpoint = self._api_uri + self._register_endpoint
+        r = self.app.get(
+            anonymous_endpoint + self._ipath,
+            headers=self.__class__.auth_header_anonymous)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        errors = self.get_content(r, return_errors=True)
+        # log.pp(errors)
+        assert "you don't have privileges" in errors.pop()
+
+        # Random file: cannot unpublish
+        r = self.app.delete(
+            endpoint + self._ipath + 'wrong',
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        errors = self.get_content(r, return_errors=True)
+        assert 'not existing' in errors.pop().get('path')
 
     def tearDown(self):
 
