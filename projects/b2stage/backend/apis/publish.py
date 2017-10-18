@@ -38,6 +38,14 @@ class Publish(EudatEndpoint):
         #         code=hcodes.HTTP_NOT_IMPLEMENTED
         #     ), None, None
 
+        # Does this path exist?
+        if not r.icommands.exists(path):
+            return self.send_errors(
+                errors=[{
+                    'path': "'%s': not existing or no permissions" % path
+                }], code=hcodes.HTTP_BAD_NOTFOUND), \
+                None, None
+
         return None, r, path
 
     def single_path_check(self, icom, zone, abs_path, check=True):

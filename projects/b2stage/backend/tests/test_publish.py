@@ -20,7 +20,7 @@ class TestPublish(RestTestsAuthenticatedBase):
     _register_endpoint = '/registered'
     _main_endpoint = '/publish'
     _anonymous_user = 'anonymous'
-    _root = '/'
+    _main_key = 'published'
 
     def setUp(self):
 
@@ -39,9 +39,14 @@ class TestPublish(RestTestsAuthenticatedBase):
 
         self.irods_vars = detector.services_classes.get('irods').variables
         self._filename = 'some_file.txt'
+        home_dirname = 'home'
         self._ipath = str(path.join(
-            self._root, self.irods_vars.get('zone'),
-            'home', self.irods_vars.get('guest_user'), self._filename
+            path.root(), self.irods_vars.get('zone'),
+            home_dirname, self.irods_vars.get('guest_user'), self._filename
+        ))
+        self._no_permission_path = str(path.join(
+            path.root(), self.irods_vars.get('zone'),
+            home_dirname, 'nonexisting'
         ))
         log.debug('*** Upload a test file: %s' % self._ipath)
 
@@ -53,25 +58,37 @@ class TestPublish(RestTestsAuthenticatedBase):
             headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-    # def test_01_POST_publish_dataobject(self):
-    #     pass
-
-    def test_02_GET_check_if_published(self):
+    def test_01_GET_check_if_published(self):
 
         endpoint = (self._api_uri + self._main_endpoint)
         log.info('*** Testing GET call on %s' % endpoint)
+
+        # Current file is not published
         r = self.app.get(
             endpoint + self._ipath, headers=self.__class__.auth_header)
-        print("\n\n\n")
-        log.pp(r.__dict__)
-        print("\n\n\n")
-        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        pass
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        data = self.get_content(r)
+        assert data.get(self._main_key) is False
 
-        # data = json.loads(r.get_data(as_text=True))
-        # # pretty print data obtained from API to check the content
-        # # log.pp(data)
-        # self.assertEqual(data['Response']['data'], 'Hello world!')
+        # Random file does not work
+        r = self.app.get(
+            endpoint + self._ipath + 'wrong',
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        errors = self.get_content(r, return_errors=True)
+        # log.pp(errors)
+        assert 'not existing' in errors.pop().get('path')
+
+        r = self.app.get(
+            endpoint + self._no_permission_path,
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        errors = self.get_content(r, return_errors=True)
+        # log.pp(errors)
+        assert 'no permissions' in errors.pop().get('path')
+
+    # def test_02_POST_publish_dataobject(self):
+    #     pass
 
     # def test_03_DELETE_unpublish_dataobject(self):
     #     pass
