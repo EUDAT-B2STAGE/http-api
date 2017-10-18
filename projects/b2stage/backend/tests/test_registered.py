@@ -160,8 +160,8 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         log.info('*** Testing GET')
         # GET non existing entity
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename + 'NOTEXISTS')
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + '/' + self._test_filename + 'NOTEXISTS'
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
@@ -187,22 +187,22 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Obtain entity metadata
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename)
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + '/' + self._test_filename
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Download an entity
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename)
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + '/' + self._test_filename
         r = self.app.get(endpoint, data=dict(download='True'),
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         self.assertEqual(r.data, STRANGE_BSTRING)
 
         # Obtain EUDAT entity metadata (not present)
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename)
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + '/' + self._test_filename
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
@@ -211,16 +211,15 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         # Add EUDAT metadata
         params = json.dumps(dict({'PID': pid}))
-        endpoint = (
-            self._api_uri + self._metadata_endpoint +
-            self._irods_path + '/' + self._test_filename)
+        endpoint = self._api_uri + self._metadata_endpoint + \
+            self._irods_path + '/' + self._test_filename
         r = self.app.patch(endpoint, data=params,
                            headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Obtain EUDAT entity metadata
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename)
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + '/' + self._test_filename
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
@@ -257,16 +256,16 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         # Rename file
         params = json.dumps(dict(newname=new_file_name))
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + self._test_filename)
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + '/' + self._test_filename
         r = self.app.patch(endpoint, data=params,
                            headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Rename again with the original name
         params = json.dumps(dict(newname=self._test_filename))
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + new_file_name)
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + '/' + new_file_name
         r = self.app.patch(endpoint, data=params,
                            headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
@@ -288,8 +287,8 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         # Rename non existing file
         params = json.dumps(dict(newname=self._test_filename))
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + new_file_name)
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + '/' + new_file_name
         r = self.app.patch(endpoint, data=params,
                            headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
@@ -302,8 +301,8 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
         # Rename w/o passing "newname"
-        endpoint = (self._api_uri + self._main_endpoint +
-                    self._irods_path + '/' + new_file_name)
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + '/' + new_file_name
         r = self.app.patch(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
@@ -333,8 +332,8 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
         # Delete entity
-        endpoint = (self._api_uri + self._main_endpoint + self._irods_path +
-                    '/' + self._test_filename)
+        endpoint = self._api_uri + self._main_endpoint + self._irods_path + \
+            '/' + self._test_filename
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
@@ -344,8 +343,8 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Delete non existing entity
-        endpoint = (self._api_uri + self._main_endpoint + self._irods_path +
-                    '/' + self._test_filename + 'x')
+        endpoint = self._api_uri + self._main_endpoint + self._irods_path + \
+            '/' + self._test_filename + 'x'
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
         # HTTP_BAD_NOTFOUND is more appropriate
