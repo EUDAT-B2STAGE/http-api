@@ -1,4 +1,6 @@
 
+depends_on:
+  - IRODS_ANONYMOUS
 file: publish
 class: Publish
 schema:

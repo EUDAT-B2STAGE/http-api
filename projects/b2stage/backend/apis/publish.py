@@ -2,6 +2,8 @@
 
 """
 Publish a digital object as a public resource for anyone
+
+NOTE: this package will be loaded only if IRODS_ANONYMOUS is set
 """
 
 from utilities import htmlcodes as hcodes
