@@ -29,6 +29,7 @@ REMOTE_HTTPAPI_URI = 'https://%s' % REMOTE_DOMAIN
 LOCAL_HTTPAPI_URI = 'http://localhost:8080'
 
 log = apiclient.setup_logger(__name__, level_name=LOG_LEVEL)
+remote_calls = apiclient.check_cli_arg('remote')
 
 #############
 #   MAIN    #
@@ -38,7 +39,10 @@ log = apiclient.setup_logger(__name__, level_name=LOG_LEVEL)
 if __name__ == '__main__':
 
     # decide which HTTP API server you should query
-    if apiclient.check_cli_arg('remote'):
+    if remote_calls:
+        from utilities.checks import internet_connection_available
+        if not internet_connection_available():
+            log.exit("No internet connection")
         uri = REMOTE_HTTPAPI_URI
     else:
         uri = LOCAL_HTTPAPI_URI
@@ -77,7 +81,7 @@ if __name__ == '__main__':
     # other operations
 
     # avoid more operations if the user only requested listing
-    apiclient.check_cli_arg('list', exit=True)
+    apiclient.check_cli_arg('list', exit=True)  # , reverse=True)
 
     # push files found in config dir
     files = apiclient.folder_content(FILES_PATH)
@@ -111,8 +115,15 @@ if __name__ == '__main__':
         # ACTION: upload one file
         ################
         if not os.path.basename(file_path) in new_dir_content:
+
+            # NOTE: you can wait for the PID registration
+            # (assuming the connected B2SAFE is configured so)
+            # by adding payload={'pid': True} to the call
+            # (probably also a longer timetout, e.g. 20 seconds)
+
             response = apiclient.call(
-                uri, endpoint=apiclient.BASIC_ENDPOINT + new_dir_path,
+                uri,
+                endpoint=apiclient.BASIC_ENDPOINT + new_dir_path,
                 token=token, method='put', file=file_path
             )
             log.info("Uploaded file: %s", file_path)
@@ -134,7 +145,9 @@ if __name__ == '__main__':
     response = apiclient.call(
         uri, endpoint=os.path.join(new_dir_endpoint, some_file), token=token)
 
-    pid = response[0][some_file]['metadata']['PID']
+    data = response.pop()
+    metadata = data.get(some_file, {}).get('metadata', {})
+    pid = metadata.get('PID')
     if pid:
         response = apiclient.call(
             uri, token=token,
