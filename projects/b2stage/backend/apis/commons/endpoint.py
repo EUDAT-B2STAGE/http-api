@@ -67,8 +67,6 @@ class EudatEndpoint(B2accessUtilities):
             # icd and ipwd do not give error with wrong certificates...
             # so the minimum command is ils inside the home dir
             icom.list()
-            # TODO: doublecheck if list is the best option with PRC
-
             if proxy:
                 log.debug("Current proxy certificate is valid")
 
@@ -258,12 +256,8 @@ class EudatEndpoint(B2accessUtilities):
         adding or removing replicas require explicit irods commands.
         """
 
-        # iuser = icom.get_current_user()
-
-        ############################
         # Handle flask differences on GET/DELETE and PUT/POST
         myargs = self.get_input()
-        # log.pp(myargs)
 
         ############################
         # main parameters

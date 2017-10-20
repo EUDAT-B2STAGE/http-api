@@ -6,6 +6,17 @@ volumes:
 
 services:
 
+  icat:
+    command: echo enabled b2access certificates
+    environment:
+      ACTIVATE: 1
+      B2ACCESS_CAS: ${B2ACCESS_CAS}
+    volumes:
+      # B2ACCESS certificates
+      - sharedcerts:/opt/certificates
+      - ../submodules/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      - ../submodules/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
+
   backend:
     # command: sleep infinity
     restart: always
@@ -20,6 +31,7 @@ services:
       B2ACCESS_ENV: development  # try 'integration' server
       # B2ACCESS_ENV: production
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
+      # MAIN_LOGIN_ENABLE: 0
       ##################
     depends_on:
       # - icat

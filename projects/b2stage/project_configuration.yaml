@@ -25,10 +25,14 @@ variables:
 
     ###############################
     ## B2ACCESS
+    # set this up if you want to provide endpoints
+    # to authenticate with B2ACCESS
+
+    B2ACCESS_ACCOUNT:
     # B2ACCESS_ACCOUNT: httpapi # dev
-    B2ACCESS_ACCOUNT: httpapi_test # staging
+    # B2ACCESS_ACCOUNT: httpapi_test # staging
     # B2ACCESS_ACCOUNT: b2stage_httpapi # prod
-    B2ACCESS_SECRET: SETYOURSECRETKEY
+    B2ACCESS_SECRET:
 
     ###############################
     ## LOCAL iRODS server VERSION

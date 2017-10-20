@@ -271,6 +271,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             return self.send_errors('Location: missing filepath inside URI',
                                     code=hcodes.HTTP_BAD_REQUEST)
         irods_location = self.fix_location(irods_location)
+        # NOTE: irods_location will act strange due to Flask internals
+        # in case upload is served with streaming options,
+        # NOT finding the right path + filename if the path is a collection
 
         ###################
         # Basic init
@@ -284,12 +287,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ipath = None
 
-        # FIXME: allow custom split of a custom response
-        # this piece of code does not work with a custom response
-        # if it changes the main blocks of the json root;
-        # the developer should be able to provide a 'custom_split'
-
         # Manage both form and streaming upload
+
         #################
         # FORM UPLOAD
         if request.mimetype != 'application/octet-stream':
@@ -338,6 +337,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     # Transaction rollback: remove local cache in any case
                     log.debug("Removing cache object")
                     os.remove(abs_file)
+
         #################
         # STREAMING UPLOAD
         else:
@@ -410,9 +410,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if pid_found:
             return self.force_response(content, errors=errors, code=status)
         else:
-            return self.send_warnings(content,
-                                      errors=errors,
-                                      code=hcodes.HTTP_OK_ACCEPTED)
+            return self.send_warnings(
+                content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def patch(self, irods_location=None):
@@ -527,5 +526,4 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         icom.remove(irods_location, recursive=is_recursive, resource=resource)
         log.info("Removed %s", irods_location)
-
         return {'removed': irods_location}
