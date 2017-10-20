@@ -43,7 +43,7 @@ services:
       - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
   icat:
-    build: ../submodules/build-templates/b2safe
+    # build: ../submodules/build-templates/b2safe  # if needed to be tested
     environment:
       ACTIVATE: 1
       POSTGRES_HOST: "${ALCHEMY_HOST}"
