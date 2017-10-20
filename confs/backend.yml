@@ -67,6 +67,8 @@ services:
       DEBUG_ENDPOINTS: 0
       # base the user/role mechanism on some database
       AUTH_ENABLE: 0
+      # disable the basic /api/login method
+      MAIN_LOGIN_ENABLE: 0
       # AUTH_SERVICE: ${AUTH_SERVICE}
       # # if Unicode is complaining with print
       # PYTHONIOENCODING: UTF-8
@@ -199,11 +201,16 @@ services:
   #         - ${CELERY_BROKER_HOST}
   #   environment:
   #     ACTIVATE: 0
+  # RABBITMQ_DEFAULT_USER
+  # RABBITMQ_DEFAULT_PASS
+  # https://hub.docker.com/_/rabbitmq/
+  # http://docs.celeryproject.org/en/latest/getting-started/brokers/rabbitmq.html
 
   ##########################
   ### SERVICE INTERFACES ###
   ##########################
 
+  # http://mher.github.io/flower/reverse-proxy.html
   # celeryui:
   #   build: ../submodules/build-templates/celery
   #   image: ${COMPOSE_PROJECT_NAME}/celery:template
