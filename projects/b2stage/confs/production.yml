@@ -7,8 +7,14 @@ volumes:
 services:
 
   backend:
+    restart: on-failure:5
+    # TO TEST the failure:
+    # 1. go inside backend
+    # 2. ps aux --forest
+    # 3. kill process 1 and the tree branches
+
+    # restart: always
     # command: sleep infinity
-    restart: always
     environment:
       ##################
       # Base info
@@ -44,13 +50,15 @@ services:
     #   # - ../submodules/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 
   postgres:
-    restart: always
+    # restart: always
+    restart: on-failure:5
     # Activate a production ready configuration
     volumes:
       # - ../submodules/build-templates/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
       - ../submodules/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
 
   proxy:
+    restart: always
     environment:
       ACTIVATE: 1
       DOMAIN: ${PROJECT_DOMAIN}
