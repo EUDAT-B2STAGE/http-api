@@ -34,6 +34,10 @@ variables:
     # B2ACCESS_ACCOUNT: b2stage_httpapi # prod
     B2ACCESS_SECRET:
 
+    ## while b2access is not working yet against b2safe:
+    ## 1. /auth/b2safeproxy is enabled for using irods credentials
+    ## 2. /auth/askauth and similar are disabled
+
     ###############################
     ## LOCAL iRODS server VERSION
     # NOTE: intended for DEBUG mode, to be commented in PRODUCTION

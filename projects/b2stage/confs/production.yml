@@ -6,32 +6,28 @@ volumes:
 
 services:
 
-  icat:
-    command: echo enabled b2access certificates
-    environment:
-      ACTIVATE: 1
-      B2ACCESS_CAS: ${B2ACCESS_CAS}
-    volumes:
-      # B2ACCESS certificates
-      - sharedcerts:/opt/certificates
-      - ../submodules/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
-      - ../submodules/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
-
   backend:
     # command: sleep infinity
     restart: always
     environment:
+      ##################
+      # Base info
       ACTIVATE: 1
       APP_MODE: production
       FLASK_DEBUG: 0
       DEBUG_LEVEL: INFO
       NGINX_ACTIVE: "True"
+
       ##################
       # EUDAT RELATED
-      B2ACCESS_ENV: development  # try 'integration' server
-      # B2ACCESS_ENV: production
+      ## Enable publishing
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
-      # MAIN_LOGIN_ENABLE: 0
+      ## /api/login is not enabled in production
+      MAIN_LOGIN_ENABLE: 0
+      ## If you don't provide credentials b2access will not be enabled
+      # B2ACCESS_ENV: staging
+      B2ACCESS_ENV: production
+
       ##################
     depends_on:
       # - icat
@@ -88,3 +84,31 @@ services:
       - proxy
     volumes:
       - sslcerts:/tmp/certs
+
+  ################
+  icat:
+    command: /docker-entrypoint.d/b2access.sh
+    # command: echo enabled b2access certificates
+    volumes:
+      # B2ACCESS certificates
+      - sharedcerts:/opt/certificates
+      - ../submodules/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      - ../submodules/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
+    environment:
+      ## Activate this container only if B2ACCESS will be used
+      ## In python if B2ACCESS_SECRET is empty string -> False
+      ## if string with chars -> True
+      ACTIVATE: ${B2ACCESS_SECRET}
+      B2ACCESS_CAS: ${B2ACCESS_CAS}
+      ## Warning: fake variables;
+      ## icat is needed only to produce the b2access certificates
+      POSTGRES_HOST: null
+      POSTGRES_USER: null
+      POSTGRES_PASSWORD: null
+      IRODS_HOST: null
+      IRODS_PORT: null
+      IRODS_USER: null
+      IRODS_ZONE: null
+      IRODS_DB: null
+      IRODS_PASSWORD: null
+  ################
