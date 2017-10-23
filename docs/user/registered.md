@@ -144,7 +144,7 @@ Both Form and Streaming upload are supported. Streaming is faster and does load 
 |-----------|------|-------------
 | file (required) | string | Name of the local file to be uploaded
 | force | bool | Force overwrite
-| pid | bool | Return PID (synchronous)
+| pid_await | bool | Return PID (synchronous)
 
 ##### Example: Form upload
 ```bash

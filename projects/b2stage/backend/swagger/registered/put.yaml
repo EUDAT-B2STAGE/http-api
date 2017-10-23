@@ -25,7 +25,7 @@ single:
       type: boolean
       # default: false
       description: force action even if getting warnings
-    - name: pid
+    - name: pid_await
       in: query
       type: boolean
       description: Returns PID in the JSON response

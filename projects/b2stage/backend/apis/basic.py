@@ -367,7 +367,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         pid_found = True
         if not errors:
             out = {}
-            pid_parameter = self._args.get('pid')
+            pid_parameter = self._args.get('pid_await')
             if pid_parameter and 'true' in pid_parameter.lower():
                 # Shall we get the timeout from user?
                 pid_found = False
