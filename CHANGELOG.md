@@ -1,23 +1,30 @@
 
-# v0.7.0-rc4 (*near future*)
-**due date**: October 15th, 2017
+# v1.0.1 (*near future*)
+**due date**: November 30th, 2017
 
 ## features
 
-- Connect prototype to production services #90
-- Checklist for good projects #62
-- to be defined
+- to be defined in the next developer meeting
 
-# v0.6.2-rc3 (*currently developed*)
-**due date**: October 1th, 2017
-**project**: [webinar](https://github.com/EUDAT-B2STAGE/http-api/projects/3)
+# v1.0.0 (*first stable release*)
+**due date**: October 24th, 2017
+**milestone**: [stable release](https://github.com/EUDAT-B2STAGE/http-api/milestones/8)
 
 ## features
 
-- Define a protocol to release production to be tested automatically #55
-- to be defined
+- Benchmarks #20
+- Unittests upgrade (from `nose2` to `py.test`) #105
+- A publish endpoint to make data available to anyone/anonymous #72
+- PIDS refactor #106
+- Automatically recover from failures #103
+- Landing page #42
+- Bug fixes
 
-# v0.6.1-rc2 (*latest stable*)
+## known issues
+
+Currently B2ACCESS and B2SAFE are facing problems in sharing certificated credentials. This is under investigation and will be discussed in the upcoming developer meeting. It is not an issue related to B2STAGE HTTP-API code.
+
+# v0.6.1-rc2
 **due date**: September 9th, 2017
 **project**: [release candidate 2](https://github.com/EUDAT-B2STAGE/http-api/milestone/9)
 
