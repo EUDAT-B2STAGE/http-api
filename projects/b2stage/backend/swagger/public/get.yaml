@@ -1,0 +1,8 @@
+
+public:
+  custom:
+    authentication: false
+  summary: Let non-authenticated users get data about a public data-object
+  responses:
+    '200':
+      description: Informations about the data-object

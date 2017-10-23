@@ -29,10 +29,8 @@ class OauthLogin(EudatEndpoint):
         exception_label='Server side B2ACCESS misconfiguration')
     def get(self):
 
-        from flask import request
-        # agent = request.headers.get('User-Agent')
-        # log.pp(request.user_agent.__dict__)
-        if request.user_agent.browser is None:
+        from restapi.rest.response import request_from_browser
+        if not request_from_browser():
             return self.send_errors(
                 "B2ACCESS authorization must be requested from a browser",
                 code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
