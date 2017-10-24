@@ -40,8 +40,8 @@ The first stable release is focused on the interaction with the `B2SAFE` service
 - Administration
     + read the [pre-requisites](docs/deploy/preq.md) prior to installation
     + [startup](docs/deploy/startup.md) a working copy
-    + deploy in two [modes](docs/deploy/running_modes.md) 
-    + [debug](docs/deploy/debug.md) the server operating on top of `B2SAFE` and fix eventual issues
+    + deploy in two [modes](docs/deploy/modes.md) 
+    + [debug](docs/deploy/debugging.md) the server operating on top of `B2SAFE` and fix eventual issues
 - Development
     + [add](docs/development/development.md) new features
     + extra [operations](docs/development/operations.md)
