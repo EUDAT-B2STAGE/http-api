@@ -7,7 +7,6 @@
 | [![Build Status](https://travis-ci.org/EUDAT-B2STAGE/http-api.svg?branch=master)](https://travis-ci.org/EUDAT-B2STAGE/http-api) | [![Coverage Status](https://coveralls.io/repos/github/EUDAT-B2STAGE/http-api/badge.svg?branch=master)](https://coveralls.io/github/EUDAT-B2STAGE/http-api?branch=master) | [![Code Health](https://landscape.io/github/EUDAT-B2STAGE/http-api/master/landscape.svg?style=flat)](https://landscape.io/github/EUDAT-B2STAGE/http-api/master) | [![Uptime Robot](https://img.shields.io/uptimerobot/ratio/m778586640-4e31f2b00e90bce508dcdf33.svg?maxAge=2592000)](https://stats.uptimerobot.com/xGG9gTK3q) | [![Swagger validation](https://img.shields.io/swagger/valid/2.0/https/b2stage.cineca.it/api/specs.svg)](http://petstore.swagger.io/?url=https://b2stage.cineca.it/api/specs&docExpansion=none) | [![Gitter](https://badges.gitter.im/EUDAT-B2STAGE/http-api.svg)](https://gitter.im/EUDAT-B2STAGE/http-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) |
 
 
-
 ---
 
 

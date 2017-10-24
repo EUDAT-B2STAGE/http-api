@@ -16,4 +16,5 @@ Please feel free [to report or comment](https://gitter.im/EUDAT-B2STAGE/http-api
 Before starting up head to the [pre-requisites](docs/deploy/preq.md) page.
 Here's step-by-step tutorial to work with the HTTP API project.
 
-`TO BE FIXED`
+`TO BE COMPLETED`
+

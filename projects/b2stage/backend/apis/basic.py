@@ -286,6 +286,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             self.get_file_parameters(icom, path=irods_location)
 
         ipath = None
+        request.get_data()
 
         # Manage both form and streaming upload
 

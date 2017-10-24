@@ -141,6 +141,9 @@ tags:
   registered: upload, download, list and delete objects
   pids: resolve and download data from EUDAT Persistent IDentifier
   publish: allow public access to data objects
+  public: landing page
+  b2safe: proxy access to irods b2safe credentials
+  # internal: for internal testing purpose only
 
 # Keep track of releases and dependencies
 releases:
@@ -168,3 +171,7 @@ releases:
     type: patch
     rapydo: null
     status: todo
+  # '0.7.0':
+  #   type: RC5
+  #   rapydo: null
+  #   status: todo
