@@ -144,7 +144,7 @@ Both Form and Streaming upload are supported. Streaming is more advisable uplodi
 |-----------|------|-------------
 | file (required) | string | Name of the local file to be uploaded
 | force | bool | Force overwrite
-| pid_await | bool | Return PID synchronously: the response is returned has the registration is completed (or after 10 seconds if the PID is not ready yet)
+| pid_await | bool | Return PID in the response: the response is returned as the registration is completed (or after 10 seconds if the PID is not ready yet)
 
 ##### Example: Form upload
 ```bash
