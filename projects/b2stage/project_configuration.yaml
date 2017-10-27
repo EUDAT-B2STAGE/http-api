@@ -24,11 +24,10 @@ variables:
 
     ###############################
     ## B2ACCESS
-    # set this up if you want to provide endpoints
-    # to authenticate with B2ACCESS
-
-    # B2ACCESS_ACCOUNT:
-    # B2ACCESS_SECRET:
+    # Provide some existing credentials here
+    # if you want to provide endpoints to authenticate with B2ACCESS
+    B2ACCESS_ACCOUNT:
+    B2ACCESS_SECRET:
 
     ###############################
     ## LOCAL iRODS server VERSION
