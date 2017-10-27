@@ -5,8 +5,7 @@
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing files in different EUDAT domains
-  version: v1.0.0
-  rapydo: 0.5.6
+  version: 1.0.0
 
 ###############################
 ## Please CHECK VARIABLES here
@@ -28,15 +27,8 @@ variables:
     # set this up if you want to provide endpoints
     # to authenticate with B2ACCESS
 
-    B2ACCESS_ACCOUNT:
-    # B2ACCESS_ACCOUNT: httpapi # dev
-    # B2ACCESS_ACCOUNT: httpapi_test # staging
-    # B2ACCESS_ACCOUNT: b2stage_httpapi # prod
-    B2ACCESS_SECRET:
-
-    ## while b2access is not working yet against b2safe:
-    ## 1. /auth/b2safeproxy is enabled for using irods credentials
-    ## 2. /auth/askauth and similar are disabled
+    # B2ACCESS_ACCOUNT:
+    # B2ACCESS_SECRET:
 
     ###############################
     ## LOCAL iRODS server VERSION
@@ -165,13 +157,13 @@ releases:
     status: released
   '1.0.0':
     type: stable
-    rapydo: 0.5.5
+    rapydo: 0.5.7
     status: released
   '1.0.1':
     type: patch
-    rapydo: null
+    rapydo: 0.5.8
+    status: development
+  '1.0.2':
+    type: development
+    rapydo: 0.5.8
     status: todo
-  # '0.7.0':
-  #   type: RC5
-  #   rapydo: null
-  #   status: todo
