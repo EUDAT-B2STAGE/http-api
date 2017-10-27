@@ -6,22 +6,22 @@
 # data
 uploads
 tmp_files
-b2stage/*
 # virtualenv
-
-# Skip self-signed certificates
+b2stage/*
 data/certs/nginx-selfsigned*
 data/certs/*cineca*
 data/secrets/secret_*
+data/b2handle/*.pem
+data/files/*
 
 #################
 ##  Submodules ##
 #################
 
 submodules/.backup
-submodules/utilities
-submodules/builds_base
-submodules/backend
+submodules/build-templates
+submodules/utils
+submodules/http-api
 submodules/frontend
 submodules/prc
 
@@ -29,8 +29,8 @@ submodules/prc
 ##  Dynamically created file and folders  ##
 ############################################
 
-.projectrc
-frontend/eudat/libs/bower_components
+#.projectrc
+frontend/b2stage/libs/bower_components
 .env
 projects/*/backend/confs/project_configuration.yaml
 

@@ -7,16 +7,16 @@ version: '3'
 volumes:
   jwt_tokens:
     driver: local
-  rabbitdata:
-    driver: local
+  # rabbitdata:
+  #   driver: local
   sqldata:
     driver: local
-  graphdata:
-    driver: local
-  mongodata:
-    driver: local
-  pureftpd:
-    driver: local
+  # graphdata:
+  #   driver: local
+  # mongodata:
+  #   driver: local
+  # pureftpd:
+  #   driver: local
   letsencrypt_certs:
     driver: local
   ssl_dhparam:
@@ -31,11 +31,11 @@ volumes:
 
 networks:
   # default:
+  # worker_net:
+  # ftp_net:
   i_net:
   app_net:
   proxy_net:
-  worker_net:
-  ftp_net:
   db_net:
     # # driver: bridge
     # ipam:
@@ -54,7 +54,7 @@ services:
   ########################
   backend:
     # command: sleep infinity
-    build: ../submodules/builds_base/backend
+    build: ../submodules/build-templates/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:template
     # hostname: restapi
     hostname: rapydo_server
@@ -67,6 +67,8 @@ services:
       DEBUG_ENDPOINTS: 0
       # base the user/role mechanism on some database
       AUTH_ENABLE: 0
+      # disable the basic /api/login method
+      MAIN_LOGIN_ENABLE: 0
       # AUTH_SERVICE: ${AUTH_SERVICE}
       # # if Unicode is complaining with print
       # PYTHONIOENCODING: UTF-8
@@ -77,9 +79,6 @@ services:
       - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
-      # Unit tests
-      - ../submodules/backend/tests:/code/tests
-      - ../projects/${COMPOSE_PROJECT_NAME}/backend/tests:/code/tests/custom
     networks:
       app_net:
         aliases:
@@ -89,7 +88,7 @@ services:
 
   ##############################
   proxy:
-    build: ../submodules/builds_base/proxy
+    build: ../submodules/build-templates/proxy
     image: ${COMPOSE_PROJECT_NAME}/proxy:template
     hostname: reverseproxy
     volumes:
@@ -117,10 +116,12 @@ services:
   ###  DATABASES  ###
   ###################
   postgres:
-    image: postgres:9.6
+    # image: postgres:9.6
+    # image: postgres:9.6.5-alpine
+    image: postgres:10.0-alpine
     volumes:
       - sqldata:/var/lib/postgresql/data
-      - ../submodules/builds_base/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/setup-my-schema.sh:ro
+      - ../submodules/build-templates/postgres/pgs_init.sh:/docker-entrypoint-initdb.d/init-db-and-users.sh:ro
     environment:
       ACTIVATE: 0
       POSTGRES_USER: "${PLACEHOLDER}"
@@ -131,168 +132,176 @@ services:
         aliases:
           - ${ALCHEMY_HOST}
 
-  neo4j:
-    image: neo4j:3.2.1
-    volumes:
-      - graphdata:/data
-    networks:
-      db_net:
-        aliases:
-          - ${GRAPHDB_HOST}
-    environment:
-      ACTIVATE: 0
-      NEO4J_AUTH: neo4j/${PLACEHOLDER}
-      # NEO4J_dbms_memory_pagecache_size: 2048M
-      # NEO4J_dbms_memory_heap_maxSize: 4096M
-    # ports:
-    #   - 9090:7474
-    #   - 7687:7687
+  # neo4j:
+  #   image: neo4j:3.2.2
+  #   # image: neo4j:3.2.3
+  #   # volumes:
+  #   #   - graphdata:/data
+  #   # networks:
+  #   #   db_net:
+  #   #     aliases:
+  #   #       - ${GRAPHDB_HOST}
+  #   environment:
+  #     ACTIVATE: 0
+  #     NEO4J_AUTH: neo4j/${PLACEHOLDER}
+  #     # NEO4J_dbms_memory_pagecache_size: 2048M
+  #     # NEO4J_dbms_memory_heap_maxSize: 4096M
+  #   # ports:
+  #   #   - 9090:7474
+  #   #   - 7687:7687
 
-  mongodb:
-    image: mongo:3.4
-    volumes:
-      - mongodata:/data/db
-    networks:
-      db_net:
-        aliases:
-          - ${MONGO_HOST}
-    environment:
-      ACTIVATE: 0
+  # mongodb:
+  #   image: mongo:3.4
+  #   # volumes:
+  #   #   - mongodata:/data/db
+  #   # networks:
+  #   #   db_net:
+  #   #     aliases:
+  #   #       - ${MONGO_HOST}
+  #   environment:
+  #     ACTIVATE: 0
 
   #########################
   ###  QUEUE MANAGEMENT ###
   #########################
 
-  celery:
-    build: ../submodules/builds_base/celery
-    image: ${COMPOSE_PROJECT_NAME}/celery:template
-    # hostname: celworker
-    # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
-    user: root
-    working_dir: /code
-    environment:
-      ACTIVATE: 0
-      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
-      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
-    volumes:
-      # FIXME: UHM, what is this @mattia?
-      # Base code
-      - ../submodules/backend:/code
-      # Vanilla code
-      - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
-      # JWT tokens secret
-      - jwt_tokens:${JWT_APP_SECRETS}
-    networks:
-      db_net:
-      worker_net:
-    depends_on:
-      - rabbit
-      # - flower
+  # celery:
+  #   build: ../submodules/build-templates/celery
+  #   image: ${COMPOSE_PROJECT_NAME}/celery:template
+  #   # hostname: celworker
+  #   # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
+  #   user: root
+  #   working_dir: /code
+  #   environment:
+  #     ACTIVATE: 0
+  #     VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+  #     JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+  #   volumes:
+  #     # Base code
+  #     - ../submodules/http-api:/code
+  #     # Vanilla code
+  #     - ../projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+  #     # JWT tokens secret
+  #     - jwt_tokens:${JWT_APP_SECRETS}
+  #   networks:
+  #     db_net:
+  #     worker_net:
+  #   depends_on:
+  #     - rabbit
+  #     # - flower
 
-  rabbit:
-    image: rabbitmq:latest
-    hostname: rabbit
-    volumes:
-      - rabbitdata:/var/lib/rabbitmq
-    networks:
-      worker_net:
-        aliases:
-          - ${CELERY_BROKER_HOST}
-    environment:
-      ACTIVATE: 0
+  # rabbit:
+  #   image: rabbitmq:latest
+  #   hostname: rabbit
+  #   volumes:
+  #     - rabbitdata:/var/lib/rabbitmq
+  #   networks:
+  #     worker_net:
+  #       aliases:
+  #         - ${CELERY_BROKER_HOST}
+  #   environment:
+  #     ACTIVATE: 0
+  # RABBITMQ_DEFAULT_USER
+  # RABBITMQ_DEFAULT_PASS
+  # https://hub.docker.com/_/rabbitmq/
+  # http://docs.celeryproject.org/en/latest/getting-started/brokers/rabbitmq.html
 
   ##########################
   ### SERVICE INTERFACES ###
   ##########################
 
-  celeryui:
-    build: ../submodules/builds_base/celery
-    image: ${COMPOSE_PROJECT_NAME}/celery:template
-    hostname: flower
-    user: root
-    working_dir: /code
-    command: start_flower
-    expose:
-      - 5555
-    ports:
-      - 5555:5555
-    environment:
-      ACTIVATE: 0
-      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
-      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
-    volumes:
-      - ..:/code/${COMPOSE_PROJECT_NAME}
-      - ../tmp_irods_certificates:/opt/certificates
-      - ../tmp_files:/uploads
-    networks:
-      db_net:
-      worker_net:
-    depends_on:
-      - rabbit
+  # http://mher.github.io/flower/reverse-proxy.html
+  # celeryui:
+  #   build: ../submodules/build-templates/celery
+  #   image: ${COMPOSE_PROJECT_NAME}/celery:template
+  #   hostname: flower
+  #   user: root
+  #   working_dir: /code
+  #   command: start_flower
+  #   expose:
+  #     - 5555
+  #   ports:
+  #     - 5555:5555
+  #   environment:
+  #     ACTIVATE: 0
+  #     VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+  #     JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+  #   volumes:
+  #     - ..:/code/${COMPOSE_PROJECT_NAME}
+  #     - ../tmp_irods_certificates:/opt/certificates
+  #     - ../tmp_files:/uploads
+  #   networks:
+  #     db_net:
+  #     worker_net:
+  #   depends_on:
+  #     - rabbit
 
   swaggerui:
-    build: ../submodules/builds_base/swaggerui
+    build: ../submodules/build-templates/swaggerui
     image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
     environment:
       ACTIVATE: 0
 
   sqlalchemyui:
-    build: ../submodules/builds_base/sqlalchemyui
-    image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
+    image: adminer:4.3.1-standalone
+    # build: ../submodules/build-templates/sqlalchemyui
+    # image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
     networks:
       db_net:
     environment:
       ACTIVATE: 0
+      # https://github.com/vrana/adminer/tree/master/designs
+      # ADMINER_DESIGN: brade
 
-  mongoui:
-    image: mongo-express:0.40.0
-    environment:
-      ACTIVATE: 0
-      ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
-    networks:
-      db_net:
+  # mongoui:
+  #   image: mongo-express:0.40.0
+  #   environment:
+  #     ACTIVATE: 0
+  #     ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
+  #   networks:
+  #     db_net:
 
   #############
   # REST API client (wget, curl, httpie, http-prompt)
   restclient:
-    build: ../submodules/builds_base/restclient
+    build: ../submodules/build-templates/restclient
     image: ${COMPOSE_PROJECT_NAME}/restclient:template
     hostname: rapydo_client
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       ACTIVATE: 0
     volumes:
-      # - ../submodules/utilities/utilities/projects_defaults.yaml:/code/base.yml
+      # - ../submodules/utils/utilities/projects_defaults.yaml:/code/base.yml
       - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/custom.yml
 
 
   ###################
   ### FTP SERVER  ###
   ###################
-  ftp:
-    # image: stilliard/pure-ftpd:latest
-    build: ../submodules/builds_base/ftp
-    image: ${COMPOSE_PROJECT_NAME}/ftp:template
-    volumes:
-      - pureftpd:/etc/pure-ftpd/passwd
-  # /etc/ssl/private/ A directory containing a single pure-ftpd.pem file
-  # with the server's SSL certificates for TLS support. Optional TLS is
-  # automatically enabled when the container finds this file on startup.
-    environment:
-      ACTIVATE: 0
-      PUBLICHOST: ${PROJECT_DOMAIN}
-      ADDED_FLAGS: -d -d
-    networks:
-      ftp_net:
+  # ftp:
+  #   # image: stilliard/pure-ftpd:latest
+  #   build: ../submodules/build-templates/ftp
+  #   image: ${COMPOSE_PROJECT_NAME}/ftp:template
+  #   volumes:
+  #     - pureftpd:/etc/pure-ftpd/passwd
+  # # /etc/ssl/private/ A directory containing a single pure-ftpd.pem file
+  # # with the server's SSL certificates for TLS support. Optional TLS is
+  # # automatically enabled when the container finds this file on startup.
+  #   environment:
+  #     ACTIVATE: 0
+  #     PUBLICHOST: ${PROJECT_DOMAIN}
+  #     ADDED_FLAGS: -d -d
+  #   networks:
+  #     ftp_net:
 
   ######################################################
   ###  iRODS iCAT server (usually for EUDAT B2safe)  ###
   ######################################################
   icat:
     # B2safe instance on irods
-    build: ../submodules/builds_base/icat
+    build: ../submodules/build-templates/icat
     image: ${COMPOSE_PROJECT_NAME}/icat:template
     # image: b2safe:rapydo
     hostname: ${IRODS_HOST}
@@ -308,6 +317,7 @@ services:
       IRODS_DB: ${PLACEHOLDER}
       IRODS_USER: ${PLACEHOLDER}
       IRODS_PASSWORD: ${PLACEHOLDER}
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
     networks:
       i_net:
         aliases:

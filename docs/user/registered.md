@@ -117,7 +117,7 @@ $ curl \
           "location": "irods://rodserver.dockerized.io/path/to/directory", 
           "metadata": {
             "PID": null, 
-            "checksum": "9876543210", , 
+            "checksum": "9876543210",
             "name": "test", 
             "object_type": "dataobject"
           }, 
@@ -135,7 +135,7 @@ $ curl \
 ## **PUT**
 ### Upload an entity **and trigger the registration in B2SAFE**
 
-Both Form and Streaming upload are supported. Streaming is faster and does load the file in memory on clinet side.
+Both Form and Streaming upload are supported. Streaming is more advisable uploding large data.
 
 > Notes: The entity registration depends on the policies adopted by the B2SAFE instance which the B2STAGE HTTP-API is connected to. This operation is idempotent.
 
@@ -144,7 +144,7 @@ Both Form and Streaming upload are supported. Streaming is faster and does load 
 |-----------|------|-------------
 | file (required) | string | Name of the local file to be uploaded
 | force | bool | Force overwrite
-| pid | bool | Return PID (synchronous)
+| pid_await | bool | Return PID in the response: the response is returned as the registration is completed (or after 10 seconds if the PID is not ready yet)
 
 ##### Example: Form upload
 ```bash
@@ -159,6 +159,12 @@ $ curl -X PUT \
   -H "Authorization: Bearer <auth_token>" \
   -F file=@myfile2 \
   <http_server:port>/api/registered/path/to/directory/filename?force=true 
+
+# Form upload 'myfile' and get the PID in the response
+$ curl -X PUT \
+  -H "Authorization: Bearer <auth_token>" \
+  -F file=@myfile2 \
+  <http_server:port>/api/registered/path/to/directory/filename?pid_await=true 
 ```
 ##### Example: Streaming upload
 ```bash

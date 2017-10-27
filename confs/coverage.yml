@@ -9,7 +9,7 @@ services:
   coverage:
     command: coveralls
     hostname: coveraging
-    build: ../submodules/builds_base/backend
+    build: ../submodules/build-templates/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:template
     working_dir: /repo
     environment:

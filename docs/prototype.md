@@ -39,7 +39,7 @@ https://b2stage.cineca.it/api/specs
 
 ### authentication process
 
-Details on how to create a valid token upon the current release of the HTTP API is available [inside the user guide](user/authentication.md)
+Details on how to create a valid token upon the current release of the HTTP API is available [inside the user guide](user/authentication.md).
 
 ### curl
 
@@ -49,10 +49,26 @@ See also the [main user page](user/user.md) to understand which endpoints exists
 
 Since the HTTP API server follows the `openapi` standard, you can query its endpoints also using the official `swagger-ui` web server, by just passing the `JSON` file in input:
 
-http://petstore.swagger.io/?url=https://b2stage.cineca.it/api/specs&docExpansion=none
+[link to the swagger `petstore`](http://petstore.swagger.io/?url=https://b2stage.cineca.it/api/specs&docExpansion=none)
 
-### python script
+### python client
 
-This is yet a work in progress: 
+You can find a [dedicated python module file](data/scripts/templates/client.py) to query the EUDAT B2STAGE HTTP-API. 
 
-> creating a dedicated python package to officially query the EUDAT B2STAGE HTTP-API
+The script is already configured to work with a local deploy of the HTTP-API containers on your computer or to a remote host. Before using it open the file and [change](https://github.com/EUDAT-B2STAGE/http-api/blob/master/data/scripts/templates/client.py#L22-L23) the basic [parameters](https://github.com/EUDAT-B2STAGE/http-api/blob/master/data/scripts/templates/client.py#L27).
+
+#### local
+
+If you are [running a working copy]() of the `B2STAGE HTTP-API` you can test the client by simply calling from a `UNIX` terminal:
+
+```bash
+data/scripts/templates/client.py
+```
+
+#### remote
+
+If you have credentials to a remote instance of the `HTTP-API` you just need to provide them inside the script and then execute with:
+
+```bash
+data/scripts/templates/client.py --remote
+```

@@ -1,0 +1,11 @@
+
+file: public
+class: Public
+schema:
+  expose: true
+mapping:
+  public: "/public/<path:irods_location>"
+labels:
+  - eudat
+  - pids
+  - public

@@ -1,9 +1,0 @@
-
-class: B2accesProxyEndpoint
-file: oauth
-baseuri: /auth
-mapping:
-  authproxy: /proxy
-labels:
-  - eudat
-  - b2access

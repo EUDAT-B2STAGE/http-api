@@ -14,15 +14,20 @@ The examples in this section use cURL commands. For information about cURL, see 
 ---
 
 ## **GET**
+
 ### Resolve PID
+
 ##### Example
+
 ```bash
 # Resolve <PID> (e.g. 11100/33ac01fc-6850-11e5-b66e-e41f13eb32b2)
 $ curl \
   -H "Authorization: Bearer <auth_token>"  \
   <http_server:port>/api/pids/<PID> 
 ```
+
 ##### Response
+
 ```json
 {
     "Meta": {
@@ -43,14 +48,18 @@ $ curl \
 
 
 ### Resolve PID and download object
+
 ##### Example
+
 ```bash
 # Get 'filename.txt' metadata
 $ curl \
   -H "Authorization: Bearer <auth_token>"  \
   <http_server:port>/api/pids/<PID>?download=true
 ```
+
 ##### Response
+
 ```json
 Content of the object to which the PID points to (if reachable by the HTTP-API server)
 ```

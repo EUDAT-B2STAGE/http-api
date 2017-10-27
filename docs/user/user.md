@@ -12,6 +12,7 @@ The current release of the B2STAGE HTTP-API allows users to perform the followin
 The complete description of the operation you can perform is available in:
 - the [registered api](registered.md) page
 - the [pids api](pids.md) page
+- the [publish api](publish.md) page
 
 
 ## Authentication flow

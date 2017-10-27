@@ -1,0 +1,16 @@
+
+depends_on:
+  - not B2ACCESS_APPKEY
+
+file: b2safeproxy
+class: B2safeProxy
+baseuri: /auth
+schema:
+  expose: true
+mapping:
+  b2safeproxy: "/b2safeproxy"
+labels:
+  - eudat
+  - b2safe
+  # - proxy
+  - authentication
