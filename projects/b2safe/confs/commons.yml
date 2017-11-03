@@ -38,7 +38,7 @@ services:
     #     - 1247:1247
   sqlalchemyui:
     ports:
-      - 80:8888
+      - 80:8080
   iclient:
     build: ../submodules/build-templates/icat
     image: ${COMPOSE_PROJECT_NAME}/icat:template

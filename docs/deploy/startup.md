@@ -2,21 +2,21 @@
 # Start-up the project
 
 
-## 1. cloning 
+## 1. cloning 
 
 To clone the working code:
 
 ```bash
-$ VERSION=0.6.1 \
+$ VERSION=1.0.0 \
     && git clone https://github.com/EUDAT-B2STAGE/http-api.git \
     && cd http-api \
     && git checkout $VERSION  
 
-# now you will have the current latest release (RC1)
+# now you will have the current latest release
 ```
 
 
-## 2. configure
+## 2. configure
 
 Now that you have all necessary software installed, before launching services you should consider editing the main configuration:
 

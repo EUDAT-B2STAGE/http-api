@@ -13,6 +13,8 @@ services:
       - ../submodules/build-templates/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
       # B2ACCESS dev and prod certificates
       - ../submodules/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
+      # # Extra volumes
+      # - /your/path/to/something:/var/lib/data/irods
 
     # Open irods port to Outside world
     ports:
