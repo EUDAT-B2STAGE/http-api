@@ -156,7 +156,7 @@ releases:
     status: released
   '1.0.0':
     type: stable
-    rapydo: 0.5.7
+    rapydo: 0.6.0
     status: released
   '1.0.1':
     type: patch
