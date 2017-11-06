@@ -40,7 +40,10 @@ services:
     ports:
       - 80:8080
   iclient:
-    build: ../submodules/build-templates/icat
+    build:
+      context: ../submodules/build-templates/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: ${COMPOSE_PROJECT_NAME}/icat:template
     hostname: iclient
     command: sleep infinity

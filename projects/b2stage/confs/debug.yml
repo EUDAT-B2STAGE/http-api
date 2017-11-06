@@ -43,7 +43,6 @@ services:
       - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
   icat:
-    # build: ../submodules/build-templates/b2safe  # if needed to be tested
     environment:
       ACTIVATE: 1
       POSTGRES_HOST: "${ALCHEMY_HOST}"
@@ -76,8 +75,6 @@ services:
     #     - 1247:1247
 
   restclient:
-    # build: ../projects/${COMPOSE_PROJECT_NAME}/builds/restclient
-    # image: ${COMPOSE_PROJECT_NAME}/restclient:custom
     environment:
       ACTIVATE: 1
       APP_HOST: ${FLASK_HOST}

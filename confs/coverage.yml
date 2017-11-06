@@ -9,7 +9,10 @@ services:
   coverage:
     command: coveralls
     hostname: coveraging
-    build: ../submodules/build-templates/backend
+    build:
+      context: ../submodules/build-templates/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: ${COMPOSE_PROJECT_NAME}/backend:template
     working_dir: /repo
     environment:

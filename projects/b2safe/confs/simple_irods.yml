@@ -3,7 +3,10 @@ version: '3'
 services:
 
   icat:
-    build: ../submodules/build-templates/icat
+    build:
+      context: ../submodules/build-templates/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: ${COMPOSE_PROJECT_NAME}/server:icat
     # Open irods port to Outside world
     ports:

@@ -54,7 +54,10 @@ services:
   ########################
   backend:
     # command: sleep infinity
-    build: ../submodules/build-templates/backend
+    build:
+      context: ../submodules/build-templates/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: ${COMPOSE_PROJECT_NAME}/backend:template
     # hostname: restapi
     hostname: rapydo_server
@@ -88,7 +91,10 @@ services:
 
   ##############################
   proxy:
-    build: ../submodules/build-templates/proxy
+    build:
+      context: ../submodules/build-templates/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: ${COMPOSE_PROJECT_NAME}/proxy:template
     hostname: reverseproxy
     volumes:
@@ -166,7 +172,10 @@ services:
   #########################
 
   # celery:
-  #   build: ../submodules/build-templates/celery
+    # build:
+    #   context: ../submodules/build-templates/backend
+    #   args:
+    #     RAPYDO_VERSION: ${RAPYDO_VERSION}
   #   image: ${COMPOSE_PROJECT_NAME}/celery:template
   #   # hostname: celworker
   #   # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
@@ -212,7 +221,10 @@ services:
 
   # http://mher.github.io/flower/reverse-proxy.html
   # celeryui:
-  #   build: ../submodules/build-templates/celery
+    # build:
+    #   context: ../submodules/build-templates/backend
+    #   args:
+    #     RAPYDO_VERSION: ${RAPYDO_VERSION}
   #   image: ${COMPOSE_PROJECT_NAME}/celery:template
   #   hostname: flower
   #   user: root
@@ -237,7 +249,10 @@ services:
   #     - rabbit
 
   swaggerui:
-    build: ../submodules/build-templates/swaggerui
+    build:
+      context: ../submodules/build-templates/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
     environment:
       ACTIVATE: 0
@@ -246,7 +261,10 @@ services:
     # NOTE: this image let you access sqllite/postgres/mysql
     # with a phpmyadmin-like web page
     image: adminer:4.3.1-standalone
-    # build: ../submodules/build-templates/sqlalchemyui
+    # build:
+    #   context: ../submodules/build-templates/backend
+    #   args:
+    #     RAPYDO_VERSION: ${RAPYDO_VERSION}
     # image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
     networks:
       db_net:
@@ -266,7 +284,10 @@ services:
   #############
   # REST API client (wget, curl, httpie, http-prompt)
   restclient:
-    build: ../submodules/build-templates/restclient
+    build:
+      context: ../submodules/build-templates/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: ${COMPOSE_PROJECT_NAME}/restclient:template
     hostname: rapydo_client
     environment:
@@ -282,7 +303,10 @@ services:
   ###################
   # ftp:
   #   # image: stilliard/pure-ftpd:latest
-  #   build: ../submodules/build-templates/ftp
+    # build:
+    #   context: ../submodules/build-templates/backend
+    #   args:
+    #     RAPYDO_VERSION: ${RAPYDO_VERSION}
   #   image: ${COMPOSE_PROJECT_NAME}/ftp:template
   #   volumes:
   #     - pureftpd:/etc/pure-ftpd/passwd
@@ -301,7 +325,10 @@ services:
   ######################################################
   icat:
     # B2safe instance on irods
-    build: ../submodules/build-templates/icat
+    build:
+      context: ../submodules/build-templates/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: ${COMPOSE_PROJECT_NAME}/icat:template
     # image: b2safe:rapydo
     hostname: ${IRODS_HOST}
