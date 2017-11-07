@@ -13,7 +13,7 @@ services:
       context: ../submodules/build-templates/backend
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
-    image: ${COMPOSE_PROJECT_NAME}/backend:template
+    image: rapydo/backend:${RAPYDO_VERSION}
     working_dir: /repo
     environment:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}

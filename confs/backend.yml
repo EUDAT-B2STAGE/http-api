@@ -58,7 +58,8 @@ services:
       context: ../submodules/build-templates/backend
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
-    image: ${COMPOSE_PROJECT_NAME}/backend:template
+    # image: ${COMPOSE_PROJECT_NAME}/backend:template
+    image: rapydo/backend:${RAPYDO_VERSION}
     # hostname: restapi
     hostname: rapydo_server
     environment:
@@ -92,10 +93,11 @@ services:
   ##############################
   proxy:
     build:
-      context: ../submodules/build-templates/backend
+      context: ../submodules/build-templates/proxy
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
-    image: ${COMPOSE_PROJECT_NAME}/proxy:template
+    # image: ${COMPOSE_PROJECT_NAME}/proxy:template
+    image: rapydo/proxy:${RAPYDO_VERSION}
     hostname: reverseproxy
     volumes:
       # - letsencrypt_certs:/etc/letsencrypt
@@ -173,10 +175,10 @@ services:
 
   # celery:
     # build:
-    #   context: ../submodules/build-templates/backend
+    #   context: ../submodules/build-templates/celery
     #   args:
     #     RAPYDO_VERSION: ${RAPYDO_VERSION}
-  #   image: ${COMPOSE_PROJECT_NAME}/celery:template
+    # image: rapydo/celery:${RAPYDO_VERSION}
   #   # hostname: celworker
   #   # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
   #   user: root
@@ -222,10 +224,10 @@ services:
   # http://mher.github.io/flower/reverse-proxy.html
   # celeryui:
     # build:
-    #   context: ../submodules/build-templates/backend
+    #   context: ../submodules/build-templates/celery
     #   args:
     #     RAPYDO_VERSION: ${RAPYDO_VERSION}
-  #   image: ${COMPOSE_PROJECT_NAME}/celery:template
+    # image: rapydo/celery:${RAPYDO_VERSION}
   #   hostname: flower
   #   user: root
   #   working_dir: /code
@@ -250,10 +252,11 @@ services:
 
   swaggerui:
     build:
-      context: ../submodules/build-templates/backend
+      context: ../submodules/build-templates/swaggerui
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
-    image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
+    # image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
+    image: rapydo/swaggerui:${RAPYDO_VERSION}
     environment:
       ACTIVATE: 0
 
@@ -262,10 +265,10 @@ services:
     # with a phpmyadmin-like web page
     image: adminer:4.3.1-standalone
     # build:
-    #   context: ../submodules/build-templates/backend
+    #   context: ../submodules/build-templates/sqlalchemyui
     #   args:
     #     RAPYDO_VERSION: ${RAPYDO_VERSION}
-    # image: ${COMPOSE_PROJECT_NAME}/sqlalchemyui:template
+    # image: rapydo/sqlalchemyui:${RAPYDO_VERSION}
     networks:
       db_net:
     environment:
@@ -285,10 +288,11 @@ services:
   # REST API client (wget, curl, httpie, http-prompt)
   restclient:
     build:
-      context: ../submodules/build-templates/backend
+      context: ../submodules/build-templates/restclient
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
-    image: ${COMPOSE_PROJECT_NAME}/restclient:template
+    # image: ${COMPOSE_PROJECT_NAME}/restclient:template
+    image: rapydo/restclient:${RAPYDO_VERSION}
     hostname: rapydo_client
     environment:
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
@@ -304,10 +308,10 @@ services:
   # ftp:
   #   # image: stilliard/pure-ftpd:latest
     # build:
-    #   context: ../submodules/build-templates/backend
+    #   context: ../submodules/build-templates/ftp
     #   args:
     #     RAPYDO_VERSION: ${RAPYDO_VERSION}
-  #   image: ${COMPOSE_PROJECT_NAME}/ftp:template
+    # image: rapydo/ftp:${RAPYDO_VERSION}
   #   volumes:
   #     - pureftpd:/etc/pure-ftpd/passwd
   # # /etc/ssl/private/ A directory containing a single pure-ftpd.pem file
@@ -326,11 +330,11 @@ services:
   icat:
     # B2safe instance on irods
     build:
-      context: ../submodules/build-templates/backend
+      context: ../submodules/build-templates/icat
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
-    image: ${COMPOSE_PROJECT_NAME}/icat:template
-    # image: b2safe:rapydo
+    # image: ${COMPOSE_PROJECT_NAME}/icat:template
+    image: rapydo/icat:${RAPYDO_VERSION}
     hostname: ${IRODS_HOST}
     # command: sleep infinity
     environment:

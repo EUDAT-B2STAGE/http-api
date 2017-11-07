@@ -44,7 +44,7 @@ services:
       context: ../submodules/build-templates/backend
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
-    image: ${COMPOSE_PROJECT_NAME}/icat:template
+    image: rapydo/icat:${RAPYDO_VERSION}
     hostname: iclient
     command: sleep infinity
     environment:
