@@ -1,6 +1,7 @@
 #log-level: VERY_VERBOSE
 #log-level: VERBOSE
 mode: debug
+#development: True
 project: b2stage
 #mode: production
 #hostname: b2stage.cineca.it
