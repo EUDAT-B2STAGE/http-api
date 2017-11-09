@@ -1,0 +1,91 @@
+version: '3'
+
+volumes:
+  queuedata:
+    driver: local
+networks:
+  # default:
+  worker_net:
+
+services:
+
+#########################
+###  QUEUE MANAGEMENT ###
+#########################
+
+  celery:
+    build:
+      context: ../submodules/build-templates/celery
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+    image: rapydo/celery:${RAPYDO_VERSION}
+    # hostname: celworker
+    # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
+    user: root
+    working_dir: /code
+    environment:
+      ACTIVATE: 0
+      VANILLA_PACKAGE: ${B2STAGE_PROJECT}
+      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+    volumes:
+      # Base code
+      - ../submodules/http-api:/code
+      # Vanilla code
+      - ../projects/${B2STAGE_PROJECT}/backend:/code/${B2STAGE_PROJECT}
+      # JWT tokens secret
+      - jwt_tokens:${JWT_APP_SECRETS}
+    networks:
+      db_net:
+      worker_net:
+    # depends_on:
+    #   - rabbit
+    #   # - flower
+
+  # https://hub.docker.com/_/rabbitmq/
+  # http://docs.celeryproject.org/en/latest/getting-started/brokers/rabbitmq.html
+  # default username and password of guest / guest
+  rabbit:
+    # image: rabbitmq:3.6.14-alpine
+    image: rabbitmq:3.6.14-management-alpine
+    hostname: rabbit
+    volumes:
+      - queuedata:/var/lib/rabbitmq
+    networks:
+      worker_net:
+        aliases:
+          - ${CELERY_BROKER_HOST}
+    environment:
+      ACTIVATE: 1
+
+  ##########################
+  ### SERVICE INTERFACES ###
+  ##########################
+
+  # http://mher.github.io/flower/reverse-proxy.html
+  # celeryui:
+    # build:
+    #   context: ../submodules/build-templates/celery
+    #   args:
+    #     RAPYDO_VERSION: ${RAPYDO_VERSION}
+    # image: rapydo/celery:${RAPYDO_VERSION}
+  #   hostname: flower
+  #   user: root
+  #   working_dir: /code
+  #   command: start_flower
+  #   expose:
+  #     - 5555
+  #   ports:
+  #     - 5555:5555
+  #   environment:
+  #     ACTIVATE: 0
+  #     VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+  #     JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+  #   volumes:
+  #     - ..:/code/${COMPOSE_PROJECT_NAME}
+  #     - ../tmp_irods_certificates:/opt/certificates
+  #     - ../tmp_files:/uploads
+  #   networks:
+  #     db_net:
+  #     worker_net:
+  #   depends_on:
+  #     - rabbit

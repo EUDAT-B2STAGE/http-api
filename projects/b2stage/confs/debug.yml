@@ -32,6 +32,7 @@ services:
       RESOURCES_URL:
       RESOURCES_KEY:
       RESOURCES_SECRET:
+      RESOURCES_PROJECT:
       #################
 
     ports:

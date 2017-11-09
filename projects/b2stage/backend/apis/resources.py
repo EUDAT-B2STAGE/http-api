@@ -40,29 +40,22 @@ class Resources(EndpointResource):
 
         log.info("Request for resources")
 
-        ###############
-        # self.get_input()
-        # log.pp(self._args, prefix_line='Parsed args')
-
-        # service_handle = self.get_service_instance(service_name)
-        # log.debug("Connected to %s:\n%s", service_name, service_handle)
-        # if service_handle is None:
-        #     log.error('Service %s unavailable', service_name)
-        #     return self.send_errors(
-        #         message='Server internal error. Please contact adminers.',
-        #         # code=hcodes.HTTP_BAD_NOTFOUND
-        #     )
-
-        ###############
         rancher = self.get_or_create_handle()
         resources = rancher.list()
+
         return self.force_response(resources)
 
     def post(self):
         """
         Run a container
         """
-        pass
+
+        self.get_input()
+        log.pp(self._args, prefix_line='Parsed args')
+
+        rancher = self.get_or_create_handle()
+        rancher.test()
+        return "Hello!"
 
     def put(self, container_id):
         """

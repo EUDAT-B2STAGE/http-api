@@ -28,6 +28,7 @@ services:
       IRODS_DB: "${IRODS_DB}"
       IRODS_USER: ${IRODS_USER}
       IRODS_PASSWORD: ${IRODS_PASSWORD}
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
     volumes:
       - etcconf:/etc
       - irodshome:/home/${IRODS_USER}

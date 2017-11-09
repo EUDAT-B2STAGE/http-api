@@ -13,10 +13,18 @@ log = get_logger(__name__)
 
 class Rancher(object):
 
-    def __init__(self, key, secret, url):
+    def __init__(self, key, secret, url, project):
+        self.connect(key, secret, url)
+        self.project_handle(project)
+
+    def connect(self, key, secret, url):
         import gdapi
         self._client = gdapi.Client(
             url=url, access_key=key, secret_key=secret)
+
+    def project_handle(self, project):
+        self._project = project
+        return self._client.by_id_project(self._project)
 
     def hosts(self):
         """
@@ -116,6 +124,11 @@ class Rancher(object):
         return resources
 
     def test(self):
+
+        project = self.project_handle()
+        uri = project.actions.get('update')
+        # FIXME: use uri to create a host and a container
+        uri
 
         # client.list_host()
         # client.list_project()
