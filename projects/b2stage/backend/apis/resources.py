@@ -41,10 +41,6 @@ class Resources(EndpointResource):
         log.info("Request for resources")
 
         ###############
-        rancher = self.get_or_create_handle()
-        print(rancher.test())
-
-        ###############
         # self.get_input()
         # log.pp(self._args, prefix_line='Parsed args')
 
@@ -57,5 +53,19 @@ class Resources(EndpointResource):
         #         # code=hcodes.HTTP_BAD_NOTFOUND
         #     )
 
-        response = 'Hello world!'
-        return self.force_response(response)
+        ###############
+        rancher = self.get_or_create_handle()
+        resources = rancher.list()
+        return self.force_response(resources)
+
+    def post(self):
+        """
+        Run a container
+        """
+        pass
+
+    def put(self, container_id):
+        """
+        Execute a command inside a running container
+        """
+        pass
