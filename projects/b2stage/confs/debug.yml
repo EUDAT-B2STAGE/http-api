@@ -16,6 +16,7 @@ services:
       DEBUG_ENDPOINTS: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
+
       #################
       # EUDAT RELATED
       B2ACCESS_ENV: development
@@ -25,6 +26,14 @@ services:
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
       MAIN_LOGIN_ENABLE: 1
       #################
+
+      #################
+      # SEADATACLOUD RELATED
+      RESOURCES_URL:
+      RESOURCES_KEY:
+      RESOURCES_SECRET:
+      #################
+
     ports:
       - 8080:${FLASK_DEFAULT_PORT}
 
