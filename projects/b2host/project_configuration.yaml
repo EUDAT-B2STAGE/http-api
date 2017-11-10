@@ -10,8 +10,6 @@ project:
 # environment configuration
 variables:
   env:
-    QUEUE: some
-    # CELERY_BROKER_HOST:
     B2STAGE_PROJECT: b2stage
     RABBITMQ_USER: whiterabbit
     RABBITMQ_PASSWORD: downthehole

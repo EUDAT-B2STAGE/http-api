@@ -1,5 +1,11 @@
 
 version: '3'
+
+# allow the accesso to an external docker compose
+networks:
+  b2host_worker_net:
+    external: true
+
 services:
 
   backend:
@@ -33,6 +39,13 @@ services:
       RESOURCES_KEY:
       RESOURCES_SECRET:
       RESOURCES_PROJECT:
+
+      RABBITMQ_ENABLE: 1
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      # RABBITMQ_HOST: ${CELERY_BROKER_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       #################
 
     ports:
@@ -45,6 +58,10 @@ services:
     volumes:
       # Custom python repos
       - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
+    networks:
+      - b2host_worker_net
+    # external_links:
+    #   - b2host_rabbit_1:${RABBITMQ_HOST}
 
   icat:
     environment:

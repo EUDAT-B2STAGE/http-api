@@ -1,0 +1,19 @@
+
+common:
+  custom:
+    # FIXME
+    authentication: false
+    # authorized:
+    #   - staff_user
+
+messages:
+  summary: Receive messages on a queue
+  parameters:
+    - name: queue
+      in: query
+      type: string
+      description: queue for the message
+      default: hello
+  responses:
+    '200':
+      description: unknown

@@ -16,6 +16,11 @@ variables:
   env:
 
     ###############################
+    ## Queue
+    RABBITMQ_USER: whiterabbit
+    RABBITMQ_PASSWORD: downthehole
+
+    ###############################
     ## Dockerized DB
     # You may leave this like this in DEBUG mode
     ALCHEMY_USER: rods

@@ -7,5 +7,6 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     ports:
       # 4369/tcp, 5671-5672/tcp, 25672/tcp
+      # - 5672:5672
       - 9999:15672
 

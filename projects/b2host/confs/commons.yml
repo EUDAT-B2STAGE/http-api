@@ -54,6 +54,7 @@ services:
       worker_net:
         aliases:
           - ${CELERY_BROKER_HOST}
+          - ${RABBITMQ_HOST}
     environment:
       ACTIVATE: 1
 

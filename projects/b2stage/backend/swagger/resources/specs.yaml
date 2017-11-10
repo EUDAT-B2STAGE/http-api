@@ -4,10 +4,8 @@ class: Resources
 schema:
   # FIXME
   expose: true
-# baseuri: /internals
 mapping:
   resources: /internals/resources
 labels:
-  - custom
   - seadatacloud
   - resources

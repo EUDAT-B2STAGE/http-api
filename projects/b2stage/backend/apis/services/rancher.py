@@ -125,6 +125,7 @@ class Rancher(object):
 
     def test(self):
 
+        # https://github.com/rancher/rancher/issues/10305
         project = self.project_handle()
         uri = project.actions.get('update')
         # FIXME: use uri to create a host and a container

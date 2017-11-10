@@ -8,7 +8,6 @@ from restapi.rest.definition import EndpointResource
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
-service_name = "sqlalchemy"
 
 
 class Resources(EndpointResource):
@@ -37,6 +36,7 @@ class Resources(EndpointResource):
         return self._handle
 
     def get(self):
+        """ list resources """
 
         log.info("Request for resources")
 
@@ -46,9 +46,7 @@ class Resources(EndpointResource):
         return self.force_response(resources)
 
     def post(self):
-        """
-        Run a container
-        """
+        """ run a container """
 
         self.get_input()
         log.pp(self._args, prefix_line='Parsed args')
