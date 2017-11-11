@@ -1,0 +1,12 @@
+common:
+  custom:
+    # FIXME
+    authentication: false
+    # authorized:
+    #   - staff_user
+
+tasks:
+  summary: Queue an asynchronous task
+  responses:
+    '200':
+      description: unknown

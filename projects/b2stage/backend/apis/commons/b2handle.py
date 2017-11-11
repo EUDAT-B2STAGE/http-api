@@ -6,9 +6,14 @@ B2HANDLE utilities
 
 import os
 from b2stage.apis.commons.endpoint import EudatEndpoint
-from b2handle.handleclient import EUDATHandleClient as b2handle
-from b2handle.clientcredentials import PIDClientCredentials as credentials
-from b2handle import handleexceptions
+try:
+    from b2handle.handleclient \
+        import EUDATHandleClient as b2handle
+    from b2handle.clientcredentials \
+        import PIDClientCredentials as credentials
+    from b2handle import handleexceptions
+except BaseException:
+    b2handle, credentials, handleexceptions = [None] * 3
 from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 

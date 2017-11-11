@@ -1,0 +1,14 @@
+
+depends_on:
+  - CELERY_ENABLE
+
+file: tasks
+class: Tasks
+schema:
+  # FIXME
+  expose: true
+mapping:
+  tasks: "/internals/tasks"
+labels:
+  - seadatacloud
+  - tasks

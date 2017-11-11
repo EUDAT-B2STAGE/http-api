@@ -1,8 +1,11 @@
 
+depends_on:
+  - RESOURCES_PROJECT
+
 file: resources
 class: Resources
 schema:
-  # FIXME
+  # FIXME: internals, not to expose
   expose: true
 mapping:
   resources: /internals/resources

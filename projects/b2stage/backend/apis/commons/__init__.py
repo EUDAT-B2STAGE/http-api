@@ -11,7 +11,10 @@ from utilities.logs import get_logger
 
 log = get_logger(__name__)
 
-IRODS_VARS = detector.services_classes.get('irods').variables
+try:
+    IRODS_VARS = detector.services_classes.get('irods').variables
+except AttributeError:
+    IRODS_VARS = {}
 IRODS_EXTERNAL = IRODS_VARS.get('external', False)
 
 # CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
