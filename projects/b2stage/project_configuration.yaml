@@ -17,8 +17,19 @@ variables:
 
     ###############################
     ## Queue
-    RABBITMQ_USER: whiterabbit
-    RABBITMQ_PASSWORD: downthehole
+    # RABBITMQ_USER: whiterabbit
+    # RABBITMQ_PASSWORD: downthehole
+
+    # please change this:
+    RABBITMQ_HOST: your.rabbit.com
+    RABBITMQ_USER: user
+    RABBITMQ_PASSWORD: somepass
+
+    # tested with merret:
+    RABBITMQ_VHOST: qc
+    RABBITMQ_ROUTING_KEY: dkrz-qc
+    RABBITMQ_EXCHANGE: b2host
+    RABBITMQ_QUEUE: testqueue
 
     ###############################
     ## Dockerized DB
