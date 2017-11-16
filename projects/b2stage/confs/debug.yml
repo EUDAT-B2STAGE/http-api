@@ -85,15 +85,12 @@ services:
   #   volumes:
   #     - ../submodules/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
   swaggerui:
+    environment:
+      API_URL: http://localhost:8080/api/specs
     ports:
-      - 80:80
+      - 80:8080
   sqlalchemyui:
     # volumes:
     #   - restlitedb:/dbs
     ports:
       - 81:8080
-
-  # graphdb:
-  #   ports:
-  #     - 9090:7474
-  #     - 7687:7687

@@ -157,12 +157,14 @@ services:
   #     ACTIVATE: 0
 
   swaggerui:
-    build:
-      context: ../submodules/build-templates/swaggerui
-      args:
-        RAPYDO_VERSION: ${RAPYDO_VERSION}
-    # image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
-    image: rapydo/swaggerui:${RAPYDO_VERSION}
+    # build:
+    #   context: ../submodules/build-templates/swaggerui
+    #   args:
+    #     RAPYDO_VERSION: ${RAPYDO_VERSION}
+    # # image: ${COMPOSE_PROJECT_NAME}/swaggerui:template
+    # image: rapydo/swaggerui:${RAPYDO_VERSION}
+    image: swaggerapi/swagger-ui:latest
+    # image: swaggerapi/swagger-ui:v3.0.5
     environment:
       ACTIVATE: 0
 
