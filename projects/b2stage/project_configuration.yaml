@@ -17,19 +17,19 @@ variables:
 
     ###############################
     ## Queue
-    # RABBITMQ_USER: whiterabbit
-    # RABBITMQ_PASSWORD: downthehole
+    # # RABBITMQ_USER: whiterabbit
+    # # RABBITMQ_PASSWORD: downthehole
 
-    # please change this:
-    RABBITMQ_HOST: your.rabbit.com
-    RABBITMQ_USER: user
-    RABBITMQ_PASSWORD: somepass
+    # # please change this:
+    # RABBITMQ_HOST: your.rabbit.com
+    # RABBITMQ_USER: user
+    # RABBITMQ_PASSWORD: somepass
 
-    # tested with merret:
-    RABBITMQ_VHOST: qc
-    RABBITMQ_ROUTING_KEY: dkrz-qc
-    RABBITMQ_EXCHANGE: b2host
-    RABBITMQ_QUEUE: testqueue
+    # # tested with merret:
+    # RABBITMQ_VHOST: qc
+    # RABBITMQ_ROUTING_KEY: dkrz-qc
+    # RABBITMQ_EXCHANGE: b2host
+    # RABBITMQ_QUEUE: testqueue
 
     ###############################
     ## Dockerized DB
@@ -74,6 +74,12 @@ variables:
     # # DN of your external iRODS host (with GSI plugin installed)
     # # Needed for B2ACCESS certificates exchange
     # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/yourhostname.com"
+
+    ###############################
+    ## Mongo
+    # MONGO_HOST: your.host.com
+    # MONGO_DATABASE: yourdb
+    # MONGO_PORT: 27017
 
 ###############################
 ## WARNING!! do not modify below
