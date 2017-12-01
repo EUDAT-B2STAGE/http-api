@@ -4,7 +4,7 @@ services:
 
   icat:
     build:
-      context: ../submodules/build-templates/backend
+      context: ${SUBMODULE_DIR}/build-templates/backend
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: rapydo/icat:${RAPYDO_VERSION}

@@ -4,7 +4,7 @@ version: '3'
 services:
 
   backend:
-    # command: sleep 1234567890
+    # command: sleep infinity
 
     # build: ../../../builds/backend
     # # # Convention: use project/service:SOME_LABEL
@@ -36,7 +36,7 @@ services:
       # - mongodb
     volumes:
       # Custom python repos
-      - ../submodules/prc/irods:${PYTHON_PATH}/irods
+      - ${SUBMODULE_DIR}/prc/irods:${PYTHON_PATH}/irods
 
   icat:
     environment:
@@ -60,10 +60,10 @@ services:
       ## CERTIFICATES
       - sharedcerts:/opt/certificates
       # adds GSI users in our irods instance
-      - ../submodules/build-templates/icat/extra_gsi_users.sh:/docker-entrypoint.d/gsi.sh
+      - ${SUBMODULE_DIR}/build-templates/icat/extra_gsi_users.sh:/docker-entrypoint.d/gsi.sh
       # B2ACCESS certificates
-      - ../submodules/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
-      - ../submodules/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
+      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      - ${SUBMODULE_DIR}/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why
@@ -83,7 +83,7 @@ services:
 
   # postgres:
   #   volumes:
-  #     - ../submodules/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
+  #     - ${SUBMODULE_DIR}/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
   swaggerui:
     environment:
       API_URL: http://localhost:8080/api/specs

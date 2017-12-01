@@ -31,9 +31,9 @@ services:
       # SHARED
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
-      - ../data/certs:/usr/local/share/ca-certificates
+      - ${VANILLA_DIR}/data/certs:/usr/local/share/ca-certificates
       # # mount irods code to develop patches
-      # - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
+      # - ${SUBMODULE_DIR}/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
     networks:
       i_net:
 
@@ -41,6 +41,8 @@ services:
       # base the user/role mechanism on some database
       AUTH_ENABLE: 1
       AUTH_SERVICE: ${AUTH_SERVICE}
+      # disable the basic /api/login method
+      MAIN_LOGIN_ENABLE: 0
 
       ##############################
       # set this inside the MODE yaml files you want to use

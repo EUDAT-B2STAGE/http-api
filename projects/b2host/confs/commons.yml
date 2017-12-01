@@ -32,7 +32,7 @@ services:
 
   celery:
     build:
-      context: ../submodules/build-templates/celery
+      context: ${SUBMODULE_DIR}/build-templates/celery
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: rapydo/celery:${RAPYDO_VERSION}
@@ -48,9 +48,9 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
       # Custom configuration
-      - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
-      - ../projects/${B2STAGE_PROJECT}/backend:/code/${B2STAGE_PROJECT}
+      - ${VANILLA_DIR}/projects/${B2STAGE_PROJECT}/backend:/code/${B2STAGE_PROJECT}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
     networks:
@@ -63,7 +63,7 @@ services:
   # http://mher.github.io/flower/reverse-proxy.html
   celeryui:
     build:
-      context: ../submodules/build-templates/celery
+      context: ${SUBMODULE_DIR}/build-templates/celery
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: rapydo/celery:${RAPYDO_VERSION}
@@ -81,9 +81,9 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
     volumes:
       # Custom configuration
-      - ../projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
-      - ../projects/${B2STAGE_PROJECT}/backend:/code/${B2STAGE_PROJECT}
+      - ${VANILLA_DIR}/projects/${B2STAGE_PROJECT}/backend:/code/${B2STAGE_PROJECT}
       # # JWT tokens secret
       # - jwt_tokens:${JWT_APP_SECRETS}
     networks:

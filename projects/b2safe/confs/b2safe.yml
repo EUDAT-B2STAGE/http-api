@@ -4,7 +4,7 @@ services:
 
   icat:
     build:
-      context: ../submodules/build-templates/backend
+      context: ${SUBMODULE_DIR}/build-templates/backend
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
     # image: ${COMPOSE_PROJECT_NAME}/server:b2safe-mod
@@ -13,10 +13,10 @@ services:
       B2ACCESS_CAS: ${B2ACCESS_CAS}
 
     volumes:
-      - ../submodules/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
-      - ../submodules/build-templates/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
+      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
       # B2ACCESS dev and prod certificates
-      - ../submodules/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
+      - ${SUBMODULE_DIR}/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
       # # Extra volumes
       # - /your/path/to/something:/var/lib/data/irods
 
