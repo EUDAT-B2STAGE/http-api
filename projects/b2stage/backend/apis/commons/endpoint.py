@@ -211,10 +211,10 @@ class EudatEndpoint(B2accessUtilities):
             IRODS_PROTOCOL, CURRENT_B2SAFE_SERVER,
             ipath.strip(self._path_separator))
 
-    def fix_location(self, irods_location):
-        if not irods_location.startswith(self._path_separator):
-            irods_location = self._path_separator + irods_location
-        return irods_location
+    def fix_location(self, location):
+        if not location.startswith(self._path_separator):
+            location = self._path_separator + location
+        return location
 
     # @staticmethod
     # def user_from_unity(unity_persistent):

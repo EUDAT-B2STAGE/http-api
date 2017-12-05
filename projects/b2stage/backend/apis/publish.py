@@ -16,22 +16,22 @@ log = get_logger(__name__)
 
 class Publish(EudatEndpoint):
 
-    def base(self, irods_location):
+    def base(self, location):
 
-        if irods_location is None:
+        if location is None:
             return self.send_errors(
                 'Location: missing filepath inside URI',
                 code=hcodes.HTTP_BAD_REQUEST
             ), None, None
         else:
-            irods_location = self.fix_location(irods_location)
+            location = self.fix_location(location)
 
         r = self.init_endpoint()
         if r.errors is not None:
             return self.send_errors(errors=r.errors), None, None
 
         path, resource, filename, _ = \
-            self.get_file_parameters(r.icommands, path=irods_location)
+            self.get_file_parameters(r.icommands, path=location)
 
         # if r.icommands.is_collection(path):
         #     return self.send_errors(
@@ -109,9 +109,9 @@ class Publish(EudatEndpoint):
         return True
 
     @decorate.catch_error()
-    def get(self, irods_location):
+    def get(self, location):
 
-        error, handler, path = self.base(irods_location)
+        error, handler, path = self.base(location)
         if error is not None:
             return error
 
@@ -121,9 +121,9 @@ class Publish(EudatEndpoint):
         return {'published': self.publish_helper(icom, path)}
 
     @decorate.catch_error()
-    def put(self, irods_location=None):
+    def put(self, location=None):
 
-        error, handler, path = self.base(irods_location)
+        error, handler, path = self.base(location)
         if error is not None:
             return error
 
@@ -140,9 +140,9 @@ class Publish(EudatEndpoint):
         return {'published': True}
 
     @decorate.catch_error()
-    def delete(self, irods_location):
+    def delete(self, location):
 
-        error, handler, path = self.base(irods_location)
+        error, handler, path = self.base(location)
         if error is not None:
             return error
 
