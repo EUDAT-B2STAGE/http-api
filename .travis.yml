@@ -3,7 +3,7 @@ sudo: required
 # dist: trusty
 # group: deprecated-2017Q2
 python:
-- 3.6.1
+- 3.6.3
 services:
 - docker
 env:

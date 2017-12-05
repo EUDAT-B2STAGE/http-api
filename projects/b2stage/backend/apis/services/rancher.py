@@ -14,17 +14,26 @@ log = get_logger(__name__)
 class Rancher(object):
 
     def __init__(self, key, secret, url, project):
-        self.connect(key, secret, url)
-        self.project_handle(project)
 
-    def connect(self, key, secret, url):
+        ####################
+        # SET URL
+        self._url = url
+        self._project = project
+        # why? explained in http://bit.ly/2BBDJRj
+        self._project_uri = "%s/projects/%s/schemas" % (url, project)
+
+        ####################
+        self.connect(key, secret)
+        # self.project_handle(project)
+
+    def connect(self, key, secret):
         import gdapi
         self._client = gdapi.Client(
-            url=url, access_key=key, secret_key=secret)
+            url=self._project_uri,
+            access_key=key, secret_key=secret)
 
-    def project_handle(self, project):
-        self._project = project
-        return self._client.by_id_project(self._project)
+    # def project_handle(self, project):
+    #     return self._client.by_id_project(self._project)
 
     def hosts(self):
         """
@@ -125,21 +134,10 @@ class Rancher(object):
 
     def test(self):
 
-        # https://github.com/rancher/rancher/issues/10305
-        project = self.project_handle()
-        uri = project.actions.get('update')
-        # FIXME: use uri to create a host and a container
-        uri
+        self._client.create_container()
+        # TODO: check parameters from command line test I've made
 
         # client.list_host()
         # client.list_project()
         # client.list_service()
-
-        # for element in client.list_host().data:
-        #     # log.pp(element.data)
-        #     print(element.id, element.uuid, element.hostname)
-        #     # for key, value in element.items():
-        #     #     print(key)
-        # # break
-
         pass
