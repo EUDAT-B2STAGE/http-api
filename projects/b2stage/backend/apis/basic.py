@@ -285,17 +285,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         path, resource, filename, force = \
             self.get_file_parameters(icom, path=location)
 
+        # Manage both form and streaming upload
         ipath = None
 
-        # Read the request
-        request.get_data()
-
-        # Manage both form and streaming upload
-
         #################
-        # FORM UPLOAD
+        # CASE 1- FORM UPLOAD
         if request.mimetype != 'application/octet-stream':
-            # TODO: double check if this is the right mimetype
+
+            # Read the request
+            request.get_data()
 
             # Normal upload: inside the host tmp folder
             response = super(BasicEndpoint, self) \
@@ -342,7 +340,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     os.remove(abs_file)
 
         #################
-        # STREAMING UPLOAD
+        # CASE 2 - STREAMING UPLOAD
         else:
             filename = None
 
