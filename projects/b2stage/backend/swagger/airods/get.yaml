@@ -1,0 +1,9 @@
+common:
+  custom:
+    authentication: false
+
+airods:
+  summary: Unauthenticated airods endpoint
+  responses:
+    '200':
+      description: "returning 'Hello World!' string"

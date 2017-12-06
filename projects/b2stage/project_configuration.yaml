@@ -35,7 +35,7 @@ variables:
     ## Dockerized DB
     # You may leave this like this in DEBUG mode
     ALCHEMY_USER: rods
-    ALCHEMY_PASSWORD: chooseapasswordwisely
+    ALCHEMY_PASSWORD: sdor
     ALCHEMY_API_DB: SQL_API
 
     ###############################
@@ -51,35 +51,36 @@ variables:
     IRODS_USER: irods
     IRODS_GUEST_USER: guest              # intended to work only with GSI
     IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
-    IRODS_ZONE: tempZone
+    IRODS_ZONE: INGV
     IRODS_HOME: home
-    IRODS_AUTHSCHEME:   # to be auto-detected
-    # IRODS_AUTHSCHEME: credentials
+    # IRODS_AUTHSCHEME:   # to be auto-detected
+    IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
     # NOTE: this must match ALCHEMY_PASSWORD if running in debug mode
-    IRODS_PASSWORD: chooseapasswordwisely
+    IRODS_PASSWORD: sdor
     # If empty it will be automatically computed within the docker network
     IRODS_DN:
 
     ###############################
     ## PRODUCTION example: iRODS server VERSION
 
-    # IRODS_HOST: yourhostname
-    # IRODS_ZONE: productionZone1
+    # IRODS_HOST: 10.10.10.2
+    # IRODS_ZONE: INGV
     # IRODS_HOME: home
     # # You MUST provide user/password credentials to iquery users informations
     # IRODS_AUTHSCHEME: credentials
-    # IRODS_USER: httpapi
-    # IRODS_PASSWORD: SETTHISPASSWORDINPRODUCTION
+    # IRODS_USER: irods
+    # IRODS_PASSWORD: sdor
     # # DN of your external iRODS host (with GSI plugin installed)
     # # Needed for B2ACCESS certificates exchange
     # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/yourhostname.com"
+    # IRODS_DN:
 
     ###############################
     ## Mongo
-    # MONGO_HOST: your.host.com
-    # MONGO_DATABASE: yourdb
-    # MONGO_PORT: 27017
+    MONGO_HOST: 10.10.10.10
+    MONGO_DATABASE: wfrepo
+    MONGO_PORT: 27017
 
 ###############################
 ## WARNING!! do not modify below
