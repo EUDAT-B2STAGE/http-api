@@ -82,8 +82,8 @@ services:
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
 
       # mongodb connection
-      MONGO_ENABLE: 0
-      # MONGO_ENABLE: 1
+      # MONGO_ENABLE: 0
+      MONGO_ENABLE: 1
       MONGO_HOST: ${MONGO_HOST}
       MONGO_DATABASE: ${MONGO_DATABASE}
       MONGO_PORT: ${MONGO_PORT}
