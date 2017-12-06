@@ -4,7 +4,7 @@ class: Airods
 schema:
   expose: true
 mapping:
-  airods: "/airods"
+  airods: "/airods/data"
 labels:
-  - custom
+  #- custom
   - airods
