@@ -86,4 +86,19 @@ rapydo ssl-certificate  # issue valid certificate with "Let's Encrypt"
 curl -i https://yourdomain.com/api/status
 ```
 
-To dig more into details you may now [head back to the index](https://github.com/EUDAT-B2STAGE/http-api/blob/1.0.1/README.md#documentation).
+
+## Other actions
+
+We implemented on the `rapydo` cli tool all needed Docker (or Docker compose) typical actions to manage running containers: `rapydo status`, `rapydo stop`, `rapydo remove`.
+
+To get a list of all available commands you can use one of the following:
+```bash
+rapydo
+rapydo --help
+rapydo -h
+```
+
+
+## What's more
+
+Finally to dig more into details you may now [head back to the index](https://github.com/EUDAT-B2STAGE/http-api/blob/1.0.1/README.md#documentation) to read the other parts of the documentation.
