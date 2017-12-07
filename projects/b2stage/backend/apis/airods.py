@@ -70,7 +70,8 @@ class Airods(EndpointResource):
             
             icom = self.get_service_instance(service_name='irods') #, user='rods', password='sdor' 
             
-            myobj = icom.list() #myfirstvalue[0].irods_path
+            myobj = myfirstvalue[0].irods_path
+            #myobj = icom.list() #myfirstvalue[0].irods_path
             #myresp = icom.get_permissions(myfirstvalue[0].irods_path)
             print (myobj)
             
@@ -90,7 +91,7 @@ class Airods(EndpointResource):
             
             except BaseException as e:
                 print(e, type(e))
-                return self.force_response('errore')
+                return self.force_response(e)
                 
             
         # Pid list :: OK

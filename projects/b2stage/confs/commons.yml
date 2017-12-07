@@ -71,6 +71,7 @@ services:
       ALCHEMY_POOLSIZE: ${ALCHEMY_POOLSIZE}
 
       # irods configuration
+      # IRODS_ENABLE: 0
       IRODS_ENABLE: 1
       IRODS_HOST: ${IRODS_HOST}
       IRODS_PORT: ${IRODS_PORT}

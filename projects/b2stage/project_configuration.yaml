@@ -48,33 +48,33 @@ variables:
     ###############################
     ## LOCAL iRODS server VERSION
     # NOTE: intended for DEBUG mode, to be commented in PRODUCTION
-    IRODS_USER: irods
-    IRODS_GUEST_USER: guest              # intended to work only with GSI
-    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
-    IRODS_ZONE: INGV
-    IRODS_HOME: home
+    # IRODS_USER: irods
+    # IRODS_GUEST_USER: guest              # intended to work only with GSI
+    # IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
+    # IRODS_ZONE: INGV
+    # IRODS_HOME: home
     # IRODS_AUTHSCHEME:   # to be auto-detected
-    IRODS_AUTHSCHEME: credentials
+    # IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
     # NOTE: this must match ALCHEMY_PASSWORD if running in debug mode
-    IRODS_PASSWORD: sdor
+    # IRODS_PASSWORD: sdor
     # If empty it will be automatically computed within the docker network
-    IRODS_DN:
+    # IRODS_DN:
 
     ###############################
     ## PRODUCTION example: iRODS server VERSION
 
-    # IRODS_HOST: 10.10.10.2
-    # IRODS_ZONE: INGV
-    # IRODS_HOME: home
+    IRODS_HOST: 10.10.10.9
+    IRODS_ZONE: INGV
+    IRODS_HOME: home
     # # You MUST provide user/password credentials to iquery users informations
-    # IRODS_AUTHSCHEME: credentials
-    # IRODS_USER: irods
-    # IRODS_PASSWORD: sdor
+    IRODS_AUTHSCHEME: credentials
+    IRODS_USER: irods
+    IRODS_PASSWORD: sdor
     # # DN of your external iRODS host (with GSI plugin installed)
     # # Needed for B2ACCESS certificates exchange
     # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/yourhostname.com"
-    # IRODS_DN:
+    IRODS_DN:
 
     ###############################
     ## Mongo
@@ -95,7 +95,8 @@ variables:
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
 
-    IRODS_ANONYMOUS: 1
+    IRODS_ANONYMOUS: 0
+    #IRODS_ANONYMOUS: 1
     IRODS_DB: ICAT
     IRODS_CHUNKSIZE: 1048576
     ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
