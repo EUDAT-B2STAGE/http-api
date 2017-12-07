@@ -4,9 +4,9 @@ common:
   
 
 
-airods:
+airodsmeta:
   
-    summary: Get data from iRODS-B2SAFE via boundingBox-timeWindow  (Epos ecosystem)
+    summary: Get Metadata from iRODS-B2SAFE via boundingBox-timeWindow (Epos ecosystem)
 
     parameters:
 
