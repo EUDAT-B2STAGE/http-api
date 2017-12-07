@@ -150,6 +150,6 @@ Currently B2ACCESS and B2SAFE are facing problems in sharing certificated creden
 
 ## prototype
 
-First prototype [is online](https://b2stage.cineca.it/api/status):
+First prototype [is online](https://b2stage-test.cineca.it/api/status):
 - based completely on docker
 - pointing to [B2ACCESS development server](https://unity.eudat-aai.fz-juelich.de:8443/home/home)

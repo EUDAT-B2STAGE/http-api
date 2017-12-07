@@ -13,18 +13,21 @@ Before getting our hands on the first `HTTP-API` server prototype, here's a list
 
 The HTTP API prototype endpoints are accessible at the URI bases:
 
-- https://b2stage.cineca.it/api
-- https://b2stage.cineca.it/auth
+- https://b2stage-test.cineca.it/api
+- https://b2stage-test.cineca.it/auth
 
-e.g. once you authenticated: https://b2stage.cineca.it/auth/profile
+e.g. once you authenticated: https://b2stage-test.cineca.it/auth/profile
 
 ## Status
 
 The status page for the current prototype is:
-https://b2stage.cineca.it/api/status
+https://b2stage-test.cineca.it/api/status
 
-This is an endpoint to call if you want to automatically verify if the server is responding to request. This endpoint is also automatically monitored from the [uptime robot service](https://stats.uptimerobot.com/xGG9gTK3q).
+This is the endpoint to call if you want to automatically verify if the server is responding to request. 
 
+<!--
+This endpoint is also automatically monitored from the [uptime robot service](https://stats.uptimerobot.com/xGG9gTK3q).
+-->
 
 ## Swagger specifications
 
@@ -32,7 +35,7 @@ The EUDAT B2STAGE HTTP API provide description of the current specifications fol
 
 The description in `JSON` format is available at:
 
-https://b2stage.cineca.it/api/specs
+https://b2stage-test.cineca.it/api/specs
 
 
 ## Clients
@@ -49,7 +52,7 @@ See also the [main user page](user/user.md) to understand which endpoints exists
 
 Since the HTTP API server follows the `openapi` standard, you can query its endpoints also using the official `swagger-ui` web server, by just passing the `JSON` file in input:
 
-[link to the swagger `petstore`](http://petstore.swagger.io/?url=https://b2stage.cineca.it/api/specs&docExpansion=none)
+[link to the swagger `petstore`](http://petstore.swagger.io/?url=https://b2stage-test.cineca.it/api/specs&docExpansion=none)
 
 ### python client
 
