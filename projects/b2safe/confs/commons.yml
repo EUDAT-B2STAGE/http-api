@@ -42,7 +42,7 @@ services:
       - 80:8080
   iclient:
     build:
-      context: ${SUBMODULE_DIR}/build-templates/iclient
+      context: ${SUBMODULE_DIR}/build-templates/icat
       args:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: rapydo/icat:${RAPYDO_VERSION}
