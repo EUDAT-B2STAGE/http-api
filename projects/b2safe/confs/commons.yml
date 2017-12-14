@@ -43,8 +43,8 @@ services:
   iclient:
     build:
       context: ${SUBMODULE_DIR}/build-templates/icat
-      args:
-        RAPYDO_VERSION: ${RAPYDO_VERSION}
+      # args:
+      #   RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: rapydo/icat:${RAPYDO_VERSION}
     hostname: iclient
     command: sleep infinity
