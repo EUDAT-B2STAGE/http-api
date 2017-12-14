@@ -5,6 +5,9 @@ Communicating with docker via rancher
 
 NOTE: to convert the output json and read it:
 https://jsonformatter.curiousconcept.com/
+
+API examples:
+https://github.com/rancher/validation-tests/tree/master/tests/v2_validation/cattlevalidationtest/core
 """
 
 from utilities.logs import get_logger
@@ -16,7 +19,7 @@ class Rancher(object):
     def __init__(self, key, secret, url, project):
 
         ####################
-        # SET URL
+        # SET URL
         self._url = url
         self._project = project
         # why? explained in http://bit.ly/2BBDJRj
