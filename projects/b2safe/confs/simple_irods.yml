@@ -5,8 +5,8 @@ services:
   icat:
     build:
       context: ${SUBMODULE_DIR}/build-templates/icat
-      args:
-        RAPYDO_VERSION: ${RAPYDO_VERSION}
+      # args:
+      #   RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: rapydo/icat:${RAPYDO_VERSION}
     # Open irods port to Outside world
     ports:

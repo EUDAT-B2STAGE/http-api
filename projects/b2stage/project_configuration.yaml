@@ -16,22 +16,6 @@ variables:
   env:
 
     ###############################
-    ## Queue
-    # # RABBITMQ_USER: whiterabbit
-    # # RABBITMQ_PASSWORD: downthehole
-
-    # # please change this:
-    # RABBITMQ_HOST: your.rabbit.com
-    # RABBITMQ_USER: user
-    # RABBITMQ_PASSWORD: somepass
-
-    # # tested with merret:
-    # RABBITMQ_VHOST: qc
-    # RABBITMQ_ROUTING_KEY: dkrz-qc
-    # RABBITMQ_EXCHANGE: b2host
-    # RABBITMQ_QUEUE: testqueue
-
-    ###############################
     ## Dockerized DB
     # You may leave this like this in DEBUG mode
     ALCHEMY_USER: rods
@@ -81,6 +65,11 @@ variables:
     # MONGO_DATABASE: yourdb
     # MONGO_PORT: 27017
 
+    ###############################
+    ## Seadata branch
+    SEADATA_PROJECT: 0
+    # SEADATA_PROJECT: 1
+
 ###############################
 ## WARNING!! do not modify below
 ## if you don't know what you are doing
@@ -119,6 +108,22 @@ variables:
     # FLASK_FIXED_IP: 175.1.0.10
     UPLOAD_PATH: /uploads
     FULL_JWT: false
+
+    ###############################
+    ## Queue
+    # # RABBITMQ_USER: whiterabbit
+    # # RABBITMQ_PASSWORD: downthehole
+
+    # # please change this:
+    # RABBITMQ_HOST: your.rabbit.com
+    # RABBITMQ_USER: user
+    # RABBITMQ_PASSWORD: somepass
+
+    # # tested with merret:
+    # RABBITMQ_VHOST: qc
+    # RABBITMQ_ROUTING_KEY: dkrz-qc
+    # RABBITMQ_EXCHANGE: b2host
+    # RABBITMQ_QUEUE: testqueue
 
   # # CHANGE ME in production
   # backend:

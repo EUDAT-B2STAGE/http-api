@@ -5,9 +5,8 @@ services:
   icat:
     build:
       context: ${SUBMODULE_DIR}/build-templates/b2safe
-      args:
-        RAPYDO_VERSION: ${RAPYDO_VERSION}
-    # image: ${COMPOSE_PROJECT_NAME}/server:b2safe-mod
+      # args:
+      #   RAPYDO_VERSION: ${RAPYDO_VERSION}
     image: rapydo/b2safe:${RAPYDO_VERSION}
     environment:
       B2ACCESS_CAS: ${B2ACCESS_CAS}
