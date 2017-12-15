@@ -11,6 +11,8 @@ from restapi.services.detect import detector
 from utilities.logs import get_logger
 import dateutil.parser
 
+from b2stage.apis.commons.endpoint import EudatEndpoint
+
 #################
 # INIT VARIABLES
 log = get_logger(__name__)
@@ -58,8 +60,11 @@ class Airods(EndpointResource):
         myLatX = float(myargs.get("maxlat"))
         myLonX = float(myargs.get("maxlon"))
 
-        #myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
-        myfirstvalue = mongohd.wf_do.objects.all()
+        myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
+        #myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX }})
+            #,"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
+
+        #myfirstvalue = mongohd.wf_do.objects.all()
         for document in myfirstvalue:
                 myLine = [document.fileId,document.dc_identifier,document.irods_path, document.dc_coverage_x, document.dc_coverage_y ]
                 documentResult1.append(myLine)
@@ -82,12 +87,14 @@ class Airods(EndpointResource):
             print (myfirstvalue[0].irods_path) 
                 
             try:
-                for document in myfirstvalue:
-                    print(document.irods_path)
-                    icom.read_in_streaming(document.irods_path)
+                # for time being ... @TODO: allow multi files download
+                return icom.read_in_streaming(myfirstvalue[0].irods_path)
+                #for document in myfirstvalue:
+                #    print(document.irods_path)
+                #    icom.read_in_streaming(document.irods_path)
                     
-                
-                return("download ok")
+                # test only
+                #return("download ok")
             
             except BaseException as e:
                 print(e, type(e))

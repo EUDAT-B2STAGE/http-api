@@ -1,6 +1,6 @@
 common:
   custom:
-    authentication: false
+    authentication: true
   
 
 
