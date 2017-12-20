@@ -135,11 +135,12 @@ $ curl \
 ## **PUT**
 ### Upload an entity **and trigger the registration in B2SAFE**
 
-Both Form and Streaming upload are supported. Streaming is more advisable uploding large data.
+Both Form and Streaming upload are supported. Streaming is more advisable uploding large data. Also be aware that for larger and longer upload you might have to provide a bigger timeout parameter to your client if any (e.g. for `curl` there is a `--max-time` option)
 
 > Notes: The entity registration depends on the policies adopted by the B2SAFE instance which the B2STAGE HTTP-API is connected to. This operation is idempotent.
 
 ##### Parameters
+
 | Parameter | Type | Description
 |-----------|------|-------------
 | file (required) | string | Name of the local file to be uploaded
