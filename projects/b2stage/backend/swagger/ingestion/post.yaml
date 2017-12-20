@@ -1,0 +1,8 @@
+
+withoutid:
+  custom:
+    authentication: false
+  summary: Upload a zip file to the ingestion cloud
+  responses:
+    '200':
+      description: File was uploaded without errors

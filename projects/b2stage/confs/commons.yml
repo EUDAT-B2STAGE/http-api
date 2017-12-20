@@ -60,6 +60,8 @@ services:
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
+      # other projects variables
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
 
       # db access
       ALCHEMY_ENABLE: 1

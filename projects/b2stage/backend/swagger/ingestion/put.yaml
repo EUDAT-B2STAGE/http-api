@@ -1,0 +1,8 @@
+
+withid:
+  custom:
+    authentication: true
+  summary: Enable a batch to be ingested in the submission process
+  responses:
+    '200':
+      description: The batch for the specified identifier has been enabled

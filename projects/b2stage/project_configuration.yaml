@@ -69,6 +69,7 @@ variables:
     ## Seadata branch
     SEADATA_PROJECT: 0
     # SEADATA_PROJECT: 1
+    # SEADATA_INGESTION_PATH:
 
 ###############################
 ## WARNING!! do not modify below
@@ -162,6 +163,7 @@ tags:
   public: landing page
   b2safe: proxy access to irods b2safe credentials
   # internal: for internal testing purpose only
+  seadatacloud: endpoints related to the SeaDataCloud project
 
 # Keep track of releases and dependencies
 releases:

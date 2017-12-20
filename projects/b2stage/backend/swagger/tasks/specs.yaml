@@ -1,6 +1,7 @@
 
 depends_on:
   - CELERY_ENABLE
+  - SEADATA_PROJECT
 
 file: tasks
 class: Tasks

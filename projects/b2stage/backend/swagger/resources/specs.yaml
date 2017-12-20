@@ -1,6 +1,7 @@
 
 depends_on:
   - RESOURCES_PROJECT
+  - SEADATA_PROJECT
 
 file: resources
 class: Resources
