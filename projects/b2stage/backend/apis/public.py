@@ -42,23 +42,28 @@ class Public(B2HandleEndpoint):
                 code=hcodes.HTTP_BAD_REQUEST
             )
 
+        # ####################
+        # # check if browser
+        # from restapi.rest.response import request_from_browser
+        # if not request_from_browser:
+        #     return 'Not a browser'
+
         # list content
-        tmp = icom.list(location)
-        log.pp(tmp)
+        is_collection = icom.is_collection(path)
+        jout = self.list_objects(icom, path, is_collection, location)
+        return jout
 
         ####################
         # # look for pid metadata
         # pid = '11100/33ac01fc-6850-11e5-b66e-e41f13eb32b2'
         # metadata, bad_response = self.get_pid_metadata(pid)
-
         ####################
-        # check if browser
-        from restapi.rest.response import request_from_browser
-        if request_from_browser:
-            # # use logos in an html reply
-            # https://www.eudat.eu/sites/default/files/logo-b2stage.png
-            # https://www.eudat.eu/sites/default/files/EUDAT-logo.png
-            return """ </br> <p> This is <b>HTML</b> content </p> """
+        # tmp = icom.list(location)
+        # log.pp(tmp)
 
-        ####################
-        return 'Not a browser'
+        # ####################
+        # # # use logos in an html reply
+        # # https://www.eudat.eu/sites/default/files/logo-b2stage.png
+        # # https://www.eudat.eu/sites/default/files/EUDAT-logo.png
+        # return """ </br> <p> This is <b>HTML</b> content </p>
+        #     <pre>%s</pre>""" % jout
