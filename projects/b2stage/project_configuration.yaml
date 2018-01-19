@@ -81,6 +81,7 @@ variables:
     AUTH_SERVICE: sqlalchemy
     # AUTH_SERVICE: mongo
     API_MAIN_ENDPOINT: registered
+    API_PUBLIC_ENDPOINT: public
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
 
@@ -189,9 +190,9 @@ releases:
     status: released
   '1.0.1':
     type: patch
-    rapydo: 0.5.8
+    rapydo: 0.6.1
     status: development
   '1.0.2':
     type: development
-    rapydo: 0.5.8
+    rapydo: 0.6.2
     status: todo

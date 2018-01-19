@@ -21,17 +21,23 @@ IRODS_EXTERNAL = IRODS_VARS.get('external', False)
 CURRENT_B2SAFE_SERVER = IRODS_VARS.get('host')
 # CURRENT_HTTPAPI_SERVER = 'b2stage-test.cineca.it'
 CURRENT_HTTPAPI_SERVER = detector.get_global_var('PROJECT_DOMAIN')
+
 # CURRENT_B2ACCESS_ENVIRONMENT = 'development'
 CURRENT_B2ACCESS_ENVIRONMENT = detector.get_global_var('B2ACCESS_ENV')
 # CURRENT_MAIN_ENDPOINT = 'registered'
 CURRENT_MAIN_ENDPOINT = "%s/%s" \
     % (API_URL, detector.get_global_var('MAIN_ENDPOINT', default=''))
+PUBLIC_ENDPOINT = "%s/%s" \
+    % (API_URL, detector.get_global_var('PUBLIC_ENDPOINT', default=''))
 
 IRODS_PROTOCOL = 'irods'
 
 HTTP_PROTOCOL = 'http'
 if PRODUCTION:
     HTTP_PROTOCOL = 'https'
+else:
+    # FIXME: how to get the PORT?
+    CURRENT_HTTPAPI_SERVER += ":8080"
 
 
 ########################

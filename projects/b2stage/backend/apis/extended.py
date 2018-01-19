@@ -44,15 +44,8 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
                 message='B2HANDLE: empty URL_value returned',
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
-        # parse query parameters
-        self.get_input()
-        download = False
-        if (hasattr(self._args, 'download')):
-            if self._args.download and 'true' in self._args.download.lower():
-                download = True
-
-        # If download is True, trigger file download
-        if download:
+        # If download is requested, trigger file download
+        if self.download_parameter():
             api_url = CURRENT_HTTPAPI_SERVER
 
             # If local HTTP-API perform a direct download

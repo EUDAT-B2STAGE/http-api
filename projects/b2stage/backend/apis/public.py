@@ -36,11 +36,15 @@ class Public(B2HandleEndpoint):
 
         path, resource, filename, force = \
             self.get_file_parameters(icom, path=location)
-        if icom.is_collection(path):
+        is_collection = icom.is_collection(path)
+        if is_collection:
             return self.send_errors(
                 message="Path provided is a collection",
                 code=hcodes.HTTP_BAD_REQUEST
             )
+
+        if self.download_parameter():
+            return "To be downloaded!!!"
 
         ####################
         # # look for pid metadata
@@ -51,8 +55,8 @@ class Public(B2HandleEndpoint):
         # log.pp(tmp)
 
         # list content
-        is_collection = icom.is_collection(path)
-        jout = self.list_objects(icom, path, is_collection, location)
+        jout = self.list_objects(icom,
+                                 path, is_collection, location, public=True)
 
         # ####################
         # # check if browser
@@ -64,14 +68,80 @@ class Public(B2HandleEndpoint):
         accepted_formats = get_accepted_formats()
         if MIMETYPE_HTML in accepted_formats:
 
-            ####################
-            # # use logos in an html reply
-            # https://www.eudat.eu/sites/default/files/logo-b2stage.png
-            # https://www.eudat.eu/sites/default/files/EUDAT-logo.png
+            title = "EUDAT: B2STAGE HTTP-API"
+            header = """<!DOCTYPE html>
+<html>
+<head> <title>%s</title> </head>
+<body>
+""" % title
 
+            footer = """
+</body>
+</html>
+"""
+
+            # body = "<p><b>Test</b></p>\n"
+            body = """
+
+<table>
+    <tr>
+        <td>
+            <img
+    src='https://www.eudat.eu/sites/default/files/logo-b2stage.png'
+    width=150
+    </td>
+        <td>
+            <img
+    src='https://www.eudat.eu/sites/default/files/EUDAT-logo.png'
+    width=150
+    </td>
+    </tr>
+</table>
+"""
+
+            metadata = ""
+            try:
+                _, info = jout.pop().popitem()
+            except IndexError:
+                # NOTE: probably some error if here, to catch?
+                info = {}
+            else:
+                # log.pp(info)
+                for key, value in info.get('metadata', {}).items():
+                    if value is None:
+                        continue
+                    metadata += '<tr>'
+                    metadata += "<th> <i>metadata</i> </th>"
+                    metadata += "<th> %s </th>" % key.capitalize()
+                    metadata += "<td> %s </td>" % value
+                    metadata += '</tr>\n'
+
+            body += """
+<table border=1 cellpadding=5 cellspacing=5>
+    %s
+    <tr>
+        <th> <i>info</i> </th>
+        <th> Collection </th>
+        <td> %s </td>
+    </tr>
+    <tr>
+        <th> <i>access</i> </th>
+        <th> Download </th>
+        <td> <a href='%s?download=true'>link</a> </td>
+    </tr>
+</table>
+
+""" % (
+                # info.get('dataobject'),
+                metadata,
+                info.get('path'),
+                info.get('link'),
+            )
+
+            ####################
             # print("HTML")
-            output = """ </br> <p> This is <b>HTML</b> content! </p>
-                <pre>%s</pre>""" % jout
+            output = header + body + footer
+
             from restapi.rest.response import WerkzeugResponse
             headers = {'Content-Type': 'text/html; charset=utf-8'}
             return WerkzeugResponse(output, headers=headers)

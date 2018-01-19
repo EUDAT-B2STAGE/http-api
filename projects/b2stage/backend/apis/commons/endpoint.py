@@ -204,6 +204,8 @@ class EudatEndpoint(B2accessUtilities):
         else:
             api_path = "/%s" % api_path.lstrip('/')
 
+        # print("TEST", CURRENT_HTTPAPI_SERVER)
+
         return '%s://%s%s/%s' % (
             HTTP_PROTOCOL, CURRENT_HTTPAPI_SERVER, api_path,
             ipath.strip(self._path_separator))
@@ -344,10 +346,20 @@ class EudatEndpoint(B2accessUtilities):
         # Stream file content
         return filecontent
 
-    def list_objects(self, icom, path, is_collection, location):
+    def download_parameter(self):
+        # parse query parameters
+        self.get_input()
+        download = False
+        print("TEST", self._args)
+        if (hasattr(self._args, 'download')):
+            if self._args.download and 'true' in self._args.download.lower():
+                download = True
+        return download
+
+    def list_objects(self, icom, path, is_collection, location, public=False):
         """ DATA LISTING """
 
-        from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
+        from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT, PUBLIC_ENDPOINT
         from restapi.flask_ext.flask_irods.client import IrodsException
 
         EMPTY_RESPONSE = {}
@@ -414,6 +426,10 @@ class EudatEndpoint(B2accessUtilities):
             metadata['EUDAT/PARENT'] = out.get("EUDAT/PARENT")
 
             metadata.pop('path')
+            if public:
+                api_path = PUBLIC_ENDPOINT
+            else:
+                api_path = CURRENT_MAIN_ENDPOINT
             content = {
                 'metadata': metadata,
                 metadata['object_type']: filename,
@@ -421,7 +437,7 @@ class EudatEndpoint(B2accessUtilities):
                 'location': self.b2safe_location(collection),
                 'link': self.httpapi_location(
                     icom.get_absolute_path(filename, root=collection),
-                    api_path=CURRENT_MAIN_ENDPOINT,
+                    api_path=api_path,
                     remove_suffix=location)
             }
 
