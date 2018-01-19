@@ -37,9 +37,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     def get(self, location=None):
         """ Download file from filename """
 
-        data = {}
-        checksum = None
-
         if location is None:
             return self.send_errors(
                 'Location: missing filepath inside URI',

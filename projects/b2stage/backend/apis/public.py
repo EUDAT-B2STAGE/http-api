@@ -71,40 +71,71 @@ class Public(B2HandleEndpoint):
             title = "EUDAT: B2STAGE HTTP-API"
             header = """<!DOCTYPE html>
 <html>
-<head> <title>%s</title> </head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+
+    <link rel="stylesheet"
+    href="https://v4-alpha.getbootstrap.com/examples/narrow-jumbotron/narrow-jumbotron.css">
+
+    <title>%s</title>
+</head>
 <body>
+ <div class="container">
+
+      <div class="float-right">
+        <table>
+            <tr>
+                <td>
+                    <img
+            src='https://www.eudat.eu/sites/default/files/logo-b2stage.png'
+            width=75
+            </td>
+                <td>
+                    <img
+            src='https://www.eudat.eu/sites/default/files/EUDAT-logo.png'
+            width=75
+            </td>
+            </tr>
+        </table>
+
+      </div>
+
+      <div class="header clearfix">
+        <h2 class="text-muted">
+            EUDAT-B2STAGE: HTTP-API service
+        </h2>
+      </div>
 """ % title
 
             footer = """
+
+    <footer class="footer">
+     <p>&copy; EUDAT 2018</p>
+    </footer>
+
+ </div>
 </body>
 </html>
 """
 
             # body = "<p><b>Test</b></p>\n"
             body = """
-
-<table>
-    <tr>
-        <td>
-            <img
-    src='https://www.eudat.eu/sites/default/files/logo-b2stage.png'
-    width=150
-    </td>
-        <td>
-            <img
-    src='https://www.eudat.eu/sites/default/files/EUDAT-logo.png'
-    width=150
-    </td>
-    </tr>
-</table>
 """
 
             metadata = ""
             try:
                 _, info = jout.pop().popitem()
-            except IndexError:
-                # NOTE: probably some error if here, to catch?
-                info = {}
+            except AttributeError:
+                info = None
+            except BaseException as e:
+                info = None
+                log.error("Unknown error: %s(%s)" % (e.__class__.__name__, e))
             else:
                 # log.pp(info)
                 for key, value in info.get('metadata', {}).items():
@@ -116,7 +147,16 @@ class Public(B2HandleEndpoint):
                     metadata += "<td> %s </td>" % value
                     metadata += '</tr>\n'
 
-            body += """
+            if info is None:
+                body = "<h3> Data Object not found </h3>"
+            else:
+                body += """
+<h3> Data Object landing page </h3>
+
+</br> </br>
+Found a data object <b>publicy</b> available:
+</br> </br>
+
 <table border=1 cellpadding=5 cellspacing=5>
     %s
     <tr>
@@ -130,13 +170,14 @@ class Public(B2HandleEndpoint):
         <td> <a href='%s?download=true'>link</a> </td>
     </tr>
 </table>
+</br> </br>
 
 """ % (
-                # info.get('dataobject'),
-                metadata,
-                info.get('path'),
-                info.get('link'),
-            )
+                    # info.get('dataobject'),
+                    metadata,
+                    info.get('path'),
+                    info.get('link'),
+                )
 
             ####################
             # print("HTML")

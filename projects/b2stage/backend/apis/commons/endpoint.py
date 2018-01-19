@@ -350,7 +350,6 @@ class EudatEndpoint(B2accessUtilities):
         # parse query parameters
         self.get_input()
         download = False
-        print("TEST", self._args)
         if (hasattr(self._args, 'download')):
             if self._args.download and 'true' in self._args.download.lower():
                 download = True
@@ -362,6 +361,7 @@ class EudatEndpoint(B2accessUtilities):
         from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT, PUBLIC_ENDPOINT
         from restapi.flask_ext.flask_irods.client import IrodsException
 
+        data = {}
         EMPTY_RESPONSE = {}
 
         #####################
