@@ -42,17 +42,6 @@ class Public(B2HandleEndpoint):
                 code=hcodes.HTTP_BAD_REQUEST
             )
 
-        # ####################
-        # # check if browser
-        # from restapi.rest.response import request_from_browser
-        # if not request_from_browser:
-        #     return 'Not a browser'
-
-        # list content
-        is_collection = icom.is_collection(path)
-        jout = self.list_objects(icom, path, is_collection, location)
-        return jout
-
         ####################
         # # look for pid metadata
         # pid = '11100/33ac01fc-6850-11e5-b66e-e41f13eb32b2'
@@ -61,9 +50,35 @@ class Public(B2HandleEndpoint):
         # tmp = icom.list(location)
         # log.pp(tmp)
 
+        # list content
+        is_collection = icom.is_collection(path)
+        jout = self.list_objects(icom, path, is_collection, location)
+
         # ####################
-        # # # use logos in an html reply
-        # # https://www.eudat.eu/sites/default/files/logo-b2stage.png
-        # # https://www.eudat.eu/sites/default/files/EUDAT-logo.png
-        # return """ </br> <p> This is <b>HTML</b> content </p>
-        #     <pre>%s</pre>""" % jout
+        # # check if browser
+        # from restapi.rest.response import request_from_browser
+        # if not request_from_browser:
+        #     return 'Not a browser'
+
+        from restapi.rest.response import get_accepted_formats, MIMETYPE_HTML
+        accepted_formats = get_accepted_formats()
+        if MIMETYPE_HTML in accepted_formats:
+
+            ####################
+            # # use logos in an html reply
+            # https://www.eudat.eu/sites/default/files/logo-b2stage.png
+            # https://www.eudat.eu/sites/default/files/EUDAT-logo.png
+
+            # print("HTML")
+            output = """ </br> <p> This is <b>HTML</b> content! </p>
+                <pre>%s</pre>""" % jout
+            from restapi.rest.response import WerkzeugResponse
+            headers = {'Content-Type': 'text/html; charset=utf-8'}
+            return WerkzeugResponse(output, headers=headers)
+            # return respond_to_browser(r)
+
+        else:  # if MIMETYPE_JSON in accepted_formats:
+            # print("NOT HTML")
+            output = jout
+
+        return output
