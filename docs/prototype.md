@@ -11,12 +11,12 @@ Before getting our hands on the first `HTTP-API` server prototype, here's a list
 - B2SAFE/irods credentials do not work as HTTP API credentials at the moment.
 - The current instance is working on a testbed B2SAFE running at [CINECA](http://hpc.cineca.it/).
 
-The HTTP API prototype endpoints are accessible at the URI bases:
+The HTTP API prototype endpoints are accessible through the following two URI prefixes:
 
-- https://b2stage-test.cineca.it/api
-- https://b2stage-test.cineca.it/auth
+- `SERVER/api`
+- `SERVER/auth`
 
-e.g. once you authenticated: https://b2stage-test.cineca.it/auth/profile
+(for example to authenticate you need to `POST` credentials at: https://b2stage-test.cineca.it/auth/b2safeproxy)
 
 ## Status
 
@@ -29,12 +29,13 @@ This is the endpoint to call if you want to automatically verify if the server i
 This endpoint is also automatically monitored from the [uptime robot service](https://stats.uptimerobot.com/xGG9gTK3q).
 -->
 
-## Swagger specifications
+## List of available endpoints
 
-The EUDAT B2STAGE HTTP API provide description of the current specifications following the latest version (`3.0`) of the `openapi` standard from [Swagger](https://swagger.io/specification/). 
+How do we understand which endpoint we need to call and which require authentication?
+
+The EUDAT B2STAGE HTTP API provide description of up-to-date specifications following the latest version (`3.0`) of the `openapi` standard from [Swagger](https://swagger.io/specification/). 
 
 The description in `JSON` format is available at:
-
 https://b2stage-test.cineca.it/api/specs
 
 
