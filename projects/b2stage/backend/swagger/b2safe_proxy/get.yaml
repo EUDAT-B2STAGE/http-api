@@ -3,7 +3,7 @@ common:
     authentication: True
 
 b2safeproxy:
-  summary: Test a token obtained as a B2SAFE iRODS user
+  summary: Test a token obtained as a B2SAFE user
   responses:
     '200':
       description: token is valid
