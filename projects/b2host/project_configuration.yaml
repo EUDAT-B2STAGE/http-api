@@ -18,7 +18,7 @@ variables:
 releases:
   '0.1.0':
     type: alpha
-    rapydo: 0.6.0
+    rapydo: 0.6.1
     status: developing
 
 # controller:

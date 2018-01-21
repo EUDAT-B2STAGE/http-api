@@ -1,10 +1,18 @@
 
-# v1.0.1 (*near future*)
-**due date**: November 30th, 2017
+# v1.0.2 (*near future*)
+**due date**: April 30th, 2018
 
 ## features
 
-- to be defined in the next developer meeting
+- improve deploy documentation
+- aspects to be defined together with the communities
+
+# v1.0.1 (*near future*)
+**due date**: January 21th, 2018
+
+## features
+
+- Mostly bug fixes
 
 # v1.0.0 (*first stable release*)
 **due date**: October 24th, 2017

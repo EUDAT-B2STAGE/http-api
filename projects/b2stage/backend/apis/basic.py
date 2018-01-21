@@ -71,6 +71,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     return self.send_errors(
                         'Collection: recursive download is not allowed')
                 else:
+                    # NOTE: we always send in chunks when downloading
                     return icom.read_in_streaming(path)
 
         return self.list_objects(icom, path, is_collection, location)
