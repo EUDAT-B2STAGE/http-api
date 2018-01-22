@@ -27,7 +27,7 @@ PASSWORD = 'somepassword'
 FILES_PATH = './data/files'
 LOG_LEVEL = 'info'  # or 'debug', 'verbose', 'very_verbose'
 
-REMOTE_DOMAIN = 'b2stage.cineca.it'  # you may change to another server
+REMOTE_DOMAIN = 'b2stage-test.cineca.it'  # you may change to another server
 REMOTE_HTTPAPI_URI = 'https://%s' % REMOTE_DOMAIN
 LOCAL_HTTPAPI_URI = 'http://localhost:8080'
 

@@ -5,7 +5,7 @@
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing files in different EUDAT domains
-  version: 1.0.0
+  version: 1.0.1
 
 ###############################
 ## Please CHECK VARIABLES here
@@ -59,6 +59,18 @@ variables:
     # # Needed for B2ACCESS certificates exchange
     # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/yourhostname.com"
 
+    ###############################
+    ## Mongo
+    # MONGO_HOST: your.host.com
+    # MONGO_DATABASE: yourdb
+    # MONGO_PORT: 27017
+
+    ###############################
+    ## Seadata branch
+    SEADATA_PROJECT: 0
+    # SEADATA_PROJECT: 1
+    # SEADATA_INGESTION_PATH:
+
 ###############################
 ## WARNING!! do not modify below
 ## if you don't know what you are doing
@@ -69,6 +81,7 @@ variables:
     AUTH_SERVICE: sqlalchemy
     # AUTH_SERVICE: mongo
     API_MAIN_ENDPOINT: registered
+    API_PUBLIC_ENDPOINT: public
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
 
@@ -97,6 +110,22 @@ variables:
     # FLASK_FIXED_IP: 175.1.0.10
     UPLOAD_PATH: /uploads
     FULL_JWT: false
+
+    ###############################
+    ## Queue
+    # # RABBITMQ_USER: whiterabbit
+    # # RABBITMQ_PASSWORD: downthehole
+
+    # # please change this:
+    # RABBITMQ_HOST: your.rabbit.com
+    # RABBITMQ_USER: user
+    # RABBITMQ_PASSWORD: somepass
+
+    # # tested with merret:
+    # RABBITMQ_VHOST: qc
+    # RABBITMQ_ROUTING_KEY: dkrz-qc
+    # RABBITMQ_EXCHANGE: b2host
+    # RABBITMQ_QUEUE: testqueue
 
   # # CHANGE ME in production
   # backend:
@@ -135,6 +164,7 @@ tags:
   public: landing page
   b2safe: proxy access to irods b2safe credentials
   # internal: for internal testing purpose only
+  seadatacloud: endpoints related to the SeaDataCloud project
 
 # Keep track of releases and dependencies
 releases:
@@ -156,13 +186,13 @@ releases:
     status: released
   '1.0.0':
     type: stable
-    rapydo: 0.5.7
+    rapydo: 0.6.0
     status: released
   '1.0.1':
     type: patch
-    rapydo: 0.5.8
+    rapydo: 0.6.1
     status: development
   '1.0.2':
     type: development
-    rapydo: 0.5.8
+    rapydo: 0.6.2
     status: todo

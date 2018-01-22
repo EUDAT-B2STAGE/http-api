@@ -14,6 +14,10 @@ volumes:
 
 services:
 
+  icat:
+    environment:
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
+
   postgres:
     environment:
       POSTGRES_USER: "${ALCHEMY_USER}"
@@ -27,9 +31,9 @@ services:
       # SHARED
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
-      - ../data/certs:/usr/local/share/ca-certificates
+      - ${VANILLA_DIR}/data/certs:/usr/local/share/ca-certificates
       # # mount irods code to develop patches
-      # - ../submodules/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
+      # - ${SUBMODULE_DIR}/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
     networks:
       i_net:
 
@@ -37,6 +41,8 @@ services:
       # base the user/role mechanism on some database
       AUTH_ENABLE: 1
       AUTH_SERVICE: ${AUTH_SERVICE}
+      # disable the basic /api/login method
+      MAIN_LOGIN_ENABLE: 0
 
       ##############################
       # set this inside the MODE yaml files you want to use
@@ -51,9 +57,12 @@ services:
       UPLOAD_PATH: ${UPLOAD_PATH}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
+      PUBLIC_ENDPOINT: ${API_PUBLIC_ENDPOINT}
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
+      # other projects variables
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
 
       # db access
       ALCHEMY_ENABLE: 1
@@ -75,17 +84,19 @@ services:
       IRODS_PASSWORD: ${IRODS_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
 
-      # # mongodb connection
+      # mongodb connection
+      MONGO_ENABLE: 0
       # MONGO_ENABLE: 1
-      # MONGO_HOST: ${MONGO_HOST}
-      # MONGO_PORT: ${MONGO_PORT}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_DATABASE: ${MONGO_DATABASE}
+      MONGO_PORT: ${MONGO_PORT}
 
-      # # neo connection
-      # GRAPHDB_ENABLE: 0
-      # # GRAPHDB_ENABLE: 1
-      # GRAPHDB_HOST: ${GRAPHDB_HOST}
-      # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
-      # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+      # neo connection
+      GRAPHDB_ENABLE: 0
+      # GRAPHDB_ENABLE: 1
+      GRAPHDB_HOST: ${GRAPHDB_HOST}
+      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
 
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
       HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json

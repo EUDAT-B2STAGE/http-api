@@ -90,22 +90,37 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         ###################################################
 
         log.info('*** Testing PUT')
+        content = b"a test"
         # Upload entity in test folder
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
         r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(b"a test"), self._test_filename)),
+                         file=(io.BytesIO(content), self._test_filename)),
                          headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # Then verify content!
+        endpoint += '/' + self._test_filename
+        r = self.app.get(
+            endpoint, data=dict(download='True'),
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        self.assertEqual(r.data, content)
 
         log.info('*** Testing PUT in streaming')
         # Upload entity in test folder
-        endpoint = self._api_uri + self._main_endpoint + self._irods_path \
-            + '/filename'
-        r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(b"a test"))),
-                         content_type='application/octet-stream',
-                         headers=self.__class__.auth_header)
+        endpoint = self._api_uri + self._main_endpoint + \
+            self._irods_path + self._test_filename + '2'
+        content = b"verywell\nbla bla\n"
+        r = self.app.put(
+            endpoint, data=io.BytesIO(content),
+            content_type='application/octet-stream',
+            headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # Then verify content!
+        r = self.app.get(
+            endpoint, data=dict(download='True'),
+            headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        self.assertEqual(r.data, content)
 
         # Overwrite entity in test folder
         r = self.app.put(endpoint, data=dict(

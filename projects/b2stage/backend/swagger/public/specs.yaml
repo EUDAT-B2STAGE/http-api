@@ -4,7 +4,7 @@ class: Public
 schema:
   expose: true
 mapping:
-  public: "/public/<path:irods_location>"
+  public: "/public/<path:location>"
 labels:
   - eudat
   - pids

@@ -20,6 +20,7 @@ class TestPublic(RestTestsAuthenticatedBase):
 
     def test_01_GET_public_data(self):
 
+        # not official at the moment
         assert True
 
         # endpoint = (self._api_uri + self._main_endpoint)

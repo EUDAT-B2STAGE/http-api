@@ -38,6 +38,8 @@ class EudatEndpoint(B2accessUtilities):
         # internal_user = user internal to the API
         # external_user = user from oauth (B2ACCESS)
         internal_user = self.get_current_user()
+        # VERIFY FOR SEADATA
+        # print("TEST", internal_user)
         log.debug("Token user: %s" % internal_user)
 
         #################################
@@ -202,6 +204,8 @@ class EudatEndpoint(B2accessUtilities):
         else:
             api_path = "/%s" % api_path.lstrip('/')
 
+        # print("TEST", CURRENT_HTTPAPI_SERVER)
+
         return '%s://%s%s/%s' % (
             HTTP_PROTOCOL, CURRENT_HTTPAPI_SERVER, api_path,
             ipath.strip(self._path_separator))
@@ -211,10 +215,10 @@ class EudatEndpoint(B2accessUtilities):
             IRODS_PROTOCOL, CURRENT_B2SAFE_SERVER,
             ipath.strip(self._path_separator))
 
-    def fix_location(self, irods_location):
-        if not irods_location.startswith(self._path_separator):
-            irods_location = self._path_separator + irods_location
-        return irods_location
+    def fix_location(self, location):
+        if not location.startswith(self._path_separator):
+            location = self._path_separator + location
+        return location
 
     # @staticmethod
     # def user_from_unity(unity_persistent):
@@ -341,3 +345,102 @@ class EudatEndpoint(B2accessUtilities):
         os.remove(abs_file)
         # Stream file content
         return filecontent
+
+    def download_parameter(self):
+        # parse query parameters
+        self.get_input()
+        download = False
+        if (hasattr(self._args, 'download')):
+            if self._args.download and 'true' in self._args.download.lower():
+                download = True
+        return download
+
+    def list_objects(self, icom, path, is_collection, location, public=False):
+        """ DATA LISTING """
+
+        from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT, PUBLIC_ENDPOINT
+        from restapi.flask_ext.flask_irods.client import IrodsException
+
+        data = {}
+        EMPTY_RESPONSE = {}
+
+        #####################
+        # DIRECTORY
+        if is_collection:
+            collection = path
+            data = icom.list(path=collection)
+            if len(data) < 1:
+                data = EMPTY_RESPONSE
+            # Print content list if it's a collection
+        #####################
+        # FILE (or not existing)
+        else:
+            collection = icom.get_collection_from_path(path)
+            current_filename = path[len(collection) + 1:]
+
+            from contextlib import suppress
+            with suppress(IrodsException):
+                filelist = icom.list(path=collection)
+                data = EMPTY_RESPONSE
+                for filename, metadata in filelist.items():
+                    if filename == current_filename:
+                        data[filename] = metadata
+                # log.pp(data)
+
+            # # Print file details/sys metadata if it's a specific file
+            # data = icom.meta_sys_list(path)
+
+            # if a path that does not exist
+            if len(data) < 1:
+                return self.send_errors(
+                    "Path does not exists or you don't have privileges: %s"
+                    % path, code=hcodes.HTTP_BAD_NOTFOUND)
+
+        # Set the right context to each element
+        response = []
+        for filename, metadata in data.items():
+
+            # Get iRODS checksum
+            file_path = os.path.join(collection, filename)
+            try:
+                obj = icom.get_dataobject(file_path)
+                checksum = obj.checksum
+            except IrodsException:
+                checksum = None
+
+            # Get B2SAFE metadata
+            out = {}
+            try:
+                out, _ = icom.get_metadata(file_path)
+            except IrodsException:
+                pass
+
+            metadata['checksum'] = checksum
+            metadata['PID'] = out.get("PID")
+
+            # Shell we add B2SAFE metadata only if present?
+            metadata['EUDAT/FIXED_CONTENT'] = out.get("EUDAT/FIXED_CONTENT")
+            metadata['EUDAT/REPLICA'] = out.get("EUDAT/REPLICA")
+            metadata['EUDAT/FIO'] = out.get("EUDAT/FIO")
+            metadata['EUDAT/ROR'] = out.get("EUDAT/ROR")
+            metadata['EUDAT/PARENT'] = out.get("EUDAT/PARENT")
+
+            metadata.pop('path')
+            if public:
+                api_path = PUBLIC_ENDPOINT
+            else:
+                api_path = CURRENT_MAIN_ENDPOINT
+            content = {
+                'metadata': metadata,
+                metadata['object_type']: filename,
+                'path': collection,
+                'location': self.b2safe_location(collection),
+                'link': self.httpapi_location(
+                    icom.get_absolute_path(filename, root=collection),
+                    api_path=api_path,
+                    remove_suffix=location)
+            }
+
+            response.append({filename: content})
+
+        return response

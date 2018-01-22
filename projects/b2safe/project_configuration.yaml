@@ -5,7 +5,7 @@
 project:
   title: EUDAT-B2SAFE 'dockerized' server
   description: Processing files in different EUDAT domains
-  version: v0.1.0
+  version: 0.1.0
 
 ###############################
 ## Please CHECK VARIABLES here
@@ -48,12 +48,7 @@ controller:
 
 # Keep track of releases and dependencies
 releases:
-  '0.6.2':
-    type: RC1
-    rapydo: 0.5.7
+  '0.1.0':
+    type: alpha
+    rapydo: 0.6.1
     status: developing
-  # '1.0.0':
-  #   type: stable
-  #   # rapydo: 0.5.7
-  #   rapydo: null
-  #   status: todo

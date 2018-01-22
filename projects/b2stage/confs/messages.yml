@@ -1,0 +1,92 @@
+version: '3'
+
+# allow the access to an external docker compose
+networks:
+  b2host_worker_net:
+    external: true
+
+services:
+
+  backend:
+    environment:
+      ACTIVATE: 1
+      FLASK_DEBUG: 1
+      DEBUG_ENDPOINTS: 1
+      DEBUG_LEVEL: VERY_VERBOSE
+      APP_MODE: debug
+
+      #################
+      # EUDAT RELATED
+      B2ACCESS_ENV: development
+      # B2ACCESS_ENV: staging
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
+      IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
+      MAIN_LOGIN_ENABLE: 1
+      #################
+
+      #################
+      # SEADATACLOUD RELATED
+      RABBITMQ_ENABLE: 1
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      # RABBITMQ_HOST: ${CELERY_BROKER_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      #################
+
+    ports:
+      - 8080:${FLASK_DEFAULT_PORT}
+    depends_on:
+      - icat
+      - postgres
+    volumes:
+      # Custom python repos
+      - ${SUBMODULE_DIR}/prc/irods:${PYTHON_PATH}/irods
+    networks:
+      - b2host_worker_net
+
+  icat:
+    environment:
+      ACTIVATE: 1
+      POSTGRES_HOST: "${ALCHEMY_HOST}"
+      POSTGRES_USER: "${ALCHEMY_USER}"
+      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
+      IRODS_HOST: "${IRODS_HOST}"
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_DB: "${IRODS_DB}"
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
+      B2ACCESS_CAS: ${B2ACCESS_CAS}
+
+    volumes:
+      - etcconf:/etc
+      - irodshome:/home/${IRODS_USER}
+      - irodsvar:/var/lib/${IRODS_USER}
+      ####################
+      ## CERTIFICATES
+      - sharedcerts:/opt/certificates
+      # adds GSI users in our irods instance
+      - ${SUBMODULE_DIR}/build-templates/icat/extra_gsi_users.sh:/docker-entrypoint.d/gsi.sh
+      # B2ACCESS certificates
+      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      - ${SUBMODULE_DIR}/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
+
+  restclient:
+    environment:
+      ACTIVATE: 1
+      APP_HOST: ${FLASK_HOST}
+      APP_PORT: :${FLASK_DEFAULT_PORT}
+      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
+    networks:
+      app_net:
+    depends_on:
+      - backend
+
+  swaggerui:
+    ports:
+      - 80:80
+  sqlalchemyui:
+    ports:
+      - 81:8080

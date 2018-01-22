@@ -1,10 +1,18 @@
 
-# v1.0.1 (*near future*)
-**due date**: November 30th, 2017
+# v1.0.2 (*near future*)
+**due date**: April 30th, 2018
 
 ## features
 
-- to be defined in the next developer meeting
+- improve deploy documentation
+- aspects to be defined together with the communities
+
+# v1.0.1 (*near future*)
+**due date**: January 21th, 2018
+
+## features
+
+- Mostly bug fixes
 
 # v1.0.0 (*first stable release*)
 **due date**: October 24th, 2017
@@ -150,6 +158,6 @@ Currently B2ACCESS and B2SAFE are facing problems in sharing certificated creden
 
 ## prototype
 
-First prototype [is online](https://b2stage.cineca.it/api/status):
+First prototype [is online](https://b2stage-test.cineca.it/api/status):
 - based completely on docker
 - pointing to [B2ACCESS development server](https://unity.eudat-aai.fz-juelich.de:8443/home/home)

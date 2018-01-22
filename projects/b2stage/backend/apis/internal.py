@@ -22,15 +22,15 @@ log = get_logger(__name__)
 
 class MetadataEndpoint(EudatEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def patch(self, irods_location=None):
+    def patch(self, location=None):
         """
         Add metadata to an object.
         """
 
-        if irods_location is None:
+        if location is None:
             return self.send_errors('Location: missing filepath inside URI',
                                     code=hcodes.HTTP_BAD_REQUEST)
-        irods_location = self.fix_location(irods_location)
+        location = self.fix_location(location)
 
         ###################
         # BASIC INIT
@@ -40,7 +40,7 @@ class MetadataEndpoint(EudatEndpoint):
         icom = r.icommands
 
         path, resource, filename, force = \
-            self.get_file_parameters(icom, path=irods_location)
+            self.get_file_parameters(icom, path=location)
 
         dct = {}
         pid = self._args.get('PID')
@@ -55,13 +55,13 @@ class MetadataEndpoint(EudatEndpoint):
 
         out = None
         if dct:
-            icom.set_metadata(irods_location, **dct)
-            out, _ = icom.get_metadata(irods_location)
+            icom.set_metadata(location, **dct)
+            out, _ = icom.get_metadata(location)
 
         return {
             'metadata': out,
             'location': filename,
             'link': self.httpapi_location(
-                irods_location, api_path=CURRENT_MAIN_ENDPOINT
+                location, api_path=CURRENT_MAIN_ENDPOINT
             )
         }

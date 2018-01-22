@@ -1,23 +1,31 @@
 #!/bin/bash
 
-vename="b2stage"
+pip_binary="pip3"
+ve_name="b2stage"
 myuser=$(whoami)
 
 # use virtualenv
 if [ $myuser != "root" ]; then
-    echo "You are not the administrator."
-    echo "Switching to a virtual environment."
+    echo "You are not the administrator!"
     echo ""
-    pip3 install --user virtualenv
+    echo "Switching to a Python virtual environment (with virtualenv)."
+    echo ""
+    $pip_binary install --user virtualenv
     ve="$HOME/.local/bin/virtualenv"
-    $ve $vename
-    source $vename/bin/activate
+    $ve $ve_name
+    source $ve_name/bin/activate
 fi
 
-for existing in `pip3 list --format columns | grep rapydo | awk '{print $1}'`;
+# update or die
+$pip_binary install --upgrade pip
+if [ "$?" != 0 ]; then
+    echo "Failed to use $pip_binary. Did you install Python and Pip?"
+fi
+
+for existing in `$pip_binary list --format columns | grep rapydo | awk '{print $1}'`;
 do
     echo "removing: $existing"
-    pip3 uninstall -y $existing
+    $pip_binary uninstall -y $existing
 done
 
 if [ "$1" == 'dev' ]; then
@@ -29,12 +37,12 @@ fi
 for package in `cat projects/*/$files`;
 do
     echo "adding: $package"
-    pip3 install --upgrade $package
+    $pip_binary install --upgrade $package
 done
 
 if [ $myuser != "root" ]; then
     echo "Please activate the environment with:"
-    echo "source $vename/bin/activate"
+    echo "source $ve_name/bin/activate"
 fi
 
 branch=$(git rev-parse --abbrev-ref HEAD)

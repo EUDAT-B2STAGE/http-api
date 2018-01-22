@@ -1,0 +1,13 @@
+
+common:
+  custom:
+    # FIXME
+    authentication: false
+    # authorized:
+    #   - staff_user
+
+resources:
+  summary: Resources management
+  responses:
+    '200':
+      description: unknown

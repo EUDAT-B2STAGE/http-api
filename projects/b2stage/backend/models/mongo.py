@@ -9,8 +9,9 @@ from pymodm import MongoModel, fields
 class Testing(MongoModel):
     onefield = fields.CharField()
 
-    class Meta:
-        connection_alias = 'mytest'
-        # write_concern = WriteConcern(j=True)
+    # NOTE: do not touch connection here, see experiments/mongo.py
+    # class Meta:
+    #     connection_alias = 'test'
+    #     # write_concern = WriteConcern(j=True)
 
 # FIXME: two fields are missing in ExternalAccounts

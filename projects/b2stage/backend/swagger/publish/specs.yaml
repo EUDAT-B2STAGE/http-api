@@ -7,9 +7,9 @@ class: Publish
 schema:
   expose: true
 mapping:
-  publish: "/publish/<path:irods_location>"
+  publish: "/publish/<path:location>"
 ids:
-  irods_location: the filesystem path to your digital entities/objects
+  location: the filesystem path to your digital entities/objects
 labels:
   - eudat
   - publish

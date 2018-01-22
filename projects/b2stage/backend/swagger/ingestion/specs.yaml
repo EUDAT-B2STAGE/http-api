@@ -1,0 +1,15 @@
+
+depends_on:
+  - SEADATA_PROJECT
+
+file: ingestion
+class: Ingestion
+schema:
+  expose: true
+mapping:
+  withoutid: "/ingestion"
+  withid: "/ingestion/<string:batch_id>"
+
+labels:
+  - seadatacloud
+  - ingestion
