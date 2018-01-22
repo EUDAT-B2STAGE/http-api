@@ -25,7 +25,7 @@ rm -rf myb2safe
 ##################
 # Clone the latest development branch
 git clone https://github.com/EUDAT-B2STAGE/http-api.git myb2safe
-cd myb2safe && git checkout 1.0.1
+cd myb2safe && git checkout 1.0.2
 
 ##################
 # Install the rapydo controller

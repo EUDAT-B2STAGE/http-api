@@ -5,7 +5,7 @@
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing files in different EUDAT domains
-  version: 1.0.1
+  version: 1.0.2
 
 ###############################
 ## Please CHECK VARIABLES here
@@ -191,8 +191,12 @@ releases:
   '1.0.1':
     type: patch
     rapydo: 0.6.1
-    status: development
+    status: released
   '1.0.2':
     type: development
+    rapydo: 0.6.1
+    status: development
+  '1.0.3':
+    type: patch
     rapydo: 0.6.2
     status: todo

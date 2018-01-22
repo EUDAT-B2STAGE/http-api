@@ -7,7 +7,7 @@ To deploy your own server you need some prerequisites:
 - A `UNIX`-based machine
 - A recent kernel
 - the `docker` engine installed, together with `docker-compose`
-- `git` to clone the repository code or [download](https://github.com/EUDAT-B2STAGE/http-api/archive/v1.0.1.tar.gz) the stable release tarball
+- `git` to clone the repository code or [download](https://github.com/EUDAT-B2STAGE/http-api/archive/v1.0.2.tar.gz) the stable release tarball
 - `python 3.4+` installed
 -->
 
