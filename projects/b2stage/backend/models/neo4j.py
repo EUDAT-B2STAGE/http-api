@@ -9,7 +9,7 @@ from __future__ import absolute_import
 from neomodel import StringProperty, BooleanProperty, JSONProperty, \
     StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
 
-from ..neo4j import User as UserBase
+from restapi.models.neo4j import User as UserBase
 
 # from common.logs import get_logger
 # logger = logging.get_logger(__name__)

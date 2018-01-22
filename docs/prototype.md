@@ -11,28 +11,32 @@ Before getting our hands on the first `HTTP-API` server prototype, here's a list
 - B2SAFE/irods credentials do not work as HTTP API credentials at the moment.
 - The current instance is working on a testbed B2SAFE running at [CINECA](http://hpc.cineca.it/).
 
-The HTTP API prototype endpoints are accessible at the URI bases:
+The HTTP API prototype endpoints are accessible through the following two URI prefixes:
 
-- https://b2stage.cineca.it/api
-- https://b2stage.cineca.it/auth
+- `SERVER/api`
+- `SERVER/auth`
 
-e.g. once you authenticated: https://b2stage.cineca.it/auth/profile
+(for example to authenticate you need to `POST` credentials at: https://b2stage-test.cineca.it/auth/b2safeproxy)
 
 ## Status
 
 The status page for the current prototype is:
-https://b2stage.cineca.it/api/status
+https://b2stage-test.cineca.it/api/status
 
-This is an endpoint to call if you want to automatically verify if the server is responding to request. This endpoint is also automatically monitored from the [uptime robot service](https://stats.uptimerobot.com/xGG9gTK3q).
+This is the endpoint to call if you want to automatically verify if the server is responding to request. 
 
+<!--
+This endpoint is also automatically monitored from the [uptime robot service](https://stats.uptimerobot.com/xGG9gTK3q).
+-->
 
-## Swagger specifications
+## List of available endpoints
 
-The EUDAT B2STAGE HTTP API provide description of the current specifications following the latest version (`3.0`) of the `openapi` standard from [Swagger](https://swagger.io/specification/). 
+How do we understand which endpoint we need to call and which require authentication?
+
+The EUDAT B2STAGE HTTP API provide description of up-to-date specifications following the latest version (`3.0`) of the `openapi` standard from [Swagger](https://swagger.io/specification/). 
 
 The description in `JSON` format is available at:
-
-https://b2stage.cineca.it/api/specs
+https://b2stage-test.cineca.it/api/specs
 
 
 ## Clients
@@ -49,7 +53,7 @@ See also the [main user page](user/user.md) to understand which endpoints exists
 
 Since the HTTP API server follows the `openapi` standard, you can query its endpoints also using the official `swagger-ui` web server, by just passing the `JSON` file in input:
 
-[link to the swagger `petstore`](http://petstore.swagger.io/?url=https://b2stage.cineca.it/api/specs&docExpansion=none)
+[link to the swagger `petstore`](http://petstore.swagger.io/?url=https://b2stage-test.cineca.it/api/specs&docExpansion=none)
 
 ### python client
 

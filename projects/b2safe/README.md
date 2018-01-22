@@ -10,7 +10,7 @@ Currently the prototype is based on the HTTP-API development branch.
 
 The first draft is composed of three containers: 
 
-1. a simple iRODS `iCAT` server `v4.2.1` with Globus/GSI installed
+1. a simple iRODS `iCAT` server `v4.2.2` with Globus/GSI installed
 2. Postgresql for the iCAT database
 3. A client to check connecting to iRODS from another container at the very least
 
@@ -23,9 +23,9 @@ The first draft is composed of three containers:
 rm -rf myb2safe
 
 ##################
-# Clone the latest branch
+# Clone the latest development branch
 git clone https://github.com/EUDAT-B2STAGE/http-api.git myb2safe
-cd myb2safe && git checkout 0.6.2
+cd myb2safe && git checkout 1.0.1
 
 ##################
 # Install the rapydo controller

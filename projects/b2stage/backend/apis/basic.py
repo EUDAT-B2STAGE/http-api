@@ -34,17 +34,14 @@ log = get_logger(__name__)
 class BasicEndpoint(Uploader, EudatEndpoint):
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def get(self, irods_location=None):
+    def get(self, location=None):
         """ Download file from filename """
 
-        data = {}
-        checksum = None
-
-        if irods_location is None:
+        if location is None:
             return self.send_errors(
                 'Location: missing filepath inside URI',
                 code=hcodes.HTTP_BAD_REQUEST)
-        irods_location = self.fix_location(irods_location)
+        location = self.fix_location(location)
 
         ###################
         # Init EUDAT endpoint resources
@@ -55,7 +52,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # get parameters with defaults
         icom = r.icommands
         path, resource, filename, force = \
-            self.get_file_parameters(icom, path=irods_location)
+            self.get_file_parameters(icom, path=location)
 
         is_collection = icom.is_collection(path)
         # Check if it's not a collection because the object does not exist
@@ -74,93 +71,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     return self.send_errors(
                         'Collection: recursive download is not allowed')
                 else:
+                    # NOTE: we always send in chunks when downloading
                     return icom.read_in_streaming(path)
 
-        ###################
-        # DATA LISTING
-        ###################
-
-        EMPTY_RESPONSE = {}
-
-        #####################
-        # DIRECTORY
-        if is_collection:
-            collection = path
-            data = icom.list(path=collection)
-            if len(data) < 1:
-                data = EMPTY_RESPONSE
-            # Print content list if it's a collection
-        #####################
-        # FILE (or not existing)
-        else:
-            collection = icom.get_collection_from_path(path)
-            current_filename = path[len(collection) + 1:]
-
-            from contextlib import suppress
-            with suppress(IrodsException):
-                filelist = icom.list(path=collection)
-                data = EMPTY_RESPONSE
-                for filename, metadata in filelist.items():
-                    if filename == current_filename:
-                        data[filename] = metadata
-                # log.pp(data)
-
-            # # Print file details/sys metadata if it's a specific file
-            # data = icom.meta_sys_list(path)
-
-            # if a path that does not exist
-            if len(data) < 1:
-                return self.send_errors(
-                    "Path does not exists or you don't have privileges: %s"
-                    % path, code=hcodes.HTTP_BAD_NOTFOUND)
-
-        # Set the right context to each element
-        response = []
-        for filename, metadata in data.items():
-
-            # Get iRODS checksum
-            file_path = os.path.join(collection, filename)
-            try:
-                obj = icom.get_dataobject(file_path)
-                checksum = obj.checksum
-            except IrodsException:
-                checksum = None
-
-            # Get B2SAFE metadata
-            out = {}
-            try:
-                out, _ = icom.get_metadata(file_path)
-            except IrodsException:
-                pass
-
-            metadata['checksum'] = checksum
-            metadata['PID'] = out.get("PID")
-
-            # Shell we add B2SAFE metadata only if present?
-            metadata['EUDAT/FIXED_CONTENT'] = out.get("EUDAT/FIXED_CONTENT")
-            metadata['EUDAT/REPLICA'] = out.get("EUDAT/REPLICA")
-            metadata['EUDAT/FIO'] = out.get("EUDAT/FIO")
-            metadata['EUDAT/ROR'] = out.get("EUDAT/ROR")
-            metadata['EUDAT/PARENT'] = out.get("EUDAT/PARENT")
-
-            metadata.pop('path')
-            content = {
-                'metadata': metadata,
-                metadata['object_type']: filename,
-                'path': collection,
-                'location': self.b2safe_location(collection),
-                'link': self.httpapi_location(
-                    icom.get_absolute_path(filename, root=collection),
-                    api_path=CURRENT_MAIN_ENDPOINT,
-                    remove_suffix=irods_location)
-            }
-
-            response.append({filename: content})
-
-        return response
+        return self.list_objects(icom, path, is_collection, location)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def post(self, irods_location=None):
+    def post(self, location=None):
         """
         Handle [directory creation](docs/user/registered.md#post).
         Test on internal client shell with:
@@ -170,7 +87,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
 
         # Post does not accept the <ID> inside the URI
-        if irods_location is not None:
+        if location is not None:
             return self.send_errors(
                 'Forbidden path inside URI; ' +
                 "Please pass the location string as body parameter 'path'",
@@ -233,7 +150,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         return self.force_response(content, code=status)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def put(self, irods_location=None):
+    def put(self, location=None):
         """
         Handle file upload. Test on docker client shell with:
         http --form PUT $SERVER/api/resources/tempZone/home/guest/test \
@@ -267,11 +184,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 '/tempZone/home/guest/prova', data=f, headers=headers)
         """
 
-        if irods_location is None:
+        if location is None:
             return self.send_errors('Location: missing filepath inside URI',
                                     code=hcodes.HTTP_BAD_REQUEST)
-        irods_location = self.fix_location(irods_location)
-        # NOTE: irods_location will act strange due to Flask internals
+        location = self.fix_location(location)
+        # NOTE: location will act strange due to Flask internals
         # in case upload is served with streaming options,
         # NOT finding the right path + filename if the path is a collection
 
@@ -283,17 +200,17 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = \
-            self.get_file_parameters(icom, path=irods_location)
-
-        ipath = None
-        request.get_data()
+            self.get_file_parameters(icom, path=location)
 
         # Manage both form and streaming upload
+        ipath = None
 
         #################
-        # FORM UPLOAD
+        # CASE 1- FORM UPLOAD
         if request.mimetype != 'application/octet-stream':
-            # TODO: double check if this is the right mimetype
+
+            # Read the request
+            request.get_data()
 
             # Normal upload: inside the host tmp folder
             response = super(BasicEndpoint, self) \
@@ -340,7 +257,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     os.remove(abs_file)
 
         #################
-        # STREAMING UPLOAD
+        # CASE 2 - STREAMING UPLOAD
         else:
             filename = None
 
@@ -415,15 +332,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def patch(self, irods_location=None):
+    def patch(self, location=None):
         """
         PATCH a record. E.g. change only the filename to a resource.
         """
 
-        if irods_location is None:
+        if location is None:
             return self.send_errors('Location: missing filepath inside URI',
                                     code=hcodes.HTTP_BAD_REQUEST)
-        irods_location = self.fix_location(irods_location)
+        location = self.fix_location(location)
 
         ###################
         # BASIC INIT
@@ -433,7 +350,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         icom = r.icommands
         # Note: ignore resource, get new filename as 'newname'
         path, _, newfile, force = \
-            self.get_file_parameters(icom, path=irods_location, newfile=True)
+            self.get_file_parameters(icom, path=location, newfile=True)
 
         if force:
             return self.send_errors(
@@ -446,11 +363,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 code=hcodes.HTTP_BAD_REQUEST)
 
         # Get the base directory
-        collection = icom.get_collection_from_path(irods_location)
+        collection = icom.get_collection_from_path(location)
         # Set the new absolute path
         newpath = icom.get_absolute_path(newfile, root=collection)
         # Move in irods
-        icom.move(irods_location, newpath)
+        icom.move(location, newpath)
 
         return {
             'location': self.b2safe_location(newpath),
@@ -459,12 +376,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             'link': self.httpapi_location(
                 newpath,
                 api_path=CURRENT_MAIN_ENDPOINT,
-                remove_suffix=irods_location
+                remove_suffix=location
             )
         }
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def delete(self, irods_location=None):
+    def delete(self, location=None):
         """
         Remove an object or an empty directory on iRODS
 
@@ -498,33 +415,33 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 return "Cleaned"
 
         # Note: this check is not at the beginning to allow the clean operation
-        if irods_location is None:
+        if location is None:
             return self.send_errors('Location: missing filepath inside URI',
                                     code=hcodes.HTTP_BAD_REQUEST)
-        irods_location = self.fix_location(irods_location)
+        location = self.fix_location(location)
 
         ########################################
         # Remove from irods (only files and empty directories)
         is_recursive = False
-        if icom.is_collection(irods_location):
-            if not icom.list(irods_location):
+        if icom.is_collection(location):
+            if not icom.list(location):
                 # nb: recursive option is necessary to remove a collection
                 is_recursive = True
             else:
-                log.info("list:  %i", len(icom.list(path=irods_location)))
+                log.info("list:  %i", len(icom.list(path=location)))
                 return self.send_errors(
                     'Directory is not empty',
                     code=hcodes.HTTP_BAD_REQUEST)
         else:
             # Print file details/sys metadata if it's a specific file
             try:
-                icom.get_metadata(path=irods_location)
+                icom.get_metadata(path=location)
             except IrodsException:
                 # if a path that does not exist
                 return self.send_errors(
                     "Path does not exists or you don't have privileges",
                     code=hcodes.HTTP_BAD_NOTFOUND)
 
-        icom.remove(irods_location, recursive=is_recursive, resource=resource)
-        log.info("Removed %s", irods_location)
-        return {'removed': irods_location}
+        icom.remove(location, recursive=is_recursive, resource=resource)
+        log.info("Removed %s", location)
+        return {'removed': location}

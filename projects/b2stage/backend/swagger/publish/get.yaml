@@ -2,7 +2,7 @@
 publish:
   custom:
     authentication: true
-  summary: Check if that irods path is currently readable for anonymous user
+  summary: Check if the path is currently readable for the anonymous user
   responses:
     '200':
-      description: return a bolean 'published' if readable for anonymous
+      description: return a boolean 'published'

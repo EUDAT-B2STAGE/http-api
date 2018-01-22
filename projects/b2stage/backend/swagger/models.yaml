@@ -9,7 +9,7 @@ definitions:
         type: string
       newname:
         type: string
-        description: iRODS resource
+        description: B2SAFE resource
 
   FileDelete:
     properties:

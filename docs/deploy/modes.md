@@ -52,14 +52,14 @@ NOTE: on the client image you have multiple tools installed for testing:
 Some important points before going further:
 
 1. Please follow this paragraph only if you plan to deploy the HTTP API server in production
-2. Usually in production you have a domain name associated to your host IP (e.g. `b2stage.cineca.it` to 240.bla.bla.bla). But you can just use 'localhost' if this is not the case.
+2. Usually in production you have a domain name associated to your host IP (e.g. `b2stage-test.cineca.it` to 240.bla.bla.bla). But you can just use 'localhost' if this is not the case.
 3. You need a `B2ACCESS` account on the development server for the HTTP API application. Set the credentials [here](https://github.com/EUDAT-B2STAGE/http-api/blob/0.6.1/projects/b2stage/project_configuration.yaml#L22-L26) otherwise the endpoint `/auth/askauth` would not work.  
 
 Deploying is very simple:
 
 ```bash
 # define your domain
-$ DOMAIN='b2stage.cineca.it'
+$ DOMAIN='b2stage-test.cineca.it'
 # launch production mode
 $ rapydo --hostname $DOMAIN --mode production start
 ```

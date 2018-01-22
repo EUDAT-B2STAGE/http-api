@@ -1,7 +1,7 @@
 publish:
   custom:
     authentication: true
-  summary: Ensure that the irods path is not readable for anonymous user
+  summary: Ensure that the path is not accessible for the anonymous user
   responses:
     '200':
-      description: return a bolean 'published' if readable for anonymous
+      description: return a boolean 'published'

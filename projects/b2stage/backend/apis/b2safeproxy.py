@@ -78,15 +78,23 @@ class B2safeProxy(EndpointResource):
 
         token, irods_user = self.auth.irods_user(username, encoded_session)
 
-        # Get the default irods user just to compute current user home
-        ihandle = self.get_service_instance(service_name='irods')
-        user_home = ihandle.get_user_home(irods_user)
-
         #############
-        return self.force_response(
-            defined_content={
-                'token': token,
-                'b2safe_user': irods_user,
-                'b2safe_home': user_home,
-            }
-        )
+        response = {
+            'token': token,
+        }
+        ihandle = self.get_service_instance(service_name='irods')
+
+        # from b2stage.apis.commons.seadatacloud import SEADATA_ENABLED
+        # if SEADATA_ENABLED:
+        #     from utilities import path
+        #     suffix_path = str(path.build(['batchs', irods_user]))
+        #     ingestion_path = ihandle.get_current_zone(suffix=suffix_path)
+        #     response['seadata_ingestion'] = \
+        #         ingestion_path  # avoid public access
+        # else:
+
+        user_home = ihandle.get_user_home(irods_user)
+        response['b2safe_home'] = user_home
+        response['b2safe_user'] = irods_user
+
+        return self.force_response(defined_content=response)
