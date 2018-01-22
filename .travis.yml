@@ -22,6 +22,8 @@ script:
 # versions
 - docker --version && docker-compose --version
 - pip list --format columns | grep docker && pip search rapydo-
+# remove skips
+- rm projects/b2stage/backend/swagger/publish/SKIP
 # startup and launch tests
 - rapydo init && rapydo start
 - rapydo shell backend --command 'restapi tests --wait'
