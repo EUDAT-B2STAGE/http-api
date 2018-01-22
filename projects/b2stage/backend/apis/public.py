@@ -7,6 +7,7 @@ Getting informations for public data.
 
 from restapi.rest.response import WerkzeugResponse
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from b2stage.apis.commons.statics import HEADER, FOOTER
 from restapi import decorators as decorate
 from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
@@ -39,9 +40,16 @@ class Public(B2HandleEndpoint):
             self.get_file_parameters(icom, path=location)
         is_collection = icom.is_collection(path)
         if is_collection:
-            return self.send_errors(
-                message="Path provided is a collection",
-                code=hcodes.HTTP_BAD_REQUEST
+            body = "<h3> Failure </h3>" + \
+                "Path provided is a Collection.<br>" + \
+                "Listing is NOT yet implemented."
+            output = HEADER + body + FOOTER
+
+            headers = {'Content-Type': 'text/html; charset=utf-8'}
+            return WerkzeugResponse(
+                output,
+                status=hcodes.HTTP_BAD_REQUEST,
+                headers=headers,
             )
 
         ####################
@@ -50,7 +58,6 @@ class Public(B2HandleEndpoint):
         accepted_formats = get_accepted_formats()
         if MIMETYPE_HTML not in accepted_formats:
             # print("NOT HTML")
-            from utilities import htmlcodes as hcodes
             return self.send_errors(
                 "This endpoint is currently accessible only via Browser.",
                 code=hcodes.HTTP_BAD_FORBIDDEN,
@@ -74,64 +81,8 @@ class Public(B2HandleEndpoint):
         # log.pp(tmp)
 
         # list content
-        jout = self.list_objects(icom,
-                                 path, is_collection, location, public=True)
-
-        title = "EUDAT: B2STAGE HTTP-API"
-        header = """<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet"
-    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-    crossorigin="anonymous">
-
-    <link rel="stylesheet"
-    href="https://v4-alpha.getbootstrap.com/examples/narrow-jumbotron/narrow-jumbotron.css">
-
-    <title>%s</title>
-</head>
-<body>
- <div class="container">
-
-      <div class="float-right">
-        <table>
-            <tr>
-                <td>
-                    <img
-            src='https://www.eudat.eu/sites/default/files/logo-b2stage.png'
-            width=75
-            </td>
-                <td>
-                    <img
-            src='https://www.eudat.eu/sites/default/files/EUDAT-logo.png'
-            width=75
-            </td>
-            </tr>
-        </table>
-
-      </div>
-
-      <div class="header clearfix">
-        <h2 class="text-muted">
-            EUDAT-B2STAGE: HTTP-API service
-        </h2>
-      </div>
-""" % title
-
-        footer = """
-
-    <footer class="footer">
-     <p>&copy; EUDAT 2018</p>
-    </footer>
-
- </div>
-</body>
-</html>
-"""
+        jout = self.list_objects(
+            icom, path, is_collection, location, public=True)
 
         metadata = ""
         try:
@@ -153,7 +104,8 @@ class Public(B2HandleEndpoint):
                 metadata += '</tr>\n'
 
         if info is None:
-            body = "<h3> Data Object not found </h3>"
+            body = "<h3> Failure </h3>" + \
+                "Data Object NOT found, or no permission to access.<br>"
         else:
             body = """
 <h3> Data Object landing page </h3>
@@ -186,7 +138,7 @@ Found a data object <b>publicy</b> available:
 
         ####################
         # print("HTML")
-        output = header + body + footer
+        output = HEADER + body + FOOTER
 
         headers = {'Content-Type': 'text/html; charset=utf-8'}
         return WerkzeugResponse(output, headers=headers)
