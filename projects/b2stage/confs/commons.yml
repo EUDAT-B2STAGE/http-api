@@ -17,6 +17,11 @@ services:
   icat:
     environment:
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
+      # other projects variables
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
+    volumes:
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
 
   postgres:
     environment:
@@ -63,6 +68,7 @@ services:
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
       # other projects variables
       SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
 
       # db access
       ALCHEMY_ENABLE: 1

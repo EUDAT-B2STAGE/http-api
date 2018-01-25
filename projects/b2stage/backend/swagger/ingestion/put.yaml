@@ -2,7 +2,7 @@
 withid:
   custom:
     authentication: true
-  summary: Enable a batch to be ingested in the submission process
+  summary: Upload a zip file to the ingestion cloud
   responses:
     '200':
-      description: The batch for the specified identifier has been enabled
+      description: File was uploaded without errors

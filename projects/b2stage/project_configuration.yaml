@@ -66,10 +66,10 @@ variables:
     # MONGO_PORT: 27017
 
     ###############################
-    ## Seadata branch
-    SEADATA_PROJECT: 0
+    ## Seadata project variable
     # SEADATA_PROJECT: 1
-    # SEADATA_INGESTION_PATH:
+    SEADATA_PROJECT: 0
+    SEADATA_INGESTION_DIR: batches
 
 ###############################
 ## WARNING!! do not modify below
@@ -85,7 +85,8 @@ variables:
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
 
-    IRODS_ANONYMOUS: 1
+    IRODS_ANONYMOUS: 0
+    # IRODS_ANONYMOUS: 1
     IRODS_DB: ICAT
     IRODS_CHUNKSIZE: 1048576
     ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
@@ -127,7 +128,6 @@ variables:
     # RABBITMQ_EXCHANGE: b2host
     # RABBITMQ_QUEUE: testqueue
 
-  # # CHANGE ME in production
   # backend:
   #   credentials:
   #     username: someotheruser
