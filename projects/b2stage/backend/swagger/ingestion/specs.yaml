@@ -3,7 +3,7 @@ depends_on:
   - SEADATA_PROJECT
 
 file: ingestion
-class: Ingestion
+class: IngestionEndpoint
 schema:
   expose: true
 mapping:

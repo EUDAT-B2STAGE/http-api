@@ -18,7 +18,6 @@ from flask import request, current_app
 
 from b2stage.apis.commons import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
-
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities import htmlcodes as hcodes
@@ -226,9 +225,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             if isinstance(content, dict) and key_file in content:
                 original_filename = content[key_file]
-
-                abs_file = self.absolute_upload_file(original_filename,
-                                                     r.username)
+                abs_file = self.absolute_upload_file(
+                    original_filename, r.username)
                 log.info("File is '%s'" % abs_file)
 
                 ############################
@@ -300,7 +298,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 if not pid:
                     error_message = \
                         ("Timeout waiting for PID from B2SAFE:"
-                         " the object registration maybe in progress."
+                         " the object registration may be still in progress."
                          " File correctly uploaded.")
                     log.warning(error_message)
                     status = hcodes.HTTP_OK_ACCEPTED
