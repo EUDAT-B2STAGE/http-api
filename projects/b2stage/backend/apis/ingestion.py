@@ -32,6 +32,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint):
 
         return icom.get_current_zone(suffix=suffix_path)
 
+    def get(self, batch_id):
+        # let them check if it is enabled if they have permissions
+        pass
+        return "HELLO" + batch_id
+
     def put(self, batch_id):
         """
         Let the Replication Manager upload a zip file into a batch folder

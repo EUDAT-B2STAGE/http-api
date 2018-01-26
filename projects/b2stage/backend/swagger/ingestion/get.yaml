@@ -1,0 +1,8 @@
+
+withid:
+  custom:
+    authentication: true
+  summary: Check if the ingestion batch is enabled and filled
+  responses:
+    '200':
+      description: File is either enabled or filled
