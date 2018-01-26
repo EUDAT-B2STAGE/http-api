@@ -33,9 +33,30 @@ class IngestionEndpoint(Uploader, EudatEndpoint):
         return icom.get_current_zone(suffix=suffix_path)
 
     def get(self, batch_id):
-        # let them check if it is enabled if they have permissions
-        pass
-        return "HELLO" + batch_id
+
+        ########################
+        # get irods session
+        obj = self.init_endpoint()
+        icom = obj.icommands
+
+        batch_path = self.get_batch_path(icom, batch_id)
+        log.info("Batch path: %s", batch_path)
+
+        ########################
+        # Check if the folder exists and is empty
+        if not icom.is_collection(batch_path):
+            return self.send_errors(
+                "Batch '%s' not enabled or you have no permissions"
+                % batch_id,
+                code=hcodes.HTTP_BAD_REQUEST)
+
+        files = icom.list(batch_path)
+        if len(files) != 1:
+            return self.send_errors(
+                "Batch '%s' not yet filled" % batch_id,
+                code=hcodes.HTTP_BAD_REQUEST)
+
+        return "Batch '%s' is enabled and filled" % batch_id
 
     def put(self, batch_id):
         """
