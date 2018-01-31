@@ -17,9 +17,22 @@ services:
   icat:
     environment:
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
+
+      ####################
+      ####################
       # other projects variables
+
+      ####################
+      ##### SEADATA
       SEADATA_PROJECT: ${SEADATA_PROJECT}
       SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
+      # rancher
+      RESOURCES_URL: ${RESOURCES_URL}
+      RESOURCES_KEY: ${RESOURCES_KEY}
+      RESOURCES_SECRET: ${RESOURCES_SECRET}
+      RESOURCES_PROJECT: ${RESOURCES_PROJECT}
+      RESOURCES_HUB: ${RESOURCES_HUB}
+
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
 
@@ -66,9 +79,6 @@ services:
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
-      # other projects variables
-      SEADATA_PROJECT: ${SEADATA_PROJECT}
-      SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
 
       # db access
       ALCHEMY_ENABLE: 1
@@ -106,6 +116,25 @@ services:
 
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
       HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json
+
+      ####################
+      ####################
+      # other projects variables
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
+
+      ####################
+      ##### SEADATA
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
+      # rancher
+      RESOURCES_URL: ${RESOURCES_URL}
+      RESOURCES_KEY: ${RESOURCES_KEY}
+      RESOURCES_SECRET: ${RESOURCES_SECRET}
+      RESOURCES_PROJECT: ${RESOURCES_PROJECT}
+      RESOURCES_HUB: ${RESOURCES_HUB}
+
+      ####################
 
   restclient:
     environment:

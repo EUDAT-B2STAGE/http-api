@@ -16,7 +16,7 @@ log = get_logger(__name__)
 
 class Rancher(object):
 
-    def __init__(self, key, secret, url, project):
+    def __init__(self, key, secret, url, project, hub):
 
         ####################
         # SET URL
@@ -24,6 +24,7 @@ class Rancher(object):
         self._project = project
         # why? explained in http://bit.ly/2BBDJRj
         self._project_uri = "%s/projects/%s/schemas" % (url, project)
+        self._hub_uri = hub
 
         ####################
         self.connect(key, secret)
@@ -92,18 +93,26 @@ class Rancher(object):
         for info in self._client.list_container():
 
             # detect system containers
-            labels = self.obj_to_dict(info.get('labels', {}))
-            if labels.get(system_label) is not None:
-                continue
+            try:
+                labels = self.obj_to_dict(info.get('labels', {}))
+                if labels.get(system_label) is not None:
+                    # log.verbose("Skipping sycontainer: %s" % system_label)
+                    continue
+            except BaseException:
+                pass
 
+            # labels = info.get('data', {}).get('fields', {}).get('labels', {})
             # info.get('externalId')
-            cid = info.get('data', {}) \
-                .get('fields', {}).get('labels', {}) \
-                .get('io.rancher.container.uuid')
             name = info.get('name')
-
+            cid = info.get('uuid')
+            if cid is None:
+                labels = info.get('labels', {})
+                cid = labels.get('io.rancher.container.uuid', None)
             if cid is None:
                 log.warning("Container %s launching", name)
+                log.pp(info)
+                break
+                cid = name
 
             containers[cid] = {
                 'name': name,
@@ -135,11 +144,46 @@ class Rancher(object):
 
         return resources
 
+    def run(self, container_name, image_name, private=False):
+
+        if private:
+            image_name = "%s/%s" % (self._hub_uri, image_name)
+
+        from gdapi import ApiError
+
+        try:
+            pass
+            self._client.create_container(
+                name=container_name,
+                imageUuid='docker:' + image_name,
+                # entryPoint=['/bin/sh'],
+                # command=['echo', 'it', 'works'],
+                # command=['sleep', '1234567890'],
+            )
+        except ApiError as e:
+            log.error("Rancher fail:")
+            log.pp(e.__dict__)
+            return e.__dict__
+        else:
+            return None
+
+    def get_container_object(self, container_name):
+        for element in self._client.list_container():
+            # NOTE: container name is unique in the whole cluster env
+            if element.name == container_name:
+                # print("found", element)
+                return element
+
+        return None
+
+    def remove_container_by_name(self, container_name):
+        obj = self.get_container_object(container_name)
+        if obj is not None:
+            self._client.delete(obj)
+            return True
+        return False
+
     def test(self):
-
-        self._client.create_container()
-        # TODO: check parameters from command line test I've made
-
         # client.list_host()
         # client.list_project()
         # client.list_service()
