@@ -5,8 +5,10 @@ Manage resources
 """
 
 from restapi.rest.definition import EndpointResource
+from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
+DOCKER_IMAGE_PREFIX = 'maris'
 log = get_logger(__name__)
 
 
@@ -36,28 +38,53 @@ class Resources(EndpointResource):
             self._handle = Rancher(**params)
         return self._handle
 
+    @staticmethod
+    def get_container_name(batch_id, qc_name):
+        return '%s_%s' % (batch_id, qc_name.replace('_', ''))
+
+    @staticmethod
+    def get_container_image(qc_name):
+        return '%s/%s' % (DOCKER_IMAGE_PREFIX, qc_name)
+
     def get(self, batch_id, qc_name):
         """ Check my quality check container """
 
         # log.info("Request for resources")
-
-        # rancher = self.get_or_create_handle()
+        container_name = self.get_container_name(batch_id, qc_name)
+        rancher = self.get_or_create_handle()
         # resources = rancher.list()
+        container = rancher.get_container_object(container_name)
+        if container is None:
+            return self.send_errors(
+                'Quality check does not exist',
+                code=hcodes.HTTP_BAD_NOTFOUND
+            )
 
-        # return self.force_response(resources)
-        return "Hello"
+        response = {
+            'batch_id': batch_id,
+            'qc_name': qc_name,
+            'state': container.get('state'),
+            'errors': [],
+        }
 
-    def post(self, batch_id, qc_name):
-        """ run a container """
+        if container.get('transitioning') == 'error':
+            response['errors'].append(container.get('transitioningMessage'))
 
-        if 'docker_example_' not in qc_name:
-            return self.send_errors("Only image allowed is 'docker_example'")
+        """
+        "state": "stopped", / error
+        "firstRunningTS": 1517431685000,
+        "transitioning": "no",
+        "transitioning": "error",
+        "transitioningMessage": "Image
+        """
 
-        # self.get_input()
-        # log.pp(self._args, prefix_line='Parsed args')
-        # docker_image_name = self._args.get('image')
-        container_name = 'qc1'
-        docker_image_name = 'maris/docker_example_vs_17_v3'
+        return response
+
+    def put(self, batch_id, qc_name):
+        """ Launch a quality check inside a container """
+
+        container_name = self.get_container_name(batch_id, qc_name)
+        docker_image_name = self.get_container_image(qc_name)
 
         rancher = self.get_or_create_handle()
         errors = rancher.run(
@@ -65,27 +92,31 @@ class Resources(EndpointResource):
             image_name=docker_image_name,
             private=True)
 
-        if errors is None:
-            # return 'Executed: %s' % container_name
-            return {'qcid': container_name}
-        else:
-            if errors.get('error', {}).get('code') == 'NotUnique':
-                return self.send_errors('Already executed')
-            else:
-                return self.send_errors('Failed to launch')
+        response = {
+            'batch_id': batch_id,
+            'qc_name': qc_name,
+            'status': 'executed',
+        }
 
-    # def put(self, container_id):
-    #     """
-    #     Execute a command inside a running container
-    #     """
-    #     pass
+        if errors is not None:
+            if errors.get('error', {}).get('code') == 'NotUnique':
+                response['status'] = 'existing'
+            else:
+                response['status'] = 'failure'
+        return response
 
     def delete(self, batch_id, qc_name):
         """
         Remove a quality check executed
         """
 
+        container_name = self.get_container_name(batch_id, qc_name)
         rancher = self.get_or_create_handle()
-        qc_name = 'qc1'
-        rancher.remove_container_by_name(qc_name)
-        return {'removed': qc_name}
+        rancher.remove_container_by_name(container_name)
+
+        response = {
+            'batch_id': batch_id,
+            'qc_name': qc_name,
+            'status': 'removed',
+        }
+        return response

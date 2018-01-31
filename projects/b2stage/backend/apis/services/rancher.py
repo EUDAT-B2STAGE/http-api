@@ -152,10 +152,12 @@ class Rancher(object):
         from gdapi import ApiError
 
         try:
-            pass
-            self._client.create_container(
+            container = self._client.create_container(
                 name=container_name,
                 imageUuid='docker:' + image_name,
+                labels={
+                    "io.rancher.scheduler.affinity:host_label": "host_type=qc",
+                },
                 # entryPoint=['/bin/sh'],
                 # command=['echo', 'it', 'works'],
                 # command=['sleep', '1234567890'],
@@ -165,6 +167,9 @@ class Rancher(object):
             log.pp(e.__dict__)
             return e.__dict__
         else:
+            # container = self._client.wait_success(container)
+            # log.pp(container)
+            container
             return None
 
     def get_container_object(self, container_name):
