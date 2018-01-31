@@ -4,7 +4,7 @@
 
 project:
   title: EUDAT-B2STAGE HTTP-API server
-  description: Processing files in different EUDAT domains
+  description: Processing files in EUDAT domains
   version: 1.0.2
 
 ###############################
@@ -31,7 +31,7 @@ variables:
 
     ###############################
     ## LOCAL iRODS server VERSION
-    # NOTE: intended for DEBUG mode, to be commented in PRODUCTION
+    # NOTE: intended for DEBUG mode and to be commented in PRODUCTION
     IRODS_USER: irods
     IRODS_GUEST_USER: guest              # intended to work only with GSI
     IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
@@ -46,7 +46,7 @@ variables:
     IRODS_DN:
 
     ###############################
-    ## PRODUCTION example: iRODS server VERSION
+    ## PRODUCTION example: external iRODS server VERSION
 
     # IRODS_HOST: yourhostname
     # IRODS_ZONE: productionZone1
@@ -128,6 +128,16 @@ variables:
     # RABBITMQ_EXCHANGE: b2host
     # RABBITMQ_QUEUE: testqueue
 
+    #################
+    # rancher
+    RESOURCES_URL:
+    RESOURCES_KEY:
+    RESOURCES_SECRET:
+    RESOURCES_PROJECT:
+    RESOURCES_HUB:
+
+    #################
+
   # backend:
   #   credentials:
   #     username: someotheruser
@@ -141,7 +151,7 @@ variables:
 
   repos:
     irods-client:
-      branch: master # python-irodsclient==0.7.0a0
+      branch: master
       online_url: https://github.com/irods/python-irodsclient.git
       path: prc
       if: true
