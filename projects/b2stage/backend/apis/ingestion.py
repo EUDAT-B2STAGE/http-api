@@ -79,36 +79,58 @@ class IngestionEndpoint(Uploader, EudatEndpoint):
                 % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        #######################
-        # Upload the file to temporary location
+        # #######################
+        # # UPLOAD THE FILE TO A TEMPORARY LOCATION
+        # # FIXME: use streaming upload and test with PAW
+        # # otherwise go with POST for upload please
 
-        # Read the request
+        # # Read the request
+        # from flask import request
+        # request.get_data()
+        # # Normal upload: inside the host tmp folder
+        # response = super(IngestionEndpoint, self) \
+        #     .upload(subfolder=obj.username, force=True)
+        # # Check if upload response is success
+        # content, errors, status = self.explode_response(response, get_all=True)
+
+        # key_file = 'filename'
+        # if isinstance(content, dict) and key_file in content:
+        #     original_filename = content[key_file]
+        #     fpath = self.absolute_upload_file(original_filename, obj.username)
+        #     log.info("File is '%s'" % fpath)
+        # else:
+        #     return self.send_errors(errors=errors, code=status)
+
+        # #######################
+        # # Complain if this is not the wanted extension
+        # # TODO: see how to do it in Python
+        # # if extension not in self._allowed_extensions
+
+        # #######################
+        # # Put it into iRODS with a fixed name
+        # ipath = self.complete_path(batch_path, 'input.zip')
+        # icom.save(fpath, destination=ipath, force=True)
+        # log.verbose("Stored: %s", ipath)
+
+        ########################
+        # Only streaming is allowed
+        ALLOWED_MIMETYPE_UPLOAD = 'application/octet-stream'
         from flask import request
-        request.get_data()
-        # Normal upload: inside the host tmp folder
-        response = super(IngestionEndpoint, self) \
-            .upload(subfolder=obj.username, force=True)
-        # Check if upload response is success
-        content, errors, status = self.explode_response(response, get_all=True)
+        if request.mimetype != ALLOWED_MIMETYPE_UPLOAD:
+            return self.send_errors(
+                "Only mimetype allowed for upload: %s"
+                % ALLOWED_MIMETYPE_UPLOAD,
+                code=hcodes.HTTP_BAD_REQUEST)
 
-        key_file = 'filename'
-        if isinstance(content, dict) and key_file in content:
-            original_filename = content[key_file]
-            fpath = self.absolute_upload_file(original_filename, obj.username)
-            log.info("File is '%s'" % fpath)
-        else:
-            return self.send_errors(errors=errors, code=status)
-
-        #######################
-        # Complain if this is not the wanted extension
-        # TODO: see how to do it in Python
-        # if extension not in self._allowed_extensions
-
-        #######################
-        # Put it into iRODS with a fixed name
-        ipath = self.complete_path(batch_path, batch_id + '.zip')
-        icom.save(fpath, destination=ipath, force=True)
-        log.verbose("Stored: %s", ipath)
+        ipath = self.complete_path(batch_path, 'input.zip')
+        try:
+            iout = icom.write_in_streaming(destination=ipath, force=True)
+            log.info("irods call %s", iout)
+        except BaseException as e:
+            log.error("Failed streaming to iRODS: %s", e)
+            return self.send_errors(
+                "Failed streaming towards B2SAFE cloud",
+                code=hcodes.HTTP_SERVER_ERROR)
 
         ########################
         response = "Batch '%s' filled" % batch_id

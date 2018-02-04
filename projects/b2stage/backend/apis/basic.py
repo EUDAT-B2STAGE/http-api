@@ -267,7 +267,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 log.info("irods call %s", iout)
                 response = self.force_response({'filename': ipath},
                                                code=hcodes.HTTP_OK_BASIC)
-            except Exception as e:
+            except BaseException as e:
                 response = self.force_response(
                     errors={"Uploading failed": "{0}".format(e)},
                     code=hcodes.HTTP_SERVER_ERROR)
