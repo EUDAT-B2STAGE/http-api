@@ -10,8 +10,9 @@ source ~/.bash_aliases
 if [ ! -z "SEADATA_PROJECT" ]; then
 
     BATCHES_PATH="/$IRODS_ZONE/$SEADATA_BATCH_DIR"
-    # FIXME: who should be here?
-    BATCHES_MAIN_USER='anonymous'
+    # NOTE: we are using the main HTTP API irods user
+    # to manage batches across nodes
+    BATCHES_MAIN_USER="$IRODS_USER"
 
     berods -c "imkdir $BATCHES_PATH"
     berods -c "ichmod own $BATCHES_MAIN_USER $BATCHES_PATH"
