@@ -111,7 +111,7 @@ class Public(B2HandleEndpoint):
 <h3> Data Object landing page </h3>
 
 </br> </br>
-Found a data object <b>publicy</b> available:
+Found a data object <b>publicly</b> available:
 </br> </br>
 
 <table border=1 cellpadding=5 cellspacing=5>
