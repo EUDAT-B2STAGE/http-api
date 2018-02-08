@@ -8,7 +8,7 @@ from restapi.rest.definition import EndpointResource
 from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
-DOCKER_IMAGE_PREFIX = 'maris'
+DEFAULT_IMAGE_PREFIX = 'docker'
 log = get_logger(__name__)
 
 
@@ -43,8 +43,10 @@ class Resources(EndpointResource):
         return '%s_%s' % (batch_id, qc_name.replace('_', ''))
 
     @staticmethod
-    def get_container_image(qc_name):
-        return '%s/%s' % (DOCKER_IMAGE_PREFIX, qc_name)
+    def get_container_image(qc_name, prefix=None):
+        if prefix is None:
+            prefix = DEFAULT_IMAGE_PREFIX
+        return '%s/%s' % (prefix, qc_name)
 
     def get(self, batch_id, qc_name):
         """ Check my quality check container """
@@ -95,23 +97,27 @@ class Resources(EndpointResource):
     def put(self, batch_id, qc_name):
         """ Launch a quality check inside a container """
 
+        self.get_input()
+        input_json = self._args.get('input', {})
+
         container_name = self.get_container_name(batch_id, qc_name)
-        docker_image_name = self.get_container_image(qc_name)
+        docker_image_name = self.get_container_image(qc_name, prefix='maris')
 
-        ###########################
-        # TODO: MOVE ME TO ingestion.py
+        # ###########################
+        # # TODO: MOVE ME TO ingestion.py
+        # # as this has to be done after put
 
-        # irods variables
-        from restapi.services.detect import detector
-        variables = detector.output_service_variables('irods')
+        # # irods variables
+        # from restapi.services.detect import detector
+        # variables = detector.output_service_variables('irods')
 
-        b2safe_connvar = {
-            'IRODS_HOST': variables.get('host'),
-            'IRODS_PORT': variables.get('port'),
-            'IRODS_ZONE_NAME': variables.get('zone'),
-            'IRODS_USER_NAME': variables.get('user'),
-            'IRODS_PASSWORD': variables.get('password'),
-        }
+        # b2safe_connvar = {
+        #     'IRODS_HOST': variables.get('host'),
+        #     'IRODS_PORT': variables.get('port'),
+        #     'IRODS_ZONE_NAME': variables.get('zone'),
+        #     'IRODS_USER_NAME': variables.get('user'),
+        #     'IRODS_PASSWORD': variables.get('password'),
+        # }
 
         ###########################
         rancher = self.get_or_create_handle()
@@ -119,13 +125,14 @@ class Resources(EndpointResource):
             container_name=container_name,
             image_name=docker_image_name,
             private=True,
-            extras={'environment': b2safe_connvar},
+            # extras={'environment': b2safe_connvar},
         )
 
         response = {
             'batch_id': batch_id,
             'qc_name': qc_name,
             'status': 'executed',
+            'input': input_json,
         }
 
         if errors is not None:
