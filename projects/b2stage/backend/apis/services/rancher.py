@@ -16,7 +16,7 @@ log = get_logger(__name__)
 
 class Rancher(object):
 
-    def __init__(self, key, secret, url, project, hub):
+    def __init__(self, key, secret, url, project, hub, hubuser, hubpass):
 
         ####################
         # SET URL
@@ -25,6 +25,7 @@ class Rancher(object):
         # why? explained in http://bit.ly/2BBDJRj
         self._project_uri = "%s/projects/%s/schemas" % (url, project)
         self._hub_uri = hub
+        self._hub_credentials = (hubuser, hubpass)
 
         ####################
         self.connect(key, secret)
@@ -144,24 +145,83 @@ class Rancher(object):
 
         return resources
 
-    def run(self, container_name, image_name, private=False):
+    def recover_logs(self, container_name):
+        import websocket as ws
+        container = self.get_container_object(container_name)
+        logs = container.logs(follow=False, lines=100)
+        uri = logs.url + '?token=' + logs.token
+        sock = ws.create_connection(uri, timeout=15)
+        out = ''
+        useless = "/bin/stty: 'standard input': Inappropriate ioctl for device"
 
+        while True:
+            try:
+                line = sock.recv()
+                if useless in line:
+                    continue
+            except ws.WebSocketConnectionClosedException:
+                break
+            else:
+                out += line + '\n'
+
+        return out
+
+    def catalog_images(self):
+        # check if container is there?
+        catalog_url = "https://%s/v2/_catalog" % self._hub_uri
+        # https://snf-773873.vm.okeanos.grnet.gr/v2/_catalog
+        try:
+            import requests
+            r = requests.get(catalog_url, auth=self._hub_credentials)
+            catalog = r.json()
+            # print("TEST", catalog)
+        except BaseException as e:
+            return None
+        else:
+            return catalog.get('repositories', {})
+
+    def run(self, container_name, image_name, private=False, extras=None):
+
+        ############
         if private:
+            image_name_no_tags = image_name.split(':')[0]
+            images_available = self.catalog_images()
+
+            error = None
+            if images_available is None:
+                error = {'catalog': "Not reachable"}
+            elif image_name_no_tags not in images_available:
+                error = {'image': "Not found in our private catalog"}
+            if error is not None:
+                return {'error': error}
+
+            # Add the prefix for private hub if it's there
             image_name = "%s/%s" % (self._hub_uri, image_name)
 
+        ############
+        params = {
+            'name': container_name,
+            'imageUuid': 'docker:' + image_name,
+            'labels': {
+                "io.rancher.scheduler.affinity:host_label": "host_type=qc",
+            },
+            # entryPoint=['/bin/sh'],
+            # command=['echo', 'it', 'works'],
+            # command=['sleep', '1234567890'],
+        }
+
+        ############
+        if extras is not None and isinstance(extras, dict):
+            for key, value in extras.items():
+                if key not in params:
+                    log.debug("Adding extra: %s = %s", key, value)
+                    params[key] = value
+
+        ############
         from gdapi import ApiError
 
         try:
-            container = self._client.create_container(
-                name=container_name,
-                imageUuid='docker:' + image_name,
-                labels={
-                    "io.rancher.scheduler.affinity:host_label": "host_type=qc",
-                },
-                # entryPoint=['/bin/sh'],
-                # command=['echo', 'it', 'works'],
-                # command=['sleep', '1234567890'],
-            )
+            container = self._client.create_container(**params)
         except ApiError as e:
             log.error("Rancher fail:")
             log.pp(e.__dict__)

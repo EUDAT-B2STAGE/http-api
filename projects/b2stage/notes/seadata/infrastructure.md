@@ -1,7 +1,4 @@
 
-BUGS:
-- icat starts also in production with 1.0.2?
-
 # Infrastructure
 
 0. HTTP API irods user has to be an "irods adminer"
@@ -18,3 +15,9 @@ BUGS:
         in /usr/share/inputs
 -->
 
+# BUGS
+
+- icat starts also in production with 1.0.2?
+- create container with icommands and with variables that connects to irods
+    + upload to private registry
+    + launch with rancher to copy data into a folder of the container

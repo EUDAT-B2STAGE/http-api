@@ -135,6 +135,8 @@ variables:
     RESOURCES_SECRET:
     RESOURCES_PROJECT:
     RESOURCES_HUB:
+    RESOURCES_HUBUSER:
+    RESOURCES_HUBPASS:
 
     #################
 

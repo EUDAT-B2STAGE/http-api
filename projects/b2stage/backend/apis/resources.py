@@ -60,11 +60,23 @@ class Resources(EndpointResource):
                 code=hcodes.HTTP_BAD_NOTFOUND
             )
 
+        logs = rancher.recover_logs(container_name)
+        # print("TEST", container_name, tmp)
+        errors_keys = ['failure', 'failed', 'error']
+        errors = []
+        for line in logs.lower().split('\n'):
+            if line.strip() == '':
+                continue
+            for key in errors_keys:
+                if key in line:
+                    errors.append(line)
+                    break
+
         response = {
             'batch_id': batch_id,
             'qc_name': qc_name,
             'state': container.get('state'),
-            'errors': [],
+            'errors': errors,
         }
 
         if container.get('transitioning') == 'error':
@@ -86,11 +98,29 @@ class Resources(EndpointResource):
         container_name = self.get_container_name(batch_id, qc_name)
         docker_image_name = self.get_container_image(qc_name)
 
+        ###########################
+        # TODO: MOVE ME TO ingestion.py
+
+        # irods variables
+        from restapi.services.detect import detector
+        variables = detector.output_service_variables('irods')
+
+        b2safe_connvar = {
+            'IRODS_HOST': variables.get('host'),
+            'IRODS_PORT': variables.get('port'),
+            'IRODS_ZONE_NAME': variables.get('zone'),
+            'IRODS_USER_NAME': variables.get('user'),
+            'IRODS_PASSWORD': variables.get('password'),
+        }
+
+        ###########################
         rancher = self.get_or_create_handle()
         errors = rancher.run(
             container_name=container_name,
             image_name=docker_image_name,
-            private=True)
+            private=True,
+            extras={'environment': b2safe_connvar},
+        )
 
         response = {
             'batch_id': batch_id,
@@ -99,10 +129,17 @@ class Resources(EndpointResource):
         }
 
         if errors is not None:
-            if errors.get('error', {}).get('code') == 'NotUnique':
-                response['status'] = 'existing'
+            if isinstance(errors, dict):
+                edict = errors.get('error', {})
+                # print("TEST", edict)
+                if edict.get('code') == 'NotUnique':
+                    response['status'] = 'existing'
+                else:
+                    response['status'] = 'could NOT be started'
+                    response['description'] = edict
             else:
                 response['status'] = 'failure'
+
         return response
 
     def delete(self, batch_id, qc_name):
