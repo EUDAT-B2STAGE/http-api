@@ -1,7 +1,8 @@
 
 # Registered APIs
 
->Note: According to the EUDAT Data Architecture B2SAFE is part of the registered data domain, where digital objects are stored and managed in such a way that data carrying associated descriptive metadata is discoverable and can be referred to or retrieved using persistent identifiers.
+>Note: The endpoint called *registered* corresponds to a domain in iRODS, where each data object carries a persistent identifier (PID). The HTTP API itself does **not** assign the PID, this is done by iRODS rules, e.g. eventhooks in iRODS calliong the B2SAFE PID registration rule.
+By default, when you enabled your iRODS instance with the HTTP API but did not install B2SAFE or configured these eventhooks **no PIDs will be assigned**.
 >For the time being B2SAFE object registration policies are not applied to a specific path, but can be configured to trigger the registration in any available paths. Therefore the B2STAGE HTTP-API can not guarantee that an uploaded file will be registered by B2SAFE.
 
 The registered APIs allow the management of entities on B2SAFE.
