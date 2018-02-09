@@ -6,8 +6,7 @@ Ingestion process submission to upload the SeaDataNet marine data.
 
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
-# from restapi.rest.definition import EndpointResource
-# from b2stage.apis.commons.seadatacloud import SEADATA_ENABLED
+from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from utilities import htmlcodes as hcodes
 from restapi.services.detect import detector
 from utilities.logs import get_logger
@@ -16,7 +15,7 @@ log = get_logger(__name__)
 BATCHES_DIR = detector.get_global_var('SEADATA_BATCH_DIR')
 
 
-class IngestionEndpoint(Uploader, EudatEndpoint):
+class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     """ Create batch folder and upload zip files inside it """
 
     _allowed_extensions = ['zip']
@@ -79,41 +78,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint):
                 % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        # #######################
-        # # UPLOAD THE FILE TO A TEMPORARY LOCATION
-        # # FIXME: use streaming upload and test with PAW
-        # # otherwise go with POST for upload please
-
-        # # Read the request
-        # from flask import request
-        # request.get_data()
-        # # Normal upload: inside the host tmp folder
-        # response = super(IngestionEndpoint, self) \
-        #     .upload(subfolder=obj.username, force=True)
-        # # Check if upload response is success
-        # content, errors, status = self.explode_response(response, get_all=True)
-
-        # key_file = 'filename'
-        # if isinstance(content, dict) and key_file in content:
-        #     original_filename = content[key_file]
-        #     fpath = self.absolute_upload_file(original_filename, obj.username)
-        #     log.info("File is '%s'" % fpath)
-        # else:
-        #     return self.send_errors(errors=errors, code=status)
-
-        # #######################
-        # # Complain if this is not the wanted extension
-        # # TODO: see how to do it in Python
-        # # if extension not in self._allowed_extensions
-
-        # #######################
-        # # Put it into iRODS with a fixed name
-        # ipath = self.complete_path(batch_path, 'input.zip')
-        # icom.save(fpath, destination=ipath, force=True)
-        # log.verbose("Stored: %s", ipath)
-
         ########################
-        # Only streaming is allowed
+        # NOTE: only streaming is allowed, as it is more performant
         ALLOWED_MIMETYPE_UPLOAD = 'application/octet-stream'
         from flask import request
         if request.mimetype != ALLOWED_MIMETYPE_UPLOAD:
@@ -125,12 +91,50 @@ class IngestionEndpoint(Uploader, EudatEndpoint):
         ipath = self.complete_path(batch_path, 'input.zip')
         try:
             iout = icom.write_in_streaming(destination=ipath, force=True)
-            log.info("irods call %s", iout)
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
             return self.send_errors(
                 "Failed streaming towards B2SAFE cloud",
                 code=hcodes.HTTP_SERVER_ERROR)
+        else:
+            log.info("irods call %s", iout)
+            # NOTE: permissions are inherited thanks to the POST call
+
+        # ###########################
+        # # Also copy file to the B2HOST environment
+
+        # b2safe_connvar = {
+        #     # TODO: test icom.variables please
+        #     # 'IRODS_HOST': icom.variables.get('host'),
+        #     # 'IRODS_PORT': icom.variables.get('port'),
+        #     # 'IRODS_ZONE_NAME': icom.variables.get('zone'),
+        #     # 'IRODS_USER_NAME': icom.variables.get('user'),
+        #     # 'IRODS_PASSWORD': icom.variables.get('password'),
+        # }
+
+        # rancher = self.get_or_create_handle()
+        # cname = 'copy_zip'
+        # cversion = '0.5'
+        # image_tag = '%s:%s' % (cname, cversion)
+        # container_name = self.get_container_name(batch_id, image_tag)
+        # docker_image_name = self.get_container_image(image_tag, prefix='eudat')
+        # errors = rancher.run(
+        #     container_name=container_name, image_name=docker_image_name,
+        #     private=True, extras={'environment': b2safe_connvar},
+        # )
+
+        # errors
+        # # if errors is not None:
+        # #     if isinstance(errors, dict):
+        # #         edict = errors.get('error', {})
+        # #         # print("TEST", edict)
+        # #         if edict.get('code') == 'NotUnique':
+        # #             response['status'] = 'existing'
+        # #         else:
+        # #             response['status'] = 'could NOT be started'
+        # #             response['description'] = edict
+        # #     else:
+        # #         response['status'] = 'failure'
 
         ########################
         response = "Batch '%s' filled" % batch_id
@@ -157,26 +161,32 @@ class IngestionEndpoint(Uploader, EudatEndpoint):
         log.info("Batch path: %s", batch_path)
 
         ##################
+        # FIXME: possible questions:
         # Does it already exist?
-
-        # Is it a collection?
-        # if icom.is_collection(location):
-
+        # Is it a collection? # if icom.is_collection(location):
         # Are the permissions fine?
 
         ##################
-        batch_path = self.get_batch_path(icom, batch_id)
-        ianonymous = self.get_service_instance(
-            service_name='irods', user=icom.anonymous_user, password='null')
+        # Enable the batch with the right permissions
+        # NOTE: Main API user is the key to let this happen
+
+        imain = self.get_service_instance(service_name='irods')
+        # ianonymous = self.get_service_instance(
+        #     service_name='irods', user=icom.anonymous_user, password='null')
+
         # Create the path
-        ianonymous.create_empty(
-            batch_path, directory=True, ignore_existing=True)
+        batch_path = self.get_batch_path(icom, batch_id)
+        imain.create_empty(batch_path, directory=True, ignore_existing=True)
         # This user will own the directory
-        ianonymous.set_permissions(
-            batch_path, permission='own', userOrGroup=obj.username)
-        # Remove anonymous access to this batch
-        ianonymous.set_permissions(
-            batch_path, permission='null', userOrGroup=icom.anonymous_user)
+        imain.set_permissions(
+            batch_path,
+            permission='own', userOrGroup=obj.username)
+        # Let the permissions scale to subelements
+        imain.enable_inheritance(batch_path)  # cool!
+
+        # # # Remove anonymous access to this batch
+        # # ianonymous.set_permissions(
+        # #     batch_path, permission='null', userOrGroup=icom.anonymous_user)
 
         ##################
         response = "Batch '%s' enabled" % batch_id
