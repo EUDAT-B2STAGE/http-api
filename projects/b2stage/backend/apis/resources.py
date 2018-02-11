@@ -74,7 +74,13 @@ class Resources(ClusterContainerEndpoint):
             container_name=container_name,
             image_name=docker_image_name,
             private=True,
-            # extras={'environment': b2safe_connvar},
+            extras={
+                'dataVolumes': [self.mount_batch_volume(batch_id)],
+                'environment': {
+                    'BATCH_ZIPFILE_PATH':
+                        self.get_batch_zipfile_path(batch_id),
+                }
+            }
         )
 
         response = {

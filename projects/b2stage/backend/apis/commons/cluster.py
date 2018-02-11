@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from restapi.rest.definition import EndpointResource
+from restapi.services.detect import detector
+from utilities import path
 from utilities.logs import get_logger
+log = get_logger(__name__)
 
 DEFAULT_IMAGE_PREFIX = 'docker'
-log = get_logger(__name__)
+BATCHES_DIR = detector.get_global_var('SEADATA_BATCH_DIR')
 
 
 class ClusterContainerEndpoint(EndpointResource):
@@ -16,8 +19,6 @@ class ClusterContainerEndpoint(EndpointResource):
         """ It gets called every time a new request is executed """
         self._handle = None
         self._credentials = {}
-
-        # FIXME: use it only when needed
         # self.load_credentials()
         # self.get_or_create_handle()
 
@@ -36,6 +37,40 @@ class ClusterContainerEndpoint(EndpointResource):
             # log.pp(params)
             self._handle = Rancher(**params)
         return self._handle
+
+    def get_ingestion_path(self, batch_id=None):
+        paths = [self._handle._localpath]
+        if batch_id is None:
+            paths.append('batch')
+        else:
+            paths.append('ingestion')
+            paths.append(batch_id)
+        return str(path.build(paths))
+
+    def mount_batch_volume(self, batch_id):
+        host_path = self.get_ingestion_path(batch_id)
+        container_fixed_path = self.get_ingestion_path()
+        return "%s:%s" % (host_path, container_fixed_path)
+
+    def get_input_zip_filename(self):
+        filename = 'input'
+        extension = 'zip'
+        return "%s.%s" % (filename, extension)
+
+    def get_batch_path(self, icom, batch_id=None):
+
+        # home_dir = icom.get_home_var()
+        paths = [BATCHES_DIR]
+        if batch_id is not None:
+            paths.append(batch_id)
+        from utilities import path
+        suffix_path = str(path.build(paths))
+        return icom.get_current_zone(suffix=suffix_path)
+
+    def get_batch_zipfile_path(self, batch_id):
+        container_fixed_path = self.get_ingestion_path()
+        filename = self.get_input_zip_filename()
+        return str(path.build([container_fixed_path, filename]))
 
     @staticmethod
     def get_container_name(batch_id, qc_name):

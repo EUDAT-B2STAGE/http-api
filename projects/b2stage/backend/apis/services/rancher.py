@@ -16,7 +16,9 @@ log = get_logger(__name__)
 
 class Rancher(object):
 
-    def __init__(self, key, secret, url, project, hub, hubuser, hubpass):
+    def __init__(self,
+                 key, secret, url, project,
+                 hub, hubuser, hubpass, localpath):
 
         ####################
         # SET URL
@@ -26,6 +28,7 @@ class Rancher(object):
         self._project_uri = "%s/projects/%s/schemas" % (url, project)
         self._hub_uri = hub
         self._hub_credentials = (hubuser, hubpass)
+        self._localpath = localpath
 
         ####################
         self.connect(key, secret)
@@ -180,6 +183,17 @@ class Rancher(object):
         else:
             return catalog.get('repositories', {})
 
+    @staticmethod
+    def confine_host():
+        """
+        Define Rancher docker labels
+        to launch containers only on selected host(s)
+        """
+        rancher_label = "io.rancher.scheduler.affinity:host_label"
+        label_key = 'host_type'
+        label_value = 'qc'
+        return {rancher_label: "%s=%s" % (label_key, label_value)}
+
     def run(self, container_name, image_name, private=False, extras=None):
 
         ############
@@ -202,11 +216,8 @@ class Rancher(object):
         params = {
             'name': container_name,
             'imageUuid': 'docker:' + image_name,
-            'labels': {
-                "io.rancher.scheduler.affinity:host_label": "host_type=qc",
-            },
+            'labels': self.confine_host(),
             # entryPoint=['/bin/sh'],
-            # command=['echo', 'it', 'works'],
             # command=['sleep', '1234567890'],
         }
 

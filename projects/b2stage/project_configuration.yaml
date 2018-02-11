@@ -130,13 +130,16 @@ variables:
 
     #################
     # rancher
-    RESOURCES_URL:
+    RESOURCES_URL: http://IP:PORT/v2-beta
     RESOURCES_KEY:
     RESOURCES_SECRET:
     RESOURCES_PROJECT:
     RESOURCES_HUB:
     RESOURCES_HUBUSER:
     RESOURCES_HUBPASS:
+    # This path needs permissions to user 1001
+    # as owner of subdir 'ingestion'
+    RESOURCES_LOCALPATH: /usr/share
 
     #################
 

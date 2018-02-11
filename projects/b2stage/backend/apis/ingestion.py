@@ -8,28 +8,13 @@ from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from utilities import htmlcodes as hcodes
-from restapi.services.detect import detector
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
-BATCHES_DIR = detector.get_global_var('SEADATA_BATCH_DIR')
 
 
 class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     """ Create batch folder and upload zip files inside it """
-
-    _allowed_extensions = ['zip']
-
-    def get_batch_path(self, icom, batch_id=None):
-
-        # home_dir = icom.get_home_var()
-        paths = [BATCHES_DIR]
-        if batch_id is not None:
-            paths.append(batch_id)
-        from utilities import path
-        suffix_path = str(path.build(paths))
-
-        return icom.get_current_zone(suffix=suffix_path)
 
     def get(self, batch_id):
 
@@ -88,7 +73,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 % ALLOWED_MIMETYPE_UPLOAD,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        ipath = self.complete_path(batch_path, 'input.zip')
+        ipath = self.complete_path(batch_path, self.get_input_zip_filename())
         try:
             iout = icom.write_in_streaming(destination=ipath, force=True)
         except BaseException as e:
@@ -100,41 +85,52 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             log.info("irods call %s", iout)
             # NOTE: permissions are inherited thanks to the POST call
 
-        # ###########################
-        # # Also copy file to the B2HOST environment
+        ###########################
+        # Also copy file to the B2HOST environment
 
-        # b2safe_connvar = {
-        #     # TODO: test icom.variables please
-        #     # 'IRODS_HOST': icom.variables.get('host'),
-        #     # 'IRODS_PORT': icom.variables.get('port'),
-        #     # 'IRODS_ZONE_NAME': icom.variables.get('zone'),
-        #     # 'IRODS_USER_NAME': icom.variables.get('user'),
-        #     # 'IRODS_PASSWORD': icom.variables.get('password'),
-        # }
+        rancher = self.get_or_create_handle()
+        old_zone = icom.variables.get('zone')
+        new_zone = 'sdcCineca'
+        ipath = ipath.replace(old_zone, new_zone)
+        idest = self.get_ingestion_path()
+        # print("TEST", ipath, idest)
+        b2safe_connvar = {
+            'BATCH_SRC_PATH': ipath,
+            'BATCH_DEST_PATH': idest,
+            'IRODS_HOST': icom.variables.get('host'),
+            'IRODS_PORT': icom.variables.get('port'),
+            'IRODS_ZONE_NAME': icom.variables.get('zone'),
+            'IRODS_USER_NAME': icom.variables.get('user'),
+            'IRODS_PASSWORD': icom.variables.get('password'),
+        }
 
-        # rancher = self.get_or_create_handle()
-        # cname = 'copy_zip'
-        # cversion = '0.5'
-        # image_tag = '%s:%s' % (cname, cversion)
-        # container_name = self.get_container_name(batch_id, image_tag)
-        # docker_image_name = self.get_container_image(image_tag, prefix='eudat')
-        # errors = rancher.run(
-        #     container_name=container_name, image_name=docker_image_name,
-        #     private=True, extras={'environment': b2safe_connvar},
-        # )
+        cname = 'copy_zip'
+        cversion = '0.7'
+        image_tag = '%s:%s' % (cname, cversion)
+        container_name = self.get_container_name(batch_id, image_tag)
+        docker_image_name = self.get_container_image(image_tag, prefix='eudat')
+        errors = rancher.run(
+            container_name=container_name, image_name=docker_image_name,
+            private=True,
+            extras={
+                'environment': b2safe_connvar,
+                'dataVolumes': [self.mount_batch_volume(batch_id)],
+            },
+        )
 
-        # errors
-        # # if errors is not None:
-        # #     if isinstance(errors, dict):
-        # #         edict = errors.get('error', {})
-        # #         # print("TEST", edict)
-        # #         if edict.get('code') == 'NotUnique':
-        # #             response['status'] = 'existing'
-        # #         else:
-        # #             response['status'] = 'could NOT be started'
-        # #             response['description'] = edict
-        # #     else:
-        # #         response['status'] = 'failure'
+        errors
+        # TODO: check for errors
+        # if errors is not None:
+        #     if isinstance(errors, dict):
+        #         edict = errors.get('error', {})
+        #         # print("TEST", edict)
+        #         if edict.get('code') == 'NotUnique':
+        #             response['status'] = 'existing'
+        #         else:
+        #             response['status'] = 'could NOT be started'
+        #             response['description'] = edict
+        #     else:
+        #         response['status'] = 'failure'
 
         ########################
         response = "Batch '%s' filled" % batch_id
