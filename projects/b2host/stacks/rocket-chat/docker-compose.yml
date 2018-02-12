@@ -1,0 +1,66 @@
+
+version: '2'
+services:
+  mongo:
+    image: mongo
+    command:
+    - mongod
+    - --smallfiles
+    - --oplogSize
+    - '128'
+    labels:
+      # io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: host_type=rocket
+  proxy:
+    image: rapydo/proxy:rocket
+    hostname: proxy
+    environment:
+      # DOMAIN: seadata-chat.cineca.it
+      DOMAIN:
+      MODE: ''
+    stdin_open: true
+    volumes:
+    - letsencrypt_certs:/etc/letsencrypt
+    # - /path/to/production_nofrontend.conf:/etc/nginx/sites-enabled/production
+    - ssl_dhparam:/etc/nginx/ssl
+    # domainname: seadata-chat.cineca.it
+    tty: true
+    links:
+    - rocketchat:rc
+    ports:
+    - 80:80/tcp
+    - 443:443/tcp
+    labels:
+      io.rancher.container.start_once: 'true'
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: host_type=rocket
+  rocketchat:
+    image: rocketchat/rocket.chat:latest
+    environment:
+      MONGO_URL: mongodb://mongo:27017/rocketchat
+      # ROOT_URL: http://yourhost:3000
+      ROOT_URL: https://130.186.13.150
+      PORT: '3000'
+    volumes:
+    - rocket_files:/app/bundle/files
+    # - b2stage_letsencrypt_certs:/tmp/certs
+    links:
+    - mongo:mongo
+    labels:
+      main: '1'
+      io.rancher.scheduler.affinity:host_label: host_type=rocket
+  hubot:
+    image: rocketchat/hubot-rocketchat
+    environment:
+      BOT_NAME: catbot
+      EXTERNAL_SCRIPTS: hubot-help,hubot-seen,hubot-links,hubot-diagnostics
+      ROCKETCHAT_PASSWORD: TOBECHANGED
+      ROCKETCHAT_ROOM: GENERAL
+      ROCKETCHAT_URL: rocketchat:3000
+      ROCKETCHAT_USER: rocket.cat
+    labels:
+      io.rancher.scheduler.affinity:host_label: host_type=rocket
+    links:
+    - rocketchat:rocketchat
+    ports:
+    - 3001:8080/tcp
