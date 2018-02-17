@@ -4,12 +4,12 @@ services:
   mongo:
     scale: 1
     start_on_create: true
-  proxy:
-    scale: 1
-    start_on_create: true
   rocketchat:
     scale: 1
     start_on_create: true
-  hubot:
+  proxy:
     scale: 0
-    start_on_create: false
+    start_on_create: true
+  # hubot:
+  #   scale: 0
+  #   start_on_create: true
