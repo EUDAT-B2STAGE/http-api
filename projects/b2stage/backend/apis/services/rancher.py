@@ -184,15 +184,21 @@ class Rancher(object):
             return catalog.get('repositories', {})
 
     @staticmethod
-    def confine_host():
+    def internal_labels():
         """
         Define Rancher docker labels
-        to launch containers only on selected host(s)
         """
-        rancher_label = "io.rancher.scheduler.affinity:host_label"
+        # force to repull the image every time
+        pull_label = "io.rancher.container.pull_image"
+        # to launch containers only on selected host(s)
+        host_label = "io.rancher.scheduler.affinity:host_label"
         label_key = 'host_type'
         label_value = 'qc'
-        return {rancher_label: "%s=%s" % (label_key, label_value)}
+
+        return {
+            host_label: "%s=%s" % (label_key, label_value),
+            pull_label: 'always',
+        }
 
     def run(self, container_name, image_name, private=False, extras=None):
 
@@ -216,7 +222,7 @@ class Rancher(object):
         params = {
             'name': container_name,
             'imageUuid': 'docker:' + image_name,
-            'labels': self.confine_host(),
+            'labels': self.internal_labels(),
             # entryPoint=['/bin/sh'],
             # command=['sleep', '1234567890'],
         }

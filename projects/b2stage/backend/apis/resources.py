@@ -62,11 +62,13 @@ class Resources(ClusterContainerEndpoint):
     def put(self, batch_id, qc_name):
         """ Launch a quality check inside a container """
 
+        im_prefix = 'maris'
         self.get_input()
         input_json = self._args.get('input', {})
 
+        # TODO: only one quality check at the time on the same batch
         container_name = self.get_container_name(batch_id, qc_name)
-        docker_image_name = self.get_container_image(qc_name, prefix='maris')
+        docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
         ###########################
         rancher = self.get_or_create_handle()
