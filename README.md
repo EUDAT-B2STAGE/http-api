@@ -46,11 +46,6 @@ The first stable release is focused on the interaction with the `B2SAFE` service
     + [add](docs/development/development.md) new features
     + extra [operations](docs/development/operations.md)
 
-<!--
-Documentation for the current developed branch instead can be found 
-[here](https://github.com/EUDAT-B2STAGE/http-api/tree/0.6.2/docs).
--->
-
 
 ## Implementation
 
