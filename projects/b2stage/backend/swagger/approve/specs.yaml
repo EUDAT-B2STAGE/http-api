@@ -1,0 +1,11 @@
+
+file: approve
+class: Approve
+schema:
+  expose: true
+mapping:
+  approve: "/ingestion/<string:batch_id>/approve"
+labels:
+  - seadatacloud
+  # - resources
+  - ingestion

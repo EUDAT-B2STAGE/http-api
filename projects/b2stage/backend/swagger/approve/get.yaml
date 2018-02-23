@@ -1,0 +1,9 @@
+common:
+  custom:
+    authentication: true
+
+approve:
+  summary: Work in progress
+  responses:
+    '200':
+      description: Work in progress

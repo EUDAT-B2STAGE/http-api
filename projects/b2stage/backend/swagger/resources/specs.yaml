@@ -12,4 +12,5 @@ mapping:
   # resources: /internals/resources
 labels:
   - seadatacloud
-  - resources
+  # - resources
+  - ingestion

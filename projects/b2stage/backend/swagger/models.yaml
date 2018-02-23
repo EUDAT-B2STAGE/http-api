@@ -30,3 +30,10 @@ definitions:
   #     force:
   #       type: boolean
   #       default: false
+
+  # FileList:
+  #   required:
+  #     - filelist
+  #   properties:
+  #     filelist:
+  #       type: object
