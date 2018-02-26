@@ -28,23 +28,31 @@ Over the EUDAT2020 project other functionalities will be added: the development 
 
 The first stable release is focused on the interaction with the `B2SAFE` service, allowing users to transfer and manage data on the `registered` **domain**.
 
-- Get started
-    + try a [quick start](docs/quick_start.md)
-    + see the latest [webinar](https://pdonorio.github.io/chapters/webinars/b2stage)
-    + a demo [prototype](docs/prototype.md) of the current functionalities
-- User guide
-    + [use](docs/user/user.md) an existing instance of the `HTTP-API`
-    + [main authentication](docs/user/authentication.md) based on `B2ACCESS`
-    + [alternative authentication](docs/user/authentication_b2safe.md) based on `B2SAFE`
-    + [endpoints](docs/user/endpoints.md) description and examples
-- Administration
-    + read the [pre-requisites](docs/deploy/preq.md) prior to installation
-    + [startup](docs/deploy/startup.md) a working copy
-    + deploy in two [modes](docs/deploy/modes.md) 
-    + [debug](docs/deploy/debugging.md) the server operating on top of `B2SAFE` and fix eventual issues
-- Development
-    + [add](docs/development/development.md) new features
-    + extra [operations](docs/development/operations.md)
+### Get started
+
+- try a [quick start](docs/quick_start.md)
+- see the latest [webinar](https://pdonorio.github.io/chapters/webinars/b2stage)
+- a demo [prototype](docs/prototype.md) of the current functionalities
+
+### User guide
+
+- [use](docs/user/user.md) an existing instance of the `HTTP-API`
+- [main authentication](docs/user/authentication.md) based on `B2ACCESS`
+- [alternative authentication](docs/user/authentication_b2safe.md) based on `B2SAFE`
+- [endpoints](docs/user/endpoints.md) description and examples
+
+### Administration
+
+- read the [pre-requisites](docs/deploy/preq.md) prior to installation
+- [startup](docs/deploy/startup.md) a working copy
+- deploy in two [modes](docs/deploy/modes.md) 
+- define the [authentication mechanism](docs/deploy/authentication.md) to be applied
+- [debug](docs/deploy/debugging.md) the server operating on top of `B2SAFE` and fix eventual issues
+
+### Development
+
+- [add](docs/development/development.md) new features
+- extra [operations](docs/development/operations.md)
 
 
 ## Implementation
