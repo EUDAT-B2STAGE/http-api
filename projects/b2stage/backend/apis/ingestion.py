@@ -75,7 +75,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ipath = self.complete_path(batch_path, self.get_input_zip_filename())
         try:
-            iout = icom.write_in_streaming(destination=ipath, force=True)
+            # NOTE: we know this will always be Compressed Files (binaries)
+            iout = icom.write_in_streaming(
+                destination=ipath, force=True, binary=True)
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
             return self.send_errors(
