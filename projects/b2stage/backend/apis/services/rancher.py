@@ -170,9 +170,9 @@ class Rancher(object):
         return out
 
     def catalog_images(self):
-        # check if container is there?
+        """ check if container image is there """
         catalog_url = "https://%s/v2/_catalog" % self._hub_uri
-        # https://snf-773873.vm.okeanos.grnet.gr/v2/_catalog
+        # print(catalog_url)
         try:
             import requests
             r = requests.get(catalog_url, auth=self._hub_credentials)

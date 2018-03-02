@@ -2,6 +2,24 @@
 # Infrastructure
 
 
+## BUG fixes
+
+- rancher HTTPS
+    + require cattle.cineca.it
+    + proxy image with HTTPS to forward to internal port 
+    + (close 8080?)
+
+
+## Deploy B2STAGE server
+
+- test upgrade
+    + https://github.com/rapydo/issues/issues/71
+- verify connection to B2SAFE with rapydo command
+    + https://github.com/rapydo/issues/issues/92#issue-299715193
+- package for debian
+    + https://github.com/rapydo/issues/issues/91
+
+
 ## instructions
 
 0. HTTP API irods user has to be an "irods adminer"
@@ -20,3 +38,19 @@
     + mount the NFS server to every host that will run quality checks 
         in /usr/share/inputs
 -->
+
+## done
+
+- auth docs deploy
+    + https://github.com/EUDAT-B2STAGE/http-api/issues/99
+    + Improved the discussion of what authentication mechanism to enable on your server
+- add binary option
+    + force it on upload call for seadata
+    + open issue for normal b2stage servers
+    In [4]: type('test') Out[4]: str
+    In [5]: type('test'.encode()) Out[5]: bytes
+- fix pretty print
+    + test update
+    `$ rapydo update --rebuild`
+- $ irule "{EUDATCreatePID ...
+
