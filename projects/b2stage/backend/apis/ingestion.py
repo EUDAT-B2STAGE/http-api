@@ -91,11 +91,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # Also copy file to the B2HOST environment
 
         rancher = self.get_or_create_handle()
-        old_zone = icom.variables.get('zone')
-        new_zone = 'sdcCineca'
-        ipath = ipath.replace(old_zone, new_zone)
         idest = self.get_ingestion_path()
-        # print("TEST", ipath, idest)
+
         b2safe_connvar = {
             'BATCH_SRC_PATH': ipath,
             'BATCH_DEST_PATH': idest,
@@ -106,11 +103,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             'IRODS_PASSWORD': icom.variables.get('password'),
         }
 
+        # Launch a container to copy the data into B2HOST
         cname = 'copy_zip'
         cversion = '0.7'
         image_tag = '%s:%s' % (cname, cversion)
         container_name = self.get_container_name(batch_id, image_tag)
         docker_image_name = self.get_container_image(image_tag, prefix='eudat')
+        log.info("Requesting copy2containers; image: %s" % docker_image_name)
         errors = rancher.run(
             container_name=container_name, image_name=docker_image_name,
             private=True,
@@ -120,22 +119,27 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             },
         )
 
-        errors
-        # TODO: check for errors
-        # if errors is not None:
-        #     if isinstance(errors, dict):
-        #         edict = errors.get('error', {})
-        #         # print("TEST", edict)
-        #         if edict.get('code') == 'NotUnique':
-        #             response['status'] = 'existing'
-        #         else:
-        #             response['status'] = 'could NOT be started'
-        #             response['description'] = edict
-        #     else:
-        #         response['status'] = 'failure'
-
         ########################
-        response = "Batch '%s' filled" % batch_id
+        response = {
+            'batch_id': batch_id,
+            'status': 'filled',
+        }
+
+        if errors is not None:
+            if isinstance(errors, dict):
+                edict = errors.get('error', {})
+                # errors = edict
+                # print("TEST", edict)
+                if edict.get('code') == 'NotUnique':
+                    response['status'] = 'existing'
+                else:
+                    response['status'] = 'Copy could NOT be started'
+                    response['description'] = edict
+            else:
+                response['status'] = 'failure'
+
+        # response['errors'] = errors
+        # response = "Batch '%s' filled" % batch_id
         return self.force_response(response)
 
     def post(self):
@@ -174,17 +178,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         # Create the path
         batch_path = self.get_batch_path(icom, batch_id)
-        imain.create_empty(batch_path, directory=True, ignore_existing=True)
-        # This user will own the directory
-        imain.set_permissions(
-            batch_path,
-            permission='own', userOrGroup=obj.username)
-        # Let the permissions scale to subelements
-        imain.enable_inheritance(batch_path)  # cool!
+        imain.create_collection_inheritable(batch_path, obj.username)
 
-        # # # Remove anonymous access to this batch
-        # # ianonymous.set_permissions(
-        # #     batch_path, permission='null', userOrGroup=icom.anonymous_user)
+        # # Remove anonymous access to this batch
+        # ianonymous.set_permissions(
+        #     batch_path, permission='null', userOrGroup=icom.anonymous_user)
 
         ##################
         response = "Batch '%s' enabled" % batch_id

@@ -4,7 +4,7 @@ class: Approve
 schema:
   expose: true
 mapping:
-  approve: "/ingestion/<string:batch_id>/approve"
+  approve: "/ingestion/<string:batch_id>/approve/<string:temp_id>"
 labels:
   - seadatacloud
   # - resources

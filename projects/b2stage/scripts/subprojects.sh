@@ -10,6 +10,8 @@ source ~/.bash_aliases
 if [ ! -z "SEADATA_PROJECT" ]; then
 
     BATCHES_PATH="/$IRODS_ZONE/$SEADATA_BATCH_DIR"
+    PROD_PATH="/$IRODS_ZONE/$SEADATA_CLOUD_DIR"
+
     # NOTE: we are using the main HTTP API irods user
     # to manage batches across nodes
     BATCHES_MAIN_USER="$IRODS_USER"
@@ -17,5 +19,9 @@ if [ ! -z "SEADATA_PROJECT" ]; then
     berods -c "imkdir $BATCHES_PATH"
     berods -c "ichmod own $BATCHES_MAIN_USER $BATCHES_PATH"
     echo -e "Enabled the SeaDataCloud batch path: $BATCHES_PATH"
+
+    berods -c "imkdir $PROD_PATH"
+    berods -c "ichmod own $BATCHES_MAIN_USER $PROD_PATH"
+    echo -e "Enabled the SeaDataCloud batch path: $PROD_PATH"
 
 fi

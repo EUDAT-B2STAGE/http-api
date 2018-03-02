@@ -26,6 +26,7 @@ services:
       ##### SEADATA
       SEADATA_PROJECT: ${SEADATA_PROJECT}
       SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
+      SEADATA_CLOUD_DIR: ${SEADATA_PRODUCTION_DIR}
 
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
@@ -114,13 +115,12 @@ services:
       ####################
       ####################
       # other projects variables
-      SEADATA_PROJECT: ${SEADATA_PROJECT}
-      SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
 
       ####################
       ##### SEADATA
       SEADATA_PROJECT: ${SEADATA_PROJECT}
       SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
+      SEADATA_CLOUD_DIR: ${SEADATA_PRODUCTION_DIR}
       # rancher
       RESOURCES_URL: ${RESOURCES_URL}
       RESOURCES_KEY: ${RESOURCES_KEY}

@@ -70,6 +70,7 @@ variables:
     # SEADATA_PROJECT: 1
     SEADATA_PROJECT: 0
     SEADATA_INGESTION_DIR: batches
+    SEADATA_PRODUCTION_DIR: cloud
 
 ###############################
 ## WARNING!! do not modify below
@@ -130,7 +131,7 @@ variables:
 
     #################
     # rancher
-    RESOURCES_URL: http://IP:PORT/v2-beta
+    RESOURCES_URL: https://IP/v2-beta
     RESOURCES_KEY:
     RESOURCES_SECRET:
     RESOURCES_PROJECT:
@@ -138,7 +139,7 @@ variables:
     RESOURCES_HUBUSER:
     RESOURCES_HUBPASS:
     # This path needs permissions to user 1001
-    # as owner of subdir 'ingestion'
+    # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /usr/share
 
     #################
@@ -180,6 +181,7 @@ tags:
   b2safe: proxy access to irods b2safe credentials
   # internal: for internal testing purpose only
   seadatacloud: endpoints related to the SeaDataCloud project
+  ingestion: submission of files to be approved before cloud storing
 
 # Keep track of releases and dependencies
 releases:

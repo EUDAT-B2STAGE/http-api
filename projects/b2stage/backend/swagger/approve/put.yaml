@@ -4,7 +4,7 @@ common:
     # authentication: false
 
 approve:
-  summary: Register files that passed QCs into Production namespace
+  summary: Register a file from a batch passing all QCs into Production
   # parameters:
   #   - name: filelist
   #     in: body
@@ -12,4 +12,4 @@ approve:
   #       $ref: "#/definitions/FileList"
   responses:
     '200':
-      description: Registration process launched
+      description: Registration executed

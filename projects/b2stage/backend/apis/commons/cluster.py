@@ -8,6 +8,7 @@ log = get_logger(__name__)
 
 DEFAULT_IMAGE_PREFIX = 'docker'
 BATCHES_DIR = detector.get_global_var('SEADATA_BATCH_DIR')
+PRODUCTION_DIR = detector.get_global_var('SEADATA_CLOUD_DIR')
 
 
 class ClusterContainerEndpoint(EndpointResource):
@@ -57,15 +58,19 @@ class ClusterContainerEndpoint(EndpointResource):
         extension = 'zip'
         return "%s.%s" % (filename, extension)
 
-    def get_batch_path(self, icom, batch_id=None):
-
-        # home_dir = icom.get_home_var()
-        paths = [BATCHES_DIR]
-        if batch_id is not None:
-            paths.append(batch_id)
+    def get_path_with_suffix(self, icom, mypath, suffix=None):
+        paths = [mypath]
+        if suffix is not None:
+            paths.append(suffix)
         from utilities import path
         suffix_path = str(path.build(paths))
         return icom.get_current_zone(suffix=suffix_path)
+
+    def get_production_path(self, icom, batch_id=None):
+        return self.get_path_with_suffix(icom, PRODUCTION_DIR, batch_id)
+
+    def get_batch_path(self, icom, batch_id=None):
+        return self.get_path_with_suffix(icom, BATCHES_DIR, batch_id)
 
     def get_batch_zipfile_path(self, batch_id):
         container_fixed_path = self.get_ingestion_path()
