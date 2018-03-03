@@ -47,7 +47,9 @@ The first stable release is focused on the interaction with the `B2SAFE` service
 - [startup](docs/deploy/startup.md) a working copy
 - deploy in two [modes](docs/deploy/modes.md) 
 - define the [authentication mechanism](docs/deploy/authentication.md) to be applied
-- [debug](docs/deploy/debugging.md) the server operating on top of `B2SAFE` and fix eventual issues
+- maintenance operations:
+    + [debug](docs/deploy/debugging.md) the server operating on top of `B2SAFE` and fix eventual issues
+    + keep your server [up-to-date](docs/deploy/updates.md)
 
 ### Development
 
