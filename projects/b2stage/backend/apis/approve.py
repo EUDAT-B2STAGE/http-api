@@ -103,6 +103,8 @@ class Approve(EudatEndpoint, ClusterContainerEndpoint):
 
         ################
         # 4. irule to get PID
+
+        imain.irule()
         """
 irule
     "{EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *newPID)}"

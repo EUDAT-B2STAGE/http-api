@@ -2,14 +2,6 @@
 # Infrastructure
 
 
-## BUG fixes
-
-- rancher HTTPS
-    + require cattle.cineca.it
-    + proxy image with HTTPS to forward to internal port 
-    + (close 8080?)
-
-
 ## Deploy B2STAGE server
 
 - test upgrade
