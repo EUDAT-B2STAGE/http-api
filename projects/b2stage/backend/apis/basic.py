@@ -119,17 +119,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ###################
         # Create Directory
-        if force:
-            # TODO: implement recursion
-            return self.send_errors(
-                'Recursive collection creations has not yet been implemented',
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
-            )
 
-        # Create directory if not exists
-        ipath = icom.create_empty(
-            path, directory=True, ignore_existing=force
-        )
+        ipath = icom.create_directory(path, ignore_existing=force)
         if ipath is None:
             if force:
                 ipath = path
@@ -138,7 +129,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             log.info("Created irods collection: %s", ipath)
 
-        # TOFIX: Should this status be No response?
+        # NOTE: question: should this status be No response?
         status = hcodes.HTTP_OK_BASIC
         content = {
             'location': self.b2safe_location(path),

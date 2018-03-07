@@ -2,6 +2,15 @@
 # Infrastructure
 
 
+## Checks
+
+- psycog warning
+- unittests failure
+- test anonymous container creation
+- test irule and metadata
+- restclient script is currently wrong
+
+
 ## Deploy B2STAGE server
 
 - test upgrade
