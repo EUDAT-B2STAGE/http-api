@@ -104,14 +104,42 @@ class Approve(EudatEndpoint, ClusterContainerEndpoint):
         ################
         # 4. irule to get PID
 
-        imain.irule()
-        """
-irule
-    "{EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *newPID)}"
-    "*parent_pid=%*path=ABSOLUTE_IPATH%*ror=%*fio=%*fixed=true"
-    "*newPID"
-*newPID = 21.T12995/7e5300f8-1bcb-11e8-83d5-fa163e7b6737
-        """
+        # # METADATA RULE
+        # object_path = "/sdcCineca/home/httpadmin/tmp.txt"
+        # test_name = 'paolo2'
+        # inputs = {  # extra quotes for string literals
+        #     '*object': '"%s"' % object_path,
+        #     '*name': '"%s"' % test_name,
+        #     '*value': '"%s"' % test_name,
+        # }
+        # body = """
+        #     # add metadata
+        #     *attribute.*name = *value;
+        #     msiAssociateKeyValuePairsToObj(*attribute, *object, "-d")
+        # """
+        # output = imain.irule('test', body, inputs, 'ruleExecOut')
+        # print("TEST", output)
+        # # log.pp(output)
+
+        # EUDAT RULE for PID
+        object_path = "/sdcCineca/home/httpadmin/tmp.txt"
+        out_name = 'newPID'
+        inputs = {
+            '*path': '"%s"' % object_path,
+            '*fixed': '"true"',
+            # empty variables
+            '*parent_pid': '""',
+            '*ror': '""',
+            '*fio': '""',
+        }
+        body = """
+            EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *%s)
+        """ % out_name
+        output = imain.irule('get_pid', body, inputs, out_name)
+        print("TEST", output)
+        # NOTE: output not working yet:
+        # https://github.com/irods/python-irodsclient/issues/119
+        # log.pp(output)
 
         ################
         # 5. b2handle to verify PID

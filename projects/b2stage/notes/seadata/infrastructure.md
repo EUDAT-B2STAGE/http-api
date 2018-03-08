@@ -4,11 +4,10 @@
 
 ## Checks
 
-- psycog warning
-- unittests failure
+- irule output issue
 - test anonymous container creation
-- test irule and metadata
 - restclient script is currently wrong
+- ansible course (better than .env)
 
 
 ## Deploy B2STAGE server
