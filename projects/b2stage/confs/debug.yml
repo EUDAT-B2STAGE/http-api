@@ -80,6 +80,9 @@ services:
       APP_HOST: ${FLASK_HOST}
       APP_PORT: :${FLASK_DEFAULT_PORT}
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
+      # Fix for mac development
+      LINES: 28
+      COLUMNS: 160
     networks:
       app_net:
     depends_on:

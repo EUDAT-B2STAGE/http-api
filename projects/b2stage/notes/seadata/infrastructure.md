@@ -4,9 +4,9 @@
 
 ## Checks
 
-- irule output issue
+- irods/b2safe image/stack
 - test anonymous container creation
-- restclient script is currently wrong
+- irule output issue
 - ansible course (better than .env)
 
 
