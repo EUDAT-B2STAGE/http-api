@@ -155,35 +155,37 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 "Mandatory parameter '%s' missing" % param_name,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        # get irods session
+        ##################
+        # Get irods session
         obj = self.init_endpoint()
-        icom = obj.icommands
+        # icom = obj.icommands
 
-        batch_path = self.get_batch_path(icom, batch_id)
+        # NOTE: Main API user is the key to let this happen
+        imain = self.get_service_instance(service_name='irods')
+
+        batch_path = self.get_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
 
         ##################
-        # FIXME: possible questions:
-        # Does it already exist?
-        # Is it a collection? # if icom.is_collection(location):
-        # Are the permissions fine?
+        # Does it already exist? Is it a collection?
+        if not imain.is_collection(batch_path):
+            # Enable the batch
+            batch_path = self.get_batch_path(imain, batch_id)
 
-        ##################
-        # Enable the batch with the right permissions
-        # NOTE: Main API user is the key to let this happen
+            # Create the path and set permissions
+            imain.create_collection_inheritable(batch_path, obj.username)
 
-        imain = self.get_service_instance(service_name='irods')
-        # ianonymous = self.get_service_instance(
-        #     service_name='irods', user=icom.anonymous_user, password='null')
+            ##################
+            # # Remove anonymous access to this batch
+            # ianonymous.set_permissions(
+            #     batch_path,
+            #     permission='null', userOrGroup=icom.anonymous_user)
 
-        # Create the path
-        batch_path = self.get_batch_path(icom, batch_id)
-        imain.create_collection_inheritable(batch_path, obj.username)
+            ##################
+            response = "Batch '%s' enabled" % batch_id
 
-        # # Remove anonymous access to this batch
-        # ianonymous.set_permissions(
-        #     batch_path, permission='null', userOrGroup=icom.anonymous_user)
+        else:
+            log.debug("Already exists")
+            response = "Batch '%s' already exists" % batch_id
 
-        ##################
-        response = "Batch '%s' enabled" % batch_id
         return self.force_response(response)

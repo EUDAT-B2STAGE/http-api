@@ -2,8 +2,25 @@
 # Copyright 2011-2017 EUDAT CDI - www.eudat.eu
 # ###############################################
 
+project:
+  title: EUDAT-B2STAGE HTTP-API server
+  description: Processing data in EUDAT domains
+  version: 1.0.2
+
+###############################
+## Please CHECK VARIABLES here
+## before starting your project
+###############################
 variables:
+
   env:
+
+    ###############################
+    ## Dockerized DB
+    # You may leave this like this in DEBUG mode
+    ALCHEMY_USER: rods
+    ALCHEMY_PASSWORD: chooseapasswordwisely
+    ALCHEMY_API_DB: SQL_API
 
     ###############################
     ## B2ACCESS
@@ -13,36 +30,107 @@ variables:
     B2ACCESS_SECRET:
 
     ###############################
-    ## LOCAL (container) iRODS server
+    ## LOCAL iRODS server VERSION
+    # NOTE: intended for DEBUG mode and to be commented in PRODUCTION
     IRODS_USER: irods
     IRODS_GUEST_USER: guest              # intended to work only with GSI
     IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
     IRODS_ZONE: tempZone
     IRODS_HOME: home
-    IRODS_PASSWORD: chooseapasswordwisely
-    IRODS_DN:           # automatically computed within the docker network
-    IRODS_ANONYMOUS: 0  # EXPERIMENTAL: enable the publish/public endpoints
     IRODS_AUTHSCHEME:   # to be auto-detected
     # IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
-    # NOTE: this must match ALCHEMY_PASSWORD
+    # NOTE: this must match ALCHEMY_PASSWORD if running in debug mode
+    IRODS_PASSWORD: chooseapasswordwisely
+    # If empty it will be automatically computed within the docker network
+    IRODS_DN:
 
     ###############################
-    ## Dockerized DB
-    ALCHEMY_USER: rods
-    ALCHEMY_PASSWORD: chooseapasswordwisely
-    ALCHEMY_API_DB: SQL_API
+    ## PRODUCTION example: external iRODS server VERSION
+
+    # IRODS_HOST: yourhostname
+    # IRODS_ZONE: productionZone1
+    # IRODS_HOME: home
+    # # You MUST provide user/password credentials to iquery users informations
+    # IRODS_AUTHSCHEME: credentials
+    # IRODS_USER: httpapi
+    # IRODS_PASSWORD: SETTHISPASSWORDINPRODUCTION
+    # # DN of your external iRODS host (with GSI plugin installed)
+    # # Needed for B2ACCESS certificates exchange
+    # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/yourhostname.com"
+
+    ###############################
+    ## Mongo
+    # MONGO_HOST: your.host.com
+    # MONGO_DATABASE: yourdb
+    # MONGO_PORT: 27017
 
     ###############################
     ## Seadata project variable
+    # SEADATA_PROJECT: 1
     SEADATA_PROJECT: 0
     SEADATA_INGESTION_DIR: batches
     SEADATA_PRODUCTION_DIR: cloud
-    ## B2SAFE SEADATA
+
+###############################
+## WARNING!! do not modify below
+## if you don't know what you are doing
+###############################
+
+    # COMPOSE_PROJECT_NAME: b2stage
+    # PROJECT_DOMAIN: myserver.mydomain.dev
+    AUTH_SERVICE: sqlalchemy
+    # AUTH_SERVICE: mongo
+    API_MAIN_ENDPOINT: registered
+    API_PUBLIC_ENDPOINT: public
+    # LETSENCRYPT_MODE: --staging
+    LETSENCRYPT_MODE:
+
+    IRODS_ANONYMOUS: 0
+    # IRODS_ANONYMOUS: 1
+    IRODS_DB: ICAT
+    IRODS_CHUNKSIZE: 1048576
+    ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
+    B2ACCESS_CAS: /tmp/certificates/b2access
+
+    # sqlalchemy fixed:
+    ALCHEMY_ENGINE: postgresql
+    ALCHEMY_DBS: 'ICAT SQL_API'
+
+    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
+    HANDLE_BASE: "https://url.to.epic/handles/"
     # HANDLE_USER:
     # HANDLE_PREFIX:
     # HANDLE_PASS:
-    ## RANCHER
+
+    # # neo4j:
+    # GRAPHDB_PASSWORD: wakeupneo
+    # EPIC HANDLE credentials
+
+    # ##: OTHERs / FIXED
+    # FLASK_SUBNET: 175.1.0.0
+    # FLASK_FIXED_IP: 175.1.0.10
+    UPLOAD_PATH: /uploads
+    FULL_JWT: false
+
+    ###############################
+    ## Queue
+    # # RABBITMQ_USER: whiterabbit
+    # # RABBITMQ_PASSWORD: downthehole
+
+    # # please change this:
+    # RABBITMQ_HOST: your.rabbit.com
+    # RABBITMQ_USER: user
+    # RABBITMQ_PASSWORD: somepass
+
+    # # tested with merret:
+    # RABBITMQ_VHOST: qc
+    # RABBITMQ_ROUTING_KEY: dkrz-qc
+    # RABBITMQ_EXCHANGE: b2host
+    # RABBITMQ_QUEUE: testqueue
+
+    #################
+    # rancher
     RESOURCES_URL: https://IP/v2-beta
     RESOURCES_KEY:
     RESOURCES_SECRET:
@@ -50,36 +138,11 @@ variables:
     RESOURCES_HUB:
     RESOURCES_HUBUSER:
     RESOURCES_HUBPASS:
-
-    #################
-
-    AUTH_SERVICE: sqlalchemy
-    API_MAIN_ENDPOINT: registered
-    API_PUBLIC_ENDPOINT: public
-    # COMPOSE_PROJECT_NAME: b2stage
-    # PROJECT_DOMAIN: myserver.mydomain.dev
-    # LETSENCRYPT_MODE: --staging
-    LETSENCRYPT_MODE:
-    # irods fixed
-    IRODS_DB: ICAT
-    IRODS_CHUNKSIZE: 1048576
-    ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
-    B2ACCESS_CAS: /tmp/certificates/b2access
-    # sqlalchemy fixed:
-    ALCHEMY_ENGINE: postgresql
-    ALCHEMY_DBS: 'ICAT SQL_API'
-    ##: OTHERs / FIXED
-    UPLOAD_PATH: /uploads
-    FULL_JWT: false
-    # TO BE DEPRECATED
-    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
-    HANDLE_BASE: "https://url.to.epic/handles/"
     # This path needs permissions to user 1001
     # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /usr/share
 
     #################
-    # base user/password
 
   # backend:
   #   credentials:
@@ -92,7 +155,6 @@ variables:
   #       admin: admin_root
   #       default: normal_user
 
-  #################
   repos:
     irods-client:
       branch: master
@@ -100,11 +162,13 @@ variables:
       path: prc
       if: true
 
-##################################################
-project:
-  title: EUDAT-B2STAGE HTTP-API server
-  description: Processing data in EUDAT domains
-  version: 1.0.2
+controller:
+  commands:
+    irods_restart:
+      description: Try to restart the current iCAT server instance
+      command: service irods restart
+      service: icat
+      user: root
 
 tags:
   eudat: all endpoints associated to EUDAT services
@@ -153,11 +217,3 @@ releases:
     type: patch
     rapydo: 0.6.2
     status: todo
-
-controller:
-  commands:
-    irods_restart:
-      description: Try to restart the current iCAT server instance
-      command: service irods restart
-      service: icat
-      user: root
