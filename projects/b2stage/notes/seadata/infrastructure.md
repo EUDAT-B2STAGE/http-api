@@ -1,13 +1,16 @@
 
-# Infrastructure
+# notes
 
 
 ## Checks
 
 - irods/b2safe image/stack
-- test anonymous container creation
-- irule output issue
 - ansible course (better than .env)
+
+
+## Bugs
+
+- HTTP API to manually trigger the EUDAT replication rule after uploading
 
 
 ## Deploy B2STAGE server

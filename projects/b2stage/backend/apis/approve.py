@@ -104,28 +104,10 @@ class Approve(EudatEndpoint, ClusterContainerEndpoint):
         ################
         # 4. irule to get PID
 
-        # # METADATA RULE
-        # object_path = "/sdcCineca/home/httpadmin/tmp.txt"
-        # test_name = 'paolo2'
-        # inputs = {  # extra quotes for string literals
-        #     '*object': '"%s"' % object_path,
-        #     '*name': '"%s"' % test_name,
-        #     '*value': '"%s"' % test_name,
-        # }
-        # body = """
-        #     # add metadata
-        #     *attribute.*name = *value;
-        #     msiAssociateKeyValuePairsToObj(*attribute, *object, "-d")
-        # """
-        # output = imain.irule('test', body, inputs, 'ruleExecOut')
-        # print("TEST", output)
-        # # log.pp(output)
-
-        # EUDAT RULE for PID
-        object_path = "/sdcCineca/home/httpadmin/tmp.txt"
+        # EUDAT RULE for PID
         out_name = 'newPID'
         inputs = {
-            '*path': '"%s"' % object_path,
+            '*path': '"%s"' % dest_path,
             '*fixed': '"true"',
             # empty variables
             '*parent_pid': '""',
@@ -135,26 +117,61 @@ class Approve(EudatEndpoint, ClusterContainerEndpoint):
         body = """
             EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *%s)
         """ % out_name
-        output = imain.irule('get_pid', body, inputs, out_name)
-        print("TEST", output)
-        # NOTE: output not working yet:
-        # https://github.com/irods/python-irodsclient/issues/119
-        # log.pp(output)
+        imain.irule('get_pid', body, inputs, out_name)
+
+        # # NOTE: output not working yet:
+        # output = imain.irule('get_pid', body, inputs, out_name)
+        # print("TEST", output)
+        # # https://github.com/irods/python-irodsclient/issues/119
+        # # log.pp(output)
+
+        # get the metadata to check the PID
+        metadata, _ = imain.get_metadata(dest_path)
+
+        try:
+            pid = metadata.pop('PID')
+        except KeyError:
+            error = 'Unable to generate PID: %s/%s' % (batch_id, temp_id)
+            log.error(error)
+            return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
+        else:
+            log.info("PID: %s", pid)
+
+        # # DEBUG extra metadata?
+        # for key, value in metadata.items():
+        #     if not key.lower().startswith('eudat'):
+        #         print("Metadata:", key, value)
 
         ################
         # 5. b2handle to verify PID
 
-        # from b2handle.handleclient import EUDATHandleClient as b2handle
-        # client = b2handle.instantiate_for_read_access()
-        # PID = '21.T12995/7e5300f8-1bcb-11e8-83d5-fa163e7b6737'
-        # client.retrieve_handle_record(PID)
+        # TODO: move it into a function
+        import logging
+        logging.getLogger('b2handle').setLevel(logging.WARNING)
+        from b2handle.handleclient import EUDATHandleClient as b2handle
+        client = b2handle.instantiate_for_read_access()
+        out = client.retrieve_handle_record(pid)
+        log.pp(out)
+        if out is None:
+            error = 'Cannot confirm PID: %s/%s = %s' % (batch_id, temp_id, pid)
+            log.error(error)
+            return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
+        log.verbose("PID %s verified", pid)
 
         ################
-        # 6. set metadata
-        ################
+        # 6. set metadata (with a prefix)
+        for key in keys:
+            value = json_input.get(key)
+            args = {'path': dest_path, key: value}
+            imain.set_metadata(**args)
+        log.debug("Metadata set")
+
         # 7. check metadata ?
+
         ################
         # 8. ALL DONE: move file from ingestion to trash
+        imain.remove(src_path)
+        log.info("Source removed: %s", src_path)
 
         ################
         response = 'Dummy method.'
