@@ -7,8 +7,10 @@ Endpoint example for the RAPyDo framework
 #################
 # IMPORTS
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
-from b2stage.apis.commons.endpoint import EudatEndpoint
+# from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.apis.commons.b2handle import B2HandleEndpoint
 # from restapi.rest.definition import EndpointResource
+from b2stage.apis.commons.seadatacloud import Metadata as md
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -23,7 +25,7 @@ log = get_logger(__name__)
 #################
 # REST CLASS
 # class Approve(EndpointResource):
-class Approve(EudatEndpoint, ClusterContainerEndpoint):
+class Approve(B2HandleEndpoint, ClusterContainerEndpoint):
 
     def get(self, batch_id, temp_id):
         log.info("Received a test HTTP request")
@@ -60,18 +62,7 @@ class Approve(EudatEndpoint, ClusterContainerEndpoint):
         # 1.5 check parameters
         json_input = self.get_input()
         # log.pp(self._args, prefix_line='Parsed args')
-        """ {
-        "cdi_n_code": "1522222",
-        "format_n_code": "541555",
-        "data_format_l24": "CFPOINT",
-        "version": "1"
-        } """
-
-        keys = [
-            "cdi_n_code", "format_n_code", "data_format_l24", "version",
-        ]
-        max_size = 10
-        for key in keys:
+        for key in md.keys:
             value = json_input.get(key)
             error = None
 
@@ -80,8 +71,8 @@ class Approve(EudatEndpoint, ClusterContainerEndpoint):
             else:
                 value_len = len(value)
 
-            if value_len > max_size:
-                error = 'Parameter %s exceeds size %s ' % (key, max_size)
+            if value_len > md.max_size:
+                error = 'Parameter %s exceeds size %s ' % (key, md.max_size)
             if value_len < 1:
                 error = 'Parameter %s empty' % key
 
@@ -132,7 +123,7 @@ class Approve(EudatEndpoint, ClusterContainerEndpoint):
             pid = metadata.pop('PID')
         except KeyError:
             error = 'Unable to generate PID: %s/%s' % (batch_id, temp_id)
-            log.error(error)
+            # log.error(error)
             return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
         else:
             log.info("PID: %s", pid)
@@ -141,26 +132,28 @@ class Approve(EudatEndpoint, ClusterContainerEndpoint):
         # for key, value in metadata.items():
         #     if not key.lower().startswith('eudat'):
         #         print("Metadata:", key, value)
+        # self.eudat_pid_fields
 
         ################
-        # 5. b2handle to verify PID
+        # 5. Verify PID (b2handle)
 
-        # TODO: move it into a function
-        import logging
-        logging.getLogger('b2handle').setLevel(logging.WARNING)
-        from b2handle.handleclient import EUDATHandleClient as b2handle
-        client = b2handle.instantiate_for_read_access()
-        out = client.retrieve_handle_record(pid)
-        log.pp(out)
+        # FIXME: better max retries: 5
+        import time
+        time.sleep(3)
+
+        out = self.check_pid_content(pid)
+
         if out is None:
             error = 'Cannot confirm PID: %s/%s = %s' % (batch_id, temp_id, pid)
-            log.error(error)
+            # log.error(error)
             return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
-        log.verbose("PID %s verified", pid)
+        else:
+            log.verbose("PID %s verified", pid)
+            log.pp(out)
 
         ################
         # 6. set metadata (with a prefix)
-        for key in keys:
+        for key in md.keys:
             value = json_input.get(key)
             args = {'path': dest_path, key: value}
             imain.set_metadata(**args)
@@ -174,6 +167,5 @@ class Approve(EudatEndpoint, ClusterContainerEndpoint):
         log.info("Source removed: %s", src_path)
 
         ################
-        response = 'Dummy method.'
-        # response = 'Dummy method. File list received: %s' % flist
+        response = {'PID': pid}
         return self.force_response(response)

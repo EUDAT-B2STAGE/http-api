@@ -1,6 +1,6 @@
 
-depends_on:
-  - not SEADATA_PROJECT
+# depends_on:
+#   - not SEADATA_PROJECT
 
 # The name of the REST class
 class: PIDEndpoint

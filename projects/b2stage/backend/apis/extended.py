@@ -11,7 +11,6 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/master/docs/user/endpoints.md
 """
 
 from restapi.flask_ext.flask_irods.client import IrodsException
-from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 
 from restapi.services.uploader import Uploader
@@ -26,13 +25,7 @@ log = get_logger(__name__)
 class PIDEndpoint(Uploader, B2HandleEndpoint):
     """ Handling PID on endpoint requests """
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def get(self, pid=None):
-        """ Get metadata or file from pid """
-
-        if pid is None:
-            return self.send_errors(
-                message='Missing PID inside URI', code=hcodes.HTTP_BAD_REQUEST)
+    def eudat_pid(self, pid):
 
         # recover metadata from pid
         metadata, bad_response = self.get_pid_metadata(pid)
@@ -46,11 +39,12 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
 
         # If download is requested, trigger file download
         if self.download_parameter():
-            api_url = CURRENT_HTTPAPI_SERVER
 
             # If local HTTP-API perform a direct download
-            # FIXME: the following code can be improved
-            route = api_url + 'api/registered/'
+            from b2stage.apis.commons import \
+                CURRENT_HTTPAPI_SERVER, API_URL, CURRENT_MAIN_ENDPOINT
+            route = '%s/%s/%s/' % (
+                CURRENT_HTTPAPI_SERVER, API_URL, CURRENT_MAIN_ENDPOINT)
             # route = route.replace('http://', '')
 
             if (url.startswith(route)):
@@ -65,10 +59,65 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
                     {'URL': url},
                     errors=[
                         "Data-object can't be downloaded by current " +
-                        "HTTP-API server '%s'" % api_url
+                        "HTTP-API server '%s'" % CURRENT_HTTPAPI_SERVER
                     ]
                 )
             return url
 
         # When no download is requested
         return metadata
+
+    def seadata_pid(self, pid):
+
+        #################
+        # b2handle to verify PID
+        out = self.check_pid_content(pid)
+        if out is None:
+            error = 'PID not found: %s' % pid
+            log.error(error)
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        else:
+            log.verbose("PID %s verified", pid)
+            log.pp(out)
+
+        #################
+        # url / irods path
+        # NOTE: this will not work if the protocol is changed
+        url = out.get('URL').replace('irods://', '')
+
+        from utilities import path
+        # path_pieces = url.split(path.os.sep)[1:]
+        path_pieces = url.split(path.os.sep)
+        path_pieces[0] = path.os.sep
+        # print("pieces", path_pieces)
+        ipath = str(path.build(path_pieces))
+        log.debug("object path: %s", ipath)
+
+        #################
+        # get the metadata
+        imain = self.get_service_instance(service_name='irods')
+        metadata, _ = imain.get_metadata(ipath)
+        log.pp(metadata)
+
+        from b2stage.apis.commons.seadatacloud import Metadata as md
+        response = {}
+        for key, value in metadata.items():
+            if key in md.keys:
+                response[key] = value
+
+        return response
+
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    def get(self, pid):
+        """ Get metadata or file from pid """
+
+        # if pid is None:
+        #     return self.send_errors(
+        #         message='Missing PID inside URI',
+        #         code=hcodes.HTTP_BAD_REQUEST)
+
+        from b2stage.apis.commons.seadatacloud import SEADATA_ENABLED
+        if SEADATA_ENABLED:
+            return self.seadata_pid(pid)
+        else:
+            return self.eudat_pid(pid)

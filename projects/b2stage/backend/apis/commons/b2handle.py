@@ -38,12 +38,23 @@ class B2HandleEndpoint(EudatEndpoint):
         "EUDAT/UNPUBLISHED_DATE", "EUDAT/UNPUBLISHED_REASON"
     ]
 
-    def connect_client(self, force_no_credentials=False):
+    eudat_internal_fields = [
+        "EUDAT/FIXED_CONTENT", 'PID'
+    ]
+
+    def connect_client(self, force_no_credentials=False, disable_logs=False):
 
         found = False
 
+        if disable_logs:
+            import logging
+            logging.getLogger('b2handle').setLevel(logging.WARNING)
+
         # With credentials
-        if not force_no_credentials:
+        if force_no_credentials:
+            client = b2handle.instantiate_for_read_access()
+            log.info("PID client connected: NO credentials")
+        else:
             file = os.environ.get('HANDLE_CREDENTIALS', None)
             if file is not None:
                 from utilities import path
@@ -60,9 +71,14 @@ class B2HandleEndpoint(EudatEndpoint):
                 log.info("PID client connected: w/ credentials")
                 return client, True
 
-        client = b2handle.instantiate_for_read_access()
-        log.warning("PID client connected: NO credentials")
         return client, False
+
+    def check_pid_content(self, pid):
+        # from b2handle.handleclient import EUDATHandleClient as b2handle
+        # client = b2handle.instantiate_for_read_access()
+        client, authenticated = self.connect_client(
+            force_no_credentials=True, disable_logs=True)
+        return client.retrieve_handle_record(pid)
 
     def handle_pid_fields(self, client, pid):
         """ Perform B2HANDLE request: retrieve URL from handle """
