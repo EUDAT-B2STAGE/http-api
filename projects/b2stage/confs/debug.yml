@@ -43,6 +43,14 @@ services:
       - ${SUBMODULE_DIR}/prc/irods:${PYTHON_PATH}/irods
 
   icat:
+
+
+    # build:
+    #   context: ${SUBMODULE_DIR}/build-templates/b2safe
+    #   # args:
+    #   #   RAPYDO_VERSION: ${RAPYDO_VERSION}
+    # image: rapydo/b2safe:${RAPYDO_VERSION}
+
     environment:
       ACTIVATE: 1
       POSTGRES_HOST: "${ALCHEMY_HOST}"
@@ -66,8 +74,10 @@ services:
       # adds GSI users in our irods instance
       - ${SUBMODULE_DIR}/build-templates/icat/extra_gsi_users.sh:/docker-entrypoint.d/gsi.sh
       # B2ACCESS certificates
-      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
       - ${SUBMODULE_DIR}/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
+      # EXTRA EUDAT scripts
+      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      # - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why
