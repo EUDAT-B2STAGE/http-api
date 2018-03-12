@@ -69,29 +69,28 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
 
     def seadata_pid(self, pid):
 
+        response = {
+            'PID': pid,
+            'verified': False,
+            'metadata': {},
+        }
+
         #################
         # b2handle to verify PID
-        out = self.check_pid_content(pid)
-        if out is None:
-            error = 'PID not found: %s' % pid
+        b2handle_output = self.check_pid_content(pid)
+        if b2handle_output is None:
+            error = {'B2HANDLE': 'not found'}
             log.error(error)
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_warnings(
+                response,
+                errors=error, code=hcodes.HTTP_BAD_REQUEST)
         else:
             log.verbose("PID %s verified", pid)
-            log.pp(out)
+            response['verified'] = True
+            log.pp(b2handle_output)
 
         #################
-        # url / irods path
-        # NOTE: this will not work if the protocol is changed
-        url = out.get('URL').replace('irods://', '')
-
-        from utilities import path
-        # path_pieces = url.split(path.os.sep)[1:]
-        path_pieces = url.split(path.os.sep)
-        path_pieces[0] = path.os.sep
-        # print("pieces", path_pieces)
-        ipath = str(path.build(path_pieces))
-        log.debug("object path: %s", ipath)
+        ipath = self.parse_pid_dataobject_path(b2handle_output)
 
         #################
         # get the metadata
@@ -100,10 +99,9 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
         log.pp(metadata)
 
         from b2stage.apis.commons.seadatacloud import Metadata as md
-        response = {}
         for key, value in metadata.items():
             if key in md.keys:
-                response[key] = value
+                response['metadata'][key] = value
 
         return response
 

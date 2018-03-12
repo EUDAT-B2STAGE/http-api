@@ -4,8 +4,9 @@
 
 ## Checks
 
+- order/ticket
 - irods/b2safe image/stack
-- ansible course (better than .env)
+- ansible
 
 
 ## Bugs

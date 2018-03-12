@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Endpoint example for the RAPyDo framework
+Move data from ingestion to production
 """
 
 #################
@@ -27,17 +27,15 @@ log = get_logger(__name__)
 # class Approve(EndpointResource):
 class Approve(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    def get(self, batch_id, temp_id):
-        log.info("Received a test HTTP request")
-        # self.get_input()
-        # log.pp(self._args, prefix_line='Parsed args')
-        response = 'Dummy method: (%s, %s)' % (batch_id, temp_id)
-        return self.force_response(response)
+    # def get(self, batch_id, temp_id):
+    #     log.info("Received a test HTTP request")
+    #     # self.get_input()
+    #     # log.pp(self._args, prefix_line='Parsed args')
+    #     response = 'Dummy method: (%s, %s)' % (batch_id, temp_id)
+    #     return self.force_response(response)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, batch_id, temp_id):
-
-        log.info("Received a test HTTP request")
 
         ################
         # 1. check if irods file exists
@@ -94,39 +92,22 @@ class Approve(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ################
         # 4. irule to get PID
-
-        # EUDAT RULE for PID
-        out_name = 'newPID'
-        inputs = {
-            '*path': '"%s"' % dest_path,
-            '*fixed': '"true"',
-            # empty variables
-            '*parent_pid': '""',
-            '*ror': '""',
-            '*fio': '""',
-        }
-        body = """
-            EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *%s)
-        """ % out_name
-        imain.irule('get_pid', body, inputs, out_name)
-
-        # # NOTE: output not working yet:
-        # output = imain.irule('get_pid', body, inputs, out_name)
-        # print("TEST", output)
-        # # https://github.com/irods/python-irodsclient/issues/119
-        # # log.pp(output)
-
+        pid = self.pid_request(imain, dest_path)
         # get the metadata to check the PID
         metadata, _ = imain.get_metadata(dest_path)
-
         try:
-            pid = metadata.pop('PID')
+            metadata_pid = metadata.pop('PID').strip()
         except KeyError:
             error = 'Unable to generate PID: %s/%s' % (batch_id, temp_id)
-            # log.error(error)
             return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
         else:
-            log.info("PID: %s", pid)
+            if pid == metadata_pid:
+                log.info("Confirmed PID: %s", pid)
+            else:
+                log.warning(
+                    "PID unconfirmed?\nfrom rule: %s\nfrom md: %s",
+                    pid, metadata_pid
+                )
 
         # # DEBUG extra metadata?
         # for key, value in metadata.items():
@@ -137,19 +118,22 @@ class Approve(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         # 5. Verify PID (b2handle)
 
-        # FIXME: better max retries: 5
-        import time
-        time.sleep(3)
+        b2handle_output = None
+        counter = 0
 
-        out = self.check_pid_content(pid)
+        while b2handle_output is None and counter < 5:
+            counter += 1
+            log.debug("b2handle pid test: n.%d" % counter)
+            import time
+            time.sleep(1)
+            b2handle_output = self.check_pid_content(pid)
 
-        if out is None:
-            error = 'Cannot confirm PID: %s/%s = %s' % (batch_id, temp_id, pid)
-            # log.error(error)
+        if b2handle_output is None:
+            error = 'PID unverified: %s/%s = %s' % (batch_id, temp_id, pid)
             return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
         else:
-            log.verbose("PID %s verified", pid)
-            log.pp(out)
+            log.verbose("PID verified (b2handle): %s", pid)
+            log.pp(b2handle_output)
 
         ################
         # 6. set metadata (with a prefix)
@@ -158,7 +142,6 @@ class Approve(B2HandleEndpoint, ClusterContainerEndpoint):
             args = {'path': dest_path, key: value}
             imain.set_metadata(**args)
         log.debug("Metadata set")
-
         # 7. check metadata ?
 
         ################
