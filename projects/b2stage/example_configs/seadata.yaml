@@ -1,9 +1,51 @@
 # ###############################################
 # Copyright 2011-2017 EUDAT CDI - www.eudat.eu
 # ###############################################
-
 variables:
   env:
+
+    ###############################
+    ## Seadata project variable
+    SEADATA_PROJECT: 1
+    IRODS_ANONYMOUS: 1
+    SEADATA_INGESTION_DIR: batches
+    SEADATA_PRODUCTION_DIR: cloud
+    SEADATA_ORDERS_DIR: orders
+    ## RANCHER
+    RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
+    RESOURCES_KEY: bla
+    RESOURCES_SECRET: bla
+    RESOURCES_PROJECT: bla
+    RESOURCES_HUB: bla
+    RESOURCES_HUBUSER: bla
+    RESOURCES_HUBPASS: bla
+
+#LOCAL
+    # IRODS_USER: irods
+    # IRODS_ZONE: tempZone
+    # IRODS_HOME: home
+    # IRODS_PASSWORD: chooseapasswordwisely
+    # IRODS_DN:           # automatically computed within the docker network
+    # IRODS_AUTHSCHEME:   # to be auto-detected
+    # IRODS_GUEST_USER: guest              # intended to work only with GSI
+    # IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
+
+#REMOTE
+    IRODS_HOST: HOST_IP
+    IRODS_ZONE: bla
+    IRODS_HOME: home
+    IRODS_AUTHSCHEME: credentials
+    IRODS_USER: bla
+    IRODS_PASSWORD: bla
+    IRODS_DN:
+    IRODS_GUEST_USER:
+    IRODS_DEFAULT_ADMIN_USER:
+
+    ###############################
+    ## B2SAFE SEADATA
+    # HANDLE_USER:
+    # HANDLE_PREFIX:
+    # HANDLE_PASS:
 
     ###############################
     ## B2ACCESS
@@ -13,44 +55,10 @@ variables:
     B2ACCESS_SECRET:
 
     ###############################
-    ## LOCAL (container) iRODS server
-    IRODS_USER: irods
-    IRODS_GUEST_USER: guest              # intended to work only with GSI
-    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
-    IRODS_ZONE: tempZone
-    IRODS_HOME: home
-    IRODS_PASSWORD: chooseapasswordwisely
-    IRODS_DN:           # automatically computed within the docker network
-    IRODS_ANONYMOUS: 0  # EXPERIMENTAL: enable the publish/public endpoints
-    IRODS_AUTHSCHEME:   # to be auto-detected
-    # IRODS_AUTHSCHEME: credentials
-    # IRODS_AUTHSCHEME: GSI
-    # NOTE: this must match ALCHEMY_PASSWORD
-
-    ###############################
     ## Dockerized DB
     ALCHEMY_USER: rods
     ALCHEMY_PASSWORD: chooseapasswordwisely
     ALCHEMY_API_DB: SQL_API
-
-    ###############################
-    ## Seadata project variable
-    SEADATA_PROJECT: 0
-    SEADATA_INGESTION_DIR: batches
-    SEADATA_PRODUCTION_DIR: cloud
-    SEADATA_ORDERS_DIR: orders
-    ## B2SAFE SEADATA
-    # HANDLE_USER:
-    # HANDLE_PREFIX:
-    # HANDLE_PASS:
-    ## RANCHER
-    RESOURCES_URL: https://IP/v2-beta
-    RESOURCES_KEY:
-    RESOURCES_SECRET:
-    RESOURCES_PROJECT:
-    RESOURCES_HUB:
-    RESOURCES_HUBUSER:
-    RESOURCES_HUBPASS:
 
     #################
 

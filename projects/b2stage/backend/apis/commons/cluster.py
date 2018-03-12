@@ -7,8 +7,11 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 DEFAULT_IMAGE_PREFIX = 'docker'
-BATCHES_DIR = detector.get_global_var('SEADATA_BATCH_DIR')
-PRODUCTION_DIR = detector.get_global_var('SEADATA_CLOUD_DIR')
+
+seadata_vars = detector.load_group(label='seadata')
+BATCHES_DIR = seadata_vars.get('batch_dir')
+ORDERS_DIR = seadata_vars.get('orders_dir')
+PRODUCTION_DIR = seadata_vars.get('cloud_dir')
 
 
 class ClusterContainerEndpoint(EndpointResource):

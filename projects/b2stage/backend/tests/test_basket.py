@@ -7,9 +7,9 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 
-class TestApprove(BaseTests):
+class TestBasket(BaseTests):
 
-    _main_endpoint = '/approve'
+    _main_endpoint = '/basket'
 
     def test_01_GET_giveityourname(self, client):
 

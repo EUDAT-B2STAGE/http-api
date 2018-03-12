@@ -38,6 +38,7 @@ variables:
     SEADATA_PROJECT: 0
     SEADATA_INGESTION_DIR: batches
     SEADATA_PRODUCTION_DIR: cloud
+    SEADATA_ORDERS_DIR: orders
     ## B2SAFE SEADATA
     # HANDLE_USER:
     # HANDLE_PREFIX:

@@ -1,0 +1,9 @@
+common:
+  custom:
+    authentication: true
+
+basket:
+  summary: Unauthenticated basket endpoint
+  responses:
+    '200':
+      description: "returning 'Hello World!' string"

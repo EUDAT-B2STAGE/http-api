@@ -1,0 +1,11 @@
+
+file: basket
+class: Basket
+schema:
+  expose: true
+mapping:
+  basket: "/order/<string:order_id>"
+labels:
+  - seadatacloud
+  # - resources
+  - ingestion
