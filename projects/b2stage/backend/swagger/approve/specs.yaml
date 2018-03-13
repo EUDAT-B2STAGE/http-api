@@ -1,6 +1,9 @@
 
+depends_on:
+  - SEADATA_PROJECT
+
 file: approve
-class: Approve
+class: MoveToProductionEndpoint
 schema:
   expose: true
 mapping:

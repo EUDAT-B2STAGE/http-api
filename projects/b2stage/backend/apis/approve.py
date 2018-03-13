@@ -25,7 +25,7 @@ log = get_logger(__name__)
 #################
 # REST CLASS
 # class Approve(EndpointResource):
-class Approve(B2HandleEndpoint, ClusterContainerEndpoint):
+class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     # def get(self, batch_id, temp_id):
     #     log.info("Received a test HTTP request")

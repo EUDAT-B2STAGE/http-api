@@ -75,6 +75,9 @@ class ClusterContainerEndpoint(EndpointResource):
     def get_batch_path(self, icom, batch_id=None):
         return self.get_path_with_suffix(icom, BATCHES_DIR, batch_id)
 
+    def get_order_path(self, icom, order_id=None):
+        return self.get_path_with_suffix(icom, ORDERS_DIR, order_id)
+
     def get_batch_zipfile_path(self, batch_id):
         container_fixed_path = self.get_ingestion_path()
         filename = self.get_input_zip_filename()

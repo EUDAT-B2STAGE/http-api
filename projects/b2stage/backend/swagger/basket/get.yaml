@@ -2,8 +2,14 @@ common:
   custom:
     authentication: true
 
-basket:
-  summary: Unauthenticated basket endpoint
+order:
+  summary: "Download an order"
+  parameters:
+    - name: code
+      in: query
+      type: string
+      description: code to verify the order download
+      # default: hello
   responses:
     '200':
-      description: "returning 'Hello World!' string"
+      description: The order with all files compressed

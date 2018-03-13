@@ -1,0 +1,9 @@
+common:
+  custom:
+    authentication: true
+
+basket:
+  summary: Request one order preparation
+  responses:
+    '200':
+      description: Asynchronous request launched

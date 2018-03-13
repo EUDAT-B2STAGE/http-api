@@ -1,10 +1,14 @@
 
+depends_on:
+  - SEADATA_PROJECT
+
 file: basket
-class: Basket
+class: BasketEndpoint
 schema:
   expose: true
 mapping:
-  basket: "/order/<string:order_id>"
+  basket: "/orders"
+  order: "/orders/<string:order_id>"
 labels:
   - seadatacloud
   # - resources
