@@ -62,26 +62,40 @@ class Resources(ClusterContainerEndpoint):
     def put(self, batch_id, qc_name):
         """ Launch a quality check inside a container """
 
+        ###########################
+        # get name from batch
+        imain = self.get_service_instance(service_name='irods')
+        batch_path = self.get_batch_path(imain, batch_id)
+        log.info("Batch path: %s", batch_path)
+        files = imain.list(batch_path)
+        if len(files) != 1:
+            return self.send_errors(
+                'Misconfiguration for batch_id: %s' % batch_id,
+                code=hcodes.HTTP_BAD_NOTFOUND
+            )
+        # log.pp(files)
+        file_id = list(files.keys()).pop()
+
+        ###########################
         im_prefix = 'maris'
         self.get_input()
         input_json = self._args.get('input', {})
 
-        # TODO: only one quality check at the time on the same batch
+        # FIXME: only one quality check at the time on the same batch
         container_name = self.get_container_name(batch_id, qc_name)
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
         ###########################
         rancher = self.get_or_create_handle()
+        cpath = self.get_batch_zipfile_path(batch_id, filename=file_id)
+        log.verbose("Container path: %s", cpath)
         errors = rancher.run(
             container_name=container_name,
             image_name=docker_image_name,
             private=True,
             extras={
                 'dataVolumes': [self.mount_batch_volume(batch_id)],
-                'environment': {
-                    'BATCH_ZIPFILE_PATH':
-                        self.get_batch_zipfile_path(batch_id),
-                }
+                'environment': {'BATCH_ZIPFILE_PATH': cpath}
             }
         )
 

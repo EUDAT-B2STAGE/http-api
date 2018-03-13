@@ -1,5 +1,6 @@
 
-withid:
+# withid:
+withidandfile:
   custom:
     authentication: true
   summary: Upload a zip file to the ingestion cloud

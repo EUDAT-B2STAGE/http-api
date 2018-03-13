@@ -4,6 +4,8 @@
 
 ## Checks
 
+- cp files to local dir and zip
+    + NOT @async for now
 - order/ticket
 - irods/b2safe image/stack
 - ansible

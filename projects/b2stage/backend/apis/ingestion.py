@@ -42,7 +42,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         return "Batch '%s' is enabled and filled" % batch_id
 
-    def put(self, batch_id):
+    def put(self, batch_id, file_id):
         """
         Let the Replication Manager upload a zip file into a batch folder
         """
@@ -73,7 +73,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 % ALLOWED_MIMETYPE_UPLOAD,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        ipath = self.complete_path(batch_path, self.get_input_zip_filename())
+        ipath = self.complete_path(
+            batch_path, self.get_input_zip_filename(file_id))
+        log.verbose("Cloud filename: %s", ipath)
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
             iout = icom.write_in_streaming(
@@ -89,7 +91,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ###########################
         # Also copy file to the B2HOST environment
-
         rancher = self.get_or_create_handle()
         idest = self.get_ingestion_path()
 
@@ -105,7 +106,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         # Launch a container to copy the data into B2HOST
         cname = 'copy_zip'
-        cversion = '0.7'
+        cversion = '0.7'  # release 1.0?
         image_tag = '%s:%s' % (cname, cversion)
         container_name = self.get_container_name(batch_id, image_tag)
         docker_image_name = self.get_container_image(image_tag, prefix='eudat')

@@ -56,8 +56,9 @@ class ClusterContainerEndpoint(EndpointResource):
         container_fixed_path = self.get_ingestion_path()
         return "%s:%s" % (host_path, container_fixed_path)
 
-    def get_input_zip_filename(self):
-        filename = 'input'
+    def get_input_zip_filename(self, filename=None):
+        if filename is None:
+            filename = 'input'
         extension = 'zip'
         return "%s.%s" % (filename, extension)
 
@@ -78,10 +79,10 @@ class ClusterContainerEndpoint(EndpointResource):
     def get_order_path(self, icom, order_id=None):
         return self.get_path_with_suffix(icom, ORDERS_DIR, order_id)
 
-    def get_batch_zipfile_path(self, batch_id):
+    def get_batch_zipfile_path(self, batch_id, filename=None):
         container_fixed_path = self.get_ingestion_path()
-        filename = self.get_input_zip_filename()
-        return str(path.build([container_fixed_path, filename]))
+        batch_file = self.get_input_zip_filename(filename)
+        return str(path.build([container_fixed_path, batch_file]))
 
     @staticmethod
     def get_container_name(batch_id, qc_name):

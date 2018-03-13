@@ -18,7 +18,7 @@ To be continued...
 To be continued...
 
 ```bash
-$ rapydo update --rebuild
+$ rapydo update --rebuild && rapydo restart
 ```
 
 ## Upgrade
