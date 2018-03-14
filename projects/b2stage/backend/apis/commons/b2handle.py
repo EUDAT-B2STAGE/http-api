@@ -46,34 +46,36 @@ class B2HandleEndpoint(EudatEndpoint):
 
     def connect_client(self, force_no_credentials=False, disable_logs=False):
 
-        found = False
+        if getattr(self, '_handle_client', None) is None:
 
-        if disable_logs:
-            import logging
-            logging.getLogger('b2handle').setLevel(logging.WARNING)
+            if disable_logs:
+                import logging
+                logging.getLogger('b2handle').setLevel(logging.WARNING)
 
-        # With credentials
-        if force_no_credentials:
-            client = b2handle.instantiate_for_read_access()
-            log.info("PID client connected: NO credentials")
-        else:
-            file = os.environ.get('HANDLE_CREDENTIALS', None)
-            if file is not None:
-                from utilities import path
-                credentials_path = path.build(file)
-                found = path.file_exists_and_nonzero(credentials_path)
-                if not found:
-                    log.warning(
-                        "B2HANDLE credentials file not found %s", file)
+            # With credentials
+            if force_no_credentials:
+                self._handle_client = b2handle.instantiate_for_read_access()
+                log.debug("HANDLE client connected [w/out credentials]")
+            else:
+                found = False
+                file = os.environ.get('HANDLE_CREDENTIALS', None)
+                if file is not None:
+                    from utilities import path
+                    credentials_path = path.build(file)
+                    found = path.file_exists_and_nonzero(credentials_path)
+                    if not found:
+                        log.warning(
+                            "B2HANDLE credentials file not found %s", file)
 
-            if found:
-                client = b2handle.instantiate_with_credentials(
-                    credentials.load_from_JSON(file)
-                )
-                log.info("PID client connected: w/ credentials")
-                return client, True
+                if found:
+                    self._handle_client = \
+                        b2handle.instantiate_with_credentials(
+                            credentials.load_from_JSON(file)
+                        )
+                    log.debug("HANDLE client connected [w/ credentials]")
+                    return self._handle_client, True
 
-        return client, False
+        return self._handle_client, False
 
     def check_pid_content(self, pid):
         # from b2handle.handleclient import EUDATHandleClient as b2handle

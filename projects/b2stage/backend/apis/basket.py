@@ -84,17 +84,32 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
+        # Verify pids
+        files = {}
+        for pid in pids:
+            b2handle_output = self.check_pid_content(pid)
+            if b2handle_output is None:
+                error = {pid: 'not found'}
+                log.error(error)
+                return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+            ipath = self.parse_pid_dataobject_path(b2handle_output)
+            log.debug("PID verified: %s\n(%s)", pid, ipath)
+            files[pid] = ipath
+        # log.verbose("PID list: %s", pids)
+
+        ##################
+        # Create the path
         log.info("Order request: %s", order_id)
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
-        log.debug("PID list: %s", pids)
+        log.pp(files)
 
         ##################
-        # Create the path
-
-        ##################
-        # Add all file from production to order directory
+        # Add all files into a tmpdir (with the order_id folder name)
+        # Zip the dir
+        # Copy the zip into irods
         # @async!
 
         ##################
