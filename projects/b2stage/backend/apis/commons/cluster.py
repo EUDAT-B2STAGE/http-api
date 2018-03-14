@@ -56,11 +56,12 @@ class ClusterContainerEndpoint(EndpointResource):
         container_fixed_path = self.get_ingestion_path()
         return "%s:%s" % (host_path, container_fixed_path)
 
-    def get_input_zip_filename(self, filename=None):
+    def get_input_zip_filename(self, filename=None, extension='zip', sep='.'):
         if filename is None:
             filename = 'input'
-        extension = 'zip'
-        return "%s.%s" % (filename, extension)
+        else:
+            filename = filename.replace('%s%s' % (sep, extension), '')
+        return "%s%s%s" % (filename, sep, extension)
 
     def get_path_with_suffix(self, icom, mypath, suffix=None):
         paths = [mypath]

@@ -231,7 +231,8 @@ class Rancher(object):
         if extras is not None and isinstance(extras, dict):
             for key, value in extras.items():
                 if key not in params:
-                    log.debug("Adding extra: %s = %s", key, value)
+                    # NOTE: this may print passwords, watch out!
+                    # log.debug("Adding extra: %s = %s", key, value)
                     params[key] = value
 
         ############
