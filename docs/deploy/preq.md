@@ -27,6 +27,10 @@ $ apt-get update && apt-get install python3-pip
 
 ### docker engine
 
+Please *NOTE*: if you are using `Red Hat` (RHEL) as Operatin System, Docker is supported [only in the enterprise edition](https://docs.docker.com/install/linux/docker-ee/rhel/#prerequisites).
+
+---
+
 To install docker on a unix terminal you may use the [get docker script](https://get.docker.com):
 
 ```
