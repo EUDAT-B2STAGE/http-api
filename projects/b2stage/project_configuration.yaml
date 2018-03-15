@@ -78,6 +78,8 @@ variables:
     # This path needs permissions to user 1001
     # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /usr/share
+    # Email to be notified for proxy certificates expiration (letsencrypt)
+    SMTP_ADMIN:
 
     #################
     # base user/password

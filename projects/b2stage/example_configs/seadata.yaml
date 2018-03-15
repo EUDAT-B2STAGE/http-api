@@ -13,12 +13,13 @@ variables:
     SEADATA_ORDERS_DIR: orders
     ## RANCHER
     RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
-    RESOURCES_KEY: bla
-    RESOURCES_SECRET: bla
-    RESOURCES_PROJECT: bla
-    RESOURCES_HUB: bla
-    RESOURCES_HUBUSER: bla
-    RESOURCES_HUBPASS: bla
+    RESOURCES_KEY: put_some_value
+    RESOURCES_SECRET: put_some_value
+    RESOURCES_PROJECT: put_some_value
+    ## DOCKER HUB
+    RESOURCES_HUB: put_some_value
+    RESOURCES_HUBUSER: put_some_value
+    RESOURCES_HUBPASS: put_some_value
 
 #LOCAL
     # IRODS_USER: irods
@@ -32,14 +33,18 @@ variables:
 
 #REMOTE
     IRODS_HOST: HOST_IP
-    IRODS_ZONE: bla
+    IRODS_ZONE: put_some_value
     IRODS_HOME: home
     IRODS_AUTHSCHEME: credentials
-    IRODS_USER: bla
-    IRODS_PASSWORD: bla
+    IRODS_USER: put_some_value
+    IRODS_PASSWORD: put_some_value
     IRODS_DN:
     IRODS_GUEST_USER:
     IRODS_DEFAULT_ADMIN_USER:
+
+    ###############################
+    # Email to be notified for proxy certificates expiration (letsencrypt)
+    SMTP_ADMIN:
 
     ###############################
     ## B2SAFE SEADATA

@@ -113,6 +113,8 @@ variables:
     # FLASK_FIXED_IP: 175.1.0.10
     UPLOAD_PATH: /uploads
     FULL_JWT: false
+    # Email to be notified for proxy certificates expiration
+    SMTP_ADMIN:
 
     ###############################
     ## Queue

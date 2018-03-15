@@ -90,3 +90,7 @@ services:
       worker_net:
     # depends_on:
     #   - rabbit
+
+  proxy:
+    environment:
+      SMTP_ADMIN: ${SMTP_ADMIN}
