@@ -2,6 +2,7 @@
 
 from restapi.services.detect import detector
 SEADATA_ENABLED = detector.get_global_var('SEADATA_PROJECT')
+ORDERS_ENDPOINT = 'orders'
 
 
 class Metadata(object):

@@ -172,11 +172,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         if not imain.is_collection(batch_path):
             # Enable the batch
             batch_path = self.get_batch_path(imain, batch_id)
-
             # Create the path and set permissions
             imain.create_collection_inheritable(batch_path, obj.username)
-
-            ##################
             # # Remove anonymous access to this batch
             # ianonymous.set_permissions(
             #     batch_path,

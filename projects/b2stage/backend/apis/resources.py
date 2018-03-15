@@ -78,6 +78,7 @@ class Resources(ClusterContainerEndpoint):
 
         ###########################
         im_prefix = 'maris'
+        # im_prefix = 'eudat'
         self.get_input()
         input_json = self._args.get('input', {})
 
