@@ -11,7 +11,7 @@ if [ ! -z "SEADATA_PROJECT" ]; then
 
     BATCHES_PATH="/$IRODS_ZONE/$SEADATA_BATCH_DIR"
     PROD_PATH="/$IRODS_ZONE/$SEADATA_CLOUD_DIR"
-    ORDERS_PATH="/$IRODS_ZONE/$SEADATA_ORDER_DIR"
+    ORDERS_PATH="/$IRODS_ZONE/$SEADATA_ORDERS_DIR"
 
     # NOTE: we are using the main HTTP API irods user
     # to manage batches across nodes
