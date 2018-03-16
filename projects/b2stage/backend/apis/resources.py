@@ -6,6 +6,8 @@ Launch containers for quality checks in Seadata
 
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from utilities import htmlcodes as hcodes
+from restapi import decorators as decorate
+from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -13,6 +15,7 @@ log = get_logger(__name__)
 
 class Resources(ClusterContainerEndpoint):
 
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, batch_id, qc_name):
         """ Check my quality check container """
 
@@ -59,6 +62,7 @@ class Resources(ClusterContainerEndpoint):
 
         return response
 
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, batch_id, qc_name):
         """ Launch a quality check inside a container """
 
@@ -67,36 +71,87 @@ class Resources(ClusterContainerEndpoint):
         imain = self.get_service_instance(service_name='irods')
         batch_path = self.get_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
-        files = imain.list(batch_path)
-        if len(files) != 1:
+        try:
+            files = imain.list(batch_path)
+        except BaseException as e:
+            log.warning(e.__class__.__name__)
+            log.error(e)
             return self.send_errors(
-                'Misconfiguration for batch_id: %s' % batch_id,
-                code=hcodes.HTTP_BAD_NOTFOUND
+                "Batch '%s' not found (or no permissions)" % batch_id,
+                code=hcodes.HTTP_BAD_REQUEST
             )
-        # log.pp(files)
-        file_id = list(files.keys()).pop()
+        else:
+            if len(files) != 1:
+                return self.send_errors(
+                    'Misconfiguration for batch_id: %s' % batch_id,
+                    code=hcodes.HTTP_BAD_NOTFOUND
+                )
+            else:
+                # log.pp(files)
+                file_id = list(files.keys()).pop()
 
         ###########################
         im_prefix = 'maris'
         # im_prefix = 'eudat'
-        self.get_input()
-        input_json = self._args.get('input', {})
 
-        # FIXME: only one quality check at the time on the same batch
+        ###################
+        # Parameters check
+        input_json = self.get_input()
+        # input_json = self._args.get('input', {})
+        # input parameters to be passed to container
+        envs = {}
+        pkey = "parameters"
+        param_keys = [
+            "request_id", "edmo_code", "datetime",
+            "api_function", "version", "test_mode",
+            pkey
+        ]
+        for key in param_keys:
+            if key == pkey:
+                continue
+            value = input_json.get(key, None)
+            if value is None:
+                return self.send_errors(
+                    'Missing JSON key: %s' % key,
+                    code=hcodes.HTTP_BAD_REQUEST
+                )
+            else:
+                envs[key.upper()] = value
+        # check batch id also from the parameters
+        batch_j = input_json.get(pkey, {}).get("batch_number", 'UNKNOWN')
+        if batch_j != batch_id:
+            return self.send_errors(
+                "Wrong JSON batch id: '%s' instead of '%s'" % (
+                    batch_j, batch_id
+                ), code=hcodes.HTTP_BAD_REQUEST
+            )
+
+        for key, value in input_json.get(pkey, {}).items():
+            name = '%s_%s' % (pkey, key)
+            envs[name.upper()] = value
+
+        ###################
+        # TODO: only one quality check at the time on the same batch
+        # should I ps containers before launching?
         container_name = self.get_container_name(batch_id, qc_name)
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
         ###########################
         rancher = self.get_or_create_handle()
-        cpath = self.get_batch_zipfile_path(batch_id, filename=file_id)
-        log.verbose("Container path: %s", cpath)
+        cfilepath = self.get_batch_zipfile_path(batch_id, filename=file_id)
+        # log.verbose("Container path: %s", cpath)
+        from utilities import path
+        envs['BATCH_DIR_PATH'] = path.dir_name(cfilepath)
+        # envs['BATCH_ZIPFILE_PATH'] = cpath
+        log.pp(envs)
+
         errors = rancher.run(
             container_name=container_name,
             image_name=docker_image_name,
             private=True,
             extras={
                 'dataVolumes': [self.mount_batch_volume(batch_id)],
-                'environment': {'BATCH_ZIPFILE_PATH': cpath}
+                'environment': envs,
             }
         )
 
@@ -121,6 +176,7 @@ class Resources(ClusterContainerEndpoint):
 
         return response
 
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def delete(self, batch_id, qc_name):
         """
         Remove a quality check executed

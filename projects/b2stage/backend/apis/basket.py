@@ -163,6 +163,14 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, order_id):
 
+        ##################
+        # imain = self.get_service_instance(service_name='irods')
+        # TODO: push pdonorio/prc
+        # tickets = imain.list_tickets()
+        # print(tickets)
+        # return "Hello"
+
+        ##################
         log.info("Order request: %s", order_id)
 
         obj = self.init_endpoint()
@@ -182,9 +190,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # irods ticket
-        # TODO: check permissions
+
+        # TODO: prc list tickets so we can avoid more than once
         ticket = icom.ticket(zip_ipath)
-        # FIXME: what if you ask twice?
 
         # TODO: investigate iticket expiration
         # iticket mod Ticket_string-or-id uses/expire string-or-none
