@@ -139,3 +139,7 @@ services:
   restclient:
     environment:
       IRODS_ZONE: ${IRODS_ZONE}
+
+  proxy:
+    environment:
+      SMTP_ADMIN: ${SMTP_ADMIN}
