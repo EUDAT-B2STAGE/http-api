@@ -90,16 +90,21 @@ class Resources(ClusterContainerEndpoint):
                 # log.pp(files)
                 file_id = list(files.keys()).pop()
 
-        ###########################
-        im_prefix = 'maris'
-        # im_prefix = 'eudat'
-
         ###################
-        # Parameters check
+        # Parameters (and checks)
+        envs = {}
         input_json = self.get_input()
         # input_json = self._args.get('input', {})
+
+        # backdoor check
+        bd = input_json.pop('eudat_backdoor', False)  # TODO: remove me
+        if bd:
+            im_prefix = 'eudat'
+        else:
+            im_prefix = 'maris'
+        log.debug("Image prefix: %s", im_prefix)
+
         # input parameters to be passed to container
-        envs = {}
         pkey = "parameters"
         param_keys = [
             "request_id", "edmo_code", "datetime",
@@ -115,8 +120,8 @@ class Resources(ClusterContainerEndpoint):
                     'Missing JSON key: %s' % key,
                     code=hcodes.HTTP_BAD_REQUEST
                 )
-            else:
-                envs[key.upper()] = value
+            # else:
+            #     envs[key.upper()] = value
         # check batch id also from the parameters
         batch_j = input_json.get(pkey, {}).get("batch_number", 'UNKNOWN')
         if batch_j != batch_id:
@@ -126,9 +131,9 @@ class Resources(ClusterContainerEndpoint):
                 ), code=hcodes.HTTP_BAD_REQUEST
             )
 
-        for key, value in input_json.get(pkey, {}).items():
-            name = '%s_%s' % (pkey, key)
-            envs[name.upper()] = value
+        # for key, value in input_json.get(pkey, {}).items():
+        #     name = '%s_%s' % (pkey, key)
+        #     envs[name.upper()] = value
 
         ###################
         # TODO: only one quality check at the time on the same batch
@@ -142,6 +147,8 @@ class Resources(ClusterContainerEndpoint):
         # log.verbose("Container path: %s", cpath)
         from utilities import path
         envs['BATCH_DIR_PATH'] = path.dir_name(cfilepath)
+        import json
+        envs['JSON_INPUT'] = json.dumps(input_json)
         # envs['BATCH_ZIPFILE_PATH'] = cpath
         log.pp(envs)
 

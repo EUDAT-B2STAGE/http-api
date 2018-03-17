@@ -1,6 +1,10 @@
 
+- Step 03
+    - Send JSON in a string as OS env
+    - Read it with `jq` as example
 - Step 04
-    - `POST` on `/api/ingestion/<batch_id>/approve` as file_list @above
+    - `/api/ingestion/<batch_id>/approve` as file_list @above
+        + `POST`  (instead of `PUT`) 
     - Call the Maris `API` with returns value of the same list + PIDs
 - Step 05/06
     - Order `POST`: Call the Maris `API` at the end of the file zipped
