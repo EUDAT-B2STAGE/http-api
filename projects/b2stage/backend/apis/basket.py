@@ -69,16 +69,52 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.debug('POST request on orders')
         json_input = self.get_input()
 
+        # TODO: verify also these parameters
+        # "api_function": "order_create_zipfile",
+        # "request_id": 15528,
+        # "parameters":
+        #     "restricted": "false",
+        #     "file_name": "order_15528_unrestricted",
+        #     "file_count": 3
+
         ##################
-        key = 'order_id'
+        key = 'request_id'
         order_id = json_input.get(key)
         if order_id is None:
+            error = "Order ID '%s': missing" % key
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        else:
+            order_id = str(order_id)
+
+        ##################
+        main_key = 'parameters'
+        params = json_input.get(main_key, {})
+        if len(params) < 1:
+            error = "'%s' missing" % main_key
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        # else:
+        #     log.pp(params)
+
+        ##################
+        key = 'file_name'
+        filename = params.get(key)
+        if filename is None:
             error = "Parameter '%s' is missing" % key
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        elif filename != 'order_%s_unrestricted' % order_id:
+            error = "Wrong '%s': %s" % (key, filename)
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+        # ##################
+        # key = 'order_number'
+        # order_id = params.get(key)
+        # if order_id is None:
+        #     error = "Parameter '%s' is missing" % key
+        #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
         key = 'pids'
-        pids = json_input.get(key)
+        pids = params.get(key)
         if pids is None:
             error = "Parameter '%s' is missing" % key
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
@@ -100,7 +136,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             ipath = self.parse_pid_dataobject_path(b2handle_output)
             log.debug("PID verified: %s\n(%s)", pid, ipath)
             files[pid] = ipath
-        # log.verbose("PID list: %s", pids)
+        log.verbose("PID files: %s", files)
 
         ##################
         # Create the path
@@ -115,10 +151,13 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # Does the zip already exists?
-        zip_file_name = path.append_compress_extension(order_id)
+        # zip_file_name = path.append_compress_extension(order_id)
+        zip_file_name = path.append_compress_extension(filename)
         zip_ipath = path.join(order_path, zip_file_name, return_str=True)
         if imain.is_dataobject(zip_ipath):
-            return {order_id: 'already exists'}
+            # return {order_id: 'already exists'}
+            json_input['status'] = 'exists'
+            return json_input
 
         ##################
         # log.pp(files)
@@ -149,16 +188,19 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # Zip the dir
-        zip_local_file = path.join(TMPDIR, zip_file_name, return_str=True)
+        zip_local_file = path.join(TMPDIR, zip_file_name)  # , return_str=True)
         # log.debug("Zip local path: %s", zip_local_file)
         if not path.file_exists_and_nonzero(zip_local_file):
-            path.compress(local_dir, zip_local_file)
+            path.compress(local_dir, str(zip_local_file))
             log.info("Compressed in: %s", zip_local_file)
 
         ##################
         # Copy the zip into irods (force overwrite)
-        imain.put(zip_local_file, zip_ipath)  # NOTE: always overwrite
-        return {order_id: 'created'}
+        imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
+
+        # return {order_id: 'created'}
+        json_input['status'] = 'created'
+        return json_input
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, order_id):
@@ -181,7 +223,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # verify if the path exists
-        zip_file_name = path.append_compress_extension(order_id)
+        filename = 'order_%s_unrestricted' % order_id
+        zip_file_name = path.append_compress_extension(filename)
         zip_ipath = path.join(order_path, zip_file_name, return_str=True)
         log.debug("Zip irods path: %s", zip_ipath)
         if not icom.is_dataobject(zip_ipath):
