@@ -20,21 +20,23 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ########################
         # get irods session
-        obj = self.init_endpoint()
-        icom = obj.icommands
 
-        batch_path = self.get_batch_path(icom, batch_id)
+        imain = self.get_service_instance(service_name='irods')
+        # obj = self.init_endpoint()
+        # icom = obj.icommands
+
+        batch_path = self.get_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
 
         ########################
         # Check if the folder exists and is empty
-        if not icom.is_collection(batch_path):
+        if not imain.is_collection(batch_path):
             return self.send_errors(
                 "Batch '%s' not enabled or you have no permissions"
                 % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        files = icom.list(batch_path)
+        files = imain.list(batch_path)
         if len(files) != 1:
             return self.send_errors(
                 "Batch '%s' not yet filled" % batch_id,
