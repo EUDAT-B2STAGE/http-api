@@ -37,6 +37,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, batch_id, temp_id):
 
+        # TODO: switch to list of approved files
+
         ################
         # 1. check if irods file exists
 
@@ -148,6 +150,26 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # 8. ALL DONE: move file from ingestion to trash
         imain.remove(src_path)
         log.info("Source removed: %s", src_path)
+
+        ################
+        # TODO: output as input
+        """
+        "request_id": 197,
+        "edmo_code": 486,
+        "datetime": "20180312T16:03:52",
+        "version": "1",
+        "api_function": "upload_datafiles_ready",
+        "test_mode": "true",
+        "parameters": {
+            "batch_number": 197,
+            "pids": [{
+                    "temp_id": "00486_ODV_45511746_V1.txt",
+                    "pid": "pidpid",
+                    "cdi_n_code": "2449339",
+                    "format_n_code": "4119694",
+                    "data_format_l24": "ODV",
+                    "version": "1"
+        """
 
         ################
         response = {'PID': pid}
