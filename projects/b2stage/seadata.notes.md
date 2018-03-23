@@ -1,20 +1,25 @@
 
 - Step 02
-    + check with `GET` different permissions if a batch is enabled
+    * check with `GET` different permissions if a batch is enabled
 - Step 03
     * Send JSON in a string as OS env
     * Read it with `jq` as example
+    + decompress in one container
+    + move files in another file
 - Step 04
     + `/api/ingestion/<batch_id>/approve` as file_list @above
         + `POST`  (instead of `PUT`) 
     + Call the Maris `API` with returns value of the same list + PIDs
 - Step 05/06
-    * Order `POST`: Change input/output
+    * Order `POST`: Change input/output?
+    + Order `POST`: Swagger input JSON not possible?
     + Order `POST`: Call the Maris `API` at the end of the file zipped
-    + Order `PUT`: Create the URL for the ticket code in GET
+    * Order `PUT`: Create the URL for the ticket code in GET
+        * return URL
         + iticket ls with pdonorio/prc?
     + Order `GET`: 
-        + Download the URL
+        * Retrieve the path
+        + Download the URL (iticket supply)
         + check counts/expiration inside ticket/icat db
 
 ---

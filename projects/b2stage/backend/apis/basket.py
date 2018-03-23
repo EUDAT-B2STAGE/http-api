@@ -59,8 +59,51 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.info("Order request: %s (code '%s')", order_id, code)
 
         ##################
-        response = 'Work in progress'
-        return self.force_response(response)
+        imain = self.get_service_instance(service_name='irods')
+        order_path = self.get_order_path(imain, order_id)
+
+        ##################
+        # verify if the path exists
+        filename = 'order_%s_unrestricted' % order_id
+        zip_file_name = path.append_compress_extension(filename)
+        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
+        log.debug("Zip irods path: %s", zip_ipath)
+
+        ##################
+        error = None
+        if not imain.is_dataobject(zip_ipath):
+            error = "Order '%s' not found (or no permissions)" % order_id
+        else:
+            # NOTE: very important!
+            # use anonymous to get the session here
+            # because the ticket supply breaks the iuser session permissions
+            icom = self.get_service_instance(
+                service_name='irods', user='anonymous', password='null')
+            # obj = self.init_endpoint()
+            # icom = obj.icommands
+            icom.ticket_supply(code)
+
+            # code += 'error'
+            if not icom.test_ticket(zip_ipath):
+                error = "Invalid code"
+
+        if error is not None:
+            return self.send_errors(
+                {order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
+        else:
+            # # TODO: push pdonorio/prc
+            # tickets = imain.list_tickets()
+            # print(tickets)
+
+            pass
+            # iticket mod "$TICKET" add user anonymous
+            # iticket mod "$TICKET" uses 1
+            # iticket mod "$TICKET" expire "2018-03-23.06:50:00"
+
+        # ##################
+        # response = {order_id: 'valid'}
+        # return self.force_response(response)
+        return icom.stream_ticket(zip_ipath)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self):
@@ -215,10 +258,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ##################
         log.info("Order request: %s", order_id)
 
-        obj = self.init_endpoint()
-        icom = obj.icommands
-        # imain = self.get_service_instance(service_name='irods')
-        order_path = self.get_order_path(icom, order_id)
+        # obj = self.init_endpoint()
+        # icom = obj.icommands
+        imain = self.get_service_instance(service_name='irods')
+        order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
 
         ##################
@@ -227,7 +270,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         zip_file_name = path.append_compress_extension(filename)
         zip_ipath = path.join(order_path, zip_file_name, return_str=True)
         log.debug("Zip irods path: %s", zip_ipath)
-        if not icom.is_dataobject(zip_ipath):
+        if not imain.is_dataobject(zip_ipath):
             error = "Order '%s' not found (or no permissions)" % order_id
             return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
@@ -235,7 +278,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # irods ticket
 
         # TODO: prc list tickets so we can avoid more than once
-        ticket = icom.ticket(zip_ipath)
+        ticket = imain.ticket(zip_ipath)
+        log.warning("Ticket: %s", ticket.ticket)
 
         # TODO: investigate iticket expiration
         # iticket mod Ticket_string-or-id uses/expire string-or-none
@@ -244,14 +288,21 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # build URL
         from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
         from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
-        route = '%s/%s/%s/' % (
-            CURRENT_HTTPAPI_SERVER, API_URL, ORDERS_ENDPOINT
-        )
-        print("TEST", route)
         # GET /api/orders/?code=xxx
+        import urllib.parse
+        route = '%s%s/%s/%s?code=%s' % (
+            CURRENT_HTTPAPI_SERVER, API_URL,
+            ORDERS_ENDPOINT, order_id,
+            urllib.parse.quote_plus(ticket.ticket)
+        )
+        # print("TEST", route)
 
         ##################
-        response = ticket.ticket
+        # response = {'code': ticket.ticket}
+        response = {
+            'GET': route,
+            'code': urllib.parse.quote_plus(ticket.ticket)
+        }
         # response = 'Work in progress'
         return self.force_response(response)
 

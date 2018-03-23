@@ -55,8 +55,8 @@ services:
       # base the user/role mechanism on some database
       AUTH_ENABLE: 1
       AUTH_SERVICE: ${AUTH_SERVICE}
-      # disable the basic /api/login method
-      MAIN_LOGIN_ENABLE: 0
+      MAIN_LOGIN_ENABLE: 0  # disable the basic /auth/login method
+      PROFILE_DISABLED: 1   # disable /auth/profile operations
 
       ##############################
       # set this inside the MODE yaml files you want to use

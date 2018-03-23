@@ -8,6 +8,7 @@ from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from utilities import htmlcodes as hcodes
+# from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
 
 log = get_logger(__name__)

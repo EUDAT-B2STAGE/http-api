@@ -14,7 +14,6 @@ services:
     environment:
       ACTIVATE: 1
       FLASK_DEBUG: 1
-      DEBUG_ENDPOINTS: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
 
@@ -25,8 +24,12 @@ services:
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
-      MAIN_LOGIN_ENABLE: 1
       #################
+
+      # trick for unittests
+      DEBUG_ENDPOINTS: 1
+      MAIN_LOGIN_ENABLE: 1
+      PROFILE_DISABLED: 0
 
       # Fix for mac development
       LINES: 28
