@@ -27,75 +27,31 @@ log = get_logger(__name__)
 # class Approve(EndpointResource):
 class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    # def get(self, batch_id, temp_id):
+    # def get(self, batch_id):
     #     log.info("Received a test HTTP request")
     #     # self.get_input()
     #     # log.pp(self._args, prefix_line='Parsed args')
-    #     response = 'Dummy method: (%s, %s)' % (batch_id, temp_id)
+    #     response = 'Dummy method'
     #     return self.force_response(response)
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def put(self, batch_id, temp_id):
+    def pid_production(self, imain, batch_id, data):
 
-        # TODO: switch to list of approved files
-
-        ################
-        # 1. check if irods file exists
-
-        imain = self.get_service_instance(service_name='irods')
-        batch_path = self.get_batch_path(imain, batch_id)
-        log.debug("Batch path: %s", batch_path)
-
-        if not imain.is_collection(batch_path):
-            return self.send_errors(
-                "Batch '%s' not enabled or you have no permissions"
-                % batch_id,
-                code=hcodes.HTTP_BAD_REQUEST)
-        src_path = self.complete_path(batch_path, temp_id)
-        log.info("File path: %s", src_path)
-        if not imain.is_dataobject(src_path):
-            return self.send_errors(
-                "File '%s' not found for batch '%s'" % (temp_id, batch_id),
-                code=hcodes.HTTP_BAD_REQUEST)
-
-        ################
-        # 1.5 check parameters
-        json_input = self.get_input()
-        # log.pp(self._args, prefix_line='Parsed args')
-        for key in md.keys:
-            value = json_input.get(key)
-            error = None
-
-            if value is None:
-                error = 'Missing parameter: %s' % key
-            else:
-                value_len = len(value)
-
-            if value_len > md.max_size:
-                error = 'Parameter %s exceeds size %s ' % (key, md.max_size)
-            if value_len < 1:
-                error = 'Parameter %s empty' % key
-
-            if error is not None:
-                return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
-        ################
-        # 2. make batch_id directory in production if not existing
-        prod_path = self.get_production_path(imain, batch_id)
-        log.debug("Production path: %s", prod_path)
-        obj = self.init_endpoint()
-        imain.create_collection_inheritable(prod_path, obj.username)
+        temp_id = data.get(md.tid)
+        src_path = self.src_paths.get(temp_id)
+        log.warning("TESTING: %s (%s)", temp_id, src_path)
 
         ################
         # 3. copy file from ingestion to production
-        dest_path = self.complete_path(prod_path, temp_id)
+        dest_path = self.complete_path(self.prod_path, temp_id)
         log.info("Production file path: %s", dest_path)
         imain.icopy(src_path, dest_path)
 
         ################
         # 4. irule to get PID
         pid = self.pid_request(imain, dest_path)
-        # get the metadata to check the PID
+
+        ################
+        # 5. irods metadata to check the PID
         metadata, _ = imain.get_metadata(dest_path)
         try:
             metadata_pid = metadata.pop('PID').strip()
@@ -106,71 +62,145 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             if pid == metadata_pid:
                 log.info("Confirmed PID: %s", pid)
             else:
-                log.warning(
-                    "PID unconfirmed?\nfrom rule: %s\nfrom md: %s",
-                    pid, metadata_pid
-                )
+                log.warning("PID unconfirmed?\n%s vs %s", pid, metadata_pid)
 
+        # ################
         # # DEBUG extra metadata?
         # for key, value in metadata.items():
         #     if not key.lower().startswith('eudat'):
         #         print("Metadata:", key, value)
         # self.eudat_pid_fields
 
+        # ################
+        # # 6. Verify PID (b2handle)
+        # TODO: re-enable, but use 'retry' python lib:
+        # http://tenacity.readthedocs.io/en/latest/#examples
+
+        # b2handle_output = None
+        # counter = 0
+
+        # while b2handle_output is None and counter < 5:
+        #     counter += 1
+        #     log.debug("b2handle pid test: n.%d" % counter)
+        #     import time
+        #     time.sleep(1)
+        #     b2handle_output = self.check_pid_content(pid)
+
+        # if b2handle_output is None:
+        #     error = 'PID unverified: %s/%s = %s' % (batch_id, temp_id, pid)
+        #     return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
+        # else:
+        #     log.verbose("PID verified (b2handle): %s", pid)
+        #     log.pp(b2handle_output)
+
         ################
-        # 5. Verify PID (b2handle)
-
-        b2handle_output = None
-        counter = 0
-
-        while b2handle_output is None and counter < 5:
-            counter += 1
-            log.debug("b2handle pid test: n.%d" % counter)
-            import time
-            time.sleep(1)
-            b2handle_output = self.check_pid_content(pid)
-
-        if b2handle_output is None:
-            error = 'PID unverified: %s/%s = %s' % (batch_id, temp_id, pid)
-            return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
-        else:
-            log.verbose("PID verified (b2handle): %s", pid)
-            log.pp(b2handle_output)
-
-        ################
-        # 6. set metadata (with a prefix)
+        # 7. set metadata (with a prefix)
         for key in md.keys:
-            value = json_input.get(key)
+            value = data.get(key)
             args = {'path': dest_path, key: value}
             imain.set_metadata(**args)
         log.debug("Metadata set")
-        # 7. check metadata ?
+        # check again metadata ?
 
         ################
         # 8. ALL DONE: move file from ingestion to trash
         imain.remove(src_path)
         log.info("Source removed: %s", src_path)
 
-        ################
-        # TODO: output as input
-        """
-        "request_id": 197,
-        "edmo_code": 486,
-        "datetime": "20180312T16:03:52",
-        "version": "1",
-        "api_function": "upload_datafiles_ready",
-        "test_mode": "true",
-        "parameters": {
-            "batch_number": 197,
-            "pids": [{
-                    "temp_id": "00486_ODV_45511746_V1.txt",
-                    "pid": "pidpid",
-                    "cdi_n_code": "2449339",
-                    "format_n_code": "4119694",
-                    "data_format_l24": "ODV",
-                    "version": "1"
-        """
+        return pid
+
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    def post(self, batch_id):
+
+        # TODO: switch to list of approved files
 
         ################
-        response = {'PID': pid}
-        return self.force_response(response)
+        # 0. check parameters
+        json_input = self.get_input()
+        # log.pp(self._args, prefix_line='Parsed args')
+
+        param_key = 'parameters'
+        params = json_input.get(param_key, {})
+        if len(params) < 1:
+            return self.send_errors(
+                "'%s' is empty" % param_key, code=hcodes.HTTP_BAD_REQUEST)
+
+        key = 'pids'
+        files = params.get(key, {})
+        if len(files) < 1:
+            return self.send_errors(
+                "'%s' parameter is empty list" % key,
+                code=hcodes.HTTP_BAD_REQUEST)
+
+        for data in files:
+
+            if not isinstance(data, dict):
+                return self.send_errors(
+                    "File list contains at least one wrong entry",
+                    code=hcodes.HTTP_BAD_REQUEST)
+
+            # print("TEST", data)
+            for key in md.keys:  # + [md.tid]:
+                value = data.get(key)
+                error = None
+                if value is None:
+                    error = 'Missing parameter: %s' % key
+                else:
+                    value_len = len(value)
+                if value_len > md.max_size:
+                    error = "Param '%s': exceeds size %s" % (key, md.max_size)
+                if value_len < 1:
+                    error = "Param '%s': empty" % key
+                if error is not None:
+                    return self.send_errors(
+                        error, code=hcodes.HTTP_BAD_REQUEST)
+
+        ################
+        # 1. check if irods path exists
+        imain = self.get_service_instance(service_name='irods')
+        self.batch_path = self.get_batch_path(imain, batch_id)
+        log.debug("Batch path: %s", self.batch_path)
+
+        if not imain.is_collection(self.batch_path):
+            return self.send_errors(
+                "Batch '%s' not enabled (or no permissions)" % batch_id,
+                code=hcodes.HTTP_BAD_REQUEST)
+
+        ################
+        # 2. check on list of files
+        self.src_paths = {}
+        for data in files:
+            temp_id = data.get(md.tid)
+            src_path = self.complete_path(self.batch_path, temp_id)
+            log.info("File path: %s", src_path)
+            self.src_paths[temp_id] = src_path
+
+            if not imain.is_dataobject(src_path):
+                return self.send_errors(
+                    "File '%s' not in batch '%s'" % (temp_id, batch_id),
+                    code=hcodes.HTTP_BAD_REQUEST)
+
+        ################
+        # 3. make batch_id directory in production if not existing
+        self.prod_path = self.get_production_path(imain, batch_id)
+        log.debug("Production path: %s", self.prod_path)
+        obj = self.init_endpoint()
+        imain.create_collection_inheritable(self.prod_path, obj.username)
+
+        return "DEBUG"
+
+        ################
+        # 4. Request PIDs
+        out_data = []
+        for data in files:
+            pid, error = self.pid_production(imain, batch_id, data)
+            print("MAKING PIDS", pid, error)
+            if pid is None:
+                log.error("Error: %s", error)
+            else:
+                data['pid'] = pid
+                out_data.append(data)
+
+        ################
+        json_input[param_key] = out_data
+        return data

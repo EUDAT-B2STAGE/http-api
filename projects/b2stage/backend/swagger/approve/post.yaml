@@ -1,9 +1,10 @@
 common:
   custom:
     authentication: true
+    # authentication: false
 
-basket:
-  summary: Request one order preparation
+approve:
+  summary: Approve files in a batch that are passing all QCs
   parameters:
     - name: parameters
       in: body
@@ -11,4 +12,4 @@ basket:
         $ref: "#/definitions/SeadataPost"
   responses:
     '200':
-      description: Asynchronous request launched
+      description: Registration executed

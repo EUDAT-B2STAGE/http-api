@@ -12,4 +12,4 @@ mapping:
 labels:
   - seadatacloud
   # - resources
-  - ingestion
+  - order

@@ -14,6 +14,7 @@ class Metadata(object):
     "version": "1"
     } """
 
+    tid = 'temp_id'
     keys = [
         "cdi_n_code", "format_n_code", "data_format_l24", "version",
     ]

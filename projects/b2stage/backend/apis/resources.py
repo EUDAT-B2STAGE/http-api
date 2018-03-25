@@ -81,6 +81,7 @@ class Resources(ClusterContainerEndpoint):
                 code=hcodes.HTTP_BAD_REQUEST
             )
         else:
+            # if len(files) < 1:
             if len(files) != 1:
                 return self.send_errors(
                     'Misconfiguration for batch_id: %s' % batch_id,
@@ -122,15 +123,18 @@ class Resources(ClusterContainerEndpoint):
                 )
             # else:
             #     envs[key.upper()] = value
-        # check batch id also from the parameters
-        batch_j = input_json.get(pkey, {}).get("batch_number", 'UNKNOWN')
-        if batch_j != batch_id:
-            return self.send_errors(
-                "Wrong JSON batch id: '%s' instead of '%s'" % (
-                    batch_j, batch_id
-                ), code=hcodes.HTTP_BAD_REQUEST
-            )
 
+        ###################
+        # # check batch id also from the parameters
+        # batch_j = input_json.get(pkey, {}).get("batch_number", 'UNKNOWN')
+        # if batch_j != batch_id:
+        #     return self.send_errors(
+        #         "Wrong JSON batch id: '%s' instead of '%s'" % (
+        #             batch_j, batch_id
+        #         ), code=hcodes.HTTP_BAD_REQUEST
+        #     )
+
+        ###################
         # for key, value in input_json.get(pkey, {}).items():
         #     name = '%s_%s' % (pkey, key)
         #     envs[name.upper()] = value

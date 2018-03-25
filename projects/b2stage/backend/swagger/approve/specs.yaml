@@ -7,7 +7,8 @@ class: MoveToProductionEndpoint
 schema:
   expose: true
 mapping:
-  approve: "/ingestion/<string:batch_id>/approve/<string:temp_id>"
+  # approve: "/ingestion/<string:batch_id>/approve/<string:temp_id>"
+  approve: "/ingestion/<string:batch_id>/approve"
 labels:
   - seadatacloud
   # - resources

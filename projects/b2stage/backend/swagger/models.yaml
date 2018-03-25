@@ -37,3 +37,14 @@ definitions:
   #   properties:
   #     filelist:
   #       type: object
+
+  SeadataPost:
+    required:
+      - request_id
+    properties:
+      request_id:
+        type: string
+        description: Main id
+      edmo_code:
+        type: string
+        description: EDMO code

@@ -174,6 +174,7 @@ controller:
       user: root
 
 tags:
+  # EUDAT related
   eudat: all endpoints associated to EUDAT services
   b2access: request/refresh authorization from B2ACCESS
   b2safe: proxy access to irods b2safe credentials
@@ -181,10 +182,11 @@ tags:
   pids: resolve and download data from EUDAT Persistent IDentifier
   publish: allow public access to data objects
   public: landing page
-  b2safe: proxy access to irods b2safe credentials
-  # internal: for internal testing purpose only
+  # Other subprojects
   seadatacloud: endpoints related to the SeaDataCloud project
-  ingestion: submission of files to be approved before cloud storing
+  ingestion: submission of files to be approved into the cloud
+  order: request an order from the interface
+  # internal: for internal testing purpose only
 
 # Keep track of releases and dependencies
 releases:
