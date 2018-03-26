@@ -91,6 +91,9 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
 
         #################
         ipath = self.parse_pid_dataobject_path(b2handle_output)
+        from utilities import path
+        response['temp_id'] = path.last_part(ipath)
+        response['batch_id'] = path.last_part(path.dir_name(ipath))
 
         #################
         # get the metadata

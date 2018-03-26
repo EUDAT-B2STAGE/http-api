@@ -309,18 +309,29 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     def delete(self, order_id):
 
         ##################
-        log.debug('DELETE request on orders')
-        log.info("Order request: %s", order_id)
+        log.debug("DELETE request on order: %s", order_id)
+        imain = self.get_service_instance(service_name='irods')
+        order_path = self.get_order_path(imain, order_id)
+        log.debug("Order path: %s", order_path)
 
         ##################
         # verify if the path exists
+        filename = 'order_%s_unrestricted' % order_id
+        zip_file_name = path.append_compress_extension(filename)
+        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
+        log.debug("Zip irods path: %s", zip_ipath)
+        if not imain.is_dataobject(zip_ipath):
+            error = "Order '%s' not found (or no permissions)" % order_id
+            return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
         ##################
         # remove the iticket
+        pass
 
         ##################
-        # remove the path
+        # remove the path in the cloud
+        imain.remove(zip_ipath)
 
         ##################
-        response = 'Work in progress'
+        response = {order_id: 'removed'}
         return self.force_response(response)
