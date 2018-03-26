@@ -37,21 +37,24 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     def pid_production(self, imain, batch_id, data):
 
         temp_id = data.get(md.tid)
-        src_path = self.src_paths.get(temp_id)
-        log.warning("TESTING: %s (%s)", temp_id, src_path)
 
-        ################
-        # 3. copy file from ingestion to production
+        # ################
+        # # copy file from ingestion to production
+        # src_path = self.src_paths.get(temp_id)
+        # log.warning("TESTING: %s (%s)", temp_id, src_path)
         dest_path = self.complete_path(self.prod_path, temp_id)
-        log.info("Production file path: %s", dest_path)
-        imain.icopy(src_path, dest_path)
+        if not imain.is_dataobject(dest_path):
+            log.error("Missing: %s", dest_path)
+            return None
+        # log.info("Production file path: %s", dest_path)
+        # imain.icopy(src_path, dest_path)
 
         ################
-        # 4. irule to get PID
+        # irule to get PID
         pid = self.pid_request(imain, dest_path)
 
         ################
-        # 5. irods metadata to check the PID
+        # irods metadata to check the PID
         metadata, _ = imain.get_metadata(dest_path)
         try:
             metadata_pid = metadata.pop('PID').strip()
@@ -72,7 +75,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # self.eudat_pid_fields
 
         # ################
-        # # 6. Verify PID (b2handle)
+        # Verify PID (b2handle)
         # TODO: re-enable, but use 'retry' python lib:
         # http://tenacity.readthedocs.io/en/latest/#examples
 
@@ -94,20 +97,71 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         #     log.pp(b2handle_output)
 
         ################
-        # 7. set metadata (with a prefix)
+        # set metadata (with a prefix?)
+        metadata, _ = imain.get_metadata(dest_path)
+        log.pp(metadata)
+        setting = False
         for key in md.keys:
-            value = data.get(key)
-            args = {'path': dest_path, key: value}
-            imain.set_metadata(**args)
-        log.debug("Metadata set")
-        # check again metadata ?
+            if key not in metadata:
+                value = data.get(key)
+                args = {'path': dest_path, key: value}
+                imain.set_metadata(**args)
+                setting = True
+        if setting:
+            log.debug("Some metadata is set")
 
-        ################
-        # 8. ALL DONE: move file from ingestion to trash
-        imain.remove(src_path)
-        log.info("Source removed: %s", src_path)
+        # ################
+        # # ALL DONE: move file from ingestion to trash
+        # imain.remove(src_path)
+        # log.info("Source removed: %s", src_path)
 
         return pid
+
+    def copy_to_production(self, icom, batch_id, files):
+
+        # Copy files from the B2HOST environment
+        rancher = self.get_or_create_handle()
+        batch_dir = self.get_ingestion_path()
+
+        b2safe_connvar = {
+            'BATCH_SRC_PATH': batch_dir,
+            'BATCH_DEST_PATH': self.prod_path,
+            'FILES': ' '.join(files),
+            'IRODS_HOST': icom.variables.get('host'),
+            'IRODS_PORT': icom.variables.get('port'),
+            'IRODS_ZONE_NAME': icom.variables.get('zone'),
+            'IRODS_USER_NAME': icom.variables.get('user'),
+            'IRODS_PASSWORD': icom.variables.get('password'),
+        }
+        log.pp(b2safe_connvar)
+
+        # Launch a container to copy the data into B2HOST
+        cname = 'copy_zip'
+        cversion = '0.8'
+        image_tag = '%s:%s' % (cname, cversion)
+        container_name = self.get_container_name(batch_id, image_tag)
+        print(container_name)
+        docker_image_name = self.get_container_image(image_tag, prefix='eudat')
+        log.info("Request copy2prod; image: %s" % docker_image_name)
+
+        # remove if exists
+        rancher.remove_container_by_name(container_name)
+        # import time
+        # time.sleep(2)
+        # launch
+        errors = rancher.run(
+            container_name=container_name, image_name=docker_image_name,
+            private=True,
+            extras={
+                'environment': b2safe_connvar,
+                'dataVolumes': [self.mount_batch_volume(batch_id)],
+            },
+        )
+        log.pp(errors)
+
+        # HOW TO WAIT?
+        import time
+        time.sleep(5)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self, batch_id):
@@ -132,6 +186,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 "'%s' parameter is empty list" % key,
                 code=hcodes.HTTP_BAD_REQUEST)
 
+        filenames = []
         for data in files:
 
             if not isinstance(data, dict):
@@ -155,6 +210,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                     return self.send_errors(
                         error, code=hcodes.HTTP_BAD_REQUEST)
 
+            filenames.append(data.get(md.tid))
+
         ################
         # 1. check if irods path exists
         imain = self.get_service_instance(service_name='irods')
@@ -167,40 +224,42 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_BAD_REQUEST)
 
         ################
-        # 2. check on list of files
-        self.src_paths = {}
-        for data in files:
-            temp_id = data.get(md.tid)
-            src_path = self.complete_path(self.batch_path, temp_id)
-            log.info("File path: %s", src_path)
-            self.src_paths[temp_id] = src_path
-
-            if not imain.is_dataobject(src_path):
-                return self.send_errors(
-                    "File '%s' not in batch '%s'" % (temp_id, batch_id),
-                    code=hcodes.HTTP_BAD_REQUEST)
-
-        ################
-        # 3. make batch_id directory in production if not existing
+        # 2. make batch_id directory in production if not existing
         self.prod_path = self.get_production_path(imain, batch_id)
         log.debug("Production path: %s", self.prod_path)
         obj = self.init_endpoint()
         imain.create_collection_inheritable(self.prod_path, obj.username)
 
-        return "DEBUG"
+        ################
+        # 3. copy files from containers to production
+        self.copy_to_production(obj.icommands, batch_id, filenames)
+
+        # ################
+        # # 4. check on list of files
+        # self.src_paths = {}
+        # for filename in filenames:
+        #     src_path = self.complete_path(self.batch_path, filename)
+        #     log.info("File path: %s", src_path)
+        #     self.src_paths[filename] = src_path
+
+        #     if not imain.is_dataobject(src_path):
+        #         return self.send_errors(
+        #             "File '%s' not in batch '%s'" % (filename, batch_id),
+        #             code=hcodes.HTTP_BAD_REQUEST)
 
         ################
         # 4. Request PIDs
         out_data = []
         for data in files:
-            pid, error = self.pid_production(imain, batch_id, data)
-            print("MAKING PIDS", pid, error)
+            # pid, error = self.pid_production(imain, batch_id, data)
+            pid = self.pid_production(imain, batch_id, data)
             if pid is None:
                 log.error("Error: %s", error)
             else:
+                log.info("Obtained: %s", pid)
                 data['pid'] = pid
                 out_data.append(data)
 
         ################
         json_input[param_key] = out_data
-        return data
+        return json_input
