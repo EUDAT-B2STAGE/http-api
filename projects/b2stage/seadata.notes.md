@@ -3,10 +3,10 @@
 * Step 04: `/api/ingestion/<batch_id>/approve` as file_list
 * Step 04: copy back files selected...
     * wait for container on rancher
-- Call `API` with returns value (the same list + PIDs) - step 04/05 POST
-    + add url in compose/configuration
-    + use a common method with post and generic data
-    + test it in approve ending
+* Call `API` with returns value (the same list + PIDs)
+    * add url in compose/configuration
+    * use a common method with post and generic data
+    * test it in approve ending (step 04)
 - Step 06: DELETE order/ticket?
 
 ---

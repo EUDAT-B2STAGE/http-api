@@ -10,15 +10,14 @@ from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 # from b2stage.apis.commons.endpoint import EudatEndpoint
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 # from restapi.rest.definition import EndpointResource
-from b2stage.apis.commons.seadatacloud import Metadata as md
+from b2stage.apis.commons.seadatacloud import \
+    Metadata as md, ImportManagerAPI as API
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
 # from restapi.services.detect import detector
 from utilities.logs import get_logger
 
-#################
-# INIT VARIABLES
 log = get_logger(__name__)
 
 
@@ -258,7 +257,13 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ################
         # TODO: set expiration metadata on batch zip file?
+        pass
 
         ################
         json_input[param_key] = out_data
+
+        # call Import manager to notify
+        api = API()
+        api.post(json_input)
+
         return json_input
