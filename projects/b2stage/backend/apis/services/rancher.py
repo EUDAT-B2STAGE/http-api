@@ -10,6 +10,7 @@ API examples:
 https://github.com/rancher/validation-tests/tree/master/tests/v2_validation/cattlevalidationtest/core
 """
 
+import time
 from utilities.logs import get_logger
 log = get_logger(__name__)
 
@@ -200,7 +201,10 @@ class Rancher(object):
             pull_label: 'always',
         }
 
-    def run(self, container_name, image_name, private=False, extras=None):
+    def run(self,
+            container_name, image_name,
+            private=False, extras=None, wait_stopped=False
+            ):
 
         ############
         if private:
@@ -245,9 +249,16 @@ class Rancher(object):
             log.pp(e.__dict__)
             return e.__dict__
         else:
-            # container = self._client.wait_success(container)
-            # log.pp(container)
-            container
+            if wait_stopped:
+                while True:
+                    c = self.get_container_object(container_name)
+                    log.debug("Container %s: %s", container_name, c.state)
+                    if c.state not in ['creating', 'starting', 'running']:
+                        break
+                    else:
+                        time.sleep(1)
+            else:
+                log.debug("Launched: %s", container.externalId)
             return None
 
     def get_container_object(self, container_name):

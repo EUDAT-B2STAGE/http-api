@@ -146,22 +146,18 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         # remove if exists
         rancher.remove_container_by_name(container_name)
-        # import time
-        # time.sleep(2)
         # launch
-        errors = rancher.run(
+        rancher.run(
             container_name=container_name, image_name=docker_image_name,
             private=True,
+            wait_stopped=True,
             extras={
                 'environment': b2safe_connvar,
                 'dataVolumes': [self.mount_batch_volume(batch_id)],
             },
         )
-        log.pp(errors)
-
-        # HOW TO WAIT?
-        import time
-        time.sleep(5)
+        # errors = rancher.run(
+        # log.pp(errors)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self, batch_id):
@@ -259,6 +255,9 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 log.info("Obtained: %s", pid)
                 data['pid'] = pid
                 out_data.append(data)
+
+        ################
+        # TODO: set expiration metadata on batch zip file?
 
         ################
         json_input[param_key] = out_data
