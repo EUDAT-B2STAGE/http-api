@@ -32,7 +32,18 @@ class ImportManagerAPI(object):
 
     def post(self, payload):
 
+        # payload['datetime'] = #timestamp '20180320T08:15:44',
+        # # YYMMDDTHH:MM:SS
+        payload['api_function'] += '_ready'
+
         import requests
         # print("TEST", self._uri)
-        r = requests.post(self._uri, data=payload)
-        log.info("Called POST on external APIs: %s", r.status_code)
+        r = requests.post(self._uri, json=payload)
+
+        from utilities import htmlcodes as hcodes
+        if r.status_code != hcodes.HTTP_OK_BASIC:
+            log.error("Failed to call external APIs: %s", r.status_code)
+            return False
+        else:
+            log.info("Called POST on external APIs: %s", r.status_code)
+            return True

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from restapi.rest.definition import EndpointResource
+from restapi.commons.seadatacloud import seadata_vars
 from restapi.services.detect import detector
 from utilities import path
 from utilities.logs import get_logger
@@ -8,10 +9,11 @@ log = get_logger(__name__)
 
 DEFAULT_IMAGE_PREFIX = 'docker'
 
-seadata_vars = detector.load_group(label='seadata')
 BATCHES_DIR = seadata_vars.get('batch_dir')
 ORDERS_DIR = seadata_vars.get('orders_dir')
 PRODUCTION_DIR = seadata_vars.get('cloud_dir')
+
+CONTAINERS_VARS = detector.load_group(label='containers')
 
 
 class ClusterContainerEndpoint(EndpointResource):

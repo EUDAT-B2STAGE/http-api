@@ -261,9 +261,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ################
         json_input[param_key] = out_data
-
         # call Import manager to notify
         api = API()
         api.post(json_input)
-
         return json_input

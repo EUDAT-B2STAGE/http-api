@@ -22,6 +22,7 @@ DELETE /api/order/<OID>
 # IMPORTS
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.seadatacloud import ImportManagerAPI as API
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 # from b2stage.apis.commons.endpoint import EudatEndpoint
 # from b2stage.apis.commons.seadatacloud import Metadata as md
@@ -41,11 +42,9 @@ TMPDIR = '/tmp'
 # REST CLASS
 # class BasketEndpoint(EudatEndpoint):
 class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
-
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, order_id):
 
-        ##################
         log.debug('GET request on orders')
         parameters = self.get_input()
 
@@ -103,7 +102,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # ##################
         # response = {order_id: 'valid'}
         # return self.force_response(response)
-        return icom.stream_ticket(zip_ipath)
+        headers = {
+            'Content-Transfer-Encoding': 'binary',
+            'Content-Disposition': "attachment; filename=%s.zip" % order_id,
+        }
+        return icom.stream_ticket(zip_ipath, headers=headers)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self):
@@ -241,8 +244,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # Copy the zip into irods (force overwrite)
         imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
 
+        ################
         # return {order_id: 'created'}
         json_input['status'] = 'created'
+        # call Import manager to notify
+        api = API()
+        api.post(json_input)
         return json_input
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
