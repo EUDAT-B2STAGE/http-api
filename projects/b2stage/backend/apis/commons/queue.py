@@ -24,7 +24,8 @@ class QueueMessages(object):
 
     def log_into_queue(self, dictionary_message):
         """
-        # user: username (Marine ID)
+        LOGGIN INFO
+        # user: username (Marine ID) / irods username
         # TODO: get the marine id from ifremer
         # ipnumber
         # timestamp of the request (my time)
@@ -73,3 +74,33 @@ class QueueMessages(object):
         # # close resource
         # msg_queue.close()
         return True
+
+    def read(self):
+
+        # log.info("Request: read a message")
+
+        # self.get_input()
+        # # log.pp(self._args, prefix_line='Parsed args')
+        # current_queue = self._args.get('queue')
+
+        # # connect
+        # msg_queue = self.get_service_instance(self._queue_service)
+        # log.debug("Connected to %s", self._queue_service)
+
+        # # send a message
+        # channel = msg_queue.channel()
+        # channel.queue_declare(queue=current_queue)
+
+        # def callback(ch, method, properties, body):
+        #     print("\n\nReceived: %r" % body)
+        #     import json
+        #     print(json.loads(body))
+
+        # # associate callback to queue
+        # channel.basic_consume(callback, queue=current_queue, no_ack=True)
+        # # blocking
+        # channel.start_consuming()
+
+        # return "Received?"
+
+        raise NotADirectoryError("Not available at the moment")

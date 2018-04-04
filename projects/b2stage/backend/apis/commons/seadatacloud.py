@@ -32,6 +32,11 @@ class ImportManagerAPI(object):
 
     def post(self, payload):
 
+        from restapi.confs import PRODUCTION
+        if not PRODUCTION:
+            log.debug("Skipping ImportManagerAPI")
+            return False
+
         # payload['datetime'] = #timestamp '20180320T08:15:44',
         # # YYMMDDTHH:MM:SS
         payload['api_function'] += '_ready'

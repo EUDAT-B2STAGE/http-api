@@ -44,6 +44,9 @@ class ClusterContainerEndpoint(EndpointResource):
             self._handle = Rancher(**params)
         return self._handle
 
+    def join_paths(self, paths):
+        return str(path.build(paths))
+
     def get_ingestion_path(self, batch_id=None):
         paths = [self._handle._localpath]
         if batch_id is None:

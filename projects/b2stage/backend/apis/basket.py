@@ -108,8 +108,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.debug('GET request on orders')
 
         ##################
-        # TODO: cover empty response
-        # TODO: list zip files
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
@@ -117,15 +115,28 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             error = "Order '%s': not existing" % order_id
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
+        ##################
         ils = imain.list(order_path)
-        files = []
+        response = []
+
         for _, data in ils.items():
-            files.append(data.get('name'))
-        if len(files) < 1:
+            name = data.get('name')
+            ipath = self.join_paths([data.get('path'), name])
+            metadata, _ = imain.get_metadata(ipath)
+            # log.pp(metadata)
+            obj = {
+                'order': order_id,
+                'file': data.get('name'),
+                'URL': metadata.get('download'),
+                'owner': 'NOT IMPLEMENTED YET',  # FIXME: based on irods uname?
+            }
+            response.append(obj)
+
+        if len(response) < 1:
             error = "Order '%s': no files yet" % order_id
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
-        return {'files': files}
+        return response
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self):
@@ -133,14 +144,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ##################
         log.debug('POST request on orders')
         json_input = self.get_input()
-
-        # TODO: verify also these parameters
-        # "api_function": "order_create_zipfile",
-        # "request_id": 15528,
-        # "parameters":
-        #     "restricted": "false",
-        #     "file_name": "order_15528_unrestricted",
-        #     "file_count": 3
 
         ##################
         key = 'request_id'
@@ -223,6 +226,20 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # return {order_id: 'already exists'}
             json_input['status'] = 'exists'
             return json_input
+
+        ##################
+        # TODO: check PID errors
+        """
+        "errors": [{
+            "error": "41",
+            "description": "PID not found",
+            "subject": "21.T12995/b3220f58-26b2-11e8-af67-fa163e7b67qq37"
+        }, {
+            "error": "41",
+            "description": "PID not found",
+            "subject": "21.T12995/b3220f58-26b2-11e8-af67-fa163e7b6737aa"
+        }],
+        """
 
         ##################
         # log.pp(files)
@@ -323,6 +340,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             urllib.parse.quote_plus(ticket.ticket)
         )
         # print("TEST", route)
+
+        ##################
+        # Set the url as Metadata in the irods file
+        imain.set_metadata(zip_ipath, download=route)
 
         ##################
         # response = {'code': ticket.ticket}
