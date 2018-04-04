@@ -1,15 +1,16 @@
 common:
   custom:
-    authentication: true
+    #custom authentication: true
+    authentication: false
 
-order:
+download:
   summary: "Download an order"
-  parameters:
-    - name: code
-      in: query
-      type: string
-      description: code to verify the order download
-      # default: hello
+  # parameters:
+  #   - name: code  # passed in the URL
+  #     in: query
+  #     type: string
+  #     description: code to verify the order download
+  #     # default: hello
   responses:
     '200':
       description: The order with all files compressed

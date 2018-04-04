@@ -146,6 +146,7 @@ class Resources(ClusterContainerEndpoint):
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
         ###########################
+        # ## ENVS
         rancher = self.get_or_create_handle()
         cfilepath = self.get_batch_zipfile_path(batch_id, filename=file_id)
         # log.verbose("Container path: %s", cpath)
@@ -153,9 +154,22 @@ class Resources(ClusterContainerEndpoint):
         envs['BATCH_DIR_PATH'] = path.dir_name(cfilepath)
         import json
         envs['JSON_INPUT'] = json.dumps(input_json)
+        from b2stage.apis.commons.queue import QUEUE_VARS
+        from b2stage.apis.commons.cluster import CONTAINERS_VARS
+        for key, value in QUEUE_VARS.items():
+            if key == 'user':
+                value = CONTAINERS_VARS.get('rabbituser')
+            elif key == 'password':
+                value = CONTAINERS_VARS.get('rabbitpass')
+            envs['LOGS_' + key.upper()] = value
+        envs['DB_USERNAME'] = CONTAINERS_VARS.get('dbuser')
+        envs['DB_PASSWORD'] = CONTAINERS_VARS.get('dbpass')
+
         # envs['BATCH_ZIPFILE_PATH'] = cpath
         log.pp(envs)
+        return 'Hello'
 
+        ###########################
         errors = rancher.run(
             container_name=container_name,
             image_name=docker_image_name,

@@ -39,22 +39,13 @@ TMPDIR = '/tmp'
 
 
 #################
-# REST CLASS
-# class BasketEndpoint(EudatEndpoint):
-class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
+# REST CLASSES
+
+
+class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    def get(self, order_id):
-
-        log.debug('GET request on orders')
-        parameters = self.get_input()
-
-        ##################
-        key = 'code'
-        code = parameters.get(key)
-        if code is None:
-            error = "Parameter '%s' is missing" % key
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
+    def get(self, order_id, code):
+        """ downloading """
         log.info("Order request: %s (code '%s')", order_id, code)
 
         ##################
@@ -107,6 +98,34 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             'Content-Disposition': "attachment; filename=%s.zip" % order_id,
         }
         return icom.stream_ticket(zip_ipath, headers=headers)
+
+
+class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    def get(self, order_id):
+        """ listing, not downloading """
+
+        log.debug('GET request on orders')
+
+        ##################
+        # TODO: cover empty response
+        # TODO: list zip files
+        imain = self.get_service_instance(service_name='irods')
+        order_path = self.get_order_path(imain, order_id)
+        log.debug("Order path: %s", order_path)
+        if not imain.is_collection(order_path):
+            error = "Order '%s': not existing" % order_id
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+        ils = imain.list(order_path)
+        files = []
+        for _, data in ils.items():
+            files.append(data.get('name'))
+        if len(files) < 1:
+            error = "Order '%s': no files yet" % order_id
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+        return {'files': files}
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self):
@@ -297,7 +316,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
         # GET /api/orders/?code=xxx
         import urllib.parse
-        route = '%s%s/%s/%s?code=%s' % (
+        # route = '%s%s/%s/%s?code=%s' % (
+        route = '%s%s/%s/%s/download/%s' % (
             CURRENT_HTTPAPI_SERVER, API_URL,
             ORDERS_ENDPOINT, order_id,
             urllib.parse.quote_plus(ticket.ticket)
