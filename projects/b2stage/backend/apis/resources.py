@@ -157,7 +157,9 @@ class Resources(ClusterContainerEndpoint):
         from b2stage.apis.commons.queue import QUEUE_VARS
         from b2stage.apis.commons.cluster import CONTAINERS_VARS
         for key, value in QUEUE_VARS.items():
-            if key == 'user':
+            if key in ['enable']:
+                continue
+            elif key == 'user':
                 value = CONTAINERS_VARS.get('rabbituser')
             elif key == 'password':
                 value = CONTAINERS_VARS.get('rabbitpass')
@@ -165,9 +167,9 @@ class Resources(ClusterContainerEndpoint):
         envs['DB_USERNAME'] = CONTAINERS_VARS.get('dbuser')
         envs['DB_PASSWORD'] = CONTAINERS_VARS.get('dbpass')
 
-        # envs['BATCH_ZIPFILE_PATH'] = cpath
-        log.pp(envs)
-        return 'Hello'
+        # # envs['BATCH_ZIPFILE_PATH'] = cpath
+        # log.pp(envs)
+        # return 'Hello'
 
         ###########################
         errors = rancher.run(
