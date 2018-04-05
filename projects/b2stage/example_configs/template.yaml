@@ -134,14 +134,30 @@ variables:
     # RABBITMQ_QUEUE: testqueue
 
     #################
-    # rancher
-    RESOURCES_URL: https://IP/v2-beta
+    ## RANCHER
+    RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
     RESOURCES_KEY:
     RESOURCES_SECRET:
     RESOURCES_PROJECT:
+    ## DOCKER HUB
     RESOURCES_HUB:
     RESOURCES_HUBUSER:
     RESOURCES_HUBPASS:
+    ## RABBIT SEADATA
+    RABBIT_HOST:
+    RABBIT_PORT:
+    RABBIT_VHOST:
+    RABBIT_USER:
+    RABBIT_PASSWORD:
+    RABBIT_EXCHANGE:
+    RABBIT_QUEUE:
+    ## OTHERS
+    CONTAINERS_RABBITUSER:
+    CONTAINERS_RABBITPASS:
+    CONTAINERS_DBUSER:
+    CONTAINERS_DBPASS:
+    CONTAINERS_DBEXTRAUSER:
+    CONTAINERS_DBEXTRAPASS:
     # This path needs permissions to user 1001
     # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /usr/share

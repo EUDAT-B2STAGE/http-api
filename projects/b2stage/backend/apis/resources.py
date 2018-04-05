@@ -166,6 +166,8 @@ class Resources(ClusterContainerEndpoint):
             envs['LOGS_' + key.upper()] = value
         envs['DB_USERNAME'] = CONTAINERS_VARS.get('dbuser')
         envs['DB_PASSWORD'] = CONTAINERS_VARS.get('dbpass')
+        envs['DB_USER_EDIT'] = CONTAINERS_VARS.get('dbextrauser')
+        envs['DB_PASSWORD_EDIT'] = CONTAINERS_VARS.get('dbextrapass')
 
         # # envs['BATCH_ZIPFILE_PATH'] = cpath
         # log.pp(envs)
