@@ -108,6 +108,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.debug('GET request on orders')
 
         ##################
+        from b2stage.apis.commons.queue import log_into_queue, prepare_message
+        msg = prepare_message(self, json=None, log_string='start')
+        log_into_queue(self, msg)
+
+        ##################
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
@@ -135,6 +140,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if len(response) < 1:
             error = "Order '%s': no files yet" % order_id
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+        ##################
+        msg = prepare_message(self, log_string='end')
+        log_into_queue(self, msg)
 
         return response
 
