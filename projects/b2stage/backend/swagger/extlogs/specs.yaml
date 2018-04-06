@@ -6,5 +6,5 @@ schema:
 mapping:
   extlogs: "/logs"
 labels:
-  - seadata
+  - seadatacloud
   - logs
