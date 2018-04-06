@@ -24,13 +24,28 @@ class QueueMessages(object):
 
     def log_into_queue(self, dictionary_message):
         """
-        LOGGIN INFO
-        # user: username (Marine ID) / irods username
-        # TODO: get the marine id from ifremer
-        # ipnumber
-        # timestamp of the request (my time)
-        # url (server + endpoint)
-        # parameters maris
+
+{ # start
+    "request_id":"from the json input file",
+    "edmo_code":"sample 353",
+    "json": "the json input file" # parameters maris
+    "datetime":"20180328T10:08:30", # timestamp
+    "ip_number":"544.544.544.544", # request.remote_addr
+    "program":"program/function name", # what's mine?
+    "url" ?
+    "user":"username", # from maris? marine id?
+    "log_string":"start"
+}
+
+{ # end
+    "datetime":"20180328T10:08:30",
+    "request_id":"from the json input file",
+    "ip_number":"544.544.544.544",
+    "program":"program of function = name",
+    "user":"username",
+    "edmo_code":"sample 353",
+    "log_string":"end"
+}
         """
 
         ############
