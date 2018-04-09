@@ -26,6 +26,7 @@ from b2stage.apis.commons.seadatacloud import ImportManagerAPI as API
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 # from b2stage.apis.commons.endpoint import EudatEndpoint
 # from b2stage.apis.commons.seadatacloud import Metadata as md
+from b2stage.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -45,8 +46,12 @@ TMPDIR = '/tmp'
 class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, order_id, code):
-        """ downloading """
+        """ downloading (not authenticated) """
         log.info("Order request: %s (code '%s')", order_id, code)
+        json = {'order_id': order_id, 'code': code}
+        msg = prepare_message(
+            self, json=json, user='anonymous', log_string='start')
+        log_into_queue(self, msg)
 
         ##################
         imain = self.get_service_instance(service_name='irods')
@@ -97,6 +102,8 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             'Content-Transfer-Encoding': 'binary',
             'Content-Disposition': "attachment; filename=%s.zip" % order_id,
         }
+        msg = prepare_message(self, json=json, log_string='end', status='sent')
+        log_into_queue(self, msg)
         return icom.stream_ticket(zip_ipath, headers=headers)
 
 
@@ -106,9 +113,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         """ listing, not downloading """
 
         log.debug('GET request on orders')
-
-        ##################
-        from b2stage.apis.commons.queue import log_into_queue, prepare_message
         msg = prepare_message(self, json=None, log_string='start')
         log_into_queue(self, msg)
 
@@ -142,9 +146,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
-        msg = prepare_message(self, log_string='end')
+        msg = prepare_message(self, log_string='end', status='completed')
         log_into_queue(self, msg)
-
         return response
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
@@ -153,6 +156,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ##################
         log.debug('POST request on orders')
         json_input = self.get_input()
+        msg = prepare_message(self, json=json_input, log_string='start')
+        log_into_queue(self, msg)
 
         ##################
         key = 'request_id'
@@ -295,6 +300,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # call Import manager to notify
         api = API()
         api.post(json_input)
+
+        msg = prepare_message(self, log_string='end', status='created')
+        log_into_queue(self, msg)
         return json_input
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
@@ -309,6 +317,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         log.info("Order request: %s", order_id)
+        msg = prepare_message(
+            self, json={'order_id': order_id}, log_string='start')
+        log_into_queue(self, msg)
 
         # obj = self.init_endpoint()
         # icom = obj.icommands
@@ -361,12 +372,18 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             'code': urllib.parse.quote_plus(ticket.ticket)
         }
         # response = 'Work in progress'
+        msg = prepare_message(self, log_string='end', status='enabled')
+        log_into_queue(self, msg)
         return self.force_response(response)
 
     def delete(self, order_id):
 
         ##################
         log.debug("DELETE request on order: %s", order_id)
+        msg = prepare_message(
+            self, json={'order_id': order_id}, log_string='start')
+        log_into_queue(self, msg)
+
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
@@ -391,4 +408,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         response = {order_id: 'removed'}
+
+        msg = prepare_message(self, log_string='end', status='removed')
+        log_into_queue(self, msg)
         return self.force_response(response)

@@ -11,7 +11,7 @@ class Extlogs(EndpointResource):
     def get(self):
 
         #################
-        log.info("Received a test HTTP request")
+        log.info("Received HTTP request")
         # self.get_input()
         # log.pp(self._args, prefix_line='Parsed args')
 
@@ -34,9 +34,13 @@ class Extlogs(EndpointResource):
         out = r.json().get('hits', {})
         log.info("Found %s results", out.get('total'))
 
-        logs = {}
+        # logs = {}
+        logs = []
         for result in out.get('hits', []):
             value = result.get('_source', {}).get('parsed_json')
-            key = value.pop('datetime')
-            logs[key] = value
-        return {'logs': logs}
+            if value is None:
+                continue
+            # key = value.pop('datetime')
+            # logs[key] = value
+            logs.append(value)
+        return logs

@@ -18,7 +18,7 @@ QUEUE_SERVICE = 'rabbit'
 QUEUE_VARS = detector.load_group(label=QUEUE_SERVICE)
 
 
-def prepare_message(instance, **params):
+def prepare_message(instance, user=None, **params):
     """
 { # start
     "request_id": # build a hash for the current request
@@ -64,7 +64,9 @@ def prepare_message(instance, **params):
     import re
     endpoint = re.sub(r"https?://[^\/]+", '', request.url)
     obj['program'] = request.method + ':' + endpoint
-    obj['user'] = 'import_manager'
+    if user is None:
+        user = 'import_manager'
+    obj['user'] = user
 
     log.pp(obj)
     return obj
