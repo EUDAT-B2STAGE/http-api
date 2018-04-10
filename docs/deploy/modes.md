@@ -79,6 +79,12 @@ $ rapydo --hostname $DOMAIN --mode production ssl-certificate
 
 If you check again the server should now be correctly certificated. At this point the service should be completely functional.
 
+### using the same mode for every command
+
+To keep the production mode in every command request you can leverage the [`.projectrc`](.projectrc) file by setting the value `mode: production` inside of it.
+
+### debugging production
+
 In production it might be difficult to get informations if something goes wrong. If the server failed you have a couple of options to find out why:
 
 ```bash
