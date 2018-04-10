@@ -52,3 +52,9 @@ is by using their [toolbox](https://www.docker.com/toolbox).
 `Compose` is a tool for docker written in Python. See the [official instructions](https://docs.docker.com/compose/install/) to install it.
 
 NOTE: compose comes bundled with the toolbox.
+
+
+## Production instance
+
+
+The B2STAGE HTTP API server acts as a proxy interface to a real B2SAFE instance. Having B2SAFE already running in production would be a requisite if you want to deploy our project on top of it.

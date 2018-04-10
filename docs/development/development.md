@@ -6,8 +6,9 @@ Before starting please make sure that you have installed on your system:
 * [docker-compose](https://docs.docker.com/compose/) 1.7+
 
 
-##Coding Style
-Primarily all code has to adhere to PEP8 http://legacy.python.org/dev/peps/pep-0008/.
+## Coding Style
+
+Primarily all code has to adhere to [PEP8](http://legacy.python.org/dev/peps/pep-0008/) rules.
 
 ## Quick start
 

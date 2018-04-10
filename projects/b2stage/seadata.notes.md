@@ -5,10 +5,10 @@
 
 * credentials
 * list the zip files
-- HTTP API logging into elastisearch
-    - agree on the username field
+* unwanted characters in filenames (ONLY CHECK)
+* HTTP API logging into elastisearch
 - Restricted data prototype
-- unwanted characters in filenames (ONLY CHECK)
+- Log username sent from import manager
 - push 1 thousand files in production from RAR
 - more than one zip file in one unrestricted order
 
