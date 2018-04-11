@@ -7,17 +7,25 @@ Ingestion process submission to upload the SeaDataNet marine data.
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
 # from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
+ingestion_user = 'RM'
 
 
 class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     """ Create batch folder and upload zip files inside it """
 
     def get(self, batch_id):
+
+        log.info("Batch request: %s", batch_id)
+        # json = {'batch_id': batch_id}
+        # msg = prepare_message(
+        #     self, json=json, user=ingestion_user, log_string='start')
+        # log_into_queue(self, msg)
 
         ########################
         # get irods session
@@ -51,6 +59,12 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         """
         Let the Replication Manager upload a zip file into a batch folder
         """
+
+        ##################
+        msg = prepare_message(
+            self, json={'batch_id': batch_id, 'file_id': file_id},
+            user=ingestion_user, log_string='start')
+        log_into_queue(self, msg)
 
         ########################
         # get irods session
@@ -146,6 +160,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         # response['errors'] = errors
         # response = "Batch '%s' filled" % batch_id
+        msg = prepare_message(
+            self, status=response['status'],
+            user=ingestion_user, log_string='end')
+        log_into_queue(self, msg)
         return self.force_response(response)
 
     def post(self):
@@ -160,6 +178,12 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return self.send_errors(
                 "Mandatory parameter '%s' missing" % param_name,
                 code=hcodes.HTTP_BAD_REQUEST)
+
+        ##################
+        msg = prepare_message(
+            self, json={'batch_id': batch_id},
+            user=ingestion_user, log_string='start')
+        log_into_queue(self, msg)
 
         ##################
         # Get irods session
@@ -186,9 +210,15 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
             ##################
             response = "Batch '%s' enabled" % batch_id
+            status = 'enabled'
 
         else:
             log.debug("Already exists")
             response = "Batch '%s' already exists" % batch_id
+            status = 'exists'
 
+        ##################
+        msg = prepare_message(
+            self, status=status, user=ingestion_user, log_string='end')
+        log_into_queue(self, msg)
         return self.force_response(response)

@@ -18,6 +18,7 @@ Missing:
 - logging HTTP API actions into Rabbit
 - async with celery
 - auth forbidden for maris only endpoint
+- how to give back errors correctly to Import Manager
 - guys in hometown to discuss the Python code
 - ansible the infrastructure
 - rocket chat to CSC

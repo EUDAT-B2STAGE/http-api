@@ -68,7 +68,7 @@ def prepare_message(instance, user=None, **params):
         user = 'import_manager'
     obj['user'] = user
 
-    log.pp(obj)
+    # log.pp(obj)
     return obj
 
 
@@ -113,6 +113,7 @@ def log_into_queue(instance, dictionary_message):
     )
 
     ############
+    log.verbose('Queue msg sent')
     # log.verbose("%s: sent msg '%s'", current_queue, dictionary_message)
 
     # NOTE: bad! all connections would result in closed
