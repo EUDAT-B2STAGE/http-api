@@ -10,10 +10,11 @@ class Extlogs(EndpointResource):
 
     def get(self):
 
-        #################
-        log.info("Received HTTP request")
-        # self.get_input()
-        # log.pp(self._args, prefix_line='Parsed args')
+        from restapi.confs import PRODUCTION
+        if not PRODUCTION:
+            return 'Not working in DEBUG mode'
+        else:
+            log.info("Request logs content")
 
         #################
         # check index?
@@ -28,6 +29,7 @@ class Extlogs(EndpointResource):
             'http', qvars.get('host'), 9200,
             qvars.get('queue'), calendar
         )
+        log.debug("Index URL: %s", url)
 
         import requests
         r = requests.get(url)
@@ -37,9 +39,14 @@ class Extlogs(EndpointResource):
         # logs = {}
         logs = []
         for result in out.get('hits', []):
-            value = result.get('_source', {}).get('parsed_json')
+            source = result.get('_source', {})
+            value = source.get('parsed_json')
             if value is None:
+                # tmp = source.get('message')
+                # import json
+                # value = json.loads(tmp)
                 continue
+
             # key = value.pop('datetime')
             # logs[key] = value
             logs.append(value)
