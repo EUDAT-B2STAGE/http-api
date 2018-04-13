@@ -76,6 +76,11 @@ def log_into_queue(instance, dictionary_message):
     """ RabbitMQ in the EUDAT infrastructure """
 
     ############
+    from restapi.confs import PRODUCTION
+    if not PRODUCTION:
+        return False
+
+    ############
     # LOGGING
 
     current_exchange = QUEUE_VARS.get('exchange')
@@ -86,39 +91,29 @@ def log_into_queue(instance, dictionary_message):
     # app_name = 'maris_elk_test'
     app_name = current_queue
 
-    # connect
-    msg_queue = instance.get_service_instance(QUEUE_SERVICE)
-    log.debug("Connected to %s", QUEUE_SERVICE)
+    try:
+        # connect
+        msg_queue = instance.get_service_instance(QUEUE_SERVICE)
+        log.verbose("Connected to %s", QUEUE_SERVICE)
+        # channel.queue_declare(queue=current_queue)  # not necessary if exists
+        channel = msg_queue.channel()  # send a message
+        channel.basic_publish(
+            exchange=current_exchange, routing_key=current_queue,
+            properties=pika.BasicProperties(
+                delivery_mode=2,
+                headers={'app_name': app_name, 'filter_code': filter_code},
+            ),
+            body=json.dumps(dictionary_message),
+        )
+    except BaseException as e:
+        log.error("Failed to log:\n%s(%s)", e.__class__.__name__, e)
+    else:
+        log.verbose('Queue msg sent')
+        # log.verbose("%s: sent msg '%s'", current_queue, dictionary_message)
 
-    ############
-    # send a message
-
-    # not necessary if already exists (it should)
-    # channel.queue_declare(queue=current_queue)
-    channel = msg_queue.channel()
-
-    # dictionary_message = {
-    #     'test': 1, 'some': 'state',
-    #     'request_user': 'paolo',
-    #     'valid': ["one", "two"]
-    # }
-
-    channel.basic_publish(
-        exchange=current_exchange, routing_key=current_queue,
-        properties=pika.BasicProperties(
-            delivery_mode=2,
-            headers={'app_name': app_name, 'filter_code': filter_code},
-        ),
-        body=json.dumps(dictionary_message),
-    )
-
-    ############
-    log.verbose('Queue msg sent')
-    # log.verbose("%s: sent msg '%s'", current_queue, dictionary_message)
-
-    # NOTE: bad! all connections would result in closed
-    # # close resource
-    # msg_queue.close()
+        # NOTE: bad! all connections would result in closed
+        # # close resource
+        # msg_queue.close()
 
     return True
 
