@@ -73,6 +73,7 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       PUBLIC_ENDPOINT: ${API_PUBLIC_ENDPOINT}
+      ENABLE_PUBLIC_ENDPOINT: ${ENABLE_PUBLIC_ENDPOINT}
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
@@ -96,6 +97,7 @@ services:
       IRODS_DN: ${IRODS_DN}
       IRODS_PASSWORD: ${IRODS_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
 
       # mongodb connection
       MONGO_ENABLE: 0

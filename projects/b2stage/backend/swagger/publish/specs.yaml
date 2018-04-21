@@ -1,6 +1,7 @@
 
 depends_on:
   - IRODS_ANONYMOUS
+  - ENABLE_PUBLIC_ENDPOINT
 
 file: publish
 class: Publish

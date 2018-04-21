@@ -92,9 +92,14 @@ def log_into_queue(instance, dictionary_message):
     app_name = current_queue
 
     try:
+        ###########
         # connect
+        # FIXME: error seem to be raised if we don't refresh connection?
+        # https://github.com/pika/pika/issues/397#issuecomment-35322410
         msg_queue = instance.get_service_instance(QUEUE_SERVICE)
         log.verbose("Connected to %s", QUEUE_SERVICE)
+
+        ###########
         # channel.queue_declare(queue=current_queue)  # not necessary if exists
         channel = msg_queue.channel()  # send a message
         channel.basic_publish(

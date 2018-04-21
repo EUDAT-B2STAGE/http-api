@@ -23,7 +23,6 @@ services:
       # B2ACCESS_ENV: staging
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
-      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
       #################
 
       # trick for unittests

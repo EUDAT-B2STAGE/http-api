@@ -12,7 +12,7 @@ Also see the [dedicated instructions](prototype.md). Please feel free [to report
 
 ## A debug instance in few commands
 
-If you feel comfortable with a terminal shell you could spin your first instace easily. Please head to the [pre-requisites](docs/deploy/preq.md) page first, to make sure your host is qualified to host the project.
+If you feel comfortable with a terminal shell you could spin your first instace easily. Please head to the [pre-requisites](deploy/preq.md) page first, to make sure your host is qualified to host the project.
 
 Here's step-by-step tutorial to work with the HTTP API project:
 ```bash
