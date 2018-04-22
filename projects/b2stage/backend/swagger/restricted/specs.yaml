@@ -1,0 +1,13 @@
+
+file: restricted
+class: Restricted
+schema:
+  expose: true
+mapping:
+  # restrictedid: "/restricted/<string:order_id>"
+  restricted: "/restricted/<string:order_id>"
+  # restricted: "/restricted"
+labels:
+  - seadatacloud
+  - restricted
+  # - order
