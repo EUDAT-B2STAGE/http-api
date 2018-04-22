@@ -32,8 +32,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         rancher = self.get_or_create_handle()
 
         b2safe_connvar = {
-            'RESTRICTED_PATH': order_path,
-            'UPLOADED_FILE': ipath,
+            'BATCH_SRC_PATH': order_path,
+            'BATCH_DEST_PATH': ipath,
             # 'FILES': ' '.join(files),
             'IRODS_HOST': icom.variables.get('host'),
             'IRODS_PORT': icom.variables.get('port'),
