@@ -240,7 +240,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if len(files) < 1 and len(restricted) < 1:
             error = "Neither valid PIDs nor Restricted users specified"
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-        # return "Hello"
 
         ##################
         # Create the path
@@ -264,19 +263,23 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             json_input['status'] = 'exists'
             return json_input
 
-        # ##################
-        # # RESTRICTED metadata
-        # # dump as json & set metadata
-        # import json
-        # json.dumps(restricted)
-        # # TODO: set restricted metadata
-        # # imain.set_metadata(order_path, **md)
+        ##################
+        metadata, _ = imain.get_metadata(order_path)
+        log.pp(metadata)
 
         ##################
-        # log.pp(files)
-        metadata, _ = imain.get_metadata(order_path)
-        # log.pp(metadata)
+        # RESTRICTED metadata
+        if enable_restricted:
+            key = 'restricted'
+            if key in metadata:
+                imain.remove_metadata(order_path, key)
+            import json
+            string = json.dumps(restricted)
+            # TODO: set restricted metadata
+            imain.set_metadata(order_path, restricted=string)
+            log.debug('Flagged restricted: %s', string)
 
+        ##################
         local_dir = path.build([TMPDIR, order_id])
         path.create(local_dir, directory=True, force=True)
 
