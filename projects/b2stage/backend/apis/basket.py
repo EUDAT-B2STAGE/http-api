@@ -188,6 +188,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         # ##################
+        # NOTE: useless as it's the same as the request id...
         # key = 'order_number'
         # order_id = params.get(key)
         # if order_id is None:
@@ -195,30 +196,51 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
+        # RESTRICTED PARAM
+        key = 'marine_ids'
+        restricted = params.get(key, [])
+        # PIDS: can be empty if restricted
         key = 'pids'
-        pids = params.get(key)
-        if pids is None:
-            error = "Parameter '%s' is missing" % key
+        pids = params.get(key, [])
+        # debug
+        log.pp(restricted, prefix_line='restrict')
+        log.pp(pids, prefix_line='pids')
+
+        ##################
+        # Verify marine IDs?
+        key = 'restricted'
+        enable_restricted = params.get(key)
+        if enable_restricted == 'true' and len(restricted) < 1:
+            error = "No restricted users but '%s' param is true" % key
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-        if not isinstance(pids, list) or len(pids) < 1:
-            error = "Parameter '%s' " % key + \
-                "must be a list (with at least one element)"
+        if enable_restricted == 'false' and len(restricted) > 0:
+            error = "Restricted users requested but '%s' param is false" % key
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
         # Verify pids
         files = {}
+        errors = []
         for pid in pids:
             b2handle_output = self.check_pid_content(pid)
             if b2handle_output is None:
-                error = {pid: 'not found'}
-                log.error(error)
-                return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
-            ipath = self.parse_pid_dataobject_path(b2handle_output)
-            log.debug("PID verified: %s\n(%s)", pid, ipath)
-            files[pid] = ipath
+                errors.append({
+                    "error": "41",  # as for Maris specs
+                    "description": "PID not found",
+                    "subject": pid
+                })
+            else:
+                ipath = self.parse_pid_dataobject_path(b2handle_output)
+                log.debug("PID verified: %s\n(%s)", pid, ipath)
+                files[pid] = ipath
         log.verbose("PID files: %s", files)
+
+        ##################
+        # We need either Unrestricted or Restricted data to show up
+        if len(files) < 1 and len(restricted) < 1:
+            error = "Neither valid PIDs nor Restricted users specified"
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        # return "Hello"
 
         ##################
         # Create the path
@@ -237,23 +259,18 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         zip_file_name = path.append_compress_extension(filename)
         zip_ipath = path.join(order_path, zip_file_name, return_str=True)
         if imain.is_dataobject(zip_ipath):
+            # give error here
             # return {order_id: 'already exists'}
             json_input['status'] = 'exists'
             return json_input
 
-        ##################
-        # TODO: check PID errors
-        """
-        "errors": [{
-            "error": "41",
-            "description": "PID not found",
-            "subject": "21.T12995/b3220f58-26b2-11e8-af67-fa163e7b67qq37"
-        }, {
-            "error": "41",
-            "description": "PID not found",
-            "subject": "21.T12995/b3220f58-26b2-11e8-af67-fa163e7b6737aa"
-        }],
-        """
+        # ##################
+        # # RESTRICTED metadata
+        # # dump as json & set metadata
+        # import json
+        # json.dumps(restricted)
+        # # TODO: set restricted metadata
+        # # imain.set_metadata(order_path, **md)
 
         ##################
         # log.pp(files)
@@ -297,6 +314,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         # return {order_id: 'created'}
         json_input['status'] = 'created'
+        if len(errors) > 0:
+            json_input['parameters']['errors'] = errors
         # call Import manager to notify
         api = API()
         api.post(json_input)

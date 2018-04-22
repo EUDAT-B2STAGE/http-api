@@ -1,10 +1,16 @@
 
+# 1.0.2
+
+todos
+
 ## general
 
 - cron to create the certificate every 80 days
 - dockerized Handle? https://hub.docker.com/r/osul/handle/
 
-## inefficiency
+## seadata
+
+### inefficiency
 
 - HTTP API logging into elastisearch (direct?)
 - Async ops @celery
@@ -14,13 +20,13 @@
         * restricted / unrestricted
 - containers cleaning
 
-## still missing
+### still missing
 
 - ansible the infrastructure
 - auth forbidden for maris only endpoint
 - how to give back errors correctly to Import Manager
 
-## notes
+### notes
 
 - rocket chat to somewhere else
 - Restricted data prototype
@@ -30,8 +36,7 @@
 - Log username sent from import manager
 - more than one zip file in one unrestricted order
 
-
----
+### snippets
 
 ```python
 """ Recover the PIDs from data in a folder in production """
