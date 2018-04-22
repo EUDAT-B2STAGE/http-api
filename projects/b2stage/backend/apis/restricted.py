@@ -119,25 +119,27 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.debug("Order path: %s", order_path)
 
         ###############
+        error = "Order '%s' not enabled or you have no permissions" % order_id
         if not imain.is_collection(order_path):
-            return 'FAILED'
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
         else:
             metadata, _ = imain.get_metadata(order_path)
             key = 'restricted'
             if key not in metadata:
-                return 'FAILED'
+                return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
             else:
                 string = metadata.get(key)
                 import json
                 restricted_users = json.loads(string)
                 # log.pp(restricted_users)
                 if len(restricted_users) < 1:
-                    return 'FAILED'
+                    return self.send_errors(
+                        error, code=hcodes.HTTP_BAD_REQUEST)
 
         ###############
         obj = self.init_endpoint()
         if obj.username not in restricted_users:
-            return 'FAILED'
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ###############
         # irods copy
@@ -158,5 +160,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         self.ingest_restricted_zip(imain, order_id, zip_ipath, ipath)
 
         ###############
-        response = 'Hello world!'
+        response = {
+            'order_id': order_id,
+            'status': 'filled',
+        }
         return self.force_response(response)
