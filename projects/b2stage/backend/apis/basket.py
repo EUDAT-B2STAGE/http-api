@@ -202,9 +202,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # PIDS: can be empty if restricted
         key = 'pids'
         pids = params.get(key, [])
-        # debug
-        log.pp(restricted, prefix_line='restrict')
-        log.pp(pids, prefix_line='pids')
+        # # debug
+        # log.pp(restricted, prefix_line='restrict')
+        # log.pp(pids, prefix_line='pids')
 
         ##################
         # Verify marine IDs?

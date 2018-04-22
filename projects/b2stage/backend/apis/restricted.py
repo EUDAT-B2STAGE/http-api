@@ -99,10 +99,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         """
 
         ###############
-        json_input = self.get_input()
-        log.pp(json_input)
-
-        # ##################
+        # json_input = self.get_input()
+        # log.pp(json_input)
         # key = 'request_id'
         # order_id = json_input.get(key)
         # if order_id is None:
@@ -149,8 +147,15 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.verbose("Uploaded: %s", ipath)
 
         ###############
+        # define zip final path
+        from utilities import path
+        filename = 'order_%s' % order_id
+        # zip_file_name = path.append_compress_extension(filename)
+        zip_ipath = path.join(order_path, filename, return_str=True)
+
+        ###############
         # launch container
-        self.ingest_restricted_zip(imain, order_id, order_path, ipath)
+        self.ingest_restricted_zip(imain, order_id, zip_ipath, ipath)
 
         ###############
         response = 'Hello world!'
