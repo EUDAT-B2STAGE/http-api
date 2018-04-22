@@ -1,31 +1,35 @@
 
-## notes
-
-**PRIORITIES** ::MVP::
-
-* credentials
-* list the zip files
-* unwanted characters in filenames (ONLY CHECK)
-* HTTP API logging into elastisearch
-* push 1 thousand files in production from RAR
-- Restricted data prototype
-- Log username sent from import manager
-- more than one zip file in one unrestricted order
-
----
+## general
 
 - cron to create the certificate every 80 days
 - dockerized Handle? https://hub.docker.com/r/osul/handle/
 
----
+## inefficiency
 
-Missing:
-- async with celery
+- HTTP API logging into elastisearch (direct?)
+- Async ops @celery
+    + irods copy and PIDs #slow
+    + approve: recover pids and send to maris
+    + orders: create zip files 
+        * restricted / unrestricted
+- containers cleaning
+
+## still missing
+
+- ansible the infrastructure
 - auth forbidden for maris only endpoint
 - how to give back errors correctly to Import Manager
-- guys in hometown to discuss the Python code
-- ansible the infrastructure
-- rocket chat to CSC
+
+## notes
+
+- rocket chat to somewhere else
+- Restricted data prototype
+    - restricted metadata on POST
+    - restricted upload PUT + async container 
+        + with curl call to Maris API
+- Log username sent from import manager
+- more than one zip file in one unrestricted order
+
 
 ---
 

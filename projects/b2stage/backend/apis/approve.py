@@ -35,6 +35,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     def pid_production(self, imain, batch_id, data):
 
+        # TODO: am I using the metadata of the zip file?
+
         temp_id = data.get(md.tid)
 
         # ################
@@ -51,20 +53,22 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         # irule to get PID
         pid = self.pid_request(imain, dest_path)
+        log.info("Received PID: %s", pid)
 
-        ################
-        # irods metadata to check the PID
-        metadata, _ = imain.get_metadata(dest_path)
-        try:
-            metadata_pid = metadata.pop('PID').strip()
-        except KeyError:
-            error = 'Unable to generate PID: %s/%s' % (batch_id, temp_id)
-            return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
-        else:
-            if pid == metadata_pid:
-                log.info("Confirmed PID: %s", pid)
-            else:
-                log.warning("PID unconfirmed?\n%s vs %s", pid, metadata_pid)
+        # ################
+        # PID CHCECKING in IRODS METADATA (not wise for performances)
+        # # irods metadata to check the PID
+        # metadata, _ = imain.get_metadata(dest_path)
+        # try:
+        #     metadata_pid = metadata.pop('PID').strip()
+        # except KeyError:
+        #     error = 'Unable to generate PID: %s/%s' % (batch_id, temp_id)
+        #     return self.send_errors(error, code=hcodes.HTTP_SERVER_ERROR)
+        # else:
+        #     if pid == metadata_pid:
+        #         log.info("Confirmed PID: %s", pid)
+        #     else:
+        #         log.warning("PID unconfirmed?\n%s vs %s", pid, metadata_pid)
 
         # ################
         # # DEBUG extra metadata?
@@ -95,19 +99,19 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         #     log.verbose("PID verified (b2handle): %s", pid)
         #     log.pp(b2handle_output)
 
-        ################
-        # set metadata (with a prefix?)
-        metadata, _ = imain.get_metadata(dest_path)
-        log.pp(metadata)
-        setting = False
-        for key in md.keys:
-            if key not in metadata:
-                value = data.get(key)
-                args = {'path': dest_path, key: value}
-                imain.set_metadata(**args)
-                setting = True
-        if setting:
-            log.debug("Some metadata is set")
+        # ################
+        # # set metadata (with a prefix?)
+        # metadata, _ = imain.get_metadata(dest_path)
+        # log.pp(metadata)
+        # # setting = False
+        # for key in md.keys:
+        #     if key not in metadata:
+        #         value = data.get(key)
+        #         args = {'path': dest_path, key: value}
+        #         imain.set_metadata(**args)
+        #         # setting = True
+        # # if setting:
+        # #     log.debug("Some metadata is set")
 
         # ################
         # # ALL DONE: move file from ingestion to trash
@@ -132,14 +136,14 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             'IRODS_USER_NAME': icom.variables.get('user'),
             'IRODS_PASSWORD': icom.variables.get('password'),
         }
-        log.pp(b2safe_connvar)
+        # log.pp(b2safe_connvar)
 
         # Launch a container to copy the data into B2HOST
         cname = 'copy_zip'
         cversion = '0.8'
         image_tag = '%s:%s' % (cname, cversion)
         container_name = self.get_container_name(batch_id, image_tag)
-        print(container_name)
+        # print(container_name)
         docker_image_name = self.get_container_image(image_tag, prefix='eudat')
         log.info("Request copy2prod; image: %s" % docker_image_name)
 
@@ -254,6 +258,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 log.info("Obtained: %s", pid)
                 data['pid'] = pid
                 out_data.append(data)
+        # NOTE: I could set here the pids as metadata in prod collection
 
         ################
         # TODO: set expiration metadata on batch zip file?

@@ -1,5 +1,5 @@
 # ###############################################
-# Copyright 2011-2017 EUDAT CDI - www.eudat.eu
+# Copyright 2011-2018 EUDAT CDI - www.eudat.eu
 # ###############################################
 variables:
   env:
@@ -87,6 +87,7 @@ variables:
     AUTH_SERVICE: sqlalchemy
     API_MAIN_ENDPOINT: registered
     API_PUBLIC_ENDPOINT: public
+    ENABLE_PUBLIC_ENDPOINT: 0
     # COMPOSE_PROJECT_NAME: b2stage
     # PROJECT_DOMAIN: myserver.mydomain.dev
     # LETSENCRYPT_MODE: --staging
