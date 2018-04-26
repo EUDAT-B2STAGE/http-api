@@ -114,7 +114,9 @@ class B2HandleEndpoint(EudatEndpoint):
     def get_pid_metadata(self, pid):
 
         # First test: check if credentials exists and works
-        client, authenticated = self.connect_client()
+        client, authenticated = self.connect_client(
+            force_no_credentials=True, disable_logs=True)
+        # client, authenticated = self.connect_client()
         data, error, code = self.handle_pid_fields(client, pid)
 
         # If credentials were found but they gave error

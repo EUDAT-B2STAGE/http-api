@@ -6,7 +6,8 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 seadata_vars = detector.load_group(label='seadata')
 
-SEADATA_ENABLED = seadata_vars.get('project')
+# SEADATA_ENABLED = seadata_vars.get('project')
+SEADATA_ENABLED = seadata_vars.get('project') == '1'
 ORDERS_ENDPOINT = 'orders'
 
 

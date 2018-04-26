@@ -114,7 +114,7 @@ services:
       # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
 
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
-      HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json
+      # HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json
 
       ####################
       ####################

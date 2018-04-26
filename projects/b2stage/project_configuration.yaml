@@ -91,14 +91,15 @@ variables:
     ##: OTHERs / FIXED
     UPLOAD_PATH: /uploads
     FULL_JWT: false
-    # TO BE DEPRECATED
-    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
-    HANDLE_BASE: "https://url.to.epic/handles/"
     # This path needs permissions to user 1001
     # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /usr/share
     # Email to be notified for proxy certificates expiration (letsencrypt)
     SMTP_ADMIN:
+    ############################
+    # TO BE DEPRECATED
+    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
+    HANDLE_BASE: "https://url.to.epic/handles/"
 
     #################
     # base user/password
