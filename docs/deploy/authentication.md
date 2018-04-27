@@ -25,7 +25,7 @@ Your application must be registered as a client for the B2ACCESS OAUTH protocol.
 
 Once you start the B2STAGE server with the two variables `B2ACCESS_ACCOUNT` and `B2ACCESS_SECRET` set, the related endpoints will be activated (you may double-check this inside your `/api/specs` JSON content).
 
-Please read also how the authentication works for a user [here](docs/user/authentication.md#authentication-via-the-b2access-service).
+Please read also how the authentication works for a user [here](/docs/user/authentication.md#authentication-via-the-b2access-service).
 
 ### Current issues
 
@@ -41,5 +41,5 @@ The two teams have are currently working off a solution. A few options are being
 
 Once you start the B2STAGE server without setting the two variables `B2ACCESS_ACCOUNT` and `B2ACCESS_SECRET` (which is the **`default`** as for the current open issues), the related endpoints will be activated (you may double-check this inside your `/api/specs` JSON content).
 
-Please read also how the authentication works for a user [here](docs/user/authentication_b2safe.md).
+Please read also how the authentication works for a user [here](/docs/user/authentication_b2safe.md).
 
