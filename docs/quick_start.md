@@ -10,9 +10,11 @@ The quickest way to deploy or develop the current project state is to test onlin
 Also see the [dedicated instructions](prototype.md). Please feel free [to report or comment](https://gitter.im/EUDAT-B2STAGE/http-api) to help us improve!
 
 
-## A debug instance in few commands
+## Set-up your "debug" instance (in very few commands)
 
-If you feel comfortable with a terminal shell you could spin your first instace easily. Please head to the [pre-requisites](deploy/preq.md) page first, to make sure your host is qualified to host the project.
+If you feel comfortable with a terminal shell you could spin your first instace easily. Please head to the [pre-requisites](deploy/preq.md) page first, to make sure your current machine is qualified to host the project.
+
+NOTE: **DO NOT** run this instructions as administrator. Please make sure you are not the `root` user (e.g. with the `whoami` command); this behaviour is not allowed by the `rapydo` framework.
 
 Here's step-by-step tutorial to work with the HTTP API project:
 ```bash
@@ -79,13 +81,39 @@ echo "mode: production" >> .projectrc
 echo "hostname: yourdomain.com" >> .projectrc  # set a domain if you have one
 
 # edit the project configuration to set an external B2SAFE instance
-vi projects/b2stage/project_configuration.yaml
+vi configuration.yaml
 
-rapydo start  # in production
-rapydo ssl-certificate  # issue valid certificate with "Let's Encrypt"
-curl -i https://yourdomain.com/api/status
+rapydo start  # in production, thanks to the projectrc setup
+# Hint: double check open ports 80 and 443 from the outside world
+
+# issues a valid free SSL certificate with "Let's Encrypt"
+rapydo ssl-certificate  
+
+# check your server is alive and running on HTTPS protocol
+curl -i https://YOURDOMAIN.com/api/status
+
+# check your swagger configuration with a browser
+open http://petstore.swagger.io/?url=https://YOURDOMAIN.com/api/specs&docExpansion=none
 ```
 
+
+### Periodically update the SSL certificate
+
+Certificates issued using "Let's encrypt" lasts 90 days.
+To make sure your certificate is always up-to-date you can setup a cron job to run every two months of the year.
+
+```bash
+
+# edit crontab
+$ crontab -e
+
+# add this line
+30  0   1   2,4,6,8,10,12  *    cd /path/to/httpapi/code && rapydo ssl-certificate
+# runs the 1st day of even months of the year, at 00:30 AM
+
+# to check later on about cron jobs executions:
+less /var/log/cron
+```
 
 ## Other actions
 
