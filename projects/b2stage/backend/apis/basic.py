@@ -403,34 +403,41 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     log.debug("Removed %s" % obj['name'])
                 return "Cleaned"
 
-        # Note: this check is not at the beginning to allow the clean operation
-        if location is None:
-            return self.send_errors('Location: missing filepath inside URI',
-                                    code=hcodes.HTTP_BAD_REQUEST)
-        location = self.fix_location(location)
+        # TODO: only if it has a PID?
+        return self.send_errors(
+            "Data objects/collections removal " +
+            "is NOT allowed inside the 'registered' domain",
+            code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+        )
 
-        ########################################
-        # Remove from irods (only files and empty directories)
-        is_recursive = False
-        if icom.is_collection(location):
-            if not icom.list(location):
-                # nb: recursive option is necessary to remove a collection
-                is_recursive = True
-            else:
-                log.info("list:  %i", len(icom.list(path=location)))
-                return self.send_errors(
-                    'Directory is not empty',
-                    code=hcodes.HTTP_BAD_REQUEST)
-        else:
-            # Print file details/sys metadata if it's a specific file
-            try:
-                icom.get_metadata(path=location)
-            except IrodsException:
-                # if a path that does not exist
-                return self.send_errors(
-                    "Path does not exists or you don't have privileges",
-                    code=hcodes.HTTP_BAD_NOTFOUND)
+        # # Note: check not at the beginning to allow the "clean" operation
+        # if location is None:
+        #     return self.send_errors('Location: missing filepath inside URI',
+        #                             code=hcodes.HTTP_BAD_REQUEST)
+        # location = self.fix_location(location)
 
-        icom.remove(location, recursive=is_recursive, resource=resource)
-        log.info("Removed %s", location)
-        return {'removed': location}
+        # ########################################
+        # # Remove from irods (only files and empty directories)
+        # is_recursive = False
+        # if icom.is_collection(location):
+        #     if not icom.list(location):
+        #         # nb: recursive option is necessary to remove a collection
+        #         is_recursive = True
+        #     else:
+        #         log.info("list:  %i", len(icom.list(path=location)))
+        #         return self.send_errors(
+        #             'Directory is not empty',
+        #             code=hcodes.HTTP_BAD_REQUEST)
+        # else:
+        #     # Print file details/sys metadata if it's a specific file
+        #     try:
+        #         icom.get_metadata(path=location)
+        #     except IrodsException:
+        #         # if a path that does not exist
+        #         return self.send_errors(
+        #             "Path does not exists or you don't have privileges",
+        #             code=hcodes.HTTP_BAD_NOTFOUND)
+
+        # icom.remove(location, recursive=is_recursive, resource=resource)
+        # log.info("Removed %s", location)
+        # return {'removed': location}

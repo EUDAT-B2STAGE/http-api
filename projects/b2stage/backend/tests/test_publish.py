@@ -36,6 +36,14 @@ else:
             # Call father's method
             super().setUp()
 
+            # Remove existing files
+            endpoint = self._api_uri + self._register_endpoint  # + self._ipath
+            r = self.app.delete(
+                endpoint,
+                data=dict(debugclean='True'),
+                headers=self.__class__.auth_header)
+            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+
             log.info("\n### Creating a test token (ANONYMOUS IRODS user) ###")
             credentials = json.dumps({'username': self._anonymous_user})
             endpoint = self._auth_uri + self._auth_endpoint
@@ -206,8 +214,11 @@ else:
             log.debug('\n### Cleaning anonymous data ###')
 
             # Remove the test file
-            endpoint = self._api_uri + self._register_endpoint + self._ipath
-            r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+            endpoint = self._api_uri + self._register_endpoint  # + self._ipath
+            r = self.app.delete(
+                endpoint,
+                data=dict(debugclean='True'),
+                headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
             # Recover current token id
