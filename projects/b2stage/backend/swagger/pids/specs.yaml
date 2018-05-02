@@ -1,4 +1,7 @@
 
+# depends_on:
+#   - not SEADATA_PROJECT
+
 # The name of the REST class
 class: PIDEndpoint
 # The python file where your REST class is located

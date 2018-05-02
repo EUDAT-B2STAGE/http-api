@@ -6,10 +6,11 @@ depends_on:
 file: resources
 class: Resources
 schema:
-  # FIXME: internals, not to expose
   expose: true
 mapping:
-  resources: /internals/resources
+  qc: "/ingestion/<string:batch_id>/qc/<string:qc_name>"
+  # resources: /internals/resources
 labels:
   - seadatacloud
-  - resources
+  # - resources
+  - ingestion

@@ -1,12 +1,12 @@
 
 common:
   custom:
-    # FIXME
-    authentication: false
+    # authentication: false
+    authentication: true
     # authorized:
     #   - staff_user
 
-resources:
+qc:
   summary: Resources management
   responses:
     '200':

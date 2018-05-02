@@ -1,8 +1,13 @@
 
 withoutid:
   custom:
-    authentication: false
-  summary: Upload a zip file to the ingestion cloud
+    authentication: true
+  summary: Enable a batch to be ingested in the submission process
   responses:
     '200':
-      description: File was uploaded without errors
+      description: The batch for the specified identifier has been activated
+  parameters:
+    - name: batch_id
+      in: query
+      type: string
+      description: the identifier associated to this ingestion workflow

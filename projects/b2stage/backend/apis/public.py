@@ -71,6 +71,8 @@ class Public(B2HandleEndpoint):
                 'Content-Disposition': 'attachment; filename="%s"' % filename
             }
             return icom.read_in_streaming(path, headers=headers)
+        else:
+            md, _ = icom.get_metadata(path)
 
         ####################
         # # look for pid metadata
@@ -102,6 +104,14 @@ class Public(B2HandleEndpoint):
                 metadata += "<th> %s </th>" % key.capitalize()
                 metadata += "<td> %s </td>" % value
                 metadata += '</tr>\n'
+            for key, value in md.items():
+                if value is None:
+                    continue
+                metadata += '<tr>'
+                metadata += "<th> <i>metadata</i> </th>"
+                metadata += "<th> %s </th>" % key.capitalize()
+                metadata += "<td> %s </td>" % value
+                metadata += '</tr>\n'
 
         if info is None:
             body = "<h3> Failure </h3>" + \
@@ -111,7 +121,7 @@ class Public(B2HandleEndpoint):
 <h3> Data Object landing page </h3>
 
 </br> </br>
-Found a data object <b>publicy</b> available:
+Found a data object <b>publicly</b> available:
 </br> </br>
 
 <table border=1 cellpadding=5 cellspacing=5>

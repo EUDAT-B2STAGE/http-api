@@ -1,26 +1,9 @@
 # ###############################################
-# Copyright 2011-2017 EUDAT CDI - www.eudat.eu
+# Copyright 2011-2018 EUDAT CDI - www.eudat.eu
 # ###############################################
 
-project:
-  title: EUDAT-B2STAGE HTTP-API server
-  description: Processing files in different EUDAT domains
-  version: 1.0.1
-
-###############################
-## Please CHECK VARIABLES here
-## before starting your project
-###############################
 variables:
-
   env:
-
-    ###############################
-    ## Dockerized DB
-    # You may leave this like this in DEBUG mode
-    ALCHEMY_USER: rods
-    ALCHEMY_PASSWORD: chooseapasswordwisely
-    ALCHEMY_API_DB: SQL_API
 
     ###############################
     ## B2ACCESS
@@ -30,104 +13,97 @@ variables:
     B2ACCESS_SECRET:
 
     ###############################
-    ## LOCAL iRODS server VERSION
-    # NOTE: intended for DEBUG mode, to be commented in PRODUCTION
+    ## LOCAL (container) iRODS server
     IRODS_USER: irods
-    IRODS_GUEST_USER: guest              # intended to work only with GSI
-    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
+    IRODS_PASSWORD: chooseapasswordwisely # NOTE: must match ALCHEMY_PASSWORD
     IRODS_ZONE: tempZone
     IRODS_HOME: home
+    IRODS_GUEST_USER: guest              # intended to work only with GSI
+    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
+    IRODS_DN:           # automatically computed within the docker network
     IRODS_AUTHSCHEME:   # to be auto-detected
     # IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
-    # NOTE: this must match ALCHEMY_PASSWORD if running in debug mode
-    IRODS_PASSWORD: chooseapasswordwisely
-    # If empty it will be automatically computed within the docker network
-    IRODS_DN:
 
     ###############################
-    ## PRODUCTION example: iRODS server VERSION
-
-    # IRODS_HOST: yourhostname
-    # IRODS_ZONE: productionZone1
-    # IRODS_HOME: home
-    # # You MUST provide user/password credentials to iquery users informations
-    # IRODS_AUTHSCHEME: credentials
-    # IRODS_USER: httpapi
-    # IRODS_PASSWORD: SETTHISPASSWORDINPRODUCTION
-    # # DN of your external iRODS host (with GSI plugin installed)
-    # # Needed for B2ACCESS certificates exchange
-    # IRODS_DN: "/C=US/O=Globus Consortium/OU=Globus Connect Service/CN=host/yourhostname.com"
+    ## Dockerized DB
+    ALCHEMY_USER: rods
+    ALCHEMY_PASSWORD: chooseapasswordwisely
+    ALCHEMY_API_DB: SQL_API
 
     ###############################
-    ## Mongo
-    # MONGO_HOST: your.host.com
-    # MONGO_DATABASE: yourdb
-    # MONGO_PORT: 27017
+    ## Experimental features
+    IRODS_ANONYMOUS: 0  # enable only if you know what it means
+    ENABLE_PUBLIC_ENDPOINT: 0  # experimental endpoint, depending on anonymous
 
     ###############################
-    ## Seadata branch
+    ## Seadata project variable
     SEADATA_PROJECT: 0
-    # SEADATA_PROJECT: 1
-    # SEADATA_INGESTION_PATH:
+    SEADATA_EDMO_CODE:
+    SEADATA_INGESTION_DIR: batches
+    SEADATA_PRODUCTION_DIR: cloud
+    SEADATA_ORDERS_DIR: orders
+    SEADATA_BATCH_PROD_FILES_DIR: production
+    ## IM APIs
+    SEADATA_API_IM_URL: https://some.url
+    ## RANCHER
+    RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
+    RESOURCES_KEY:
+    RESOURCES_SECRET:
+    RESOURCES_PROJECT:
+    ## PRIVATE DOCKERHUB
+    RESOURCES_HUB:
+    RESOURCES_HUBUSER:
+    RESOURCES_HUBPASS:
+    ## RABBIT SEADATA
+    RABBIT_HOST: rabbit.b2host.org
+    RABBIT_PORT: 5672
+    RABBIT_VHOST: elkstack
+    RABBIT_USER: elkuser
+    RABBIT_PASSWORD:
+    RABBIT_EXCHANGE: elkexchange
+    RABBIT_QUEUE: elkqueue
+    ## OTHERS
+    CONTAINERS_RABBITUSER:
+    CONTAINERS_RABBITPASS:
+    CONTAINERS_DBUSER:
+    CONTAINERS_DBPASS:
+    CONTAINERS_DBEXTRAUSER:
+    CONTAINERS_DBEXTRAPASS:
 
-###############################
-## WARNING!! do not modify below
-## if you don't know what you are doing
-###############################
+    #################
 
-    # COMPOSE_PROJECT_NAME: b2stage
-    # PROJECT_DOMAIN: myserver.mydomain.dev
     AUTH_SERVICE: sqlalchemy
-    # AUTH_SERVICE: mongo
     API_MAIN_ENDPOINT: registered
     API_PUBLIC_ENDPOINT: public
+    # COMPOSE_PROJECT_NAME: b2stage
+    # PROJECT_DOMAIN: myserver.mydomain.dev
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
-
-    IRODS_ANONYMOUS: 1
+    # irods fixed
     IRODS_DB: ICAT
     IRODS_CHUNKSIZE: 1048576
     ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
     B2ACCESS_CAS: /tmp/certificates/b2access
-
     # sqlalchemy fixed:
     ALCHEMY_ENGINE: postgresql
     ALCHEMY_DBS: 'ICAT SQL_API'
-
-    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
-    HANDLE_BASE: "https://url.to.epic/handles/"
-    # HANDLE_USER:
-    # HANDLE_PREFIX:
-    # HANDLE_PASS:
-
-    # # neo4j:
-    # GRAPHDB_PASSWORD: wakeupneo
-    # EPIC HANDLE credentials
-
-    # ##: OTHERs / FIXED
-    # FLASK_SUBNET: 175.1.0.0
-    # FLASK_FIXED_IP: 175.1.0.10
+    ##: OTHERs / FIXED
     UPLOAD_PATH: /uploads
     FULL_JWT: false
+    # This path needs permissions to user 1001
+    # as owner of subdir 'ingestion' and 'cloud'
+    RESOURCES_LOCALPATH: /usr/share
+    # Email to be notified for proxy certificates expiration (letsencrypt)
+    SMTP_ADMIN:
+    ############################
+    # TO BE DEPRECATED
+    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
+    HANDLE_BASE: "https://url.to.epic/handles/"
 
-    ###############################
-    ## Queue
-    # # RABBITMQ_USER: whiterabbit
-    # # RABBITMQ_PASSWORD: downthehole
+    #################
+    # base user/password
 
-    # # please change this:
-    # RABBITMQ_HOST: your.rabbit.com
-    # RABBITMQ_USER: user
-    # RABBITMQ_PASSWORD: somepass
-
-    # # tested with merret:
-    # RABBITMQ_VHOST: qc
-    # RABBITMQ_ROUTING_KEY: dkrz-qc
-    # RABBITMQ_EXCHANGE: b2host
-    # RABBITMQ_QUEUE: testqueue
-
-  # # CHANGE ME in production
   # backend:
   #   credentials:
   #     username: someotheruser
@@ -139,22 +115,22 @@ variables:
   #       admin: admin_root
   #       default: normal_user
 
+  #################
   repos:
     irods-client:
-      branch: master # python-irodsclient==0.7.0a0
+      branch: master
       online_url: https://github.com/irods/python-irodsclient.git
       path: prc
       if: true
 
-controller:
-  commands:
-    irods_restart:
-      description: Try to restart the current iCAT server instance
-      command: service irods restart
-      service: icat
-      user: root
+##################################################
+project:
+  title: EUDAT-B2STAGE HTTP-API server
+  description: Processing data in EUDAT domains
+  version: 1.0.2
 
 tags:
+  # EUDAT related
   eudat: all endpoints associated to EUDAT services
   b2access: request/refresh authorization from B2ACCESS
   b2safe: proxy access to irods b2safe credentials
@@ -162,9 +138,11 @@ tags:
   pids: resolve and download data from EUDAT Persistent IDentifier
   publish: allow public access to data objects
   public: landing page
-  b2safe: proxy access to irods b2safe credentials
-  # internal: for internal testing purpose only
+  # Other subprojects
   seadatacloud: endpoints related to the SeaDataCloud project
+  ingestion: submission of files to be approved into the cloud
+  order: request an order from the interface
+  # internal: for internal testing purpose only
 
 # Keep track of releases and dependencies
 releases:
@@ -191,8 +169,20 @@ releases:
   '1.0.1':
     type: patch
     rapydo: 0.6.1
-    status: development
+    status: released
   '1.0.2':
+    type: patch
+    rapydo: 0.6.1
+    status: released
+  '1.0.3':
     type: development
     rapydo: 0.6.2
-    status: todo
+    status: development
+
+controller:
+  commands:
+    irods_restart:
+      description: Try to restart the current iCAT server instance
+      command: service irods restart
+      service: icat
+      user: root

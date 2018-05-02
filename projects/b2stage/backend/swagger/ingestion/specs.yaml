@@ -3,12 +3,13 @@ depends_on:
   - SEADATA_PROJECT
 
 file: ingestion
-class: Ingestion
+class: IngestionEndpoint
 schema:
   expose: true
 mapping:
   withoutid: "/ingestion"
   withid: "/ingestion/<string:batch_id>"
+  withidandfile: "/ingestion/<string:batch_id>/add/<string:file_id>"
 
 labels:
   - seadatacloud

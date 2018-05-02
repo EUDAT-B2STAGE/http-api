@@ -54,19 +54,16 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
                           headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
-        # Overwrite a directory
-        params = json.dumps(dict({'force': True, 'path': self._irods_path}))
-        r = self.app.post(endpoint, data=params,
-                          headers=self.__class__.auth_header)
-        # TEMPORARY, TO BE FIXED
-        self.assertEqual(
-            r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
-        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-
         # Overwrite a directory w/o force flag
         r = self.app.post(endpoint, data=dict(path=self._irods_path),
                           headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+
+        # Overwrite a directory
+        params = json.dumps(dict(force=True, path=self._irods_path))
+        r = self.app.post(endpoint, data=params,
+                          headers=self.__class__.auth_header)
+        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Create a directory in a non existing path
         r = self.app.post(endpoint, data=dict(path=self._invalid_irods_path),
@@ -341,36 +338,42 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         ###################################################
 
         log.info('*** Testing DELETE')
-        # Delete non empty directory
-        endpoint = self._api_uri + self._main_endpoint + self._irods_path
-        r = self.app.delete(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+
+        # # Delete non empty directory
+        # endpoint = self._api_uri + self._main_endpoint + self._irods_path
+        # r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
 
         # Delete entity
         endpoint = self._api_uri + self._main_endpoint + self._irods_path + \
             '/' + self._test_filename
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        self.assertEqual(
+            r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
         # Delete directory
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        self.assertEqual(
+            r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
         # Delete non existing entity
         endpoint = self._api_uri + self._main_endpoint + self._irods_path + \
             '/' + self._test_filename + 'x'
         r = self.app.delete(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
-        # HTTP_BAD_NOTFOUND is more appropriate
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        self.assertEqual(
+            r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
 
-        # Delete non existing directory
-        endpoint = self._api_uri \
-            + self._main_endpoint + self._invalid_irods_path
-        r = self.app.delete(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        # # Delete non existing directory
+        # endpoint = self._api_uri \
+        #     + self._main_endpoint + self._invalid_irods_path
+        # r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
 
-        # Delete w/o passing a path
-        endpoint = self._api_uri + self._main_endpoint
-        r = self.app.delete(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)
+        # # Delete w/o passing a path
+        # endpoint = self._api_uri + self._main_endpoint
+        # r = self.app.delete(endpoint, headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_REQUEST)

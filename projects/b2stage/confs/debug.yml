@@ -14,9 +14,9 @@ services:
     environment:
       ACTIVATE: 1
       FLASK_DEBUG: 1
-      DEBUG_ENDPOINTS: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
+      TESTING: 0
 
       #################
       # EUDAT RELATED
@@ -24,9 +24,16 @@ services:
       # B2ACCESS_ENV: staging
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
-      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
-      MAIN_LOGIN_ENABLE: 1
       #################
+
+      # trick for unittests
+      DEBUG_ENDPOINTS: 1
+      MAIN_LOGIN_ENABLE: 1
+      PROFILE_DISABLED: 0
+
+      # Fix for mac development
+      LINES: 28
+      COLUMNS: 160
 
     ports:
       - 8080:${FLASK_DEFAULT_PORT}
@@ -39,6 +46,14 @@ services:
       - ${SUBMODULE_DIR}/prc/irods:${PYTHON_PATH}/irods
 
   icat:
+
+
+    # build:
+    #   context: ${SUBMODULE_DIR}/build-templates/b2safe
+    #   # args:
+    #   #   RAPYDO_VERSION: ${RAPYDO_VERSION}
+    # image: rapydo/b2safe:${RAPYDO_VERSION}
+
     environment:
       ACTIVATE: 1
       POSTGRES_HOST: "${ALCHEMY_HOST}"
@@ -62,8 +77,10 @@ services:
       # adds GSI users in our irods instance
       - ${SUBMODULE_DIR}/build-templates/icat/extra_gsi_users.sh:/docker-entrypoint.d/gsi.sh
       # B2ACCESS certificates
-      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
       - ${SUBMODULE_DIR}/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
+      # EXTRA EUDAT scripts
+      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      # - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why
@@ -76,6 +93,9 @@ services:
       APP_HOST: ${FLASK_HOST}
       APP_PORT: :${FLASK_DEFAULT_PORT}
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
+      # Fix for mac development
+      LINES: 28
+      COLUMNS: 160
     networks:
       app_net:
     depends_on:
@@ -90,6 +110,7 @@ services:
     ports:
       - 80:8080
   sqlalchemyui:
+    # http://localhost:81/?pgsql=psqldb.dockerized.io&username=rods&db=ICAT
     # volumes:
     #   - restlitedb:/dbs
     ports:

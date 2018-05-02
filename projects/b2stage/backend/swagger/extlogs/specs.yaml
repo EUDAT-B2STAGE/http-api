@@ -1,0 +1,10 @@
+
+file: extlogs
+class: Extlogs
+schema:
+  expose: true
+mapping:
+  extlogs: "/logs"
+labels:
+  - seadatacloud
+  - logs

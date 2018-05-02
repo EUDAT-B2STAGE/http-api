@@ -1,24 +1,29 @@
 
 # Registered APIs
 
->Note: According to the EUDAT Data Architecture B2SAFE is part of the registered data domain, where digital objects are stored and managed in such a way that data carrying associated descriptive metadata is discoverable and can be referred to or retrieved using persistent identifiers.
->For the time being B2SAFE object registration policies are not applied to a specific path, but can be configured to trigger the registration in any available paths. Therefore the B2STAGE HTTP-API can not guarantee that an uploaded file will be registered by B2SAFE.
+> NOTE: The endpoint called *registered* corresponds to a domain in iRODS, where each data object carries a persistent identifier (PID). The HTTP API itself does **not** assign the PID, this is done by iRODS rules, e.g. eventhooks in iRODS calliong the B2SAFE PID registration rule.
+
+> By default, when you enabled your iRODS instance with the HTTP API but did not install B2SAFE or configured these eventhooks **no PIDs will be assigned**.
+
+> For the time being B2SAFE object registration policies are not applied to a specific path, but can be configured to trigger the registration in any available paths. Therefore the B2STAGE HTTP-API can not guarantee that an uploaded file will be registered by B2SAFE.
 
 The registered APIs allow the management of entities on B2SAFE.
 The following operations are currently available:
-- list, upload, download and delete files (objects in iRODS) 
-- create and delete directories (collection in iRODS).
+- list, upload, download and rename files (objects in iRODS) 
+- create and rename directories (collection in iRODS).
 
 The endpoint methods will use the directory namespace (iRODS full path) to identify entities .
 The examples in this section use cURL commands. For information about cURL, see http://curl.haxx.se/.
 
 
 ## Methods
-1. [GET](#get)
-2. [PUT](#put)
-3. [POST](#post)
-4. [DELETE](#delete)
-5. [PATCH](#patch)
+
+* [GET](#get)
+* [PUT](#put)
+* [POST](#post)
+* [PATCH](#patch)
+
+> note: the `DELETE` action is **NOT** allowed in the *"registered" domain*.
 
 ---
 
@@ -246,63 +251,6 @@ $ curl -X POST \
   }
 }
 
-```
-
----
-## **DELETE**
-### Delete an entity
-
-##### Example
-```bash
-# Delete the file '/path/to/directory/file.txt'
-$ curl -X DELETE \
-  -H "Authorization: Bearer <auth_token>" \
-  <http_server:port>/api/registered/path/to/directory/file.txt 
-```
-##### Response
-```json
-{
-  "Meta": {
-    "data_type": "<class 'dict'>", 
-    "elements": 1, 
-    "errors": 0, 
-    "status": 200
-  }, 
-  "Response": {
-    "data": {
-      "removed": "/path/to/directory/file.txt"
-    }, 
-    "errors": null
-  }
-}
-
-```
-
-### Delete an empty directory
-
-##### Example
-```bash
-# Delete "directory" (only if empty)
-$ curl -X DELETE \
-  -H "Authorization: Bearer <auth_token>" \
-  <http_server:port>/api/registered/path/to/directory/ 
-```
-##### Response
-```json
-{
-  "Meta": {
-    "data_type": "<class 'dict'>", 
-    "elements": 1, 
-    "errors": 0, 
-    "status": 200
-  }, 
-  "Response": {
-    "data": {
-      "removed": "/path/to/directory/"
-    }, 
-    "errors": null
-  }
-}
 ```
 
 

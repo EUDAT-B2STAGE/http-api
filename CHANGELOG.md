@@ -1,5 +1,11 @@
 
-# v1.0.2 (*near future*)
+# v1.0.3 (*near future*)
+
+## features
+
+- to be defined
+
+# v1.0.2 (*current*)
 **due date**: April 30th, 2018
 
 ## features
@@ -7,7 +13,7 @@
 - improve deploy documentation
 - aspects to be defined together with the communities
 
-# v1.0.1 (*near future*)
+# v1.0.1
 **due date**: January 21th, 2018
 
 ## features
