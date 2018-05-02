@@ -5,10 +5,17 @@ todos
 
 ## general
 
-- cron to create the certificate every 80 days
+* cron to create the certificate every 80 days
 - dockerized Handle? https://hub.docker.com/r/osul/handle/
 
 ## seadata
+
+### still missing
+
+- rabbitmq closed connection
+- list errors in steps for Maris to define codes
+- ansible the infrastructure
+- auth forbidden to all for maris/admin only endpoint
 
 ### inefficiency
 
@@ -19,12 +26,6 @@ todos
     + orders: create zip files 
         * restricted / unrestricted
 - containers cleaning
-
-### still missing
-
-- ansible the infrastructure
-- auth forbidden for maris only endpoint
-- how to give back errors correctly to Import Manager
 
 ### notes
 

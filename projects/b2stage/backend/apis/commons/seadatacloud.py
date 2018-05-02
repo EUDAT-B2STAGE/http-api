@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
 from restapi.services.detect import detector
 from utilities.logs import get_logger
 
@@ -38,8 +39,8 @@ class ImportManagerAPI(object):
             log.debug("Skipping ImportManagerAPI")
             return False
 
-        # payload['datetime'] = #timestamp '20180320T08:15:44',
-        # # YYMMDDTHH:MM:SS
+        # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
+        payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
         payload['api_function'] += '_ready'
 
         import requests

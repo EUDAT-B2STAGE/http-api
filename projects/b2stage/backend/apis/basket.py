@@ -197,7 +197,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # RESTRICTED PARAM
-        key = 'marine_ids'
+        key = 'b2access_ids'
         restricted = params.get(key, [])
         # PIDS: can be empty if restricted
         key = 'pids'
