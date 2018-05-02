@@ -22,7 +22,8 @@ DELETE /api/order/<OID>
 # IMPORTS
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
-from b2stage.apis.commons.seadatacloud import ImportManagerAPI as API
+from b2stage.apis.commons.seadatacloud import \
+    ImportManagerAPI as API, ErrorCodes
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 # from b2stage.apis.commons.endpoint import EudatEndpoint
 # from b2stage.apis.commons.seadatacloud import Metadata as md
@@ -225,7 +226,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             b2handle_output = self.check_pid_content(pid)
             if b2handle_output is None:
                 errors.append({
-                    "error": "41",  # as for Maris specs
+                    "error": ErrorCodes.PID_NOT_FOUND,
                     "description": "PID not found",
                     "subject": pid
                 })

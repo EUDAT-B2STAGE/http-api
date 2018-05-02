@@ -12,6 +12,11 @@ SEADATA_ENABLED = seadata_vars.get('project') == '1'
 ORDERS_ENDPOINT = 'orders'
 
 
+class ErrorCodes(object):
+
+    PID_NOT_FOUND = "41"
+
+
 class Metadata(object):
 
     """ {

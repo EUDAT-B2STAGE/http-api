@@ -13,8 +13,8 @@ todos
 
 ### still missing
 
-- rabbitmq closed connection
-- list errors in steps for Maris to define codes
+- list errors in steps for Maris to define codes @TODO
+- rabbitmq closed connection @TOFIX
 - ansible the infrastructure
 - auth forbidden to all for maris/admin only endpoint
 
