@@ -1,6 +1,7 @@
 
-#depends_on:
-#  - TESTING_MODE
+depends_on:
+  - TESTING
+
 class: MetadataEndpoint
 file: internal
 mapping:
@@ -10,5 +11,5 @@ ids:
   location: the filesystem path to your digital entities/objects
 labels:
   - helpers
-  # - eudat
+  - eudat
   # - internal

@@ -108,6 +108,17 @@ class Publish(EudatEndpoint):
 
         return True
 
+    @staticmethod
+    def public_path(path):
+
+        # prepare the url to access
+        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER
+        from b2stage.apis.commons import PUBLIC_ENDPOINT
+        return '%s%s%s' % (
+            CURRENT_HTTPAPI_SERVER,
+            PUBLIC_ENDPOINT, path
+        )
+
     @decorate.catch_error()
     def get(self, location):
 
@@ -118,7 +129,18 @@ class Publish(EudatEndpoint):
         icom = handler.icommands
         user = icom.get_current_user()
         log.info("user '%s' requested to check '%s'", user, path)
-        return {'published': self.publish_helper(icom, path)}
+
+        if icom.is_collection(path):
+            return self.send_errors(
+                'Collections are not allowed to be published',
+                code=hcodes.HTTP_BAD_REQUEST
+            )
+        else:
+            published = self.publish_helper(icom, path)
+            response = {'published': published}
+            if published:
+                response['public_url'] = self.public_path(path)
+            return response
 
     @decorate.catch_error()
     def put(self, location=None):
@@ -131,13 +153,19 @@ class Publish(EudatEndpoint):
         user = icom.get_current_user()
         log.info("user '%s' requested to publish '%s'", user, path)
 
+        if icom.is_collection(path):
+            return self.send_errors(
+                'Collections are not allowed to be published',
+                code=hcodes.HTTP_BAD_REQUEST
+            )
+
         # if already set as the same don't do anything
         if not self.publish_helper(icom, path):
             self.publish_helper(icom, path, check_only=False, unpublish=False)
-
         # # If you'd like to check again:
         # return {'published': self.publish_helper(icom, path)}
-        return {'published': True}
+
+        return {'published': True, 'public_url': self.public_path(path)}
 
     @decorate.catch_error()
     def delete(self, location):
@@ -149,6 +177,12 @@ class Publish(EudatEndpoint):
         icom = handler.icommands
         user = icom.get_current_user()
         log.info("user '%s' requested to UNpublish '%s'", user, path)
+
+        if icom.is_collection(path):
+            return self.send_errors(
+                'Collections are not allowed to be published',
+                code=hcodes.HTTP_BAD_REQUEST
+            )
 
         # if not already set as the same don't do anything
         if self.publish_helper(icom, path):

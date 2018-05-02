@@ -18,6 +18,20 @@ services:
     environment:
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
 
+      ####################
+      ####################
+      # other projects variables
+
+      ####################
+      ##### SEADATA
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
+      SEADATA_CLOUD_DIR: ${SEADATA_PRODUCTION_DIR}
+      SEADATA_ORDERS_DIR: ${SEADATA_ORDERS_DIR}
+
+    volumes:
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
+
   postgres:
     environment:
       POSTGRES_USER: "${ALCHEMY_USER}"
@@ -41,8 +55,9 @@ services:
       # base the user/role mechanism on some database
       AUTH_ENABLE: 1
       AUTH_SERVICE: ${AUTH_SERVICE}
-      # disable the basic /api/login method
-      MAIN_LOGIN_ENABLE: 0
+      MAIN_LOGIN_ENABLE: 0  # this could disable the basic /auth/login method
+      PROFILE_DISABLED: 1   # disable /auth/profile operations
+      ADMINER_DISABLED: 1   # disable /admin/users operations
 
       ##############################
       # set this inside the MODE yaml files you want to use
@@ -58,11 +73,10 @@ services:
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       PUBLIC_ENDPOINT: ${API_PUBLIC_ENDPOINT}
+      ENABLE_PUBLIC_ENDPOINT: ${ENABLE_PUBLIC_ENDPOINT}
       # app credentials to work inside the b2access environment
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
-      # other projects variables
-      SEADATA_PROJECT: ${SEADATA_PROJECT}
 
       # db access
       ALCHEMY_ENABLE: 1
@@ -83,24 +97,70 @@ services:
       IRODS_DN: ${IRODS_DN}
       IRODS_PASSWORD: ${IRODS_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
 
       # mongodb connection
       MONGO_ENABLE: 0
-      # MONGO_ENABLE: 1
-      MONGO_HOST: ${MONGO_HOST}
-      MONGO_DATABASE: ${MONGO_DATABASE}
-      MONGO_PORT: ${MONGO_PORT}
+      # # MONGO_ENABLE: 1
+      # MONGO_HOST: ${MONGO_HOST}
+      # MONGO_DATABASE: ${MONGO_DATABASE}
+      # MONGO_PORT: ${MONGO_PORT}
 
       # neo connection
       GRAPHDB_ENABLE: 0
-      # GRAPHDB_ENABLE: 1
-      GRAPHDB_HOST: ${GRAPHDB_HOST}
-      GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
-      GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
+      # # GRAPHDB_ENABLE: 1
+      # GRAPHDB_HOST: ${GRAPHDB_HOST}
+      # GRAPHDB_PORT: ${GRAPHDB_BOLT_PORT}
+      # GRAPHDB_PASSWORD: ${GRAPHDB_PASSWORD}
 
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
-      HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json
+      # HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json
+
+      ####################
+      ####################
+      # other projects variables
+
+      ####################
+      ## SEADATA
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_EDMO_CODE: ${SEADATA_EDMO_CODE}
+      SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
+      SEADATA_CLOUD_DIR: ${SEADATA_PRODUCTION_DIR}
+      SEADATA_ORDERS_DIR: ${SEADATA_ORDERS_DIR}
+      SEADATA_API_IM_URL: ${SEADATA_API_IM_URL}
+      # rancher
+      RESOURCES_URL: ${RESOURCES_URL}
+      RESOURCES_KEY: ${RESOURCES_KEY}
+      RESOURCES_SECRET: ${RESOURCES_SECRET}
+      RESOURCES_PROJECT: ${RESOURCES_PROJECT}
+      RESOURCES_LOCALPATH: ${RESOURCES_LOCALPATH}
+      # hub
+      RESOURCES_HUB: ${RESOURCES_HUB}
+      RESOURCES_HUBUSER: ${RESOURCES_HUBUSER}
+      RESOURCES_HUBPASS: ${RESOURCES_HUBPASS}
+      # rabbit
+      RABBIT_ENABLE: ${SEADATA_PROJECT}
+      RABBIT_HOST: ${RABBIT_HOST}
+      RABBIT_PORT: ${RABBIT_PORT}
+      RABBIT_VHOST: ${RABBIT_VHOST}
+      RABBIT_USER: ${RABBIT_USER}
+      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+      RABBIT_EXCHANGE: ${RABBIT_EXCHANGE}
+      RABBIT_QUEUE: ${RABBIT_QUEUE}
+      # containerrs
+      CONTAINERS_DBUSER: ${CONTAINERS_DBUSER}
+      CONTAINERS_DBPASS: ${CONTAINERS_DBPASS}
+      CONTAINERS_DBEXTRAUSER: ${CONTAINERS_DBEXTRAUSER}
+      CONTAINERS_DBEXTRAPASS: ${CONTAINERS_DBEXTRAPASS}
+      CONTAINERS_RABBITUSER: ${CONTAINERS_RABBITUSER}
+      CONTAINERS_RABBITPASS: ${CONTAINERS_RABBITPASS}
+
+      ####################
 
   restclient:
     environment:
       IRODS_ZONE: ${IRODS_ZONE}
+
+  proxy:
+    environment:
+      SMTP_ADMIN: ${SMTP_ADMIN}

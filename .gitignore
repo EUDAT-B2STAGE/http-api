@@ -8,6 +8,7 @@ uploads
 tmp_files
 # virtualenv
 b2stage/*
+projects/b2stage/*.dev.*
 data/certs/nginx-selfsigned*
 data/certs/*cineca*
 data/secrets/secret_*

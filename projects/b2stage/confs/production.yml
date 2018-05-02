@@ -26,8 +26,6 @@ services:
 
       ##################
       # EUDAT RELATED
-      ## Enable publishing
-      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
       ## /api/login is not enabled in production
       MAIN_LOGIN_ENABLE: 0
       ## If you don't provide credentials b2access will not be enabled

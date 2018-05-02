@@ -1,0 +1,14 @@
+common:
+  custom:
+    authentication: true
+
+basket:
+  summary: Request one order preparation
+  parameters:
+    - name: parameters
+      in: body
+      schema:
+        $ref: "#/definitions/SeadataPost"
+  responses:
+    '200':
+      description: Asynchronous request launched

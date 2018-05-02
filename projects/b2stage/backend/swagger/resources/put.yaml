@@ -1,0 +1,25 @@
+
+common:
+  custom:
+    # authentication: false
+    authentication: true
+    # authorized:
+    #   - staff_user
+
+qc:
+  summary: Launch a quality check as a docker container
+  # parameters:
+  #   - name: image
+  #     in: query
+  #     type: string
+  #     description: docker image for quality check to run
+  #     default: ubuntu:16.04
+  #     default: ubuntu:16.04
+  #   - name: command
+  #     in: query
+  #     type: string
+  #     description: the command to be executed
+  #     default: null
+  responses:
+    '200':
+      description: unknown

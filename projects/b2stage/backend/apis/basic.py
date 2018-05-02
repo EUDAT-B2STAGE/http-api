@@ -18,7 +18,6 @@ from flask import request, current_app
 
 from b2stage.apis.commons import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
-
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities import htmlcodes as hcodes
@@ -120,17 +119,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ###################
         # Create Directory
-        if force:
-            # TODO: implement recursion
-            return self.send_errors(
-                'Recursive collection creations has not yet been implemented',
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
-            )
 
-        # Create directory if not exists
-        ipath = icom.create_empty(
-            path, directory=True, ignore_existing=force
-        )
+        ipath = icom.create_directory(path, ignore_existing=force)
         if ipath is None:
             if force:
                 ipath = path
@@ -139,7 +129,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             log.info("Created irods collection: %s", ipath)
 
-        # TOFIX: Should this status be No response?
+        # NOTE: question: should this status be No response?
         status = hcodes.HTTP_OK_BASIC
         content = {
             'location': self.b2safe_location(path),
@@ -226,9 +216,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             if isinstance(content, dict) and key_file in content:
                 original_filename = content[key_file]
-
-                abs_file = self.absolute_upload_file(original_filename,
-                                                     r.username)
+                abs_file = self.absolute_upload_file(
+                    original_filename, r.username)
                 log.info("File is '%s'" % abs_file)
 
                 ############################
@@ -269,7 +258,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 log.info("irods call %s", iout)
                 response = self.force_response({'filename': ipath},
                                                code=hcodes.HTTP_OK_BASIC)
-            except Exception as e:
+            except BaseException as e:
                 response = self.force_response(
                     errors={"Uploading failed": "{0}".format(e)},
                     code=hcodes.HTTP_SERVER_ERROR)
@@ -300,7 +289,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 if not pid:
                     error_message = \
                         ("Timeout waiting for PID from B2SAFE:"
-                         " the object registration maybe in progress."
+                         " the object registration may be still in progress."
                          " File correctly uploaded.")
                     log.warning(error_message)
                     status = hcodes.HTTP_OK_ACCEPTED
@@ -414,34 +403,41 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     log.debug("Removed %s" % obj['name'])
                 return "Cleaned"
 
-        # Note: this check is not at the beginning to allow the clean operation
-        if location is None:
-            return self.send_errors('Location: missing filepath inside URI',
-                                    code=hcodes.HTTP_BAD_REQUEST)
-        location = self.fix_location(location)
+        # TODO: only if it has a PID?
+        return self.send_errors(
+            "Data objects/collections removal " +
+            "is NOT allowed inside the 'registered' domain",
+            code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+        )
 
-        ########################################
-        # Remove from irods (only files and empty directories)
-        is_recursive = False
-        if icom.is_collection(location):
-            if not icom.list(location):
-                # nb: recursive option is necessary to remove a collection
-                is_recursive = True
-            else:
-                log.info("list:  %i", len(icom.list(path=location)))
-                return self.send_errors(
-                    'Directory is not empty',
-                    code=hcodes.HTTP_BAD_REQUEST)
-        else:
-            # Print file details/sys metadata if it's a specific file
-            try:
-                icom.get_metadata(path=location)
-            except IrodsException:
-                # if a path that does not exist
-                return self.send_errors(
-                    "Path does not exists or you don't have privileges",
-                    code=hcodes.HTTP_BAD_NOTFOUND)
+        # # Note: check not at the beginning to allow the "clean" operation
+        # if location is None:
+        #     return self.send_errors('Location: missing filepath inside URI',
+        #                             code=hcodes.HTTP_BAD_REQUEST)
+        # location = self.fix_location(location)
 
-        icom.remove(location, recursive=is_recursive, resource=resource)
-        log.info("Removed %s", location)
-        return {'removed': location}
+        # ########################################
+        # # Remove from irods (only files and empty directories)
+        # is_recursive = False
+        # if icom.is_collection(location):
+        #     if not icom.list(location):
+        #         # nb: recursive option is necessary to remove a collection
+        #         is_recursive = True
+        #     else:
+        #         log.info("list:  %i", len(icom.list(path=location)))
+        #         return self.send_errors(
+        #             'Directory is not empty',
+        #             code=hcodes.HTTP_BAD_REQUEST)
+        # else:
+        #     # Print file details/sys metadata if it's a specific file
+        #     try:
+        #         icom.get_metadata(path=location)
+        #     except IrodsException:
+        #         # if a path that does not exist
+        #         return self.send_errors(
+        #             "Path does not exists or you don't have privileges",
+        #             code=hcodes.HTTP_BAD_NOTFOUND)
+
+        # icom.remove(location, recursive=is_recursive, resource=resource)
+        # log.info("Removed %s", location)
+        # return {'removed': location}

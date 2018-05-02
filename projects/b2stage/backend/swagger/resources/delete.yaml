@@ -1,0 +1,13 @@
+
+common:
+  custom:
+    # authentication: false
+    authentication: true
+    # authorized:
+    #   - staff_user
+
+qc:
+  summary: Remove a quality check if existing
+  responses:
+    '200':
+      description: unknown

@@ -1,0 +1,197 @@
+# ###############################################
+# Copyright 2011-2018 EUDAT CDI - www.eudat.eu
+# ###############################################
+variables:
+  env:
+
+    ###############################
+    ## Seadata project variable
+    SEADATA_PROJECT: 1
+    SEADATA_EDMO_CODE: toberequestedtoCDI
+    IRODS_ANONYMOUS: 1
+    SEADATA_INGESTION_DIR: batches
+    SEADATA_PRODUCTION_DIR: cloud
+    SEADATA_ORDERS_DIR: orders
+    SEADATA_API_IM_URL: https://some.url
+    ## RANCHER
+    RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
+    RESOURCES_KEY: put_some_value
+    RESOURCES_SECRET: put_some_value
+    RESOURCES_PROJECT: put_some_value
+    ## DOCKER HUB
+    RESOURCES_HUB: put_some_value
+    RESOURCES_HUBUSER: put_some_value
+    RESOURCES_HUBPASS: put_some_value
+    ## RABBIT SEADATA
+    RABBIT_HOST: put_some_value
+    RABBIT_PORT: put_some_value
+    RABBIT_VHOST: put_some_value
+    RABBIT_USER: put_some_value
+    RABBIT_PASSWORD: put_some_value
+    RABBIT_EXCHANGE: put_some_value
+    RABBIT_QUEUE: put_some_value
+    ## OTHERS
+    CONTAINERS_RABBITUSER: put_some_value
+    CONTAINERS_RABBITPASS: put_some_value
+    CONTAINERS_DBUSER: put_some_value
+    CONTAINERS_DBPASS: put_some_value
+    CONTAINERS_DBEXTRAUSER: put_some_value
+    CONTAINERS_DBEXTRAPASS: put_some_value
+
+#LOCAL
+    # IRODS_USER: irods
+    # IRODS_ZONE: tempZone
+    # IRODS_HOME: home
+    # IRODS_PASSWORD: chooseapasswordwisely
+    # IRODS_DN:           # automatically computed within the docker network
+    # IRODS_AUTHSCHEME:   # to be auto-detected
+    # IRODS_GUEST_USER: guest              # intended to work only with GSI
+    # IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
+
+#REMOTE
+    IRODS_HOST: HOST_IP
+    IRODS_ZONE: put_some_value
+    IRODS_HOME: home
+    IRODS_AUTHSCHEME: credentials
+    IRODS_USER: put_some_value
+    IRODS_PASSWORD: put_some_value
+    IRODS_DN:
+    IRODS_GUEST_USER:
+    IRODS_DEFAULT_ADMIN_USER:
+
+    ###############################
+    # Email to be notified for proxy certificates expiration (letsencrypt)
+    SMTP_ADMIN:
+
+    ###############################
+    ## B2SAFE SEADATA
+    # HANDLE_USER:
+    # HANDLE_PREFIX:
+    # HANDLE_PASS:
+
+    ###############################
+    ## B2ACCESS
+    # Provide some existing credentials here
+    # if you want to provide endpoints to authenticate with B2ACCESS
+    B2ACCESS_ACCOUNT:
+    B2ACCESS_SECRET:
+
+    ###############################
+    ## Dockerized DB
+    ALCHEMY_USER: rods
+    ALCHEMY_PASSWORD: chooseapasswordwisely
+    ALCHEMY_API_DB: SQL_API
+
+    #################
+
+    AUTH_SERVICE: sqlalchemy
+    API_MAIN_ENDPOINT: registered
+    API_PUBLIC_ENDPOINT: public
+    ENABLE_PUBLIC_ENDPOINT: 0
+    # COMPOSE_PROJECT_NAME: b2stage
+    # PROJECT_DOMAIN: myserver.mydomain.dev
+    # LETSENCRYPT_MODE: --staging
+    LETSENCRYPT_MODE:
+    # irods fixed
+    IRODS_DB: ICAT
+    IRODS_CHUNKSIZE: 1048576
+    ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
+    B2ACCESS_CAS: /tmp/certificates/b2access
+    # sqlalchemy fixed:
+    ALCHEMY_ENGINE: postgresql
+    ALCHEMY_DBS: 'ICAT SQL_API'
+    ##: OTHERs / FIXED
+    UPLOAD_PATH: /uploads
+    FULL_JWT: false
+    # TO BE DEPRECATED
+    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
+    HANDLE_BASE: "https://url.to.epic/handles/"
+    # This path needs permissions to user 1001
+    # as owner of subdir 'ingestion' and 'cloud'
+    RESOURCES_LOCALPATH: /usr/share
+
+    #################
+    # base user/password
+
+  # backend:
+  #   credentials:
+  #     username: someotheruser
+  #     password: somepassword
+  #     # warning: do not change base roles for the database
+  #     roles:
+  #       user: normal_user
+  #       internal: staff_user
+  #       admin: admin_root
+  #       default: normal_user
+
+  #################
+  repos:
+    irods-client:
+      branch: master
+      online_url: https://github.com/irods/python-irodsclient.git
+      path: prc
+      if: true
+
+##################################################
+project:
+  title: EUDAT-B2STAGE HTTP-API server
+  description: Processing data in EUDAT domains
+  version: 1.0.2
+
+tags:
+  # EUDAT related
+  eudat: all endpoints associated to EUDAT services
+  b2access: request/refresh authorization from B2ACCESS
+  b2safe: proxy access to irods b2safe credentials
+  registered: upload, download, list and delete objects
+  pids: resolve and download data from EUDAT Persistent IDentifier
+  publish: allow public access to data objects
+  public: landing page
+  # Other subprojects
+  seadatacloud: endpoints related to the SeaDataCloud project
+  ingestion: submission of files to be approved into the cloud
+  order: request an order from the interface
+  # internal: for internal testing purpose only
+
+# Keep track of releases and dependencies
+releases:
+  '0.5.1':
+    type: beta
+    rapydo: null
+    status: released
+  '0.5.2':
+    type: beta
+    rapydo: null
+    status: discontinued
+  '0.6.0':
+    type: RC1
+    rapydo: 0.5.3
+    status: released
+  '0.6.1':
+    type: RC2
+    rapydo: 0.5.4
+    status: released
+  '1.0.0':
+    type: stable
+    rapydo: 0.6.0
+    status: released
+  '1.0.1':
+    type: patch
+    rapydo: 0.6.1
+    status: released
+  '1.0.2':
+    type: patch
+    rapydo: 0.6.1
+    status: released
+  '1.0.3':
+    type: development
+    rapydo: 0.6.2
+    status: development
+
+controller:
+  commands:
+    irods_restart:
+      description: Try to restart the current iCAT server instance
+      command: service irods restart
+      service: icat
+      user: root
