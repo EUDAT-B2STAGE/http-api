@@ -5,36 +5,33 @@
 variables:
   env:
 
-    ###############################
+    ##################################################
+    # VARIABLES INTENDED TO BE CHANGED IN PRODUCTION #
+    ##################################################
+
+    ## iRODS server
+    IRODS_HOST: b2safe.yourdomain.org
+    IRODS_PORT: 1247
+    IRODS_USER: yourirodsuser
+    IRODS_PASSWORD: yourirodsuserpassword
+    IRODS_ZONE: yourZoneName
+    IRODS_DN:           # needed for GSI if enabling B2ACCESS below
+    ## Dockerized postgresql internal DB - set only on the first startup
+    ALCHEMY_PASSWORD: pleasesetapassword
+    # Email to be notified for SSL certificates expiration (letsencrypt)
+    SMTP_ADMIN:
     ## B2ACCESS
     # Register a B2ACCESS 'app' and use credentials here
     # if you want to provide the endpoints to authenticate with B2ACCESS site
     B2ACCESS_ACCOUNT:
     B2ACCESS_SECRET:
-
-    ###############################
-    ## LOCAL (container) iRODS server
-    IRODS_USER: irods
-    IRODS_PASSWORD: chooseapasswordwisely # NOTE: must match ALCHEMY_PASSWORD
-    IRODS_ZONE: tempZone
-    IRODS_HOME: home
-    IRODS_GUEST_USER: guest              # intended to work only with GSI
-    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
-    IRODS_DN:           # automatically computed within the docker network
-    IRODS_AUTHSCHEME:   # to be auto-detected
-    # IRODS_AUTHSCHEME: credentials
-    # IRODS_AUTHSCHEME: GSI
-
-    ###############################
-    ## Dockerized DB
-    ALCHEMY_USER: rods
-    ALCHEMY_PASSWORD: chooseapasswordwisely
-    ALCHEMY_API_DB: SQL_API
-
-    ###############################
     ## Experimental features
     IRODS_ANONYMOUS: 0  # enable only if you know what it means
     ENABLE_PUBLIC_ENDPOINT: 0  # experimental endpoint, depending on anonymous
+
+    ##################################################
+    # DON'T CHANGE BELOW, IF YOU DON'T UNDERSTAND THESE OPTIONS
+    ##################################################
 
     ###############################
     ## Seadata project variable
@@ -81,8 +78,14 @@ variables:
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
     # irods fixed
-    IRODS_DB: ICAT
+    IRODS_HOME: home
+    IRODS_GUEST_USER: guest              # intended to work only with GSI
+    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
+    IRODS_AUTHSCHEME:   # to be auto-detected
+    IRODS_DB: ICAT # not used in production
     IRODS_CHUNKSIZE: 1048576
+    ALCHEMY_USER: rods
+    ALCHEMY_API_DB: SQL_API
     ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
     B2ACCESS_CAS: /tmp/certificates/b2access
     # sqlalchemy fixed:
@@ -94,8 +97,6 @@ variables:
     # This path needs permissions to user 1001
     # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /usr/share
-    # Email to be notified for proxy certificates expiration (letsencrypt)
-    SMTP_ADMIN:
     ############################
     # TO BE DEPRECATED
     HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle

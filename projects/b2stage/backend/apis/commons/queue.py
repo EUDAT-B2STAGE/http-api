@@ -110,6 +110,8 @@ def log_into_queue(instance, dictionary_message):
             ),
             body=json.dumps(dictionary_message),
         )
+    # except (ChannelClosed, ConnectionClosed):
+    #     pass
     except BaseException as e:
         log.error("Failed to log:\n%s(%s)", e.__class__.__name__, e)
     else:
