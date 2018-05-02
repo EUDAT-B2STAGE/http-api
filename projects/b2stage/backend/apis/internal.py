@@ -2,9 +2,9 @@
 
 """
 Internal endpoints.
-
 Code to implement the /api/internal endpoint
 
+FIXME: TO BE DEPRECATED
 """
 
 from b2stage.apis.commons.endpoint import EudatEndpoint

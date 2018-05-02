@@ -51,11 +51,19 @@ NOTE: on the client image you have multiple tools installed for testing:
 
 Some important points before going further:
 
-1. Please follow this paragraph only if you plan to deploy the HTTP API server in production
+1. Please follow this paragraph only if you plan to deploy the HTTP API server in production, typically associated with an existing `B2SAFE` server in production.
 2. Usually in production you have a domain name associated to your host IP (e.g. `b2stage-test.cineca.it` to 240.bla.bla.bla). But you can just use 'localhost' if this is not the case.
-3. You need a `B2ACCESS` account on the development server for the HTTP API application. Set the credentials [here](https://github.com/EUDAT-B2STAGE/http-api/blob/0.6.1/projects/b2stage/project_configuration.yaml#L22-L26) otherwise the endpoint `/auth/askauth` would not work.  
+3. You may consider to register a `B2ACCESS` "app" account on the development server for the HTTP API application, to be used in the `configuration.yaml` file; otherwise the endpoint `/auth/askauth` and the related OAUTH2 based B2ACCESS authentication would not work.  
 
-Deploying is very simple:
+Primary step is to set up your configuration
+
+```bash
+# copy the example configuration file
+$ cp projects/b2stage/example_configs/production.yaml configuration.yaml
+$ vim configuration.yaml  # edit the file as suggested inside the content
+```
+
+Make sure your IRODS parameters are correctly inserted before proceding further. Deploying right after is quite simple:
 
 ```bash
 # define your domain
