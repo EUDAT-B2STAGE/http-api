@@ -16,6 +16,7 @@ services:
       FLASK_DEBUG: 1
       DEBUG_LEVEL: VERY_VERBOSE
       APP_MODE: debug
+      TESTING: 0
 
       #################
       # EUDAT RELATED

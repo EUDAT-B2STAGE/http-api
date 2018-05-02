@@ -1,6 +1,6 @@
 
 depends_on:
-  - TESTING_MODE
+  - TESTING
 
 class: MetadataEndpoint
 file: internal

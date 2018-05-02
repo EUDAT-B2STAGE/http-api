@@ -9,6 +9,7 @@ services:
 - docker
 env:
 - PROJECT=b2stage
+# - TESTING_MODE=1
 
 # # installation
 # before_install:
@@ -26,6 +27,8 @@ script:
 
 # remove skips
 
+# set TESTING mode
+- sed -i "19s/0/1/" projects/b2stage/confs/debug.yml
 # test anonymous (IRODS_ANONYMOUS / ENABLE_PUBLIC_ENDPOINT)
 - sed -i "36s/0/1/" projects/b2stage/project_configuration.yaml
 - sed -i "37s/0/1/" projects/b2stage/project_configuration.yaml
