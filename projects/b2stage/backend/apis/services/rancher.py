@@ -89,6 +89,28 @@ class Rancher(object):
         import json
         return json.loads(obj.__repr__().replace("'", '"'))
 
+    def all_containers_available(self):
+        """
+        Handle paginations properly
+        https://rancher.com/docs/rancher/v1.5/en/api/v2-beta/
+        """
+
+        is_all = False
+        containers = []
+
+        while not is_all:
+            marker = len(containers)
+            onepage = self._client.list_container(
+                limit=PERPAGE_LIMIT, marker='m%s' % marker)
+            log.verbose('Containers list marker: %s', marker)
+            pagination = onepage.get('pagination', {})
+            # print(pagination)
+            is_all = not pagination.get('partial')
+            for element in onepage:
+                containers.append(element)
+
+        return containers
+
     def containers(self):
         """
         https://github.com/rancher/gdapi-python/blob/master/gdapi.py#L68
@@ -98,7 +120,7 @@ class Rancher(object):
         system_label = 'io.rancher.container.system'
 
         containers = {}
-        for info in self._client.list_container(limit=PERPAGE_LIMIT):
+        for info in self.all_containers_available():
 
             # detect system containers
             try:
@@ -265,7 +287,8 @@ class Rancher(object):
             return None
 
     def get_container_object(self, container_name):
-        containers = self._client.list_container(limit=PERPAGE_LIMIT)
+        containers = self.all_containers_available()
+        # containers = self._client.list_container(limit=PERPAGE_LIMIT)
 
         ####################################
         # should I clean a little bit?
