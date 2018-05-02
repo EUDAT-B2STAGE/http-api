@@ -180,13 +180,13 @@ releases:
     rapydo: 0.6.1
     status: released
   '1.0.2':
-    type: development
-    rapydo: 0.6.1
-    status: development
-  '1.0.3':
     type: patch
+    rapydo: 0.6.1
+    status: released
+  '1.0.3':
+    type: development
     rapydo: 0.6.2
-    status: todo
+    status: development
 
 controller:
   commands:

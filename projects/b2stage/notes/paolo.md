@@ -7,6 +7,7 @@ todos
 
 * docs on cron to create the certificate every 2 months
 - dockerized Handle? https://hub.docker.com/r/osul/handle/
+- verify connection parameters
 
 ## seadata
 
