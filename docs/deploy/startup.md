@@ -7,7 +7,7 @@
 To clone the working code:
 
 ```bash
-$ VERSION=1.0.2 \
+$ VERSION=1.0.3 \
     && git clone https://github.com/EUDAT-B2STAGE/http-api.git \
     && cd http-api \
     && git checkout $VERSION  
@@ -51,12 +51,10 @@ Your current project needs to be initialized. This step is needed only the first
 $ rapydo init
 ```
 
-NOTE: with `RC1` there is no working `upgrade` process in place to make life easier if you already have this project cloned from a previous release. This is something important already in progress [here](https://github.com/EUDAT-B2STAGE/http-api/issues/87).
-
 If you wish to __**manually upgrade**__:
 
 ```bash
-VERSION="0.6.1"
+VERSION="0.6.2"
 git checkout $VERSION
 
 # supposely the rapydo framework has been updated, so you need to check:

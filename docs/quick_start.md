@@ -23,7 +23,7 @@ Here's step-by-step tutorial to work with the HTTP API project:
 # get the code
 git clone https://github.com/EUDAT-B2STAGE/http-api.git latest
 cd latest
-git checkout 1.0.2
+git checkout 1.0.3
 
 ################
 # install the corrensponding rapydo framework version
