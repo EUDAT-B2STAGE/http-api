@@ -214,6 +214,7 @@ class Resources(ClusterContainerEndpoint):
         container_name = self.get_container_name(batch_id, qc_name)
         rancher = self.get_or_create_handle()
         rancher.remove_container_by_name(container_name)
+        log.info("About to remove: %s", container_name)
 
         response = {
             'batch_id': batch_id,

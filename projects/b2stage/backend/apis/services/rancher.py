@@ -14,6 +14,9 @@ import time
 from utilities.logs import get_logger
 log = get_logger(__name__)
 
+# PERPAGE_LIMIT = 50
+PERPAGE_LIMIT = 1000
+
 
 class Rancher(object):
 
@@ -95,7 +98,7 @@ class Rancher(object):
         system_label = 'io.rancher.container.system'
 
         containers = {}
-        for info in self._client.list_container():
+        for info in self._client.list_container(limit=PERPAGE_LIMIT):
 
             # detect system containers
             try:
@@ -262,8 +265,20 @@ class Rancher(object):
             return None
 
     def get_container_object(self, container_name):
-        for element in self._client.list_container():
+        containers = self._client.list_container(limit=PERPAGE_LIMIT)
+
+        ####################################
+        # should I clean a little bit?
+        pagination = containers.get('pagination', {})
+        # print(pagination)
+        is_all = not pagination.get('partial')
+        if not is_all:
+            log.warning('More pages...')
+
+        ####################################
+        for element in containers:
             # NOTE: container name is unique in the whole cluster env
+            # print(element.get('name'), container_name)
             if element.name == container_name:
                 # print("found", element)
                 return element
@@ -275,6 +290,8 @@ class Rancher(object):
         if obj is not None:
             self._client.delete(obj)
             return True
+        else:
+            log.warning("Did not found container: %s", container_name)
         return False
 
     def test(self):
