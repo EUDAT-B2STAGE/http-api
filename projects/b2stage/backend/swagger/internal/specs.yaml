@@ -1,6 +1,6 @@
 
 depends_on:
-  - not ADMINER_DISABLED
+  - TESTING_MODE
 
 class: MetadataEndpoint
 file: internal
