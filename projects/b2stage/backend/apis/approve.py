@@ -97,19 +97,19 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         #     log.verbose("PID verified (b2handle): %s", pid)
         #     log.pp(b2handle_output)
 
-        # ################
-        # # set metadata (with a prefix?)
-        # metadata, _ = imain.get_metadata(dest_path)
-        # log.pp(metadata)
-        # # setting = False
-        # for key in md.keys:
-        #     if key not in metadata:
-        #         value = data.get(key)
-        #         args = {'path': dest_path, key: value}
-        #         imain.set_metadata(**args)
-        #         # setting = True
-        # # if setting:
-        # #     log.debug("Some metadata is set")
+        ################
+        # set metadata (with a prefix?)
+        metadata, _ = imain.get_metadata(dest_path)
+        log.pp(metadata)
+        # setting = False
+        for key in md.keys:
+            if key not in metadata:
+                value = data.get(key)
+                args = {'path': dest_path, key: value}
+                imain.set_metadata(**args)
+                # setting = True
+        # if setting:
+        #     log.debug("Some metadata is set")
 
         # ################
         # # ALL DONE: move file from ingestion to trash
