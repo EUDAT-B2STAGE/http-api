@@ -10,6 +10,7 @@ seadata_vars = detector.load_group(label='seadata')
 # SEADATA_ENABLED = seadata_vars.get('project')
 SEADATA_ENABLED = seadata_vars.get('project') == '1'
 ORDERS_ENDPOINT = 'orders'
+EDMO_CODE = seadata_vars.get('edmo_code')
 
 
 class ErrorCodes(object):
@@ -46,6 +47,7 @@ class ImportManagerAPI(object):
             return False
 
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
+        payload['edmo_code'] = EDMO_CODE
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
         payload['api_function'] += '_ready'
 
