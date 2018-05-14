@@ -15,6 +15,7 @@ ORDERS_ENDPOINT = 'orders'
 class ErrorCodes(object):
 
     PID_NOT_FOUND = "41"
+    INGESTION_FILE_NOT_FOUND = "50"
 
 
 class Metadata(object):

@@ -14,6 +14,7 @@ import time
 from utilities.logs import get_logger
 log = get_logger(__name__)
 
+# PERPAGE_LIMIT = 5
 # PERPAGE_LIMIT = 50
 PERPAGE_LIMIT = 1000
 
@@ -102,7 +103,7 @@ class Rancher(object):
             marker = len(containers)
             onepage = self._client.list_container(
                 limit=PERPAGE_LIMIT, marker='m%s' % marker)
-            log.verbose('Containers list marker: %s', marker)
+            log.very_verbose('Containers list marker: %s', marker)
             pagination = onepage.get('pagination', {})
             # print(pagination)
             is_all = not pagination.get('partial')
@@ -290,13 +291,14 @@ class Rancher(object):
         containers = self.all_containers_available()
         # containers = self._client.list_container(limit=PERPAGE_LIMIT)
 
-        ####################################
-        # should I clean a little bit?
-        pagination = containers.get('pagination', {})
-        # print(pagination)
-        is_all = not pagination.get('partial')
-        if not is_all:
-            log.warning('More pages...')
+        # ####################################
+        # # should I clean a little bit?
+        # log.pp(containers)
+        # pagination = containers.get('pagination', {})
+        # # print(pagination)
+        # is_all = not pagination.get('partial')
+        # if not is_all:
+        #     log.warning('More pages...')
 
         ####################################
         for element in containers:

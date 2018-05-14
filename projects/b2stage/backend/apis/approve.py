@@ -11,7 +11,7 @@ from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.seadatacloud import \
-    Metadata as md, ImportManagerAPI as API
+    Metadata as md, ImportManagerAPI as API, ErrorCodes
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -231,6 +231,13 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ################
         # 3. copy files from containers to production
+
+        # FIXME: verify which files are there or not
+        # checks file in irods before asking the copy...
+        # remove from filenames if not existing
+        pass
+
+        # copy files
         self.copy_to_production(obj.icommands, batch_id, filenames)
 
         # ################
@@ -249,15 +256,22 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         # 4. Request PIDs
         out_data = []
+        errors = []
         for data in files:
             # pid, error = self.pid_production(imain, batch_id, data)
             pid = self.pid_production(imain, batch_id, data)
             if pid is None:
-                log.error("Error: %s", error)
+                filename = data.get(md.tid)
+                log.error("Error: %s", filename)
+                errors.append({
+                    "error": ErrorCodes.INGESTION_FILE_NOT_FOUND,
+                    "description": "File requested not found",
+                    "subject": filename
+                })
             else:
                 log.info("Obtained: %s", pid)
                 data['pid'] = pid
-                out_data.append(data)
+            out_data.append(data)
         # NOTE: I could set here the pids as metadata in prod collection
 
         ################
@@ -265,8 +279,12 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         pass
 
         ################
-        json_input[param_key] = out_data
+        json_input[param_key]['pids'] = out_data
+        if len(errors) > 0:
+            json_input[param_key]['errors'] = errors
         # call Import manager to notify
         api = API()
         api.post(json_input)
+
+        ################
         return json_input
