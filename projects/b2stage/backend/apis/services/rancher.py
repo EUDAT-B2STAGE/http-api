@@ -211,25 +211,29 @@ class Rancher(object):
             return catalog.get('repositories', {})
 
     @staticmethod
-    def internal_labels():
+    def internal_labels(pull=True):
         """
         Define Rancher docker labels
         """
-        # force to repull the image every time
-        pull_label = "io.rancher.container.pull_image"
         # to launch containers only on selected host(s)
         host_label = "io.rancher.scheduler.affinity:host_label"
         label_key = 'host_type'
         label_value = 'qc'
 
-        return {
+        obj = {
             host_label: "%s=%s" % (label_key, label_value),
-            pull_label: 'always',
         }
+
+        if pull:
+            # force to repull the image every time
+            pull_label = "io.rancher.container.pull_image"
+            obj[pull_label] = 'always'
+
+        return obj
 
     def run(self,
             container_name, image_name,
-            private=False, extras=None, wait_stopped=False
+            private=False, extras=None, wait_stopped=False, pull=True,
             ):
 
         ############
@@ -252,10 +256,11 @@ class Rancher(object):
         params = {
             'name': container_name,
             'imageUuid': 'docker:' + image_name,
-            'labels': self.internal_labels(),
+            'labels': self.internal_labels(pull),
             # entryPoint=['/bin/sh'],
             # command=['sleep', '1234567890'],
         }
+        # log.pp(params)
 
         ############
         if extras is not None and isinstance(extras, dict):

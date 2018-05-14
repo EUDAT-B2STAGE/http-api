@@ -33,16 +33,14 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     #     response = 'Dummy method'
     #     return self.force_response(response)
 
-    def pid_production(self, imain, batch_id, data):
+    def pid_production(self, imain, batch_id, data, temp_id):
 
-        # TODO: am I using the metadata of the zip file?
-
-        temp_id = data.get(md.tid)
-
-        # ################
+        ################
         # # copy file from ingestion to production
         # src_path = self.src_paths.get(temp_id)
         # log.warning("TESTING: %s (%s)", temp_id, src_path)
+
+        ################
         dest_path = self.complete_path(self.prod_path, temp_id)
         if not imain.is_dataobject(dest_path):
             log.error("Missing: %s", dest_path)
@@ -143,17 +141,18 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         cversion = '0.8'
         image_tag = '%s:%s' % (cname, cversion)
         container_name = self.get_container_name(batch_id, image_tag)
+        # remove if exists
+        rancher.remove_container_by_name(container_name)
+        # print('removed')
+
         # print(container_name)
         docker_image_name = self.get_container_image(image_tag, prefix='eudat')
         log.info("Request copy2prod; image: %s" % docker_image_name)
 
-        # remove if exists
-        rancher.remove_container_by_name(container_name)
         # launch
         rancher.run(
             container_name=container_name, image_name=docker_image_name,
-            private=True,
-            wait_stopped=True,
+            private=True, wait_stopped=True, pull=False,
             extras={
                 'environment': b2safe_connvar,
                 'dataVolumes': [self.mount_batch_volume(batch_id)],
@@ -258,21 +257,32 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         out_data = []
         errors = []
         for data in files:
+
+            temp_id = data.get(md.tid)
+            # strip directory as prefix
+            from utilities import path
+            cleaned_temp_id = path.last_part(temp_id)
+
             # pid, error = self.pid_production(imain, batch_id, data)
-            pid = self.pid_production(imain, batch_id, data)
+            pid = self.pid_production(
+                imain, batch_id, data, cleaned_temp_id)
             if pid is None:
-                filename = data.get(md.tid)
-                log.error("Error: %s", filename)
+                log.error("Error: %s", temp_id)
                 errors.append({
                     "error": ErrorCodes.INGESTION_FILE_NOT_FOUND,
                     "description": "File requested not found",
-                    "subject": filename
+                    "subject": temp_id
                 })
             else:
                 log.info("Obtained: %s", pid)
+                data['temp_id'] = cleaned_temp_id
                 data['pid'] = pid
+
             out_data.append(data)
+
+        ################
         # NOTE: I could set here the pids as metadata in prod collection
+        pass
 
         ################
         # TODO: set expiration metadata on batch zip file?
