@@ -275,7 +275,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 })
             else:
                 log.info("Obtained: %s", pid)
-                data['temp_id'] = cleaned_temp_id
+                # data['temp_id'] = cleaned_temp_id
                 data['pid'] = pid
                 out_data.append(data)
 
