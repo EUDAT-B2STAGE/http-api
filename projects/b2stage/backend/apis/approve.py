@@ -277,8 +277,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 log.info("Obtained: %s", pid)
                 data['temp_id'] = cleaned_temp_id
                 data['pid'] = pid
-
-            out_data.append(data)
+                out_data.append(data)
 
         ################
         # NOTE: I could set here the pids as metadata in prod collection
