@@ -319,7 +319,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # return {order_id: 'created'}
         json_input['status'] = 'created'
         if len(errors) > 0:
-            json_input['parameters']['errors'] = errors
+            json_input['errors'] = errors
         # call Import manager to notify
         api = API()
         api.post(json_input)

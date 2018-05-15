@@ -290,7 +290,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         json_input[param_key]['pids'] = out_data
         if len(errors) > 0:
-            json_input[param_key]['errors'] = errors
+            json_input['errors'] = errors
         # call Import manager to notify
         api = API()
         api.post(json_input)
