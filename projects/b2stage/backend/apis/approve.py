@@ -19,6 +19,7 @@ from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
+api = API()
 
 
 #################
@@ -32,6 +33,19 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     #     # log.pp(self._args, prefix_line='Parsed args')
     #     response = 'Dummy method'
     #     return self.force_response(response)
+
+    def errors(self, json_output, errors, message=None, code=None):
+
+        # add errors
+        json_output['errors'] = errors
+        # call Import manager to notify
+        api.post(json_output)
+        # send error as response
+        if message is None:
+            message = 'Invalid request'
+        if code is None:
+            code = hcodes.HTTP_BAD_REQUEST
+        return self.send_errors(message, code=code)
 
     def pid_production(self, imain, batch_id, data, temp_id):
 
@@ -164,8 +178,6 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self, batch_id):
 
-        # TODO: switch to list of approved files
-
         ################
         # 0. check parameters
         json_input = self.get_input()
@@ -292,7 +304,6 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if len(errors) > 0:
             json_input['errors'] = errors
         # call Import manager to notify
-        api = API()
         api.post(json_input)
 
         ################

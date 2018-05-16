@@ -57,7 +57,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # launch
         rancher.run(
             container_name=container_name, image_name=docker_image_name,
-            private=True,
+            private=True, pull=False,
             wait_stopped=True,
             extras={
                 'environment': b2safe_connvar,

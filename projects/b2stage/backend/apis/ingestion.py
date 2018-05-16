@@ -132,7 +132,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.info("Requesting copy2containers; image: %s" % docker_image_name)
         errors = rancher.run(
             container_name=container_name, image_name=docker_image_name,
-            private=True,
+            private=True, pull=False,
             extras={
                 'environment': b2safe_connvar,
                 'dataVolumes': [self.mount_batch_volume(batch_id)],

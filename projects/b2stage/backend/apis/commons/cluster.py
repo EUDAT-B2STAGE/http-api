@@ -92,7 +92,12 @@ class ClusterContainerEndpoint(EndpointResource):
 
     @staticmethod
     def get_container_name(batch_id, qc_name):
-        return '%s_%s' % (batch_id, qc_name.replace('_', ''))
+        return '%s_%s' % (
+            batch_id,
+            qc_name
+            .replace('_', '').replace('-', '')
+            .replace(':', '').replace('.', '')
+        )
 
     @staticmethod
     def get_container_image(qc_name, prefix=None):

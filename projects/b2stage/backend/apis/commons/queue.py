@@ -76,6 +76,12 @@ def log_into_queue(instance, dictionary_message):
     """ RabbitMQ in the EUDAT infrastructure """
 
     ############
+    ############
+    # FIXME: not working at the moment
+    return True
+    ############
+    ############
+
     from restapi.confs import PRODUCTION
     if not PRODUCTION:
         return False
