@@ -65,6 +65,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         # irule to get PID
         pid = self.pid_request(imain, dest_path)
+        # TODO: add irule to replicate to N centers
         log.info("Received PID: %s", pid)
 
         # ################
