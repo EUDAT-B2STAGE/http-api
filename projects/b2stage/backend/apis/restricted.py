@@ -92,6 +92,11 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             log.info("irods call %s", iout)
             # NOTE: permissions are inherited thanks to the POST call
 
+    def patch(self, order_id):
+        """ Make CDI test a call to patch for the first time """
+        log.info('Order id: %s', order_id)
+        return 'It works.'
+
     def put(self, order_id):
         """
         - Set the metadata of the folder to know that this is restricted

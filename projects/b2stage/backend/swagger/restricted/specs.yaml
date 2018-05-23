@@ -6,7 +6,7 @@ schema:
 mapping:
   # restrictedid: "/restricted/<string:order_id>"
   restricted: "/restricted/<string:order_id>"
-  # restricted: "/restricted"
+  # enable: "/restricted"
 labels:
   - seadatacloud
   - restricted
