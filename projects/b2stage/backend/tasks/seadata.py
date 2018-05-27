@@ -28,8 +28,9 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         ###############
         for element in myjson.get('parameters', {}).get('pids', {}):
             current = element.get('temp_id')
+            local_element = '%s/%s' % (local_path, current)
             log.info('Element: %s', element)
-            if current in files:
+            if local_element in files:
                 log.info('%s: found', current)
             else:
                 log.error('%s: NOT found', current)
