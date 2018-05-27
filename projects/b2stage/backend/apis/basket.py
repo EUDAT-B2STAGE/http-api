@@ -318,14 +318,20 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ################
         # return {order_id: 'created'}
-        json_input['status'] = 'created'
+        # json_input['status'] = 'created'
         if len(errors) > 0:
             json_input['errors'] = errors
         # call Import manager to notify
         api = API()
         api.post(json_input)
 
-        msg = prepare_message(self, log_string='end', status='created')
+        msg = prepare_message(self, log_string='end')
+        # msg = prepare_message(self, log_string='end', status='created')
+        msg['parameters'] = {
+            "request_id": msg['request_id'],
+            "zipfile_name": params['file_name'],
+            "zipfile_count": 1,
+        }
         log_into_queue(self, msg)
         return json_input
 

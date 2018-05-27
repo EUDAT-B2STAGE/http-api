@@ -9,15 +9,17 @@ celery_app = CeleryExt.celery_app
 
 
 @celery_app.task(bind=True)
-def move_to_production_task(self, batch_id, irods_path, filenames):
+def move_to_production_task(self, batch_id, irods_path, filenames, myjson):
 
     path = '/usr/share/batches'
 
     with celery_app.app.app_context():
 
         log.info("I'm %s" % self.request.id)
-        log.warning("Vars:\n%s\n%s\n%s", batch_id, irods_path, filenames)
+        log.warning(
+            "Vars:\n%s\n%s\n%s\n%s",
+            batch_id, irods_path, filenames, myjson)
         from glob import glob as listfiles
-        files = listfiles('%s/%s' % (path, batch_id))
+        files = listfiles('%s/%s/*' % (path, batch_id))
         log.info(files)
         return files
