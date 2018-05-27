@@ -11,7 +11,7 @@ celery_app = CeleryExt.celery_app
 @celery_app.task(bind=True)
 def move_to_production_task(self, batch_id, irods_path, myjson):
 
-    path = '/usr/share/batches'
+    path = '/usr/share/batch'
 
     with celery_app.app.app_context():
 
@@ -21,14 +21,18 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
 
         ###############
-        for element in myjson.get('parameters', {}).get('pids', {}):
-            current = element.get('temp_id')
-            log.info('Element: %s\n%s', current, element)
-
-        ###############
         from glob import glob
         files = glob('%s/*' % local_path)
         log.info(files)
+
+        ###############
+        for element in myjson.get('parameters', {}).get('pids', {}):
+            current = element.get('temp_id')
+            log.info('Element: %s', element)
+            if current in files:
+                log.info('%s: found', current)
+            else:
+                log.error('%s: NOT found', current)
 
         ###############
         return files
