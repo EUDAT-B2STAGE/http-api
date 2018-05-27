@@ -15,12 +15,10 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s" % self.request.id)
-
         ###############
-        log.warning(
-            "Vars:\n%s\n%s\n%s\n%s",
-            batch_id, irods_path, myjson)
+        log.info("I'm %s" % self.request.id)
+        local_path = '%s/%s' % (path, batch_id)
+        log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
 
         ###############
         for element in myjson.get('parameters', {}).get('pids', {}):
@@ -28,8 +26,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             log.info('Element: %s\n%s', current, element)
 
         ###############
-        from glob import glob as listfiles
-        files = listfiles('%s/%s/*' % (path, batch_id))
+        from glob import glob
+        files = glob('%s/*' % local_path)
         log.info(files)
 
         ###############
