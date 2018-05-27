@@ -17,8 +17,7 @@ services:
   # http://docs.celeryproject.org/en/latest/getting-started/brokers/rabbitmq.html
   # default username and password of guest / guest
   rabbit:
-    # image: rabbitmq:3.6.14-alpine
-    image: rabbitmq:3.6.14-management-alpine
+    image: rabbitmq:3.7.5-management-alpine
     hostname: rabbit
     volumes:
       - queuedata:/var/lib/rabbitmq

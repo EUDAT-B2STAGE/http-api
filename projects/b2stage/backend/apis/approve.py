@@ -242,70 +242,82 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         imain.create_collection_inheritable(self.prod_path, obj.username)
 
         ################
-        # 3. copy files from containers to production
-
-        # FIXME: verify which files are there or not
-        # checks file in irods before asking the copy...
-        # remove from filenames if not existing
-        pass
-
-        # copy files
-        self.copy_to_production(obj.icommands, batch_id, filenames)
+        # ASYNC
+        log.info("Submit async celery task")
+        from restapi.flask_ext.flask_celery import CeleryExt
+        task = CeleryExt.test_task.apply_async(
+            args=[batch_id, self.prod_path, filenames],
+            countdown=10
+        )
+        log.warning("Async job: %s", task.id)
 
         # ################
-        # # 4. check on list of files
-        # self.src_paths = {}
-        # for filename in filenames:
-        #     src_path = self.complete_path(self.batch_path, filename)
-        #     log.info("File path: %s", src_path)
-        #     self.src_paths[filename] = src_path
+        # # 3. copy files from containers to production
 
-        #     if not imain.is_dataobject(src_path):
-        #         return self.send_errors(
-        #             "File '%s' not in batch '%s'" % (filename, batch_id),
-        #             code=hcodes.HTTP_BAD_REQUEST)
+        # # FIXME: verify which files are there or not
+        # # checks file in irods before asking the copy...
+        # # remove from filenames if not existing
+        # pass
 
-        ################
-        # 4. Request PIDs
-        out_data = []
-        errors = []
-        for data in files:
+        # # copy files
+        # self.copy_to_production(obj.icommands, batch_id, filenames)
 
-            temp_id = data.get(md.tid)
-            # strip directory as prefix
-            from utilities import path
-            cleaned_temp_id = path.last_part(temp_id)
+        # # ################
+        # # # 4. check on list of files
+        # # self.src_paths = {}
+        # # for filename in filenames:
+        # #     src_path = self.complete_path(self.batch_path, filename)
+        # #     log.info("File path: %s", src_path)
+        # #     self.src_paths[filename] = src_path
 
-            # pid, error = self.pid_production(imain, batch_id, data)
-            pid = self.pid_production(
-                imain, batch_id, data, cleaned_temp_id)
-            if pid is None:
-                log.error("Error: %s", temp_id)
-                errors.append({
-                    "error": ErrorCodes.INGESTION_FILE_NOT_FOUND,
-                    "description": "File requested not found",
-                    "subject": temp_id
-                })
-            else:
-                log.info("Obtained: %s", pid)
-                # data['temp_id'] = cleaned_temp_id
-                data['pid'] = pid
-                out_data.append(data)
+        # #     if not imain.is_dataobject(src_path):
+        # #         return self.send_errors(
+        # #             "File '%s' not in batch '%s'" % (filename, batch_id),
+        # #             code=hcodes.HTTP_BAD_REQUEST)
 
-        ################
-        # NOTE: I could set here the pids as metadata in prod collection
-        pass
+        # ################
+        # # 4. Request PIDs
+        # out_data = []
+        # errors = []
+        # for data in files:
 
-        ################
-        # TODO: set expiration metadata on batch zip file?
-        pass
+        #     temp_id = data.get(md.tid)
+        #     # strip directory as prefix
+        #     from utilities import path
+        #     cleaned_temp_id = path.last_part(temp_id)
 
-        ################
-        json_input[param_key]['pids'] = out_data
-        if len(errors) > 0:
-            json_input['errors'] = errors
-        # call Import manager to notify
-        api.post(json_input)
+        #     # pid, error = self.pid_production(imain, batch_id, data)
+        #     pid = self.pid_production(
+        #         imain, batch_id, data, cleaned_temp_id)
+        #     if pid is None:
+        #         log.error("Error: %s", temp_id)
+        #         errors.append({
+        #             "error": ErrorCodes.INGESTION_FILE_NOT_FOUND,
+        #             "description": "File requested not found",
+        #             "subject": temp_id
+        #         })
+        #     else:
+        #         log.info("Obtained: %s", pid)
+        #         # data['temp_id'] = cleaned_temp_id
+        #         data['pid'] = pid
+        #         out_data.append(data)
 
-        ################
-        return json_input
+        # ################
+        # # NOTE: I could set here the pids as metadata in prod collection
+        # pass
+
+        # ################
+        # # TODO: set expiration metadata on batch zip file?
+        # pass
+
+        # ################
+        # json_input[param_key]['pids'] = out_data
+        # if len(errors) > 0:
+        #     json_input['errors'] = errors
+        # # call Import manager to notify
+        # api.post(json_input)
+
+        # ################
+        # return json_input
+
+        return 'async call executed'

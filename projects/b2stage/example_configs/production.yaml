@@ -120,7 +120,8 @@ variables:
   repos:
     irods-client:
       branch: master
-      online_url: https://github.com/pdonorio/python-irodsclient.git
+      # online_url: https://github.com/pdonorio/python-irodsclient.git
+      online_url: https://github.com/irods/python-irodsclient.git
       path: prc
       if: true
 
