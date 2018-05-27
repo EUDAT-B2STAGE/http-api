@@ -245,7 +245,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # ASYNC
         log.info("Submit async celery task")
         from restapi.flask_ext.flask_celery import CeleryExt
-        task = CeleryExt.test_task.apply_async(
+        task = CeleryExt.move_to_production_task.apply_async(
             args=[batch_id, self.prod_path, filenames],
             countdown=10
         )
