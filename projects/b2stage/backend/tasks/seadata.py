@@ -19,6 +19,10 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         log.info("I'm %s" % self.request.id)
         local_path = '%s/%s' % (path, batch_id)
         log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
+        # icom = celery_app.get_service(service='irods', user='httpapi')
+        imain = celery_app.get_service(service='irods')
+        ifiles = imain.list(irods_path)
+        log.info('irods content: %s', ifiles)
 
         ###############
         from glob import glob
@@ -34,6 +38,12 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 log.info('%s: found', current)
             else:
                 log.error('%s: NOT found', current)
+
+            ###############
+            # 1. copy file (irods) - MAY FAIL?
+            # 2. request pid (irule)
+            # 3. set metadata (icat)
+            pass
 
         ###############
         return files
