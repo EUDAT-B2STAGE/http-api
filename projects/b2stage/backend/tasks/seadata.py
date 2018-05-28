@@ -2,12 +2,14 @@
 
 from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
-from b2stage.apis.commons.seadatacloud import Metadata as md
+from b2stage.apis.commons.queue import prepare_message
+from b2stage.apis.commons.seadatacloud import \
+    Metadata as md, ImportManagerAPI, ErrorCodes
 
 from utilities.logs import get_logger
 
+ext_api = ImportManagerAPI()
 log = get_logger(__name__)
-# celery_app = current_app.extensions.get('celery').celery_app
 celery_app = CeleryExt.celery_app
 
 
@@ -17,6 +19,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
     mypath = '/usr/share/batch'
 
     with celery_app.app.app_context():
+
         ###############
         log.info("I'm %s" % self.request.id)
         local_path = path.join(mypath, batch_id, return_str=True)
@@ -32,8 +35,13 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         pmaker = PIDgenerator()
 
         ###############
-        for element in myjson.get('parameters', {}).get('pids', {}):
-            tmp = element.pop('temp_id')
+        out_data = []
+        errors = []
+        param_key = 'parameters'
+
+        for element in myjson.get(param_key, {}).get('pids', {}):
+
+            tmp = element.get('temp_id')  # do not pop
             current = path.last_part(tmp)
             local_element = path.join(local_path, tmp, return_str=True)
             # log.info('Element: %s', element)
@@ -41,7 +49,13 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 log.info('Found: %s', local_element)
             else:
                 log.error('NOT found: %s', local_element)
+                errors.append({
+                    "error": ErrorCodes.INGESTION_FILE_NOT_FOUND,
+                    "description": "File requested not found",
+                    "subject": tmp,
+                })
                 continue
+
             ###############
             # 1. copy file (irods) - MAY FAIL?
             ifile = path.join(irods_path, current, return_str=True)
@@ -70,10 +84,25 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             # where we can check if it was already done?
             pass
 
+            ###############
+            # 5. add to logs
+            element['pid'] = PID
+            out_data.append(element)
+
+        # ###############
+        # ifiles = imain.list(irods_path)
+        # log.info('irods content: %s', ifiles)
+        # log.verbose("\n")
+
         ###############
-        ifiles = imain.list(irods_path)
-        log.info('irods content: %s', ifiles)
-        log.verbose("\n")
+        myjson[param_key]['pids'] = out_data
+        msg = prepare_message(self, isjson=True)
+        for key, value in msg.items():
+            myjson[key] = value
+        if len(errors) > 0:
+            myjson['errors'] = errors
+        ext_api.post(myjson)
+        log.info('Notified external')
 
         ###############
         return files

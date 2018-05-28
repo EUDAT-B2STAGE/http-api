@@ -39,13 +39,16 @@ class ImportManagerAPI(object):
 
     _uri = seadata_vars.get('api_im_url')
 
-    def post(self, payload):
+    def post(self, payload, instance=None):
 
         from restapi.confs import PRODUCTION
         if not PRODUCTION:
             log.debug("Skipping ImportManagerAPI")
             return False
 
+        if instance is not None:
+            instance_id = str(id(instance))
+            payload['request_id'] = instance_id
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
         payload['edmo_code'] = EDMO_CODE
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")

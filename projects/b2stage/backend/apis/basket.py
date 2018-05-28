@@ -317,14 +317,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
 
         ################
-        # return {order_id: 'created'}
-        # json_input['status'] = 'created'
-        if len(errors) > 0:
-            json_input['errors'] = errors
-        # call Import manager to notify
-        api = API()
-        api.post(json_input)
-
         msg = prepare_message(self, log_string='end')
         # msg = prepare_message(self, log_string='end', status='created')
         msg['parameters'] = {
@@ -333,6 +325,19 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             "zipfile_count": 1,
         }
         log_into_queue(self, msg)
+
+        ################
+        # return {order_id: 'created'}
+        # json_input['status'] = 'created'
+        json_input['request_id'] = msg['request_id']
+        json_input['parameters'] = msg['parameters']
+        if len(errors) > 0:
+            json_input['errors'] = errors
+
+        # call Import manager to notify
+        api = API()
+        api.post(json_input)
+
         return json_input
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')

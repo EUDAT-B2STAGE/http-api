@@ -18,7 +18,7 @@ QUEUE_SERVICE = 'rabbit'
 QUEUE_VARS = detector.load_group(label=QUEUE_SERVICE)
 
 
-def prepare_message(instance, user=None, **params):
+def prepare_message(instance, user=None, isjson=False, **params):
     """
 { # start
     "request_id": # build a hash for the current request
@@ -53,6 +53,9 @@ def prepare_message(instance, user=None, **params):
 
     from datetime import datetime
     obj['datetime'] = datetime.now().strftime("%Y%m%dT%H:%M:%S")
+
+    if isjson:
+        return obj
 
     from restapi.services.authentication import BaseAuthentication as Service
     ip, _ = Service.get_host_info()
