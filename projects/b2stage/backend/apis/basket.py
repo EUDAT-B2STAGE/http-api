@@ -262,7 +262,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if imain.is_dataobject(zip_ipath):
             # give error here
             # return {order_id: 'already exists'}
-            json_input['status'] = 'exists'
+            # json_input['status'] = 'exists'
+            json_input['parameters'] = {'status': 'exists'}
             return json_input
 
         ##################
