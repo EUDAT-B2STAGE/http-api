@@ -29,7 +29,9 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
         ###############
         from glob import glob
-        files = glob(path.join(local_path, '*', return_str=True))
+        # files = glob(path.join(local_path, '*', return_str=True))
+        all_files = path.join(local_path, '**', '*', return_str=True)
+        files = glob(all_files, recursive=True)
         log.info(files)
         from b2stage.apis.commons.b2handle import PIDgenerator
         pmaker = PIDgenerator()
