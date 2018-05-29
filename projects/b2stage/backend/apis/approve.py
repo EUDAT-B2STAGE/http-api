@@ -320,4 +320,4 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # ################
         # return json_input
 
-        return 'async call executed'
+        return {'async': task.id}
