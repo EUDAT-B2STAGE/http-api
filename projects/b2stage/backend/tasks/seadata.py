@@ -20,6 +20,9 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
     with celery_app.app.app_context():
 
+        self.update_state(
+            state="STARTING", meta={'total': None, 'step': 0, 'errors': 0})
+
         ###############
         log.info("I'm %s" % self.request.id)
         local_path = path.join(mypath, batch_id, return_str=True)
@@ -40,8 +43,13 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         out_data = []
         errors = []
         param_key = 'parameters'
+        elements = myjson.get(param_key, {}).get('pids', {})
+        total = len(elements)
+        counter = 0
+        self.update_state(state="PROGRESS", meta={
+            'total': total, 'step': counter, 'errors': len(errors)})
 
-        for element in myjson.get(param_key, {}).get('pids', {}):
+        for element in elements:
 
             tmp = element.get('temp_id')  # do not pop
             current = path.last_part(tmp)
@@ -56,6 +64,9 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     "description": "File requested not found",
                     "subject": tmp,
                 })
+
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
                 continue
 
             ###############
@@ -91,6 +102,11 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             element['pid'] = PID
             out_data.append(element)
 
+            counter += 1
+            self.update_state(state="PROGRESS", meta={
+                'total': total, 'step': counter, 'errors': len(errors)}
+            )
+
         # ###############
         # ifiles = imain.list(irods_path)
         # log.info('irods content: %s', ifiles)
@@ -105,6 +121,11 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             myjson['errors'] = errors
         ext_api.post(myjson)
         log.info('Notified external')
+
+        self.update_state(
+            state="COMPLETED", meta={
+                'total': total, 'step': counter, 'errors': len(errors)}
+        )
 
         ###############
         return files
