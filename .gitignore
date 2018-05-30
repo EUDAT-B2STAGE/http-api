@@ -2,6 +2,7 @@
 ########################
 ##  Your custom data  ##
 ########################
+.projectrc
 
 # data
 uploads
