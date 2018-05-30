@@ -11,12 +11,36 @@ from utilities.logs import get_logger
 ext_api = ImportManagerAPI()
 log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
+mypath = '/usr/share/batch'
+
+
+@celery_app.task(bind=True)
+def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
+
+    local_path = path.join(mypath, batch_id, zip_name)
+
+    with celery_app.app.app_context():
+
+        ###############
+        # pull the path from irods
+        imain = celery_app.get_service(service='irods')
+        log.debug("Copying %s", irods_path)
+        imain.copy(irods_path, local_path, force=True)
+        log.info("Copied: %s", local_path)
+
+        ###############
+        # if backdoor unzip it
+        log.warning('Backdoor? %s', backdoor)
+        if backdoor:
+            check = path.file_exists_and_nonzero(local_path)
+            log.info("Check: %s is %s", zip_name, check)
+
+    # return something
+    return local_path
 
 
 @celery_app.task(bind=True)
 def move_to_production_task(self, batch_id, irods_path, myjson):
-
-    mypath = '/usr/share/batch'
 
     with celery_app.app.app_context():
 

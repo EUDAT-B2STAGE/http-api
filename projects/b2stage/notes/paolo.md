@@ -24,14 +24,17 @@ todos
 - rabbitmq closed connection @TOFIX
 - auth forbidden to all for maris/admin only endpoint
 
+```
+apt-get install -y nfs-common
+mkdir -p /nfs/share
+130.186.13.150:/var/nfs/general /nfs/share nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
+mount -a
+```
+
 ### inefficiency
 
-- HTTP API logging into elastisearch (direct?)
 - Async ops @celery
-    + approve: recover pids and send to maris
-    + irods copy and PIDs #slow
-    + orders: create zip files 
-        * restricted / unrestricted
+- HTTP API logging: elastisearch (direct?)
 - containers cleaning
 
 ### notes
