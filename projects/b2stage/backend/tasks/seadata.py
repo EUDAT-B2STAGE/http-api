@@ -117,19 +117,21 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         # log.verbose("\n")
 
         ###############
-        myjson[param_key]['pids'] = out_data
-        msg = prepare_message(self, isjson=True)
-        for key, value in msg.items():
-            myjson[key] = value
-        if len(errors) > 0:
-            myjson['errors'] = errors
-        ext_api.post(myjson)
-        log.info('Notified external')
+        # Notify the CDI API
+        if myjson.get('test_mode', 'empty') == 'initial_load':
+            log.verbose('skipping CDI API')
+        else:
+            myjson[param_key]['pids'] = out_data
+            msg = prepare_message(self, isjson=True)
+            for key, value in msg.items():
+                myjson[key] = value
+            if len(errors) > 0:
+                myjson['errors'] = errors
+            ext_api.post(myjson)
+            log.info('Notified CDI')
 
         self.update_state(
             state="COMPLETED", meta={
                 'total': total, 'step': counter, 'errors': len(errors)}
         )
-
-        ###############
-        return files
+        return myjson
