@@ -1,6 +1,7 @@
 #!/bin/bash
 
-pip_binary="pip3"
+# pip_binary="pip3"
+pip_binary="pip3 --disable-pip-version-check"
 ve_name="b2stage"
 myuser=$(whoami)
 
@@ -16,13 +17,21 @@ if [ $myuser != "root" ]; then
     source $ve_name/bin/activate
 fi
 
-# update or die
-$pip_binary install --upgrade pip
-if [ "$?" != 0 ]; then
-    echo "Failed to use $pip_binary. Did you install Python and Pip?"
-fi
+#############################
+## PIP 10 BROKEN UPDATE
+## see: https://github.com/pypa/pip/issues/5221
 
-for existing in `$pip_binary list --format columns | grep rapydo | awk '{print $1}'`;
+# # update or die
+# $pip_binary install --upgrade pip
+# if [ "$?" != 0 ]; then
+#     echo "Failed to use $pip_binary. Did you install Python and Pip?"
+# fi
+
+## if broken, try:
+## $ python3 -m pip install --force-reinstall pip
+#############################
+
+for existing in `$pip_binary list | grep rapydo | awk '{print $1}'`;
 do
     echo "removing: $existing"
     $pip_binary uninstall -y $existing
