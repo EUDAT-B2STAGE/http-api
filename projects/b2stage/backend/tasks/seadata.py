@@ -25,7 +25,7 @@ def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
         # pull the path from irods
         imain = celery_app.get_service(service='irods')
         log.debug("Copying %s", irods_path)
-        imain.copy(irods_path, local_path, force=True)
+        imain.open(irods_path, local_path)
         log.info("Copied: %s", local_path)
 
         ###############
