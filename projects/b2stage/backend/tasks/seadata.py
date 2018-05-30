@@ -31,11 +31,13 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         imain = celery_app.get_service(service='irods')
 
         ###############
-        from glob import glob
-        # files = glob(path.join(local_path, '*', return_str=True))
-        all_files = path.join(local_path, '**', '*', return_str=True)
-        files = glob(all_files, recursive=True)
-        log.info(files)
+        # from glob import glob
+        # # files = glob(path.join(local_path, '*', return_str=True))
+        # all_files = path.join(local_path, '**', '*', return_str=True)
+        # files = glob(all_files, recursive=True)
+        # log.info(files)
+
+        ###############
         from b2stage.apis.commons.b2handle import PIDgenerator
         pmaker = PIDgenerator()
 
@@ -53,9 +55,11 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
             tmp = element.get('temp_id')  # do not pop
             current = path.last_part(tmp)
-            local_element = path.join(local_path, tmp, return_str=True)
+            local_element = path.join(local_path, tmp, return_str=False)
+
             # log.info('Element: %s', element)
-            if local_element in files:
+            # if local_element in files:
+            if path.file_exists_and_nonzero(local_element):
                 log.info('Found: %s', local_element)
             else:
                 log.error('NOT found: %s', local_element)
@@ -72,7 +76,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             ###############
             # 1. copy file (irods) - MAY FAIL?
             ifile = path.join(irods_path, current, return_str=True)
-            imain.put(local_element, ifile)
+            imain.put(str(local_element), ifile)
             log.debug("Moved: %s" % current)
 
             ###############
