@@ -32,13 +32,13 @@ def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
 
         ###############
         # if backdoor unzip it
-        log.warning('Backdoor? %s', backdoor)
         if backdoor:
-            check = path.file_exists_and_nonzero(local_element)
-            log.info("Check: %s is %s", zip_name, check)
+            log.warning('Backdoor! Unzipping: %s', local_element)
+            if path.file_exists_and_nonzero(local_element):
+                from shutil import unpack_archive
+                unpack_archive(str(local_element), str(local_path), 'zip')
 
-    # return something
-    return local_element
+    return str(local_element)
 
 
 @celery_app.task(bind=True)
