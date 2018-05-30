@@ -14,6 +14,7 @@ from utilities.logs import get_logger
 
 log = get_logger(__name__)
 ingestion_user = 'RM'
+BACKDOOR_SECRET = 'howdeepistherabbithole'
 
 
 class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
@@ -111,47 +112,46 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ###########################
         # Also copy file to the B2HOST environment
 
-        # # CELERY VERSION
-        log.info("Submit async celery task")
-        from restapi.flask_ext.flask_celery import CeleryExt
-        task = CeleryExt.send_to_workers_task.apply_async(
-            args=[
-                batch_id, ipath, zip_name,
-                file_id == 'howdeepistherabbithole'
-            ], countdown=10
-        )
-        log.warning("Async job: %s", task.id)
+        backdoor = file_id == BACKDOOR_SECRET
+        if backdoor:
+            # # CELERY VERSION
+            log.info("Submit async celery task")
+            from restapi.flask_ext.flask_celery import CeleryExt
+            task = CeleryExt.send_to_workers_task.apply_async(
+                args=[batch_id, ipath, zip_name, backdoor], countdown=10
+            )
+            log.warning("Async job: %s", task.id)
+        else:
+            # # CONTAINERS VERSION
+            rancher = self.get_or_create_handle()
+            idest = self.get_ingestion_path()
 
-        # # # CONTAINERS VERSION
-        # rancher = self.get_or_create_handle()
-        # idest = self.get_ingestion_path()
+            b2safe_connvar = {
+                'BATCH_SRC_PATH': ipath,
+                'BATCH_DEST_PATH': idest,
+                'IRODS_HOST': icom.variables.get('host'),
+                'IRODS_PORT': icom.variables.get('port'),
+                'IRODS_ZONE_NAME': icom.variables.get('zone'),
+                'IRODS_USER_NAME': icom.variables.get('user'),
+                'IRODS_PASSWORD': icom.variables.get('password'),
+            }
 
-        # b2safe_connvar = {
-        #     'BATCH_SRC_PATH': ipath,
-        #     'BATCH_DEST_PATH': idest,
-        #     'IRODS_HOST': icom.variables.get('host'),
-        #     'IRODS_PORT': icom.variables.get('port'),
-        #     'IRODS_ZONE_NAME': icom.variables.get('zone'),
-        #     'IRODS_USER_NAME': icom.variables.get('user'),
-        #     'IRODS_PASSWORD': icom.variables.get('password'),
-        # }
-
-        # # Launch a container to copy the data into B2HOST
-        # cname = 'copy_zip'
-        # cversion = '0.7'  # release 1.0?
-        # image_tag = '%s:%s' % (cname, cversion)
-        # container_name = self.get_container_name(batch_id, image_tag)
-        # docker_image_name = self.get_container_image(
-        #     image_tag, prefix='eudat')
-        # log.info("Requesting copy2containers; image: %s" % docker_image_name)
-        # errors = rancher.run(
-        #     container_name=container_name, image_name=docker_image_name,
-        #     private=True, pull=False,
-        #     extras={
-        #         'environment': b2safe_connvar,
-        #         'dataVolumes': [self.mount_batch_volume(batch_id)],
-        #     },
-        # )
+            # Launch a container to copy the data into B2HOST
+            cname = 'copy_zip'
+            cversion = '0.7'  # release 1.0?
+            image_tag = '%s:%s' % (cname, cversion)
+            container_name = self.get_container_name(batch_id, image_tag)
+            docker_image_name = self.get_container_image(
+                image_tag, prefix='eudat')
+            log.info("Requesting copy2containers; image: %s" % docker_image_name)
+            errors = rancher.run(
+                container_name=container_name, image_name=docker_image_name,
+                private=True, pull=False,
+                extras={
+                    'environment': b2safe_connvar,
+                    'dataVolumes': [self.mount_batch_volume(batch_id)],
+                },
+            )
 
         ########################
         response = {
