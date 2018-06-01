@@ -173,8 +173,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             else:
                 response['status'] = 'failure'
         response['errors'] = errors
-        response = "Batch '%s' filled" % batch_id
+        # response = "Batch '%s' filled" % batch_id
 
+        #############################
         msg = prepare_message(
             self, status=response['status'],
             user=ingestion_user, log_string='end')
