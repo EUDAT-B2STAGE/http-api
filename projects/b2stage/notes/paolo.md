@@ -49,8 +49,9 @@ mount -a
 
 ### snippets
 
+Recover the PIDs from data in a folder in production
+
 ```python
-""" Recover the PIDs from data in a folder in production """
 mypath = '/bla/bla'
 imain = self.get_service_instance(service_name='irods')
 files = imain.list(mypath)
@@ -65,4 +66,14 @@ for element in files:
     # break
 # log.pp(kv)
 return kv
+```
+
+Debug celery on ipython
+
+```python
+from restapi.flask_ext.flask_celery import CeleryExt
+from restapi.flask_ext import get_debug_instance
+obj = get_debug_instance(CeleryExt)
+workers = obj.control.inspect()
+workers.active()
 ```

@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  backend:
+    environment:
+      ACTIVATE: 0
+  rabbit:
+    environment:
+      ACTIVATE: 0
+  celery:
+    command: celery worker -c 1 -A restapi.flask_ext.flask_celery.worker.celery_app -n worker-%h
+    user: developer
+    volumes:
+      - /nfs/share:/usr/share
+    environment:
+      CELERY_ENABLE: 1
+      CELERY_EXTERNAL: 1
+      CELERY_BROKER: RABBIT
+      CELERY_BROKER_HOST: 130.186.13.150
+      CELERY_BROKER_PORT: 4369
+      #############################
+      ACTIVATE: 1
+      MAIN_LOGIN_ENABLE: 0
+      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      DEBUG_ENDPOINTS: 1
+      APP_MODE: debug
+      DEBUG_LEVEL: VERY_VERBOSE
+      PROJECT_DOMAIN: ${PROJECT_DOMAIN}
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_API_IM_URL: ${SEADATA_API_IM_URL}
+      IRODS_ENABLE: 1
+      IRODS_HOST: ${IRODS_HOST}
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_HOME: ${IRODS_HOME}
+      IRODS_DN: ${IRODS_DN}
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
+      IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
+    depends_on: []
+
