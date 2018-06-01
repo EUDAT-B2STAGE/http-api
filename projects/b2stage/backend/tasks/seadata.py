@@ -11,7 +11,7 @@ from utilities.logs import get_logger
 ext_api = ImportManagerAPI()
 log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
-mybatchpath = '/usr/share/batch'
+mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
 
 
