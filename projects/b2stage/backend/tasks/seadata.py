@@ -6,13 +6,20 @@ from b2stage.apis.commons.queue import prepare_message
 from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
 
-from utilities.logs import get_logger
+from utilities.logs import get_logger, logging
 
 ext_api = ImportManagerAPI()
 log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
+
+
+####################
+logging.getLogger('b2handle').setLevel(logging.WARNING)
+from b2handle.handleclient import EUDATHandleClient as b2handle
+b2handle_client = b2handle.instantiate_for_read_access()
+####################
 
 
 @celery_app.task(bind=True)
@@ -196,7 +203,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         files = {}
         errors = []
         for pid in pids:
-            b2handle_output = self.check_pid_content(pid)
+            b2handle_output = b2handle_client.retrieve_handle_record(pid)
             if b2handle_output is None:
                 errors.append({
                     "error": ErrorCodes.PID_NOT_FOUND,
