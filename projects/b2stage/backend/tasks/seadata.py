@@ -209,7 +209,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 })
                 log.warning("PID not found: %s", pid)
             else:
-                ipath = self.parse_pid_dataobject_path(b2handle_output)
+                ipath = pmaker.parse_pid_dataobject_path(b2handle_output)
                 log.verbose("PID verified: %s\n(%s)", pid, ipath)
                 files[pid] = ipath
 
