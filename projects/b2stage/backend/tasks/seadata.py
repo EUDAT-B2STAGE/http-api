@@ -190,6 +190,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         local_dir = path.join(myorderspath, order_id)
         path.create(local_dir, directory=True, force=True)
         local_zip_dir = path.join(local_dir, 'tobezipped')
+        path.create(local_zip_dir, directory=True, force=True)
 
         imain = celery_app.get_service(service='irods')
         metadata, _ = imain.get_metadata(order_path)
