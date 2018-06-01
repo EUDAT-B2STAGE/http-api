@@ -33,7 +33,7 @@ mount -a
 
 ### inefficiency
 
-- Async ops @celery
+* Async ops @celery
 - HTTP API logging: elastisearch (direct?)
 - containers cleaning
 

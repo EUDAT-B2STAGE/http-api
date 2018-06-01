@@ -11,13 +11,14 @@ from utilities.logs import get_logger
 ext_api = ImportManagerAPI()
 log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
-mypath = '/usr/share/batch'
+mybatchpath = '/usr/share/batch'
+myorderspath = '/usr/share/orders'
 
 
 @celery_app.task(bind=True)
 def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
 
-    local_path = path.join(mypath, batch_id)
+    local_path = path.join(mybatchpath, batch_id)
     path.create(local_path, directory=True, force=True)
     local_element = path.join(local_path, zip_name)
 
@@ -51,7 +52,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
         ###############
         log.info("I'm %s" % self.request.id)
-        local_path = path.join(mypath, batch_id, return_str=True)
+        local_path = path.join(mybatchpath, batch_id, return_str=True)
         # log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
         # icom = celery_app.get_service(service='irods', user='httpapi')
         imain = celery_app.get_service(service='irods')
@@ -160,4 +161,113 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             state="COMPLETED", meta={
                 'total': total, 'step': counter, 'errors': len(errors)}
         )
-        return myjson
+
+    return myjson
+
+
+@celery_app.task(bind=True)
+def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
+
+    with celery_app.app.app_context():
+
+        ##################
+        # self.update_state(
+        #     state="STARTING", meta={'total': None, 'step': 0, 'errors': 0})
+
+        ##################
+        main_key = 'parameters'
+        params = myjson.get(main_key, {})
+        key = 'pids'
+        pids = params.get(key, [])
+
+        ##################
+        # SETUP
+        # local_dir = path.build([TMPDIR, order_id])
+        local_dir = path.join(myorderspath, order_id)
+        path.create(local_dir, directory=True, force=True)
+        local_zip_dir = path.join(local_dir, 'tobezipped')
+
+        imain = celery_app.get_service(service='irods')
+        metadata, _ = imain.get_metadata(order_path)
+        log.pp(metadata)
+
+        ##################
+        # Verify pids
+        files = {}
+        errors = []
+        for pid in pids:
+            b2handle_output = self.check_pid_content(pid)
+            if b2handle_output is None:
+                errors.append({
+                    "error": ErrorCodes.PID_NOT_FOUND,
+                    "description": "PID not found",
+                    "subject": pid
+                })
+                log.warning("PID not found: %s", pid)
+            else:
+                ipath = self.parse_pid_dataobject_path(b2handle_output)
+                log.verbose("PID verified: %s\n(%s)", pid, ipath)
+                files[pid] = ipath
+
+        log.debug("PID files: %s", files)
+
+        ##################
+        # Recover files
+        for pid, ipath in files.items():
+            # print(pid, ipath)
+
+            # Copy files from irods into a local TMPDIR
+            filename = path.last_part(ipath)
+            local_file = path.build([local_zip_dir, filename])
+
+            # Copy if not there yet
+            if not path.file_exists_and_nonzero(local_file):
+                log.debug("Copy to local: %s", local_file)
+
+                # TODO: check if I already have a wrapper for this
+                with open(local_file, 'wb') as target:
+                    with imain.get_dataobject(ipath).open('r+') as source:
+                        for line in source:
+                            target.write(line)
+
+            # Set current file to the metadata collection
+            if pid not in metadata:
+                md = {pid: ipath}
+                imain.set_metadata(order_path, **md)
+                log.verbose("Set metadata")
+
+        ##################
+        # Zip the dir
+        zip_local_file = path.join(local_dir, zip_file_name)
+        log.debug("Zip local path: %s", zip_local_file)
+        if not path.file_exists_and_nonzero(zip_local_file):
+            path.compress(local_zip_dir, str(zip_local_file))
+            log.info("Compressed in: %s", zip_local_file)
+
+        ##################
+        # Copy the zip into irods
+        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
+        imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
+        log.info("Copied zip to irods: %s", zip_ipath)
+
+        # ##################
+        # {
+        #     "request_id": msg['request_id'],
+        #     "zipfile_name": params['file_name'],
+        #     "zipfile_count": 1,
+        # }
+
+        # msg = prepare_message(self, isjson=True)
+        # for key, value in msg.items():
+        #     myjson[key] = value
+        # if len(errors) > 0:
+        #     myjson['errors'] = errors
+        # ext_api.post(myjson)
+        # log.info('Notified CDI')
+
+        ##################
+        # self.update_state(
+        #     state="COMPLETED",
+        #     meta={'total': total, 'step': counter, 'errors': len(errors)})
+
+    return 'completed'

@@ -71,6 +71,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # get irods session
         obj = self.init_endpoint()
         icom = obj.icommands
+        errors = None
 
         batch_path = self.get_batch_path(icom, batch_id)
         log.info("Batch path: %s", batch_path)
@@ -143,7 +144,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             container_name = self.get_container_name(batch_id, image_tag)
             docker_image_name = self.get_container_image(
                 image_tag, prefix='eudat')
-            log.info("Requesting copy2containers; image: %s" % docker_image_name)
+            log.info("Requesting copy: %s" % docker_image_name)
             errors = rancher.run(
                 container_name=container_name, image_name=docker_image_name,
                 private=True, pull=False,
@@ -159,20 +160,20 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             'status': 'filled',
         }
 
-        # if errors is not None:
-        #     if isinstance(errors, dict):
-        #         edict = errors.get('error', {})
-        #         # errors = edict
-        #         # print("TEST", edict)
-        #         if edict.get('code') == 'NotUnique':
-        #             response['status'] = 'existing'
-        #         else:
-        #             response['status'] = 'Copy could NOT be started'
-        #             response['description'] = edict
-        #     else:
-        #         response['status'] = 'failure'
-        # response['errors'] = errors
-        # response = "Batch '%s' filled" % batch_id
+        if errors is not None:
+            if isinstance(errors, dict):
+                edict = errors.get('error', {})
+                # errors = edict
+                # print("TEST", edict)
+                if edict.get('code') == 'NotUnique':
+                    response['status'] = 'existing'
+                else:
+                    response['status'] = 'Copy could NOT be started'
+                    response['description'] = edict
+            else:
+                response['status'] = 'failure'
+        response['errors'] = errors
+        response = "Batch '%s' filled" % batch_id
 
         msg = prepare_message(
             self, status=response['status'],

@@ -42,9 +42,8 @@ TMPDIR = '/tmp'
 
 #################
 # REST CLASSES
-
-
 class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
+
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, order_id, code):
         """ downloading (not authenticated) """
@@ -198,50 +197,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
-        # RESTRICTED PARAM
-        key = 'b2access_ids'
-        restricted = params.get(key, [])
         # PIDS: can be empty if restricted
         key = 'pids'
         pids = params.get(key, [])
-        # # debug
-        # log.pp(restricted, prefix_line='restrict')
-        # log.pp(pids, prefix_line='pids')
-
-        ##################
-        # Verify marine IDs?
-        key = 'restricted'
-        enable_restricted = params.get(key)
-        if enable_restricted == 'true' and len(restricted) < 1:
-            error = "No restricted users but '%s' param is true" % key
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-        if enable_restricted == 'false' and len(restricted) > 0:
-            error = "Restricted users requested but '%s' param is false" % key
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
-        ##################
-        # Verify pids
-        files = {}
-        errors = []
-        for pid in pids:
-            b2handle_output = self.check_pid_content(pid)
-            if b2handle_output is None:
-                errors.append({
-                    "error": ErrorCodes.PID_NOT_FOUND,
-                    "description": "PID not found",
-                    "subject": pid
-                })
-            else:
-                ipath = self.parse_pid_dataobject_path(b2handle_output)
-                log.debug("PID verified: %s\n(%s)", pid, ipath)
-                files[pid] = ipath
-        log.verbose("PID files: %s", files)
-
-        ##################
-        # We need either Unrestricted or Restricted data to show up
-        if len(files) < 1 and len(restricted) < 1:
-            error = "Neither valid PIDs nor Restricted users specified"
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
         # Create the path
@@ -266,80 +224,41 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             json_input['parameters'] = {'status': 'exists'}
             return json_input
 
-        ##################
-        metadata, _ = imain.get_metadata(order_path)
-        log.pp(metadata)
-
-        ##################
-        # RESTRICTED metadata
-        if enable_restricted:
-            key = 'restricted'
-            if key in metadata:
-                imain.remove_metadata(order_path, key)
-            import json
-            string = json.dumps(restricted)
-            # TODO: set restricted metadata
-            imain.set_metadata(order_path, restricted=string)
-            log.debug('Flagged restricted: %s', string)
-
-        ##################
-        local_dir = path.build([TMPDIR, order_id])
-        path.create(local_dir, directory=True, force=True)
-
-        for pid, ipath in files.items():
-            # print(pid, ipath)
-
-            # Set files to collection metadata
-            if pid not in metadata:
-                md = {pid: ipath}
-                imain.set_metadata(order_path, **md)
-
-            # Copy files from irods into a local TMPDIR
-            filename = path.last_part(ipath)
-            local_file = path.build([local_dir, filename])
-
-            if not path.file_exists_and_nonzero(local_file):
-                log.very_verbose("Copy to local: %s", local_file)
-                with open(local_file, 'wb') as target:
-                    with imain.get_dataobject(ipath).open('r+') as source:
-                        for line in source:
-                            target.write(line)
-
-        ##################
-        # Zip the dir
-        zip_local_file = path.join(TMPDIR, zip_file_name)  # , return_str=True)
-        # log.debug("Zip local path: %s", zip_local_file)
-        if not path.file_exists_and_nonzero(zip_local_file):
-            path.compress(local_dir, str(zip_local_file))
-            log.info("Compressed in: %s", zip_local_file)
-
-        ##################
-        # Copy the zip into irods (force overwrite)
-        imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
-
         ################
-        msg = prepare_message(self, log_string='end')
-        # msg = prepare_message(self, log_string='end', status='created')
-        msg['parameters'] = {
-            "request_id": msg['request_id'],
-            "zipfile_name": params['file_name'],
-            "zipfile_count": 1,
-        }
-        log_into_queue(self, msg)
+        # ASYNC
+        if len(pids) > 0:
+            log.info("Submit async celery task")
+            from restapi.flask_ext.flask_celery import CeleryExt
+            task = CeleryExt.unrestricted_order.apply_async(
+                args=[order_id, order_path, zip_file_name, json_input],
+                countdown=10
+            )
+            log.warning("Async job: %s", task.id)
+            return {'async': task.id}
 
-        ################
-        # return {order_id: 'created'}
-        # json_input['status'] = 'created'
-        json_input['request_id'] = msg['request_id']
-        json_input['parameters'] = msg['parameters']
-        if len(errors) > 0:
-            json_input['errors'] = errors
+        # ################
+        # msg = prepare_message(self, log_string='end')
+        # # msg = prepare_message(self, log_string='end', status='created')
+        # msg['parameters'] = {
+        #     "request_id": msg['request_id'],
+        #     "zipfile_name": params['file_name'],
+        #     "zipfile_count": 1,
+        # }
+        # log_into_queue(self, msg)
 
-        # call Import manager to notify
-        api = API()
-        api.post(json_input)
+        # ################
+        # # return {order_id: 'created'}
+        # # json_input['status'] = 'created'
+        # json_input['request_id'] = msg['request_id']
+        # json_input['parameters'] = msg['parameters']
+        # if len(errors) > 0:
+        #     json_input['errors'] = errors
 
-        return json_input
+        # # call Import manager to notify
+        # api = API()
+        # api.post(json_input)
+
+        return {'status': 'enabled'}
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, order_id):
@@ -413,6 +332,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         return self.force_response(response)
 
     def delete(self, order_id):
+
+        # FIXME: I should also revoke the task
 
         ##################
         log.debug("DELETE request on order: %s", order_id)
