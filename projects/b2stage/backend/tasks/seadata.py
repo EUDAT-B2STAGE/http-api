@@ -5,6 +5,7 @@ from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.queue import prepare_message
 from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
+from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 
 from utilities.logs import get_logger, logging
 
@@ -14,14 +15,14 @@ celery_app = CeleryExt.celery_app
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
 
-
 ####################
+# preparing b2handle stuff
+pmaker = PIDgenerator()
+
 logging.getLogger('b2handle').setLevel(logging.WARNING)
-from b2handle.handleclient import EUDATHandleClient as b2handle
 b2handle_client = b2handle.instantiate_for_read_access()
+
 ####################
-
-
 @celery_app.task(bind=True)
 def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
 
@@ -70,10 +71,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         # all_files = path.join(local_path, '**', '*', return_str=True)
         # files = glob(all_files, recursive=True)
         # log.info(files)
-
-        ###############
-        from b2stage.apis.commons.b2handle import PIDgenerator
-        pmaker = PIDgenerator()
 
         ###############
         out_data = []
