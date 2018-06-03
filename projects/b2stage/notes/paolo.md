@@ -24,13 +24,6 @@ todos
 - rabbitmq closed connection @TOFIX
 - auth forbidden to all for maris/admin only endpoint
 
-```
-apt-get install -y nfs-common
-mkdir -p /nfs/share
-130.186.13.150:/var/nfs/general /nfs/share nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
-mount -a
-```
-
 ### inefficiency
 
 * Async ops @celery
@@ -49,7 +42,7 @@ mount -a
 
 ### snippets
 
-Recover the PIDs from data in a folder in production
+1. Recover the PIDs from data in a folder in production
 
 ```python
 mypath = '/bla/bla'
@@ -68,7 +61,7 @@ for element in files:
 return kv
 ```
 
-Debug celery on ipython
+2. Debug celery on ipython
 
 ```python
 from restapi.flask_ext.flask_celery import CeleryExt
@@ -76,4 +69,27 @@ from restapi.flask_ext import get_debug_instance
 obj = get_debug_instance(CeleryExt)
 workers = obj.control.inspect()
 workers.active()
+```
+
+3. Count current tasks in the queue
+
+```bash
+outfile="output.json"
+TOKEN=$(http POST https://seadata.cineca.it/auth/b2safeproxy \
+    username= password \
+    | jq .Response.data.token -M -c -r)
+
+http GET https://seadata.cineca.it/api/queue \
+    Authorization:"Bearer $TOKEN" > $outfile
+
+jq .Response.data output.json | grep status | wc -l
+```
+
+4. Add nfs client
+
+```
+apt-get install -y nfs-common
+mkdir -p /nfs/share
+130.186.13.150:/var/nfs/general /nfs/share nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
+mount -a
 ```

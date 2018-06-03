@@ -246,9 +246,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.info("Submit async celery task")
         from restapi.flask_ext.flask_celery import CeleryExt
         task = CeleryExt.move_to_production_task.apply_async(
-            args=[batch_id, self.prod_path, json_input],
-            countdown=10
-        )
+            args=[batch_id, self.prod_path, json_input], countdown=1)
         log.warning("Async job: %s", task.id)
 
         # ################

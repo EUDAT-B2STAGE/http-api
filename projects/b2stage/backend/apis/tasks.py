@@ -24,6 +24,6 @@ class Tasks(EndpointResource):
         log.info("Request to submit a celery task")
         from restapi.flask_ext.flask_celery import CeleryExt
         task = CeleryExt.test_task.apply_async(
-            args=[200000], countdown=10
+            args=[200000], countdown=1
         )
         return task.id

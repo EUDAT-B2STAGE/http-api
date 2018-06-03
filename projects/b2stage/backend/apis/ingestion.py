@@ -119,8 +119,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             log.info("Submit async celery task")
             from restapi.flask_ext.flask_celery import CeleryExt
             task = CeleryExt.send_to_workers_task.apply_async(
-                args=[batch_id, ipath, zip_name, backdoor], countdown=10
-            )
+                args=[batch_id, ipath, zip_name, backdoor], countdown=1)
             log.warning("Async job: %s", task.id)
         else:
             # # CONTAINERS VERSION
