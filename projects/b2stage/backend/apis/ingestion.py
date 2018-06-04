@@ -94,8 +94,22 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 % ALLOWED_MIMETYPE_UPLOAD,
                 code=hcodes.HTTP_BAD_REQUEST)
 
+        ########################
+        backdoor = file_id == BACKDOOR_SECRET
+        response = {
+            'batch_id': batch_id,
+            'status': 'filled',
+        }
+
+        ########################
         zip_name = self.get_input_zip_filename(file_id)
         ipath = self.complete_path(batch_path, zip_name)
+
+        if backdoor and icom.is_dataobject(ipath):
+            response['status'] = 'exists'
+            return response
+
+        ########################
         log.verbose("Cloud filename: %s", ipath)
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
@@ -112,8 +126,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ###########################
         # Also copy file to the B2HOST environment
-
-        backdoor = file_id == BACKDOOR_SECRET
         if backdoor:
             # # CELERY VERSION
             log.info("Submit async celery task")
@@ -154,10 +166,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             )
 
         ########################
-        response = {
-            'batch_id': batch_id,
-            'status': 'filled',
-        }
 
         if errors is not None:
             if isinstance(errors, dict):

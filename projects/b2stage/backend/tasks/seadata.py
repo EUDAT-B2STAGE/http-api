@@ -22,6 +22,7 @@ pmaker = PIDgenerator()
 logging.getLogger('b2handle').setLevel(logging.WARNING)
 b2handle_client = b2handle.instantiate_for_read_access()
 
+
 ####################
 @celery_app.task(bind=True)
 def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
@@ -175,14 +176,13 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
     with celery_app.app.app_context():
 
         ##################
-        # self.update_state(
-        #     state="STARTING", meta={'total': None, 'step': 0, 'errors': 0})
-
-        ##################
         main_key = 'parameters'
         params = myjson.get(main_key, {})
         key = 'pids'
         pids = params.get(key, [])
+        total = len(pids)
+        self.update_state(
+            state="STARTING", meta={'total': total, 'step': 0, 'errors': 0})
 
         ##################
         # SETUP
@@ -193,8 +193,9 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         path.create(local_zip_dir, directory=True, force=True)
 
         imain = celery_app.get_service(service='irods')
-        metadata, _ = imain.get_metadata(order_path)
-        log.pp(metadata)
+        log.pp(order_path)
+        # metadata, _ = imain.get_metadata(order_path)
+        # log.pp(metadata)
 
         ##################
         # Verify pids
@@ -215,9 +216,13 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 files[pid] = ipath
 
         log.debug("PID files: %s", files)
+        # self.update_state(state="PROGRESS", meta={
+        #     'total': total, 'step': counter, 'errors': len(errors)}
+        # )
 
         ##################
         # Recover files
+        counter = 0
         for pid, ipath in files.items():
             # print(pid, ipath)
 
@@ -235,11 +240,15 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         for line in source:
                             target.write(line)
 
-            # Set current file to the metadata collection
-            if pid not in metadata:
-                md = {pid: ipath}
-                imain.set_metadata(order_path, **md)
-                log.verbose("Set metadata")
+            counter += 1
+            self.update_state(state="PROGRESS", meta={
+                'total': total, 'step': counter, 'errors': len(errors)}
+            )
+            # # Set current file to the metadata collection
+            # if pid not in metadata:
+            #     md = {pid: ipath}
+            #     imain.set_metadata(order_path, **md)
+            #     log.verbose("Set metadata")
 
         ##################
         # Zip the dir
@@ -254,6 +263,14 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         zip_ipath = path.join(order_path, zip_file_name, return_str=True)
         imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
         log.info("Copied zip to irods: %s", zip_ipath)
+
+        ##################
+        self.update_state(
+            state="COMPLETED",
+            meta={'total': total, 'step': counter, 'errors': len(errors)})
+
+        ##################
+        # FIXME: call maris
 
         # ##################
         # {
@@ -270,9 +287,5 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         # ext_api.post(myjson)
         # log.info('Notified CDI')
 
-        ##################
-        # self.update_state(
-        #     state="COMPLETED",
-        #     meta={'total': total, 'step': counter, 'errors': len(errors)})
 
     return 'completed'

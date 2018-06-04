@@ -11,6 +11,13 @@ todos
 
 ## seadata
 
+### import
+
+* remove countdown=10 on task submission
+- broadcast stop all workers found in /api/queue
+- get pids from irods folders in python2
+- new rabbit stack with new docker volume
+
 ### orders
 
 1. Restricted separated api call `PATCH`
@@ -19,6 +26,7 @@ todos
 
 ### still missing
 
+- if irods/rabbit goes down, what happens to celery and the queue?
 - ansible the infrastructure
 - list errors in steps for Maris to define codes @TODO
 - rabbitmq closed connection @TOFIX
