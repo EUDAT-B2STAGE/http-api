@@ -321,7 +321,7 @@ def cache_batch_pids(self, irods_path):
         import redis
         r = redis.StrictRedis(redis_container)
 
-        for ifile in imain.ls(irods_path):
+        for ifile in imain.list(irods_path):
             log.debug('Test: %s', ifile)
             pid = r.get(ifile)
             if pid is not None:
