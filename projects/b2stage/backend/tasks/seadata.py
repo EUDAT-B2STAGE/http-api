@@ -274,6 +274,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         msg = prepare_message(self, isjson=True)
         response = {
             "request_id": msg['request_id'],
+            "order": order_id,
             "zipfile_name": params['file_name'],
             "zipfile_count": 1,
         }
