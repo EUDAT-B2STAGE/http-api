@@ -6,19 +6,25 @@ from b2stage.apis.commons.queue import prepare_message
 from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
+import redis
 
 from utilities.logs import get_logger, logging
+
+
+####################
+mybatchpath = '/usr/share/batches'
+myorderspath = '/usr/share/orders'
 
 ext_api = ImportManagerAPI()
 log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
-mybatchpath = '/usr/share/batches'
-myorderspath = '/usr/share/orders'
+# r = redis.Redis(host='localhost', port=6379, db=0)
+redis_container = 'redis-cache-1'
+r = redis.StrictRedis(redis_container)
 
 ####################
 # preparing b2handle stuff
 pmaker = PIDgenerator()
-
 logging.getLogger('b2handle').setLevel(logging.WARNING)
 b2handle_client = b2handle.instantiate_for_read_access()
 
@@ -116,6 +122,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             # strip directory as prefix
             PID = pmaker.pid_request(imain, ifile)
             log.info('PID: %s', PID)
+            # save inside the cache
+            r.set(ifile, PID)
 
             ###############
             # 3. set metadata (icat)
@@ -204,7 +212,14 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         files = {}
         errors = []
         for pid in pids:
+
+            ################
+            # try the cache first
+            pass
+            # otherwise b2handle remotely
             b2handle_output = b2handle_client.retrieve_handle_record(pid)
+
+            ################
             if b2handle_output is None:
                 errors.append({
                     "error": ErrorCodes.PID_NOT_FOUND,
@@ -295,3 +310,38 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         log.info('Notified CDI')
 
     return myjson
+
+
+@celery_app.task(bind=True)
+def cache_batch_pids(self, irods_path):
+
+    with celery_app.app.app_context():
+
+        log.info("I'm %s" % self.request.id)
+        imain = celery_app.get_service(service='irods')
+        for ifile in imain.ls(irods_path):
+            log.debug('Test: %s', ifile)
+            pid = r.get(ifile)
+            if pid is not None:
+                log.info('PID: %s', pid)
+
+
+@celery_app.task(bind=True)
+def pids_cached_to_json(self):
+
+    with celery_app.app.app_context():
+
+        for key in r.scan_iter("user:*"):
+            log.info("Key: %s = %s", key, r.get(key))
+            break
+
+        # from itertools import izip_longest
+
+        # # iterate a list in batches of size n
+        # def batcher(iterable, n):
+        #     args = [iter(iterable)] * n
+        #     return izip_longest(*args)
+
+        # # in batches of 500 delete keys matching user:*
+        # for keybatch in batcher(r.scan_iter('user:*'),500):
+        # r.delete(*keybatch)

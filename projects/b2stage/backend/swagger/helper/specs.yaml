@@ -1,0 +1,10 @@
+
+file: helper
+class: Helper
+schema:
+  expose: true
+mapping:
+  helper: "/helper"
+labels:
+  - custom
+  - helper
