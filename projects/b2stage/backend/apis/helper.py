@@ -27,9 +27,11 @@ class Helper(Endpoint):
         collections = imain.list(ipath)
 
         for collection in collections:
+            import os
+            current = os.path.join(ipath, collection)
             if collection.startswith(prefix_batches):
                 task = CeleryExt.cache_batch_pids.apply_async(
-                    args=[collection], countdown=1)
+                    args=[current], countdown=1)
                 log.warning("Async job: %s", task.id)
                 break
 
