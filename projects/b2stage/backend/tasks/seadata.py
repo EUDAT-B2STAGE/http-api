@@ -270,22 +270,19 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             meta={'total': total, 'step': counter, 'errors': len(errors)})
 
         ##################
-        # FIXME: call maris
+        # CDI notification
+        msg = prepare_message(self, isjson=True)
+        response = {
+            "request_id": msg['request_id'],
+            "zipfile_name": params['file_name'],
+            "zipfile_count": 1,
+        }
+        for key, value in msg.items():
+            myjson[key] = value
+        if len(errors) > 0:
+            myjson['errors'] = errors
+        myjson[main_key] = response
+        ext_api.post(myjson)
+        log.info('Notified CDI')
 
-        # ##################
-        # {
-        #     "request_id": msg['request_id'],
-        #     "zipfile_name": params['file_name'],
-        #     "zipfile_count": 1,
-        # }
-
-        # msg = prepare_message(self, isjson=True)
-        # for key, value in msg.items():
-        #     myjson[key] = value
-        # if len(errors) > 0:
-        #     myjson['errors'] = errors
-        # ext_api.post(myjson)
-        # log.info('Notified CDI')
-
-
-    return 'completed'
+    return myjson

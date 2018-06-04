@@ -28,14 +28,22 @@ for file in files:
     batch = pieces.pop()
     ipath = os.path.join(irods_path, batch, filename)
     chain = imeta['ls', '-d', ipath] | grep[pid_prefix]
-    out = chain()
+    try:
+        out = chain()
+    except Exception as e:
+        print('failed: %s [%s]' % (filename, batch))
+        continue
     pid = out.split(' ')[1].rstrip()
     # print(filename, pid.encode('ascii'))
     data[filename] = pid.encode('ascii')
 
     if counter % 100 == 0:
         print("Found: %s" % counter)
-        break
+        # break
+    if counter % 10000 == 0:
+        print("saving what we have so far")
+        with open('/tmp/test.json', 'w') as fh:
+            json.dump(data, fh)
 
 with open('/tmp/test.json', 'w') as fh:
     json.dump(data, fh)
