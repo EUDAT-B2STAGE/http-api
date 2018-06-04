@@ -175,6 +175,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
     with celery_app.app.app_context():
 
+        log.info("I'm %s" % self.request.id)
+
         ##################
         main_key = 'parameters'
         params = myjson.get(main_key, {})
@@ -271,18 +273,24 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
         ##################
         # CDI notification
+        reqkey = 'request_id'
         msg = prepare_message(self, isjson=True)
-        response = {
-            "request_id": msg['request_id'],
+        myjson[main_key] = {
+            # "request_id": msg['request_id'],
+            reqkey: myjson[reqkey],
             "order": order_id,
             "zipfile_name": params['file_name'],
             "zipfile_count": 1,
         }
         for key, value in msg.items():
+            if key == reqkey:
+                continue
             myjson[key] = value
         if len(errors) > 0:
             myjson['errors'] = errors
-        myjson[main_key] = response
+        myjson[reqkey] = self.request.id
+
+        log.pp(myjson)
         ext_api.post(myjson)
         log.info('Notified CDI')
 
