@@ -6,7 +6,6 @@ from b2stage.apis.commons.queue import prepare_message
 from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
-import redis
 
 from utilities.logs import get_logger, logging
 
@@ -69,6 +68,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         # log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
         # icom = celery_app.get_service(service='irods', user='httpapi')
         imain = celery_app.get_service(service='irods')
+        import redis
         r = redis.StrictRedis(redis_container)
 
         ###############
@@ -318,6 +318,7 @@ def cache_batch_pids(self, irods_path):
 
         log.info("I'm %s" % self.request.id)
         imain = celery_app.get_service(service='irods')
+        import redis
         r = redis.StrictRedis(redis_container)
 
         for ifile in imain.ls(irods_path):
@@ -332,6 +333,7 @@ def pids_cached_to_json(self):
 
     with celery_app.app.app_context():
 
+        import redis
         r = redis.StrictRedis(redis_container)
         for key in r.scan_iter("user:*"):
             log.info("Key: %s = %s", key, r.get(key))
