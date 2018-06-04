@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from restapi.rest.definition import EndpointResource
+# from restapi.rest.definition import EndpointResource
+from b2stage.apis.commons.cluster import ClusterContainerEndpoint as Endpoint
 # from restapi.services.detect import detector
 from utilities.logs import get_logger
 from restapi.flask_ext.flask_celery import CeleryExt
@@ -8,7 +9,7 @@ from restapi.flask_ext.flask_celery import CeleryExt
 log = get_logger(__name__)
 
 
-class Helper(EndpointResource):
+class Helper(Endpoint):
 
     def get(self, batch_id):
 
