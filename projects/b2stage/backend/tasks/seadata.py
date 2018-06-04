@@ -15,12 +15,10 @@ from utilities.logs import get_logger, logging
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
 
+redis_container = 'redis-cache-1'
 ext_api = ImportManagerAPI()
 log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
-# r = redis.Redis(host='localhost', port=6379, db=0)
-redis_container = 'redis-cache-1'
-r = redis.StrictRedis(redis_container)
 
 ####################
 # preparing b2handle stuff
@@ -71,6 +69,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         # log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
         # icom = celery_app.get_service(service='irods', user='httpapi')
         imain = celery_app.get_service(service='irods')
+        r = redis.StrictRedis(redis_container)
 
         ###############
         # from glob import glob
@@ -319,6 +318,8 @@ def cache_batch_pids(self, irods_path):
 
         log.info("I'm %s" % self.request.id)
         imain = celery_app.get_service(service='irods')
+        r = redis.StrictRedis(redis_container)
+
         for ifile in imain.ls(irods_path):
             log.debug('Test: %s', ifile)
             pid = r.get(ifile)
@@ -331,6 +332,7 @@ def pids_cached_to_json(self):
 
     with celery_app.app.app_context():
 
+        r = redis.StrictRedis(redis_container)
         for key in r.scan_iter("user:*"):
             log.info("Key: %s = %s", key, r.get(key))
             break
