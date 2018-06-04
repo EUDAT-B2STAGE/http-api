@@ -280,7 +280,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             reqkey: myjson[reqkey],
             "order": order_id,
             "zipfile_name": params['file_name'],
-            "zipfile_count": 1,
+            "file_count": counter,
+            "zipfile_count": 1,  # FIXME: with multiple zips is not like that
         }
         for key, value in msg.items():
             if key == reqkey:
