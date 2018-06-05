@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from socket import gethostname
 from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.queue import prepare_message
@@ -14,10 +15,18 @@ from utilities.logs import get_logger, logging
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
 
-redis_container = 'redis-cache-1'
 ext_api = ImportManagerAPI()
 log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
+
+# worker connection to redis
+if gethostname() != 'rapydo_server':
+    from redis import StrictRedis
+    # FIXME: move it as external variables
+    redis_container = 'redis-cache-1'
+    pid_prefix = '21.T12995'
+    # r = redis.Redis(redis_container)
+    r = StrictRedis(redis_container)
 
 ####################
 # preparing b2handle stuff
@@ -68,8 +77,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         # log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
         # icom = celery_app.get_service(service='irods', user='httpapi')
         imain = celery_app.get_service(service='irods')
-        import redis
-        r = redis.StrictRedis(redis_container)
 
         ###############
         # from glob import glob
@@ -121,7 +128,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             # strip directory as prefix
             PID = pmaker.pid_request(imain, ifile)
             log.info('PID: %s', PID)
-            # save inside the cache
+            # save inside the cache (both)
+            r.set(PID, ifile)
             r.set(ifile, PID)
 
             ###############
@@ -317,15 +325,27 @@ def cache_batch_pids(self, irods_path):
     with celery_app.app.app_context():
 
         log.info("I'm %s" % self.request.id)
+        log.warning("Working off: %S", irods_path)
+        import time
+        time.sleep(4)
         imain = celery_app.get_service(service='irods')
-        import redis
-        r = redis.StrictRedis(redis_container)
 
-        for ifile in imain.list(irods_path):
-            log.debug('Test: %s', ifile)
+        for current in imain.list(irods_path):
+            ifile = path.join(irods_path, current, return_str=True)
+            log.verbose('Current: %s', ifile)
             pid = r.get(ifile)
             if pid is not None:
-                log.info('PID: %s', pid)
+                log.debug('pid: %s', pid)
+            else:
+                metadata, _ = imain.get_metadata(ifile)
+                pid = metadata.get('PID')
+                if pid is None:
+                    log.warning("Cannot find pid for: %s", ifile)
+                else:
+                    r.set(pid, ifile)
+                    r.set(ifile, pid)
+                    log.very_verbose("Set cache: %s", ifile)
+                    break
 
 
 @celery_app.task(bind=True)
@@ -333,19 +353,7 @@ def pids_cached_to_json(self):
 
     with celery_app.app.app_context():
 
-        import redis
-        r = redis.StrictRedis(redis_container)
         for key in r.scan_iter("user:*"):
-            log.info("Key: %s = %s", key, r.get(key))
-            break
-
-        # from itertools import izip_longest
-
-        # # iterate a list in batches of size n
-        # def batcher(iterable, n):
-        #     args = [iter(iterable)] * n
-        #     return izip_longest(*args)
-
-        # # in batches of 500 delete keys matching user:*
-        # for keybatch in batcher(r.scan_iter('user:*'),500):
-        # r.delete(*keybatch)
+            if key.startswith(pid_prefix):
+                log.info("Key: %s = %s", key, r.get(key))
+                break

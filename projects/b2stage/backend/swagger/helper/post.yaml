@@ -7,7 +7,7 @@ common:
     publish: false
     authentication: false
 
-singlehelper:
+helper:
   summary: Unauthenticated helper endpoint
   responses:
     '200':

@@ -4,7 +4,8 @@ class: Helper
 schema:
   expose: true
 mapping:
-  helper: "/helper/<batch_id>"
+  helper: "/helper"
+  singlehelper: "/helper/<batch_id>"
 labels:
   # - custom
   - helper
