@@ -128,9 +128,9 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             # strip directory as prefix
             PID = pmaker.pid_request(imain, ifile)
             log.info('PID: %s', PID)
-            # save inside the cache (both)
-            r.set(PID, ifile)
-            r.set(ifile, PID)
+            # # save inside the cache (both)
+            # r.set(PID, ifile)
+            # r.set(ifile, PID)
 
             ###############
             # 3. set metadata (icat)
