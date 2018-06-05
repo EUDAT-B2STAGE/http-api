@@ -8,3 +8,5 @@ services:
       - /var/nfs/general/redis:/data
     labels:
       io.rancher.scheduler.affinity:host_label: host_type=nfs
+    ports:
+      - 6379:6379

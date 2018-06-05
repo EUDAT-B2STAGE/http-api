@@ -7,6 +7,7 @@ from b2stage.apis.commons.queue import prepare_message
 from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
+from restapi.services.detect import detector
 
 from utilities.logs import get_logger, logging
 
@@ -21,17 +22,10 @@ celery_app = CeleryExt.celery_app
 
 # worker connection to redis
 if gethostname() != 'rapydo_server':
+    redis_vars = detector.load_group(label='redis')
     from redis import StrictRedis
-    ########################################
-    ########################################
-    # FIXME: move it as external variables
-    # UFF
-    redis_container = 'redis-cache-1'
-    pid_prefix = '21.T12995'
-    ########################################
-    ########################################
-    # r = redis.Redis(redis_container)
-    r = StrictRedis(redis_container)
+    pid_prefix = redis_vars.get('prefix')
+    r = StrictRedis(redis_vars.get('host'))
 
 ####################
 # preparing b2handle stuff

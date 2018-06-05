@@ -64,6 +64,8 @@ variables:
     RABBIT_EXCHANGE: elkexchange
     RABBIT_QUEUE: elkqueue
     ## OTHERS
+    REDIS_HOST: redis-cache-1
+    REDIS_PREFIX: 01T10
     CONTAINERS_RABBITUSER:
     CONTAINERS_RABBITPASS:
     CONTAINERS_DBUSER:
