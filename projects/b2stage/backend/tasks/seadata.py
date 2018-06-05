@@ -353,7 +353,6 @@ def pids_cached_to_json(self):
 
     with celery_app.app.app_context():
 
-        for key in r.scan_iter("user:*"):
-            if key.startswith(pid_prefix):
-                log.info("Key: %s = %s", key, r.get(key))
-                break
+        for key in r.scan_iter("%s*" % pid_prefix):
+            log.info("Key: %s = %s", key, r.get(key))
+            # break
