@@ -18,7 +18,7 @@ class Helper(Endpoint):
 
         prefix_batches = 'import01june_rabbithole_500000_'
         imain = self.get_service_instance(service_name='irods')
-        ipath = self.get_batch_path(imain)
+        ipath = self.get_production_path(imain)
         collections = imain.list(ipath)
 
         tasks = {}

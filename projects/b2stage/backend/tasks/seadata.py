@@ -22,9 +22,14 @@ celery_app = CeleryExt.celery_app
 # worker connection to redis
 if gethostname() != 'rapydo_server':
     from redis import StrictRedis
+    ########################################
+    ########################################
     # FIXME: move it as external variables
+    # UFF
     redis_container = 'redis-cache-1'
     pid_prefix = '21.T12995'
+    ########################################
+    ########################################
     # r = redis.Redis(redis_container)
     r = StrictRedis(redis_container)
 
@@ -297,13 +302,16 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         # CDI notification
         reqkey = 'request_id'
         msg = prepare_message(self, isjson=True)
+        zipcount = 0
+        if counter > 0:
+            zipcount += 1  # FIXME: what about when restricted is there?
         myjson[main_key] = {
             # "request_id": msg['request_id'],
             reqkey: myjson[reqkey],
             "order": order_id,
             "zipfile_name": params['file_name'],
             "file_count": counter,
-            "zipfile_count": 1,  # FIXME: with multiple zips is not like that
+            "zipfile_count": zipcount,
         }
         for key, value in msg.items():
             if key == reqkey:
@@ -325,9 +333,7 @@ def cache_batch_pids(self, irods_path):
     with celery_app.app.app_context():
 
         log.info("I'm %s" % self.request.id)
-        log.warning("Working off: %S", irods_path)
-        import time
-        time.sleep(4)
+        log.warning("Working off: %s", irods_path)
         imain = celery_app.get_service(service='irods')
 
         for current in imain.list(irods_path):

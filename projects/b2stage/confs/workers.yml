@@ -8,6 +8,10 @@ services:
     environment:
       ACTIVATE: 0
   celery:
+    # labels:
+    #   io.rancher.cni.network: ipsec
+    # networks:
+    #   managed:
     command: celery worker -c 1 -A restapi.flask_ext.flask_celery.worker.celery_app -n worker-%h
     user: developer
     volumes:
