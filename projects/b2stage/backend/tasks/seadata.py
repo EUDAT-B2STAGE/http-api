@@ -332,10 +332,10 @@ def cache_batch_pids(self, irods_path):
 
         for current in imain.list(irods_path):
             ifile = path.join(irods_path, current, return_str=True)
-            log.verbose('Current: %s', ifile)
+            # log.verbose('Current: %s', ifile)
             pid = r.get(ifile)
             if pid is not None:
-                log.debug('pid: %s', pid)
+                log.debug('PID: %s', pid)
             else:
                 metadata, _ = imain.get_metadata(ifile)
                 pid = metadata.get('PID')
@@ -344,7 +344,7 @@ def cache_batch_pids(self, irods_path):
                 else:
                     r.set(pid, ifile)
                     r.set(ifile, pid)
-                    log.very_verbose("Set cache: %s", ifile)
+                    log.very_verbose("Set cache: %s", current)
                     break
 
 
