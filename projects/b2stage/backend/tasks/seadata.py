@@ -220,8 +220,13 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         for pid in pids:
 
             ################
-            # try the cache first
+            # avoid empty pids?
+            if '/' not in pid or len(pid) < 10:
+                continue
+
+            # TODO: try the cache first
             pass
+
             # otherwise b2handle remotely
             b2handle_output = b2handle_client.retrieve_handle_record(pid)
 
