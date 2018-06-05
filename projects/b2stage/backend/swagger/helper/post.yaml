@@ -1,7 +1,4 @@
 
-depends_on:
-  - SEADATA_PROJECT
-
 common:
   custom:
     publish: false

@@ -1,4 +1,7 @@
 
+depends_on:
+  - SEADATA_PROJECT
+
 file: helper
 class: Helper
 schema:
