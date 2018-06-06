@@ -3,6 +3,29 @@
 
 todos
 
+- elastic logs: CDI-%{+YYYY.MM.dd}
+    + rabbit users: create + IPs
+- workers try/catch (and send notification to MARIS) 
+    + Irule failed: EXEC_CMD_ERROR
+    + 54 "Internal error, restart your request"
+- rocket chat backup to nfs dir
+- test download iticket wrong code
+- orders adding to zip
+- list errors in steps for Maris to define codes @TODO
+- rapydo stack command
+    + rabbit
+    + redis
+    + elastic
+    + logstash
+- ansible the infrastructure
+- auth forbidden to all for maris/admin only endpoint...
+- cleaning
+    + containers
+    + batch moved into production
+    + orders
+- Log username sent from import manager
+- Celery Prefetch Limits
+
 ## general
 
 - `rapydo verify` all/single connection parameters
@@ -11,42 +34,12 @@ todos
 
 ## seadata
 
-### import
-
-* remove countdown=10 on task submission
-- broadcast stop all workers found in /api/queue
-- get pids from irods folders in python2
-- new rabbit stack with new docker volume
-
-### orders
+### restricted orders
 
 1. Restricted separated api call `PATCH`
 2. Restricted and unrestricted zips separated
 3. specify registered/unregistered when asking for a download @parameter
 
-### still missing
-
-- if irods/rabbit goes down, what happens to celery and the queue?
-- ansible the infrastructure
-- list errors in steps for Maris to define codes @TODO
-- rabbitmq closed connection @TOFIX
-- auth forbidden to all for maris/admin only endpoint
-
-### inefficiency
-
-* Async ops @celery
-- HTTP API logging: elastisearch (direct?)
-- containers cleaning
-
-### notes
-
-- rocket chat to somewhere else
-- Restricted data prototype
-    - restricted metadata on POST
-    - restricted upload PUT + async container 
-        + with curl call to Maris API
-- Log username sent from import manager
-- more than one zip file in one unrestricted order
 
 ### snippets
 
@@ -101,3 +94,11 @@ mkdir -p /nfs/share
 130.186.13.150:/var/nfs/general /nfs/share nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
 mount -a
 ```
+
+
+--- 
+
+ips: [
+    "77.87.163.227", "77.87.163.244", "77.87.163.245", 
+    "83.163.127.252", "80.127.238.100", "62.251.62.40", "80.101.105.184"
+]

@@ -230,8 +230,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.info("Submit async celery task")
             from restapi.flask_ext.flask_celery import CeleryExt
             task = CeleryExt.unrestricted_order.apply_async(
-                args=[order_id, order_path, zip_file_name, json_input],
-                countdown=1)
+                args=[order_id, order_path, zip_file_name, json_input])
             log.warning("Async job: %s", task.id)
             return {'async': task.id}
 

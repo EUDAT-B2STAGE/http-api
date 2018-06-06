@@ -20,6 +20,16 @@ ext_api = ImportManagerAPI()
 log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
 
+#####################
+# https://stackoverflow.com/q/16040039
+log.debug('celery: disable prefetching')
+# disable prefetching
+celery_app.conf.update(
+    worker_prefetch_multiplier=1,
+    task_acks_late=True,
+)
+
+#####################
 # worker connection to redis
 if gethostname() != 'rapydo_server':
     redis_vars = detector.load_group(label='redis')

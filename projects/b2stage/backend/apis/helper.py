@@ -25,8 +25,7 @@ class Helper(Endpoint):
         for collection in collections:
             current = os.path.join(ipath, collection)
             if collection.startswith(prefix_batches):
-                task = CeleryExt.cache_batch_pids.apply_async(
-                    args=[current], countdown=1)
+                task = CeleryExt.cache_batch_pids.apply_async(args=[current])
                 log.info("Async job: %s", task.id)
                 tasks[collection] = task.id
                 break
