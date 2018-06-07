@@ -14,9 +14,9 @@ EDMO_CODE = seadata_vars.get('edmo_code')
 
 
 class ErrorCodes(object):
-
     PID_NOT_FOUND = "41"
     INGESTION_FILE_NOT_FOUND = "50"
+    INTERNAL_SERVER_ERROR = "54"
 
 
 class Metadata(object):
@@ -60,8 +60,12 @@ class ImportManagerAPI(object):
 
         from utilities import htmlcodes as hcodes
         if r.status_code != hcodes.HTTP_OK_BASIC:
-            log.error("Failed to call external APIs: %s", r.status_code)
+            log.error(
+                "CDI: failed to call external APIs (status: %s)",
+                r.status_code)
             return False
         else:
-            log.info("Called POST on external APIs: %s", r.status_code)
+            log.info(
+                "CDI: called POST on external APIs (status: %s)",
+                r.status_code)
             return True

@@ -2,7 +2,7 @@
 common:
   custom:
     publish: false
-    authentication: false
+    authentication: true
 
 singlehelper:
   summary: Unauthenticated helper endpoint

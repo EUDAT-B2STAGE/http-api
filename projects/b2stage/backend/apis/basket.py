@@ -258,6 +258,22 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return {'status': 'enabled'}
 
+    def no_slash_ticket(self, imain, path):
+        """ irods ticket for HTTP """
+        # TODO: prc list tickets so we can avoid more than once
+        # TODO: investigate iticket expiration
+        # iticket mod Ticket_string-or-id uses/expire string-or-none
+
+        unwanted = '/'
+        ticket = unwanted
+        while unwanted in ticket:
+            obj = imain.ticket(path)
+            ticket = obj.ticket
+        import urllib.parse
+        encoded = urllib.parse.quote_plus(ticket)
+        log.warning("Ticket: %s -> %s", ticket, encoded)
+        return encoded
+
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, order_id):
 
@@ -290,27 +306,17 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             error = "Order '%s' not found (or no permissions)" % order_id
             return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
-        ##################
-        # irods ticket
-
-        # TODO: prc list tickets so we can avoid more than once
-        ticket = imain.ticket(zip_ipath)
-        log.warning("Ticket: %s", ticket.ticket)
-
-        # TODO: investigate iticket expiration
-        # iticket mod Ticket_string-or-id uses/expire string-or-none
+        code = self.no_slash_ticket(imain, zip_ipath)
 
         ##################
         # build URL
         from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
         from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
         # GET /api/orders/?code=xxx
-        import urllib.parse
         # route = '%s%s/%s/%s?code=%s' % (
         route = '%s%s/%s/%s/download/%s' % (
             CURRENT_HTTPAPI_SERVER, API_URL,
-            ORDERS_ENDPOINT, order_id,
-            urllib.parse.quote_plus(ticket.ticket)
+            ORDERS_ENDPOINT, order_id, code
         )
         # print("TEST", route)
 
@@ -319,10 +325,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         imain.set_metadata(zip_ipath, download=route)
 
         ##################
-        # response = {'code': ticket.ticket}
         response = {
             'GET': route,
-            'code': urllib.parse.quote_plus(ticket.ticket)
+            'code': code,
         }
         # response = 'Work in progress'
         msg = prepare_message(self, log_string='end', status='enabled')
