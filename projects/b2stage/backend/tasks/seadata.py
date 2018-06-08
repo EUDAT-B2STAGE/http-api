@@ -25,6 +25,8 @@ celery_app = CeleryExt.celery_app
 log.debug('celery: disable prefetching')
 # disable prefetching
 celery_app.conf.update(
+    # CELERYD_PREFETCH_MULTIPLIER=1,
+    # CELERY_ACKS_LATE=True,
     worker_prefetch_multiplier=1,
     task_acks_late=True,
 )
@@ -42,6 +44,16 @@ if gethostname() != 'rapydo_server':
 pmaker = PIDgenerator()
 logging.getLogger('b2handle').setLevel(logging.WARNING)
 b2handle_client = b2handle.instantiate_for_read_access()
+
+
+####################
+def notify_server_problems(myjson):
+    myjson['errors'] = {
+        "error": ErrorCodes.INTERNAL_SERVER_ERROR,
+        "description": "Internal error, restart your request",
+        # "subject": pid
+    }
+    ext_api.post(myjson)
 
 
 ####################
@@ -97,10 +109,12 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         ###############
         out_data = []
         errors = []
+        counter = 0
+        notified = False
         param_key = 'parameters'
         elements = myjson.get(param_key, {}).get('pids', {})
         total = len(elements)
-        counter = 0
+        testing_mode = myjson.get('test_mode', 'empty') == 'initial_load'
         self.update_state(state="PROGRESS", meta={
             'total': total, 'step': counter, 'errors': len(errors)})
 
@@ -127,19 +141,31 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 continue
 
             ###############
-            # 1. copy file (irods) - MAY FAIL?
+            # 1. copy file (irods)
             ifile = path.join(irods_path, current, return_str=True)
-            imain.put(str(local_element), ifile)
-            log.debug("Moved: %s" % current)
+            try:
+                imain.put(str(local_element), ifile)
+            except BaseException as e:
+                log.error(e)
+                notified = True
+                notify_server_problems(myjson)
+                break
+            else:
+                log.debug("Moved: %s" % current)
 
             ###############
             # 2. request pid (irule)
-            # strip directory as prefix
-            PID = pmaker.pid_request(imain, ifile)
-            log.info('PID: %s', PID)
-            # # save inside the cache (both)
-            # r.set(PID, ifile)
-            # r.set(ifile, PID)
+            try:
+                PID = pmaker.pid_request(imain, ifile)
+            except BaseException as e:
+                notified = True
+                notify_server_problems(myjson)
+                break
+            else:
+                log.info('PID: %s', PID)
+                # # save inside the cache? (both)
+                # r.set(PID, ifile)
+                # r.set(ifile, PID)
 
             ###############
             # 3. set metadata (icat)
@@ -174,17 +200,17 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
         ###############
         # Notify the CDI API
-        if myjson.get('test_mode', 'empty') == 'initial_load':
-            log.verbose('skipping CDI API')
-        else:
-            myjson[param_key]['pids'] = out_data
-            msg = prepare_message(self, isjson=True)
-            for key, value in msg.items():
-                myjson[key] = value
-            if len(errors) > 0:
-                myjson['errors'] = errors
-            ext_api.post(myjson)
-            log.info('Notified CDI')
+        if not notified:
+            if testing_mode:
+                log.verbose('skipping CDI API')
+            else:
+                myjson[param_key]['pids'] = out_data
+                msg = prepare_message(self, isjson=True)
+                for key, value in msg.items():
+                    myjson[key] = value
+                if len(errors) > 0:
+                    myjson['errors'] = errors
+                ext_api.post(myjson)
 
         self.update_state(
             state="COMPLETED", meta={
@@ -200,6 +226,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
     with celery_app.app.app_context():
 
         log.info("I'm %s" % self.request.id)
+        failed = False
 
         ##################
         main_key = 'parameters'
@@ -227,6 +254,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         # Verify pids
         files = {}
         errors = []
+        counter = 0
         for pid in pids:
 
             ################
@@ -234,11 +262,19 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             if '/' not in pid or len(pid) < 10:
                 continue
 
-            # TODO: try the cache first
+            # TODO: should I try the cache first?
+            # NOTE: only with a backdoor initially?
             pass
 
             # otherwise b2handle remotely
-            b2handle_output = b2handle_client.retrieve_handle_record(pid)
+            try:
+                b2handle_output = b2handle_client.retrieve_handle_record(pid)
+            except BaseException as e:
+                failed = True
+                notify_server_problems(myjson)
+                break
+            else:
+                log.verbose('Handle called')
 
             ################
             if b2handle_output is None:
@@ -253,14 +289,16 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 log.verbose("PID verified: %s\n(%s)", pid, ipath)
                 files[pid] = ipath
 
-        log.debug("PID files: %s", files)
-        # self.update_state(state="PROGRESS", meta={
-        #     'total': total, 'step': counter, 'errors': len(errors)}
-        # )
+        if failed:
+            self.update_state(state="FAILED", meta={
+                'total': total, 'step': counter, 'errors': len(errors)}
+            )
+            return 'Failed'
+        else:
+            log.debug("PID files: %s", files)
 
         ##################
         # Recover files
-        counter = 0
         for pid, ipath in files.items():
             # print(pid, ipath)
 
@@ -270,13 +308,18 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
             # Copy if not there yet
             if not path.file_exists_and_nonzero(local_file):
-                log.debug("Copy to local: %s", local_file)
-
-                # TODO: check if I already have a wrapper for this
-                with open(local_file, 'wb') as target:
-                    with imain.get_dataobject(ipath).open('r+') as source:
-                        for line in source:
-                            target.write(line)
+                try:
+                    # TODO: check if I already have a wrapper for this
+                    with open(local_file, 'wb') as target:
+                        with imain.get_dataobject(ipath).open('r+') as source:
+                            for line in source:
+                                target.write(line)
+                except BaseException as e:
+                    failed = True
+                    notify_server_problems(myjson)
+                    break
+                else:
+                    log.debug("Copy to local: %s", local_file)
 
             counter += 1
             self.update_state(state="PROGRESS", meta={
@@ -287,6 +330,12 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             #     md = {pid: ipath}
             #     imain.set_metadata(order_path, **md)
             #     log.verbose("Set metadata")
+
+        if failed:
+            self.update_state(state="FAILED", meta={
+                'total': total, 'step': counter, 'errors': len(errors)}
+            )
+            return 'Failed'
 
         ##################
         # Zip the dir
@@ -303,35 +352,37 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         log.info("Copied zip to irods: %s", zip_ipath)
 
         ##################
+        # CDI notification
+        # FIXME: add a backdoor for EUDAT tests
+        if True:
+            reqkey = 'request_id'
+            msg = prepare_message(self, isjson=True)
+            zipcount = 0
+            if counter > 0:
+                # FIXME: what about when restricted is there?
+                zipcount += 1
+            myjson[main_key] = {
+                # "request_id": msg['request_id'],
+                reqkey: myjson[reqkey],
+                "order": order_id,
+                "zipfile_name": params['file_name'],
+                "file_count": counter,
+                "zipfile_count": zipcount,
+            }
+            for key, value in msg.items():
+                if key == reqkey:
+                    continue
+                myjson[key] = value
+            if len(errors) > 0:
+                myjson['errors'] = errors
+            myjson[reqkey] = self.request.id
+            # log.pp(myjson)
+            ext_api.post(myjson)
+
+        ##################
         self.update_state(
             state="COMPLETED",
             meta={'total': total, 'step': counter, 'errors': len(errors)})
-
-        ##################
-        # CDI notification
-        reqkey = 'request_id'
-        msg = prepare_message(self, isjson=True)
-        zipcount = 0
-        if counter > 0:
-            zipcount += 1  # FIXME: what about when restricted is there?
-        myjson[main_key] = {
-            # "request_id": msg['request_id'],
-            reqkey: myjson[reqkey],
-            "order": order_id,
-            "zipfile_name": params['file_name'],
-            "file_count": counter,
-            "zipfile_count": zipcount,
-        }
-        for key, value in msg.items():
-            if key == reqkey:
-                continue
-            myjson[key] = value
-        if len(errors) > 0:
-            myjson['errors'] = errors
-        myjson[reqkey] = self.request.id
-        # log.pp(myjson)
-        ext_api.post(myjson)
-        log.info('Notified CDI')
 
     return myjson
 

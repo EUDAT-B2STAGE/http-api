@@ -12,6 +12,6 @@ services:
     labels:
       io.rancher.scheduler.affinity:host_label: host_type=nfs
     ports:
-      # - 4369:4369 # open firewall internally
-      # - 5672:5672 # open firewall internally
+      - 4369:4369 # open firewall internally
+      - 5672:5672 # open firewall internally
       - 9999:15672 # open firewall to your workstation

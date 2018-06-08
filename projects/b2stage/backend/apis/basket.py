@@ -22,8 +22,6 @@ DELETE /api/order/<OID>
 # IMPORTS
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
-from b2stage.apis.commons.seadatacloud import \
-    ImportManagerAPI as API, ErrorCodes
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 # from b2stage.apis.commons.endpoint import EudatEndpoint
 # from b2stage.apis.commons.seadatacloud import Metadata as md
@@ -359,7 +357,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
         ##################
-        # remove the iticket
+        # TODO: remove the iticket?
         pass
 
         ##################
