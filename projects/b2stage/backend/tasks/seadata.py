@@ -235,7 +235,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         pids = params.get(key, [])
         total = len(pids)
         self.update_state(
-            state="STARTING", meta={'total': total, 'step': 0, 'errors': 0})
+            state="STARTING",
+            meta={'total': total, 'step': 0, 'errors': 0, 'verified': 0})
 
         ##################
         # SETUP
@@ -255,6 +256,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         files = {}
         errors = []
         counter = 0
+        verified = 0
         for pid in pids:
 
             ################
@@ -289,9 +291,17 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 log.verbose("PID verified: %s\n(%s)", pid, ipath)
                 files[pid] = ipath
 
+                verified += 1
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'verified': verified,
+                    'errors': len(errors)}
+                )
+
         if failed:
             self.update_state(state="FAILED", meta={
-                'total': total, 'step': counter, 'errors': len(errors)}
+                'total': total, 'step': counter,
+                'verified': verified,
+                'errors': len(errors)}
             )
             return 'Failed'
         else:
@@ -323,7 +333,9 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
             counter += 1
             self.update_state(state="PROGRESS", meta={
-                'total': total, 'step': counter, 'errors': len(errors)}
+                'total': total, 'step': counter,
+                'verified': verified,
+                'errors': len(errors)}
             )
             # # Set current file to the metadata collection
             # if pid not in metadata:
@@ -382,7 +394,9 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         ##################
         self.update_state(
             state="COMPLETED",
-            meta={'total': total, 'step': counter, 'errors': len(errors)})
+            meta={
+                'total': total, 'step': counter, 'verified': verified,
+                'errors': len(errors)})
 
     return myjson
 
