@@ -317,7 +317,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             )
             return 'Failed'
         else:
-            log.debug("PID files: %s", files)
+            log.debug("PID files: %s", len(files))
 
         ##################
         # Recover files
