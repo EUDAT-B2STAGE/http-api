@@ -410,9 +410,12 @@ def cache_batch_pids(self, irods_path):
         log.warning("Working off: %s", irods_path)
         imain = celery_app.get_service(service='irods')
 
+        counter = 0
         for current in imain.list(irods_path):
             ifile = path.join(irods_path, current, return_str=True)
-            # log.verbose('Current: %s', ifile)
+            counter += 1
+            self.update_state(state="PROGRESS", meta={'count': counter})
+            log.verbose('file %s: %s', counter, ifile)
             pid = r.get(ifile)
             if pid is not None:
                 log.debug('PID: %s', pid)
@@ -425,7 +428,8 @@ def cache_batch_pids(self, irods_path):
                     r.set(pid, ifile)
                     r.set(ifile, pid)
                     log.very_verbose("Set cache: %s", current)
-                    break
+                    # break
+        self.update_state(state="COMPLETED", meta={'count': counter})
 
 
 @celery_app.task(bind=True)
