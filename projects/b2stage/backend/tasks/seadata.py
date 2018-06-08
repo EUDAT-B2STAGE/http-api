@@ -269,6 +269,11 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             ifile = r.get(pid)
             if ifile is not None:
                 files[pid] = ifile.decode()
+                verified += 1
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'verified': verified,
+                    'errors': len(errors)}
+                )
                 continue
 
             # # NOTE: only with a backdoor initially?
