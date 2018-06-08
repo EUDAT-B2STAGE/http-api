@@ -264,10 +264,17 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             if '/' not in pid or len(pid) < 10:
                 continue
 
-            # TODO: should I try the cache first?
-            # NOTE: only with a backdoor initially?
-            pass
+            ################
+            # Check the cache first
+            ifile = r.get(pid)
+            if ifile is not None:
+                files[pid] = ifile
+                continue
 
+            # # NOTE: only with a backdoor initially?
+            # pass
+
+            ################
             # otherwise b2handle remotely
             try:
                 b2handle_output = b2handle_client.retrieve_handle_record(pid)

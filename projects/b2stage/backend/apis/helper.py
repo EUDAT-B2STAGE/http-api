@@ -2,7 +2,6 @@
 
 
 import os
-import time
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint as Endpoint
 # from restapi.services.detect import detector
