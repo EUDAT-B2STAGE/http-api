@@ -8,10 +8,6 @@ services:
     environment:
       ACTIVATE: 0
   celery:
-    # labels:
-    #   io.rancher.cni.network: ipsec
-    # networks:
-    #   managed:
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -n worker-%h
     user: developer
     volumes:
@@ -30,7 +26,7 @@ services:
       MAIN_LOGIN_ENABLE: 0
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       DEBUG_ENDPOINTS: 1
-      APP_MODE: debug
+      APP_MODE: production
       DEBUG_LEVEL: VERY_VERBOSE
       PROJECT_DOMAIN: ${PROJECT_DOMAIN}
       SEADATA_PROJECT: ${SEADATA_PROJECT}
@@ -47,5 +43,15 @@ services:
       IRODS_DN: ${IRODS_DN}
       IRODS_PASSWORD: ${IRODS_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
-    depends_on: []
+      # SEADATA ELASTIC LOGS
+      ELASTIC_ENABLE: ${SEADATA_PROJECT}
+      ELASTIC_EXTERNAL: 1
+      ELASTIC_HOST: ${ELASTIC_HOST}
+      ELASTIC_PORT: ${ELASTIC_PORT}
+    # depends_on: []
 
+  # flower:
+  #   command: start_flower
+  #   user: developer
+  #   hostname: flower
+  #   environment:

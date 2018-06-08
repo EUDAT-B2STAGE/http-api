@@ -268,7 +268,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             # Check the cache first
             ifile = r.get(pid)
             if ifile is not None:
-                files[pid] = ifile
+                files[pid] = ifile.decode()
                 continue
 
             # # NOTE: only with a backdoor initially?
