@@ -1,7 +1,9 @@
 
 # 1.0.3
 
-todos
+working on it
+
+## todos
 
 - elastic logs: CDI-%{+YYYY.MM.dd}
     + rabbit users: create + IPs
@@ -12,19 +14,22 @@ todos
 - test download iticket wrong code
 - orders adding to zip
 - list errors in steps for Maris to define codes @TODO
-- rapydo stack command
-    + rabbit
-    + redis
-    + elastic
-    + logstash
 - ansible the infrastructure
 - auth forbidden to all for maris/admin only endpoint...
 - cleaning
     + containers
     + batch moved into production
     + orders
+    + tokens in postgresql
 - Log username sent from import manager
-- Celery Prefetch Limits
+- rapydo stack command
+    + rabbit
+    + redis
+    + elastic
+    + logstash
+- a way to sync maris db with all records in production 
+    + ok if in one EUDAT data center
+* Celery Prefetch Limits
 
 ## general
 
