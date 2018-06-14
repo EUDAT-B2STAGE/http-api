@@ -93,10 +93,12 @@ jq .Response.data output.json | grep status | wc -l
 
 4. Add nfs client
 
-```
-apt-get install -y nfs-common
+```bash
+sudo -i
+apt-get update && apt-get install -y nfs-common
 mkdir -p /nfs/share
-130.186.13.150:/var/nfs/general /nfs/share nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
+# 130.186.13.150
+echo "192.168.0.45:/var/nfs/general /nfs/share nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0" >> /etc/fstab
 mount -a
 ```
 
