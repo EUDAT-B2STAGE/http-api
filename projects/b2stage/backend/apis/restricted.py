@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
@@ -93,9 +94,51 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             # NOTE: permissions are inherited thanks to the POST call
 
     def patch(self, order_id):
-        """ Make CDI test a call to patch for the first time """
-        log.info('Order id: %s', order_id)
-        return 'It works.'
+
+        ##################
+        # FIXME: to be completed
+        return 'TO BE DEVELOPED'
+        ##################
+
+        log.info('Enabling restricted: order id %s', order_id)
+        json_input = self.get_input()
+
+        ##################
+        main_key = 'parameters'
+        params = json_input.get(main_key, {})
+        if len(params) < 1:
+            error = "'%s' missing" % main_key
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+        ##################
+        # RESTRICTED PARAM
+        key = 'b2access_ids'
+        restricted = params.get(key, [])
+        if len(restricted) < 0:
+            error = "'%s' missing in JSON %s" % (key, main_key)
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+        ##################
+        # Metadata handling
+        imain = self.get_service_instance(service_name='irods')
+        order_path = self.get_order_path(imain, order_id)
+        metadata, _ = imain.get_metadata(order_path)
+        log.pp(metadata)
+
+        # Remove if existing
+        key = 'restricted'
+        if key in metadata:
+            imain.remove_metadata(order_path, key)
+            # TODO: merge with the new request
+            # are they just 2 lists?
+            log.info("Merge: %s and %s", metadata.get(key), restricted)
+
+        # Set restricted metadata
+        string = json.dumps(restricted)
+        imain.set_metadata(order_path, restricted=string)
+        log.debug('Flagged restricted: %s', string)
+
+        return {'enabled': restricted}
 
     def put(self, order_id):
         """
@@ -115,10 +158,9 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         #     order_id = str(order_id)
 
         ###############
-        log.info("Order id '%s' has to be restricted", order_id)
+        log.info("Order restricted: %s", order_id)
 
         # Create the path
-        log.info("Order request: %s", order_id)
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
