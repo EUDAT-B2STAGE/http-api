@@ -16,13 +16,16 @@ class Extlogs(EndpointResource):
         else:
             log.info("Request logs content")
 
-        #################
         # check index?
         # $SERVER/_cat/indices
 
-        #################
+        ################################
+        # FIXME: move into elastic
         from datetime import datetime
         calendar = datetime.today().strftime("%Y.%m.%d")
+
+        ################################
+        # FIXME: remove this vars
         from b2stage.apis.commons.queue import QUEUE_VARS as qvars
         # Add size=100 as param?
         url = '%s://%s:%s/app_%s-%s/_search?q=*:*' % (
@@ -31,11 +34,14 @@ class Extlogs(EndpointResource):
         )
         log.debug("Index URL: %s", url)
 
+        ################################
+        # FIXME: use flask_elastic instance
         import requests
         r = requests.get(url)
         out = r.json().get('hits', {})
         log.info("Found %s results", out.get('total'))
 
+        ################################
         # logs = {}
         logs = []
         for result in out.get('hits', []):

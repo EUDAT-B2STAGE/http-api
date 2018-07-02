@@ -1,5 +1,7 @@
 version: '3.1'
 
+# https://docs.docker.com/docker-cloud/apps/service-links/#discovering-services-or-containers-on-another-stack
+
 volumes:
   mysqldata:
     driver: local
