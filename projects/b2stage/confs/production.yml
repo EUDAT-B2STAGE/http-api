@@ -18,9 +18,9 @@ services:
     environment:
       ##################
       # Base info
-      ACTIVATE: 1
+      # ACTIVATE: 1
       APP_MODE: production
-      FLASK_DEBUG: 0
+      # FLASK_DEBUG: 0
       DEBUG_LEVEL: INFO
       NGINX_ACTIVE: "True"
 
@@ -74,8 +74,8 @@ services:
     restart: always
     environment:
       ACTIVATE: 1
-      DOMAIN: ${PROJECT_DOMAIN}
-      MODE: ${LETSENCRYPT_MODE}
+      # DOMAIN: ${PROJECT_DOMAIN}
+      # MODE: ${LETSENCRYPT_MODE}
     volumes:
       # SSL / HTTPS
       # - letsencrypt_certs:/etc/letsencrypt
