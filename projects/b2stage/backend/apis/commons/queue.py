@@ -17,7 +17,11 @@ log = get_logger(__name__)
 QUEUE_SERVICE = 'rabbit'
 QUEUE_VARS = detector.load_group(label=QUEUE_SERVICE)
 
+'''
+:param instance: The Endpoint.
+:param params: The kv pairs to be in the log message.
 
+'''
 def prepare_message(instance, user=None, isjson=False, **params):
     """
 { # start
@@ -42,37 +46,37 @@ def prepare_message(instance, user=None, isjson=False, **params):
     "log_string":"end"
 }
     """
-    obj = dict(params)
+    logmsg = dict(params)
 
     instance_id = str(id(instance))
-    obj['request_id'] = instance_id
-    # obj['request_id'] = instance_id[len(instance_id) - 6:]
+    logmsg['request_id'] = instance_id
+    # logmsg['request_id'] = instance_id[len(instance_id) - 6:]
 
     from b2stage.apis.commons.seadatacloud import seadata_vars
-    obj['edmo_code'] = seadata_vars.get('edmo_code')
+    logmsg['edmo_code'] = seadata_vars.get('edmo_code')
 
     from datetime import datetime
-    obj['datetime'] = datetime.now().strftime("%Y%m%dT%H:%M:%S")
+    logmsg['datetime'] = datetime.now().strftime("%Y%m%dT%H:%M:%S")
 
     if isjson:
-        return obj
+        return logmsg
 
     from restapi.services.authentication import BaseAuthentication as Service
     ip, _ = Service.get_host_info()
-    obj['ip_number'] = ip
-    # obj['hostname'] = hostname
+    logmsg['ip_number'] = ip
+    # logmsg['hostname'] = hostname
 
     from flask import request
     # http://localhost:8080/api/pids/<PID>
     import re
     endpoint = re.sub(r"https?://[^\/]+", '', request.url)
-    obj['program'] = request.method + ':' + endpoint
+    logmsg['program'] = request.method + ':' + endpoint
     if user is None:
         user = 'import_manager'
-    obj['user'] = user
+    logmsg['user'] = user
 
-    # log.pp(obj)
-    return obj
+    # log.pp(logmsg)
+    return logmsg
 
 
 def log_into_queue(instance, dictionary_message):
