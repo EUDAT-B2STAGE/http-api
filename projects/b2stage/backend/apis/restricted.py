@@ -75,7 +75,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ALLOWED_MIMETYPE_UPLOAD = 'application/octet-stream'
         from flask import request
         if request.mimetype != ALLOWED_MIMETYPE_UPLOAD:
-            return self.send_errors(
+            return False, self.send_errors(
                 "Only mimetype allowed for upload: %s"
                 % ALLOWED_MIMETYPE_UPLOAD,
                 code=hcodes.HTTP_BAD_REQUEST)
@@ -85,14 +85,14 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             iout = icom.write_in_streaming(
                 destination=ipath, force=True, binary=True)
 
-            return iout
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
-            return self.send_errors(
+            return False, self.send_errors(
                 "Failed streaming towards B2SAFE cloud",
                 code=hcodes.HTTP_SERVER_ERROR)
         else:
             log.info("irods call %s", iout)
+            return True, iout
             # NOTE: permissions are inherited thanks to the POST call
 
     def patch(self, order_id):
@@ -200,9 +200,12 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # irods copy
         label = "%s_123.zip" % obj.username
         ipath = self.complete_path(order_path, label)
-        out = self.stream_to_irods(imain, ipath)
-        log.pp(out)
+        uploaded, message = self.stream_to_irods(imain, ipath)
+
+        if not uploaded:
+            return message
         log.verbose("Uploaded: %s", ipath)
+        log.very_verbose(message)
 
         ###############
         # define zip final path
