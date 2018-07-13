@@ -212,10 +212,12 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     myjson['errors'] = errors
                 ext_api.post(myjson)
 
-        self.update_state(
-            state="COMPLETED", meta={
-                'total': total, 'step': counter, 'errors': len(errors)}
-        )
+        out = {
+            'total': total, 'step': counter,
+            'errors': len(errors), 'out': out_data
+        }
+        self.update_state(state="COMPLETED", meta=out)
+        return out
 
     return myjson
 
@@ -269,6 +271,11 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             ifile = r.get(pid)
             if ifile is not None:
                 files[pid] = ifile.decode()
+                verified += 1
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'verified': verified,
+                    'errors': len(errors)}
+                )
                 continue
 
             # # NOTE: only with a backdoor initially?
@@ -312,7 +319,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             )
             return 'Failed'
         else:
-            log.debug("PID files: %s", files)
+            log.debug("PID files: %s", len(files))
 
         ##################
         # Recover files
@@ -323,10 +330,12 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             filename = path.last_part(ipath)
             local_file = path.build([local_zip_dir, filename])
 
-            # Copy if not there yet
+            #########################
+            #########################
+            # FIXME: can this have better performances?
+            #########################
             if not path.file_exists_and_nonzero(local_file):
                 try:
-                    # TODO: check if I already have a wrapper for this
                     with open(local_file, 'wb') as target:
                         with imain.get_dataobject(ipath).open('r+') as source:
                             for line in source:
@@ -337,6 +346,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     break
                 else:
                     log.debug("Copy to local: %s", local_file)
+            #########################
+            #########################
 
             counter += 1
             self.update_state(state="PROGRESS", meta={
@@ -356,19 +367,27 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             )
             return 'Failed'
 
-        ##################
-        # Zip the dir
-        zip_local_file = path.join(local_dir, zip_file_name)
-        log.debug("Zip local path: %s", zip_local_file)
-        if not path.file_exists_and_nonzero(zip_local_file):
-            path.compress(local_zip_dir, str(zip_local_file))
-            log.info("Compressed in: %s", zip_local_file)
+        zip_ipath = None
+        if counter > 0:
+            ##################
+            # Zip the dir
+            zip_local_file = path.join(local_dir, zip_file_name)
+            log.debug("Zip local path: %s", zip_local_file)
+            if not path.file_exists_and_nonzero(zip_local_file):
+                path.compress(local_zip_dir, str(zip_local_file))
+                log.info("Compressed in: %s", zip_local_file)
 
-        ##################
-        # Copy the zip into irods
-        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
-        imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
-        log.info("Copied zip to irods: %s", zip_ipath)
+            ##################
+            # Copy the zip into irods
+            zip_ipath = path.join(order_path, zip_file_name, return_str=True)
+            imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
+            log.info("Copied zip to irods: %s", zip_ipath)
+
+        #########################
+        # NOTE: should I close the iRODS session ?
+        #########################
+        pass
+        # imain.prc
 
         ##################
         # CDI notification
@@ -399,11 +418,13 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             ext_api.post(myjson)
 
         ##################
-        self.update_state(
-            state="COMPLETED",
-            meta={
-                'total': total, 'step': counter, 'verified': verified,
-                'errors': len(errors)})
+        out = {
+            'total': total, 'step': counter,
+            'verified': verified, 'errors': len(errors),
+            'zip': zip_ipath,
+        }
+        self.update_state(state="COMPLETED", meta=out)
+        return out
 
     return myjson
 

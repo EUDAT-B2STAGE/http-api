@@ -1,30 +1,28 @@
 version: '3'
 
 services:
+
   backend:
     environment:
       ACTIVATE: 0
+
   rabbit:
     environment:
       ACTIVATE: 0
+
+  celeryui:
+    environment:
+      ACTIVATE: 1
+
   celery:
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -n worker-%h
-    user: developer
     volumes:
       - /nfs/share:/usr/share
     environment:
-      CELERY_ENABLE: 1
       CELERY_EXTERNAL: 1
-      CELERY_BROKER: ${CELERY_BROKER}
-      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
-      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
-      CELERY_BACKEND: ${CELERY_BACKEND}
-      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
-      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
       #############################
       ACTIVATE: 1
       MAIN_LOGIN_ENABLE: 0
-      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       DEBUG_ENDPOINTS: 1
       APP_MODE: production
       DEBUG_LEVEL: VERY_VERBOSE

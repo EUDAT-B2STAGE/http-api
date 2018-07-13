@@ -1,0 +1,50 @@
+version: '3.1'
+
+networks:
+  dbs:
+
+volumes:
+  mysqldata:
+    driver: local
+
+services:
+
+  db:
+    image: mysql:5.7.22
+    environment:
+      # MYSQL_RANDOM_ROOT_PASSWORD: yes
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_DATABASE: cattle
+      MYSQL_USER: cattle
+      MYSQL_PASSWORD: userpassword
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      dbs:
+
+  rancher:
+    image: rancher/server:v1.6.18
+    command:
+      - --db-host
+      # - rancher_db
+      - db
+      - --db-name
+      - cattle
+      - --db-port
+      - "3306"
+      - --db-user
+      - cattle
+      - --db-pass
+      - userpassword
+      - --db-strict-enforcing
+    networks:
+      dbs:
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+
+  # debug:
+  #   image: mysql:5.7.22
+  #   command: sleep 1234567890
+  #   # mysql -h ${STACK_NAME}_db -u cattle -p

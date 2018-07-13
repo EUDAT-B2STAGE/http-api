@@ -15,6 +15,7 @@ data/certs/*cineca*
 data/secrets/secret_*
 data/b2handle/*.pem
 data/files/*
+data/*/*.json
 
 #################
 ##  Submodules ##

@@ -5,6 +5,8 @@
 variables:
   env:
 
+    BACKEND_BUILD_MODE: backendirods
+
     ###############################
     ## B2ACCESS
     # Register a B2ACCESS 'app' and use credentials here
