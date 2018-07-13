@@ -4,7 +4,7 @@ common:
     authentication: true
 
 restricted:
-  summary: Merge zip uploaded by a partner with the main order zip
+  summary: uploading a zip into restricted orders
   responses:
     '200':
-      description: merge has been completed without errors
+      description: upload has been completed without errors

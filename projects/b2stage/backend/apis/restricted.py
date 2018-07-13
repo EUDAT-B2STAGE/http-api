@@ -148,7 +148,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         return {'enabled': restricted}
 
-    def post(self, order_id):
+    def put(self, order_id):
         """
         - Set the metadata of the folder to know that this is restricted
         - Set also the list of authorized data centers
@@ -225,7 +225,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         }
         return self.force_response(response)
 
-    def put(self, order_id):
+    def post(self, order_id):
 
         log.warning("This endpoint should be restricted to admins?")
 
