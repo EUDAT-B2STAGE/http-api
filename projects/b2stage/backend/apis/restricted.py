@@ -135,7 +135,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             # TODO: merge with the new request
             # are they just 2 lists?
             log.info("Merge: %s and %s", metadata.get(key), restricted)
-            restricted = metadata.get(key) + restricted
+            previous_restricted = json.loads(metadata.get(key))
+            restricted = previous_restricted + restricted
 
         # Set restricted metadata
         string = json.dumps(restricted)
