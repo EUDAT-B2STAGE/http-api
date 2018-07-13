@@ -84,6 +84,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             # NOTE: we know this will always be Compressed Files (binaries)
             iout = icom.write_in_streaming(
                 destination=ipath, force=True, binary=True)
+
+            return iout
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
             return self.send_errors(
@@ -198,7 +200,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # irods copy
         label = "%s_123.zip" % obj.username
         ipath = self.complete_path(order_path, label)
-        self.stream_to_irods(imain, ipath)
+        out = self.stream_to_irods(imain, ipath)
+        log.pp(out)
         log.verbose("Uploaded: %s", ipath)
 
         ###############
