@@ -117,11 +117,13 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
         if not imain.is_collection(order_path):
-            # obj = self.init_endpoint()
+            obj = self.init_endpoint()
             # Create the path and set permissions
-            # imain.create_collection_inheritable(order_path, obj.username)
-            error = "Order '%s' not found or permissions denied" % order_id
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+            imain.create_collection_inheritable(order_path, obj.username)
+            log.warning("Create %s because it did not exist", order_path)
+            log.info("Assigned permissions to %s", obj.username)
+            # error = "Order '%s' not found or permissions denied" % order_id
+            # return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         metadata, _ = imain.get_metadata(order_path)
         log.pp(metadata)
