@@ -27,6 +27,7 @@ submodules/http-api
 submodules/frontend
 submodules/prc
 submodules/rapydo-confs
+submodules/do
 
 ############################################
 ##  Dynamically created file and folders  ##
