@@ -95,19 +95,13 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     def patch(self, order_id):
 
-        ##################
-        # FIXME: to be completed
-        return 'TO BE DEVELOPED'
-        ##################
-
         log.info('Enabling restricted: order id %s', order_id)
         json_input = self.get_input()
 
         ##################
-        main_key = 'parameters'
-        params = json_input.get(main_key, {})
+        params = json_input.get('parameters', {})
         if len(params) < 1:
-            error = "'%s' missing" % main_key
+            error = "missing parameters"
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
@@ -115,7 +109,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         key = 'b2access_ids'
         restricted = params.get(key, [])
         if len(restricted) < 0:
-            error = "'%s' missing in JSON %s" % (key, main_key)
+            error = "'%s' missing in JSON parameters" % key
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
@@ -190,7 +184,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ###############
         # irods copy
-        label = "%s_%s.%s" % (obj.username, '123', 'zip')
+        label = "%s_123.zip" % obj.username
         ipath = self.complete_path(order_path, label)
         self.stream_to_irods(imain, ipath)
         log.verbose("Uploaded: %s", ipath)
