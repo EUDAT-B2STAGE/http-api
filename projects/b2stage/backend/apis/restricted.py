@@ -116,6 +116,12 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # Metadata handling
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
+        if not imain.is_collection(order_path):
+            # obj = self.init_endpoint()
+            # Create the path and set permissions
+            # imain.create_collection_inheritable(order_path, obj.username)
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
         metadata, _ = imain.get_metadata(order_path)
         log.pp(metadata)
 
