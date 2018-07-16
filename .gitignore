@@ -37,7 +37,6 @@ submodules/do
 #.projectrc
 frontend/b2stage/libs/bower_components
 .env
-projects/*/backend/confs/project_configuration.yaml
 
 ###################################
 ##  Temporary and miscellaneous  ##
