@@ -430,6 +430,17 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
 
 @celery_app.task(bind=True)
+def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
+
+    with celery_app.app.app_context():
+
+        log.info("order_id = %s", order_id)
+        log.info("order_path = %s", order_path)
+        log.info("partial_zip = %s", partial_zip)
+        log.info("final_zip = %s", final_zip)
+
+
+@celery_app.task(bind=True)
 def cache_batch_pids(self, irods_path):
 
     with celery_app.app.app_context():

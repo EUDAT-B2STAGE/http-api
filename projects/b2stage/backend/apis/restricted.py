@@ -3,6 +3,7 @@
 import json
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
+from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from utilities import htmlcodes as hcodes
 from utilities import path
@@ -28,6 +29,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     #     response = 'Hello world!'
     #     return self.force_response(response)
 
+    """
     def ingest_restricted_zip(self, icom, order_id, order_path, ipath):
 
         # Copy files from the B2HOST environment
@@ -68,6 +70,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         )
         # errors = rancher.run(
         # log.pp(errors)
+    """
 
     def stream_to_irods(self, icom, ipath):
 
@@ -228,17 +231,21 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
 
+        # zip file uploaded from partner
         zip_file = params.get('zip_file_name')
         ipath = self.complete_path(order_path, zip_file)
         ###############
-        # define zip final path
+        # define path of final zip
         # filename = 'order_%s' % order_id
         filename = params.get('file_name')
         # zip_file_name = path.append_compress_extension(filename)
-        zip_ipath = path.join(order_path, filename, return_str=True)
+        zip_ipath = self.complete_path(order_path, filename)
+        # zip_ipath = path.join(order_path, filename, return_str=True)
 
         ###############
         # launch container
-        self.ingest_restricted_zip(imain, order_id, zip_ipath, ipath)
-
-        return self.force_response(params)
+        # self.ingest_restricted_zip(imain, order_id, zip_ipath, ipath)
+        task = CeleryExt.merge_restricted_order.apply_async(
+            args=[order_id, order_path, ipath, zip_ipath])
+        log.warning("Async job: %s", task.id)
+        return {'async': task.id}
