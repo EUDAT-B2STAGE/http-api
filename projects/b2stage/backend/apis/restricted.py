@@ -5,6 +5,7 @@ from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from utilities import htmlcodes as hcodes
+from utilities import path
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -82,8 +83,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
-            iout = icom.write_in_streaming(
-                destination=ipath, force=True, binary=True)
+            iout = icom.write_in_streaming(destination=ipath, force=True)
 
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
@@ -122,7 +122,11 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         if not imain.is_collection(order_path):
             obj = self.init_endpoint()
             # Create the path and set permissions
-            imain.create_collection_inheritable(order_path, obj.username)
+            # imain.create_collection_inheritable(order_path, obj.username)
+            # TO FIX: temporary added for debug purpose
+            log.critical("Assigned permissions to irodsmaster instead of %s",
+                         obj.username)
+            imain.create_collection_inheritable(order_path, "irodsmaster")
             log.warning("Created %s because it did not exist", order_path)
             log.info("Assigned permissions to %s", obj.username)
             # error = "Order '%s' not found or permissions denied" % order_id
@@ -208,20 +212,9 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.very_verbose(message)
 
         ###############
-        # define zip final path
-        from utilities import path
-        filename = 'order_%s' % order_id
-        # zip_file_name = path.append_compress_extension(filename)
-        zip_ipath = path.join(order_path, filename, return_str=True)
-
-        ###############
-        # launch container
-        self.ingest_restricted_zip(imain, order_id, zip_ipath, ipath)
-
-        ###############
         response = {
             'order_id': order_id,
-            'status': 'filled',
+            'status': 'uploaded',
         }
         return self.force_response(response)
 
@@ -231,4 +224,21 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         json_input = self.get_input()
         params = json_input.get('parameters', {})
+
+        imain = self.get_service_instance(service_name='irods')
+        order_path = self.get_order_path(imain, order_id)
+
+        zip_file = params.get('zip_file_name')
+        ipath = self.complete_path(order_path, zip_file)
+        ###############
+        # define zip final path
+        # filename = 'order_%s' % order_id
+        filename = params.get('file_name')
+        # zip_file_name = path.append_compress_extension(filename)
+        zip_ipath = path.join(order_path, filename, return_str=True)
+
+        ###############
+        # launch container
+        self.ingest_restricted_zip(imain, order_id, zip_ipath, ipath)
+
         return self.force_response(params)

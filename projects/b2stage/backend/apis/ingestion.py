@@ -113,8 +113,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.verbose("Cloud filename: %s", ipath)
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
-            iout = icom.write_in_streaming(
-                destination=ipath, force=True, binary=True)
+            iout = icom.write_in_streaming(destination=ipath, force=True)
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
             return self.send_errors(
