@@ -594,7 +594,7 @@ def merge_restricted_order(self, order_id, order_path,
             log.info("Reading local zipfile")
             zip_ref = None
             try:
-                zip_ref = zipfile.ZipFile(local_finalzip_path, 'r')
+                zip_ref = zipfile.ZipFile(local_finalzip_path, 'a')
             except FileNotFoundError:
                 error = '%s does not exist' % local_finalzip_path
                 log.error(error)
