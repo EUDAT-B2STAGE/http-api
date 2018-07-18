@@ -451,15 +451,11 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
             })
             return 'Failed'
 
+        # 2 - copy partial_zip in local-dir
         local_dir = path.join(myorderspath, order_id)
         path.create(local_dir, directory=True, force=True)
-
-        local_dir = path.join(local_dir, get_random_name())
-        path.create(local_dir, directory=True, force=True)
-
         log.info("Local dir = %s", local_dir)
 
-        # 2 - copy partial_zip in local-dir
         local_zip_path = path.join(
             local_dir, os.path.basename(partial_zip))
         imain.open(partial_zip, local_zip_path)
@@ -471,12 +467,31 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         log.warning("File size not verified [and not received as input]")
 
         # 5 - decompress
-        zip_ref = zipfile.ZipFile(local_zip_path, 'r')
-        zip_ref.extractall(local_dir)
+        local_unzipdir = path.join(local_dir, get_random_name())
+        path.create(local_dir, directory=True, force=True)
+        log.info("Local unzip dir = %s", local_unzipdir)
+
+        log.info("Unzipping %s", partial_zip)
+        try:
+            zip_ref = zipfile.ZipFile(local_zip_path, 'r')
+        except FileNotFoundError:
+            self.update_state(state="FAILED", meta={
+                'errors': ['%s does not exist' % partial_zip]
+            })
+            return 'Failed'
+        except zipfile.BadZipFile:
+            self.update_state(state="FAILED", meta={
+                'errors': ['%s invalid zip file' % partial_zip]
+            })
+            return 'Failed'
+        zip_ref.extractall(local_unzipdir)
         zip_ref.close()
 
         # 6 - verify num files?
-        log.warning("Num files verified [and not received as input]")
+        log.warning("Num files not verified [and not received as input]")
+
+        for f in os.listdir(local_unzipdir):
+            log.info(f)
 
         # 7 - check if final_zip exists
         # 8 - if not, simply copy partial_zip -> final_zip
