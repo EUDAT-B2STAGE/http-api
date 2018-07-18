@@ -210,12 +210,11 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         # A backdoor used for inner tests:
         if obj.username == 'stresstest' and imain.exists(ipath):
-            log.warning("I'm a backdoor")
+            log.warning("User stresstest backdoor enabled")
+            label = "%s_124.zip" % obj.username
+            ipath = self.complete_path(order_path, label)
 
         if imain.exists(ipath):
-            # A backdoor used for inner tests:
-            if obj.username == 'stresstest':
-                log.warning("I'm a backdoor")
 
             return self.send_errors(
                 "%s already exist" % ipath,
