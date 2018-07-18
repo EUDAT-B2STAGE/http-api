@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import zipfile
 from socket import gethostname
 from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
@@ -462,17 +463,27 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         local_zip_path = path.join(
             local_dir, os.path.basename(partial_zip))
         imain.open(partial_zip, local_zip_path)
+
         # 3 - verify checksum?
+        log.warning("Checksum not verified [and not received as input]")
+
         # 4 - verify size?
+        log.warning("File size not verified [and not received as input]")
+
         # 5 - decompress
+        zip_ref = zipfile.ZipFile(local_zip_path, 'r')
+        zip_ref.extractall(local_dir)
+        zip_ref.close()
+
         # 6 - verify num files?
+        log.warning("Num files verified [and not received as input]")
+
         # 7 - check if final_zip exists
         # 8 - if not, simply copy partial_zip -> final_zip
         # 9 - if already exists merge zips
         # 0 - avoid concurrent execution, introduce a cache like:
         # http://loose-bits.com/2010/10/distributed-task-locking-in-celery.html
         # https://pypi.org/project/celery_once/
-
 
 
 @celery_app.task(bind=True)
