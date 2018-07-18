@@ -436,7 +436,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 @celery_app.task(bind=True)
 def merge_restricted_order(self, order_id, order_path,
                            partial_zip, final_zip,
-                           file_size, file_checksum, data_file_count):
+                           file_size, file_checksum, file_count):
 
     with celery_app.app.app_context():
 
@@ -445,14 +445,26 @@ def merge_restricted_order(self, order_id, order_path,
         log.info("partial_zip = %s", partial_zip)
         log.info("final_zip = %s", final_zip)
 
+        try:
+            file_size = int(file_size)
+        except BaseException:
+            error = 'wrong file size input, expected an integer received %s' %\
+                    file_size
+            log.error(error)
+            self.update_state(state="FAILED", meta={
+                'errors': [error]
+            })
+            return 'Failed'
         self.update_state(state="PROGRESS")
 
         imain = celery_app.get_service(service='irods')
 
         # 1 - check if partial_zip exists
         if not imain.exists(partial_zip):
+            error = '%s does not exist' % partial_zip
+            log.error(error)
             self.update_state(state="FAILED", meta={
-                'errors': ['%s does not exist' % partial_zip]
+                'errors': [error]
             })
             return 'Failed'
 
@@ -471,7 +483,17 @@ def merge_restricted_order(self, order_id, order_path,
 
         # 4 - verify size?
         log.warning("File size not verified")
-        log.info(file_size)
+        local_file_size = os.path.getsize(local_zip_path)
+        if local_file_size == file_size:
+            log.info("File size verified")
+        else:
+            error = '%s wrong file size, expected %s, found %s' % \
+                    (partial_zip, file_size, local_file_size)
+            log.error(error)
+            self.update_state(state="FAILED", meta={
+                'errors': [error]
+            })
+            return 'Failed'
 
         # 5 - decompress
         local_unzipdir = path.join(local_dir, get_random_name())
@@ -482,27 +504,39 @@ def merge_restricted_order(self, order_id, order_path,
         try:
             zip_ref = zipfile.ZipFile(local_zip_path, 'r')
         except FileNotFoundError:
+            error = '%s does not exist' % partial_zip
+            log.error(error)
             self.update_state(state="FAILED", meta={
-                'errors': ['%s does not exist' % partial_zip]
+                'errors': [error]
             })
             return 'Failed'
         except zipfile.BadZipFile:
+            error = '%s invalid zip file' % partial_zip
+            log.error(error)
             self.update_state(state="FAILED", meta={
-                'errors': ['%s invalid zip file' % partial_zip]
+                'errors': [error]
             })
             return 'Failed'
         zip_ref.extractall(local_unzipdir)
         zip_ref.close()
 
         # 6 - verify num files?
-        log.warning("Num files not verified")
-        log.info(data_file_count)
-
-        file_count = 0
+        local_file_count = 0
         for f in os.listdir(local_unzipdir):
             # log.info(f)
-            file_count += 1
-        log.info("Unzipped %d files from %s", file_count, partial_zip)
+            local_file_count += 1
+        log.info("Unzipped %d files from %s", local_file_count, partial_zip)
+
+        if local_file_count == file_count:
+            log.info("File count verified")
+        else:
+            error = '%s wrong file count, expected %s, found %s' %\
+                    (partial_zip, file_count, local_file_count)
+            log.error(error)
+            self.update_state(state="FAILED", meta={
+                'errors': [error]
+            })
+            return 'Failed'
 
         # 7 - check if final_zip exists
         if not imain.exists(final_zip):
@@ -511,6 +545,7 @@ def merge_restricted_order(self, order_id, order_path,
             try:
                 imain.icopy(partial_zip, final_zip)
             except IrodsException as e:
+                log.error(str(e))
                 self.update_state(state="FAILED", meta={
                     'errors': [str(e)]
                 })
