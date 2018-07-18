@@ -294,39 +294,46 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
 
-        ##################
-        # verify if the path exists
-        filename = 'order_%s_unrestricted' % order_id
-        zip_file_name = path.append_compress_extension(filename)
-        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
-        log.debug("Zip irods path: %s", zip_ipath)
-        if not imain.is_dataobject(zip_ipath):
+        filenames = [
+            'order_%s_unrestricted' % order_id,
+            'order_%s_restricted' % order_id
+        ]
+        found = 0
+        response = {}
+        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
+        from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
+
+        for filename in filenames:
+            zip_file_name = path.append_compress_extension(filename)
+            zip_ipath = path.join(order_path, zip_file_name, return_str=True)
+            log.debug("Zip irods path: %s", zip_ipath)
+
+            if not imain.is_dataobject(zip_ipath):
+                continue
+
+            code = self.no_slash_ticket(imain, zip_ipath)
+
+            route = '%s%s/%s/%s/download/%s' % (
+                CURRENT_HTTPAPI_SERVER, API_URL,
+                ORDERS_ENDPOINT, order_id, code
+            )
+
+            ##################
+            # Set the url as Metadata in the irods file
+            imain.set_metadata(zip_ipath, download=route)
+
+            ##################
+            # response = {
+            #     'GET': route,
+            #     'code': code,
+            # }
+
+            response[filename] = route
+
+        if found == 0:
             error = "Order '%s' not found (or no permissions)" % order_id
             return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
-        code = self.no_slash_ticket(imain, zip_ipath)
-
-        ##################
-        # build URL
-        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
-        from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
-        # GET /api/orders/?code=xxx
-        # route = '%s%s/%s/%s?code=%s' % (
-        route = '%s%s/%s/%s/download/%s' % (
-            CURRENT_HTTPAPI_SERVER, API_URL,
-            ORDERS_ENDPOINT, order_id, code
-        )
-        # print("TEST", route)
-
-        ##################
-        # Set the url as Metadata in the irods file
-        imain.set_metadata(zip_ipath, download=route)
-
-        ##################
-        response = {
-            'GET': route,
-            'code': code,
-        }
         # response = 'Work in progress'
         msg = prepare_message(self, log_string='end', status='enabled')
         log_into_queue(self, msg)
