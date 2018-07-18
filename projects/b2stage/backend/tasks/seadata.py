@@ -449,7 +449,16 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
             })
             return 'Failed'
 
+        local_dir = path.join(myorderspath, order_id)
+        path.create(local_dir, directory=True, force=True)
+
+        local_dir = path.join(local_dir, get_random_name())
+        path.create(local_dir, directory=True, force=True)
+
+        log.info("Local dir = %s", local_dir)
+
         # 2 - copy partial_zip in local-dir
+        imain.open(partial_zip, local_dir)
         # 3 - verify checksum?
         # 4 - verify size?
         # 5 - decompress
@@ -461,13 +470,6 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         # http://loose-bits.com/2010/10/distributed-task-locking-in-celery.html
         # https://pypi.org/project/celery_once/
 
-        local_dir = path.join(myorderspath, order_id)
-        path.create(local_dir, directory=True, force=True)
-
-        local_dir = path.join(local_dir, get_random_name())
-        path.create(local_dir, directory=True, force=True)
-
-        log.info("Local dir = %s", local_dir)
 
 
 @celery_app.task(bind=True)
