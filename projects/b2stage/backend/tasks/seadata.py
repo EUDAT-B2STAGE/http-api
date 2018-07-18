@@ -490,12 +490,20 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         # 6 - verify num files?
         log.warning("Num files not verified [and not received as input]")
 
+        file_count = 0
         for f in os.listdir(local_unzipdir):
             log.info(f)
+            file_count += 1
+        log.info("Unzipped %d files from %s", file_count, partial_zip)
 
         # 7 - check if final_zip exists
-        # 8 - if not, simply copy partial_zip -> final_zip
-        # 9 - if already exists merge zips
+        if not imain.exists(final_zip):
+            # 8 - if not, simply copy partial_zip -> final_zip
+            log.info("Final zip does not exist => just cp?")
+        else:
+            # 9 - if already exists merge zips
+            log.info("Already exists, merge zip files")
+
         # 0 - avoid concurrent execution, introduce a cache like:
         # http://loose-bits.com/2010/10/distributed-task-locking-in-celery.html
         # https://pypi.org/project/celery_once/
