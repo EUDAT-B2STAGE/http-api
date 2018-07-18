@@ -342,9 +342,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         # FIXME: REMOVE ME - BACK COMPATIBIITY CHECK
         if len(response) == 1:
-            r = next(iter(response))
+            k = next(iter(response))
             response = {
-                'GET': r,
+                'GET': response.get(k),
                 # WARNING PORCATA
                 # this should work since we have only 1 element
                 # so code should be the only verified file!
