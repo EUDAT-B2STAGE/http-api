@@ -613,7 +613,7 @@ def merge_restricted_order(self, order_id, order_path,
             log.info("Adding files to local zipfile")
             if zip_ref is not None:
                 for f in os.listdir(local_unzipdir):
-                    log.debug("Adding %s", f)
+                    # log.debug("Adding %s", f)
                     zip_ref.write(
                         os.path.join(local_unzipdir, f), f)
                 zip_ref.close()
@@ -622,7 +622,7 @@ def merge_restricted_order(self, order_id, order_path,
             imain.move(final_zip, final_zip + ".bak")
 
             log.info("Uploading final updated zip")
-            imain.open(local_finalzip_path, final_zip)
+            imain.put(local_finalzip_path, final_zip)
 
             self.update_state(state="MERGE_NOT_IMPLEMENTED")
             return "MERGE_NOT_IMPLEMENTED"
