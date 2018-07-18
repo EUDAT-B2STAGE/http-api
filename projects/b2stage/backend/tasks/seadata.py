@@ -435,6 +435,11 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
 
     with celery_app.app.app_context():
 
+        log.info("order_id = %s", order_id)
+        log.info("order_path = %s", order_path)
+        log.info("partial_zip = %s", partial_zip)
+        log.info("final_zip = %s", final_zip)
+
         imain = celery_app.get_service(service='irods')
 
         # 1 - check if partial_zip exists
@@ -456,15 +461,13 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         # http://loose-bits.com/2010/10/distributed-task-locking-in-celery.html
         # https://pypi.org/project/celery_once/
 
-        r = get_random_name()
-        local_dir = path.join(myorderspath, order_id, r)
+        local_dir = path.join(myorderspath, order_id)
+        path.create(local_dir, directory=True, force=True)
+
+        local_dir = path.join(local_dir, get_random_name())
         path.create(local_dir, directory=True, force=True)
 
         log.info("Local dir = %s", local_dir)
-        log.info("order_id = %s", order_id)
-        log.info("order_path = %s", order_path)
-        log.info("partial_zip = %s", partial_zip)
-        log.info("final_zip = %s", final_zip)
 
 
 @celery_app.task(bind=True)
