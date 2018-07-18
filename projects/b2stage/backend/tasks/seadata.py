@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import hashlib
 import zipfile
 from socket import gethostname
 from utilities import path
@@ -489,8 +490,21 @@ def merge_restricted_order(self, order_id, order_path,
         imain.open(partial_zip, local_zip_path)
 
         # 3 - verify checksum?
-        log.warning("Checksum not verified")
-        log.info(file_checksum)
+        log.info("Computing checksum...")
+        local_file_checksum = hashlib.md5(
+            open(local_zip_path, 'rb').read()
+        ).hexdigest()
+
+        if local_file_checksum == file_checksum:
+            log.info("File checksum verified")
+        else:
+            error = '%s wrong file checksum, expected %s, found %s' % \
+                    (partial_zip, file_checksum, local_file_checksum)
+            log.error(error)
+            self.update_state(state="FAILED", meta={
+                'errors': [error]
+            })
+            return 'Failed'
 
         # 4 - verify size?
         log.warning("File size not verified")
