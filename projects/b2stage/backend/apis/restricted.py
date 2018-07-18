@@ -247,11 +247,15 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         # zip file uploaded from partner
         zip_file = params.get('zip_file_name')
+        if not zip_file.endswith('.zip'):
+            zip_file += ".zip"
         partial_zip_path = self.complete_path(order_path, zip_file)
         ###############
         # define path of final zip
         # filename = 'order_%s' % order_id
         filename = params.get('file_name')
+        if not filename.endswith('.zip'):
+            filename += ".zip"
         # zip_file_name = path.append_compress_extension(filename)
         zip_ipath = self.complete_path(order_path, filename)
         # zip_ipath = path.join(order_path, filename, return_str=True)
