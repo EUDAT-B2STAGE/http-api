@@ -434,7 +434,9 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
 
 @celery_app.task(bind=True)
-def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
+def merge_restricted_order(self, order_id, order_path,
+                           partial_zip, final_zip,
+                           file_size, file_checksum, data_file_count):
 
     with celery_app.app.app_context():
 
@@ -442,6 +444,8 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         log.info("order_path = %s", order_path)
         log.info("partial_zip = %s", partial_zip)
         log.info("final_zip = %s", final_zip)
+
+        self.update_state(state="PROGRESS")
 
         imain = celery_app.get_service(service='irods')
 
@@ -462,10 +466,12 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         imain.open(partial_zip, local_zip_path)
 
         # 3 - verify checksum?
-        log.warning("Checksum not verified [and not received as input]")
+        log.warning("Checksum not verified")
+        log.info(file_checksum)
 
         # 4 - verify size?
-        log.warning("File size not verified [and not received as input]")
+        log.warning("File size not verified")
+        log.info(file_size)
 
         # 5 - decompress
         local_unzipdir = path.join(local_dir, get_random_name())
@@ -489,18 +495,19 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         zip_ref.close()
 
         # 6 - verify num files?
-        log.warning("Num files not verified [and not received as input]")
+        log.warning("Num files not verified")
+        log.info(data_file_count)
 
         file_count = 0
         for f in os.listdir(local_unzipdir):
-            log.info(f)
+            # log.info(f)
             file_count += 1
         log.info("Unzipped %d files from %s", file_count, partial_zip)
 
         # 7 - check if final_zip exists
         if not imain.exists(final_zip):
             # 8 - if not, simply copy partial_zip -> final_zip
-            log.info("Final zip does not exist, coping partial zip")
+            log.info("Final zip does not exist, copying partial zip")
             try:
                 imain.icopy(partial_zip, final_zip)
             except IrodsException as e:
@@ -508,18 +515,12 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
                     'errors': [str(e)]
                 })
                 return 'Failed'
-
-            try:
-                imain.icopy(partial_zip, final_zip)
-            except IrodsException as e:
-                self.update_state(state="FAILED", meta={
-                    'errors': [str(e)]
-                })
-                return 'Failed'
-
         else:
             # 9 - if already exists merge zips
             log.info("Already exists, merge zip files")
+
+        self.update_state(state="COMPLETED")
+        return "COMPLETED"
 
         # 0 - avoid concurrent execution, introduce a cache like:
         # http://loose-bits.com/2010/10/distributed-task-locking-in-celery.html
