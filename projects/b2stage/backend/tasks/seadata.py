@@ -3,6 +3,7 @@
 import os
 import hashlib
 import zipfile
+from shutil import rmtree, unpack_archive
 from socket import gethostname
 from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
@@ -12,7 +13,6 @@ from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from restapi.services.detect import detector
-from utilities.random import get_random_name
 
 from utilities.logs import get_logger, logging
 
@@ -83,7 +83,6 @@ def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
         if backdoor:
             log.warning('Backdoor! Unzipping: %s', local_element)
             if path.file_exists_and_nonzero(local_element):
-                from shutil import unpack_archive
                 unpack_archive(str(local_element), str(local_path), 'zip')
 
     return str(local_element)
@@ -520,11 +519,18 @@ def merge_restricted_order(self, order_id, order_path,
             return 'Failed'
 
         # 5 - decompress
-        local_unzipdir = path.join(local_dir, get_random_name())
+        d = os.path.splitext(os.path.basename(partial_zip))[0]
+        local_unzipdir = path.join(local_dir, d)
+
+        if os.path.isdir(local_unzipdir):
+            log.warning("%s already exist, removing it", local_unzipdir)
+            rmtree(local_unzipdir, ignore_errors=True)
+
         path.create(local_dir, directory=True, force=True)
         log.info("Local unzip dir = %s", local_unzipdir)
 
         log.info("Unzipping %s", partial_zip)
+        zip_ref = None
         try:
             zip_ref = zipfile.ZipFile(local_zip_path, 'r')
         except FileNotFoundError:
@@ -541,8 +547,10 @@ def merge_restricted_order(self, order_id, order_path,
                 'errors': [error]
             })
             return 'Failed'
-        zip_ref.extractall(local_unzipdir)
-        zip_ref.close()
+
+        if zip_ref is not None:
+            zip_ref.extractall(local_unzipdir)
+            zip_ref.close()
 
         # 6 - verify num files?
         local_file_count = 0
@@ -577,6 +585,35 @@ def merge_restricted_order(self, order_id, order_path,
         else:
             # 9 - if already exists merge zips
             log.info("Already exists, merge zip files")
+
+            log.info("Copying zipfile locally")
+            local_finalzip_path = path.join(
+                local_dir, os.path.basename(final_zip))
+            imain.open(final_zip, local_finalzip_path)
+
+            log.info("Reading local zipfile")
+            zip_ref = None
+            try:
+                zip_ref = zipfile.ZipFile(local_finalzip_path, 'r')
+            except FileNotFoundError:
+                error = '%s does not exist' % local_finalzip_path
+                log.error(error)
+                self.update_state(state="FAILED", meta={
+                    'errors': [error]
+                })
+                return 'Failed'
+            except zipfile.BadZipFile:
+                error = '%s invalid zip file' % local_finalzip_path
+                log.error(error)
+                self.update_state(state="FAILED", meta={
+                    'errors': [error]
+                })
+                return 'Failed'
+
+            log.info("Adding files to local zipfile")
+            if zip_ref is not None:
+                zip_ref.close()
+
             self.update_state(state="MERGE_NOT_IMPLEMENTED")
             return "MERGE_NOT_IMPLEMENTED"
 
