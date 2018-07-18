@@ -5,6 +5,7 @@ import zipfile
 from socket import gethostname
 from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
+from restapi.flask_ext.flask_irods.client import IrodsException
 from b2stage.apis.commons.queue import prepare_message
 from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
@@ -499,7 +500,23 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         # 7 - check if final_zip exists
         if not imain.exists(final_zip):
             # 8 - if not, simply copy partial_zip -> final_zip
-            log.info("Final zip does not exist => just cp?")
+            log.info("Final zip does not exist, coping partial zip")
+            try:
+                imain.icopy(partial_zip, final_zip)
+            except IrodsException as e:
+                self.update_state(state="FAILED", meta={
+                    'errors': [str(e)]
+                })
+                return 'Failed'
+
+            try:
+                imain.icopy(partial_zip, final_zip)
+            except IrodsException as e:
+                self.update_state(state="FAILED", meta={
+                    'errors': [str(e)]
+                })
+                return 'Failed'
+
         else:
             # 9 - if already exists merge zips
             log.info("Already exists, merge zip files")
