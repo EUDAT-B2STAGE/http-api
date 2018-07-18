@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 from socket import gethostname
 from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
@@ -458,7 +459,9 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
         log.info("Local dir = %s", local_dir)
 
         # 2 - copy partial_zip in local-dir
-        imain.open(partial_zip, local_dir)
+        local_zip_path = path.join(
+            local_dir, os.path.basename(partial_zip))
+        imain.open(partial_zip, local_zip_path)
         # 3 - verify checksum?
         # 4 - verify size?
         # 5 - decompress
