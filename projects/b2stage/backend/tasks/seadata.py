@@ -8,6 +8,7 @@ from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from restapi.services.detect import detector
+from utilities.random import get_random_name
 
 from utilities.logs import get_logger, logging
 
@@ -434,6 +435,32 @@ def merge_restricted_order(self, order_id, order_path, partial_zip, final_zip):
 
     with celery_app.app.app_context():
 
+        imain = celery_app.get_service(service='irods')
+
+        # 1 - check if partial_zip exists
+        if not imain.exists(partial_zip):
+            self.update_state(state="FAILED", meta={
+                'errors': ['%s does not exist' % partial_zip]
+            })
+            return 'Failed'
+
+        # 2 - copy partial_zip in local-dir
+        # 3 - verify checksum?
+        # 4 - verify size?
+        # 5 - decompress
+        # 6 - verify num files?
+        # 7 - check if final_zip exists
+        # 8 - if not, simply copy partial_zip -> final_zip
+        # 9 - if already exists merge zips
+        # 0 - avoid concurrent execution, introduce a cache like:
+        # http://loose-bits.com/2010/10/distributed-task-locking-in-celery.html
+        # https://pypi.org/project/celery_once/
+
+        r = get_random_name()
+        local_dir = path.join(myorderspath, order_id, r)
+        path.create(local_dir, directory=True, force=True)
+
+        log.info("Local dir = %s", local_dir)
         log.info("order_id = %s", order_id)
         log.info("order_path = %s", order_path)
         log.info("partial_zip = %s", partial_zip)

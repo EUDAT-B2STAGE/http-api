@@ -233,7 +233,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         # zip file uploaded from partner
         zip_file = params.get('zip_file_name')
-        ipath = self.complete_path(order_path, zip_file)
+        partial_zip_path = self.complete_path(order_path, zip_file)
         ###############
         # define path of final zip
         # filename = 'order_%s' % order_id
@@ -244,8 +244,9 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ###############
         # launch container
-        # self.ingest_restricted_zip(imain, order_id, zip_ipath, ipath)
+        # self.ingest_restricted_zip(
+        #     imain, order_id, zip_ipath, partial_zip_path)
         task = CeleryExt.merge_restricted_order.apply_async(
-            args=[order_id, order_path, ipath, zip_ipath])
+            args=[order_id, order_path, partial_zip_path, zip_ipath])
         log.warning("Async job: %s", task.id)
         return {'async': task.id}
