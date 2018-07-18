@@ -207,6 +207,21 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # irods copy
         label = "%s_123.zip" % obj.username
         ipath = self.complete_path(order_path, label)
+
+        # A backdoor used for inner tests:
+        if obj.username == 'stresstest' and imain.exists(ipath):
+            log.warning("I'm a backdoor")
+
+        if imain.exists(ipath):
+            # A backdoor used for inner tests:
+            if obj.username == 'stresstest':
+                log.warning("I'm a backdoor")
+
+            return self.send_errors(
+                "%s already exist" % ipath,
+                code=hcodes.HTTP_BAD_CONFLICT
+            )
+
         uploaded, message = self.stream_to_irods(imain, ipath)
 
         if not uploaded:

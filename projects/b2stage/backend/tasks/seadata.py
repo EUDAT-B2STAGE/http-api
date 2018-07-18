@@ -507,7 +507,6 @@ def merge_restricted_order(self, order_id, order_path,
             return 'Failed'
 
         # 4 - verify size?
-        log.warning("File size not verified")
         local_file_size = os.path.getsize(local_zip_path)
         if local_file_size == file_size:
             log.info("File size verified")
@@ -578,6 +577,8 @@ def merge_restricted_order(self, order_id, order_path,
         else:
             # 9 - if already exists merge zips
             log.info("Already exists, merge zip files")
+            self.update_state(state="MERGE_NOT_IMPLEMENTED")
+            return "MERGE_NOT_IMPLEMENTED"
 
         self.update_state(state="COMPLETED")
         return "COMPLETED"
