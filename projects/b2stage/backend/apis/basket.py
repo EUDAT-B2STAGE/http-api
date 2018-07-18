@@ -311,6 +311,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             if not imain.is_dataobject(zip_ipath):
                 continue
 
+            found += 1
+
             code = self.no_slash_ticket(imain, zip_ipath)
 
             route = '%s%s/%s/%s/download/%s' % (
