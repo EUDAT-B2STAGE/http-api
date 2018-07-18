@@ -448,13 +448,24 @@ def merge_restricted_order(self, order_id, order_path,
         try:
             file_size = int(file_size)
         except BaseException:
-            error = 'wrong file size input, expected an integer received %s' %\
+            error = 'wrong file size, expected an integer but received %s' %\
                     file_size
             log.error(error)
             self.update_state(state="FAILED", meta={
                 'errors': [error]
             })
             return 'Failed'
+        try:
+            file_count = int(file_count)
+        except BaseException:
+            error = 'wrong file count, expected an integer but received %s' %\
+                    file_count
+            log.error(error)
+            self.update_state(state="FAILED", meta={
+                'errors': [error]
+            })
+            return 'Failed'
+
         self.update_state(state="PROGRESS")
 
         imain = celery_app.get_service(service='irods')
