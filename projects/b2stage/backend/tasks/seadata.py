@@ -618,6 +618,12 @@ def merge_restricted_order(self, order_id, order_path,
                         os.path.join(local_unzipdir, f), f)
                 zip_ref.close()
 
+            log.info("Creating a backup copy of final zip")
+            imain.move(final_zip, final_zip + ".bak")
+
+            log.info("Uploading final updated zip")
+            imain.open(local_finalzip_path, final_zip)
+
             self.update_state(state="MERGE_NOT_IMPLEMENTED")
             return "MERGE_NOT_IMPLEMENTED"
 
