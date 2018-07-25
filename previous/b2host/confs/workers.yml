@@ -11,11 +11,11 @@ services:
       # DEBUG_LEVEL: DEBUG
       DEBUG_LEVEL: VERY_VERBOSE
 
-      CELERY_ENABLE: 1
-      CELERY_EXTERNAL: 0
-      CELERY_BROKER: ${CELERY_BROKER}
-      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
-      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+      # CELERY_ENABLE: 1
+      # CELERY_EXTERNAL: 0
+      # CELERY_BROKER: ${CELERY_BROKER}
+      # CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
+      # CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
     volumes:
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
       - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
@@ -27,11 +27,11 @@ services:
     # command: sleep infinity
     environment:
       ACTIVATE: 1
-      CELERY_ENABLE: 1
-      CELERY_EXTERNAL: 0
-      CELERY_BROKER: ${CELERY_BROKER}
-      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
-      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+      # CELERY_ENABLE: 1
+      # CELERY_EXTERNAL: 0
+      # CELERY_BROKER: ${CELERY_BROKER}
+      # CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
+      # CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
     volumes:
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
       - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
