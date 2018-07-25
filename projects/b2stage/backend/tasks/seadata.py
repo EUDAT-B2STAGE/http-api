@@ -624,9 +624,6 @@ def merge_restricted_order(self, order_id, order_path,
             log.info("Uploading final updated zip")
             imain.put(local_finalzip_path, final_zip)
 
-            self.update_state(state="MERGE_NOT_IMPLEMENTED")
-            return "MERGE_NOT_IMPLEMENTED"
-
         self.update_state(state="COMPLETED")
         return "COMPLETED"
 
