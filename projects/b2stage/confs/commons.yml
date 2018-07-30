@@ -164,3 +164,7 @@ services:
   proxy:
     environment:
       SMTP_ADMIN: ${SMTP_ADMIN}
+
+  sqlalchemyui:
+    ports:
+      - 8080:8080
