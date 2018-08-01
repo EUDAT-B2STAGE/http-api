@@ -57,16 +57,31 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # verify if the path exists
-        filename = 'order_%s_unrestricted' % order_id
-        zip_file_name = path.append_compress_extension(filename)
-        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
-        log.debug("Zip irods path: %s", zip_ipath)
+        filenames = [
+            'order_%s_unrestricted' % order_id,
+            'order_%s_restricted' % order_id
+        ]
 
-        ##################
-        error = None
-        if not imain.is_dataobject(zip_ipath):
-            error = "Order '%s' not found (or no permissions)" % order_id
-        else:
+        for filename in filenames:
+            # filename = 'order_%s_unrestricted' % order_id
+            zip_file_name = path.append_compress_extension(filename)
+            zip_ipath = path.join(order_path, zip_file_name, return_str=True)
+
+            log.debug("Checking zip irods path: %s", zip_ipath)
+            if not imain.is_dataobject(zip_ipath):
+                log.debug("file not found, skipping %s", zip_ipath)
+                continue
+
+            # TOFIX: we should we a database or cache to save this,
+            # not irods metadata (known for low performances)
+            metadata, _ = imain.get_metadata(zip_ipath)
+            iticket_code = metadata.get('iticket_code')
+
+            if iticket_code != code:
+                log.debug(
+                    "iticket code does not match, skipping %s", zip_ipath)
+                continue
+
             # NOTE: very important!
             # use anonymous to get the session here
             # because the ticket supply breaks the iuser session permissions
@@ -76,33 +91,39 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # icom = obj.icommands
             icom.ticket_supply(code)
 
-            # code += 'error'
             if not icom.test_ticket(zip_ipath):
-                error = "Invalid code"
 
-        if error is not None:
-            return self.send_errors(
-                {order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
-        else:
+                return self.send_errors(
+                    {order_id: "Invalid code"},
+                    code=hcodes.HTTP_BAD_NOTFOUND
+                )
+
             # # TODO: push pdonorio/prc
             # tickets = imain.list_tickets()
             # print(tickets)
 
-            pass
             # iticket mod "$TICKET" add user anonymous
             # iticket mod "$TICKET" uses 1
             # iticket mod "$TICKET" expire "2018-03-23.06:50:00"
 
-        # ##################
-        # response = {order_id: 'valid'}
-        # return self.force_response(response)
-        headers = {
-            'Content-Transfer-Encoding': 'binary',
-            'Content-Disposition': "attachment; filename=%s.zip" % order_id,
-        }
-        msg = prepare_message(self, json=json, log_string='end', status='sent')
-        log_into_queue(self, msg)
-        return icom.stream_ticket(zip_ipath, headers=headers)
+            # ##################
+            # response = {order_id: 'valid'}
+            # return self.force_response(response)
+            headers = {
+                'Content-Transfer-Encoding': 'binary',
+                'Content-Disposition': "attachment; filename=%s" %
+                zip_file_name,
+            }
+            msg = prepare_message(
+                self, json=json, log_string='end', status='sent')
+            log_into_queue(self, msg)
+            return icom.stream_ticket(zip_ipath, headers=headers)
+
+        error = "Order '%s' not found (or no permissions)" % order_id
+        return self.send_errors(
+            {order_id: error},
+            code=hcodes.HTTP_BAD_NOTFOUND
+        )
 
 
 class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
@@ -323,6 +344,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             ##################
             # Set the url as Metadata in the irods file
             imain.set_metadata(zip_ipath, download=route)
+
+            # TOFIX: we should we a database or cache to save this,
+            # not irods metadata (known for low performances)
+            imain.set_metadata(zip_ipath, iticket_code=code)
 
             ##################
             # response = {

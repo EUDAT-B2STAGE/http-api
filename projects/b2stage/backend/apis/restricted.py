@@ -155,7 +155,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         return {'enabled': restricted}
 
-    def put(self, order_id):
+    def put(self, order_id, file_id):
         """
         - Set the metadata of the folder to know that this is restricted
         - Set also the list of authorized data centers
@@ -205,14 +205,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ###############
         # irods copy
-        label = "%s_123.zip" % obj.username
+        label = path.append_compress_extension(file_id)
         ipath = self.complete_path(order_path, label)
-
-        # A backdoor used for inner tests:
-        if obj.username == 'stresstest' and imain.exists(ipath):
-            log.warning("User stresstest backdoor enabled")
-            label = "%s_124.zip" % obj.username
-            ipath = self.complete_path(order_path, label)
 
         if imain.exists(ipath):
 
@@ -247,6 +241,11 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         # zip file uploaded from partner
         zip_file = params.get('zip_file_name')
+        if zip_file is None:
+            return self.send_errors(
+                "Invalid partner zip path",
+                code=hcodes.HTTP_BAD_REQUEST
+            )
         if not zip_file.endswith('.zip'):
             zip_file = path.append_compress_extension(zip_file)
         partial_zip_path = self.complete_path(order_path, zip_file)
@@ -254,6 +253,11 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # define path of final zip
         # filename = 'order_%s' % order_id
         filename = params.get('file_name')
+        if filename is None:
+            return self.send_errors(
+                "Invalid restricted zip path",
+                code=hcodes.HTTP_BAD_REQUEST
+            )
         if not filename.endswith('.zip'):
             filename = path.append_compress_extension(filename)
         zip_ipath = self.complete_path(order_path, filename)
