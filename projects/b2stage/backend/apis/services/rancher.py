@@ -23,7 +23,7 @@ class Rancher(object):
 
     def __init__(self,
                  key, secret, url, project,
-                 hub, hubuser, hubpass, localpath):
+                 hub, hubuser, hubpass, localpath, qclabel):
 
         ####################
         # SET URL
@@ -34,6 +34,7 @@ class Rancher(object):
         self._hub_uri = hub
         self._hub_credentials = (hubuser, hubpass)
         self._localpath = localpath
+        self._qclabel = qclabel
 
         ####################
         self.connect(key, secret)
@@ -210,15 +211,14 @@ class Rancher(object):
         else:
             return catalog.get('repositories', {})
 
-    @staticmethod
-    def internal_labels(pull=True):
+    def internal_labels(self, pull=True):
         """
         Define Rancher docker labels
         """
         # to launch containers only on selected host(s)
         host_label = "io.rancher.scheduler.affinity:host_label"
         label_key = 'host_type'
-        label_value = 'qc'
+        label_value = self._qclabel
 
         obj = {
             host_label: "%s=%s" % (label_key, label_value),
