@@ -79,9 +79,23 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ########################
         # Check if the folder exists and is empty
         if not icom.is_collection(batch_path):
-            return self.send_errors(
-                "Batch '%s' not enabled or you have no permissions"
-                % batch_id,
+
+            err_msg = ("Batch '%s' not enabled or you have no permissions"
+                % batch_id)
+            
+            # Log error into RabbitMQ
+            log_msg = prepare_message(self,
+                user = ingestion_user,
+                log_string = 'failure',
+                info = dict(
+                    batch_id = batch_id,
+                    file_id = file_id,
+                    error = err_msg
+                )
+            )
+            log_into_queue(self, log_msg)
+
+            return self.send_errors(err_msg,
                 code=hcodes.HTTP_BAD_REQUEST)
 
         ########################
