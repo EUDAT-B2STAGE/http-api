@@ -107,6 +107,15 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         if backdoor and icom.is_dataobject(ipath):
             response['status'] = 'exists'
+
+            # Log end (of upload) into RabbitMQ
+            # In case it already existed!
+            log_msg = prepare_message(self,
+                user = ingestion_user,
+                log_string = 'end', # TODO True?
+                status = response['status']
+            )
+            log_into_queue(self, log_msg)
             return response
 
         ########################
