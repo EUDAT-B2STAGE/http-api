@@ -100,7 +100,10 @@ def log_into_queue(instance, dictionary_message):
 
     current_exchange = QUEUE_VARS.get('exchange')
     routing_key = QUEUE_VARS.get('queue')
-    app_name = routing_key
+    app_name = QUEUE_VARS.get('app_name')
+
+    if app_name is None:
+        app_name = routing_key
 
     try:
 
