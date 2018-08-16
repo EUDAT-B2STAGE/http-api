@@ -59,7 +59,7 @@ def prepare_message(instance, user=None, isjson=False, **params):
     logmsg['datetime'] = datetime.now().strftime("%Y%m%dT%H:%M:%S")
 
     if isjson:
-        return logmsg
+        return logmsg # TODO Why this? Why does isjson exist at all?
 
     from restapi.services.authentication import BaseAuthentication as Service
     ip, _ = Service.get_host_info()
@@ -72,7 +72,7 @@ def prepare_message(instance, user=None, isjson=False, **params):
     endpoint = re.sub(r"https?://[^\/]+", '', request.url)
     logmsg['program'] = request.method + ':' + endpoint
     if user is None:
-        user = 'import_manager'
+        user = 'import_manager' # TODO: True? Not sure!
     logmsg['user'] = user
 
     # log.pp(logmsg)
