@@ -99,11 +99,8 @@ def log_into_queue(instance, dictionary_message):
     """ RabbitMQ in the EUDAT infrastructure """
 
     current_exchange = QUEUE_VARS.get('exchange')
-    current_queue = QUEUE_VARS.get('queue')
-    # FIXME: as variables
-    # app_name = 'requestlogs'
-    # app_name = 'maris_elk_test'
-    app_name = current_queue
+    routing_key = QUEUE_VARS.get('queue')
+    app_name = routing_key
 
     try:
 
@@ -113,14 +110,14 @@ def log_into_queue(instance, dictionary_message):
 
         msg_queue = instance.get_service_instance(QUEUE_SERVICE)
         log.verbose('Retrieved instance of log-queue service "%s"', QUEUE_SERVICE)
-        msg_queue.log_json_to_queue(dictionary_message, app_name, current_exchange, current_queue)
+        msg_queue.log_json_to_queue(dictionary_message, app_name, current_exchange, routing_key)
 
 
     except BaseException as e:
         log.error("Failed to log:\n%s(%s)", e.__class__.__name__, e)
     else:
         log.verbose('Log message passed to log-queue service.')
-        # log.verbose("%s: sent msg '%s'", current_queue, dictionary_message)
+        # log.verbose("%s: sent msg '%s'", routing_key, dictionary_message)
 
         # NOTE: bad! all connections would result in closed
         # # close resource
