@@ -61,11 +61,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         Let the Replication Manager upload a zip file into a batch folder
         """
 
-        ##################
-        msg = prepare_message(
+        # Log start (of upload) into RabbitMQ
+        log_msg = prepare_message(
             self, json={'batch_id': batch_id, 'file_id': file_id},
             user=ingestion_user, log_string='start')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
 
         ########################
         # get irods session
@@ -181,11 +181,12 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         response['errors'] = errors
         # response = "Batch '%s' filled" % batch_id
 
-        #############################
-        msg = prepare_message(
+        # Log end (of upload) into RabbitMQ
+        log_msg = prepare_message(
             self, status=response['status'],
             user=ingestion_user, log_string='end')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
+
 
         return self.force_response(response)
 
@@ -202,11 +203,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 "Mandatory parameter '%s' missing" % param_name,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        ##################
-        msg = prepare_message(
+        # Log start (of enable) into RabbitMQ
+        log_msg = prepare_message(
             self, json={'batch_id': batch_id},
             user=ingestion_user, log_string='start')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
 
         ##################
         # Get irods session
@@ -240,8 +241,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             response = "Batch '%s' already exists" % batch_id
             status = 'exists'
 
-        ##################
-        msg = prepare_message(
+        # Log end (of enable) into RabbitMQ
+        log_msg = prepare_message(
             self, status=status, user=ingestion_user, log_string='end')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
+
         return self.force_response(response)
