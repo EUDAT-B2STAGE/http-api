@@ -61,6 +61,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         Let the Replication Manager upload a zip file into a batch folder
         """
 
+        log.info('Received request to upload batch "%s"' % batch_id)
+
         # Log start (of upload) into RabbitMQ
         log_msg = prepare_message(
             self, json={'batch_id': batch_id, 'file_id': file_id},
@@ -221,10 +223,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         param_name = 'batch_id'
         self.get_input()
         batch_id = self._args.get(param_name, None)
+
         if batch_id is None:
             return self.send_errors(
                 "Mandatory parameter '%s' missing" % param_name,
                 code=hcodes.HTTP_BAD_REQUEST)
+
+        log.info('Received request to enable batch "%s"' % batch_id)
 
         # Log start (of enable) into RabbitMQ
         log_msg = prepare_message(
