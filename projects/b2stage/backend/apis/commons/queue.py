@@ -98,10 +98,6 @@ It needs the following info from config:
 def log_into_queue(instance, dictionary_message):
     """ RabbitMQ in the EUDAT infrastructure """
 
-    from restapi.confs import PRODUCTION
-    if not PRODUCTION:
-        return False
-
     current_exchange = QUEUE_VARS.get('exchange')
     current_queue = QUEUE_VARS.get('queue')
     # FIXME: as variables
