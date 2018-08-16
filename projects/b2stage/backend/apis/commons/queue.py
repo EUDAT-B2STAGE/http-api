@@ -78,7 +78,23 @@ def prepare_message(instance, user=None, isjson=False, **params):
     # log.pp(logmsg)
     return logmsg
 
+'''
+Send a log message into the logging queue, so that it
+ends up in ElasticSearch.
 
+It needs the following info from config:
+
+* RABBIT_EXCHANGE (where the message is sent to to be
+    distributed to a queue).
+* RABBIT_QUEUE (will be used as routing key to route the
+    message to the correct queue).
+* RABBIT_APP_NAME (will determine the name of the
+    ElasticSearch index where the message will be stored.
+    If not provided, the value of RABBIT_QUEUE will be used).
+
+:param instance: Instance of the Logging service from rapydo.
+:param dictionary_message: The message to be logged (as JSON).
+'''
 def log_into_queue(instance, dictionary_message):
     """ RabbitMQ in the EUDAT infrastructure """
 
@@ -104,10 +120,11 @@ def log_into_queue(instance, dictionary_message):
     app_name = current_queue
 
     try:
-        ###########
-        # connect
-        # FIXME: error seem to be raised if we don't refresh connection?
+
+        # Error seem to be raised if we don't refresh connection?
         # https://github.com/pika/pika/issues/397#issuecomment-35322410
+        # --> Has to be handled in rapydo/http-api, where connection is defined!
+
         msg_queue = instance.get_service_instance(QUEUE_SERVICE)
         log.verbose('Retrieved instance of log-queue service "%s"', QUEUE_SERVICE)
         msg_queue.log_json_to_queue(dictionary_message, app_name, current_exchange, current_queue)
