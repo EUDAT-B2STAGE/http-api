@@ -98,12 +98,16 @@ It needs the following info from config:
 def log_into_queue(instance, dictionary_message):
     """ RabbitMQ in the EUDAT infrastructure """
 
+    log.verbose('LOG MESSAGE to be passed to log-queue: %s ' % dictionary_message)
+
     current_exchange = QUEUE_VARS.get('exchange')
     routing_key = QUEUE_VARS.get('queue')
     app_name = QUEUE_VARS.get('app_name')
 
     if app_name is None:
         app_name = routing_key
+
+    log.debug('Log-queue service: exchange "%s", routing key "%s", app name "%s"' % (current_exchange, routing_key, app_name))
 
     try:
 
@@ -125,6 +129,7 @@ def log_into_queue(instance, dictionary_message):
         # NOTE: bad! all connections would result in closed
         # # close resource
         # msg_queue.close()
+        # FIXME: Close it elsewhere! Catching sigkill for example.
 
     return True
 
