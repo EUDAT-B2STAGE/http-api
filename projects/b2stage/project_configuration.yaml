@@ -75,6 +75,8 @@ variables:
     CONTAINERS_DBPASS:
     CONTAINERS_DBEXTRAUSER:
     CONTAINERS_DBEXTRAPASS:
+    CONTAINERS_WAIT_STOPPED: false # can be 0, 1, true, false
+    CONTAINERS_WAIT_RUNNING: false # can be 0, 1, true, false
 
     #################
 
