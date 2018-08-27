@@ -83,6 +83,7 @@ class Resources(ClusterContainerEndpoint):
         else:
             # if len(files) < 1:
             if len(files) != 1:
+                log.error('Misconfiguration: %s files in %s (expected 1).' % (len(files), batch_path))
                 return self.send_errors(
                     'Misconfiguration for batch_id: %s' % batch_id,
                     code=hcodes.HTTP_BAD_NOTFOUND
