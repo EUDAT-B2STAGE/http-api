@@ -61,11 +61,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         Let the Replication Manager upload a zip file into a batch folder
         """
 
-        ##################
-        msg = prepare_message(
+        log.info('Received request to upload batch "%s"' % batch_id)
+
+        # Log start (of upload) into RabbitMQ
+        log_msg = prepare_message(
             self, json={'batch_id': batch_id, 'file_id': file_id},
             user=ingestion_user, log_string='start')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
 
         ########################
         # get irods session
@@ -79,9 +81,23 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ########################
         # Check if the folder exists and is empty
         if not icom.is_collection(batch_path):
-            return self.send_errors(
-                "Batch '%s' not enabled or you have no permissions"
-                % batch_id,
+
+            err_msg = ("Batch '%s' not enabled or you have no permissions"
+                % batch_id)
+            
+            # Log error into RabbitMQ
+            log_msg = prepare_message(self,
+                user = ingestion_user,
+                log_string = 'failure',
+                info = dict(
+                    batch_id = batch_id,
+                    file_id = file_id,
+                    error = err_msg
+                )
+            )
+            log_into_queue(self, log_msg)
+
+            return self.send_errors(err_msg,
                 code=hcodes.HTTP_BAD_REQUEST)
 
         ########################
@@ -107,6 +123,15 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         if backdoor and icom.is_dataobject(ipath):
             response['status'] = 'exists'
+
+            # Log end (of upload) into RabbitMQ
+            # In case it already existed!
+            log_msg = prepare_message(self,
+                user = ingestion_user,
+                log_string = 'end', # TODO True?
+                status = response['status']
+            )
+            log_into_queue(self, log_msg)
             return response
 
         ########################
@@ -181,11 +206,12 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         response['errors'] = errors
         # response = "Batch '%s' filled" % batch_id
 
-        #############################
-        msg = prepare_message(
+        # Log end (of upload) into RabbitMQ
+        log_msg = prepare_message(
             self, status=response['status'],
             user=ingestion_user, log_string='end')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
+
 
         return self.force_response(response)
 
@@ -197,16 +223,19 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         param_name = 'batch_id'
         self.get_input()
         batch_id = self._args.get(param_name, None)
+
         if batch_id is None:
             return self.send_errors(
                 "Mandatory parameter '%s' missing" % param_name,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        ##################
-        msg = prepare_message(
+        log.info('Received request to enable batch "%s"' % batch_id)
+
+        # Log start (of enable) into RabbitMQ
+        log_msg = prepare_message(
             self, json={'batch_id': batch_id},
             user=ingestion_user, log_string='start')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
 
         ##################
         # Get irods session
@@ -240,8 +269,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             response = "Batch '%s' already exists" % batch_id
             status = 'exists'
 
-        ##################
-        msg = prepare_message(
+        # Log end (of enable) into RabbitMQ
+        log_msg = prepare_message(
             self, status=status, user=ingestion_user, log_string='end')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
+
         return self.force_response(response)
