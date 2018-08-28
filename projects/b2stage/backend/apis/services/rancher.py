@@ -321,8 +321,9 @@ class Rancher(object):
                         break
                     elif co.state == 'running' and wait_running:
                         log.info('Container is running!')
-                        log.info('Detailed container info %s', co)
-                        break
+                        if not not wait_stopped:
+                            log.info('Detailed container info %s', co)
+                            break
 
                     else:
                         time.sleep(1)
