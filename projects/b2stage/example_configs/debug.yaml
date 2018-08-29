@@ -119,6 +119,7 @@ variables:
   repos:
     irods-client:
       branch: master
+      # online_url: https://github.com/pdonorio/python-irodsclient.git
       online_url: https://github.com/irods/python-irodsclient.git
       path: prc
       if: true
@@ -127,7 +128,7 @@ variables:
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing data in EUDAT domains
-  version: 1.0.2
+  version: 1.0.3
 
 tags:
   # EUDAT related

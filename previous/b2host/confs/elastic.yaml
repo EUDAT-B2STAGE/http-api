@@ -1,0 +1,81 @@
+
+## NOTE: make sure that
+## - chown 1000 to /var/nfs/general/elastic
+## - sysctl -w vm.max_map_count=262144 on the host
+
+version: '2'
+services:
+  logs:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+    hostname: fulltext
+    volumes:
+      - /var/nfs/general/elastic:/usr/share/elasticsearch/data
+    restart: always
+    labels:
+      io.rancher.scheduler.affinity:host_label: host_type=nfs
+    environment:
+      - discovery.type=single-node
+      - xpack.monitoring.enabled=false
+      - xpack.security.enabled=false
+      # - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200 # open firewall to those who need it
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:9200/_cat/indices"]
+    #   interval: 60s
+    #   timeout: 30s
+    #   retries: 5
+
+
+######################
+## src: https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run
+# version: '2.2'
+# services:
+#   elasticsearch:
+#     image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+#     container_name: elasticsearch
+#     environment:
+#       - cluster.name=docker-cluster
+#       - bootstrap.memory_lock=true
+#       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#     ulimits:
+#       memlock:
+#         soft: -1
+#         hard: -1
+#     volumes:
+#       - esdata1:/usr/share/elasticsearch/data
+#     ports:
+#       - 9200:9200
+#     networks:
+#       - esnet
+#   elasticsearch2:
+#     image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+#     container_name: elasticsearch2
+#     environment:
+#       - cluster.name=docker-cluster
+#       - bootstrap.memory_lock=true
+#       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#       - "discovery.zen.ping.unicast.hosts=elasticsearch"
+#     ulimits:
+#       memlock:
+#         soft: -1
+#         hard: -1
+#     volumes:
+#       - esdata2:/usr/share/elasticsearch/data
+#     networks:
+#       - esnet
+
+# volumes:
+#   esdata1:
+#     driver: local
+#   esdata2:
+#     driver: local
+
+# networks:
+#   esnet:

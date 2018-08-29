@@ -1,11 +1,19 @@
 
-# v1.0.3 (*near future*)
+# v1.0.4 (*near future*)
 
 ## features
 
 - to be defined
 
-# v1.0.2 (*current*)
+# v1.0.3 (*current*)
+**due date**: June 30th, 2018
+
+## features
+
+- better support to SeaData.net project
+- bug fixes
+
+# v1.0.2 (*stable*)
 **due date**: April 30th, 2018
 
 ## features

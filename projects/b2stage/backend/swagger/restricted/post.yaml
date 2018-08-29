@@ -1,0 +1,10 @@
+common:
+  custom:
+    # authentication: false
+    authentication: true
+
+restricted:
+  summary: Merge zip uploaded by a partner with the main order zip
+  responses:
+    '200':
+      description: merge has been completed without errors

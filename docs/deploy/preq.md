@@ -34,7 +34,7 @@ sudo yum -y install python36u python36u-pip
 sudo ln -s /usr/bin/pip3.6 /usr/bin/pip3
 ```
 
-### GIT
+##  GIT
 
 Most of UNIX distributions have the `git` command line client already installed. If that is not that case then refer to the [official documentation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
@@ -50,7 +50,7 @@ sudo yum -y install git
 
 ### docker engine
 
-Please *NOTE*: if you are using `Red Hat` (RHEL) as Operatin System, Docker is supported [only in the enterprise edition](https://docs.docker.com/install/linux/docker-ee/rhel/#prerequisites).
+Please *NOTE*: if you are using `Red Hat` (RHEL) as Operating System, Docker is supported [only in the enterprise edition](https://docs.docker.com/install/linux/docker-ee/rhel/#prerequisites).
 
 ---
 

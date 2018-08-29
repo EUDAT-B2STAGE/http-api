@@ -2,6 +2,7 @@
 ########################
 ##  Your custom data  ##
 ########################
+.projectrc
 
 # data
 uploads
@@ -14,6 +15,7 @@ data/certs/*cineca*
 data/secrets/secret_*
 data/b2handle/*.pem
 data/files/*
+data/*/*.json
 
 #################
 ##  Submodules ##
@@ -26,6 +28,7 @@ submodules/http-api
 submodules/frontend
 submodules/prc
 submodules/rapydo-confs
+submodules/do
 
 ############################################
 ##  Dynamically created file and folders  ##
@@ -34,7 +37,6 @@ submodules/rapydo-confs
 #.projectrc
 frontend/b2stage/libs/bower_components
 .env
-projects/*/backend/confs/project_configuration.yaml
 
 ###################################
 ##  Temporary and miscellaneous  ##

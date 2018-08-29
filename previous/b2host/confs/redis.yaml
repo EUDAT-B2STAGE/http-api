@@ -1,0 +1,12 @@
+
+version: '2'
+services:
+  cache:
+    image: redis:4.0.9-alpine
+    hostname: mycache
+    volumes:
+      - /var/nfs/general/redis:/data
+    labels:
+      io.rancher.scheduler.affinity:host_label: host_type=nfs
+    ports:
+      - 6379:6379

@@ -11,7 +11,7 @@ from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.seadatacloud import \
-    Metadata as md, ImportManagerAPI as API
+    Metadata as md, ImportManagerAPI as API, ErrorCodes
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -19,6 +19,7 @@ from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
+api = API()
 
 
 #################
@@ -33,16 +34,27 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     #     response = 'Dummy method'
     #     return self.force_response(response)
 
-    def pid_production(self, imain, batch_id, data):
+    def errors(self, json_output, errors, message=None, code=None):
 
-        # TODO: am I using the metadata of the zip file?
+        # add errors
+        json_output['errors'] = errors
+        # call Import manager to notify
+        api.post(json_output)
+        # send error as response
+        if message is None:
+            message = 'Invalid request'
+        if code is None:
+            code = hcodes.HTTP_BAD_REQUEST
+        return self.send_errors(message, code=code)
 
-        temp_id = data.get(md.tid)
+    def pid_production(self, imain, batch_id, data, temp_id):
 
-        # ################
+        ################
         # # copy file from ingestion to production
         # src_path = self.src_paths.get(temp_id)
         # log.warning("TESTING: %s (%s)", temp_id, src_path)
+
+        ################
         dest_path = self.complete_path(self.prod_path, temp_id)
         if not imain.is_dataobject(dest_path):
             log.error("Missing: %s", dest_path)
@@ -53,6 +65,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         # irule to get PID
         pid = self.pid_request(imain, dest_path)
+        # TODO: add irule to replicate to N centers
         log.info("Received PID: %s", pid)
 
         # ################
@@ -99,19 +112,19 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         #     log.verbose("PID verified (b2handle): %s", pid)
         #     log.pp(b2handle_output)
 
-        # ################
-        # # set metadata (with a prefix?)
-        # metadata, _ = imain.get_metadata(dest_path)
-        # log.pp(metadata)
-        # # setting = False
-        # for key in md.keys:
-        #     if key not in metadata:
-        #         value = data.get(key)
-        #         args = {'path': dest_path, key: value}
-        #         imain.set_metadata(**args)
-        #         # setting = True
-        # # if setting:
-        # #     log.debug("Some metadata is set")
+        ################
+        # set metadata (with a prefix?)
+        metadata, _ = imain.get_metadata(dest_path)
+        log.pp(metadata)
+        # setting = False
+        for key in md.keys:
+            if key not in metadata:
+                value = data.get(key)
+                args = {'path': dest_path, key: value}
+                imain.set_metadata(**args)
+                # setting = True
+        # if setting:
+        #     log.debug("Some metadata is set")
 
         # ################
         # # ALL DONE: move file from ingestion to trash
@@ -143,17 +156,18 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         cversion = '0.8'
         image_tag = '%s:%s' % (cname, cversion)
         container_name = self.get_container_name(batch_id, image_tag)
+        # remove if exists
+        rancher.remove_container_by_name(container_name)
+        # print('removed')
+
         # print(container_name)
         docker_image_name = self.get_container_image(image_tag, prefix='eudat')
         log.info("Request copy2prod; image: %s" % docker_image_name)
 
-        # remove if exists
-        rancher.remove_container_by_name(container_name)
         # launch
         rancher.run(
             container_name=container_name, image_name=docker_image_name,
-            private=True,
-            wait_stopped=True,
+            private=True, wait_stopped=True, pull=False,
             extras={
                 'environment': b2safe_connvar,
                 'dataVolumes': [self.mount_batch_volume(batch_id)],
@@ -164,8 +178,6 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def post(self, batch_id):
-
-        # TODO: switch to list of approved files
 
         ################
         # 0. check parameters
@@ -230,43 +242,80 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         imain.create_collection_inheritable(self.prod_path, obj.username)
 
         ################
-        # 3. copy files from containers to production
-        self.copy_to_production(obj.icommands, batch_id, filenames)
+        # ASYNC
+        log.info("Submit async celery task")
+        from restapi.flask_ext.flask_celery import CeleryExt
+        task = CeleryExt.move_to_production_task.apply_async(
+            args=[batch_id, self.prod_path, json_input])
+        log.warning("Async job: %s", task.id)
 
         # ################
-        # # 4. check on list of files
-        # self.src_paths = {}
-        # for filename in filenames:
-        #     src_path = self.complete_path(self.batch_path, filename)
-        #     log.info("File path: %s", src_path)
-        #     self.src_paths[filename] = src_path
+        # # 3. copy files from containers to production
 
-        #     if not imain.is_dataobject(src_path):
-        #         return self.send_errors(
-        #             "File '%s' not in batch '%s'" % (filename, batch_id),
-        #             code=hcodes.HTTP_BAD_REQUEST)
+        # # FIXME: verify which files are there or not
+        # # checks file in irods before asking the copy...
+        # # remove from filenames if not existing
+        # pass
 
-        ################
-        # 4. Request PIDs
-        out_data = []
-        for data in files:
-            # pid, error = self.pid_production(imain, batch_id, data)
-            pid = self.pid_production(imain, batch_id, data)
-            if pid is None:
-                log.error("Error: %s", error)
-            else:
-                log.info("Obtained: %s", pid)
-                data['pid'] = pid
-                out_data.append(data)
-        # NOTE: I could set here the pids as metadata in prod collection
+        # # copy files
+        # self.copy_to_production(obj.icommands, batch_id, filenames)
 
-        ################
-        # TODO: set expiration metadata on batch zip file?
-        pass
+        # # ################
+        # # # 4. check on list of files
+        # # self.src_paths = {}
+        # # for filename in filenames:
+        # #     src_path = self.complete_path(self.batch_path, filename)
+        # #     log.info("File path: %s", src_path)
+        # #     self.src_paths[filename] = src_path
 
-        ################
-        json_input[param_key] = out_data
-        # call Import manager to notify
-        api = API()
-        api.post(json_input)
-        return json_input
+        # #     if not imain.is_dataobject(src_path):
+        # #         return self.send_errors(
+        # #             "File '%s' not in batch '%s'" % (filename, batch_id),
+        # #             code=hcodes.HTTP_BAD_REQUEST)
+
+        # ################
+        # # 4. Request PIDs
+        # out_data = []
+        # errors = []
+        # for data in files:
+
+        #     temp_id = data.get(md.tid)
+        #     # strip directory as prefix
+        #     from utilities import path
+        #     cleaned_temp_id = path.last_part(temp_id)
+
+        #     # pid, error = self.pid_production(imain, batch_id, data)
+        #     pid = self.pid_production(
+        #         imain, batch_id, data, cleaned_temp_id)
+        #     if pid is None:
+        #         log.error("Error: %s", temp_id)
+        #         errors.append({
+        #             "error": ErrorCodes.INGESTION_FILE_NOT_FOUND,
+        #             "description": "File requested not found",
+        #             "subject": temp_id
+        #         })
+        #     else:
+        #         log.info("Obtained: %s", pid)
+        #         # data['temp_id'] = cleaned_temp_id
+        #         data['pid'] = pid
+        #         out_data.append(data)
+
+        # ################
+        # # NOTE: I could set here the pids as metadata in prod collection
+        # pass
+
+        # ################
+        # # TODO: set expiration metadata on batch zip file?
+        # pass
+
+        # ################
+        # json_input[param_key]['pids'] = out_data
+        # if len(errors) > 0:
+        #     json_input['errors'] = errors
+        # # call Import manager to notify
+        # api.post(json_input)
+
+        # ################
+        # return json_input
+
+        return {'async': task.id}

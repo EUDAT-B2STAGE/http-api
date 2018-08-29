@@ -1,0 +1,11 @@
+
+common:
+  custom:
+    publish: false
+    authentication: true
+
+helper:
+  summary: Unauthenticated helper endpoint
+  responses:
+    '200':
+      description: "returning 'Hello World!' string"

@@ -3,7 +3,7 @@ common:
     # authentication: false
     authentication: true
 
-restricted:
+upload:
   summary: uploading a zip into restricted orders
   responses:
     '200':
