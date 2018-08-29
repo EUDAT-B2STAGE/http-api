@@ -146,41 +146,6 @@ tags:
   order: request an order from the interface
   # internal: for internal testing purpose only
 
-# Keep track of releases and dependencies
-releases:
-  '0.5.1':
-    type: beta
-    rapydo: null
-    status: released
-  '0.5.2':
-    type: beta
-    rapydo: null
-    status: discontinued
-  '0.6.0':
-    type: RC1
-    rapydo: 0.5.3
-    status: released
-  '0.6.1':
-    type: RC2
-    rapydo: 0.5.4
-    status: released
-  '1.0.0':
-    type: stable
-    rapydo: 0.6.0
-    status: released
-  '1.0.1':
-    type: patch
-    rapydo: 0.6.1
-    status: released
-  '1.0.2':
-    type: patch
-    rapydo: 0.6.1
-    status: released
-  '1.0.3':
-    type: development
-    rapydo: 0.6.2
-    status: development
-
 controller:
   commands:
     irods_restart:

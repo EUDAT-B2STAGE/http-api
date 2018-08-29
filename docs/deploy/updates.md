@@ -37,7 +37,8 @@ $ rapydo upgrade
  - 0.6.1 RC2 (rapydo 0.5.4) [released]
  - 1.0.0 stable (rapydo 0.6.0) [released]
  - 1.0.1 patch (rapydo 0.6.1) [released]
- - 1.0.2 development (rapydo 0.6.1) [development] *installed*
- - 1.0.3 patch (rapydo 0.6.2) [todo]
+ - 1.0.2 patch (rapydo 0.6.1) [released] *installed*
+ - 1.0.3 stable (rapydo 0.6.2) [released]
+ - 1.0.4 development (rapydo 0.6.3) [development]
 ```
 
