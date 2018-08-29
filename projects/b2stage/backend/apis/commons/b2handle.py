@@ -20,7 +20,58 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 
-class B2HandleEndpoint(EudatEndpoint):
+class PIDgenerator(object):
+
+    pid_separator = '/'
+
+    def pid_name_fix(self, irule_output):
+        pieces = irule_output.split(self.pid_separator)
+        pid = self.pid_separator.join([pieces[0], pieces[1].lower()])
+        log.debug("Parsed PID: %s", pid)
+        return pid
+
+    def pid_request(self, icom, ipath):
+        """ EUDAT RULE for PID """
+
+        outvar = 'newPID'
+        inputs = {
+            '*path': '"%s"' % ipath,
+            '*fixed': '"true"',
+            # empty variables
+            '*parent_pid': '""',
+            '*ror': '""',
+            '*fio': '""',
+        }
+        body = """
+            EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *%s);
+            writeLine("stdout", *%s);
+        """ % (outvar, outvar)
+
+        rule_output = icom.rule('get_pid', body, inputs, output=True)
+        return self.pid_name_fix(rule_output)
+
+    def parse_pid_dataobject_path(self, metadata, key='URL'):
+        """ Parse url / irods path """
+
+        url = metadata.get(key)
+        if url is None:
+            return url
+        else:
+            # NOTE: this would only work until the protocol is unchanged
+            url = url.replace('irods://', '')
+
+        from utilities import path
+        # path_pieces = url.split(path.os.sep)[1:]
+        path_pieces = url.split(path.os.sep)
+        path_pieces[0] = path.os.sep
+        # print("pieces", path_pieces)
+        ipath = str(path.build(path_pieces))
+        log.verbose("Data object: %s", ipath)
+
+        return ipath
+
+
+class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
 
     """
     Handling PID requests.
@@ -41,8 +92,6 @@ class B2HandleEndpoint(EudatEndpoint):
     eudat_internal_fields = [
         "EUDAT/FIXED_CONTENT", 'PID'
     ]
-
-    pid_separator = '/'
 
     def connect_client(self, force_no_credentials=False, disable_logs=False):
 
@@ -133,49 +182,3 @@ class B2HandleEndpoint(EudatEndpoint):
                 self.send_errors(message='B2HANDLE: %s' % error, code=code)
         else:
             return data, None
-
-    def pid_name_fix(self, irule_output):
-        pieces = irule_output.split(self.pid_separator)
-        pid = self.pid_separator.join([pieces[0], pieces[1].lower()])
-        log.debug("Parsed PID: %s", pid)
-        return pid
-
-    def pid_request(self, icom, ipath):
-        """ EUDAT RULE for PID """
-
-        outvar = 'newPID'
-        inputs = {
-            '*path': '"%s"' % ipath,
-            '*fixed': '"true"',
-            # empty variables
-            '*parent_pid': '""',
-            '*ror': '""',
-            '*fio': '""',
-        }
-        body = """
-            EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *%s);
-            writeLine("stdout", *%s);
-        """ % (outvar, outvar)
-
-        rule_output = icom.rule('get_pid', body, inputs, output=True)
-        return self.pid_name_fix(rule_output)
-
-    def parse_pid_dataobject_path(self, metadata, key='URL'):
-        """ Parse url / irods path """
-
-        url = metadata.get(key)
-        if url is None:
-            return url
-        else:
-            # NOTE: this would only work until the protocol is unchanged
-            url = url.replace('irods://', '')
-
-        from utilities import path
-        # path_pieces = url.split(path.os.sep)[1:]
-        path_pieces = url.split(path.os.sep)
-        path_pieces[0] = path.os.sep
-        # print("pieces", path_pieces)
-        ipath = str(path.build(path_pieces))
-        log.verbose("Data object: %s", ipath)
-
-        return ipath

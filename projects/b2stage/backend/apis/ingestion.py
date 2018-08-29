@@ -14,6 +14,7 @@ from utilities.logs import get_logger
 
 log = get_logger(__name__)
 ingestion_user = 'RM'
+BACKDOOR_SECRET = 'howdeepistherabbithole'
 
 
 class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
@@ -60,16 +61,19 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         Let the Replication Manager upload a zip file into a batch folder
         """
 
-        ##################
-        msg = prepare_message(
+        log.info('Received request to upload batch "%s"' % batch_id)
+
+        # Log start (of upload) into RabbitMQ
+        log_msg = prepare_message(
             self, json={'batch_id': batch_id, 'file_id': file_id},
             user=ingestion_user, log_string='start')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
 
         ########################
         # get irods session
         obj = self.init_endpoint()
         icom = obj.icommands
+        errors = None
 
         batch_path = self.get_batch_path(icom, batch_id)
         log.info("Batch path: %s", batch_path)
@@ -77,9 +81,23 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ########################
         # Check if the folder exists and is empty
         if not icom.is_collection(batch_path):
-            return self.send_errors(
-                "Batch '%s' not enabled or you have no permissions"
-                % batch_id,
+
+            err_msg = ("Batch '%s' not enabled or you have no permissions"
+                % batch_id)
+            
+            # Log error into RabbitMQ
+            log_msg = prepare_message(self,
+                user = ingestion_user,
+                log_string = 'failure',
+                info = dict(
+                    batch_id = batch_id,
+                    file_id = file_id,
+                    error = err_msg
+                )
+            )
+            log_into_queue(self, log_msg)
+
+            return self.send_errors(err_msg,
                 code=hcodes.HTTP_BAD_REQUEST)
 
         ########################
@@ -92,13 +110,35 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 % ALLOWED_MIMETYPE_UPLOAD,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        ipath = self.complete_path(
-            batch_path, self.get_input_zip_filename(file_id))
+        ########################
+        backdoor = file_id == BACKDOOR_SECRET
+        response = {
+            'batch_id': batch_id,
+            'status': 'filled',
+        }
+
+        ########################
+        zip_name = self.get_input_zip_filename(file_id)
+        ipath = self.complete_path(batch_path, zip_name)
+
+        if backdoor and icom.is_dataobject(ipath):
+            response['status'] = 'exists'
+
+            # Log end (of upload) into RabbitMQ
+            # In case it already existed!
+            log_msg = prepare_message(self,
+                user = ingestion_user,
+                log_string = 'end', # TODO True?
+                status = response['status']
+            )
+            log_into_queue(self, log_msg)
+            return response
+
+        ########################
         log.verbose("Cloud filename: %s", ipath)
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
-            iout = icom.write_in_streaming(
-                destination=ipath, force=True, binary=True)
+            iout = icom.write_in_streaming(destination=ipath, force=True)
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
             return self.send_errors(
@@ -110,40 +150,46 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ###########################
         # Also copy file to the B2HOST environment
-        rancher = self.get_or_create_handle()
-        idest = self.get_ingestion_path()
+        if backdoor:
+            # # CELERY VERSION
+            log.info("Submit async celery task")
+            from restapi.flask_ext.flask_celery import CeleryExt
+            task = CeleryExt.send_to_workers_task.apply_async(
+                args=[batch_id, ipath, zip_name, backdoor])
+            log.warning("Async job: %s", task.id)
+        else:
+            # # CONTAINERS VERSION
+            rancher = self.get_or_create_handle()
+            idest = self.get_ingestion_path()
 
-        b2safe_connvar = {
-            'BATCH_SRC_PATH': ipath,
-            'BATCH_DEST_PATH': idest,
-            'IRODS_HOST': icom.variables.get('host'),
-            'IRODS_PORT': icom.variables.get('port'),
-            'IRODS_ZONE_NAME': icom.variables.get('zone'),
-            'IRODS_USER_NAME': icom.variables.get('user'),
-            'IRODS_PASSWORD': icom.variables.get('password'),
-        }
+            b2safe_connvar = {
+                'BATCH_SRC_PATH': ipath,
+                'BATCH_DEST_PATH': idest,
+                'IRODS_HOST': icom.variables.get('host'),
+                'IRODS_PORT': icom.variables.get('port'),
+                'IRODS_ZONE_NAME': icom.variables.get('zone'),
+                'IRODS_USER_NAME': icom.variables.get('user'),
+                'IRODS_PASSWORD': icom.variables.get('password'),
+            }
 
-        # Launch a container to copy the data into B2HOST
-        cname = 'copy_zip'
-        cversion = '0.7'  # release 1.0?
-        image_tag = '%s:%s' % (cname, cversion)
-        container_name = self.get_container_name(batch_id, image_tag)
-        docker_image_name = self.get_container_image(image_tag, prefix='eudat')
-        log.info("Requesting copy2containers; image: %s" % docker_image_name)
-        errors = rancher.run(
-            container_name=container_name, image_name=docker_image_name,
-            private=True,
-            extras={
-                'environment': b2safe_connvar,
-                'dataVolumes': [self.mount_batch_volume(batch_id)],
-            },
-        )
+            # Launch a container to copy the data into B2HOST
+            cname = 'copy_zip'
+            cversion = '0.7'  # release 1.0?
+            image_tag = '%s:%s' % (cname, cversion)
+            container_name = self.get_container_name(batch_id, image_tag)
+            docker_image_name = self.get_container_image(
+                image_tag, prefix='eudat')
+            log.info("Requesting copy: %s" % docker_image_name)
+            errors = rancher.run(
+                container_name=container_name, image_name=docker_image_name,
+                private=True, pull=False,
+                extras={
+                    'environment': b2safe_connvar,
+                    'dataVolumes': [self.mount_batch_volume(batch_id)],
+                },
+            )
 
         ########################
-        response = {
-            'batch_id': batch_id,
-            'status': 'filled',
-        }
 
         if errors is not None:
             if isinstance(errors, dict):
@@ -157,13 +203,16 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                     response['description'] = edict
             else:
                 response['status'] = 'failure'
-
-        # response['errors'] = errors
+        response['errors'] = errors
         # response = "Batch '%s' filled" % batch_id
-        msg = prepare_message(
+
+        # Log end (of upload) into RabbitMQ
+        log_msg = prepare_message(
             self, status=response['status'],
             user=ingestion_user, log_string='end')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
+
+
         return self.force_response(response)
 
     def post(self):
@@ -174,16 +223,19 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         param_name = 'batch_id'
         self.get_input()
         batch_id = self._args.get(param_name, None)
+
         if batch_id is None:
             return self.send_errors(
                 "Mandatory parameter '%s' missing" % param_name,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        ##################
-        msg = prepare_message(
+        log.info('Received request to enable batch "%s"' % batch_id)
+
+        # Log start (of enable) into RabbitMQ
+        log_msg = prepare_message(
             self, json={'batch_id': batch_id},
             user=ingestion_user, log_string='start')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
 
         ##################
         # Get irods session
@@ -217,8 +269,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             response = "Batch '%s' already exists" % batch_id
             status = 'exists'
 
-        ##################
-        msg = prepare_message(
+        # Log end (of enable) into RabbitMQ
+        log_msg = prepare_message(
             self, status=status, user=ingestion_user, log_string='end')
-        log_into_queue(self, msg)
+        log_into_queue(self, log_msg)
+
         return self.force_response(response)

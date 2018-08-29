@@ -10,6 +10,13 @@ seadata_vars = detector.load_group(label='seadata')
 # SEADATA_ENABLED = seadata_vars.get('project')
 SEADATA_ENABLED = seadata_vars.get('project') == '1'
 ORDERS_ENDPOINT = 'orders'
+EDMO_CODE = seadata_vars.get('edmo_code')
+
+
+class ErrorCodes(object):
+    PID_NOT_FOUND = "41"
+    INGESTION_FILE_NOT_FOUND = "50"
+    INTERNAL_SERVER_ERROR = "54"
 
 
 class Metadata(object):
@@ -32,14 +39,18 @@ class ImportManagerAPI(object):
 
     _uri = seadata_vars.get('api_im_url')
 
-    def post(self, payload):
+    def post(self, payload, instance=None):
 
         from restapi.confs import PRODUCTION
         if not PRODUCTION:
             log.debug("Skipping ImportManagerAPI")
             return False
 
+        if instance is not None:
+            instance_id = str(id(instance))
+            payload['request_id'] = instance_id
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
+        payload['edmo_code'] = EDMO_CODE
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
         payload['api_function'] += '_ready'
 
@@ -49,8 +60,12 @@ class ImportManagerAPI(object):
 
         from utilities import htmlcodes as hcodes
         if r.status_code != hcodes.HTTP_OK_BASIC:
-            log.error("Failed to call external APIs: %s", r.status_code)
+            log.error(
+                "CDI: failed to call external APIs (status: %s)",
+                r.status_code)
             return False
         else:
-            log.info("Called POST on external APIs: %s", r.status_code)
+            log.info(
+                "CDI: called POST on external APIs (status: %s)",
+                r.status_code)
             return True

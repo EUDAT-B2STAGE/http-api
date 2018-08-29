@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import json
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
+from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from utilities import htmlcodes as hcodes
+from utilities import path
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -26,6 +29,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     #     response = 'Hello world!'
     #     return self.force_response(response)
 
+    """
     def ingest_restricted_zip(self, icom, order_id, order_path, ipath):
 
         # Copy files from the B2HOST environment
@@ -57,7 +61,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # launch
         rancher.run(
             container_name=container_name, image_name=docker_image_name,
-            private=True,
+            private=True, pull=False,
             wait_stopped=True,
             extras={
                 'environment': b2safe_connvar,
@@ -66,6 +70,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         )
         # errors = rancher.run(
         # log.pp(errors)
+    """
 
     def stream_to_irods(self, icom, ipath):
 
@@ -74,25 +79,83 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ALLOWED_MIMETYPE_UPLOAD = 'application/octet-stream'
         from flask import request
         if request.mimetype != ALLOWED_MIMETYPE_UPLOAD:
-            return self.send_errors(
+            return False, self.send_errors(
                 "Only mimetype allowed for upload: %s"
                 % ALLOWED_MIMETYPE_UPLOAD,
                 code=hcodes.HTTP_BAD_REQUEST)
 
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
-            iout = icom.write_in_streaming(
-                destination=ipath, force=True, binary=True)
+            iout = icom.write_in_streaming(destination=ipath, force=True)
+
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
-            return self.send_errors(
+            return False, self.send_errors(
                 "Failed streaming towards B2SAFE cloud",
                 code=hcodes.HTTP_SERVER_ERROR)
         else:
             log.info("irods call %s", iout)
+            return True, iout
             # NOTE: permissions are inherited thanks to the POST call
 
-    def put(self, order_id):
+    def patch(self, order_id):
+
+        log.warning("This endpoint should be restricted to admins?")
+        log.info('Enabling restricted: order id %s', order_id)
+        json_input = self.get_input()
+
+        ##################
+        params = json_input.get('parameters', {})
+        if len(params) < 1:
+            error = "missing parameters"
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+        ##################
+        # RESTRICTED PARAM
+        key = 'b2access_ids'
+        restricted = params.get(key, [])
+        if len(restricted) < 0:
+            error = "'%s' missing in JSON parameters" % key
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+        ##################
+        # Metadata handling
+        imain = self.get_service_instance(service_name='irods')
+        order_path = self.get_order_path(imain, order_id)
+        if not imain.is_collection(order_path):
+            obj = self.init_endpoint()
+            # Create the path and set permissions
+            # imain.create_collection_inheritable(order_path, obj.username)
+            # TO FIX: temporary added for debug purpose
+            log.critical("Assigned permissions to irodsmaster instead of %s",
+                         obj.username)
+            imain.create_collection_inheritable(order_path, "irodsmaster")
+            log.warning("Created %s because it did not exist", order_path)
+            log.info("Assigned permissions to %s", obj.username)
+            # error = "Order '%s' not found or permissions denied" % order_id
+            # return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+
+        metadata, _ = imain.get_metadata(order_path)
+        log.pp(metadata)
+
+        # Remove if existing
+        key = 'restricted'
+        if key in metadata:
+            imain.remove_metadata(order_path, key)
+            # TODO: merge with the new request
+            # are they just 2 lists?
+            log.info("Merge: %s and %s", metadata.get(key), restricted)
+            previous_restricted = json.loads(metadata.get(key))
+            restricted = previous_restricted + restricted
+
+        # Set restricted metadata
+        string = json.dumps(restricted)
+        imain.set_metadata(order_path, restricted=string)
+        log.debug('Flagged restricted: %s', string)
+
+        return {'enabled': restricted}
+
+    def put(self, order_id, file_id):
         """
         - Set the metadata of the folder to know that this is restricted
         - Set also the list of authorized data centers
@@ -110,10 +173,9 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         #     order_id = str(order_id)
 
         ###############
-        log.info("Order id '%s' has to be restricted", order_id)
+        log.info("Order restricted: %s", order_id)
 
         # Create the path
-        log.info("Order request: %s", order_id)
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
@@ -143,25 +205,77 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ###############
         # irods copy
-        label = "%s_%s.%s" % (obj.username, '123', 'zip')
+        label = path.append_compress_extension(file_id)
         ipath = self.complete_path(order_path, label)
-        self.stream_to_irods(imain, ipath)
+
+        if imain.exists(ipath):
+
+            return self.send_errors(
+                "%s already exist" % ipath,
+                code=hcodes.HTTP_BAD_CONFLICT
+            )
+
+        uploaded, message = self.stream_to_irods(imain, ipath)
+
+        if not uploaded:
+            return message
         log.verbose("Uploaded: %s", ipath)
-
-        ###############
-        # define zip final path
-        from utilities import path
-        filename = 'order_%s' % order_id
-        # zip_file_name = path.append_compress_extension(filename)
-        zip_ipath = path.join(order_path, filename, return_str=True)
-
-        ###############
-        # launch container
-        self.ingest_restricted_zip(imain, order_id, zip_ipath, ipath)
+        log.very_verbose(message)
 
         ###############
         response = {
             'order_id': order_id,
-            'status': 'filled',
+            'status': 'uploaded',
         }
         return self.force_response(response)
+
+    def post(self, order_id):
+
+        log.warning("This endpoint should be restricted to admins?")
+
+        json_input = self.get_input()
+        params = json_input.get('parameters', {})
+
+        imain = self.get_service_instance(service_name='irods')
+        order_path = self.get_order_path(imain, order_id)
+
+        # zip file uploaded from partner
+        zip_file = params.get('zip_file_name')
+        if zip_file is None:
+            return self.send_errors(
+                "Invalid partner zip path",
+                code=hcodes.HTTP_BAD_REQUEST
+            )
+        if not zip_file.endswith('.zip'):
+            zip_file = path.append_compress_extension(zip_file)
+        partial_zip_path = self.complete_path(order_path, zip_file)
+        ###############
+        # define path of final zip
+        # filename = 'order_%s' % order_id
+        filename = params.get('file_name')
+        if filename is None:
+            return self.send_errors(
+                "Invalid restricted zip path",
+                code=hcodes.HTTP_BAD_REQUEST
+            )
+        if not filename.endswith('.zip'):
+            filename = path.append_compress_extension(filename)
+        zip_ipath = self.complete_path(order_path, filename)
+        # zip_ipath = path.join(order_path, filename, return_str=True)
+
+        # ADDITIONAL CHECK PARAMS
+        file_size = params.get("file_size")
+        file_checksum = params.get("file_checksum")
+        data_file_count = params.get("data_file_count")
+
+        ###############
+        # launch container
+        # self.ingest_restricted_zip(
+        #     imain, order_id, zip_ipath, partial_zip_path)
+        task = CeleryExt.merge_restricted_order.apply_async(
+            args=[
+                order_id, order_path, partial_zip_path, zip_ipath,
+                file_size, file_checksum, data_file_count
+            ])
+        log.warning("Async job: %s", task.id)
+        return {'async': task.id}

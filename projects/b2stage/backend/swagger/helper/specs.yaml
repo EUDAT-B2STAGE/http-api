@@ -1,0 +1,14 @@
+
+depends_on:
+  - SEADATA_PROJECT
+
+file: helper
+class: Helper
+schema:
+  expose: true
+mapping:
+  helper: "/helper"
+  singlehelper: "/helper/<batch_id>"
+labels:
+  # - custom
+  - helper

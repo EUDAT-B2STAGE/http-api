@@ -12,11 +12,11 @@ services:
     # image: ${COMPOSE_PROJECT_NAME}/backend:custom
 
     environment:
-      ACTIVATE: 1
-      FLASK_DEBUG: 1
+      # ACTIVATE: 1
+      # FLASK_DEBUG: 1
       DEBUG_LEVEL: VERY_VERBOSE
-      APP_MODE: debug
-      TESTING: 0
+      # APP_MODE: debug
+      # TESTING: 0
 
       #################
       # EUDAT RELATED
