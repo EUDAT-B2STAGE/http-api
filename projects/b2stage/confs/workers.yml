@@ -10,10 +10,6 @@ services:
     environment:
       ACTIVATE: 0
 
-  celeryui:
-    environment:
-      ACTIVATE: 1
-
   celery:
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -n worker-%h
     volumes:

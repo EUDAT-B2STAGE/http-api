@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+
+  backend:
+    environment:
+      ACTIVATE: 0
+
+  rabbit:
+    environment:
+      ACTIVATE: 1
+
+  mongodb:
+    environment:
+      ACTIVATE: 1
+
+  # redis:
