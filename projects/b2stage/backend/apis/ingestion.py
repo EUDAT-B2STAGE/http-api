@@ -59,6 +59,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     def put(self, batch_id, file_id):
         """
         Let the Replication Manager upload a zip file into a batch folder
+
+        Example response:
+        {
+            'batch_id': batch_id,
+            'status': 'filled' OR 'exists'
+            'description': "Batch 'x' filled"
+        }
         """
 
         log.info('Received request to upload batch "%s"' % batch_id)
@@ -123,11 +130,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_BAD_REQUEST)
 
 
-        response = {
-            'batch_id': batch_id,
-            'status': 'filled',
-        }
-
         ########################
         zip_name = self.get_input_zip_filename(file_id)
         irods_path = self.complete_path(batch_path, zip_name)
@@ -136,8 +138,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # Backdoor: If this is True, the unzip is run directly,
         # and does not have to be called by the qc endpoint!
         backdoor = (file_id == BACKDOOR_SECRET)
-        if backdoor and icom.is_dataobject(irods_path):
-            response['status'] = 'exists'
+        if backdoor and icom.is_dataobject(irods_path): # TODO And if no backdoor?
+
+            response = {
+                'batch_id': batch_id,
+                'status': 'exists',
+                'description': 'A file was uploaded already for this batch.'
+            }
 
             # Log end (of upload) into RabbitMQ
             # In case it already existed!
@@ -227,25 +234,61 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ########################
         # Finalize response after launching copy to B2HOST
+        response = {
+            'batch_id': batch_id,
+        }
 
         if errors is None:
             logstring = 'end'
+            response['status'] = 'filled'
+            response['description'] = "Batch '%s' filled" % batch_id
+
         else:
             logstring = 'failure'
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
                 # errors = edict
                 # print("TEST", edict)
+
+                # FIXME: Failure or not?
+                # Semi-Failure: NotUnique just means that another
+                # container of the same name exists! Does this mean
+                # failure or not? We cannot even know!!!
                 if edict.get('code') == 'NotUnique':
-                    response['status'] = 'existing' # TODO Container is existing!! Does this mean failure or not? We cannot even know!!!
-                    logstring = 'unsure'  # TODO
+                    response['status'] = 'existing'
+                    response['description'] = 'A container of the same name existed, but it is unsure if it was successful. Please delete and retry.'
+                    log_msg = prepare_message(self,
+                        log_string='failure', # TODO What to say?
+                        error = err_msg
+                    )
+                    log_into_queue(self, log_msg)
+                    return self.send_errors(err_msg,
+                        code=hcodes.HTTP_BAD_CONFLICT)
+
+
+                # Failure: Rancher returned errors.
+                # Log to RabbitMQ and return error code
                 else:
-                    response['status'] = 'Copy could NOT be started'
-                    response['description'] = edict
+                    err_msg = 'Copy could NOT be started (%s)' % edict
+                    log_msg = prepare_message(self,
+                        log_string='failure',
+                        error = err_msg
+                    )
+                    log_into_queue(self, log_msg)
+                    return self.send_errors(err_msg,
+                        code=hcodes.HTTP_SERVER_ERROR)
+
+            # Failure: Unknown error returned by Rancher
+            # Log to RabbitMQ and return error code
             else:
-                response['status'] = 'failure'
-        response['errors'] = errors
-        # response = "Batch '%s' filled" % batch_id
+                err_msg = 'Unknown error (%s)' % errors
+                log_msg = prepare_message(self,
+                    log_string='failure',
+                    error = err_msg
+                )
+                log_into_queue(self, log_msg)
+                return self.send_errors(err_msg,
+                    code=hcodes.HTTP_SERVER_ERROR)
 
         # Log end (of upload) into RabbitMQ
         log_msg = prepare_message(
@@ -253,7 +296,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             user=ingestion_user, log_string=logstring)
         log_into_queue(self, log_msg)
 
-
+        # Return http=200:
         return self.force_response(response)
 
     def post(self):
