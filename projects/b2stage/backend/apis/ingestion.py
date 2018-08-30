@@ -80,12 +80,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ########################
         # Check if the folder exists and is empty
+        # Failure: Folder does not exist or no permissions
+        # Log to RabbitMQ and return error code
         if not icom.is_collection(batch_path):
-
             err_msg = ("Batch '%s' not enabled or you have no permissions"
                 % batch_id)
-            
-            # Log error into RabbitMQ
             log_msg = prepare_message(self,
                 user = ingestion_user,
                 log_string = 'failure',
@@ -151,9 +150,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return response
 
         ########################
+        # Try to write file into irods
+        # NOTE: we know this will always be Compressed Files (binaries)
+        # NOTE: permissions are inherited thanks to the POST call
         log.verbose("Cloud filename: %s", irods_path)
         try:
-            # NOTE: we know this will always be Compressed Files (binaries)
             iout = icom.write_in_streaming(destination=irods_path, force=True)
 
         # Failure: Streaming into iRODS
@@ -175,7 +176,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_SERVER_ERROR)
         else:
             log.info("irods call %s", iout)
-            # NOTE: permissions are inherited thanks to the POST call
 
         ###########################
         # Also copy file to the B2HOST environment
