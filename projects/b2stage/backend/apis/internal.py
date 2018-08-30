@@ -36,8 +36,7 @@ class MetadataEndpoint(EudatEndpoint):
         # BASIC INIT
         r = self.init_endpoint()
         if r.errors is not None:
-            return self.send_errors(errors=r.errors,
-                                    code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(errors=r.errors)
         icom = r.icommands
 
         path, resource, filename, force = \
