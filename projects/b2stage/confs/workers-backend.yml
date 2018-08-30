@@ -10,7 +10,7 @@ services:
     environment:
       ACTIVATE: 1
     ports:
-      - 4369:4369
+      - 5672:5672
 
   mongodb:
     environment:
