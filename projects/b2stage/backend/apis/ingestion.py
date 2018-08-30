@@ -119,9 +119,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ########################
         zip_name = self.get_input_zip_filename(file_id)
-        ipath = self.complete_path(batch_path, zip_name)
+        irods_path = self.complete_path(batch_path, zip_name)
 
-        if backdoor and icom.is_dataobject(ipath):
+        if backdoor and icom.is_dataobject(irods_path):
             response['status'] = 'exists'
 
             # Log end (of upload) into RabbitMQ
@@ -135,10 +135,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return response
 
         ########################
-        log.verbose("Cloud filename: %s", ipath)
+        log.verbose("Cloud filename: %s", irods_path)
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
-            iout = icom.write_in_streaming(destination=ipath, force=True)
+            iout = icom.write_in_streaming(destination=irods_path, force=True)
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
             return self.send_errors(
@@ -155,7 +155,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             log.info("Submit async celery task")
             from restapi.flask_ext.flask_celery import CeleryExt
             task = CeleryExt.send_to_workers_task.apply_async(
-                args=[batch_id, ipath, zip_name, backdoor])
+                args=[batch_id, irods_path, zip_name, backdoor])
             log.warning("Async job: %s", task.id)
         else:
             # # CONTAINERS VERSION
@@ -163,7 +163,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             idest = self.get_ingestion_path()
 
             b2safe_connvar = {
-                'BATCH_SRC_PATH': ipath,
+                'BATCH_SRC_PATH': irods_path,
                 'BATCH_DEST_PATH': idest,
                 'IRODS_HOST': icom.variables.get('host'),
                 'IRODS_PORT': icom.variables.get('port'),
