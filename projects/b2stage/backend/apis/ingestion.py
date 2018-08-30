@@ -259,6 +259,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     def post(self):
         """
         Create the batch folder if not exists
+
+        Response:
+        {
+            "batch_id": "xyz",
+            "description": "Description of what happened for humans.",
+            "status": "enabled" OR "exists"
+        }
         """
 
         param_name = 'batch_id'
@@ -289,6 +296,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         batch_path = self.get_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
 
+        # Init response
+        response = {
+            'batch_id': batch_id
+        }
+
         ##################
         # Does it already exist? Is it a collection?
         if not imain.is_collection(batch_path):
@@ -302,13 +314,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             #     permission='null', userOrGroup=icom.anonymous_user)
 
             ##################
-            response = "Batch '%s' enabled" % batch_id
-            status = 'enabled'
+            response['description'] = "Batch '%s' enabled" % batch_id
+            response['status'] = 'enabled'
 
         else:
             log.debug("Already exists")
-            response = "Batch '%s' already exists" % batch_id
-            status = 'exists'
+            response['description'] = "Batch '%s' already existed" % batch_id
+            response['status'] = 'exists'
 
         # Log end (of enable) into RabbitMQ
         log_msg = prepare_message(
