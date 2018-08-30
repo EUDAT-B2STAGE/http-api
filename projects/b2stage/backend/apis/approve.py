@@ -301,6 +301,16 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         obj = self.init_endpoint()
         imain.create_collection_inheritable(self.prod_path, obj.username)
 
+        # Log progress into RabbitMQ
+        log_msg = prepare_message(self,
+            log_string='intermediate',
+            info = dict(
+                batch_id = batch_id,
+                info = 'Dir created (if not existing).'
+            )
+        )
+        log_into_queue(self, log_msg)
+
         ################
         # ASYNC
         log.info("Submit async celery task")
@@ -380,7 +390,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         # Log end into RabbitMQ
         log_msg = prepare_message(self,
-            log_string='return',
+            log_string='submitted',
             info = dict(
                 batch_id = batch_id,
                 async = task.id

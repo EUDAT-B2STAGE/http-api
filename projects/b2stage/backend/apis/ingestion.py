@@ -183,6 +183,16 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_SERVER_ERROR)
         else:
             log.info("irods call %s", iout)
+            
+            # Log progress into RabbitMQ
+            log_msg = prepare_message(self,
+                log_string='intermediate',
+                info = dict(
+                    batch_id = batch_id,
+                    info = 'Data streamed to irods.'
+                )
+            )
+            log_into_queue(self, log_msg)
 
         ###########################
         # Also copy file to the B2HOST environment
