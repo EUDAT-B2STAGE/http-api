@@ -110,8 +110,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 % ALLOWED_MIMETYPE_UPLOAD,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        ########################
-        backdoor = file_id == BACKDOOR_SECRET
+
         response = {
             'batch_id': batch_id,
             'status': 'filled',
@@ -121,6 +120,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         zip_name = self.get_input_zip_filename(file_id)
         irods_path = self.complete_path(batch_path, zip_name)
 
+        ########################
+        # Backdoor: If this is True, the unzip is run directly,
+        # and does not have to be called by the qc endpoint!
+        backdoor = (file_id == BACKDOOR_SECRET)
         if backdoor and icom.is_dataobject(irods_path):
             response['status'] = 'exists'
 
