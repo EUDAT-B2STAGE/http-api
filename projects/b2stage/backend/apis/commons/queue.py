@@ -95,13 +95,13 @@ It needs the following info from config:
 :param instance: Instance of the Logging service from rapydo.
 :param dictionary_message: The message to be logged (as JSON).
 '''
-def log_into_queue(instance, dictionary_message):
+def _log_into_queue(instance, dictionary_message):
     """ RabbitMQ in the EUDAT infrastructure """
 
     log.verbose('LOG MESSAGE to be passed to log-queue: %s ' % dictionary_message)
 
     current_exchange = QUEUE_VARS.get('exchange')
-    routing_key = QUEUE_VARS.get('queue')
+    routing_key = QUEUE_VARS.get('routing_key')
     app_name = QUEUE_VARS.get('app_name')
 
     if app_name is None:

@@ -65,7 +65,7 @@ variables:
     RABBIT_USER: elkuser
     RABBIT_PASSWORD:
     RABBIT_EXCHANGE: elkexchange
-    RABBIT_QUEUE: elkqueue
+    RABBIT_ROUTING_KEY: elkqueue
     ## OTHERS
     REDIS_HOST: redis-cache-1
     REDIS_PREFIX: 01T10
