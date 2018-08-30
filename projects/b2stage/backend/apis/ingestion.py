@@ -262,8 +262,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             logstring = 'failure'
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
-                # errors = edict
-                # print("TEST", edict)
 
                 # FIXME: Failure or not?
                 # Semi-Failure: NotUnique just means that another
@@ -271,7 +269,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 # failure or not? We cannot even know!!!
                 if edict.get('code') == 'NotUnique':
                     response['status'] = 'existing'
-                    response['description'] = 'A container of the same name existed, but it is unsure if it was successful. Please delete and retry.'
+                    err_msg = 'A container of the same name existed, but it is unsure if it was successful. Please delete and retry.'
+                    response['description'] = err_msg
                     log_msg = prepare_message(self,
                         log_string='failure', # TODO What to say?
                         error = err_msg
