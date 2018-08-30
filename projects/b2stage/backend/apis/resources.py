@@ -123,10 +123,14 @@ class Resources(ClusterContainerEndpoint):
         input_json = self.get_input()
         # input_json = self._args.get('input', {})
 
-        # backdoor check
-        bd = input_json.pop('eudat_backdoor', False)  # TODO: remove me
-        if bd:
+        # Set docker image prefix
+        # Backdoor: Allows to use a docker image with prefix "eudat"
+        # instead of prefix "maris"!
+        # TODO: Un-hard-code!
+        backdoor = input_json.pop('eudat_backdoor', False)  # TODO: remove me
+        if backdoor:
             im_prefix = 'eudat'
+            log.info('Running an eudat image (backdoor)!')
         else:
             im_prefix = 'maris'
         log.debug("Image prefix: %s", im_prefix)

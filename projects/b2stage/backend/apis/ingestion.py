@@ -179,15 +179,20 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ###########################
         # Also copy file to the B2HOST environment
+        log.info('Copying file to B2HOST')
+
+        # Backdoor: Celery task is called to copy file to
+        # B2HOST and to unzip.
         if backdoor:
-            # # CELERY VERSION
             log.info("Submit async celery task")
             from restapi.flask_ext.flask_celery import CeleryExt
             task = CeleryExt.send_to_workers_task.apply_async(
                 args=[batch_id, irods_path, zip_name, backdoor])
             log.warning("Async job: %s", task.id)
+
+        # Normal (no backdoor): Data is copied to B2HOST
+        # using a normal container. No unzipping done.
         else:
-            # # CONTAINERS VERSION
             rancher = self.get_or_create_handle()
             idest = self.get_ingestion_path()
 
@@ -201,13 +206,15 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 'IRODS_PASSWORD': icom.variables.get('password'),
             }
 
-            # Launch a container to copy the data into B2HOST
+            # Define container
             cname = 'copy_zip'
             cversion = '0.7'  # release 1.0?
             image_tag = '%s:%s' % (cname, cversion)
             container_name = self.get_container_name(batch_id, image_tag)
             docker_image_name = self.get_container_image(
                 image_tag, prefix='eudat')
+
+            # Run container
             log.info("Requesting copy: %s" % docker_image_name)
             errors = rancher.run(
                 container_name=container_name, image_name=docker_image_name,
@@ -219,6 +226,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             )
 
         ########################
+        # Finalize response after launching copy to B2HOST
 
         if errors is None:
             logstring = 'end'
