@@ -9,6 +9,7 @@ from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
+from b2stage.apis.commons.queue import log_into_queue, prepare_message
 
 log = get_logger(__name__)
 
@@ -66,6 +67,13 @@ class Resources(ClusterContainerEndpoint):
     def put(self, batch_id, qc_name):
         """ Launch a quality check inside a container """
 
+        # Log start into RabbitMQ
+        log.info('Received request to run qc "%s" on batch "%s"' % (qc_name, batch_id))
+        log_msg = prepare_message(self,
+            log_string='start'
+        )
+        log_into_queue(self, log_msg)
+
         ###########################
         # get name from batch
         imain = self.get_service_instance(service_name='irods')
@@ -73,21 +81,38 @@ class Resources(ClusterContainerEndpoint):
         log.info("Batch path: %s", batch_path)
         try:
             files = imain.list(batch_path)
+
+        # Failure: Batch not found or no permissions
+        # Log to RabbitMQ and return error code
         except BaseException as e:
             log.warning(e.__class__.__name__)
             log.error(e)
-            return self.send_errors(
-                "Batch '%s' not found (or no permissions)" % batch_id,
+            err_msg = ("Batch '%s' not found (or no permissions)" %
+                batch_id)
+            log_msg = prepare_message(self,
+                log_string='failure',
+                error = err_msg
+            )
+            log_into_queue(self, log_msg)
+            return self.send_errors(err_msg,
                 code=hcodes.HTTP_BAD_REQUEST
             )
         else:
-            # if len(files) < 1:
+
+            # Failure: Not exactly 1 file:
+            # Log to RabbitMQ and return error code
             if len(files) != 1:
-                log.error('Misconfiguration: %s files in %s (expected 1).' % (len(files), batch_path))
-                return self.send_errors(
-                    'Misconfiguration for batch_id: %s' % batch_id,
+                err_msg = ('Misconfiguration for batch %s: %s files in %s (expected 1).'
+                    % (batch_id, len(files), batch_path))
+                log_msg = prepare_message(self,
+                    log_string='failure',
+                    error = err_msg
+                )
+                log_into_queue(self, log_msg)
+                return self.send_errors(err_msg,
                     code=hcodes.HTTP_BAD_NOTFOUND
                 )
+
             else:
                 # log.pp(files)
                 file_id = list(files.keys()).pop()
@@ -117,11 +142,20 @@ class Resources(ClusterContainerEndpoint):
             if key == pkey:
                 continue
             value = input_json.get(key, None)
+
+            # Failure: Missing JSON key
+            # Log to RabbitMQ and return error code
             if value is None:
-                return self.send_errors(
-                    'Missing JSON key: %s' % key,
+                err_msg = ('Missing JSON key: %s' % key)
+                log_msg = prepare_message(self,
+                    log_string='failure',
+                    error = err_msg
+                )
+                log_into_queue(self, log_msg)
+                return self.send_errors(err_msg,
                     code=hcodes.HTTP_BAD_REQUEST
                 )
+            
             # else:
             #     envs[key.upper()] = value
 
@@ -188,21 +222,31 @@ class Resources(ClusterContainerEndpoint):
         response = {
             'batch_id': batch_id,
             'qc_name': qc_name,
-            'status': 'executed',
+            'status': 'executed', # TODO started
             'input': input_json,
         }
 
-        if errors is not None:
+        if errors is None:
+            logstring = 'end'
+        else:
+            logstring = 'failure'
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
                 # print("TEST", edict)
                 if edict.get('code') == 'NotUnique':
-                    response['status'] = 'existing'
+                    response['status'] = 'existing' # TODO this means container exists! not result exists!
                 else:
                     response['status'] = 'could NOT be started'
                     response['description'] = edict
             else:
                 response['status'] = 'failure'
+
+        # Log end into RabbitMQ
+        log_msg = prepare_message(self,
+            log_string=logstring,
+            status = response['status']
+        )
+        log_into_queue(self, log_msg)
 
         return response
 
