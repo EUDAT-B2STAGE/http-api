@@ -9,9 +9,13 @@ services:
   rabbit:
     environment:
       ACTIVATE: 1
+    ports:
+      - 4369:4369
 
   mongodb:
     environment:
       ACTIVATE: 1
+    ports:
+      - 27017:27017  
 
   # redis:
