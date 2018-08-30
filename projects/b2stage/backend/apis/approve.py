@@ -254,8 +254,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                     value_len = len(value)
                     if value_len > md.max_size:
                         error = "Param '%s': exceeds size %s" % (key, md.max_size)
-                if value_len < 1:
-                    error = "Param '%s': empty" % key
+                    if value_len < 1:
+                        error = "Param '%s': empty" % key
 
                 # Failure: Some parameter not valid
                 # Log to RabbitMQ and return error code
