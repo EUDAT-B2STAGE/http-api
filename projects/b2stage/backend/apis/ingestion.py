@@ -255,7 +255,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         if errors is None:
             logstring = 'end'
-            response['status'] = 'filled'
+            response['status'] = 'filled' # TODO: Or 'launched'? We cannot be sure, as the container was only launched.
             response['description'] = "Batch '%s' filled" % batch_id
 
         else:
@@ -295,7 +295,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             # Failure: Unknown error returned by Rancher
             # Log to RabbitMQ and return error code
             else:
-                err_msg = 'Unknown error (%s)' % errors
+                err_msg = 'Upload: Unknown error (%s)' % errors
                 log_msg = prepare_message(self,
                     log_string='failure',
                     error = err_msg
