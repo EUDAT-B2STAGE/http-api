@@ -223,31 +223,66 @@ class Resources(ClusterContainerEndpoint):
             }
         )
 
+        ########################
+        # Finalize response after launching qc on B2HOST
         response = {
             'batch_id': batch_id,
             'qc_name': qc_name,
-            'status': 'executed', # TODO started
             'input': input_json,
         }
 
         if errors is None:
-            logstring = 'end'
+            log_string = 'end'
+            response['status'] = 'executed' # TODO or launched?
+            response['description'] = 'QC container was launched. Success unclear yet.'
         else:
-            logstring = 'failure'
+            log_string = 'failure'
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
-                # print("TEST", edict)
+
+                # FIXME: Failure or not?
+                # Semi-Failure: NotUnique just means that another
+                # container of the same name exists! Does this mean
+                # failure or not? We cannot even know!!!
                 if edict.get('code') == 'NotUnique':
                     response['status'] = 'existing' # TODO this means container exists! not result exists!
-                else:
-                    response['status'] = 'could NOT be started'
-                    response['description'] = edict
-            else:
-                response['status'] = 'failure'
+                    err_msg = 'A container of the same name existed, but it is unsure if it was successful. Please delete and retry.'
+                    response['description'] = err_msg
+                    log_msg = prepare_message(self,
+                        log_string='failure', # TODO What to say?
+                        error = err_msg
+                    )
+                    log_into_queue(self, log_msg)
+                    return self.send_errors(err_msg,
+                        code=hcodes.HTTP_BAD_CONFLICT)
 
-        # Log end into RabbitMQ
+                # Failure: Rancher returned errors.
+                # Log to RabbitMQ and return error code
+                else:
+                    err_msg = 'QC could NOT be started (%s)' % edict
+                    log_msg = prepare_message(self,
+                        log_string='failure',
+                        error = err_msg
+                    )
+                    log_into_queue(self, log_msg)
+                    return self.send_errors(err_msg,
+                        code=hcodes.HTTP_SERVER_ERROR)
+
+            # Failure: Unknown error returned by Rancher
+            # Log to RabbitMQ and return error code
+            else:
+                err_msg = 'QC: Unknown error (%s)' % errors
+                log_msg = prepare_message(self,
+                    log_string='failure',
+                    error = err_msg
+                )
+                log_into_queue(self, log_msg)
+                return self.send_errors(err_msg,
+                    code=hcodes.HTTP_SERVER_ERROR)
+
+        # Log end (of QC) into RabbitMQ
         log_msg = prepare_message(self,
-            log_string=logstring,
+            log_string=log_string,
             status = response['status']
         )
         log_into_queue(self, log_msg)
