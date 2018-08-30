@@ -96,18 +96,31 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 )
             )
             log_into_queue(self, log_msg)
-
             return self.send_errors(err_msg,
                 code=hcodes.HTTP_BAD_REQUEST)
 
         ########################
+        # Check for mimetype
         # NOTE: only streaming is allowed, as it is more performant
         ALLOWED_MIMETYPE_UPLOAD = 'application/octet-stream'
         from flask import request
+
+        # Failure: Wrong mimetype:
+        # Log to RabbitMQ and return error code
         if request.mimetype != ALLOWED_MIMETYPE_UPLOAD:
-            return self.send_errors(
-                "Only mimetype allowed for upload: %s"
-                % ALLOWED_MIMETYPE_UPLOAD,
+            err_msg = ("Only mimetype allowed for upload: %s"
+                % ALLOWED_MIMETYPE_UPLOAD)
+            log_msg = prepare_message(self,
+                user = ingestion_user,
+                log_string = 'failure',
+                info = dict(
+                    batch_id = batch_id,
+                    file_id = file_id,
+                    error = err_msg
+                )
+            )
+            log_into_queue(self, log_msg)
+            return self.send_errors(err_msg,
                 code=hcodes.HTTP_BAD_REQUEST)
 
 
@@ -142,10 +155,23 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
             iout = icom.write_in_streaming(destination=irods_path, force=True)
+
+        # Failure: Streaming into iRODS
+        # Log to RabbitMQ and return error code
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
-            return self.send_errors(
-                "Failed streaming towards B2SAFE cloud",
+            err_msg = 'Failed streaming towards B2SAFE cloud'
+            log_msg = prepare_message(self,
+                user = ingestion_user,
+                log_string = 'failure',
+                info = dict(
+                    batch_id = batch_id,
+                    file_id = file_id,
+                    error = err_msg
+                )
+            )
+            log_into_queue(self, log_msg)
+            return self.send_errors(err_msg,
                 code=hcodes.HTTP_SERVER_ERROR)
         else:
             log.info("irods call %s", iout)
