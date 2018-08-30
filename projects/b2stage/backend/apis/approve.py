@@ -233,7 +233,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # Failure: File data is not a dictionary.
             # Log to RabbitMQ and return error code
             if not isinstance(data, dict):
-                err_msg = "File list contains at least one wrong entry"
+                err_msg = "File list contains at least one wrong entry (not valid JSON)"
                 log.warn(err_msg)
                 log_msg = prepare_message(self,
                     log_string='failure',
@@ -249,7 +249,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 value = data.get(key)
                 error = None
                 if value is None:
-                    error = 'Missing parameter: %s' % key
+                    error = "Missing parameter: '%s'" % key
                 else:
                     value_len = len(value)
                     if value_len > md.max_size:
