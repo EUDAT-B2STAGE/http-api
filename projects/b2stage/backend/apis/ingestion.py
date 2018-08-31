@@ -214,9 +214,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             container_name = self.get_container_name(batch_id, image_tag)
             docker_image_name = self.get_container_image(
                 image_tag, prefix='eudat')
+            cont = ('%s (%s)' % (container_name, docker_image_name))
 
             # Run container
-            log.info("Requesting copy: %s" % docker_image_name)
+            log.info("Requesting copy: %s (name %s)", docker_image_name, container_name)
             errors = rancher.run(
                 container_name=container_name, image_name=docker_image_name,
                 private=True, pull=False,
@@ -236,7 +237,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
 
-                # FIXME: Failure or not?
                 # Semi-Failure: NotUnique just means that another
                 # container of the same name exists! Does this mean
                 # failure or not? We cannot even know!!!

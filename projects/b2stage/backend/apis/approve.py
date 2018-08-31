@@ -277,7 +277,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         imain.create_collection_inheritable(self.prod_path, obj.username)
 
         # Log progress into RabbitMQ
-        log_progress(self, taskname, json_input, 'Dir created (if not existing).')
+        log_progress(self, taskname, json_input, 'Dir on production cloud created (if not existing).')
 
         ################
         # ASYNC
