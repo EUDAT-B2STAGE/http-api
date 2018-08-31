@@ -154,8 +154,7 @@ def log_success_uncertain(instance, taskname, maris_params, status, descrip):
     }
     _log_any(instance, taskname, dictio, maris_params)
 
-
-def log_submitted(instance, taskname, maris_params, async_id):
+def log_submitted_async(instance, taskname, maris_params, async_id):
     # An async task was submitted to celery
     dictio = {
         'progress': 'submitted',
@@ -164,7 +163,7 @@ def log_submitted(instance, taskname, maris_params, async_id):
     _log_any(instance, taskname, dictio, maris_params)
 
 
-def log_async_start(instance, taskname, maris_params):
+def log_start_async(instance, taskname, maris_params):
     # An async task has been picked up by a worker
     dictio = {'progress': 'picked_up'}
     _log_any(instance, taskname, dictio, maris_params)

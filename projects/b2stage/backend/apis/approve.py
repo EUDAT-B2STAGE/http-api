@@ -358,11 +358,11 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         # Return http 202/accepted
         # And log end (of approve) into RabbitMQ
-        log_submitted(self, taskname, json_input, task.id)
+        log_submitted_async(self, taskname, json_input, task.id)
         response = {
             'async': task.id,
             'status': 'submitted',
-            'description': 'Submitted asynchronous task to celery for processing.'
+            'description': 'Submitted asynchronous task to celery for moving to production.'
         }
         self.force_response(response,
             code=hcodes.ACCEPTED)

@@ -185,9 +185,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 'batch_id': batch_id,
                 'status': 'submitted',
                 'async': task.id,
-                'description': 'Launched asynchronous celery task for copying data to B2HOST.'
+                'description': 'Submitted asynchronous celery task for copying data to B2HOST.'
             }
-            log_submitted(self, taskname, json_input, task.id)
+            log_submitted_async(self, taskname, json_input, task.id)
             return self.force_response(response,
                 code=hcodes.HTTP_OK_ACCEPTED)
 
