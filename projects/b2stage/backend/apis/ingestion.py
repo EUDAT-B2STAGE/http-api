@@ -179,6 +179,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 args=[batch_id, irods_path, zip_name, backdoor])
             log.warning("Async job: %s", task.id)
 
+            # Return http=202:
+            # and log submitted into RabbitMQ
             response = {
                 'batch_id': batch_id,
                 'status': 'submitted',
@@ -186,9 +188,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 'description': 'Launched asynchronous celery task for copying data to B2HOST.'
             }
             log_submitted(self, taskname, json_input, task.id)
-
-            # Return http=200:
-            return self.force_response(response)
+            return self.force_response(response,
+                code=hcodes.HTTP_OK_ACCEPTED)
 
         # Normal (no backdoor): Data is copied to B2HOST
         # using a normal container. No unzipping done.
