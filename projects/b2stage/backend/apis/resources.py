@@ -218,15 +218,11 @@ class Resources(ClusterContainerEndpoint):
         response = {
             'batch_id': batch_id,
             'qc_name': qc_name,
-            'input': input_json,
+            'input': json_input,
         }
 
-        if errors is None:
-            log_string = 'end'
-            response['status'] = 'executed' # TODO or launched?
-            response['description'] = 'QC container was launched. Success unclear yet.'
-        else:
-            log_string = 'failure'
+        if errors is not None:
+            log.error('Rancher: %s', errors)
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
 
@@ -261,6 +257,9 @@ class Resources(ClusterContainerEndpoint):
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
 
+        # If everything went well:
+        response['status'] = 'executed' # TODO or launched?
+        response['description'] = 'QC container was launched. Success unclear yet.'
         # Log end (of QC) into RabbitMQ
         desc = ('Launched the container %s (%s), but unsure if it succeeded.'
             % (container_name, docker_image_name))

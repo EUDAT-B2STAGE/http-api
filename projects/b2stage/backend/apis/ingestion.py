@@ -213,17 +213,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ########################
         # Finalize response after launching copy to B2HOST
-        response = {
-            'batch_id': batch_id,
-        }
-
-        if errors is None:
-            logstring = 'end'
-            response['status'] = 'filled' # TODO: Or 'launched'? We cannot be sure, as the container was only launched.
-            response['description'] = "Batch '%s' filled" % batch_id
-
-        else:
-            logstring = 'failure'
+        if errors is not None:
+            response = {
+                'batch_id': batch_id,
+            }
+            log.error('Rancher: %s', errors)
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
 
@@ -259,6 +253,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
 
+        # If everything went well:
+        response = {
+            'batch_id': batch_id,
+            'status': 'filled', # TODO: Or 'launched'? We cannot be sure, as the container was only launched.
+            'description': "Batch '%s' filled" % batch_id
+        }
+
         # Log end (of upload) into RabbitMQ
         desc = ('Launched the container %s (%s), but unsure if it succeeded.'
             % (container_name, docker_image_name))
@@ -289,8 +290,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 "Mandatory parameter '%s' missing" % param_name,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        log.info('Received request to enable batch "%s"' % batch_id)
-
         # Log start (of enable) into RabbitMQ
         log.info('Received request to enable batch "%s"' % batch_id)
         #json_input = self.get_input() # call only once
@@ -308,10 +307,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         batch_path = self.get_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
 
-        # Init response
-        response = {
-            'batch_id': batch_id
-        }
+
 
         ##################
         # Does it already exist? Is it a collection?
@@ -326,14 +322,20 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             #     permission='null', userOrGroup=icom.anonymous_user)
 
             ##################
-            response['description'] = "Batch '%s' enabled" % batch_id
-            response['status'] = 'enabled'
+            desc = ("Batch '%s' enabled" % batch_id)
+            status = 'enabled'
 
         else:
             log.debug("Already exists")
-            response['description'] = "Batch '%s' already existed" % batch_id
-            response['status'] = 'exists'
+            desc = ("Batch '%s' already existed" % batch_id)
+            status = 'exists'
 
+        # Init response
+        response = {
+            'batch_id': batch_id,
+            'status': status,
+            'description' : desc
+        }
         # Log end (of enable) into RabbitMQ
         log_success(self, taskname, json_input, status, desc)
         return self.force_response(response)
