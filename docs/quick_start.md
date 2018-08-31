@@ -78,7 +78,7 @@ echo "mode: production" >> .projectrc
 echo "hostname: yourdomain.com" >> .projectrc  # set a domain if you have one
 ```
 
-You can override any of the project configuration variables, e.g. to set an external B2SAFE instance by including a project_configuration section into your .projectrc file
+You can override any of the project configuration variables, e.g. to set an external B2SAFE instance by including a project_configuration section into your .projectrc file.
 
 ```bash
 project: b2stage
@@ -90,7 +90,7 @@ project_configuration:
       IRODS_HOST: your.b2safe.host
 ```
 
-You can now start your HTTP api server in production mode
+You can now start your HTTP api server in production mode.
 
 ```bash
 # remove containers in debug mode
