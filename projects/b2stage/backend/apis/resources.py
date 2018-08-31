@@ -9,7 +9,7 @@ from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
-from b2stage.apis.commons.queue import log_into_queue, prepare_message
+from b2stage.apis.commons.queue import *
 
 log = get_logger(__name__)
 
@@ -69,10 +69,9 @@ class Resources(ClusterContainerEndpoint):
 
         # Log start into RabbitMQ
         log.info('Received request to run qc "%s" on batch "%s"' % (qc_name, batch_id))
-        log_msg = prepare_message(self,
-            log_string='start'
-        )
-        log_into_queue(self, log_msg)
+        json_input = self.get_input() # call only once
+        taskname = 'qc'
+        log_start(self, taskname, json_input)
 
         ###########################
         # get name from batch
@@ -89,11 +88,8 @@ class Resources(ClusterContainerEndpoint):
             log.error(e)
             err_msg = ("Batch '%s' not found (or no permissions)" %
                 batch_id)
-            log_msg = prepare_message(self,
-                log_string='failure',
-                error = err_msg
-            )
-            log_into_queue(self, log_msg)
+            log.warn(err_msg)
+            log_failure(self, taskname, json_input, err_msg)
             return self.send_errors(err_msg,
                 code=hcodes.HTTP_BAD_REQUEST
             )
@@ -104,11 +100,8 @@ class Resources(ClusterContainerEndpoint):
             if len(files) != 1:
                 err_msg = ('Misconfiguration for batch %s: %s files in %s (expected 1).'
                     % (batch_id, len(files), batch_path))
-                log_msg = prepare_message(self,
-                    log_string='failure',
-                    error = err_msg
-                )
-                log_into_queue(self, log_msg)
+                log.warn(err_msg)
+                log_failure(self, taskname, json_input, err_msg)
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_BAD_NOTFOUND
                 )
@@ -120,14 +113,14 @@ class Resources(ClusterContainerEndpoint):
         ###################
         # Parameters (and checks)
         envs = {}
-        input_json = self.get_input()
-        # input_json = self._args.get('input', {})
+
+        # json_input = self._args.get('input', {})
 
         # Set docker image prefix
         # Backdoor: Allows to use a docker image with prefix "eudat"
         # instead of prefix "maris"!
         # TODO: Un-hard-code!
-        backdoor = input_json.pop('eudat_backdoor', False)  # TODO: remove me
+        backdoor = json_input.pop('eudat_backdoor', False)  # TODO: remove me
         if backdoor:
             im_prefix = 'eudat'
             log.info('Running an eudat image (backdoor)!')
@@ -145,17 +138,14 @@ class Resources(ClusterContainerEndpoint):
         for key in param_keys:
             if key == pkey:
                 continue
-            value = input_json.get(key, None)
+            value = json_input.get(key, None)
 
             # Failure: Missing JSON key
             # Log to RabbitMQ and return error code
             if value is None:
                 err_msg = ('Missing JSON key: %s' % key)
-                log_msg = prepare_message(self,
-                    log_string='failure',
-                    error = err_msg
-                )
-                log_into_queue(self, log_msg)
+                log.warn(err_msg)
+                log_failure(self, taskname, json_input, err_msg)
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_BAD_REQUEST
                 )
@@ -165,7 +155,7 @@ class Resources(ClusterContainerEndpoint):
 
         ###################
         # # check batch id also from the parameters
-        # batch_j = input_json.get(pkey, {}).get("batch_number", 'UNKNOWN')
+        # batch_j = json_input.get(pkey, {}).get("batch_number", 'UNKNOWN')
         # if batch_j != batch_id:
         #     return self.send_errors(
         #         "Wrong JSON batch id: '%s' instead of '%s'" % (
@@ -174,7 +164,7 @@ class Resources(ClusterContainerEndpoint):
         #     )
 
         ###################
-        # for key, value in input_json.get(pkey, {}).items():
+        # for key, value in json_input.get(pkey, {}).items():
         #     name = '%s_%s' % (pkey, key)
         #     envs[name.upper()] = value
 
@@ -192,7 +182,7 @@ class Resources(ClusterContainerEndpoint):
         from utilities import path
         envs['BATCH_DIR_PATH'] = path.dir_name(cfilepath)
         import json
-        envs['JSON_INPUT'] = json.dumps(input_json)
+        envs['JSON_INPUT'] = json.dumps(json_input)
         from b2stage.apis.commons.queue import QUEUE_VARS
         from b2stage.apis.commons.cluster import CONTAINERS_VARS
         for key, value in QUEUE_VARS.items():
@@ -248,11 +238,8 @@ class Resources(ClusterContainerEndpoint):
                     response['status'] = 'existing' # TODO this means container exists! not result exists!
                     err_msg = 'A container of the same name existed, but it is unsure if it was successful. Please delete and retry.'
                     response['description'] = err_msg
-                    log_msg = prepare_message(self,
-                        log_string='failure', # TODO What to say?
-                        error = err_msg
-                    )
-                    log_into_queue(self, log_msg)
+                    log.warn(err_msg)
+                    log_failure(self, taskname, json_input, err_msg)
                     return self.send_errors(err_msg,
                         code=hcodes.HTTP_BAD_CONFLICT)
 
@@ -260,11 +247,8 @@ class Resources(ClusterContainerEndpoint):
                 # Log to RabbitMQ and return error code
                 else:
                     err_msg = 'QC could NOT be started (%s)' % edict
-                    log_msg = prepare_message(self,
-                        log_string='failure',
-                        error = err_msg
-                    )
-                    log_into_queue(self, log_msg)
+                    log.warn(err_msg)
+                    log_failure(self, taskname, json_input, err_msg)
                     return self.send_errors(err_msg,
                         code=hcodes.HTTP_SERVER_ERROR)
 
@@ -272,21 +256,15 @@ class Resources(ClusterContainerEndpoint):
             # Log to RabbitMQ and return error code
             else:
                 err_msg = 'QC: Unknown error (%s)' % errors
-                log_msg = prepare_message(self,
-                    log_string='failure',
-                    error = err_msg
-                )
-                log_into_queue(self, log_msg)
+                log.warn(err_msg)
+                log_failure(self, taskname, json_input, err_msg)
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
 
         # Log end (of QC) into RabbitMQ
-        log_msg = prepare_message(self,
-            log_string=log_string,
-            status = response['status']
-        )
-        log_into_queue(self, log_msg)
-
+        desc = ('Launched the container %s (%s), but unsure if it succeeded.'
+            % (container_name, docker_image_name))
+        log_success_uncertain(self, taskname, json_input, desc) 
         return response
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
@@ -294,6 +272,11 @@ class Resources(ClusterContainerEndpoint):
         """
         Remove a quality check executed
         """
+
+        log.warn('Received request to delete qc container %s for batch %s !', qc_name, batch_id)
+        json_input = self.get_input() # call only once
+        taskname = 'delete_qc'
+        log_start(self, taskname, json_input)
 
         container_name = self.get_container_name(batch_id, qc_name)
         rancher = self.get_or_create_handle()
@@ -305,4 +288,5 @@ class Resources(ClusterContainerEndpoint):
             'qc_name': qc_name,
             'status': 'removed',
         }
+        log_success_uncertain(self, taskname, json_input, 'Removal launched.')
         return response

@@ -7,7 +7,7 @@ Ingestion process submission to upload the SeaDataNet marine data.
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
-from b2stage.apis.commons.queue import log_into_queue, prepare_message
+from b2stage.apis.commons.queue import *
 from utilities import htmlcodes as hcodes
 # from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
@@ -69,12 +69,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         """
 
         log.info('Received request to upload batch "%s"' % batch_id)
-
-        # Log start (of upload) into RabbitMQ
-        log_msg = prepare_message(
-            self, json={'batch_id': batch_id, 'file_id': file_id},
-            user=ingestion_user, log_string='start')
-        log_into_queue(self, log_msg)
+        taskname = 'upload'
+        json_input = self.get_input() # call only once
+        log_start(self, taskname, json_input)
 
         ########################
         # get irods session
@@ -92,16 +89,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         if not icom.is_collection(batch_path):
             err_msg = ("Batch '%s' not enabled or you have no permissions"
                 % batch_id)
-            log_msg = prepare_message(self,
-                user = ingestion_user,
-                log_string = 'failure',
-                info = dict(
-                    batch_id = batch_id,
-                    file_id = file_id,
-                    error = err_msg
-                )
-            )
-            log_into_queue(self, log_msg)
+            log.warn(err_msg)
+            log_failure(self, taskname, json_input, err_msg)
             return self.send_errors(err_msg,
                 code=hcodes.HTTP_BAD_REQUEST)
 
@@ -116,16 +105,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         if request.mimetype != ALLOWED_MIMETYPE_UPLOAD:
             err_msg = ("Only mimetype allowed for upload: %s"
                 % ALLOWED_MIMETYPE_UPLOAD)
-            log_msg = prepare_message(self,
-                user = ingestion_user,
-                log_string = 'failure',
-                info = dict(
-                    batch_id = batch_id,
-                    file_id = file_id,
-                    error = err_msg
-                )
-            )
-            log_into_queue(self, log_msg)
+            log.warn(err_msg)
+            log_failure(self, taskname, json_input, err_msg)
             return self.send_errors(err_msg,
                 code=hcodes.HTTP_BAD_REQUEST)
 
@@ -140,20 +121,15 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         backdoor = (file_id == BACKDOOR_SECRET)
         if backdoor and icom.is_dataobject(irods_path): # TODO And if no backdoor?
 
+            desc = 'A file was uploaded already for this batch.'
+            status = 'exists'
             response = {
                 'batch_id': batch_id,
-                'status': 'exists',
-                'description': 'A file was uploaded already for this batch.'
+                'status': status,
+                'description': desc
             }
+            log_success(self, taskname, json_input, status, desc)
 
-            # Log end (of upload) into RabbitMQ
-            # In case it already existed!
-            log_msg = prepare_message(self,
-                user = ingestion_user,
-                log_string = 'end', # TODO True?
-                status = response['status']
-            )
-            log_into_queue(self, log_msg)
             return response
 
         ########################
@@ -169,30 +145,12 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
             err_msg = 'Failed streaming towards B2SAFE cloud'
-            log_msg = prepare_message(self,
-                user = ingestion_user,
-                log_string = 'failure',
-                info = dict(
-                    batch_id = batch_id,
-                    file_id = file_id,
-                    error = err_msg
-                )
-            )
-            log_into_queue(self, log_msg)
+            log_failure(self, taskname, json_input, err_msg)
             return self.send_errors(err_msg,
                 code=hcodes.HTTP_SERVER_ERROR)
         else:
             log.info("irods call %s", iout)
-            
-            # Log progress into RabbitMQ
-            log_msg = prepare_message(self,
-                log_string='intermediate',
-                info = dict(
-                    batch_id = batch_id,
-                    info = 'Data streamed to irods.'
-                )
-            )
-            log_into_queue(self, log_msg)
+            log_progress(self, taskname, json_input, 'Data streamed to irods.')
 
         ###########################
         # Also copy file to the B2HOST environment
@@ -213,11 +171,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 'async': task.id,
                 'description': 'Launched asynchronous celery task for copying data to B2HOST.'
             }
-            # Log end (of upload) into RabbitMQ
-            log_msg = prepare_message(
-                self, status=response['status'],
-                user=ingestion_user, log_string='submitted')
-            log_into_queue(self, log_msg)
+            log_submitted(self, taskname, json_input, task.id)
 
             # Return http=200:
             return self.force_response(response)
@@ -281,11 +235,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                     response['status'] = 'existing'
                     err_msg = 'A container of the same name existed, but it is unsure if it was successful. Please delete and retry.'
                     response['description'] = err_msg
-                    log_msg = prepare_message(self,
-                        log_string='failure', # TODO What to say?
-                        error = err_msg
-                    )
-                    log_into_queue(self, log_msg)
+                    log.warn(err_msg)
+                    log_failure(self, taskname, json_input, err_msg)
                     return self.send_errors(err_msg,
                         code=hcodes.HTTP_BAD_CONFLICT)
 
@@ -294,11 +245,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 # Log to RabbitMQ and return error code
                 else:
                     err_msg = 'Copy could NOT be started (%s)' % edict
-                    log_msg = prepare_message(self,
-                        log_string='failure',
-                        error = err_msg
-                    )
-                    log_into_queue(self, log_msg)
+                    log.warn(err_msg)
+                    log_failure(self, taskname, json_input, err_msg)
                     return self.send_errors(err_msg,
                         code=hcodes.HTTP_SERVER_ERROR)
 
@@ -306,19 +254,15 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             # Log to RabbitMQ and return error code
             else:
                 err_msg = 'Upload: Unknown error (%s)' % errors
-                log_msg = prepare_message(self,
-                    log_string='failure',
-                    error = err_msg
-                )
-                log_into_queue(self, log_msg)
+                log.warn(err_msg)
+                log_failure(self, taskname, json_input, err_msg)
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
 
         # Log end (of upload) into RabbitMQ
-        log_msg = prepare_message(
-            self, status=response['status'],
-            user=ingestion_user, log_string=logstring)
-        log_into_queue(self, log_msg)
+        desc = ('Launched the container %s (%s), but unsure if it succeeded.'
+            % (container_name, docker_image_name))
+        log_success_uncertain(self, taskname, json_input, desc)
 
         # Return http=200:
         return self.force_response(response)
@@ -336,8 +280,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         """
 
         param_name = 'batch_id'
-        self.get_input()
-        batch_id = self._args.get(param_name, None)
+        json_input = self.get_input() # call only once
+        #batch_id = self._args.get(param_name, None)
+        batch_id = json_input['batch_id'] if 'batch_id' in json_input else None
 
         if batch_id is None:
             return self.send_errors(
@@ -347,10 +292,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.info('Received request to enable batch "%s"' % batch_id)
 
         # Log start (of enable) into RabbitMQ
-        log_msg = prepare_message(
-            self, json={'batch_id': batch_id},
-            user=ingestion_user, log_string='start')
-        log_into_queue(self, log_msg)
+        log.info('Received request to enable batch "%s"' % batch_id)
+        #json_input = self.get_input() # call only once
+        taskname = 'enable'
+        log_start(self, taskname, json_input)
 
         ##################
         # Get irods session
@@ -390,8 +335,5 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             response['status'] = 'exists'
 
         # Log end (of enable) into RabbitMQ
-        log_msg = prepare_message(
-            self, status=status, user=ingestion_user, log_string='end')
-        log_into_queue(self, log_msg)
-
+        log_success(self, taskname, json_input, status, desc)
         return self.force_response(response)

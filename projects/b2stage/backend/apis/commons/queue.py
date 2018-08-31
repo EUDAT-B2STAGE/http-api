@@ -9,6 +9,7 @@ close the rabbit connection when the HTTP API finish
 
 import json
 import pika
+import copy
 from restapi.services.detect import detector
 from utilities.logs import get_logger
 
@@ -22,7 +23,7 @@ QUEUE_VARS = detector.load_group(label=QUEUE_SERVICE)
 :param params: The kv pairs to be in the log message.
 
 '''
-def prepare_message(instance, user=None, isjson=False, **params):
+def prepare_message(instance, **params):
     """
 { # start
     "request_id": # build a hash for the current request
@@ -52,14 +53,12 @@ def prepare_message(instance, user=None, isjson=False, **params):
     logmsg['request_id'] = instance_id
     # logmsg['request_id'] = instance_id[len(instance_id) - 6:]
 
-    from b2stage.apis.commons.seadatacloud import seadata_vars
-    logmsg['edmo_code'] = seadata_vars.get('edmo_code')
+    # WRONG EDMO CODE!
+    #from b2stage.apis.commons.seadatacloud import seadata_vars
+    #logmsg['edmo_code'] = seadata_vars.get('edmo_code')
 
     from datetime import datetime
     logmsg['datetime'] = datetime.now().strftime("%Y%m%dT%H:%M:%S")
-
-    if isjson:
-        return logmsg # TODO Why this? Why does isjson exist at all?
 
     from restapi.services.authentication import BaseAuthentication as Service
     ip, _ = Service.get_host_info()
@@ -67,16 +66,107 @@ def prepare_message(instance, user=None, isjson=False, **params):
     # logmsg['hostname'] = hostname
 
     from flask import request
-    # http://localhost:8080/api/pids/<PID>
     import re
     endpoint = re.sub(r"https?://[^\/]+", '', request.url)
     logmsg['program'] = request.method + ':' + endpoint
-    if user is None:
-        user = 'import_manager' # TODO: True? Not sure!
-    logmsg['user'] = user
+
+    # WRONG USER?
+    #if user is None:
+    #    user = 'import_manager' # TODO: True? Not sure!
+    #logmsg['user'] = user
 
     # log.pp(logmsg)
     return logmsg
+
+def _log_any(instance, taskname, dictio, maris_params):
+    # Only to be used by functions in this module
+
+    # Make sure we don't log 100s of files,
+    # by replacing ref to pid-list by ref to
+    # shorter pid list, but in a copy, not in
+    # original param!
+    # TODO We probably need something similar for orders!
+    if 'parameters' in maris_params and 'pids' in maris_params['parameters']:
+        if len(maris_params['parameters']['pids']) > 3:
+            temp1 = copy.copy(maris_params)               # must be shallow
+            temp2 = copy.copy(maris_params['parameters']) # must be shallow!
+            few_pids = [
+                maris_params['parameters']['pids'][0],
+                maris_params['parameters']['pids'][1],
+                '...'
+            ]
+            temp2['pids'] = few_pids
+            temp1['parameters'] = temp2
+            maris_params = temp1 # only change pointer
+            
+    combi = {**dictio, **maris_params}
+    combi['taskname']=taskname
+    msg = prepare_message(instance, **combi)
+    _log_into_queue(instance, combi)
+
+
+def log_start(instance, taskname, maris_params, descrip=''):
+    # Log the start of any operation
+    dictio = {'progress': 'start'}
+    _log_any(instance, taskname, dictio, maris_params)
+
+def log_failure(instance, taskname, maris_params, descrip):
+    # Log any errors that return http error codes
+    # TODO Better for elastic to have alwayds the same fields?
+    dictio = {
+        'progress': 'failure',
+        'info': {
+            'descrip': descrip
+        }
+    }
+    _log_any(instance, taskname, dictio, maris_params)
+
+def log_success(instance, taskname, maris_params, status, descrip=None):
+    # Logging the end of a synchronous task
+    # or the end of an asynchronous task.
+    # NOT: When asynchronous was submitted!
+    dictio = {
+        'progress': 'end_success',
+        'info': {
+            'status': status,
+            'descrip': descrip
+        }
+    }
+    _log_any(instance, taskname, dictio, maris_params)
+
+
+def log_submitted(instance, taskname, maris_params, async_id):
+    # An async task was submitted to celery
+    dictio = {
+        'progress': 'submitted',
+        'info': {'async_id': async_id}
+    }
+    _log_any(instance, taskname, dictio, maris_params)
+
+
+def log_progress(instance, taskname, maris_params, descrip):
+    # Can be used to log any logworthy progress
+    dictio = {
+        'progress': 'intermediate',
+        'info' : descrip
+    }
+    _log_any(instance, taskname, dictio, maris_params)
+
+
+def log_async_start(instance, taskname, maris_params):
+    # An async task has been picked up by a worker
+    dictio = {'progress': 'picked_up'}
+    _log_any(instance, taskname, dictio, maris_params)
+
+
+def log_success_uncertain(instance, taskname, maris_params, descrip):
+    # When we are not sure whether the task was successful
+    dictio = {
+        'progress': 'end_uncertain',
+        'info': descrip
+    }
+    _log_any(instance, taskname, dictio, maris_params)
+
 
 '''
 Send a log message into the logging queue, so that it
