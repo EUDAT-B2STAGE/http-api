@@ -110,6 +110,14 @@ def log_start(instance, taskname, maris_params):
     dictio = {'progress': 'start'}
     _log_any(instance, taskname, dictio, maris_params)
 
+def log_progress(instance, taskname, maris_params, descrip):
+    # Can be used to log any logworthy progress
+    dictio = {
+        'progress': 'intermediate',
+        'info' : descrip
+    }
+    _log_any(instance, taskname, dictio, maris_params)
+
 def log_failure(instance, taskname, maris_params, descrip):
     # Log any errors that return http error codes
     # TODO Better for elastic to have alwayds the same fields?
@@ -134,31 +142,6 @@ def log_success(instance, taskname, maris_params, status, descrip):
     }
     _log_any(instance, taskname, dictio, maris_params)
 
-
-def log_submitted(instance, taskname, maris_params, async_id):
-    # An async task was submitted to celery
-    dictio = {
-        'progress': 'submitted',
-        'info': {'async_id': async_id}
-    }
-    _log_any(instance, taskname, dictio, maris_params)
-
-
-def log_progress(instance, taskname, maris_params, descrip):
-    # Can be used to log any logworthy progress
-    dictio = {
-        'progress': 'intermediate',
-        'info' : descrip
-    }
-    _log_any(instance, taskname, dictio, maris_params)
-
-
-def log_async_start(instance, taskname, maris_params):
-    # An async task has been picked up by a worker
-    dictio = {'progress': 'picked_up'}
-    _log_any(instance, taskname, dictio, maris_params)
-
-
 def log_success_uncertain(instance, taskname, maris_params, status, descrip):
     # When we are not sure whether the task was successful
     # This can be removed when all containers run on celery!
@@ -170,6 +153,24 @@ def log_success_uncertain(instance, taskname, maris_params, status, descrip):
         }
     }
     _log_any(instance, taskname, dictio, maris_params)
+
+
+def log_submitted(instance, taskname, maris_params, async_id):
+    # An async task was submitted to celery
+    dictio = {
+        'progress': 'submitted',
+        'info': {'async_id': async_id}
+    }
+    _log_any(instance, taskname, dictio, maris_params)
+
+
+def log_async_start(instance, taskname, maris_params):
+    # An async task has been picked up by a worker
+    dictio = {'progress': 'picked_up'}
+    _log_any(instance, taskname, dictio, maris_params)
+
+
+
 
 
 '''
