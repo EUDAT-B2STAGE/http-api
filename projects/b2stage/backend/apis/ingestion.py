@@ -230,56 +230,50 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ########################
         # Finalize response after launching copy to B2HOST
         if errors is not None:
-            response = {
-                'batch_id': batch_id,
-            }
-            log.error('Rancher: %s', errors)
+            log.error('Rancher said: %s', errors)
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
 
                 # Semi-Failure: NotUnique just means that another
                 # container of the same name exists! Does this mean
-                # failure or not? We cannot even know!!!
+                # failure or not? We cannot know, so we return
+                # http 409/conflict.
                 if edict.get('code') == 'NotUnique':
-                    response['status'] = 'existing'
-                    err_msg = 'A container of the same name existed, but it is unsure if it was successful. Please delete and retry.'
-                    response['description'] = err_msg
-                    log.warn(err_msg)
-                    log_failure(self, taskname, json_input, err_msg)
+                    err_msg = ('Copy to B2HOST: A container for this batch already existed. Please delete and retry.')
+                    log.warn(err_msg+' '+cont)
+                    log_failure(self, taskname, json_input, err_msg+' '+cont)
                     return self.send_errors(err_msg,
                         code=hcodes.HTTP_BAD_CONFLICT)
-
 
                 # Failure: Rancher returned errors.
                 # Log to RabbitMQ and return error code
                 else:
-                    err_msg = 'Copy could NOT be started (%s)' % edict
-                    log.warn(err_msg)
-                    log_failure(self, taskname, json_input, err_msg)
+                    err_msg = 'Could not copy file to B2HOST (rancher error)'
+                    log.error(err_msg+' '+cont)
+                    log_failure(self, taskname, json_input, err_msg+' '+cont+': '+str(edict))
                     return self.send_errors(err_msg,
                         code=hcodes.HTTP_SERVER_ERROR)
 
             # Failure: Unknown error returned by Rancher
             # Log to RabbitMQ and return error code
             else:
-                err_msg = 'Upload: Unknown error (%s)' % errors
-                log.warn(err_msg)
-                log_failure(self, taskname, json_input, err_msg)
-                return self.send_errors(err_msg,
+                resp_msg = 'Copy to B2HOST could NOT be started (unknown error)'
+                log.error(err_msg+' '+cont)
+                log_failure(self, taskname, json_input, err_msg+' '+cont+': '+str(edict))
+                return self.send_errors(resp_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
 
         # If everything went well, return 202/accepted
         # and log end (of upload) into RabbitMQ
+        status = 'launched'
         response = {
-            'status': 'launched',
-            'description': desc,
-            'batch_id': batch_id,
+            'status': status,
             'description': "Batch uploaded, copy to B2HOST launched."
+            'batch_id': batch_id,
         }
-        desc = ('Data successfully streamed to irods. Copying to B2HOST '
-            'was launched: %s (%s). Success unclear yet.' % (container_name,
-            docker_image_name))
-        log_success_uncertain(self, taskname, json_input, desc)
+        desc = 'Data successfully streamed to irods. Copying to B2HOST was launched.'
+        log_success_uncertain(self, taskname, json_input, desc+' '+cont)
+
         # Return http=202:
         return self.force_response(response,
             code=hcodes.HTTP_OK_ACCEPTED)

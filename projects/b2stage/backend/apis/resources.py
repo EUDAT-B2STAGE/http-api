@@ -173,6 +173,7 @@ class Resources(ClusterContainerEndpoint):
         # should I ps containers before launching?
         container_name = self.get_container_name(batch_id, qc_name)
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
+        cont = ('%s (%s)' % (container_name, docker_image_name))
 
         ###########################
         # ## ENVS
@@ -215,60 +216,54 @@ class Resources(ClusterContainerEndpoint):
 
         ########################
         # Finalize response after launching qc on B2HOST
-        response = {
-            'batch_id': batch_id,
-            'qc_name': qc_name,
-            'input': json_input,
-        }
-
         if errors is not None:
-            log.error('Rancher: %s', errors)
+            log.error('Rancher said: %s', errors)
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
 
-                # FIXME: Failure or not?
                 # Semi-Failure: NotUnique just means that another
                 # container of the same name exists! Does this mean
-                # failure or not? We cannot even know!!!
+                # failure or not? We cannot know, so we return
+                # http 409/conflict.
                 if edict.get('code') == 'NotUnique':
-                    response['status'] = 'existing' # TODO this means container exists! not result exists!
-                    err_msg = 'A container of the same name existed, but it is unsure if it was successful. Please delete and retry.'
-                    response['description'] = err_msg
-                    log.warn(err_msg)
-                    log_failure(self, taskname, json_input, err_msg)
+                    err_msg = 'QC: A container of the same name existed. Please delete and retry.'
+                    log.warn(err_msg+' '+cont)
+                    log_failure(self, taskname, json_input, err_msg+' '+cont)
                     return self.send_errors(err_msg,
                         code=hcodes.HTTP_BAD_CONFLICT)
 
                 # Failure: Rancher returned errors.
                 # Log to RabbitMQ and return error code
                 else:
-                    err_msg = 'QC could NOT be started (%s)' % edict
-                    log.warn(err_msg)
-                    log_failure(self, taskname, json_input, err_msg)
+                    err_msg = 'QC could NOT be started (rancher error)'
+                    log.error(err_msg+' '+cont)
+                    log_failure(self, taskname, json_input, err_msg+' '+cont+': '+str(edict))
                     return self.send_errors(err_msg,
                         code=hcodes.HTTP_SERVER_ERROR)
 
             # Failure: Unknown error returned by Rancher
             # Log to RabbitMQ and return error code
             else:
-                err_msg = 'QC: Unknown error (%s)' % errors
-                log.warn(err_msg)
-                log_failure(self, taskname, json_input, err_msg)
+                err_msg = 'QC could NOT be started (unknown error)'
+                log.error(err_msg+' '+cont)
+                log_failure(self, taskname, json_input, err_msg+' '+cont+': '+str(edict))
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
 
         # If everything went well, return 202/accepted
         # and log end (of QC) into RabbitMQ
-        desc = ('QC container %s (%s) was launched. Success unclear yet.' % 
-            (container_name, docker_image_name))
+        desc = 'QC container %s was launched. Success unclear yet.' % cont
+        status = 'launched'
         response = {
-            'status': 'launched',
+            'status': launched,
             'description': desc,
             'batch_id': batch_id,
             'qc_name': qc_name,
             'input': json_input
         }
-        log_success_uncertain(self, taskname, json_input, desc) 
+        log_success_uncertain(self, taskname, json_input, desc)
+
+        # Return http=202:
         self.force_response(response,
             code=hcodes.ACCEPTED)
 
@@ -288,10 +283,15 @@ class Resources(ClusterContainerEndpoint):
         rancher.remove_container_by_name(container_name)
         log.info("About to remove: %s", container_name)
 
+        status = 'launched'
+        desc = 'Removal of container %s launched.' % container_name
         response = {
             'batch_id': batch_id,
             'qc_name': qc_name,
-            'status': 'removed',
+            'status': status,
+            'description': desc
         }
-        log_success_uncertain(self, taskname, json_input, 'Removal launched.')
-        return response
+        log_success_uncertain(self, taskname, json_input, status, desc)
+        # Return http=202:
+        return self.force_response(response,
+            code=hcodes.HTTP_OK_ACCEPTED)
