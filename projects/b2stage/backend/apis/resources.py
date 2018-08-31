@@ -261,7 +261,7 @@ class Resources(ClusterContainerEndpoint):
             'qc_name': qc_name,
             'input': json_input
         }
-        log_success_uncertain(self, taskname, json_input, desc)
+        log_success_uncertain(self, taskname, json_input, status, desc)
 
         # Return http=202:
         self.force_response(response,

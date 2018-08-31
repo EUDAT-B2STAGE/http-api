@@ -105,7 +105,7 @@ def _log_any(instance, taskname, dictio, maris_params):
     _log_into_queue(instance, combi)
 
 
-def log_start(instance, taskname, maris_params, descrip=''):
+def log_start(instance, taskname, maris_params):
     # Log the start of any operation
     dictio = {'progress': 'start'}
     _log_any(instance, taskname, dictio, maris_params)
@@ -121,7 +121,7 @@ def log_failure(instance, taskname, maris_params, descrip):
     }
     _log_any(instance, taskname, dictio, maris_params)
 
-def log_success(instance, taskname, maris_params, status, descrip=None):
+def log_success(instance, taskname, maris_params, status, descrip):
     # Logging the end of a synchronous task
     # or the end of an asynchronous task.
     # NOT: When asynchronous was submitted!
@@ -159,11 +159,15 @@ def log_async_start(instance, taskname, maris_params):
     _log_any(instance, taskname, dictio, maris_params)
 
 
-def log_success_uncertain(instance, taskname, maris_params, descrip):
+def log_success_uncertain(instance, taskname, maris_params, status, descrip):
     # When we are not sure whether the task was successful
+    # This can be removed when all containers run on celery!
     dictio = {
         'progress': 'end_uncertain',
-        'info': descrip
+        'info': {
+            'status': status,
+            'descrip': descrip
+        }
     }
     _log_any(instance, taskname, dictio, maris_params)
 

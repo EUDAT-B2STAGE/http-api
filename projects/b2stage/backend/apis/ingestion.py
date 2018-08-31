@@ -142,7 +142,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 'status': status,
                 'description': desc
             }
-            log_success_uncertain(self, taskname, json_input, desc+' '+desc2)
+            log_success_uncertain(self, taskname, json_input, status, desc+' '+desc2)
             return response
 
         ########################
@@ -272,7 +272,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             'batch_id': batch_id,
         }
         desc = 'Data successfully streamed to irods. Copying to B2HOST was launched.'
-        log_success_uncertain(self, taskname, json_input, desc+' '+cont)
+        log_success_uncertain(self, taskname, json_input, status, desc+' '+cont)
 
         # Return http=202:
         return self.force_response(response,
