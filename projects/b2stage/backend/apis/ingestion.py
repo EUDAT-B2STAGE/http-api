@@ -198,8 +198,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             idest = self.get_ingestion_path()
 
             b2safe_connvar = {
-                'BATCH_SRC_PATH': irods_path,
-                'BATCH_DEST_PATH': idest,
+                'BATCH_SRC_PATH': irods_path, # /sdcDKRZ/batches/<batch_id>/<batch_id>.zip
+                'BATCH_DEST_PATH': idest,     # /usr/share/batch
                 'IRODS_HOST': icom.variables.get('host'),
                 'IRODS_PORT': icom.variables.get('port'),
                 'IRODS_ZONE_NAME': icom.variables.get('zone'),
@@ -217,6 +217,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             cont = ('%s (%s)' % (container_name, docker_image_name))
 
             # Run container
+            # Mounted: /usr/share/ingestion/<batch_id> to /usr/share/batch
+            # The container copies the data from B2SAFE
+            # (/sdcDKRZ/batches/<batch_id>/<batch_id>.zip) to the
+            # B2HOST machine (/usr/share/ingestion/<batch_id>/), which
+            # is mounted into the container.
+            # 
+            # TODO: What if there is several B2HOST machines?
             log.info("Requesting copy: %s (name %s)", docker_image_name, container_name)
             errors = rancher.run(
                 container_name=container_name, image_name=docker_image_name,
