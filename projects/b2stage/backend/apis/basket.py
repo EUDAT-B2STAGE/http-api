@@ -20,6 +20,7 @@ DELETE /api/order/<OID>
 
 #################
 # IMPORTS
+import urllib.parse
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
@@ -77,7 +78,9 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             metadata, _ = imain.get_metadata(zip_ipath)
             iticket_code = metadata.get('iticket_code')
 
-            if iticket_code != code:
+            encoded_code = urllib.parse.quote_plus(code)
+
+            if iticket_code != encoded_code:
                 log.debug(
                     "iticket code does not match, skipping %s", zip_ipath)
                 continue
@@ -288,7 +291,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         while unwanted in ticket:
             obj = imain.ticket(path)
             ticket = obj.ticket
-        import urllib.parse
         encoded = urllib.parse.quote_plus(ticket)
         log.warning("Ticket: %s -> %s", ticket, encoded)
         return encoded
