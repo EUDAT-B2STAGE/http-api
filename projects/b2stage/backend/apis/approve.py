@@ -361,4 +361,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         
         # TODO Where is completion logged?
 
-        return {'async': task.id}
+        return {
+            'async': task.id,
+            'status': 'submitted'
+        }
