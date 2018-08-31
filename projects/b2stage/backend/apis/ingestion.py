@@ -118,10 +118,14 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ########################
         # Backdoor: If this is True, the unzip is run directly,
         # and does not have to be called by the qc endpoint!
+        # Also, an existing file is not rewritten.
         backdoor = (file_id == BACKDOOR_SECRET)
-        if backdoor and icom.is_dataobject(irods_path): # TODO And if no backdoor?
 
-            desc = 'A file was uploaded already for this batch.'
+        # If file exists (and backdoor is enabled),
+        # return http 200/ok and log success into RabbitMQ
+        # TODO Why is this not done if no backdoor is there???
+        if backdoor and icom.is_dataobject(irods_path): 
+            desc = 'A file had been uploaded already for this batch.'
             status = 'exists'
             response = {
                 'batch_id': batch_id,
@@ -134,6 +138,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ########################
         # Try to write file into irods
+        # NOTE: This overwrites old files (force=True).
         # NOTE: we know this will always be Compressed Files (binaries)
         # NOTE: permissions are inherited thanks to the POST call
         log.verbose("Cloud filename: %s", irods_path)
