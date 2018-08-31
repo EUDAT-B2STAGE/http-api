@@ -268,20 +268,21 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
 
-        # If everything went well:
+        # If everything went well, return 202/accepted
+        # and log end (of upload) into RabbitMQ
         response = {
+            'status': 'launched',
+            'description': desc,
             'batch_id': batch_id,
-            'status': 'filled', # TODO: Or 'launched'? We cannot be sure, as the container was only launched.
-            'description': "Batch '%s' filled" % batch_id
+            'description': "Batch uploaded, copy to B2HOST launched."
         }
-
-        # Log end (of upload) into RabbitMQ
-        desc = ('Launched the container %s (%s), but unsure if it succeeded.'
-            % (container_name, docker_image_name))
+        desc = ('Data successfully streamed to irods. Copying to B2HOST '
+            'was launched: %s (%s). Success unclear yet.' % (container_name,
+            docker_image_name))
         log_success_uncertain(self, taskname, json_input, desc)
-
-        # Return http=200:
-        return self.force_response(response)
+        # Return http=202:
+        return self.force_response(response,
+            code=hcodes.HTTP_OK_ACCEPTED)
 
     def post(self):
         """

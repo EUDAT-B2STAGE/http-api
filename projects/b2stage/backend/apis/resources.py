@@ -257,14 +257,20 @@ class Resources(ClusterContainerEndpoint):
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
 
-        # If everything went well:
-        response['status'] = 'executed' # TODO or launched?
-        response['description'] = 'QC container was launched. Success unclear yet.'
-        # Log end (of QC) into RabbitMQ
-        desc = ('Launched the container %s (%s), but unsure if it succeeded.'
-            % (container_name, docker_image_name))
+        # If everything went well, return 202/accepted
+        # and log end (of QC) into RabbitMQ
+        desc = ('QC container %s (%s) was launched. Success unclear yet.' % 
+            (container_name, docker_image_name))
+        response = {
+            'status': 'launched',
+            'description': desc,
+            'batch_id': batch_id,
+            'qc_name': qc_name,
+            'input': json_input
+        }
         log_success_uncertain(self, taskname, json_input, desc) 
-        return response
+        self.force_response(response,
+            code=hcodes.ACCEPTED)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def delete(self, batch_id, qc_name):
