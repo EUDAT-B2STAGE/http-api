@@ -406,7 +406,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             myjson[main_key] = {
                 # "request_id": msg['request_id'],
                 reqkey: myjson[reqkey],
-                "order": order_id,
+                "order_number": order_id,
                 "zipfile_name": params['file_name'],
                 "file_count": counter,
                 "zipfile_count": zipcount,

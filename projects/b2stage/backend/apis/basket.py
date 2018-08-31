@@ -200,16 +200,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         #     log.pp(params)
 
         # ##################
-        key = 'file_name'
-        # filename = params.get(key)
-        filename = params.get(key, 'restricted')
-        # if filename is None:
-        #     error = "Parameter '%s' is missing" % key
-        #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-        # elif filename != 'order_%s_unrestricted' % order_id:
-        #     error = "Wrong '%s': %s" % (key, filename)
-        #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
+        filename = params.get('file_name', 'restricted')
         # ##################
         # NOTE: useless as it's the same as the request id...
         # key = 'order_number'
