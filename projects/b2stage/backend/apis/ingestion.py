@@ -121,19 +121,28 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # Also, an existing file is not rewritten.
         backdoor = (file_id == BACKDOOR_SECRET)
 
-        # If file exists (and backdoor is enabled),
-        # return http 200/ok and log success into RabbitMQ
-        # TODO Why is this not done if no backdoor is there???
-        if backdoor and icom.is_dataobject(irods_path): 
-            desc = 'A file had been uploaded already for this batch.'
+        ########################
+        # Backdoor: If file exists, return http 200/ok, to gain
+        # performance (no overwriting into irods).
+        # 
+        # Why is this not done if no backdoor is there? Because
+        # the client must be able to overwrite the old file, as
+        # we are not sure of its success.
+        #
+        # Note: We cannot be sure that copy to B2HOST and unzip
+        # worked, so this is really a dirty thing.
+        if backdoor and icom.is_dataobject(irods_path):
             status = 'exists'
+            desc = 'Backdoor: A file had been uploaded already for this batch. Stopping.'
+            desc2 = 'Copying to B2HOST and unzipping will not be tried.'
+            log.info(desc)
+            log.warn(desc2)
             response = {
                 'batch_id': batch_id,
                 'status': status,
                 'description': desc
             }
-            log_success(self, taskname, json_input, status, desc)
-
+            log_success_uncertain(self, taskname, json_input, desc+' '+desc2)
             return response
 
         ########################
