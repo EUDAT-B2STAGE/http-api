@@ -233,7 +233,7 @@ class Rancher(object):
         return obj
 
     def run(self,
-            container_name, image_name,
+            container_name, image_name, wait_running=None,
             private=False, extras=None, wait_stopped=False, pull=True,
             ):
 
