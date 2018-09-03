@@ -626,7 +626,9 @@ def merge_restricted_order(self, order_id, order_path,
             imain.put(local_finalzip_path, final_zip)
 
         self.update_state(state="COMPLETED")
+        myjson['parameters']['zipfile_name'] = final_zip
         ext_api.post(myjson)
+        # imain.remove(partial_zip)
         return "COMPLETED"
 
         # 0 - avoid concurrent execution, introduce a cache like:
