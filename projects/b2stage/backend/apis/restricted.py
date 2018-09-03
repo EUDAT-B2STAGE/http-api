@@ -275,7 +275,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         task = CeleryExt.merge_restricted_order.apply_async(
             args=[
                 order_id, order_path, partial_zip_path, zip_ipath,
-                file_size, file_checksum, data_file_count
+                file_size, file_checksum, data_file_count,
+                json_input
             ])
         log.warning("Async job: %s", task.id)
         return {'async': task.id}

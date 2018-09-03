@@ -436,7 +436,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 @celery_app.task(bind=True)
 def merge_restricted_order(self, order_id, order_path,
                            partial_zip, final_zip,
-                           file_size, file_checksum, file_count):
+                           file_size, file_checksum, file_count,
+                           myjson):
 
     with celery_app.app.app_context():
 
@@ -625,6 +626,7 @@ def merge_restricted_order(self, order_id, order_path,
             imain.put(local_finalzip_path, final_zip)
 
         self.update_state(state="COMPLETED")
+        ext_api.post(myjson)
         return "COMPLETED"
 
         # 0 - avoid concurrent execution, introduce a cache like:
