@@ -240,7 +240,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         order_path = self.get_order_path(imain, order_id)
 
         # zip file uploaded from partner
-        zip_file = params.get('zip_file_name')
+        zip_file = params.get('zipfile_name')
         if zip_file is None:
             return self.send_errors(
                 "Invalid partner zip path",
