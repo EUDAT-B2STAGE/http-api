@@ -73,7 +73,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 log.debug("file not found, skipping %s", zip_ipath)
                 continue
 
-            # TOFIX: we should we a database or cache to save this,
+            # TOFIX: we should use a database or cache to save this,
             # not irods metadata (known for low performances)
             metadata, _ = imain.get_metadata(zip_ipath)
             iticket_code = metadata.get('iticket_code')
@@ -334,6 +334,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 ORDERS_ENDPOINT, order_id, code
             )
 
+            # If metadata already exists, remove them:
+            # FIXME: verify if iticket_code is set and then invalidate it
+            imain.remove_metadata(zip_ipath, 'iticket_code')
+            imain.remove_metadata(zip_ipath, 'download')
             ##################
             # Set the url as Metadata in the irods file
             imain.set_metadata(zip_ipath, download=route)
@@ -373,7 +377,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             #     'GET': route,
             #     'code': code,
             # }
-
 
         return self.force_response(response)
 
