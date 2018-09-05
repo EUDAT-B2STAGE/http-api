@@ -362,22 +362,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         msg = prepare_message(self, log_string='end', status='enabled')
         log_into_queue(self, msg)
 
-        # FIXME: REMOVE ME - BACK COMPATIBIITY CHECK
-        if len(response) == 1:
-            k = next(iter(response))
-            response = {
-                'GET': response.get(k),
-                # WARNING PORCATA
-                # this should work since we have only 1 element
-                # so code should be the only verified file!
-                'code': code,
-            }
-            ##################
-            # response = {
-            #     'GET': route,
-            #     'code': code,
-            # }
-
         return self.force_response(response)
 
     def delete(self, order_id):
