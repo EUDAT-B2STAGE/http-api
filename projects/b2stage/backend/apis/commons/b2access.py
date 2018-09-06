@@ -100,6 +100,10 @@ class B2accessUtilities(EndpointResource):
                     % current_user.status
         elif isinstance(current_user._resp, HTTPError):
             errstring = "Error from B2ACCESS: %s" % current_user._resp
+        elif not hasattr(current_user, 'data'):
+            errstring = "Authorized response is invalid (missing data)"
+        elif current_user.data.get('email') is None:
+            errstring = "Authorized response is invalid (missing email)"
         else:
             error = False
 
