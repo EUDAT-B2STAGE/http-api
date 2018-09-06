@@ -39,25 +39,41 @@ class B2accessUtilities(EndpointResource):
         """ Use b2access client to get a token for all necessary operations """
         resp = None
         b2a_token = None
+        b2a_refresh_token = None
 
         try:
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
             log.critical("B2ACCESS empty:\n%s\nCheck your app credentials", e)
-            return (b2a_token, 'Server misconfiguration: oauth2 failed')
+            return (
+                b2a_token,
+                b2a_refresh_token,
+                'Server misconfiguration: oauth2 failed'
+            )
         except Exception as e:
             # raise e  # DEBUG
             log.critical("Failed to get authorized in B2ACCESS: %s", e)
-            return (b2a_token, 'B2ACCESS OAUTH2 denied: %s' % e)
+            return (
+                b2a_token,
+                b2a_refresh_token,
+                'B2ACCESS OAUTH2 denied: %s' % e
+            )
         if resp is None:
-            return (b2a_token, 'B2ACCESS denied: unknown error')
+            return (
+                b2a_token,
+                b2a_refresh_token,
+                'B2ACCESS denied: unknown error'
+            )
 
         b2a_token = resp.get('access_token')
         if b2a_token is None:
             log.critical("No token received")
             return (b2a_token, 'B2ACCESS: empty token')
         log.info("Received token: '%s'" % b2a_token)
-        return (b2a_token, tuple())
+
+        b2a_refresh_token = resp.get('refresh_token')
+        log.info("Received refresh token: '%s'" % b2a_refresh_token)
+        return (b2a_token, b2a_refresh_token, tuple())
 
     def get_b2access_user_info(self, auth, b2access, b2access_token):
         """ Get user info from current b2access token """

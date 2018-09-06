@@ -74,7 +74,8 @@ class Authorize(EudatEndpoint):
         # Get b2access token
         auth = self.auth
         b2access = self.create_b2access_client(auth, decorate=True)
-        b2access_token, b2access_error = self.request_b2access_token(b2access)
+        b2access_token, b2access_refresh_token, b2access_error = \
+            self.request_b2access_token(b2access)
         if b2access_token is None:
             return self.send_errors(message=b2access_error)
 
