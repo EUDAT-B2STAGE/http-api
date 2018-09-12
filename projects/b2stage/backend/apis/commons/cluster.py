@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
 from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.seadatacloud import seadata_vars
 from restapi.services.detect import detector
@@ -89,6 +90,11 @@ class ClusterContainerEndpoint(EndpointResource):
         container_fixed_path = self.get_ingestion_path()
         batch_file = self.get_input_zip_filename(filename)
         return str(path.build([container_fixed_path, batch_file]))
+
+    def return_async_id(request_id):
+        # dt = "20170712T15:33:11"
+        dt = datetime.strftime(datetime.now(), '%Y%m%dT%H:%M:%S')
+        return {'request_id': request_id, 'datetime': dt}
 
     @staticmethod
     def get_container_name(batch_id, qc_name):

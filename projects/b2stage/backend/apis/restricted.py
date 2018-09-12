@@ -100,6 +100,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     def patch(self, order_id):
 
+        log.warning("This endpoint should become async")
         log.warning("This endpoint should be restricted to admins?")
         log.info('Enabling restricted: order id %s', order_id)
         json_input = self.get_input()
@@ -125,11 +126,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         if not imain.is_collection(order_path):
             obj = self.init_endpoint()
             # Create the path and set permissions
-            # imain.create_collection_inheritable(order_path, obj.username)
-            # TO FIX: temporary added for debug purpose
-            log.critical("Assigned permissions to irodsmaster instead of %s",
-                         obj.username)
-            imain.create_collection_inheritable(order_path, "irodsmaster")
+            imain.create_collection_inheritable(order_path, obj.username)
             log.warning("Created %s because it did not exist", order_path)
             log.info("Assigned permissions to %s", obj.username)
             # error = "Order '%s' not found or permissions denied" % order_id
@@ -279,4 +276,4 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 json_input
             ])
         log.warning("Async job: %s", task.id)
-        return {'async': task.id}
+        return self.return_async_id(task.id)
