@@ -54,11 +54,34 @@ b2handle_client = b2handle.instantiate_for_read_access()
 ####################
 def notify_server_problems(myjson):
     myjson['errors'] = {
-        "error": ErrorCodes.INTERNAL_SERVER_ERROR,
-        "description": "Internal error, restart your request",
+        "error": ErrorCodes.INTERNAL_SERVER_ERROR[0],
+        "description": ErrorCodes.INTERNAL_SERVER_ERROR[1],
         # "subject": pid
     }
     ext_api.post(myjson)
+
+
+def notify_error(error, myjson, backdoor, self, task, extra=None):
+
+    error_message = "Error %s: %s" % (error[0], error[1])
+    log.error(error_message)
+    if extra:
+        log.error(extra)
+
+    if not backdoor:
+        myjson['errors'] = {
+            "error": error[0],
+            "description": error[1],
+        }
+        ext_api.post(myjson)
+
+    task_errors = [error_message]
+    if extra:
+        task_errors.append(extra)
+    task.update_state(state="FAILED", meta={
+        'errors': task_errors
+    })
+    return 'Failed'
 
 
 ####################
@@ -135,8 +158,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             else:
                 log.error('NOT found: %s', local_element)
                 errors.append({
-                    "error": ErrorCodes.INGESTION_FILE_NOT_FOUND,
-                    "description": "File requested not found",
+                    "error": ErrorCodes.INGESTION_FILE_NOT_FOUND[0],
+                    "description": ErrorCodes.INGESTION_FILE_NOT_FOUND[1],
                     "subject": tmp,
                 })
 
@@ -299,8 +322,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             ################
             if b2handle_output is None:
                 errors.append({
-                    "error": ErrorCodes.PID_NOT_FOUND,
-                    "description": "PID not found",
+                    "error": ErrorCodes.PID_NOT_FOUND[0],
+                    "description": ErrorCodes.PID_NOT_FOUND[1],
                     "subject": pid
                 })
                 log.warning("PID not found: %s", pid)
@@ -445,54 +468,63 @@ def merge_restricted_order(self, order_id, myjson):
         imain = celery_app.get_service(service='irods')
         order_path = self.get_order_path(imain, order_id)
 
-        # zip file uploaded from partner
-        zip_file = params.get('zipfile_name')
-        if zip_file is None:
-            return self.send_errors(
-                "Invalid partner zip path",
-                code=400
-            )
-        if not zip_file.endswith('.zip'):
-            zip_file = path.append_compress_extension(zip_file)
-        partial_zip = self.complete_path(order_path, zip_file)
-        ###############
-        # define path of final zip
         # filename = 'order_%s' % order_id
         filename = params.get('file_name')
         if filename is None:
-            return self.send_errors(
-                "Invalid restricted zip path",
-                code=400
+            return notify_error(
+                ErrorCodes.MISSING_FILENAME_PARAM,
+                myjson, backdoor, self
             )
         if not filename.endswith('.zip'):
             filename = path.append_compress_extension(filename)
         final_zip = self.complete_path(order_path, filename)
+
+        myjson['parameters']['zipfile_name'] = final_zip
+
+        # zip file uploaded from partner
+        zip_file = params.get('zipfile_name')
+        if zip_file is None:
+            return notify_error(
+                ErrorCodes.MISSING_ZIPFILENAME_PARAM,
+                myjson, backdoor, self
+            )
+
+        if not zip_file.endswith('.zip'):
+            zip_file = path.append_compress_extension(zip_file)
+        partial_zip = self.complete_path(order_path, zip_file)
 
         log.info("order_id = %s", order_id)
         log.info("order_path = %s", order_path)
         log.info("partial_zip = %s", partial_zip)
         log.info("final_zip = %s", final_zip)
 
+        file_size = params.get("file_size")
+        if file_size is None:
+            return notify_error(
+                ErrorCodes.MISSING_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
         try:
-            file_size = int(params.get("file_size"))
+            file_size = int(file_size)
         except BaseException:
-            error = 'wrong file size, expected an integer but received %s' %\
-                    file_size
-            log.error(error)
-            self.update_state(state="FAILED", meta={
-                'errors': [error]
-            })
-            return 'Failed'
+            return notify_error(
+                ErrorCodes.INVALID_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
+
+        file_count = params.get("data_file_count")
+        if file_count is None:
+            return notify_error(
+                ErrorCodes.MISSING_FILECOUNT_PARAM,
+                myjson, backdoor, self
+            )
         try:
-            file_count = int(params.get("data_file_count"))
+            file_count = int(file_count)
         except BaseException:
-            error = 'wrong file count, expected an integer but received %s' %\
-                    file_count
-            log.error(error)
-            self.update_state(state="FAILED", meta={
-                'errors': [error]
-            })
-            return 'Failed'
+            return notify_error(
+                ErrorCodes.INVALID_FILECOUNT_PARAM,
+                myjson, backdoor, self
+            )
 
         self.update_state(state="PROGRESS")
 
@@ -501,12 +533,10 @@ def merge_restricted_order(self, order_id, myjson):
 
         # 1 - check if partial_zip exists
         if not imain.exists(partial_zip):
-            error = '%s does not exist' % partial_zip
-            log.error(error)
-            self.update_state(state="FAILED", meta={
-                'errors': [error]
-            })
-            return 'Failed'
+            return notify_error(
+                ErrorCodes.FILENAME_DOESNT_EXIST,
+                myjson, backdoor, self
+            )
 
         # 2 - copy partial_zip in local-dir
         local_dir = path.join(myorderspath, order_id)
@@ -517,7 +547,7 @@ def merge_restricted_order(self, order_id, myjson):
             local_dir, os.path.basename(partial_zip))
         imain.open(partial_zip, local_zip_path)
 
-        # 3 - verify checksum?
+        # 3 - verify checksum
         log.info("Computing checksum...")
         local_file_checksum = hashlib.md5(
             open(local_zip_path, 'rb').read()
@@ -526,26 +556,20 @@ def merge_restricted_order(self, order_id, myjson):
         if local_file_checksum == file_checksum:
             log.info("File checksum verified")
         else:
-            error = '%s wrong file checksum, expected %s, found %s' % \
-                    (partial_zip, file_checksum, local_file_checksum)
-            log.error(error)
-            self.update_state(state="FAILED", meta={
-                'errors': [error]
-            })
-            return 'Failed'
+            return notify_error(
+                ErrorCodes.CHECKSUM_DOESNT_MATCH,
+                myjson, backdoor, self
+            )
 
-        # 4 - verify size?
+        # 4 - verify size
         local_file_size = os.path.getsize(local_zip_path)
         if local_file_size == file_size:
             log.info("File size verified")
         else:
-            error = '%s wrong file size, expected %s, found %s' % \
-                    (partial_zip, file_size, local_file_size)
-            log.error(error)
-            self.update_state(state="FAILED", meta={
-                'errors': [error]
-            })
-            return 'Failed'
+            return notify_error(
+                ErrorCodes.FILESIZE_DOESNT_MATCH,
+                myjson, backdoor, self
+            )
 
         # 5 - decompress
         d = os.path.splitext(os.path.basename(partial_zip))[0]
@@ -563,19 +587,15 @@ def merge_restricted_order(self, order_id, myjson):
         try:
             zip_ref = zipfile.ZipFile(local_zip_path, 'r')
         except FileNotFoundError:
-            error = '%s does not exist' % partial_zip
-            log.error(error)
-            self.update_state(state="FAILED", meta={
-                'errors': [error]
-            })
-            return 'Failed'
+            return notify_error(
+                ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
+                myjson, backdoor, self, extra=local_zip_path
+            )
         except zipfile.BadZipFile:
-            error = '%s invalid zip file' % partial_zip
-            log.error(error)
-            self.update_state(state="FAILED", meta={
-                'errors': [error]
-            })
-            return 'Failed'
+            return notify_error(
+                ErrorCodes.UNZIP_ERROR_INVALID_FILE,
+                myjson, backdoor, self, extra=local_zip_path
+            )
 
         if zip_ref is not None:
             zip_ref.extractall(local_unzipdir)
@@ -591,13 +611,10 @@ def merge_restricted_order(self, order_id, myjson):
         if local_file_count == file_count:
             log.info("File count verified")
         else:
-            error = '%s wrong file count, expected %s, found %s' %\
-                    (partial_zip, file_count, local_file_count)
-            log.error(error)
-            self.update_state(state="FAILED", meta={
-                'errors': [error]
-            })
-            return 'Failed'
+            return notify_error(
+                ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
+                myjson, backdoor, self
+            )
 
         # 7 - check if final_zip exists
         if not imain.exists(final_zip):
@@ -606,11 +623,10 @@ def merge_restricted_order(self, order_id, myjson):
             try:
                 imain.icopy(partial_zip, final_zip)
             except IrodsException as e:
-                log.error(str(e))
-                self.update_state(state="FAILED", meta={
-                    'errors': [str(e)]
-                })
-                return 'Failed'
+                return notify_error(
+                    ErrorCodes.B2SAFE_UPLOAD_ERROR,
+                    myjson, backdoor, self, extra=str(e)
+                )
         else:
             # 9 - if already exists merge zips
             log.info("Already exists, merge zip files")
@@ -625,19 +641,15 @@ def merge_restricted_order(self, order_id, myjson):
             try:
                 zip_ref = zipfile.ZipFile(local_finalzip_path, 'a')
             except FileNotFoundError:
-                error = '%s does not exist' % local_finalzip_path
-                log.error(error)
-                self.update_state(state="FAILED", meta={
-                    'errors': [error]
-                })
-                return 'Failed'
+                return notify_error(
+                    ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
+                    myjson, backdoor, self, extra=local_finalzip_path
+                )
             except zipfile.BadZipFile:
-                error = '%s invalid zip file' % local_finalzip_path
-                log.error(error)
-                self.update_state(state="FAILED", meta={
-                    'errors': [error]
-                })
-                return 'Failed'
+                return notify_error(
+                    ErrorCodes.UNZIP_ERROR_INVALID_FILE,
+                    myjson, backdoor, self, extra=local_finalzip_path
+                )
 
             log.info("Adding files to local zipfile")
             if zip_ref is not None:
@@ -654,7 +666,6 @@ def merge_restricted_order(self, order_id, myjson):
             imain.put(local_finalzip_path, final_zip)
 
         self.update_state(state="COMPLETED")
-        myjson['parameters']['zipfile_name'] = final_zip
 
         if backdoor:
             log.print(myjson)
