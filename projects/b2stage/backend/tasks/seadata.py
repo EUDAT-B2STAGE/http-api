@@ -434,12 +434,39 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
 
 @celery_app.task(bind=True)
-def merge_restricted_order(self, order_id, order_path,
-                           partial_zip, final_zip,
-                           file_size, file_checksum, file_count,
-                           myjson):
+def merge_restricted_order(self, order_id, myjson):
 
     with celery_app.app.app_context():
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        imain = celery_app.get_service(service='irods')
+        order_path = self.get_order_path(imain, order_id)
+
+        # zip file uploaded from partner
+        zip_file = params.get('zipfile_name')
+        if zip_file is None:
+            return self.send_errors(
+                "Invalid partner zip path",
+                code=400
+            )
+        if not zip_file.endswith('.zip'):
+            zip_file = path.append_compress_extension(zip_file)
+        partial_zip = self.complete_path(order_path, zip_file)
+        ###############
+        # define path of final zip
+        # filename = 'order_%s' % order_id
+        filename = params.get('file_name')
+        if filename is None:
+            return self.send_errors(
+                "Invalid restricted zip path",
+                code=400
+            )
+        if not filename.endswith('.zip'):
+            filename = path.append_compress_extension(filename)
+        final_zip = self.complete_path(order_path, filename)
 
         log.info("order_id = %s", order_id)
         log.info("order_path = %s", order_path)
@@ -447,7 +474,7 @@ def merge_restricted_order(self, order_id, order_path,
         log.info("final_zip = %s", final_zip)
 
         try:
-            file_size = int(file_size)
+            file_size = int(params.get("file_size"))
         except BaseException:
             error = 'wrong file size, expected an integer but received %s' %\
                     file_size
@@ -457,7 +484,7 @@ def merge_restricted_order(self, order_id, order_path,
             })
             return 'Failed'
         try:
-            file_count = int(file_count)
+            file_count = int(params.get("data_file_count"))
         except BaseException:
             error = 'wrong file count, expected an integer but received %s' %\
                     file_count
@@ -469,6 +496,7 @@ def merge_restricted_order(self, order_id, order_path,
 
         self.update_state(state="PROGRESS")
 
+        file_checksum = params.get("file_checksum")
         imain = celery_app.get_service(service='irods')
 
         # 1 - check if partial_zip exists
@@ -627,7 +655,11 @@ def merge_restricted_order(self, order_id, order_path,
 
         self.update_state(state="COMPLETED")
         myjson['parameters']['zipfile_name'] = final_zip
-        ext_api.post(myjson)
+
+        if backdoor:
+            log.print(myjson)
+        else:
+            ext_api.post(myjson)
         # imain.remove(partial_zip)
         return "COMPLETED"
 
