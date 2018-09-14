@@ -457,7 +457,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
 
 @celery_app.task(bind=True)
-def merge_restricted_order(self, order_id, myjson):
+def merge_restricted_order(self, order_id, order_path, myjson):
 
     with celery_app.app.app_context():
 
@@ -466,7 +466,9 @@ def merge_restricted_order(self, order_id, myjson):
         backdoor = params.pop('backdoor', False)
 
         imain = celery_app.get_service(service='irods')
-        order_path = self.get_order_path(imain, order_id)
+        # order_path = self.get_order_path(imain, order_id)
+        # Make sure you have a path with no trailing slash
+        order_path = order_path.rstrip('/')
 
         # filename = 'order_%s' % order_id
         filename = params.get('file_name')
@@ -477,7 +479,8 @@ def merge_restricted_order(self, order_id, myjson):
             )
         if not filename.endswith('.zip'):
             filename = path.append_compress_extension(filename)
-        final_zip = self.complete_path(order_path, filename)
+        # final_zip = self.complete_path(order_path, filename)
+        final_zip = order_path + '/' + filename.rstrip('/')
 
         myjson['parameters']['zipfile_name'] = final_zip
 
@@ -491,7 +494,8 @@ def merge_restricted_order(self, order_id, myjson):
 
         if not zip_file.endswith('.zip'):
             zip_file = path.append_compress_extension(zip_file)
-        partial_zip = self.complete_path(order_path, zip_file)
+        # partial_zip = self.complete_path(order_path, zip_file)
+        partial_zip = order_path + '/' + zip_file.rstrip('/')
 
         log.info("order_id = %s", order_id)
         log.info("order_path = %s", order_path)
