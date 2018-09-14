@@ -482,7 +482,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         # final_zip = self.complete_path(order_path, filename)
         final_zip = order_path + '/' + filename.rstrip('/')
 
-        myjson['parameters']['zipfile_name'] = final_zip
+        # myjson['parameters']['zipfile_name'] = final_zip
 
         # zip file uploaded from partner
         zip_file = params.get('zipfile_name')
