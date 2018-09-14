@@ -61,7 +61,7 @@ def notify_server_problems(myjson):
     ext_api.post(myjson)
 
 
-def notify_error(error, myjson, backdoor, self, task, extra=None):
+def notify_error(error, myjson, backdoor, task, extra=None):
 
     error_message = "Error %s: %s" % (error[0], error[1])
     log.error(error_message)
