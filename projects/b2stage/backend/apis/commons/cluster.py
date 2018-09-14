@@ -91,7 +91,7 @@ class ClusterContainerEndpoint(EndpointResource):
         batch_file = self.get_input_zip_filename(filename)
         return str(path.build([container_fixed_path, batch_file]))
 
-    def return_async_id(request_id):
+    def return_async_id(self, request_id):
         # dt = "20170712T15:33:11"
         dt = datetime.strftime(datetime.now(), '%Y%m%dT%H:%M:%S')
         return {'request_id': request_id, 'datetime': dt}
