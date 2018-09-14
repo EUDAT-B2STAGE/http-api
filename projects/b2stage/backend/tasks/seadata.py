@@ -672,7 +672,10 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         self.update_state(state="COMPLETED")
 
         if backdoor:
-            log.pp(myjson)
+            log.warning(
+                "The following json should be sent to external API, " +
+                " but you enabled the backdoor")
+            log.info(myjson)
         else:
             ext_api.post(myjson)
         # imain.remove(partial_zip)
