@@ -35,7 +35,8 @@ class PAMTest(Endpoint):
         imain = self.get_service_instance(
             service_name='irods',
             user=user,
-            password=password
+            password=password,
+            authscheme='PAM'
         )
         log.debug("B2safe authenticated")
         out = imain.list()
