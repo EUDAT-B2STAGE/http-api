@@ -2,6 +2,7 @@
 
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint as Endpoint
 from restapi.exceptions import RestApiException
+from restapi import decorators as decorate
 from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
@@ -10,6 +11,7 @@ log = get_logger(__name__)
 
 class PAMTest(Endpoint):
 
+    @decorate.catch_error()
     def post(self):
 
         jargs = self.get_input()
