@@ -7,4 +7,4 @@ helper:
   summary: Test PAM auth 
   responses:
     '200':
-      description: "returning auth token 
+      description: "returning auth token"
