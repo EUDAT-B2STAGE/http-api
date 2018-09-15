@@ -6,4 +6,4 @@ schema:
 mapping:
   pamtest: "/pamtest"
 labels:
-  - helper
+  - helpers
