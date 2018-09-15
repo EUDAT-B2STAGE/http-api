@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint as Endpoint
+from restapi.exceptions import RestApiException
+from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -13,6 +15,18 @@ class PAMTest(Endpoint):
         jargs = self.get_input()
         user = jargs.get('username')
         password = jargs.get('password')
+
+        if user is None:
+            raise RestApiException(
+                'User cannot be empty',
+                status_code=hcodes.HTTP_BAD_REQUEST
+            )
+
+        if password is None:
+            raise RestApiException(
+                'Password cannot be empty',
+                status_code=hcodes.HTTP_BAD_REQUEST
+            )
 
         log.info("Received user: %s", user)
         log.debug("Authenticating to b2safe...")
