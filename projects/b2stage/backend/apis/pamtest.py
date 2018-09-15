@@ -14,10 +14,14 @@ class PAMTest(Endpoint):
         user = jargs.get('username')
         password = jargs.get('password')
 
+        log.info("Received user: %s", user)
+        log.debug("Authenticating to b2safe...")
         imain = self.get_service_instance(
             service_name='irods',
             user=user,
             password=password
         )
+        log.debug("B2safe authenticated")
         out = imain.list()
+        log.info(out)
         return out
