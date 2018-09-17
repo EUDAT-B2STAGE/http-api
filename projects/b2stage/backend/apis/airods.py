@@ -13,10 +13,10 @@ import dateutil.parser
 import uuid
 import subprocess
 
-from b2stage.apis.commons.endpoint import EudatEndpoint
+#from b2stage.apis.commons.endpoint import EudatEndpoint
 
 from irods.query import SpecificQuery
-from irods.models import Collection, DataObject
+from irods.models import Collection, DataObject, User, UserGroup, UserAuth
 
 #################
 # INIT VARIABLES
@@ -229,7 +229,7 @@ class AirodsList(EndpointResource):
             
         ####################################################
 
-        print ('start - QUERY!')
+        #print ('start - QUERY!')
         session = icom.prc
         sql = "select zone_name, zone_conn_string, r_comment   from r_zone_main where r_comment LIKE 'stag%'" #where zone_type_name = 'remote'"
         #alias = 'list_zone_max'
@@ -271,9 +271,9 @@ class AirodsList(EndpointResource):
 
         
 #################
-# REST CLASS AirodsList
-#
-class AirodsStage(EudatEndpoint, EndpointResource):
+# REST CLASS AirodsStage
+# 
+class AirodsStage( EndpointResource):
     
     def get(self):
         service = 'mongo'
@@ -281,22 +281,13 @@ class AirodsStage(EudatEndpoint, EndpointResource):
         
         variables = detector.output_service_variables(service)
         db = variables.get('database')
-        # test if it works
-        # BAD: using private internal meta
-        # (src: http://bit.ly/2njr3LN)
+        
         mongohd.wf_do._mongometa.connection_alias = db
         
-        # just a test:
-        # mongohd.Testing(onefield='justatest1').save()
-        # for element in mongohd.Testing.objects.all():
-        #    log.pp(element)
-        # return "Completed"
-        
-        
-        # real:
+        # MONGO
         myargs = self.get_input()
         print(myargs)
-        documentResult1 = []
+        documentResult1 = {}
         
         mycollection = mongohd.wf_do
         
@@ -308,108 +299,198 @@ class AirodsStage(EudatEndpoint, EndpointResource):
         myLonX = float(myargs.get("maxlon"))
 
         myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX },"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
-        #myfirstvalue = mycollection.objects.raw({"dc_coverage_x": { "$gte" : myLat }, "dc_coverage_y": { "$gte" : myLon }, "dc_coverage_x": { "$lte" : myLatX }, "dc_coverage_y": { "$lte" : myLonX }})
-            #,"dc_coverage_t_min": { "$gte" : myStartDate },"dc_coverage_t_max": { "$lte" : myEndDate }})
+
+        # IRODS 
+        icom = self.get_service_instance(service_name='irods')
         
-        #from b2stage.apis.commons.endpoint import EudatEndpoint
-        imain = self.get_service_instance(service_name='irods')
-        
-        ###################
-        # BASIC INIT
-        r = self.init_endpoint()
-        if r.errors is not None:
-            return self.send_errors(errors=r.errors)
-        icom = r.icommands
-        #myfirstvalue = mongohd.wf_do.objects.all()
         ephemeralDir=str(uuid.uuid4())
         stagePath='/'+myargs.get("endpoint")+'/home/rods#INGV/areastage/'
         dest_path=stagePath+ephemeralDir
         
-        ipath = icom.create_directory(dest_path, ignore_existing=force)
+        ipath = icom.create_directory(dest_path)
         
-        """
+        
         if ipath is None:
-            if force:
-                ipath = dest_path
-            else:
-                raise IrodsException("Failed to create %s" % path)
+            raise IrodsException("Failed to create %s" % dest_path)
         else:
-            log.info("Created irods collection: %s", ipath)
-        """
+            log.info("Created irods collection: %s", dest_path)
         
-        
-        stageDirOk='OK'
-        #stageDirOk=self.icmnd('none', dest_path, 'imkdir')
-        print('stageDir: '+ipath)
-        
-        if stageDirOk == 'OK' :
-            """
+        # STAGE
+        if ipath:
+            #myLine = ['remote_collection_ID: '+ dest_path ]
+            #documentResult1.append(myLine)
+            myLine = self.queryIcat(icom, myargs.get("endpoint"), dest_path)
+            
+            documentResult1['remote_info']=myLine 
+            
+            i = 0
             for document in myfirstvalue:
-                stageOk=self.icmnd(document.irods_path, dest_path, 'icp')
-                if stageOk == 'OK' :
-                    myLine = [document.fileId,document.dc_identifier,document.irods_path, document.dc_coverage_x, document.dc_coverage_y ]
-                    documentResult1.append(myLine)
+                
+                stageOk=self.icopy(icom, document.irods_path, dest_path+'/'+document.fileId)
+                                
+                if stageOk :
+                    
+                    documentResult1['file_ID_'+str(i)]=str(document.fileId)
+                    i = i+1
                 else:
-                    documentResult1.append(['stage DO ', document.fileId ,': NOT OK'])
-            """
-            print ('if')
+                    
+                    documentResult1['DO-NOT-OK']='stage DO '+document.fileId+': NOT OK'
+                
+            documentResult1['total DO staged']= str(i)   
         
         else:
-            print('else')
-            documentResult1.append(['stage dir: NOT OK'])
+            
+            documentResult1['DIR-NOT-OK']='stage dir:'+dest_path+' NOT OK'
         
         
         return [documentResult1]
     
+    # COPY on Remote endpoint via irule
+    def icopy(self, icom, irods_path, dest_path):
+        
+        """ EUDAT RULE for Replica (exploited for copy) """
+        
+        outvar = 'response'
+        inputs = {
+            '*irods_path': '"%s"' % irods_path,
+            '*stage_path': '"%s"' % dest_path
+            }
+        body = """
+            *res = EUDATReplication(*irods_path, *stage_path, "false", "false", *%s);
+            if (*res) {
+                writeLine("stdout", "Object  replicated to stage area !");
+
+            }
+            else {
+                writeLine("stdout", "Replication failed: *%s");
+            }
+        """ % (outvar, outvar)
+        
+
+        rule_output = self.rule(icom, 'do_stage', body, inputs, output=True)
+        
+        return [rule_output]
     
-    def icmnd(self, irods_path, dest_path, icommand):
+    
+    # Rule
+    def rule(self, icom, name, body, inputs, output=False):
         
-        """
-        command = {}
+        import textwrap
+        from irods.rule import Rule
+
+        user_current = icom.prc.username
+        zone_current = icom.prc.zone
         
-        command['icp'] = "icp -Kf "+irods_path+"  "+dest_path
-        
-        command['imkdir'] = coll = session.collections.create("/tempZone/home/rods/testdir")
+        rule_body = textwrap.dedent('''\
+            %s {{
+                %s
+        }}''' % (name, body))
+
+        outname = None
+        if output:
+            outname = 'ruleExecOut'
             
-        icom = self.get_service_instance(service_name='irods')
-        
-        print (command[icommand])
-        
-        
-        ###################
-        # BASIC INIT
-        r = self.init_endpoint()
-        if r.errors is not None:
-            return self.send_errors(errors=r.errors)
-        icom = r.icommands
-        
-        
-        ipath = icom.create_directory(dest_path, ignore_existing=force)
-        if ipath is None:
-            if force:
-                ipath = path
-            else:
-                raise IrodsException("Failed to create %s" % path)
+        myrule = Rule(icom.prc, body=rule_body, params=inputs, output=outname)
+        try:
+            raw_out = myrule.execute()
+        except BaseException as e:
+            msg = 'Irule failed: %s' % e.__class__.__name__
+            log.error(msg)
+            log.warning(e)
+            # raise IrodsException(msg)
+            raise e
         else:
-            log.info("Created irods collection: %s", ipath)
+            log.debug("Rule %s executed: %s", name, raw_out)
+
+            # retrieve out buffer
+            if output and len(raw_out.MsParam_PI) > 0:
+                out_array = raw_out.MsParam_PI[0].inOutStruct
+                # print("out array", out_array)
+
+                import re
+                file_coding = 'utf-8'
+
+                buf = out_array.stdoutBuf.buf
+                if buf is not None:
+                    # it's binary data (BinBytesBuf) so must be decoded
+                    buf = buf.decode(file_coding)
+                    buf = re.sub(r'\s+', '', buf)
+                    buf = re.sub(r'\\x00', '', buf)
+                    buf = buf.rstrip('\x00')
+                    log.debug("Out buff: %s", buf)
+
+                err_buf = out_array.stderrBuf.buf
+                if err_buf is not None:
+                    err_buf = err_buf.decode(file_coding)
+                    err_buf = re.sub(r'\s+', '', err_buf)
+                    log.debug("Err buff: %s", err_buf)
+
+                return buf
+
+            return raw_out
         
-        #output = ''
-        """
-        #print (datetime.datetime.now().time())
-        """
-        p = subprocess.Popen(command[icommand], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        for line in p.stdout.readlines():
-            #print line
-            if  line is None :
-                output='OK'
-                continue
-            else:
-                output='ERROR'
-                print (line)
-                
-               
-        retval = p.wait() 
-        print (output)
-        """
-        return['OK']
         
+    # Query
+    def queryIcat(self, icom, zone_name, dest_path):
+        
+        session = icom.prc
+        sql = "select zone_name, zone_conn_string, r_comment   from r_zone_main where zone_name = '"+zone_name+"'" 
+        print (sql)
+        
+        #alias = 'list_zone_max'
+        queryResponse = {}
+        #columns = [DataObject.zone_id, DataObject.zone_name] # optional, if we want to get results by key 
+        query = SpecificQuery(session, sql)
+        # register specific query in iCAT
+        _ = query.register()
+        
+        queryResponse['remote_collection_ID']=dest_path
+        for result in query:
+            
+            #print('Endpoint: '+result[0])
+            queryResponse['Endpoint']=result[0]
+            if result[1]:
+                #print('URL: '+result[1])
+                queryResponse['URL'] =result[1]
+            #else:
+                #print('URL: ')
+            if result[2]:
+                #print('description: '+result[2])
+                queryResponse['description'] =result[2]
+            #else:
+                #print('description: ')
+            
+
+            #print('{} {}'.format(result[zone_id], result[zone_name]))
+
+
+        _ = query.remove()
+        
+        return queryResponse
+        
+
+#################
+# REST CLASS AirodsFree
+#        
+class AirodsFree( EndpointResource):
+    
+    def get(self):
+        myargs = self.get_input()
+        print(myargs)
+        documentResult = []
+        
+        collection_to_del = myargs.get("remote_coll_id")
+        print ('@todo: delete remote collection!')
+        print ('@todo: empty trash remote !')
+        """
+        we need two rules:
+        1)
+        irm -r collection_to_del
+        
+        2)
+        irmtrash -rV --orphan /BINGV/trash/home/rods#INGV/trash
+        
+        """
+        
+        
+        return ['ciao']    
