@@ -67,6 +67,7 @@ variables:
     RABBIT_PASSWORD:
     RABBIT_EXCHANGE: elkexchange
     RABBIT_QUEUE: elkqueue
+    RABBIT_SSL_ENABLED: false # can be 0, 1, true, false
     ## OTHERS
     REDIS_HOST: redis-cache-1
     REDIS_PREFIX: 01T10
