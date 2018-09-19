@@ -69,14 +69,16 @@ class ImportManagerAPI(object):
 
         if backdoor:
             log.warning(
-                "The following json should be sent to external API, " +
+                "The following json should be sent to ImportManagerAPI, " +
                 " but you enabled the backdoor")
             log.info(payload)
             return True
 
         from restapi.confs import PRODUCTION
         if not PRODUCTION:
-            log.debug("ImportManagerAPI only enabled in PRODUCTION")
+            log.warning(
+                "The following json should be sent to ImportManagerAPI, " +
+                " but you are not in production")
             log.info(payload)
             return False
 
