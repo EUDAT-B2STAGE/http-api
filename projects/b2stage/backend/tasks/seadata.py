@@ -461,6 +461,9 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
     with celery_app.app.app_context():
 
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
         params = myjson.get('parameters', {})
 
         backdoor = params.pop('backdoor', False)
