@@ -11,6 +11,7 @@ seadata_vars = detector.load_group(label='seadata')
 SEADATA_ENABLED = seadata_vars.get('project') == '1'
 ORDERS_ENDPOINT = 'orders'
 EDMO_CODE = seadata_vars.get('edmo_code')
+API_VERSION = seadata_vars.get('api_version')
 
 
 class ErrorCodes(object):
@@ -68,6 +69,7 @@ class ImportManagerAPI(object):
         payload['edmo_code'] = EDMO_CODE
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
         payload['api_function'] += '_ready'
+        payload['version'] = API_VERSION
 
         import requests
         # print("TEST", self._uri)
