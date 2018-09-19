@@ -70,7 +70,7 @@ class ImportManagerAPI(object):
         if backdoor:
             log.warning(
                 "The following json should be sent to ImportManagerAPI, " +
-                " but you enabled the backdoor")
+                "but you enabled the backdoor")
             log.info(payload)
             return True
 
@@ -78,7 +78,7 @@ class ImportManagerAPI(object):
         if not PRODUCTION:
             log.warning(
                 "The following json should be sent to ImportManagerAPI, " +
-                " but you are not in production")
+                "but you are not in production")
             log.info(payload)
             return False
 
