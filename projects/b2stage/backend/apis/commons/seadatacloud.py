@@ -55,21 +55,30 @@ class ImportManagerAPI(object):
 
     _uri = seadata_vars.get('api_im_url')
 
-    def post(self, payload, instance=None):
+    # def post(self, payload, instance=None):
+    def post(self, payload, backdoor=False):
 
-        from restapi.confs import PRODUCTION
-        if not PRODUCTION:
-            log.debug("Skipping ImportManagerAPI")
-            return False
-
-        if instance is not None:
-            instance_id = str(id(instance))
-            payload['request_id'] = instance_id
+        # if instance is not None:
+        #     instance_id = str(id(instance))
+        #     payload['request_id'] = instance_id
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
         payload['edmo_code'] = EDMO_CODE
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
         payload['api_function'] += '_ready'
         payload['version'] = API_VERSION
+
+        if backdoor:
+            log.warning(
+                "The following json should be sent to external API, " +
+                " but you enabled the backdoor")
+            log.info(payload)
+            return True
+
+        from restapi.confs import PRODUCTION
+        if not PRODUCTION:
+            log.debug("ImportManagerAPI only enabled in PRODUCTION")
+            log.info(payload)
+            return False
 
         import requests
         # print("TEST", self._uri)
