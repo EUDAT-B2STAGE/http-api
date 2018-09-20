@@ -11,6 +11,7 @@ seadata_vars = detector.load_group(label='seadata')
 SEADATA_ENABLED = seadata_vars.get('project') == '1'
 ORDERS_ENDPOINT = 'orders'
 EDMO_CODE = seadata_vars.get('edmo_code')
+API_VERSION = seadata_vars.get('api_version')
 
 
 class ErrorCodes(object):
@@ -55,20 +56,32 @@ class ImportManagerAPI(object):
 
     _uri = seadata_vars.get('api_im_url')
 
-    def post(self, payload, instance=None):
+    # def post(self, payload, instance=None):
+    def post(self, payload, backdoor=False):
 
-        from restapi.confs import PRODUCTION
-        if not PRODUCTION:
-            log.debug("Skipping ImportManagerAPI")
-            return False
-
-        if instance is not None:
-            instance_id = str(id(instance))
-            payload['request_id'] = instance_id
+        # if instance is not None:
+        #     instance_id = str(id(instance))
+        #     payload['request_id'] = instance_id
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
         payload['edmo_code'] = EDMO_CODE
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
         payload['api_function'] += '_ready'
+        payload['version'] = API_VERSION
+
+        if backdoor:
+            log.warning(
+                "The following json should be sent to ImportManagerAPI, " +
+                "but you enabled the backdoor")
+            log.info(payload)
+            return True
+
+        from restapi.confs import PRODUCTION
+        if not PRODUCTION:
+            log.warning(
+                "The following json should be sent to ImportManagerAPI, " +
+                "but you are not in production")
+            log.info(payload)
+            return False
 
         import requests
         # print("TEST", self._uri)

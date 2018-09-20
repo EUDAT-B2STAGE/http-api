@@ -139,7 +139,9 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         counter = 0
         notified = False
         param_key = 'parameters'
-        elements = myjson.get(param_key, {}).get('pids', {})
+        params = myjson.get(param_key, {})
+        elements = params.get('pids', {})
+        backdoor = params.pop('backdoor', False)
         total = len(elements)
         testing_mode = myjson.get('test_mode', 'empty') == 'initial_load'
         self.update_state(state="PROGRESS", meta={
@@ -237,7 +239,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     myjson[key] = value
                 if len(errors) > 0:
                     myjson['errors'] = errors
-                ext_api.post(myjson)
+                ext_api.post(myjson, backdoor=backdoor)
 
         out = {
             'total': total, 'step': counter,
@@ -260,6 +262,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         ##################
         main_key = 'parameters'
         params = myjson.get(main_key, {})
+        backdoor = params.pop('backdoor', False)
         key = 'pids'
         pids = params.get(key, [])
         total = len(pids)
@@ -442,7 +445,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 myjson['errors'] = errors
             myjson[reqkey] = self.request.id
             # log.pp(myjson)
-            ext_api.post(myjson)
+            ext_api.post(myjson, backdoor=backdoor)
 
         ##################
         out = {
@@ -460,6 +463,9 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 def merge_restricted_order(self, order_id, order_path, myjson):
 
     with celery_app.app.app_context():
+
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
 
         params = myjson.get('parameters', {})
 
@@ -677,14 +683,9 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
         self.update_state(state="COMPLETED")
 
-        if backdoor:
-            log.warning(
-                "The following json should be sent to external API, " +
-                " but you enabled the backdoor")
-            log.info(myjson)
-        else:
-            ext_api.post(myjson)
         # imain.remove(partial_zip)
+
+        ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
         # 0 - avoid concurrent execution, introduce a cache like:
