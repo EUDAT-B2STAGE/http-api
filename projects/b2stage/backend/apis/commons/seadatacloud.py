@@ -32,6 +32,7 @@ class ErrorCodes(object):
     UNZIP_ERROR_INVALID_FILE = ("4010", "Unzip error: partner zip is invalid")
     UNZIP_ERROR_WRONG_FILECOUNT = ("4011", "Unzip error: file count does not match")
     B2SAFE_UPLOAD_ERROR = ("4012", "Unable to upload restricted zip on b2safe")
+    UNZIP_ERROR_INVALID_FILE = ("4013", "Unable to create restricted zip file")
 
 
 class Metadata(object):

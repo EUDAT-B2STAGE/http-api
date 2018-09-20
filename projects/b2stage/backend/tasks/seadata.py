@@ -657,11 +657,17 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
             log.info("Adding files to local zipfile")
             if zip_ref is not None:
-                for f in os.listdir(local_unzipdir):
-                    # log.debug("Adding %s", f)
-                    zip_ref.write(
-                        os.path.join(local_unzipdir, f), f)
-                zip_ref.close()
+                try:
+                    for f in os.listdir(local_unzipdir):
+                        # log.debug("Adding %s", f)
+                        zip_ref.write(
+                            os.path.join(local_unzipdir, f), f)
+                    zip_ref.close()
+                except BaseException:
+                return notify_error(
+                    ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
+                    myjson, backdoor, self, extra=local_finalzip_path
+                )
 
             log.info("Creating a backup copy of final zip")
             imain.move(final_zip, final_zip + ".bak")
