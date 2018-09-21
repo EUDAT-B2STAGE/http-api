@@ -466,6 +466,8 @@ def create_restricted_order(self, order_id, order_path, username, myjson):
     with celery_app.app.app_context():
         log.info('Enabling restricted: order id %s', order_id)
 
+        # myjson['parameters']['order_number'] = myjson['order']
+        myjson['parameters']['order_number'] = myjson.pop('order')
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
 
