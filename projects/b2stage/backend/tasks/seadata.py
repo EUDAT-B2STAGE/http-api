@@ -739,7 +739,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
         self.update_state(state="COMPLETED")
 
-        # imain.remove(partial_zip)
+        imain.remove(partial_zip)
 
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
