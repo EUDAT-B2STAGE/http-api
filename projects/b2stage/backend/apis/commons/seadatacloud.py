@@ -26,7 +26,7 @@ class ErrorCodes(object):
     INVALID_FILESIZE_PARAM = ("4003", "Invalid parameter file_size")
     MISSING_FILECOUNT_PARAM = ("4004", "Parameter file_count is missing")
     INVALID_FILECOUNT_PARAM = ("4005", "Invalid parameter file_count")
-    FILENAME_DOESNT_EXIST = ("4006", "Partner zip (file_name) does not exist")
+    FILENAME_DOESNT_EXIST = ("4006", "Partner zip (zipfile_name) does not exist")
     CHECKSUM_DOESNT_MATCH = ("4007", "Checksum does not match")
     FILESIZE_DOESNT_MATCH = ("4008", "File size does not match")
     UNZIP_ERROR_FILE_NOT_FOUND = ("4009", "Unzip error: partner zip not found")
