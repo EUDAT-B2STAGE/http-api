@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_celery import CeleryExt
@@ -100,57 +99,19 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     def patch(self, order_id):
 
-        log.warning("This endpoint should become async")
         log.warning("This endpoint should be restricted to admins?")
-        log.info('Enabling restricted: order id %s', order_id)
+
         json_input = self.get_input()
 
-        ##################
-        params = json_input.get('parameters', {})
-        if len(params) < 1:
-            error = "missing parameters"
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
-        ##################
-        # RESTRICTED PARAM
-        key = 'b2access_ids'
-        restricted = params.get(key, [])
-        if len(restricted) < 0:
-            error = "'%s' missing in JSON parameters" % key
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
-        ##################
-        # Metadata handling
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
-        if not imain.is_collection(order_path):
-            obj = self.init_endpoint()
-            # Create the path and set permissions
-            imain.create_collection_inheritable(order_path, obj.username)
-            log.warning("Created %s because it did not exist", order_path)
-            log.info("Assigned permissions to %s", obj.username)
-            # error = "Order '%s' not found or permissions denied" % order_id
-            # return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        obj = self.init_endpoint()
 
-        metadata, _ = imain.get_metadata(order_path)
-        log.pp(metadata)
-
-        # Remove if existing
-        key = 'restricted'
-        if key in metadata:
-            imain.remove_metadata(order_path, key)
-            # TODO: merge with the new request
-            # are they just 2 lists?
-            log.info("Merge: %s and %s", metadata.get(key), restricted)
-            previous_restricted = json.loads(metadata.get(key))
-            restricted = previous_restricted + restricted
-
-        # Set restricted metadata
-        string = json.dumps(restricted)
-        imain.set_metadata(order_path, restricted=string)
-        log.debug('Flagged restricted: %s', string)
-
-        return {'enabled': restricted}
+        task = CeleryExt.create_restricted_order.apply_async(
+            args=[order_id, order_path, obj.username, json_input]
+        )
+        log.warning("Async job: %s", task.id)
+        return self.return_async_id(task.id)
 
     def put(self, order_id, file_id):
         """

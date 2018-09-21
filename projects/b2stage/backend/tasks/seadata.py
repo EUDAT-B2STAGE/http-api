@@ -3,6 +3,7 @@
 import os
 import hashlib
 import zipfile
+import json
 from shutil import rmtree, unpack_archive
 from socket import gethostname
 from utilities import path
@@ -460,6 +461,59 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
 
 @celery_app.task(bind=True)
+def create_restricted_order(self, order_id, order_path, username, myjson):
+
+    with celery_app.app.app_context():
+        log.info('Enabling restricted: order id %s', order_id)
+
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        imain = celery_app.get_service(service='irods')
+        # Make sure you have a path with no trailing slash
+        order_path = order_path.rstrip('/')
+
+        restricted = params.get('b2access_ids')
+        if restricted is None:
+            return notify_error(
+                ErrorCodes.MISSING_PARTNERS_IDS,
+                myjson, backdoor, self
+            )
+
+        ##################
+        # Metadata handling
+        if not imain.is_collection(order_path):
+            # Create the path and set permissions
+            imain.create_collection_inheritable(order_path, username)
+            log.warning("Created %s because it did not exist", order_path)
+            log.info("Assigned permissions to %s", username)
+
+        metadata, _ = imain.get_metadata(order_path)
+        log.pp(metadata)
+
+        # Remove if existing
+        key = 'restricted'
+        if key in metadata:
+            imain.remove_metadata(order_path, key)
+            log.info("Merge: %s and %s", metadata.get(key), restricted)
+            previous_restricted = json.loads(metadata.get(key))
+            restricted = previous_restricted + restricted
+
+        # Set restricted metadata
+        string = json.dumps(restricted)
+        imain.set_metadata(order_path, restricted=string)
+        log.debug('Flagged restricted: %s', string)
+
+        # return {'enabled': restricted}
+        ext_api.post(myjson, backdoor=backdoor)
+        return "COMPLETED"
+
+
+@celery_app.task(bind=True)
 def merge_restricted_order(self, order_id, order_path, myjson):
 
     with celery_app.app.app_context():
@@ -670,10 +724,10 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                             os.path.join(local_unzipdir, f), f)
                     zip_ref.close()
                 except BaseException:
-                return notify_error(
-                    ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
-                    myjson, backdoor, self, extra=local_finalzip_path
-                )
+                    return notify_error(
+                        ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
+                        myjson, backdoor, self, extra=local_finalzip_path
+                    )
 
             log.info("Creating a backup copy of final zip")
             imain.move(final_zip, final_zip + ".bak")
