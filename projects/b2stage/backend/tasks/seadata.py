@@ -494,6 +494,13 @@ def create_restricted_order(self, order_id, order_path, username, myjson):
             log.warning("Created %s because it did not exist", order_path)
             log.info("Assigned permissions to %s", username)
 
+        for account in restricted:
+            log.info("Verifying %s", account)
+            info = imain.get_user_info(account)
+            log.info(info)
+            if info is None:
+                log.error("User %s does not exist!", account)
+
         metadata, _ = imain.get_metadata(order_path)
         log.pp(metadata)
 

@@ -366,6 +366,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     def delete(self, order_id):
 
+        # TODO: make me async
+
         # FIXME: I should also revoke the task
 
         ##################
