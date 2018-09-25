@@ -797,7 +797,7 @@ def delete_order(self, order_id, order_path, myjson):
 
         # TODO: I should also revoke the task?
 
-        imain.remove(order_path)
+        imain.remove(order_path, recursive=True)
 
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
@@ -820,11 +820,11 @@ def delete_batch(self, batch_id, batch_path, myjson):
         imain = celery_app.get_service(service='irods')
         if not imain.is_collection(batch_path):
             return notify_error(
-                ErrorCodes.ORDER_NOT_FOUD,
+                ErrorCodes.BATCH_NOT_FOUD,
                 myjson, backdoor, self
             )
 
-        imain.remove(batch_path)
+        imain.remove(batch_path, recursive=True)
 
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
