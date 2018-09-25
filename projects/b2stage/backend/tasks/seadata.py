@@ -486,7 +486,8 @@ def create_restricted_order(self, order_id, order_path, username, myjson):
         # Make sure you have a path with no trailing slash
         order_path = order_path.rstrip('/')
 
-        restricted = params.get('b2access_ids')
+        # restricted = params.get('b2access_ids')
+        restricted = myjson['parameters'].pop('b2access_ids', None)
         if restricted is None:
             return notify_error(
                 ErrorCodes.MISSING_PARTNERS_IDS,
