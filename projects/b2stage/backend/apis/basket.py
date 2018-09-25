@@ -182,7 +182,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log_into_queue(self, msg)
 
         ##################
-        key = 'request_id'
+        key = 'order_number'
         order_id = json_input.get(key)
         if order_id is None:
             error = "Order ID '%s': missing" % key
