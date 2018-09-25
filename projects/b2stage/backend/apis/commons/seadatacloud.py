@@ -35,6 +35,7 @@ class ErrorCodes(object):
     B2SAFE_UPLOAD_ERROR = ("4012", "Unable to upload restricted zip on b2safe")
     UNZIP_ERROR_INVALID_FILE = ("4013", "Unable to create restricted zip file")
     MISSING_PARTNERS_IDS = ("4014", "Parameter b2access_ids is missing")
+    INVALID_B2ACCESS_ID = ("4015", "Invalid b2access_ids")
 
 
 class Metadata(object):

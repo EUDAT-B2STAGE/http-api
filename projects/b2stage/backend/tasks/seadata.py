@@ -471,6 +471,9 @@ def create_restricted_order(self, order_id, order_path, username, myjson):
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
 
+        if 'errors' not in myjson:
+            myjson['errors'] = []
+
         params = myjson.get('parameters', {})
 
         backdoor = params.pop('backdoor', False)
@@ -494,30 +497,35 @@ def create_restricted_order(self, order_id, order_path, username, myjson):
             log.warning("Created %s because it did not exist", order_path)
             log.info("Assigned permissions to %s", username)
 
+        valid_accounts = []
         for account in restricted:
-            log.info("Verifying %s", account)
             info = imain.get_user_info(account)
-            log.info(info)
             if info is None:
-                log.error("User %s does not exist!", account)
+                myjson["errors"].append({
+                    "error": ErrorCodes.INVALID_B2ACCESS_ID[0],
+                    "description": ErrorCodes.INVALID_B2ACCESS_ID[1],
+                    "subject": account,
+                })
+                continue
+            valid_accounts.append(account)
+
 
         metadata, _ = imain.get_metadata(order_path)
-        log.pp(metadata)
+        # log.pp(metadata)
 
         # Remove if existing
         key = 'restricted'
         if key in metadata:
             imain.remove_metadata(order_path, key)
-            log.info("Merge: %s and %s", metadata.get(key), restricted)
+            log.info("Merge: %s and %s", metadata.get(key), valid_accounts)
             previous_restricted = json.loads(metadata.get(key))
-            restricted = previous_restricted + restricted
+            valid_accounts = previous_restricted + valid_accounts
 
         # Set restricted metadata
-        string = json.dumps(restricted)
+        string = json.dumps(valid_accounts)
         imain.set_metadata(order_path, restricted=string)
         log.debug('Flagged restricted: %s', string)
 
-        # return {'enabled': restricted}
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
