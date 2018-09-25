@@ -36,6 +36,8 @@ class ErrorCodes(object):
     UNZIP_ERROR_INVALID_FILE = ("4013", "Unable to create restricted zip file")
     MISSING_PARTNERS_IDS = ("4014", "Parameter b2access_ids is missing")
     INVALID_B2ACCESS_ID = ("4015", "Invalid b2access id")
+    ORDER_NOT_FOUD = ("4016", "Order does not exist or you lack permissions")
+    BATCH_NOT_FOUD = ("4017", "Batch does not exist or you lack permissions")
 
 
 class Metadata(object):

@@ -24,6 +24,7 @@ import urllib.parse
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from restapi.flask_ext.flask_celery import CeleryExt
 # from b2stage.apis.commons.endpoint import EudatEndpoint
 # from b2stage.apis.commons.seadatacloud import Metadata as md
 from b2stage.apis.commons.queue import log_into_queue, prepare_message
@@ -233,7 +234,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # ASYNC
         if len(pids) > 0:
             log.info("Submit async celery task")
-            from restapi.flask_ext.flask_celery import CeleryExt
             task = CeleryExt.unrestricted_order.apply_async(
                 args=[order_id, order_path, zip_file_name, json_input])
             log.warning("Async job: %s", task.id)
@@ -358,41 +358,16 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     def delete(self, order_id):
 
-        # TODO: make me async
-
-        # FIXME: I should also revoke the task
-
-        ##################
         log.debug("DELETE request on order: %s", order_id)
-        msg = prepare_message(
-            self, json={'order_id': order_id}, log_string='start')
-        log_into_queue(self, msg)
+
+        json_input = self.get_input()
 
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
 
-        ##################
-        # verify if the path exists
-        filename = 'order_%s_unrestricted' % order_id
-        zip_file_name = path.append_compress_extension(filename)
-        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
-        log.debug("Zip irods path: %s", zip_ipath)
-        if not imain.is_dataobject(zip_ipath):
-            error = "Order '%s' not found (or no permissions)" % order_id
-            return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
-
-        ##################
-        # TODO: remove the iticket?
-        pass
-
-        ##################
-        # remove the path in the cloud
-        imain.remove(zip_ipath)
-
-        ##################
-        response = {order_id: 'removed'}
-
-        msg = prepare_message(self, log_string='end', status='removed')
-        log_into_queue(self, msg)
-        return self.force_response(response)
+        task = CeleryExt.delete_order.apply_async(
+            args=[order_id, order_path, json_input]
+        )
+        log.warning("Async job: %s", task.id)
+        return self.return_async_id(task.id)

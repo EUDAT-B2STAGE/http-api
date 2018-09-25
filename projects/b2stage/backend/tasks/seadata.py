@@ -770,6 +770,67 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
 
 @celery_app.task(bind=True)
+def delete_order(self, order_id, order_path, myjson):
+
+    with celery_app.app.app_context():
+
+        log.info("Delete request for order path %s", order_path)
+
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        imain = celery_app.get_service(service='irods')
+
+        if not imain.is_collection(order_path):
+            return notify_error(
+                ErrorCodes.ORDER_NOT_FOUD,
+                myjson, backdoor, self
+            )
+
+        ##################
+        # TODO: remove the iticket?
+        pass
+
+        # TODO: I should also revoke the task?
+
+        imain.remove(order_path)
+
+        ext_api.post(myjson, backdoor=backdoor)
+        return "COMPLETED"
+
+
+@celery_app.task(bind=True)
+def delete_batch(self, batch_id, batch_path, myjson):
+
+    with celery_app.app.app_context():
+
+        log.info("Delete request for batch path %s", batch_path)
+
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        imain = celery_app.get_service(service='irods')
+        if not imain.is_collection(batch_path):
+            return notify_error(
+                ErrorCodes.ORDER_NOT_FOUD,
+                myjson, backdoor, self
+            )
+
+        imain.remove(batch_path)
+
+        ext_api.post(myjson, backdoor=backdoor)
+        return "COMPLETED"
+
+
+@celery_app.task(bind=True)
 def cache_batch_pids(self, irods_path):
 
     with celery_app.app.app_context():
