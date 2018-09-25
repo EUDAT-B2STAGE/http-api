@@ -182,15 +182,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log_into_queue(self, msg)
 
         ##################
-        key = 'order_number'
-        order_id = json_input.get(key)
-        if order_id is None:
-            error = "Order ID '%s': missing" % key
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-        else:
-            order_id = str(order_id)
-
-        ##################
         main_key = 'parameters'
         params = json_input.get(main_key, {})
         if len(params) < 1:
@@ -199,16 +190,17 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # else:
         #     log.pp(params)
 
+        ##################
+        key = 'order_number'
+        order_id = params.get(key)
+        if order_id is None:
+            error = "Order ID '%s': missing" % key
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        else:
+            order_id = str(order_id)
+
         # ##################
         filename = params.get('file_name', 'restricted')
-        # ##################
-        # NOTE: useless as it's the same as the request id...
-        # key = 'order_number'
-        # order_id = params.get(key)
-        # if order_id is None:
-        #     error = "Parameter '%s' is missing" % key
-        #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
         ##################
         # PIDS: can be empty if restricted
         key = 'pids'
