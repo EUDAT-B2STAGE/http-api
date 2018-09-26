@@ -310,15 +310,18 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         response = {}
 
         files = imain.list(order_path, detailed=True)
-        log.critical(files)
 
         for filename in filenames:
             zip_file_name = path.append_compress_extension(filename)
+
+            if zip_file_name not in files:
+                continue
+
             zip_ipath = path.join(order_path, zip_file_name, return_str=True)
             log.debug("Zip irods path: %s", zip_ipath)
 
-            if not imain.is_dataobject(zip_ipath):
-                continue
+            # if not imain.is_dataobject(zip_ipath):
+            #     continue
 
             found += 1
 
@@ -347,7 +350,14 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             #     'code': code,
             # }
 
-            response[filename] = route
+            # response[filename] = route
+            response.append(
+                {
+                    'name': filename,
+                    'url': route,
+                    'size': files[filename].get('content_length', 0)
+                }
+            )
 
         if found == 0:
             error = "Order '%s' not found (or no permissions)" % order_id
