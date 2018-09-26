@@ -24,6 +24,8 @@ import urllib.parse
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
+from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
 from restapi.flask_ext.flask_celery import CeleryExt
 # from b2stage.apis.commons.endpoint import EudatEndpoint
 # from b2stage.apis.commons.seadatacloud import Metadata as md
@@ -306,8 +308,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ]
         found = 0
         response = {}
-        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
-        from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
+
+        files = imain.list(order_path, detailed=True)
+        log.critical(files)
 
         for filename in filenames:
             zip_file_name = path.append_compress_extension(filename)
@@ -334,7 +337,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # Set the url as Metadata in the irods file
             imain.set_metadata(zip_ipath, download=route)
 
-            # TOFIX: we should we a database or cache to save this,
+            # TOFIX: we should add a database or cache to save this,
             # not irods metadata (known for low performances)
             imain.set_metadata(zip_ipath, iticket_code=code)
 
