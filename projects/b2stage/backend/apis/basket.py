@@ -352,11 +352,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # }
 
             # response[filename] = route
+            info = files[zip_file_name]
             response.append(
                 {
                     'name': filename,
                     'url': route,
-                    'size': files[filename].get('content_length', 0)
+                    'size': info.get('content_length', 0)
                 }
             )
 
