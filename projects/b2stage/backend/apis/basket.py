@@ -307,7 +307,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             'order_%s_restricted' % order_id
         ]
         found = 0
-        response = {}
+        # response = {}
+        response = []
 
         files = imain.list(order_path, detailed=True)
 
