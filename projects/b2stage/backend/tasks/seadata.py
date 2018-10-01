@@ -52,16 +52,6 @@ logging.getLogger('b2handle').setLevel(logging.WARNING)
 b2handle_client = b2handle.instantiate_for_read_access()
 
 
-####################
-def notify_server_problems(myjson):
-    myjson['errors'] = {
-        "error": ErrorCodes.INTERNAL_SERVER_ERROR[0],
-        "description": ErrorCodes.INTERNAL_SERVER_ERROR[1],
-        # "subject": pid
-    }
-    ext_api.post(myjson)
-
-
 def notify_error(error, myjson, backdoor, task, extra=None):
 
     error_message = "Error %s: %s" % (error[0], error[1])
@@ -138,7 +128,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         out_data = []
         errors = []
         counter = 0
-        notified = False
         param_key = 'parameters'
         params = myjson.get(param_key, {})
         elements = params.get('pids', {})
@@ -147,6 +136,12 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         testing_mode = myjson.get('test_mode', 'empty') == 'initial_load'
         self.update_state(state="PROGRESS", meta={
             'total': total, 'step': counter, 'errors': len(errors)})
+
+        if elements is None:
+            return notify_error(
+                ErrorCodes.MISSING_PIDS_LIST,
+                myjson, backdoor, self
+            )
 
         for element in elements:
 
@@ -177,25 +172,36 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 imain.put(str(local_element), ifile)
             except BaseException as e:
                 log.error(e)
-                notified = True
-                notify_server_problems(myjson)
-                break
-            else:
-                log.debug("Moved: %s" % current)
+                errors.append({
+                    "error": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[0],
+                    "description": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[1],
+                    "subject": tmp,
+                })
+
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+                continue
+            log.debug("Moved: %s" % current)
 
             ###############
             # 2. request pid (irule)
             try:
                 PID = pmaker.pid_request(imain, ifile)
             except BaseException as e:
-                notified = True
-                notify_server_problems(myjson)
-                break
-            else:
-                log.info('PID: %s', PID)
-                # # save inside the cache? (both)
-                # r.set(PID, ifile)
-                # r.set(ifile, PID)
+                log.error(e)
+                errors.append({
+                    "error": ErrorCodes.UNABLE_TO_ASSIGN_PID[0],
+                    "description": ErrorCodes.UNABLE_TO_ASSIGN_PID[1],
+                    "subject": tmp,
+                })
+
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+                continue
+            log.info('PID: %s', PID)
+            # # save inside the cache? (both)
+            r.set(PID, ifile)
+            r.set(ifile, PID)
 
             ###############
             # 3. set metadata (icat)
@@ -230,17 +236,16 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
         ###############
         # Notify the CDI API
-        if not notified:
-            if testing_mode:
-                log.verbose('skipping CDI API')
-            else:
-                myjson[param_key]['pids'] = out_data
-                msg = prepare_message(self, isjson=True)
-                for key, value in msg.items():
-                    myjson[key] = value
-                if len(errors) > 0:
-                    myjson['errors'] = errors
-                ext_api.post(myjson, backdoor=backdoor)
+        if testing_mode:
+            log.verbose('skipping CDI API')
+        else:
+            myjson[param_key]['pids'] = out_data
+            msg = prepare_message(self, isjson=True)
+            for key, value in msg.items():
+                myjson[key] = value
+            if len(errors) > 0:
+                myjson['errors'] = errors
+            ext_api.post(myjson, backdoor=backdoor)
 
         out = {
             'total': total, 'step': counter,
@@ -258,14 +263,10 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
     with celery_app.app.app_context():
 
         log.info("I'm %s" % self.request.id)
-        failed = False
 
-        ##################
-        main_key = 'parameters'
-        params = myjson.get(main_key, {})
+        params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
-        key = 'pids'
-        pids = params.get(key, [])
+        pids = params.get('pids', [])
         total = len(pids)
         self.update_state(
             state="STARTING",
@@ -280,9 +281,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         path.create(local_zip_dir, directory=True, force=True)
 
         imain = celery_app.get_service(service='irods')
-        log.pp(order_path)
-        # metadata, _ = imain.get_metadata(order_path)
-        # log.pp(metadata)
+        # log.pp(order_path)
 
         ##################
         # Verify pids
@@ -309,19 +308,20 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 )
                 continue
 
-            # # NOTE: only with a backdoor initially?
-            # pass
-
-            ################
             # otherwise b2handle remotely
             try:
                 b2handle_output = b2handle_client.retrieve_handle_record(pid)
             except BaseException as e:
-                failed = True
-                notify_server_problems(myjson)
-                break
-            else:
-                log.verbose('Handle called')
+                self.update_state(state="FAILED", meta={
+                    'total': total, 'step': counter,
+                    'verified': verified,
+                    'errors': len(errors)}
+                )
+                return notify_error(
+                    ErrorCodes.B2HANDLE_ERROR,
+                    myjson, backdoor, self
+                )
+            log.verbose('Handle called')
 
             ################
             if b2handle_output is None:
@@ -330,6 +330,9 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     "description": ErrorCodes.PID_NOT_FOUND[1],
                     "subject": pid
                 })
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+
                 log.warning("PID not found: %s", pid)
             else:
                 ipath = pmaker.parse_pid_dataobject_path(b2handle_output)
@@ -342,20 +345,10 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     'errors': len(errors)}
                 )
 
-        if failed:
-            self.update_state(state="FAILED", meta={
-                'total': total, 'step': counter,
-                'verified': verified,
-                'errors': len(errors)}
-            )
-            return 'Failed'
-        else:
-            log.debug("PID files: %s", len(files))
+        log.debug("PID files: %s", len(files))
 
-        ##################
         # Recover files
         for pid, ipath in files.items():
-            # print(pid, ipath)
 
             # Copy files from irods into a local TMPDIR
             filename = path.last_part(ipath)
@@ -372,11 +365,17 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             for line in source:
                                 target.write(line)
                 except BaseException as e:
-                    failed = True
-                    notify_server_problems(myjson)
-                    break
-                else:
-                    log.debug("Copy to local: %s", local_file)
+                    errors.append({
+                        "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
+                        "description": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[1],
+                        "subject": filename
+                    })
+                    self.update_state(state="PROGRESS", meta={
+                        'total': total, 'step': counter,
+                        'errors': len(errors)})
+                    continue
+
+                log.debug("Copy to local: %s", local_file)
             #########################
             #########################
 
@@ -391,12 +390,6 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             #     md = {pid: ipath}
             #     imain.set_metadata(order_path, **md)
             #     log.verbose("Set metadata")
-
-        if failed:
-            self.update_state(state="FAILED", meta={
-                'total': total, 'step': counter, 'errors': len(errors)}
-            )
-            return 'Failed'
 
         zip_ipath = None
         if counter > 0:
@@ -430,7 +423,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             if counter > 0:
                 # FIXME: what about when restricted is there?
                 zipcount += 1
-            myjson[main_key] = {
+            myjson['parameters'] = {
                 # "request_id": msg['request_id'],
                 reqkey: myjson[reqkey],
                 "order_number": order_id,

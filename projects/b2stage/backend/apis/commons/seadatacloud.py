@@ -17,7 +17,6 @@ API_VERSION = seadata_vars.get('api_version')
 class ErrorCodes(object):
     PID_NOT_FOUND = ("41", "PID not found")
     INGESTION_FILE_NOT_FOUND = ("50", "File requested not found")
-    INTERNAL_SERVER_ERROR = ("54", "Internal error, restart your request")
 
     # addzip_restricted_order
     MISSING_ZIPFILENAME_PARAM = ("4000", "Parameter zipfile_name is missing")
@@ -38,6 +37,11 @@ class ErrorCodes(object):
     INVALID_B2ACCESS_ID = ("4015", "Invalid b2access id")
     ORDER_NOT_FOUD = ("4016", "Order does not exist or you lack permissions")
     BATCH_NOT_FOUD = ("4017", "Batch does not exist or you lack permissions")
+    MISSING_PIDS_LIST = ("4018", "Parameter 'pids' is missing")
+    UNABLE_TO_MOVE_IN_PRODUCTION = ("4019", "Cannot move file in production")
+    UNABLE_TO_ASSIGN_PID = ("4020", "Unable to assign a PID to the file")
+    B2HANDLE_ERROR = ("4021", "PID server (b2handle) unreachable")
+    UNABLE_TO_DOWNLOAD_FILE = ("4022", "Unable to download the file")
 
 
 class Metadata(object):
