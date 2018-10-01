@@ -1,0 +1,8 @@
+withid:
+  custom:
+    authentication: true
+
+  summary: Delete an ingestion batch
+  responses:
+    '200':
+      description: Ingestion batch removed

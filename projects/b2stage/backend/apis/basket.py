@@ -24,6 +24,9 @@ import urllib.parse
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
+from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
+from restapi.flask_ext.flask_celery import CeleryExt
 # from b2stage.apis.commons.endpoint import EudatEndpoint
 # from b2stage.apis.commons.seadatacloud import Metadata as md
 from b2stage.apis.commons.queue import log_into_queue, prepare_message
@@ -182,15 +185,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log_into_queue(self, msg)
 
         ##################
-        key = 'request_id'
-        order_id = json_input.get(key)
-        if order_id is None:
-            error = "Order ID '%s': missing" % key
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-        else:
-            order_id = str(order_id)
-
-        ##################
         main_key = 'parameters'
         params = json_input.get(main_key, {})
         if len(params) < 1:
@@ -199,16 +193,17 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # else:
         #     log.pp(params)
 
+        ##################
+        key = 'order_number'
+        order_id = params.get(key)
+        if order_id is None:
+            error = "Order ID '%s': missing" % key
+            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        else:
+            order_id = str(order_id)
+
         # ##################
         filename = params.get('file_name', 'restricted')
-        # ##################
-        # NOTE: useless as it's the same as the request id...
-        # key = 'order_number'
-        # order_id = params.get(key)
-        # if order_id is None:
-        #     error = "Parameter '%s' is missing" % key
-        #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
         ##################
         # PIDS: can be empty if restricted
         key = 'pids'
@@ -241,7 +236,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # ASYNC
         if len(pids) > 0:
             log.info("Submit async celery task")
-            from restapi.flask_ext.flask_celery import CeleryExt
             task = CeleryExt.unrestricted_order.apply_async(
                 args=[order_id, order_path, zip_file_name, json_input])
             log.warning("Async job: %s", task.id)
@@ -313,17 +307,22 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             'order_%s_restricted' % order_id
         ]
         found = 0
-        response = {}
-        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
-        from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
+        # response = {}
+        response = []
+
+        files = imain.list(order_path, detailed=True)
 
         for filename in filenames:
             zip_file_name = path.append_compress_extension(filename)
+
+            if zip_file_name not in files:
+                continue
+
             zip_ipath = path.join(order_path, zip_file_name, return_str=True)
             log.debug("Zip irods path: %s", zip_ipath)
 
-            if not imain.is_dataobject(zip_ipath):
-                continue
+            # if not imain.is_dataobject(zip_ipath):
+            #     continue
 
             found += 1
 
@@ -342,7 +341,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # Set the url as Metadata in the irods file
             imain.set_metadata(zip_ipath, download=route)
 
-            # TOFIX: we should we a database or cache to save this,
+            # TOFIX: we should add a database or cache to save this,
             # not irods metadata (known for low performances)
             imain.set_metadata(zip_ipath, iticket_code=code)
 
@@ -352,7 +351,15 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             #     'code': code,
             # }
 
-            response[filename] = route
+            # response[filename] = route
+            info = files[zip_file_name]
+            response.append(
+                {
+                    'name': filename,
+                    'url': route,
+                    'size': info.get('content_length', 0)
+                }
+            )
 
         if found == 0:
             error = "Order '%s' not found (or no permissions)" % order_id
@@ -366,39 +373,16 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     def delete(self, order_id):
 
-        # FIXME: I should also revoke the task
-
-        ##################
         log.debug("DELETE request on order: %s", order_id)
-        msg = prepare_message(
-            self, json={'order_id': order_id}, log_string='start')
-        log_into_queue(self, msg)
+
+        json_input = self.get_input()
 
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
 
-        ##################
-        # verify if the path exists
-        filename = 'order_%s_unrestricted' % order_id
-        zip_file_name = path.append_compress_extension(filename)
-        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
-        log.debug("Zip irods path: %s", zip_ipath)
-        if not imain.is_dataobject(zip_ipath):
-            error = "Order '%s' not found (or no permissions)" % order_id
-            return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
-
-        ##################
-        # TODO: remove the iticket?
-        pass
-
-        ##################
-        # remove the path in the cloud
-        imain.remove(zip_ipath)
-
-        ##################
-        response = {order_id: 'removed'}
-
-        msg = prepare_message(self, log_string='end', status='removed')
-        log_into_queue(self, msg)
-        return self.force_response(response)
+        task = CeleryExt.delete_order.apply_async(
+            args=[order_id, order_path, json_input]
+        )
+        log.warning("Async job: %s", task.id)
+        return self.return_async_id(task.id)

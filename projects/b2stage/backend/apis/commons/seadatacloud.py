@@ -17,7 +17,6 @@ API_VERSION = seadata_vars.get('api_version')
 class ErrorCodes(object):
     PID_NOT_FOUND = ("41", "PID not found")
     INGESTION_FILE_NOT_FOUND = ("50", "File requested not found")
-    INTERNAL_SERVER_ERROR = ("54", "Internal error, restart your request")
 
     # addzip_restricted_order
     MISSING_ZIPFILENAME_PARAM = ("4000", "Parameter zipfile_name is missing")
@@ -26,7 +25,7 @@ class ErrorCodes(object):
     INVALID_FILESIZE_PARAM = ("4003", "Invalid parameter file_size")
     MISSING_FILECOUNT_PARAM = ("4004", "Parameter file_count is missing")
     INVALID_FILECOUNT_PARAM = ("4005", "Invalid parameter file_count")
-    FILENAME_DOESNT_EXIST = ("4006", "Partner zip (file_name) does not exist")
+    FILENAME_DOESNT_EXIST = ("4006", "Partner zip (zipfile_name) does not exist")
     CHECKSUM_DOESNT_MATCH = ("4007", "Checksum does not match")
     FILESIZE_DOESNT_MATCH = ("4008", "File size does not match")
     UNZIP_ERROR_FILE_NOT_FOUND = ("4009", "Unzip error: partner zip not found")
@@ -34,6 +33,15 @@ class ErrorCodes(object):
     UNZIP_ERROR_WRONG_FILECOUNT = ("4011", "Unzip error: file count does not match")
     B2SAFE_UPLOAD_ERROR = ("4012", "Unable to upload restricted zip on b2safe")
     UNZIP_ERROR_INVALID_FILE = ("4013", "Unable to create restricted zip file")
+    MISSING_PARTNERS_IDS = ("4014", "Parameter b2access_ids is missing")
+    INVALID_B2ACCESS_ID = ("4015", "Invalid b2access id")
+    ORDER_NOT_FOUD = ("4016", "Order does not exist or you lack permissions")
+    BATCH_NOT_FOUD = ("4017", "Batch does not exist or you lack permissions")
+    MISSING_PIDS_LIST = ("4018", "Parameter 'pids' is missing")
+    UNABLE_TO_MOVE_IN_PRODUCTION = ("4019", "Cannot move file in production")
+    UNABLE_TO_ASSIGN_PID = ("4020", "Unable to assign a PID to the file")
+    B2HANDLE_ERROR = ("4021", "PID server (b2handle) unreachable")
+    UNABLE_TO_DOWNLOAD_FILE = ("4022", "Unable to download the file")
 
 
 class Metadata(object):

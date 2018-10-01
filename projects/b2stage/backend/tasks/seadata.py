@@ -3,6 +3,7 @@
 import os
 import hashlib
 import zipfile
+import json
 from shutil import rmtree, unpack_archive
 from socket import gethostname
 from utilities import path
@@ -49,16 +50,6 @@ if gethostname() != 'rapydo_server':
 pmaker = PIDgenerator()
 logging.getLogger('b2handle').setLevel(logging.WARNING)
 b2handle_client = b2handle.instantiate_for_read_access()
-
-
-####################
-def notify_server_problems(myjson):
-    myjson['errors'] = {
-        "error": ErrorCodes.INTERNAL_SERVER_ERROR[0],
-        "description": ErrorCodes.INTERNAL_SERVER_ERROR[1],
-        # "subject": pid
-    }
-    ext_api.post(myjson)
 
 
 def notify_error(error, myjson, backdoor, task, extra=None):
@@ -137,7 +128,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         out_data = []
         errors = []
         counter = 0
-        notified = False
         param_key = 'parameters'
         params = myjson.get(param_key, {})
         elements = params.get('pids', {})
@@ -146,6 +136,12 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         testing_mode = myjson.get('test_mode', 'empty') == 'initial_load'
         self.update_state(state="PROGRESS", meta={
             'total': total, 'step': counter, 'errors': len(errors)})
+
+        if elements is None:
+            return notify_error(
+                ErrorCodes.MISSING_PIDS_LIST,
+                myjson, backdoor, self
+            )
 
         for element in elements:
 
@@ -176,25 +172,36 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 imain.put(str(local_element), ifile)
             except BaseException as e:
                 log.error(e)
-                notified = True
-                notify_server_problems(myjson)
-                break
-            else:
-                log.debug("Moved: %s" % current)
+                errors.append({
+                    "error": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[0],
+                    "description": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[1],
+                    "subject": tmp,
+                })
+
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+                continue
+            log.debug("Moved: %s" % current)
 
             ###############
             # 2. request pid (irule)
             try:
                 PID = pmaker.pid_request(imain, ifile)
             except BaseException as e:
-                notified = True
-                notify_server_problems(myjson)
-                break
-            else:
-                log.info('PID: %s', PID)
-                # # save inside the cache? (both)
-                # r.set(PID, ifile)
-                # r.set(ifile, PID)
+                log.error(e)
+                errors.append({
+                    "error": ErrorCodes.UNABLE_TO_ASSIGN_PID[0],
+                    "description": ErrorCodes.UNABLE_TO_ASSIGN_PID[1],
+                    "subject": tmp,
+                })
+
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+                continue
+            log.info('PID: %s', PID)
+            # # save inside the cache? (both)
+            r.set(PID, ifile)
+            r.set(ifile, PID)
 
             ###############
             # 3. set metadata (icat)
@@ -229,17 +236,16 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
         ###############
         # Notify the CDI API
-        if not notified:
-            if testing_mode:
-                log.verbose('skipping CDI API')
-            else:
-                myjson[param_key]['pids'] = out_data
-                msg = prepare_message(self, isjson=True)
-                for key, value in msg.items():
-                    myjson[key] = value
-                if len(errors) > 0:
-                    myjson['errors'] = errors
-                ext_api.post(myjson, backdoor=backdoor)
+        if testing_mode:
+            log.verbose('skipping CDI API')
+        else:
+            myjson[param_key]['pids'] = out_data
+            msg = prepare_message(self, isjson=True)
+            for key, value in msg.items():
+                myjson[key] = value
+            if len(errors) > 0:
+                myjson['errors'] = errors
+            ext_api.post(myjson, backdoor=backdoor)
 
         out = {
             'total': total, 'step': counter,
@@ -257,14 +263,10 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
     with celery_app.app.app_context():
 
         log.info("I'm %s" % self.request.id)
-        failed = False
 
-        ##################
-        main_key = 'parameters'
-        params = myjson.get(main_key, {})
+        params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
-        key = 'pids'
-        pids = params.get(key, [])
+        pids = params.get('pids', [])
         total = len(pids)
         self.update_state(
             state="STARTING",
@@ -279,9 +281,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         path.create(local_zip_dir, directory=True, force=True)
 
         imain = celery_app.get_service(service='irods')
-        log.pp(order_path)
-        # metadata, _ = imain.get_metadata(order_path)
-        # log.pp(metadata)
+        # log.pp(order_path)
 
         ##################
         # Verify pids
@@ -308,19 +308,20 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 )
                 continue
 
-            # # NOTE: only with a backdoor initially?
-            # pass
-
-            ################
             # otherwise b2handle remotely
             try:
                 b2handle_output = b2handle_client.retrieve_handle_record(pid)
             except BaseException as e:
-                failed = True
-                notify_server_problems(myjson)
-                break
-            else:
-                log.verbose('Handle called')
+                self.update_state(state="FAILED", meta={
+                    'total': total, 'step': counter,
+                    'verified': verified,
+                    'errors': len(errors)}
+                )
+                return notify_error(
+                    ErrorCodes.B2HANDLE_ERROR,
+                    myjson, backdoor, self
+                )
+            log.verbose('Handle called')
 
             ################
             if b2handle_output is None:
@@ -329,6 +330,9 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     "description": ErrorCodes.PID_NOT_FOUND[1],
                     "subject": pid
                 })
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+
                 log.warning("PID not found: %s", pid)
             else:
                 ipath = pmaker.parse_pid_dataobject_path(b2handle_output)
@@ -341,20 +345,10 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     'errors': len(errors)}
                 )
 
-        if failed:
-            self.update_state(state="FAILED", meta={
-                'total': total, 'step': counter,
-                'verified': verified,
-                'errors': len(errors)}
-            )
-            return 'Failed'
-        else:
-            log.debug("PID files: %s", len(files))
+        log.debug("PID files: %s", len(files))
 
-        ##################
         # Recover files
         for pid, ipath in files.items():
-            # print(pid, ipath)
 
             # Copy files from irods into a local TMPDIR
             filename = path.last_part(ipath)
@@ -371,11 +365,17 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             for line in source:
                                 target.write(line)
                 except BaseException as e:
-                    failed = True
-                    notify_server_problems(myjson)
-                    break
-                else:
-                    log.debug("Copy to local: %s", local_file)
+                    errors.append({
+                        "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
+                        "description": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[1],
+                        "subject": filename
+                    })
+                    self.update_state(state="PROGRESS", meta={
+                        'total': total, 'step': counter,
+                        'errors': len(errors)})
+                    continue
+
+                log.debug("Copy to local: %s", local_file)
             #########################
             #########################
 
@@ -390,12 +390,6 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             #     md = {pid: ipath}
             #     imain.set_metadata(order_path, **md)
             #     log.verbose("Set metadata")
-
-        if failed:
-            self.update_state(state="FAILED", meta={
-                'total': total, 'step': counter, 'errors': len(errors)}
-            )
-            return 'Failed'
 
         zip_ipath = None
         if counter > 0:
@@ -429,7 +423,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             if counter > 0:
                 # FIXME: what about when restricted is there?
                 zipcount += 1
-            myjson[main_key] = {
+            myjson['parameters'] = {
                 # "request_id": msg['request_id'],
                 reqkey: myjson[reqkey],
                 "order_number": order_id,
@@ -457,6 +451,81 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         return out
 
     return myjson
+
+
+@celery_app.task(bind=True)
+def create_restricted_order(self, order_id, order_path, username, myjson):
+
+    with celery_app.app.app_context():
+        log.info('Enabling restricted: order id %s', order_id)
+
+        # Cleaning up input json
+        if 'order' in myjson['parameters']:
+            myjson['parameters'].pop('order', None)
+        if 'order_id' in myjson['parameters']:
+            myjson['parameters'].pop('order_id', None)
+        myjson['parameters']['order_number'] = order_id
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
+        if 'errors' not in myjson:
+            myjson['errors'] = []
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        imain = celery_app.get_service(service='irods')
+        # Make sure you have a path with no trailing slash
+        order_path = order_path.rstrip('/')
+
+        # restricted = params.get('b2access_ids')
+        restricted = myjson['parameters'].pop('b2access_ids', None)
+        if restricted is None:
+            return notify_error(
+                ErrorCodes.MISSING_PARTNERS_IDS,
+                myjson, backdoor, self
+            )
+
+        ##################
+        # Metadata handling
+        if not imain.is_collection(order_path):
+            # Create the path and set permissions
+            imain.create_collection_inheritable(order_path, username)
+            log.warning("Created %s because it did not exist", order_path)
+            log.info("Assigned permissions to %s", username)
+
+        valid_accounts = []
+        for account in restricted:
+            info = imain.get_user_info(account)
+            if info is None:
+                myjson["errors"].append({
+                    "error": ErrorCodes.INVALID_B2ACCESS_ID[0],
+                    "description": ErrorCodes.INVALID_B2ACCESS_ID[1],
+                    "subject": account,
+                })
+                continue
+            valid_accounts.append(account)
+
+
+        metadata, _ = imain.get_metadata(order_path)
+        # log.pp(metadata)
+
+        # Remove if existing
+        key = 'restricted'
+        if key in metadata:
+            imain.remove_metadata(order_path, key)
+            log.info("Merge: %s and %s", metadata.get(key), valid_accounts)
+            previous_restricted = json.loads(metadata.get(key))
+            valid_accounts = previous_restricted + valid_accounts
+
+        # Set restricted metadata
+        string = json.dumps(valid_accounts)
+        imain.set_metadata(order_path, restricted=string)
+        log.debug('Flagged restricted: %s', string)
+
+        ext_api.post(myjson, backdoor=backdoor)
+        return "COMPLETED"
 
 
 @celery_app.task(bind=True)
@@ -670,10 +739,10 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                             os.path.join(local_unzipdir, f), f)
                     zip_ref.close()
                 except BaseException:
-                return notify_error(
-                    ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
-                    myjson, backdoor, self, extra=local_finalzip_path
-                )
+                    return notify_error(
+                        ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
+                        myjson, backdoor, self, extra=local_finalzip_path
+                    )
 
             log.info("Creating a backup copy of final zip")
             imain.move(final_zip, final_zip + ".bak")
@@ -683,7 +752,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
         self.update_state(state="COMPLETED")
 
-        # imain.remove(partial_zip)
+        imain.remove(partial_zip)
 
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
@@ -691,6 +760,67 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         # 0 - avoid concurrent execution, introduce a cache like:
         # http://loose-bits.com/2010/10/distributed-task-locking-in-celery.html
         # https://pypi.org/project/celery_once/
+
+
+@celery_app.task(bind=True)
+def delete_order(self, order_id, order_path, myjson):
+
+    with celery_app.app.app_context():
+
+        log.info("Delete request for order path %s", order_path)
+
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        imain = celery_app.get_service(service='irods')
+
+        if not imain.is_collection(order_path):
+            return notify_error(
+                ErrorCodes.ORDER_NOT_FOUD,
+                myjson, backdoor, self
+            )
+
+        ##################
+        # TODO: remove the iticket?
+        pass
+
+        # TODO: I should also revoke the task?
+
+        imain.remove(order_path, recursive=True)
+
+        ext_api.post(myjson, backdoor=backdoor)
+        return "COMPLETED"
+
+
+@celery_app.task(bind=True)
+def delete_batch(self, batch_id, batch_path, myjson):
+
+    with celery_app.app.app_context():
+
+        log.info("Delete request for batch path %s", batch_path)
+
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        imain = celery_app.get_service(service='irods')
+        if not imain.is_collection(batch_path):
+            return notify_error(
+                ErrorCodes.BATCH_NOT_FOUD,
+                myjson, backdoor, self
+            )
+
+        imain.remove(batch_path, recursive=True)
+
+        ext_api.post(myjson, backdoor=backdoor)
+        return "COMPLETED"
 
 
 @celery_app.task(bind=True)

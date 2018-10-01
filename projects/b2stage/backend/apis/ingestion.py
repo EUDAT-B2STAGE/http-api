@@ -6,6 +6,7 @@ Ingestion process submission to upload the SeaDataNet marine data.
 
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
+from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
@@ -153,7 +154,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         if backdoor:
             # # CELERY VERSION
             log.info("Submit async celery task")
-            from restapi.flask_ext.flask_celery import CeleryExt
             task = CeleryExt.send_to_workers_task.apply_async(
                 args=[batch_id, ipath, zip_name, backdoor])
             log.warning("Async job: %s", task.id)
@@ -275,3 +275,18 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log_into_queue(self, log_msg)
 
         return self.force_response(response)
+
+    def delete(self, batch_id):
+        log.debug("DELETE request on batch: %s", batch_id)
+
+        json_input = self.get_input()
+
+        imain = self.get_service_instance(service_name='irods')
+        batch_path = self.get_batch_path(imain, batch_id)
+        log.debug("Batch path: %s", batch_path)
+
+        task = CeleryExt.delete_batch.apply_async(
+            args=[batch_id, batch_path, json_input]
+        )
+        log.warning("Async job: %s", task.id)
+        return self.return_async_id(task.id)
