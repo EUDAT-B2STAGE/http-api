@@ -38,11 +38,11 @@ class PAMTest(Endpoint):
             password=password,
             authscheme='PAM'
         )
-        log.debug("B2safe authenticated")
         u = imain.get_current_user()
-        log.info("Authenticated with user = %s", u)
+        log.debug("B2safe authenticated with user = %s", u)
+
         info = imain.get_user_info(u)
         log.info(info)
-        out = imain.list(path='/cinecaDMPZone1/home/')
+        out = imain.list(path='/cinecaDMPZone1/home/%s' % u)
         log.info(out)
         return out
