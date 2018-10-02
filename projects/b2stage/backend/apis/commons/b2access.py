@@ -64,7 +64,6 @@ class B2accessUtilities(EndpointResource):
                 b2a_refresh_token,
                 'B2ACCESS denied: unknown error'
             )
-        log.pp(resp)
 
         b2a_token = resp.get('access_token')
         if b2a_token is None:
@@ -84,26 +83,25 @@ class B2accessUtilities(EndpointResource):
         session['b2access_token'] = (b2access_token, '')
 
         # Calling with the oauth2 client
-        current_user = b2access.get('userinfo')
-        # log.pp(current_user)
+        b2access_user = b2access.get('userinfo')
 
         error = True
-        if current_user is None:
+        if b2access_user is None:
             errstring = "Empty response from B2ACCESS"
-        elif not isinstance(current_user, OAuthResponse):
+        elif not isinstance(b2access_user, OAuthResponse):
             errstring = "Invalid response from B2ACCESS"
-        elif current_user.status > hcodes.HTTP_TRESHOLD:
-            log.error("Bad status: %s" % str(current_user._resp))
-            if current_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
+        elif b2access_user.status > hcodes.HTTP_TRESHOLD:
+            log.error("Bad status: %s" % str(b2access_user._resp))
+            if b2access_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:
                 errstring = "B2ACCESS token obtained failed with %s" \
-                    % current_user.status
-        elif isinstance(current_user._resp, HTTPError):
-            errstring = "Error from B2ACCESS: %s" % current_user._resp
-        elif not hasattr(current_user, 'data'):
+                    % b2access_user.status
+        elif isinstance(b2access_user._resp, HTTPError):
+            errstring = "Error from B2ACCESS: %s" % b2access_user._resp
+        elif not hasattr(b2access_user, 'data'):
             errstring = "Authorized response is invalid (missing data)"
-        elif current_user.data.get('email') is None:
+        elif b2access_user.data.get('email') is None:
             errstring = "Authorized response is invalid (missing email)"
         else:
             error = False
@@ -115,7 +113,7 @@ class B2accessUtilities(EndpointResource):
 
         # Store b2access information inside the db
         intuser, extuser = \
-            auth.store_oauth2_user(current_user, b2access_token)
+            auth.store_oauth2_user(b2access_user, b2access_token)
         # In case of error this account already existed...
         if intuser is None:
             error = "Failed to store access info"
@@ -136,7 +134,7 @@ class B2accessUtilities(EndpointResource):
         tok_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
         auth.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
 
-        return current_user, intuser, extuser
+        return b2access_user, intuser, extuser
 
     # B2ACCESS proxy certificates are no longer required
     # def obtain_proxy_certificate(self, auth, extuser):

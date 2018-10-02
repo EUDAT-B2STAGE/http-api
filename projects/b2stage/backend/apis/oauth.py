@@ -85,7 +85,7 @@ class Authorize(EudatEndpoint):
         if curuser is None and intuser is None:
             return self.send_errors('oauth2', extuser)
 
-        log.critical(curuser)
+        log.critical(curuser.__dict__)
         log.critical(intuser)
         log.critical(extuser)
 
