@@ -36,7 +36,7 @@ class PAMTest(Endpoint):
             service_name='irods',
             user=user,
             password=password,
-            authscheme='PAM'
+            # authscheme='PAM'
         )
         u = imain.get_current_user()
         log.debug("B2safe authenticated with user = %s", u)
