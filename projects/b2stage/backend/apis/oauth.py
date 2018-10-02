@@ -139,6 +139,14 @@ class Authorize(EudatEndpoint):
         log.critical(b2access_dn)
         log.critical(intuser)
         log.critical(extuser)
+        log.critical(extuser.username)
+        log.critical(extuser.token)
+        log.critical(extuser.token_expiration)
+        log.critical(extuser.email)
+        log.critical(extuser.certificate_cn)
+        log.critical(extuser.certificate_dn)
+        log.critical(extuser.proxyfile)
+        log.critical(extuser.description)
 
         return self.force_response(
             defined_content={
