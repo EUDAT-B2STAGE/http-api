@@ -86,9 +86,6 @@ class Authorize(EudatEndpoint):
             return self.send_errors('oauth2', extuser)
 
         b2access_dn = b2access_user.data.get('distinguishedName')
-        # log.critical(b2access_dn)
-        # log.critical(intuser)
-        # log.critical(extuser)
 
         # B2access user proxy is no longer required
         # proxy_file = self.obtain_proxy_certificate(auth, extuser)
@@ -138,6 +135,10 @@ class Authorize(EudatEndpoint):
 
         # FIXME: Create a method to reply with standard Bearer oauth response
         # return self.send_credentials(local_token, extra, metas)
+
+        log.critical(b2access_dn)
+        log.critical(intuser)
+        log.critical(extuser)
 
         return self.force_response(
             defined_content={
