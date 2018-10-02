@@ -85,21 +85,38 @@ class Authorize(EudatEndpoint):
         if curuser is None and intuser is None:
             return self.send_errors('oauth2', extuser)
 
-        # B2access user proxy
-        proxy_file = self.obtain_proxy_certificate(auth, extuser)
-        if proxy_file is None:
-            return self.send_errors(
-                "B2ACCESS CA is down", "Could not get certificate files")
+        log.critical(curuser)
+        log.critical(intuser)
+        log.critical(extuser)
+
+        # B2access user proxy is no longer required
+        # proxy_file = self.obtain_proxy_certificate(auth, extuser)
+        # if proxy_file is None:
+        #     return self.send_errors(
+        #         "B2ACCESS CA is down", "Could not get certificate files")
 
         # iRODS informations: get/set from current B2ACCESS response
-        icom = self.get_service_instance(service_name='irods')
-        irods_user = self.set_irods_username(icom, auth, extuser)
-        if irods_user is None:
-            return self.send_errors(
-                "Current B2ACCESS credentials (%s) " % extuser.certificate_dn +
-                "do not match any user inside B2SAFE namespace"
-            )
-        user_home = icom.get_user_home(irods_user)
+
+        icom = self.get_service_instance(
+            service_name='irods',
+            user=intuser,
+            password=b2access_token,
+            authscheme='PAM',
+            catch_exceptions=True
+        )
+
+        # TODO: re-implement user mapping
+        irods_user = "?"
+        user_home = "?"
+
+        # icom = self.get_service_instance(service_name='irods')
+        # irods_user = self.set_irods_username(icom, auth, extuser)
+        # if irods_user is None:
+        #     return self.send_errors(
+        #         "Current B2ACCESS credentials (%s) " % extuser.certificate_dn +
+        #         "do not match any user inside B2SAFE namespace"
+        #     )
+        # user_home = icom.get_user_home(irods_user)
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))

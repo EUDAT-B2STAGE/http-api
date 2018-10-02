@@ -137,38 +137,39 @@ class B2accessUtilities(EndpointResource):
 
         return current_user, intuser, extuser
 
-    def obtain_proxy_certificate(self, auth, extuser):
-        """
-        Ask B2ACCESS a valid proxy certificate to access irods data.
+    # B2ACCESS proxy certificates are no longer required
+    # def obtain_proxy_certificate(self, auth, extuser):
+    #     """
+    #     Ask B2ACCESS a valid proxy certificate to access irods data.
 
-        Note: this certificates lasts 12 hours.
-        """
+    #     Note: this certificates lasts 12 hours.
+    #     """
 
-        # To use the b2access token with oauth2 client
-        # We have to save it into session
-        key = 'b2access_token'
-        if key not in session or session.get(key, None) is None:
-            session[key] = (extuser.token, '')
+    #     # To use the b2access token with oauth2 client
+    #     # We have to save it into session
+    #     key = 'b2access_token'
+    #     if key not in session or session.get(key, None) is None:
+    #         session[key] = (extuser.token, '')
 
-        # # invalidate token, for debug purpose
-        # session[key] = ('ABC', '')
+    #     # # invalidate token, for debug purpose
+    #     # session[key] = ('ABC', '')
 
-        # Create the object for accessing certificates in B2ACCESS
-        b2accessCA = auth._oauth2.get('b2accessCA')
-        b2access_prod = auth._oauth2.get('prod')
+    #     # Create the object for accessing certificates in B2ACCESS
+    #     b2accessCA = auth._oauth2.get('b2accessCA')
+    #     b2access_prod = auth._oauth2.get('prod')
 
-        # Call the oauth2 object requesting a certificate
-        if self._certs is None:
-            self._certs = Certificates()
-        proxy_file = self._certs.proxy_from_ca(b2accessCA, prod=b2access_prod)
+    #     # Call the oauth2 object requesting a certificate
+    #     if self._certs is None:
+    #         self._certs = Certificates()
+    #     proxy_file = self._certs.proxy_from_ca(b2accessCA, prod=b2access_prod)
 
-        # Save the proxy filename into the database
-        if proxy_file is None:
-            log.pp(b2accessCA, "Failed oauth2")
-        else:
-            auth.store_proxy_cert(extuser, proxy_file)
+    #     # Save the proxy filename into the database
+    #     if proxy_file is None:
+    #         log.pp(b2accessCA, "Failed oauth2")
+    #     else:
+    #         auth.store_proxy_cert(extuser, proxy_file)
 
-        return proxy_file
+    #     return proxy_file
 
     def set_irods_username(self, icom, auth, user):
         """ Find out what is the irods username and save it """
