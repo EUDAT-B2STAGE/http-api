@@ -75,7 +75,10 @@ class B2accessUtilities(EndpointResource):
         log.info("Received refresh token: '%s'" % b2a_refresh_token)
         return (b2a_token, b2a_refresh_token, tuple())
 
-    def get_b2access_user_info(self, auth, b2access, b2access_token):
+    def get_b2access_user_info(self, auth,
+                               b2access,
+                               b2access_token,
+                               b2access_refresh_token):
         """ Get user info from current b2access token """
 
         # To use the b2access token with oauth2 client
@@ -113,7 +116,8 @@ class B2accessUtilities(EndpointResource):
 
         # Store b2access information inside the db
         intuser, extuser = \
-            auth.store_oauth2_user(b2access_user, b2access_token)
+            auth.store_oauth2_user(
+                b2access_user, b2access_token, b2access_refresh_token)
         # In case of error this account already existed...
         if intuser is None:
             error = "Failed to store access info"

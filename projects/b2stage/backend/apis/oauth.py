@@ -80,8 +80,8 @@ class Authorize(EudatEndpoint):
             return self.send_errors(message=b2access_error)
 
         # B2access user info
-        b2access_user, intuser, extuser = \
-            self.get_b2access_user_info(auth, b2access, b2access_token)
+        b2access_user, intuser, extuser = self.get_b2access_user_info(
+            auth, b2access, b2access_token, b2access_refresh_token)
         if b2access_user is None and intuser is None:
             return self.send_errors('oauth2', extuser)
 
