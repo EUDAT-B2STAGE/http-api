@@ -86,9 +86,9 @@ class Authorize(EudatEndpoint):
             return self.send_errors('oauth2', extuser)
 
         b2access_dn = b2access_user.data.get('distinguishedName')
-        log.critical(b2access_dn)
-        log.critical(intuser)
-        log.critical(extuser)
+        # log.critical(b2access_dn)
+        # log.critical(intuser)
+        # log.critical(extuser)
 
         # B2access user proxy is no longer required
         # proxy_file = self.obtain_proxy_certificate(auth, extuser)
@@ -116,13 +116,13 @@ class Authorize(EudatEndpoint):
         #     )
         user_home = icom.get_user_home(irods_user)
 
-        icom = self.get_service_instance(
-            service_name='irods',
-            user=irods_user,
-            password=b2access_token,
-            authscheme='PAM',
-            catch_exceptions=True
-        )
+        # icom = self.get_service_instance(
+        #     service_name='irods',
+        #     user=irods_user,
+        #     password=b2access_token,
+        #     authscheme='PAM',
+        #     catch_exceptions=True
+        # )
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
