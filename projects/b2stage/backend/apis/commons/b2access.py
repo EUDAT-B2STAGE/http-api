@@ -175,38 +175,36 @@ class B2accessUtilities(EndpointResource):
 
         # Does this user exist?
         irods_user = icom.get_user_from_dn(user.certificate_dn)
-        user_exists = irods_user is not None
 
-        if not user_exists:
+        if irods_user is None:
             # Production / Real B2SAFE and irods instance
             if IRODS_EXTERNAL:
                 log.error("No iRODS user related to certificate")
                 return None
             # Using dockerized iRODS/B2SAFE
-            else:
 
-                # NOTE: dockerized version does not know about the user
-                # because it has no sync script with B2ACCESS running
+            # NOTE: dockerized version does not know about the user
+            # because it has no sync script with B2ACCESS running
 
-                # NOTE: mapping is for common 'eudat' user for all.
-                # Of course it's only for debugging purpose.
-                irods_user = 'eudat'
-                # irods_user = user.unity
+            # NOTE: mapping is for common 'eudat' user for all.
+            # Of course it's only for debugging purpose.
+            irods_user = 'eudat'
+            # irods_user = user.unity
 
-                iadmin = self.get_service_instance(
-                    service_name='irods', be_admin=True)
+            iadmin = self.get_service_instance(
+                service_name='irods', be_admin=True)
 
-                # User may exist without dn/certificate
-                if not iadmin.query_user_exists(irods_user):
-                    # Add (as normal) user inside irods
-                    iadmin.create_user(irods_user, admin=False)
+            # User may exist without dn/certificate
+            if not iadmin.query_user_exists(irods_user):
+                # Add (as normal) user inside irods
+                iadmin.create_user(irods_user, admin=False)
 
-                irods_user_data = iadmin.list_user_attributes(irods_user)
-                if irods_user_data.get('dn') is None:
-                    # Add DN to user access possibility
-                    iadmin.modify_user_dn(
-                        irods_user,
-                        dn=user.certificate_dn, zone=irods_user_data['zone'])
+            irods_user_data = iadmin.list_user_attributes(irods_user)
+            if irods_user_data.get('dn') is None:
+                # Add DN to user access possibility
+                iadmin.modify_user_dn(
+                    irods_user,
+                    dn=user.certificate_dn, zone=irods_user_data['zone'])
 
         # Update db to save the irods user related to this user account
         auth.associate_object_to_attr(user, 'irodsuser', irods_user)

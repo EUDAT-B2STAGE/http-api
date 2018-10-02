@@ -80,12 +80,13 @@ class Authorize(EudatEndpoint):
             return self.send_errors(message=b2access_error)
 
         # B2access user info
-        curuser, intuser, extuser = \
+        b2access_user, intuser, extuser = \
             self.get_b2access_user_info(auth, b2access, b2access_token)
-        if curuser is None and intuser is None:
+        if b2access_user is None and intuser is None:
             return self.send_errors('oauth2', extuser)
 
-        log.critical(curuser.__dict__)
+        b2access_dn = b2access_user.data.get('distinguishedName')
+        log.critical(b2access_dn)
         log.critical(intuser)
         log.critical(extuser)
 
@@ -97,26 +98,31 @@ class Authorize(EudatEndpoint):
 
         # iRODS informations: get/set from current B2ACCESS response
 
-        icom = self.get_service_instance(
-            service_name='irods',
-            user=intuser,
-            password=b2access_token,
-            authscheme='PAM',
-            catch_exceptions=True
-        )
+        icom = self.get_service_instance(service_name='irods')
 
-        # TODO: re-implement user mapping
-        irods_user = "?"
-        user_home = "?"
-
-        # icom = self.get_service_instance(service_name='irods')
         # irods_user = self.set_irods_username(icom, auth, extuser)
+        irods_user = icom.get_user_from_dn(b2access_dn)
+
+        if irods_user is None:
+            err = "B2ACCESS credentials (%s) do not match any user in B2SAFE" \
+                % b2access_dn
+            log.error(err)
+            return self.send_errors(err)
+
         # if irods_user is None:
         #     return self.send_errors(
         #         "Current B2ACCESS credentials (%s) " % extuser.certificate_dn +
         #         "do not match any user inside B2SAFE namespace"
         #     )
-        # user_home = icom.get_user_home(irods_user)
+        user_home = icom.get_user_home(irods_user)
+
+        # icom = self.get_service_instance(
+        #     service_name='irods',
+        #     user=irods_user,
+        #     password=b2access_token,
+        #     authscheme='PAM',
+        #     catch_exceptions=True
+        # )
 
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
