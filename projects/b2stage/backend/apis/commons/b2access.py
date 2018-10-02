@@ -64,6 +64,7 @@ class B2accessUtilities(EndpointResource):
                 b2a_refresh_token,
                 'B2ACCESS denied: unknown error'
             )
+        log.pp(resp)
 
         b2a_token = resp.get('access_token')
         if b2a_token is None:
