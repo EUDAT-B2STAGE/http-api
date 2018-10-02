@@ -115,9 +115,10 @@ class B2accessUtilities(EndpointResource):
         # Attributes you find: http://j.mp/b2access_profile_attributes
 
         # Store b2access information inside the db
-        intuser, extuser = \
-            auth.store_oauth2_user(
-                b2access_user, b2access_token, b2access_refresh_token)
+        intuser, extuser = auth.store_oauth2_user(
+            "b2access", b2access_user,
+            b2access_token, b2access_refresh_token
+        )
         # In case of error this account already existed...
         if intuser is None:
             error = "Failed to store access info"

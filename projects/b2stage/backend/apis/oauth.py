@@ -140,6 +140,7 @@ class Authorize(EudatEndpoint):
         log.critical(intuser)
         log.critical(extuser)
         log.critical(extuser.username)
+        log.critical(extuser.account_type)
         log.critical(extuser.token)
         log.critical(extuser.refresh_token)
         log.critical(extuser.token_expiration)
