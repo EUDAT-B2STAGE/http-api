@@ -56,8 +56,11 @@ class EudatEndpoint(B2accessUtilities):
             icom = self.irodsuser_from_b2stage(internal_user)
         elif internal_user.authmethod == 'irods':
             icom = self.irodsuser_from_b2safe(internal_user)
+        # elif internal_user.authmethod == 'oauth2':
+        #     icom, external_user, proxy = \
+        #         self.irodsuser_from_b2access_cert(internal_user)
         elif internal_user.authmethod == 'oauth2':
-            icom, external_user, proxy = \
+            icom, external_user = \
                 self.irodsuser_from_b2access(internal_user)
         else:
             log.exit("Unknown credentials provided")
@@ -105,6 +108,18 @@ class EudatEndpoint(B2accessUtilities):
         )
 
     def irodsuser_from_b2access(self, internal_user):
+        external_user = self.auth.oauth_from_local(internal_user)
+
+        icom = self.get_service_instance(
+            service_name='irods',
+            user=external_user.irodsuser,
+            password=external_user.token,
+            authscheme='PAM'
+        )
+
+        return icom, external_user
+
+    def irodsuser_from_b2access_cert(self, internal_user):
         """ Certificates X509 and authority delegation """
         proxy = True
         external_user = self.auth.oauth_from_local(internal_user)
