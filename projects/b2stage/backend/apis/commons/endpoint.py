@@ -69,7 +69,7 @@ class EudatEndpoint(B2accessUtilities):
             if errors is not None:
                 return errors
 
-        elif internal_user.authmethod == 'oauth2':
+        elif internal_user.authmethod == 'b2access':
             icom, external_user, refreshed = \
                 self.irodsuser_from_b2access(internal_user)
             # icd and ipwd do not give error with wrong certificates...
@@ -77,7 +77,7 @@ class EudatEndpoint(B2accessUtilities):
             icom.list()
 
         else:
-            log.exit("Unknown credentials provided")
+            log.error("Unknown credentials provided")
 
         #################################
         sql = self.get_service_instance('sqlalchemy')
