@@ -88,6 +88,7 @@ class Authorize(EudatEndpoint):
                 errors=extuser
             )
 
+        # B2ACCESS WITH TOKENS AUTHENTICATION
         b2access_dn = b2access_user.data.get('distinguishedName')
 
         icom = self.get_service_instance(service_name='irods')
@@ -100,26 +101,28 @@ class Authorize(EudatEndpoint):
             log.error(err)
             return self.send_errors(err)
 
-        # B2access user proxy is no longer used
-        # proxy_file = self.obtain_proxy_certificate(auth, extuser)
-        # if proxy_file is None:
-        #     return self.send_errors(
-        #         "B2ACCESS CA is down", "Could not get certificate files")
+        # Update db to save the irods user related to this user account
+        auth.associate_object_to_attr(extuser, 'irodsuser', irods_user)
+
+        # B2ACCESS WITH CERTIFICATES AUTHENTICATION - no longer used
+        """
+        proxy_file = self.obtain_proxy_certificate(auth, extuser)
+        if proxy_file is None:
+            return self.send_errors(
+                "B2ACCESS CA is down", "Could not get certificate files")
 
         # iRODS informations: get/set from current B2ACCESS response
 
-        # icom = self.get_service_instance(service_name='irods')
+        icom = self.get_service_instance(service_name='irods')
 
-        # irods_user = self.set_irods_username(icom, auth, extuser)
+        irods_user = self.set_irods_username(icom, auth, extuser)
 
-        # B2access user proxy is no longer required
-        # if irods_user is None:
-        #     return self.send_errors(
-        #         "Current B2ACCESS credentials (%s) " % \
-        #          extuser.certificate_dn +
-        #         "do not match any user inside B2SAFE namespace"
-        #     )
-
+        if irods_user is None:
+            return self.send_errors(
+                "B2ACCESS credentials (%s) " % extuser.certificate_dn +
+                "do not match any user inside B2SAFE namespace"
+            )
+        """
         user_home = icom.get_user_home(irods_user)
 
         # If all is well, give our local token to this validated user
