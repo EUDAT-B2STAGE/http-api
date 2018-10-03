@@ -61,14 +61,14 @@ class EudatEndpoint(B2accessUtilities):
 
             icom = self.irodsuser_from_b2safe(internal_user)
 
-        # AUTHMETHOD SHOULD BE B2ACCESS, NOT OAUTH2 ...
+        elif internal_user.authmethod == 'b2access-cert':
 
-        # elif internal_user.authmethod == 'oauth2':
-        #     icom, external_user, refreshed, errors = \
-        #         self.irodsuser_from_b2access_cert(internal_user)
-        #     proxy = True
-        #     if errors is not None:
-        #         return errors
+            icom, external_user, refreshed, errors = \
+                self.irodsuser_from_b2access_cert(internal_user)
+            proxy = True
+            if errors is not None:
+                return errors
+
         elif internal_user.authmethod == 'oauth2':
             icom, external_user, refreshed = \
                 self.irodsuser_from_b2access(internal_user)
@@ -111,6 +111,7 @@ class EudatEndpoint(B2accessUtilities):
 
         return icom, external_user, refreshed
 
+    # B2access with certificates are no longer used
     def irodsuser_from_b2access_cert(self, internal_user):
         """ Certificates X509 and authority delegation """
         external_user = self.auth.oauth_from_local(internal_user)
