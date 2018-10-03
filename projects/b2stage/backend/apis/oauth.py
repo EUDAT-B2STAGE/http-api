@@ -89,7 +89,7 @@ class Authorize(EudatEndpoint):
             )
 
         # B2ACCESS WITH TOKENS AUTHENTICATION
-        log.pp(b2access_user.data)
+        # log.pp(b2access_user.data)
 
         # distinguishedName is only defined in prod, not in dev and staging
         # b2access_dn = b2access_user.data.get('distinguishedName')
