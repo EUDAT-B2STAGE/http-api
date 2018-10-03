@@ -83,7 +83,10 @@ class Authorize(EudatEndpoint):
         b2access_user, intuser, extuser = self.get_b2access_user_info(
             auth, b2access, b2access_token, b2access_refresh_token)
         if b2access_user is None and intuser is None:
-            return self.send_errors('oauth2', extuser)
+            return self.send_errors(
+                message='Unable to retrieve user info from b2access',
+                errors=extuser
+            )
 
         b2access_dn = b2access_user.data.get('distinguishedName')
 
@@ -97,7 +100,9 @@ class Authorize(EudatEndpoint):
 
         icom = self.get_service_instance(service_name='irods')
 
+        # B2access user proxy is no longer required
         # irods_user = self.set_irods_username(icom, auth, extuser)
+
         irods_user = icom.get_user_from_dn(b2access_dn)
 
         if irods_user is None:
@@ -106,6 +111,7 @@ class Authorize(EudatEndpoint):
             log.error(err)
             return self.send_errors(err)
 
+        # B2access user proxy is no longer required
         # if irods_user is None:
         #     return self.send_errors(
         #         "Current B2ACCESS credentials (%s) " % extuser.certificate_dn +

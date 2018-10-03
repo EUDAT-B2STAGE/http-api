@@ -47,51 +47,39 @@ class EudatEndpoint(B2accessUtilities):
         # NOTE: icom = irods commands handler (official python driver PRC)
 
         proxy = False
+        refreshed = False
         external_user = None
 
         if internal_user is None:
             raise AttributeError("Missing user association to token")
 
         if internal_user.authmethod == 'credentials':
+
             icom = self.irodsuser_from_b2stage(internal_user)
+
         elif internal_user.authmethod == 'irods':
+
             icom = self.irodsuser_from_b2safe(internal_user)
+
+        # AUTHMETHOD SHOULD BE B2ACCESS, NOT OAUTH2 ...
+
         # elif internal_user.authmethod == 'oauth2':
-        #     icom, external_user, proxy = \
+        #     icom, external_user, refreshed, errors = \
         #         self.irodsuser_from_b2access_cert(internal_user)
+        #     proxy = True
+        #     if errors is not None:
+        #         return errors
         elif internal_user.authmethod == 'oauth2':
-            icom, external_user = \
+            icom, external_user, refreshed = \
                 self.irodsuser_from_b2access(internal_user)
+            # icd and ipwd do not give error with wrong certificates...
+            # so the minimum command is ils inside the home dir
+            icom.list()
+
         else:
             log.exit("Unknown credentials provided")
 
         #################################
-        # Verify if irods certificates are ok
-        refreshed = False
-        try:
-            # icd and ipwd do not give error with wrong certificates...
-            # so the minimum command is ils inside the home dir
-            icom.list()
-            if proxy:
-                log.debug("Current proxy certificate is valid")
-
-        # Catch exceptions on this irods test
-        # To manipulate the reply to be given to the user
-        except BaseException as e:
-            log.warning("Catched exception %s" % type(e))
-
-            if proxy:
-                error = self.check_proxy_certificate(external_user, e)
-                if error is None:
-                    refreshed = True
-                else:
-                    # Case of error to be printed
-                    return self.parse_gss_failure(error)
-            else:
-                raise e
-
-        #################################
-        # database connection
         sql = self.get_service_instance('sqlalchemy')
         # update user variable to account email, which should be always unique
         user = internal_user.email
@@ -114,24 +102,45 @@ class EudatEndpoint(B2accessUtilities):
             service_name='irods',
             user=external_user.irodsuser,
             password=external_user.token,
-            authscheme='PAM'
+            authscheme='PAM',
+            catch_exceptions=True
         )
 
-        return icom, external_user
+        # Check validity with a list() and ask for a new code if needed
+        refreshed = False
+
+        return icom, external_user, refreshed
 
     def irodsuser_from_b2access_cert(self, internal_user):
         """ Certificates X509 and authority delegation """
-        proxy = True
         external_user = self.auth.oauth_from_local(internal_user)
 
-        return \
-            self.get_service_instance(
-                service_name='irods', only_check_proxy=True,
-                user=external_user.irodsuser, password=None,
-                gss=proxy, proxy_file=external_user.proxyfile,
-            ), \
-            external_user, \
-            proxy
+        icom = self.get_service_instance(
+            service_name='irods', only_check_proxy=True,
+            user=external_user.irodsuser, password=None,
+            gss=True, proxy_file=external_user.proxyfile,
+        )
+
+        refreshed = False
+        try:
+            # icd and ipwd do not give error with wrong certificates...
+            # so the minimum command is ils inside the home dir
+            icom.list()
+            log.debug("Current proxy certificate is valid")
+
+        # Catch exceptions on this irods test
+        # To manipulate the reply to be given to the user
+        except BaseException as e:
+            log.warning("Catched exception %s" % type(e))
+
+            error = self.check_proxy_certificate(external_user, e)
+            if error is None:
+                refreshed = True
+            else:
+                # Case of error to be printed
+                return None, None, None, self.parse_gss_failure(error)
+
+        return icom, external_user, refreshed, None
 
     def irodsuser_from_b2safe(self, user):
 
@@ -142,8 +151,13 @@ class EudatEndpoint(B2accessUtilities):
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
-        return self.get_service_instance(
+        icom = self.get_service_instance(
             service_name='irods', user_session=user)
+        # icd and ipwd do not give error with wrong certificates...
+        # so the minimum command is ils inside the home dir
+        icom.list()
+
+        return icom
 
     def irodsuser_from_b2stage(self, internal_user):
         """
@@ -158,10 +172,15 @@ class EudatEndpoint(B2accessUtilities):
             # 'guest' irods mode is only for debugging purpose
             raise ValueError("Invalid authentication")
 
-        return self.get_service_instance(
+        icom = self.get_service_instance(
             service_name='irods', only_check_proxy=True,
             user=IRODS_VARS.get('guest_user'), password=None, gss=True,
         )
+        # icd and ipwd do not give error with wrong certificates...
+        # so the minimum command is ils inside the home dir
+        icom.list()
+
+        return icom
 
     def parse_gss_failure(self, error_object):
 
