@@ -111,12 +111,18 @@ class EudatEndpoint(B2accessUtilities):
 
             log.debug("Current b2access token is valid")
         except iexceptions.PAM_AUTH_PASSWORD_FAILED:
-            log.warning("Invalid PAM credentials")
+
             if external_user.refresh_token is None:
                 log.warning(
-                    "Refresh token is None, cannot request for a new token")
+                    "Missing refresh token cannot request for a new token")
+                raise RestApiException('Invalid PAM credentials')
             else:
-                log.info("Requesting new token to b2access...")
+                log.info(
+                    "B2access token is no longer valid, requesting new token")
+
+                raise NotImplementedError('B2access refresh token request')
+
+                refreshed = True
 
         except BaseException as e:
             raise RestApiException(
