@@ -98,6 +98,11 @@ class EudatEndpoint(B2accessUtilities):
     def irodsuser_from_b2access(self, internal_user):
         external_user = self.auth.oauth_from_local(internal_user)
 
+        log.info(
+            "Authenticating user %s with token %s",
+            external_user.irodsuser,
+            external_user.token
+        )
         icom = self.get_service_instance(
             service_name='irods',
             user=external_user.irodsuser,
@@ -106,8 +111,17 @@ class EudatEndpoint(B2accessUtilities):
             catch_exceptions=True
         )
 
-        # Check validity with a list() and ask for a new code if needed
         refreshed = False
+        try:
+            # icd and ipwd do not give error with wrong credentials...
+            # so the minimum command is ils inside the home dir
+            icom.list()
+            log.debug("Current b2access token is valid")
+
+        # Catch exceptions on this irods test
+        # To manipulate the reply to be given to the user
+        except BaseException as e:
+            raise e
 
         return icom, external_user, refreshed
 
@@ -124,7 +138,7 @@ class EudatEndpoint(B2accessUtilities):
 
         refreshed = False
         try:
-            # icd and ipwd do not give error with wrong certificates...
+            # icd and ipwd do not give error with wrong credentials...
             # so the minimum command is ils inside the home dir
             icom.list()
             log.debug("Current proxy certificate is valid")
@@ -154,7 +168,7 @@ class EudatEndpoint(B2accessUtilities):
 
         icom = self.get_service_instance(
             service_name='irods', user_session=user)
-        # icd and ipwd do not give error with wrong certificates...
+        # icd and ipwd do not give error with wrong credentials...
         # so the minimum command is ils inside the home dir
         icom.list()
 

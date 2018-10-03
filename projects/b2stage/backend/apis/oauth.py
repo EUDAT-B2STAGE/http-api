@@ -122,14 +122,6 @@ class Authorize(EudatEndpoint):
 
         user_home = icom.get_user_home(irods_user)
 
-        # icom = self.get_service_instance(
-        #     service_name='irods',
-        #     user=irods_user,
-        #     password=b2access_token,
-        #     authscheme='PAM',
-        #     catch_exceptions=True
-        # )
-
         # If all is well, give our local token to this validated user
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
