@@ -140,20 +140,6 @@ class Authorize(EudatEndpoint):
         # FIXME: Create a method to reply with standard Bearer oauth response
         # return self.send_credentials(local_token, extra, metas)
 
-        log.critical(b2access_dn)
-        log.critical(intuser)
-        log.critical(extuser)
-        log.critical(extuser.username)
-        log.critical(extuser.account_type)
-        log.critical(extuser.token)
-        log.critical(extuser.refresh_token)
-        log.critical(extuser.token_expiration)
-        log.critical(extuser.email)
-        log.critical(extuser.certificate_cn)
-        log.critical(extuser.certificate_dn)
-        log.critical(extuser.proxyfile)
-        log.critical(extuser.description)
-
         return self.force_response(
             defined_content={
                 'token': local_token,
