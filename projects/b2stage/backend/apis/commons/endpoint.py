@@ -99,18 +99,15 @@ class EudatEndpoint(B2accessUtilities):
         external_user = self.auth.oauth_from_local(internal_user)
 
         external_user.token = 'HbF6eXrJtvp7PZYaFhhu2DTAaejo'
-        icom = self.get_service_instance(
-            service_name='irods',
-            user=external_user.irodsuser,
-            password=external_user.token,
-            authscheme='PAM'
-        )
-
         refreshed = False
         try:
-            # icd and ipwd do not give error with wrong credentials...
-            # so the minimum command is ils inside the home dir
-            icom.list()
+            icom = self.get_service_instance(
+                service_name='irods',
+                user=external_user.irodsuser,
+                password=external_user.token,
+                authscheme='PAM'
+            )
+
             log.debug("Current b2access token is valid")
 
         # Catch exceptions on this irods test
@@ -164,9 +161,6 @@ class EudatEndpoint(B2accessUtilities):
 
         icom = self.get_service_instance(
             service_name='irods', user_session=user)
-        # icd and ipwd do not give error with wrong credentials...
-        # so the minimum command is ils inside the home dir
-        icom.list()
 
         return icom
 
@@ -187,9 +181,6 @@ class EudatEndpoint(B2accessUtilities):
             service_name='irods', only_check_proxy=True,
             user=IRODS_VARS.get('guest_user'), password=None, gss=True,
         )
-        # icd and ipwd do not give error with wrong certificates...
-        # so the minimum command is ils inside the home dir
-        icom.list()
 
         return icom
 
