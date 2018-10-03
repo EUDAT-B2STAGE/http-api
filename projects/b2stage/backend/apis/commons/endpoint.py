@@ -103,8 +103,7 @@ class EudatEndpoint(B2accessUtilities):
             service_name='irods',
             user=external_user.irodsuser,
             password=external_user.token,
-            authscheme='PAM',
-            catch_exceptions=True
+            authscheme='PAM'
         )
 
         refreshed = False
