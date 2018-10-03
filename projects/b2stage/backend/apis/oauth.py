@@ -90,7 +90,18 @@ class Authorize(EudatEndpoint):
 
         # B2ACCESS WITH TOKENS AUTHENTICATION
         log.pp(b2access_user.data)
-        b2access_dn = b2access_user.data.get('distinguishedName')
+
+        # distinguishedName is only defined in prod, not in dev and staging
+        # b2access_dn = b2access_user.data.get('distinguishedName')
+
+        # copied from auth/sqlalchemy:store_oauth2_user
+        # DN very strange: the current key is something like 'urn:oid:2.5.4.49'
+        # is it going to change?
+        b2access_dn = None
+        for key, _ in b2access_user.data.items():
+            if 'urn:oid' in key:
+                b2access_dn = b2access_user.data.get(key)
+
         b2access_email = b2access_user.data.get('email')
         log.info("B2ACCESS DN = %s", b2access_dn)
         log.info("B2ACCESS email = %s", b2access_email)
