@@ -5,6 +5,7 @@ Common functions for EUDAT endpoints
 """
 
 import os
+from irods import exception as iexceptions
 # from restapi.rest.definition import EndpointResource
 from restapi.exceptions import RestApiException
 from b2stage.apis.commons.b2access import B2accessUtilities
@@ -109,9 +110,14 @@ class EudatEndpoint(B2accessUtilities):
             )
 
             log.debug("Current b2access token is valid")
+        except iexceptions.PAM_AUTH_PASSWORD_FAILED:
+            log.warning("Invalid PAM credentials")
+            if external_user.refresh_token is None:
+                log.warning(
+                    "Refresh token is None, cannot request for a new token")
+            else:
+                log.info("Requesting new token to b2access...")
 
-        # Catch exceptions on this irods test
-        # To manipulate the reply to be given to the user
         except BaseException as e:
             raise RestApiException(
                 "Unexpected error: %s (%s)" % (type(e), str(e)))
