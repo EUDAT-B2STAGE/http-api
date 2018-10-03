@@ -144,8 +144,7 @@ class Authorize(EudatEndpoint):
             defined_content={
                 'token': local_token,
                 'b2safe_user': irods_user,
-                'b2safe_home': user_home,
-                'home': icom.list()
+                'b2safe_home': user_home
             },
             # meta={
             #     'examples': {
