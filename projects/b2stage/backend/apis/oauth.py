@@ -92,8 +92,8 @@ class Authorize(EudatEndpoint):
         log.pp(b2access_user.data)
         b2access_dn = b2access_user.data.get('distinguishedName')
         b2access_email = b2access_user.data.get('email')
-        log.info("B2ACCESS DN = ", b2access_dn)
-        log.info("B2ACCESS email = ", b2access_email)
+        log.info("B2ACCESS DN = %s", b2access_dn)
+        log.info("B2ACCESS email = %s", b2access_email)
 
         icom = self.get_service_instance(service_name='irods')
 
