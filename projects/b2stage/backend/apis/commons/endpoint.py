@@ -116,7 +116,8 @@ class EudatEndpoint(B2accessUtilities):
         # Catch exceptions on this irods test
         # To manipulate the reply to be given to the user
         except BaseException as e:
-            raise e
+            raise RestApiException(
+                "Unexpected error: %s (%s)" % (type(e), str(e)))
 
         return icom, external_user, refreshed
 
