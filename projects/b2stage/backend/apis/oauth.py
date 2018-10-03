@@ -89,7 +89,11 @@ class Authorize(EudatEndpoint):
             )
 
         # B2ACCESS WITH TOKENS AUTHENTICATION
+        log.pp(b2access_user.data)
         b2access_dn = b2access_user.data.get('distinguishedName')
+        b2access_email = b2access_user.data.get('email')
+        log.info("B2ACCESS DN = ", b2access_dn)
+        log.info("B2ACCESS email = ", b2access_email)
 
         icom = self.get_service_instance(service_name='irods')
 
