@@ -75,7 +75,10 @@ class B2accessUtilities(EndpointResource):
         log.info("Received refresh token: '%s'" % b2a_refresh_token)
         return (b2a_token, b2a_refresh_token, tuple())
 
-    def get_b2access_user_info(self, auth, b2access, b2access_token):
+    def get_b2access_user_info(self, auth,
+                               b2access,
+                               b2access_token,
+                               b2access_refresh_token):
         """ Get user info from current b2access token """
 
         # To use the b2access token with oauth2 client
@@ -83,26 +86,25 @@ class B2accessUtilities(EndpointResource):
         session['b2access_token'] = (b2access_token, '')
 
         # Calling with the oauth2 client
-        current_user = b2access.get('userinfo')
-        # log.pp(current_user)
+        b2access_user = b2access.get('userinfo')
 
         error = True
-        if current_user is None:
+        if b2access_user is None:
             errstring = "Empty response from B2ACCESS"
-        elif not isinstance(current_user, OAuthResponse):
+        elif not isinstance(b2access_user, OAuthResponse):
             errstring = "Invalid response from B2ACCESS"
-        elif current_user.status > hcodes.HTTP_TRESHOLD:
-            log.error("Bad status: %s" % str(current_user._resp))
-            if current_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
+        elif b2access_user.status > hcodes.HTTP_TRESHOLD:
+            log.error("Bad status: %s" % str(b2access_user._resp))
+            if b2access_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:
                 errstring = "B2ACCESS token obtained failed with %s" \
-                    % current_user.status
-        elif isinstance(current_user._resp, HTTPError):
-            errstring = "Error from B2ACCESS: %s" % current_user._resp
-        elif not hasattr(current_user, 'data'):
+                    % b2access_user.status
+        elif isinstance(b2access_user._resp, HTTPError):
+            errstring = "Error from B2ACCESS: %s" % b2access_user._resp
+        elif not hasattr(b2access_user, 'data'):
             errstring = "Authorized response is invalid (missing data)"
-        elif current_user.data.get('email') is None:
+        elif b2access_user.data.get('email') is None:
             errstring = "Authorized response is invalid (missing email)"
         else:
             error = False
@@ -113,8 +115,10 @@ class B2accessUtilities(EndpointResource):
         # Attributes you find: http://j.mp/b2access_profile_attributes
 
         # Store b2access information inside the db
-        intuser, extuser = \
-            auth.store_oauth2_user(current_user, b2access_token)
+        intuser, extuser = auth.store_oauth2_user(
+            "b2access", b2access_user,
+            b2access_token, b2access_refresh_token
+        )
         # In case of error this account already existed...
         if intuser is None:
             error = "Failed to store access info"
@@ -135,78 +139,77 @@ class B2accessUtilities(EndpointResource):
         tok_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
         auth.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
 
-        return current_user, intuser, extuser
+        return b2access_user, intuser, extuser
 
-    def obtain_proxy_certificate(self, auth, extuser):
-        """
-        Ask B2ACCESS a valid proxy certificate to access irods data.
+    # B2ACCESS proxy certificates are no longer required
+    # def obtain_proxy_certificate(self, auth, extuser):
+    #     """
+    #     Ask B2ACCESS a valid proxy certificate to access irods data.
 
-        Note: this certificates lasts 12 hours.
-        """
+    #     Note: this certificates lasts 12 hours.
+    #     """
 
-        # To use the b2access token with oauth2 client
-        # We have to save it into session
-        key = 'b2access_token'
-        if key not in session or session.get(key, None) is None:
-            session[key] = (extuser.token, '')
+    #     # To use the b2access token with oauth2 client
+    #     # We have to save it into session
+    #     key = 'b2access_token'
+    #     if key not in session or session.get(key, None) is None:
+    #         session[key] = (extuser.token, '')
 
-        # # invalidate token, for debug purpose
-        # session[key] = ('ABC', '')
+    #     # # invalidate token, for debug purpose
+    #     # session[key] = ('ABC', '')
 
-        # Create the object for accessing certificates in B2ACCESS
-        b2accessCA = auth._oauth2.get('b2accessCA')
-        b2access_prod = auth._oauth2.get('prod')
+    #     # Create the object for accessing certificates in B2ACCESS
+    #     b2accessCA = auth._oauth2.get('b2accessCA')
+    #     b2access_prod = auth._oauth2.get('prod')
 
-        # Call the oauth2 object requesting a certificate
-        if self._certs is None:
-            self._certs = Certificates()
-        proxy_file = self._certs.proxy_from_ca(b2accessCA, prod=b2access_prod)
+    #     # Call the oauth2 object requesting a certificate
+    #     if self._certs is None:
+    #         self._certs = Certificates()
+    #     proxy_file = self._certs.proxy_from_ca(b2accessCA, prod=b2access_prod)
 
-        # Save the proxy filename into the database
-        if proxy_file is None:
-            log.pp(b2accessCA, "Failed oauth2")
-        else:
-            auth.store_proxy_cert(extuser, proxy_file)
+    #     # Save the proxy filename into the database
+    #     if proxy_file is None:
+    #         log.pp(b2accessCA, "Failed oauth2")
+    #     else:
+    #         auth.store_proxy_cert(extuser, proxy_file)
 
-        return proxy_file
+    #     return proxy_file
 
     def set_irods_username(self, icom, auth, user):
         """ Find out what is the irods username and save it """
 
         # Does this user exist?
         irods_user = icom.get_user_from_dn(user.certificate_dn)
-        user_exists = irods_user is not None
 
-        if not user_exists:
+        if irods_user is None:
             # Production / Real B2SAFE and irods instance
             if IRODS_EXTERNAL:
                 log.error("No iRODS user related to certificate")
                 return None
             # Using dockerized iRODS/B2SAFE
-            else:
 
-                # NOTE: dockerized version does not know about the user
-                # because it has no sync script with B2ACCESS running
+            # NOTE: dockerized version does not know about the user
+            # because it has no sync script with B2ACCESS running
 
-                # NOTE: mapping is for common 'eudat' user for all.
-                # Of course it's only for debugging purpose.
-                irods_user = 'eudat'
-                # irods_user = user.unity
+            # NOTE: mapping is for common 'eudat' user for all.
+            # Of course it's only for debugging purpose.
+            irods_user = 'eudat'
+            # irods_user = user.unity
 
-                iadmin = self.get_service_instance(
-                    service_name='irods', be_admin=True)
+            iadmin = self.get_service_instance(
+                service_name='irods', be_admin=True)
 
-                # User may exist without dn/certificate
-                if not iadmin.query_user_exists(irods_user):
-                    # Add (as normal) user inside irods
-                    iadmin.create_user(irods_user, admin=False)
+            # User may exist without dn/certificate
+            if not iadmin.query_user_exists(irods_user):
+                # Add (as normal) user inside irods
+                iadmin.create_user(irods_user, admin=False)
 
-                irods_user_data = iadmin.list_user_attributes(irods_user)
-                if irods_user_data.get('dn') is None:
-                    # Add DN to user access possibility
-                    iadmin.modify_user_dn(
-                        irods_user,
-                        dn=user.certificate_dn, zone=irods_user_data['zone'])
+            irods_user_data = iadmin.list_user_attributes(irods_user)
+            if irods_user_data.get('dn') is None:
+                # Add DN to user access possibility
+                iadmin.modify_user_dn(
+                    irods_user,
+                    dn=user.certificate_dn, zone=irods_user_data['zone'])
 
         # Update db to save the irods user related to this user account
         auth.associate_object_to_attr(user, 'irodsuser', irods_user)

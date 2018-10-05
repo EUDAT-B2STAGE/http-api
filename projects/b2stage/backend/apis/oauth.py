@@ -80,25 +80,64 @@ class Authorize(EudatEndpoint):
             return self.send_errors(message=b2access_error)
 
         # B2access user info
-        curuser, intuser, extuser = \
-            self.get_b2access_user_info(auth, b2access, b2access_token)
-        if curuser is None and intuser is None:
-            return self.send_errors('oauth2', extuser)
+        b2access_user, intuser, extuser = self.get_b2access_user_info(
+            auth, b2access, b2access_token, b2access_refresh_token)
+        if b2access_user is None and intuser is None:
+            return self.send_errors(
+                message='Unable to retrieve user info from b2access',
+                errors=extuser
+            )
 
-        # B2access user proxy
+        # B2ACCESS WITH TOKENS AUTHENTICATION
+        # log.pp(b2access_user.data)
+
+        # distinguishedName is only defined in prod, not in dev and staging
+        # b2access_dn = b2access_user.data.get('distinguishedName')
+
+        # copied from auth/sqlalchemy:store_oauth2_user
+        # DN very strange: the current key is something like 'urn:oid:2.5.4.49'
+        # is it going to change?
+        b2access_dn = None
+        for key, _ in b2access_user.data.items():
+            if 'urn:oid' in key:
+                b2access_dn = b2access_user.data.get(key)
+
+        b2access_email = b2access_user.data.get('email')
+        log.info("B2ACCESS DN = %s", b2access_dn)
+        log.info("B2ACCESS email = %s", b2access_email)
+
+        icom = self.get_service_instance(service_name='irods')
+
+        irods_user = icom.get_user_from_dn(b2access_dn)
+
+        if irods_user is None:
+            err = "B2ACCESS credentials (%s) do not match any user in B2SAFE" \
+                % b2access_dn
+            log.error(err)
+            return self.send_errors(err)
+
+        # Update db to save the irods user related to this user account
+        auth.associate_object_to_attr(extuser, 'irodsuser', irods_user)
+
+        # B2ACCESS WITH CERTIFICATES AUTHENTICATION - no longer used
+        """
         proxy_file = self.obtain_proxy_certificate(auth, extuser)
         if proxy_file is None:
             return self.send_errors(
                 "B2ACCESS CA is down", "Could not get certificate files")
 
         # iRODS informations: get/set from current B2ACCESS response
+
         icom = self.get_service_instance(service_name='irods')
+
         irods_user = self.set_irods_username(icom, auth, extuser)
+
         if irods_user is None:
             return self.send_errors(
-                "Current B2ACCESS credentials (%s) " % extuser.certificate_dn +
+                "B2ACCESS credentials (%s) " % extuser.certificate_dn +
                 "do not match any user inside B2SAFE namespace"
             )
+        """
         user_home = icom.get_user_home(irods_user)
 
         # If all is well, give our local token to this validated user

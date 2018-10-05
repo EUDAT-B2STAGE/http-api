@@ -36,9 +36,12 @@ class PAMTest(Endpoint):
             service_name='irods',
             user=user,
             password=password,
-            authscheme='PAM'
+            authscheme='PAM',
+            catch_exceptions=True
         )
-        log.debug("B2safe authenticated")
-        out = imain.list()
-        log.info(out)
-        return out
+        u = imain.get_current_user()
+        log.debug("B2safe authenticated with user = %s", u)
+
+        info = imain.get_user_info(u)
+        out = imain.list(path='/cinecaDMPZone1/home/%s' % u)
+        return {"user": info, "home": out}
