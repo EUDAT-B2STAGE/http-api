@@ -6,6 +6,7 @@ import zipfile
 import json
 from shutil import rmtree, unpack_archive
 from socket import gethostname
+from utilities.basher import BashCommands
 from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -17,7 +18,9 @@ from restapi.services.detect import detector
 
 from utilities.logs import get_logger, logging
 
-
+# Size in bytes
+# TODO: move me into the configuration
+MAX_ZIP_SIZE = 300
 ####################
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
@@ -706,6 +709,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                     ErrorCodes.B2SAFE_UPLOAD_ERROR,
                     myjson, backdoor, self, extra=str(e)
                 )
+            local_finalzip_path = local_zip_path
         else:
             # 9 - if already exists merge zips
             log.info("Already exists, merge zip files")
@@ -753,6 +757,23 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         self.update_state(state="COMPLETED")
 
         imain.remove(partial_zip)
+
+        if os.path.getsize(local_finalzip_path) > MAX_ZIP_SIZE:
+            log.warning("Zip too large, splitting %s", local_finalzip_path)
+
+            bash = BashCommands()
+            split_cmd = 'zipsplit -n %d %s' % (
+                MAX_ZIP_SIZE, local_finalzip_path
+            )
+            out = bash.execute_command(split_cmd)
+
+            log.info(out)
+
+            # -n   make zip files no larger than "size" (default = 36000)
+            # -s   do a sequential split even if it takes more zip files
+            # -i   make index (zipsplit.idx) and count its size against zipfile
+        #    split
+        #    upload all
 
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
