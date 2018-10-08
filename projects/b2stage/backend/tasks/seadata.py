@@ -762,7 +762,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
             log.warning("Zip too large, splitting %s", local_finalzip_path)
 
             bash = BashCommands()
-            split_cmd = 'zipsplit -n %d %s' % (
+            split_cmd = '/usr/bin/zipsplit -n %d %s' % (
                 MAX_ZIP_SIZE, local_finalzip_path
             )
             out = bash.execute_command(split_cmd)
