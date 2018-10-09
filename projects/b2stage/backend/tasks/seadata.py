@@ -797,7 +797,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 )
 
             prefix = m.group(1)
-            for index in range(100):
+            for index in range(1, 100):
                 subzip_file = path.append_compress_extension(
                     "%s%d" % (prefix, index)
                 )
