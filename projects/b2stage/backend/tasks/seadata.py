@@ -801,7 +801,8 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 subzip_file = path.append_compress_extension(
                     "%s%d" % (prefix, index)
                 )
-                subzip_path = path.join(split_path, subzip_file)
+                subzip_path = path.join(
+                    split_path, subzip_file, return_str=True)
 
                 if not path.file_exists_and_nonzero(subzip_path):
                     log.warning("%s not found, break the loop", subzip_path)
@@ -810,7 +811,8 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 subzip_ifile = path.append_compress_extension(
                     "%s%d" % (base_filename, index)
                 )
-                subzip_ipath = path.join(order_path, subzip_ifile)
+                subzip_ipath = path.join(
+                    order_path, subzip_ifile, return_str=True)
 
                 subzip_file = path.append_compress_extension(
                     "%s%d" % (prefix, index)
