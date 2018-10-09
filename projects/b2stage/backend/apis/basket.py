@@ -278,7 +278,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.warning("Ticket: %s -> %s", ticket, encoded)
         return encoded
 
-    def get_download(self, imain, order_id, order_path, files, zip_file_name):
+    def get_download(self, imain, order_id, order_path, files,
+                     restricted=False, index=None):
+
+        index = '' if index is None else index
+        label = "restricted" if restricted else "unrestricted"
+        zip_file_name = 'order_%s_%s%s.zip' % (order_id, label, index)
 
         if zip_file_name not in files:
             return None
@@ -335,7 +340,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
 
-        found = 0
         response = []
 
         files = imain.list(order_path, detailed=True)
@@ -343,20 +347,32 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # unrestricted zip
         info = self.get_download(
             imain, order_id, order_path, files,
-            'order_%s_unrestricted.zip' % order_id)
+            restricted=False, index=None)
         if info is not None:
-            found += 1
             response.append(info)
 
-        # restricted zip
+        # splitted restricted zip
         info = self.get_download(
             imain, order_id, order_path, files,
-            'order_%s_restricted.zip' % order_id)
-        if info is not None:
-            found += 1
-            response.append(info)
+            restricted=True, index=1)
 
-        if found == 0:
+        # No split zip found, looking for the single restricted zip
+        if info is None:
+            info = self.get_download(
+                imain, order_id, order_path, files,
+                restricted=True, index=None)
+            if info is not None:
+                response.append(info)
+        # When found one split, looking for more:
+        else:
+            for index in range(2, 100):
+                info = self.get_download(
+                    imain, order_id, order_path, files,
+                    restricted=True, index=index)
+                if info is not None:
+                    response.append(info)
+
+        if len(response) == 0:
             error = "Order '%s' not found (or no permissions)" % order_id
             return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
