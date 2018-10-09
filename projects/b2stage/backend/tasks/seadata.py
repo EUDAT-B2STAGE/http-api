@@ -447,6 +447,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             ErrorCodes.ZIP_SPLIT_ENTRY_TOO_LARGE,
                             myjson, backdoor, self, extra=extra
                         )
+                    else:
+                        log.error(e.stdout)
 
                     return notify_error(
                         ErrorCodes.ZIP_SPLIT_ERROR,
@@ -874,6 +876,8 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                         ErrorCodes.ZIP_SPLIT_ENTRY_TOO_LARGE,
                         myjson, backdoor, self, extra=extra
                     )
+                else:
+                    log.error(e.stdout)
 
                 return notify_error(
                     ErrorCodes.ZIP_SPLIT_ERROR,
