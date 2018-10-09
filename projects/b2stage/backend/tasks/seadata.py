@@ -22,7 +22,7 @@ from utilities.logs import get_logger, logging
 
 # Size in bytes
 # TODO: move me into the configuration
-MAX_ZIP_SIZE = 500
+MAX_ZIP_SIZE = 5
 ####################
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
@@ -438,7 +438,6 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 except ProcessExecutionError as e:
 
                     if 'Entry is larger than max split size' in e.stdout:
-                        log.critical(e.stdout)
                         reg = 'Entry too big to split, read, or write \((.*)\)'
                         extra = None
                         m = re.search(reg, e.stdout)
@@ -860,7 +859,26 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 '-b', split_path,
                 local_finalzip_path
             ]
-            out = bash.execute_command('/usr/bin/zipsplit', split_params)
+            try:
+                out = bash.execute_command(
+                    '/usr/bin/zipsplit', split_params)
+            except ProcessExecutionError as e:
+
+                if 'Entry is larger than max split size' in e.stdout:
+                    reg = 'Entry too big to split, read, or write \((.*)\)'
+                    extra = None
+                    m = re.search(reg, e.stdout)
+                    if m:
+                        extra = m.group(1)
+                    return notify_error(
+                        ErrorCodes.ZIP_SPLIT_ENTRY_TOO_LARGE,
+                        myjson, backdoor, self, extra=extra
+                    )
+
+                return notify_error(
+                    ErrorCodes.ZIP_SPLIT_ERROR,
+                    myjson, backdoor, self, extra=str(local_finalzip_path)
+                )
             # Parsing the zipsplit output to determine the output name
             # Long names are truncated to 7 characters, we want to come
             # back to the previous names
@@ -872,7 +890,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
             if not m:
                 return notify_error(
                     ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
-                    myjson, backdoor, self, extra=local_finalzip_path
+                    myjson, backdoor, self, extra=str(local_finalzip_path)
                 )
 
             prefix = m.group(1)
