@@ -383,13 +383,35 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         files = imain.list(order_path, detailed=True)
 
         # unrestricted zip
+        # info = self.get_download(
+        #     imain, order_id, order_path, files,
+        #     restricted=False, index=None)
+        # if info is not None:
+        #     response.append(info)
+
+        # checking for splitted unrestricted zip
         info = self.get_download(
             imain, order_id, order_path, files,
-            restricted=False, index=None)
-        if info is not None:
-            response.append(info)
+            restricted=False, index=1)
 
-        # splitted restricted zip
+        # No split zip found, looking for the single unrestricted zip
+        if info is None:
+            info = self.get_download(
+                imain, order_id, order_path, files,
+                restricted=False, index=None)
+            if info is not None:
+                response.append(info)
+        # When found one split, looking for more:
+        else:
+            response.append(info)
+            for index in range(2, 100):
+                info = self.get_download(
+                    imain, order_id, order_path, files,
+                    restricted=False, index=index)
+                if info is not None:
+                    response.append(info)
+
+        # checking for splitted restricted zip
         info = self.get_download(
             imain, order_id, order_path, files,
             restricted=True, index=1)
