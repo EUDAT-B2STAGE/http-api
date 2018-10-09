@@ -9,7 +9,7 @@ log = get_logger(__name__)
 
 class ListResources(Endpoint):
 
-    def get(self):
+    def post(self):
 
         imain = self.get_service_instance(service_name='irods')
         json_input = self.get_input()
