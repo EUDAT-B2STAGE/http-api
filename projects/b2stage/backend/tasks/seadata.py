@@ -965,8 +965,8 @@ def delete_orders(self, orders_path, myjson):
 
             if not imain.is_collection(order_path):
                 errors.append({
-                    "error": ErrorCodes.ORDER_NOT_FOUD[0],
-                    "description": ErrorCodes.ORDER_NOT_FOUD[1],
+                    "error": ErrorCodes.ORDER_NOT_FOUND[0],
+                    "description": ErrorCodes.ORDER_NOT_FOUND[1],
                     "subject": order,
                 })
 
