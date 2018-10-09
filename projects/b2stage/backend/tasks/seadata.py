@@ -942,6 +942,18 @@ def delete_orders(self, order_path, myjson):
 
         backdoor = params.pop('backdoor', False)
 
+        orders = myjson['parameters'].pop('orders', None)
+        if orders is None:
+            return notify_error(
+                ErrorCodes.MISSING_ORDERS_PARAMETER,
+                myjson, backdoor, self
+            )
+
+        imain = celery_app.get_service(service='irods')
+
+        for order in orders:
+            log.info(order)
+
         imain = celery_app.get_service(service='irods')
 
         # if not imain.is_collection(order_path):
@@ -976,7 +988,17 @@ def delete_batches(self, batch_path, myjson):
 
         backdoor = params.pop('backdoor', False)
 
+        batches = myjson['parameters'].pop('batches', None)
+        if batches is None:
+            return notify_error(
+                ErrorCodes.MISSING_BATCHES_PARAMETER,
+                myjson, backdoor, self
+            )
+
         imain = celery_app.get_service(service='irods')
+
+        for batch in batches:
+            log.info(batch)
         # if not imain.is_collection(batch_path):
         #     return notify_error(
         #         ErrorCodes.BATCH_NOT_FOUD,

@@ -44,6 +44,8 @@ class ErrorCodes(object):
     UNABLE_TO_DOWNLOAD_FILE = ("4022", "Unable to download the file")
     ZIP_SPLIT_ERROR = ("4023", "Zip split unexpected error")
     ZIP_SPLIT_ENTRY_TOO_LARGE = ("4024", "One or more files are larger than max zip size")
+    MISSING_BATCHES_PARAMETER = ("4025", "Parameter batches is missing")
+    MISSING_ORDERS_PARAMETER = ("4026", "Parameter orders is missing")
 
 
 class Metadata(object):
