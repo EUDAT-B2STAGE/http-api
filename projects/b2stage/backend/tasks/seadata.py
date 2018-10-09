@@ -766,10 +766,13 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
             # Create a sub folder for split files. If already exists,
             # remove it before to start from a clean environment
-            split_path = path.join(
-                local_dir, "zip_split", return_str=True)
-            rmtree(split_path, ignore_errors=True)
+            split_path = path.join(local_dir, "zip_split")
+            # split_path is an object
+            rmtree(str(split_path), ignore_errors=True)
+            # path create requires a path object
             path.create(split_path, directory=True, force=True)
+            # path object is no longer required, cast to string
+            split_path = str(split_path)
 
             # Execute the split of the whole zip
             bash = BashCommands()
