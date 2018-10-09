@@ -43,6 +43,7 @@ class ErrorCodes(object):
     B2HANDLE_ERROR = ("4021", "PID server (b2handle) unreachable")
     UNABLE_TO_DOWNLOAD_FILE = ("4022", "Unable to download the file")
     ZIP_SPLIT_ERROR = ("4023", "Zip split unexpected error")
+    ZIP_SPLIT_ENTRY_TOO_LARGE = ("4024", "One or more files are larger than max zip size")
 
 
 class Metadata(object):

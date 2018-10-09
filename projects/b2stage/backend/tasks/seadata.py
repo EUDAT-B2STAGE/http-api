@@ -62,7 +62,7 @@ def notify_error(error, myjson, backdoor, task, extra=None):
     error_message = "Error %s: %s" % (error[0], error[1])
     log.error(error_message)
     if extra:
-        log.error(extra)
+        log.error(str(extra))
 
     if not backdoor:
         myjson['errors'] = {
@@ -73,7 +73,7 @@ def notify_error(error, myjson, backdoor, task, extra=None):
 
     task_errors = [error_message]
     if extra:
-        task_errors.append(extra)
+        task_errors.append(str(extra))
     task.update_state(state="FAILED", meta={
         'errors': task_errors
     })
@@ -436,11 +436,22 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     out = bash.execute_command(
                         '/usr/bin/zipsplit', split_params)
                 except ProcessExecutionError as e:
-                    log.critical(e.stdout)
-                    log.critical(e.stderr)
+
+                    if 'Entry is larger than max split size' in e.stdout:
+                        log.critical(e.stdout)
+                        reg = 'Entry too big to split, read, or write \((.*)\)'
+                        extra = None
+                        m = re.search(reg, e.stdout)
+                        if m:
+                            extra = m.group(1)
+                        return notify_error(
+                            ErrorCodes.ZIP_SPLIT_ENTRY_TOO_LARGE,
+                            myjson, backdoor, self, extra=extra
+                        )
+
                     return notify_error(
                         ErrorCodes.ZIP_SPLIT_ERROR,
-                        myjson, backdoor, self, extra=zip_local_file
+                        myjson, backdoor, self, extra=str(zip_local_file)
                     )
 
                 # Parsing the zipsplit output to determine the output name
@@ -454,7 +465,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 if not m:
                     return notify_error(
                         ErrorCodes.ZIP_SPLIT_ERROR,
-                        myjson, backdoor, self, extra=zip_local_file
+                        myjson, backdoor, self, extra=str(zip_local_file)
                     )
 
                 base_filename = zip_local_file  # remove ext
