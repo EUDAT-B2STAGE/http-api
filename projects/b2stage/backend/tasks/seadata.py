@@ -4,6 +4,7 @@ import os
 import hashlib
 import zipfile
 import json
+import re
 from shutil import rmtree, unpack_archive
 from socket import gethostname
 from utilities.basher import BashCommands
@@ -543,8 +544,6 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
         backdoor = params.pop('backdoor', False)
 
-        imain = celery_app.get_service(service='irods')
-        # order_path = self.get_order_path(imain, order_id)
         # Make sure you have a path with no trailing slash
         order_path = order_path.rstrip('/')
 
@@ -555,7 +554,11 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 ErrorCodes.MISSING_FILENAME_PARAM,
                 myjson, backdoor, self
             )
-        if not filename.endswith('.zip'):
+        base_filename = filename
+        if filename.endswith('.zip'):
+            log.warning('%s already contains extention .zip', filename)
+            # TO DO: save base_filename as filename - .zip
+        else:
             filename = path.append_compress_extension(filename)
         # final_zip = self.complete_path(order_path, filename)
         final_zip = order_path + '/' + filename.rstrip('/')
@@ -761,21 +764,56 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         if os.path.getsize(local_finalzip_path) > MAX_ZIP_SIZE:
             log.warning("Zip too large, splitting %s", local_finalzip_path)
 
+            # Create a sub folder for split files. If already exists,
+            # remove it before to start from a clean environment
+            split_path = path.join(
+                local_dir, "zip_split", return_str=True)
+            rmtree(split_path, ignore_errors=True)
+            path.create(split_path, directory=True, force=True)
+
+            # Execute the split of the whole zip
             bash = BashCommands()
             split_params = [
                 '-n', MAX_ZIP_SIZE,
-                '-b', os.path.dirname(local_finalzip_path),
+                '-b', split_path,
                 local_finalzip_path
             ]
             out = bash.execute_command('/usr/bin/zipsplit', split_params)
+            # Parsing the zipsplit output to determine the output name
+            # Long names are truncated to 7 characters, we want to come
+            # back to the previous names
+            out_array = out.split('\n')
+            # example of out_array[1]:
+            # creating: /usr/share/orders/zip_split/130900/order_p1.zip
+            regexp = 'creating: %s/(.*)1.zip' % split_path
+            m = re.search(regexp, out_array[1])
+            if not m:
+                return notify_error(
+                    ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
+                    myjson, backdoor, self, extra=local_finalzip_path
+                )
 
-            log.info(out)
+            prefix = m.group(1)
+            for index in range(100):
+                subzip_file = path.append_compress_extension(
+                    "%s%d" % (prefix, index)
+                )
+                subzip_path = path.join(split_path, subzip_file)
 
-            # -n   make zip files no larger than "size" (default = 36000)
-            # -s   do a sequential split even if it takes more zip files
-            # -i   make index (zipsplit.idx) and count its size against zipfile
-        #    split
-        #    upload all
+                if not path.file_exists_and_nonzero(subzip_path):
+                    log.warning("%s not found, break the loop", subzip_path)
+                    break
+
+                subzip_ifile = path.append_compress_extension(
+                    "%s%d" % (base_filename, index)
+                )
+                subzip_ipath = path.join(order_path, subzip_ifile)
+
+                subzip_file = path.append_compress_extension(
+                    "%s%d" % (prefix, index)
+                )
+                log.info("Uploading %s -> %s", subzip_path, subzip_ipath)
+                imain.put(subzip_path, subzip_ipath)
 
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"

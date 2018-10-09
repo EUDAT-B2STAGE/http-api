@@ -42,6 +42,7 @@ class ErrorCodes(object):
     UNABLE_TO_ASSIGN_PID = ("4020", "Unable to assign a PID to the file")
     B2HANDLE_ERROR = ("4021", "PID server (b2handle) unreachable")
     UNABLE_TO_DOWNLOAD_FILE = ("4022", "Unable to download the file")
+    INVALID_ZIP_SPLIT_OUTPUT = ("4023", "Zip split unexpected error")
 
 
 class Metadata(object):
