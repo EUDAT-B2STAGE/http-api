@@ -951,16 +951,28 @@ def delete_orders(self, orders_path, myjson):
 
         imain = celery_app.get_service(service='irods')
 
+        errors = []
+        total = len(orders)
+        counter = 0
         for order in orders:
+
+            counter += 1
+            self.update_state(state="PROGRESS", meta={
+                'total': total, 'step': counter, 'errors': len(errors)})
 
             order_path = path.join(orders_path, order)
             log.info(order_path)
 
             if not imain.is_collection(order_path):
-                return notify_error(
-                    ErrorCodes.ORDER_NOT_FOUD,
-                    myjson, backdoor, self
-                )
+                errors.append({
+                    "error": ErrorCodes.ORDER_NOT_FOUD[0],
+                    "description": ErrorCodes.ORDER_NOT_FOUD[1],
+                    "subject": order,
+                })
+
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+                continue
 
             ##################
             # TODO: remove the iticket?
@@ -970,6 +982,8 @@ def delete_orders(self, orders_path, myjson):
 
             # imain.remove(order_path, recursive=True)
 
+        if len(errors) > 0:
+            myjson['errors'] = errors
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
@@ -997,18 +1011,31 @@ def delete_batches(self, batches_path, myjson):
 
         imain = celery_app.get_service(service='irods')
 
+        errors = []
+        total = len(batches)
+        counter = 0
         for batch in batches:
+
+            counter += 1
+            self.update_state(state="PROGRESS", meta={
+                'total': total, 'step': counter, 'errors': len(errors)})
+
             batch_path = path.join(batches_path, batch)
-            log.info(batch_path)
 
             if not imain.is_collection(batch_path):
-                return notify_error(
-                    ErrorCodes.BATCH_NOT_FOUD,
-                    myjson, backdoor, self
-                )
+                errors.append({
+                    "error": ErrorCodes.BATCH_NOT_FOUND[0],
+                    "description": ErrorCodes.BATCH_NOT_FOUND[1],
+                    "subject": batch,
+                })
 
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+                continue
             # imain.remove(batch_path, recursive=True)
 
+        if len(errors) > 0:
+            myjson['errors'] = errors
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
