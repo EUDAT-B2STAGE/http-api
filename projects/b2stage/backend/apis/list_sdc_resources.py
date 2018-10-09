@@ -11,9 +11,14 @@ class ListResources(Endpoint):
 
     def get(self):
 
+        imain = self.get_service_instance(service_name='irods')
         json_input = self.get_input()
         task = CeleryExt.list_resources.apply_async(
-            args=[self.get_batch_path(), self.get_order_path(), json_input]
+            args=[
+                self.get_batch_path(imain),
+                self.get_order_path(imain),
+                json_input
+            ]
         )
         log.warning("Async job: %s", task.id)
         return self.return_async_id(task.id)
