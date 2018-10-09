@@ -7,6 +7,7 @@ import json
 import re
 from shutil import rmtree, unpack_archive
 from socket import gethostname
+from plumbum.commands.processes import ProcessExecutionError
 from utilities.basher import BashCommands
 from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
@@ -431,7 +432,12 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     '-b', split_path,
                     zip_local_file
                 ]
-                out = bash.execute_command('/usr/bin/zipsplit', split_params)
+                try:
+                    out = bash.execute_command(
+                        '/usr/bin/zipsplit', split_params)
+                except ProcessExecutionError as e:
+                    log.critical(e)
+
                 # Parsing the zipsplit output to determine the output name
                 # Long names are truncated to 7 characters, we want to come
                 # back to the previous names
