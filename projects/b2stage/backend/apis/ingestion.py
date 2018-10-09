@@ -275,17 +275,16 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         return self.force_response(response)
 
-    def delete(self, batch_id):
-        log.debug("DELETE request on batch: %s", batch_id)
+    def delete(self):
 
         json_input = self.get_input()
 
         imain = self.get_service_instance(service_name='irods')
-        batch_path = self.get_batch_path(imain, batch_id)
+        batch_path = self.get_batch_path(imain)
         log.debug("Batch path: %s", batch_path)
 
-        task = CeleryExt.delete_batch.apply_async(
-            args=[batch_id, batch_path, json_input]
+        task = CeleryExt.delete_batches.apply_async(
+            args=[batch_path, json_input]
         )
         log.warning("Async job: %s", task.id)
         return self.return_async_id(task.id)

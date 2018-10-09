@@ -442,18 +442,16 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return self.force_response(response)
 
-    def delete(self, order_id):
-
-        log.debug("DELETE request on order: %s", order_id)
+    def delete(self):
 
         json_input = self.get_input()
 
         imain = self.get_service_instance(service_name='irods')
-        order_path = self.get_order_path(imain, order_id)
+        order_path = self.get_order_path(imain)
         log.debug("Order path: %s", order_path)
 
-        task = CeleryExt.delete_order.apply_async(
-            args=[order_id, order_path, json_input]
+        task = CeleryExt.delete_orders.apply_async(
+            args=[order_path, json_input]
         )
         log.warning("Async job: %s", task.id)
         return self.return_async_id(task.id)
