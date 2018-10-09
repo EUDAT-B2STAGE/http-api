@@ -62,13 +62,11 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ##################
         # verify if the path exists
         filenames = [
-            'order_%s_unrestricted' % order_id,
-            'order_%s_restricted' % order_id
+            'order_%s_unrestricted.zip' % order_id,
+            'order_%s_restricted.zip' % order_id
         ]
 
-        for filename in filenames:
-            # filename = 'order_%s_unrestricted' % order_id
-            zip_file_name = path.append_compress_extension(filename)
+        for zip_file_name in filenames:
             zip_ipath = path.join(order_path, zip_file_name, return_str=True)
 
             log.debug("Checking zip irods path: %s", zip_ipath)
@@ -280,6 +278,41 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.warning("Ticket: %s -> %s", ticket, encoded)
         return encoded
 
+    def get_download(self, imain, order_id, order_path, files, zip_file_name):
+
+        if zip_file_name not in files:
+            return None
+
+        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
+        log.debug("Zip irods path: %s", zip_ipath)
+
+        code = self.no_slash_ticket(imain, zip_ipath)
+
+        route = '%s%s/%s/%s/download/%s' % (
+            CURRENT_HTTPAPI_SERVER, API_URL,
+            ORDERS_ENDPOINT, order_id, code
+        )
+
+        # If metadata already exists, remove them:
+        # FIXME: verify if iticket_code is set and then invalidate it
+        imain.remove_metadata(zip_ipath, 'iticket_code')
+        imain.remove_metadata(zip_ipath, 'download')
+        ##################
+        # Set the url as Metadata in the irods file
+        imain.set_metadata(zip_ipath, download=route)
+
+        # TOFIX: we should add a database or cache to save this,
+        # not irods metadata (known for low performances)
+        imain.set_metadata(zip_ipath, iticket_code=code)
+
+        info = files[zip_file_name]
+
+        return {
+            'name': zip_file_name,
+            'url': route,
+            'size': info.get('content_length', 0)
+        }
+
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def put(self, order_id):
 
@@ -302,70 +335,31 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         order_path = self.get_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
 
-        filenames = [
-            'order_%s_unrestricted' % order_id,
-            'order_%s_restricted' % order_id
-        ]
         found = 0
-        # response = {}
         response = []
 
         files = imain.list(order_path, detailed=True)
 
-        for filename in filenames:
-            zip_file_name = path.append_compress_extension(filename)
-
-            if zip_file_name not in files:
-                continue
-
-            zip_ipath = path.join(order_path, zip_file_name, return_str=True)
-            log.debug("Zip irods path: %s", zip_ipath)
-
-            # if not imain.is_dataobject(zip_ipath):
-            #     continue
-
+        # unrestricted zip
+        info = self.get_download(
+            imain, order_id, order_path, files,
+            'order_%s_unrestricted.zip' % order_id)
+        if info is not None:
             found += 1
+            response.append(info)
 
-            code = self.no_slash_ticket(imain, zip_ipath)
-
-            route = '%s%s/%s/%s/download/%s' % (
-                CURRENT_HTTPAPI_SERVER, API_URL,
-                ORDERS_ENDPOINT, order_id, code
-            )
-
-            # If metadata already exists, remove them:
-            # FIXME: verify if iticket_code is set and then invalidate it
-            imain.remove_metadata(zip_ipath, 'iticket_code')
-            imain.remove_metadata(zip_ipath, 'download')
-            ##################
-            # Set the url as Metadata in the irods file
-            imain.set_metadata(zip_ipath, download=route)
-
-            # TOFIX: we should add a database or cache to save this,
-            # not irods metadata (known for low performances)
-            imain.set_metadata(zip_ipath, iticket_code=code)
-
-            ##################
-            # response = {
-            #     'GET': route,
-            #     'code': code,
-            # }
-
-            # response[filename] = route
-            info = files[zip_file_name]
-            response.append(
-                {
-                    'name': filename,
-                    'url': route,
-                    'size': info.get('content_length', 0)
-                }
-            )
+        # restricted zip
+        info = self.get_download(
+            imain, order_id, order_path, files,
+            'order_%s_restricted.zip' % order_id)
+        if info is not None:
+            found += 1
+            response.append(info)
 
         if found == 0:
             error = "Order '%s' not found (or no permissions)" % order_id
             return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
-        # response = 'Work in progress'
         msg = prepare_message(self, log_string='end', status='enabled')
         log_into_queue(self, msg)
 
