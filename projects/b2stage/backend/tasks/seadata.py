@@ -469,6 +469,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         myjson, backdoor, self, extra=str(zip_local_file)
                     )
 
+                # Remove the .zip extention
+                base_filename, _ = os.path.splitext(zip_local_file)
                 prefix = m.group(1)
                 for index in range(1, 100):
                     subzip_file = path.append_compress_extension(
@@ -481,7 +483,10 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             "%s not found, break the loop", subzip_path)
                         break
 
-                    subzip_ipath = path.join(order_path, zip_local_file)
+                    subzip_ifile = path.append_compress_extension(
+                        "%s%d" % (base_filename, index)
+                    )
+                    subzip_ipath = path.join(order_path, subzip_ifile)
 
                     subzip_file = path.append_compress_extension(
                         "%s%d" % (prefix, index)
