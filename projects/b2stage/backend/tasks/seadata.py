@@ -1040,8 +1040,17 @@ def list_resources(self, batch_path, order_path, myjson):
         param_key = 'parameters'
         params = myjson.get(param_key, {})
         backdoor = params.pop('backdoor', False)
-        myjson[param_key]['batches'] = [batch_path]
-        myjson[param_key]['orders'] = [order_path]
+
+        myjson[param_key]['batches'] = []
+        batches = imain.list(batch_path)
+        for n in batches:
+            myjson[param_key]['batches'].append(n)
+
+        myjson[param_key]['orders'] = []
+        orders = imain.list(order_path)
+        for n in orders:
+            myjson[param_key]['orders'].append(n)
+
         ext_api.post(myjson, backdoor=backdoor)
 
         return "COMPLETED"
