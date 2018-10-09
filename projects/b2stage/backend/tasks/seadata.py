@@ -411,6 +411,65 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
             log.info("Copied zip to irods: %s", zip_ipath)
 
+            if os.path.getsize(zip_local_file) > MAX_ZIP_SIZE:
+                log.warning("Zip too large, splitting %s", zip_local_file)
+
+                # Create a sub folder for split files. If already exists,
+                # remove it before to start from a clean environment
+                split_path = path.join(local_dir, "unrestricted_zip_split")
+                # split_path is an object
+                rmtree(str(split_path), ignore_errors=True)
+                # path create requires a path object
+                path.create(split_path, directory=True, force=True)
+                # path object is no longer required, cast to string
+                split_path = str(split_path)
+
+                # Execute the split of the whole zip
+                bash = BashCommands()
+                split_params = [
+                    '-n', MAX_ZIP_SIZE,
+                    '-b', split_path,
+                    zip_local_file
+                ]
+                out = bash.execute_command('/usr/bin/zipsplit', split_params)
+                # Parsing the zipsplit output to determine the output name
+                # Long names are truncated to 7 characters, we want to come
+                # back to the previous names
+                out_array = out.split('\n')
+                # example of out_array[1]:
+                # creating: /usr/share/orders/zip_split/130900/order_p1.zip
+                regexp = 'creating: %s/(.*)1.zip' % split_path
+                m = re.search(regexp, out_array[1])
+                if not m:
+                    return notify_error(
+                        ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
+                        myjson, backdoor, self, extra=zip_local_file
+                    )
+
+                base_filename = zip_local_file  # remove ext
+                prefix = m.group(1)
+                for index in range(1, 100):
+                    subzip_file = path.append_compress_extension(
+                        "%s%d" % (prefix, index)
+                    )
+                    subzip_path = path.join(split_path, subzip_file)
+
+                    if not path.file_exists_and_nonzero(subzip_path):
+                        log.warning(
+                            "%s not found, break the loop", subzip_path)
+                        break
+
+                    subzip_ifile = path.append_compress_extension(
+                        "%s%d" % (base_filename, index)
+                    )
+                    subzip_ipath = path.join(order_path, subzip_ifile)
+
+                    subzip_file = path.append_compress_extension(
+                        "%s%d" % (prefix, index)
+                    )
+                    log.info("Uploading %s -> %s", subzip_path, subzip_ipath)
+                    imain.put(str(subzip_path), str(subzip_ipath))
+
         #########################
         # NOTE: should I close the iRODS session ?
         #########################
@@ -419,31 +478,29 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
         ##################
         # CDI notification
-        # FIXME: add a backdoor for EUDAT tests
-        if True:
-            reqkey = 'request_id'
-            msg = prepare_message(self, isjson=True)
-            zipcount = 0
-            if counter > 0:
-                # FIXME: what about when restricted is there?
-                zipcount += 1
-            myjson['parameters'] = {
-                # "request_id": msg['request_id'],
-                reqkey: myjson[reqkey],
-                "order_number": order_id,
-                "zipfile_name": params['file_name'],
-                "file_count": counter,
-                "zipfile_count": zipcount,
-            }
-            for key, value in msg.items():
-                if key == reqkey:
-                    continue
-                myjson[key] = value
-            if len(errors) > 0:
-                myjson['errors'] = errors
-            myjson[reqkey] = self.request.id
-            # log.pp(myjson)
-            ext_api.post(myjson, backdoor=backdoor)
+        reqkey = 'request_id'
+        msg = prepare_message(self, isjson=True)
+        zipcount = 0
+        if counter > 0:
+            # FIXME: what about when restricted is there?
+            zipcount += 1
+        myjson['parameters'] = {
+            # "request_id": msg['request_id'],
+            reqkey: myjson[reqkey],
+            "order_number": order_id,
+            "zipfile_name": params['file_name'],
+            "file_count": counter,
+            "zipfile_count": zipcount,
+        }
+        for key, value in msg.items():
+            if key == reqkey:
+                continue
+            myjson[key] = value
+        if len(errors) > 0:
+            myjson['errors'] = errors
+        myjson[reqkey] = self.request.id
+        # log.pp(myjson)
+        ext_api.post(myjson, backdoor=backdoor)
 
         ##################
         out = {
@@ -766,7 +823,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
             # Create a sub folder for split files. If already exists,
             # remove it before to start from a clean environment
-            split_path = path.join(local_dir, "zip_split")
+            split_path = path.join(local_dir, "restricted_zip_split")
             # split_path is an object
             rmtree(str(split_path), ignore_errors=True)
             # path create requires a path object

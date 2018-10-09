@@ -212,7 +212,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             user=ingestion_user, log_string='end')
         log_into_queue(self, log_msg)
 
-
         return self.force_response(response)
 
     def post(self):
