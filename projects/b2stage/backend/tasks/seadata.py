@@ -980,7 +980,7 @@ def delete_orders(self, orders_path, myjson):
 
             # TODO: I should also revoke the task?
 
-            # imain.remove(order_path, recursive=True)
+            imain.remove(order_path, recursive=True)
 
         if len(errors) > 0:
             myjson['errors'] = errors
@@ -1032,7 +1032,7 @@ def delete_batches(self, batches_path, myjson):
                 self.update_state(state="PROGRESS", meta={
                     'total': total, 'step': counter, 'errors': len(errors)})
                 continue
-            # imain.remove(batch_path, recursive=True)
+            imain.remove(batch_path, recursive=True)
 
         if len(errors) > 0:
             myjson['errors'] = errors
