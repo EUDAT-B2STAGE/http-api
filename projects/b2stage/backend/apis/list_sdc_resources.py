@@ -9,7 +9,7 @@ log = get_logger(__name__)
 
 class ListResources(Endpoint):
 
-    def get(self, batch_id):
+    def get(self):
 
         json_input = self.get_input()
         task = CeleryExt.list_resources.apply_async(
