@@ -929,11 +929,11 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
 
 @celery_app.task(bind=True)
-def delete_orders(self, order_path, myjson):
+def delete_orders(self, orders_path, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("Delete request for order path %s", order_path)
+        log.info("Delete request for order path %s", orders_path)
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
@@ -952,34 +952,34 @@ def delete_orders(self, order_path, myjson):
         imain = celery_app.get_service(service='irods')
 
         for order in orders:
-            log.info(order)
 
-        imain = celery_app.get_service(service='irods')
+            order_path = path.join(orders_path, order)
+            log.info(order_path)
 
-        # if not imain.is_collection(order_path):
-        #     return notify_error(
-        #         ErrorCodes.ORDER_NOT_FOUD,
-        #         myjson, backdoor, self
-        #     )
+            if not imain.is_collection(order_path):
+                return notify_error(
+                    ErrorCodes.ORDER_NOT_FOUD,
+                    myjson, backdoor, self
+                )
 
-        ##################
-        # TODO: remove the iticket?
-        pass
+            ##################
+            # TODO: remove the iticket?
+            pass
 
-        # TODO: I should also revoke the task?
+            # TODO: I should also revoke the task?
 
-        # imain.remove(order_path, recursive=True)
+            # imain.remove(order_path, recursive=True)
 
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
 
 @celery_app.task(bind=True)
-def delete_batches(self, batch_path, myjson):
+def delete_batches(self, batches_path, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("Delete request for batch path %s", batch_path)
+        log.info("Delete request for batch path %s", batches_path)
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
@@ -998,14 +998,16 @@ def delete_batches(self, batch_path, myjson):
         imain = celery_app.get_service(service='irods')
 
         for batch in batches:
-            log.info(batch)
-        # if not imain.is_collection(batch_path):
-        #     return notify_error(
-        #         ErrorCodes.BATCH_NOT_FOUD,
-        #         myjson, backdoor, self
-        #     )
+            batch_path = path.join(batches_path, batch)
+            log.info(batch_path)
 
-        # imain.remove(batch_path, recursive=True)
+            if not imain.is_collection(batch_path):
+                return notify_error(
+                    ErrorCodes.BATCH_NOT_FOUD,
+                    myjson, backdoor, self
+                )
+
+            # imain.remove(batch_path, recursive=True)
 
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
