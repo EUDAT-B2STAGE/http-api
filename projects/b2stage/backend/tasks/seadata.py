@@ -1028,3 +1028,20 @@ def pids_cached_to_json(self):
         for key in r.scan_iter("%s*" % pid_prefix):
             log.info("Key: %s = %s", key, r.get(key))
             # break
+
+
+@celery_app.task(bind=True)
+def list_resources(self, batch_path, order_path, myjson):
+
+    with celery_app.app.app_context():
+
+        imain = celery_app.get_service(service='irods')
+
+        param_key = 'parameters'
+        params = myjson.get(param_key, {})
+        backdoor = params.pop('backdoor', False)
+        myjson[param_key]['batches'] = [batch_path]
+        myjson[param_key]['orders'] = [order_path]
+        ext_api.post(myjson, backdoor=backdoor)
+
+        return "COMPLETED"
