@@ -21,7 +21,7 @@ from utilities.logs import get_logger, logging
 
 # Size in bytes
 # TODO: move me into the configuration
-MAX_ZIP_SIZE = 300
+MAX_ZIP_SIZE = 500
 ####################
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
