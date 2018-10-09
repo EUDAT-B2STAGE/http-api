@@ -436,7 +436,12 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     out = bash.execute_command(
                         '/usr/bin/zipsplit', split_params)
                 except ProcessExecutionError as e:
-                    log.critical(e)
+                    log.critical(e.stdout)
+                    log.critical(e.stderr)
+                    return notify_error(
+                        ErrorCodes.ZIP_SPLIT_ERROR,
+                        myjson, backdoor, self, extra=zip_local_file
+                    )
 
                 # Parsing the zipsplit output to determine the output name
                 # Long names are truncated to 7 characters, we want to come
@@ -448,7 +453,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 m = re.search(regexp, out_array[1])
                 if not m:
                     return notify_error(
-                        ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
+                        ErrorCodes.ZIP_SPLIT_ERROR,
                         myjson, backdoor, self, extra=zip_local_file
                     )
 
