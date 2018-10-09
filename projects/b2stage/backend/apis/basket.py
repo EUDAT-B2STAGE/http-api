@@ -321,10 +321,19 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.debug("Zip irods path: %s", zip_ipath)
 
         code = self.no_slash_ticket(imain, zip_ipath)
+        ftype = ""
+        if restricted:
+            ftype += "1"
+        else:
+            ftype += "0"
+        if index is None:
+            ftype += "0"
+        else:
+            ftype += str(index)
 
-        route = '%s%s/%s/%s/download/%s' % (
+        route = '%s%s/%s/%s/download/%s/c/%s' % (
             CURRENT_HTTPAPI_SERVER, API_URL,
-            ORDERS_ENDPOINT, order_id, code
+            ORDERS_ENDPOINT, order_id, ftype, code
         )
 
         # If metadata already exists, remove them:
