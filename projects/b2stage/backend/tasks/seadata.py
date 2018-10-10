@@ -1092,6 +1092,9 @@ def list_resources(self, batch_path, order_path, myjson):
         params = myjson.get(param_key, {})
         backdoor = params.pop('backdoor', False)
 
+        if param_key not in myjson:
+            myjson[param_key] = {}
+
         myjson[param_key]['batches'] = []
         batches = imain.list(batch_path)
         for n in batches:
