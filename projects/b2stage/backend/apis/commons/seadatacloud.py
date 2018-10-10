@@ -77,6 +77,8 @@ class ImportManagerAPI(object):
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
         payload['edmo_code'] = EDMO_CODE
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
+        if 'api_function' not in payload:
+            payload['api_function'] = 'unknown_function'
         payload['api_function'] += '_ready'
         payload['version'] = API_VERSION
 
