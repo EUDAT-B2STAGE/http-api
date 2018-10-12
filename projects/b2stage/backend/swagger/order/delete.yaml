@@ -2,8 +2,8 @@ common:
   custom:
     authentication: true
 
-order:
-  summary: "Remove an order from being downloaded (if existing)"
+basket:
+  summary: "Remove one or more orders"
   responses:
     '200':
-      description: Order removed
+      description: Async job submitted for orders removal

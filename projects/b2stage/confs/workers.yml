@@ -11,6 +11,8 @@ services:
       ACTIVATE: 0
 
   celery:
+    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
+    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -n worker-%h
     volumes:
       - /nfs/share:/usr/share
@@ -46,6 +48,8 @@ services:
     # depends_on: []
 
   celeryui:
+    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
+    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     #command: start_flower
     #command: sleep infinity
     command: flower --basic_auth=import:whereistherabbithole --port=5555 persistent=True -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor

@@ -4,8 +4,11 @@ import os
 import hashlib
 import zipfile
 import json
+import re
 from shutil import rmtree, unpack_archive
 from socket import gethostname
+from plumbum.commands.processes import ProcessExecutionError
+from utilities.basher import BashCommands
 from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -17,7 +20,9 @@ from restapi.services.detect import detector
 
 from utilities.logs import get_logger, logging
 
-
+# Size in bytes
+# TODO: move me into the configuration
+MAX_ZIP_SIZE = 2147483648  # 2 gb
 ####################
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
@@ -57,7 +62,7 @@ def notify_error(error, myjson, backdoor, task, extra=None):
     error_message = "Error %s: %s" % (error[0], error[1])
     log.error(error_message)
     if extra:
-        log.error(extra)
+        log.error(str(extra))
 
     if not backdoor:
         myjson['errors'] = {
@@ -68,7 +73,7 @@ def notify_error(error, myjson, backdoor, task, extra=None):
 
     task_errors = [error_message]
     if extra:
-        task_errors.append(extra)
+        task_errors.append(str(extra))
     task.update_state(state="FAILED", meta={
         'errors': task_errors
     })
@@ -407,6 +412,88 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
             log.info("Copied zip to irods: %s", zip_ipath)
 
+            if os.path.getsize(zip_local_file) > MAX_ZIP_SIZE:
+                log.warning("Zip too large, splitting %s", zip_local_file)
+
+                # Create a sub folder for split files. If already exists,
+                # remove it before to start from a clean environment
+                split_path = path.join(local_dir, "unrestricted_zip_split")
+                # split_path is an object
+                rmtree(str(split_path), ignore_errors=True)
+                # path create requires a path object
+                path.create(split_path, directory=True, force=True)
+                # path object is no longer required, cast to string
+                split_path = str(split_path)
+
+                # Execute the split of the whole zip
+                bash = BashCommands()
+                split_params = [
+                    '-n', MAX_ZIP_SIZE,
+                    '-b', split_path,
+                    zip_local_file
+                ]
+                try:
+                    out = bash.execute_command(
+                        '/usr/bin/zipsplit', split_params)
+                except ProcessExecutionError as e:
+
+                    if 'Entry is larger than max split size' in e.stdout:
+                        reg = 'Entry too big to split, read, or write \((.*)\)'
+                        extra = None
+                        m = re.search(reg, e.stdout)
+                        if m:
+                            extra = m.group(1)
+                        return notify_error(
+                            ErrorCodes.ZIP_SPLIT_ENTRY_TOO_LARGE,
+                            myjson, backdoor, self, extra=extra
+                        )
+                    else:
+                        log.error(e.stdout)
+
+                    return notify_error(
+                        ErrorCodes.ZIP_SPLIT_ERROR,
+                        myjson, backdoor, self, extra=str(zip_local_file)
+                    )
+
+                # Parsing the zipsplit output to determine the output name
+                # Long names are truncated to 7 characters, we want to come
+                # back to the previous names
+                out_array = out.split('\n')
+                # example of out_array[1]:
+                # creating: /usr/share/orders/zip_split/130900/order_p1.zip
+                regexp = 'creating: %s/(.*)1.zip' % split_path
+                m = re.search(regexp, out_array[1])
+                if not m:
+                    return notify_error(
+                        ErrorCodes.ZIP_SPLIT_ERROR,
+                        myjson, backdoor, self, extra=str(zip_local_file)
+                    )
+
+                # Remove the .zip extention
+                base_filename, _ = os.path.splitext(zip_file_name)
+                prefix = m.group(1)
+                for index in range(1, 100):
+                    subzip_file = path.append_compress_extension(
+                        "%s%d" % (prefix, index)
+                    )
+                    subzip_path = path.join(split_path, subzip_file)
+
+                    if not path.file_exists_and_nonzero(subzip_path):
+                        log.warning(
+                            "%s not found, break the loop", subzip_path)
+                        break
+
+                    subzip_ifile = path.append_compress_extension(
+                        "%s%d" % (base_filename, index)
+                    )
+                    subzip_ipath = path.join(order_path, subzip_ifile)
+
+                    subzip_file = path.append_compress_extension(
+                        "%s%d" % (prefix, index)
+                    )
+                    log.info("Uploading %s -> %s", subzip_path, subzip_ipath)
+                    imain.put(str(subzip_path), str(subzip_ipath))
+
         #########################
         # NOTE: should I close the iRODS session ?
         #########################
@@ -415,31 +502,29 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
         ##################
         # CDI notification
-        # FIXME: add a backdoor for EUDAT tests
-        if True:
-            reqkey = 'request_id'
-            msg = prepare_message(self, isjson=True)
-            zipcount = 0
-            if counter > 0:
-                # FIXME: what about when restricted is there?
-                zipcount += 1
-            myjson['parameters'] = {
-                # "request_id": msg['request_id'],
-                reqkey: myjson[reqkey],
-                "order_number": order_id,
-                "zipfile_name": params['file_name'],
-                "file_count": counter,
-                "zipfile_count": zipcount,
-            }
-            for key, value in msg.items():
-                if key == reqkey:
-                    continue
-                myjson[key] = value
-            if len(errors) > 0:
-                myjson['errors'] = errors
-            myjson[reqkey] = self.request.id
-            # log.pp(myjson)
-            ext_api.post(myjson, backdoor=backdoor)
+        reqkey = 'request_id'
+        msg = prepare_message(self, isjson=True)
+        zipcount = 0
+        if counter > 0:
+            # FIXME: what about when restricted is there?
+            zipcount += 1
+        myjson['parameters'] = {
+            # "request_id": msg['request_id'],
+            reqkey: myjson[reqkey],
+            "order_number": order_id,
+            "zipfile_name": params['file_name'],
+            "file_count": counter,
+            "zipfile_count": zipcount,
+        }
+        for key, value in msg.items():
+            if key == reqkey:
+                continue
+            myjson[key] = value
+        if len(errors) > 0:
+            myjson['errors'] = errors
+        myjson[reqkey] = self.request.id
+        # log.pp(myjson)
+        ext_api.post(myjson, backdoor=backdoor)
 
         ##################
         out = {
@@ -540,8 +625,6 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
         backdoor = params.pop('backdoor', False)
 
-        imain = celery_app.get_service(service='irods')
-        # order_path = self.get_order_path(imain, order_id)
         # Make sure you have a path with no trailing slash
         order_path = order_path.rstrip('/')
 
@@ -552,7 +635,11 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 ErrorCodes.MISSING_FILENAME_PARAM,
                 myjson, backdoor, self
             )
-        if not filename.endswith('.zip'):
+        base_filename = filename
+        if filename.endswith('.zip'):
+            log.warning('%s already contains extention .zip', filename)
+            # TO DO: save base_filename as filename - .zip
+        else:
             filename = path.append_compress_extension(filename)
         # final_zip = self.complete_path(order_path, filename)
         final_zip = order_path + '/' + filename.rstrip('/')
@@ -706,6 +793,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                     ErrorCodes.B2SAFE_UPLOAD_ERROR,
                     myjson, backdoor, self, extra=str(e)
                 )
+            local_finalzip_path = local_zip_path
         else:
             # 9 - if already exists merge zips
             log.info("Already exists, merge zip files")
@@ -754,6 +842,84 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
         imain.remove(partial_zip)
 
+        if os.path.getsize(local_finalzip_path) > MAX_ZIP_SIZE:
+            log.warning("Zip too large, splitting %s", local_finalzip_path)
+
+            # Create a sub folder for split files. If already exists,
+            # remove it before to start from a clean environment
+            split_path = path.join(local_dir, "restricted_zip_split")
+            # split_path is an object
+            rmtree(str(split_path), ignore_errors=True)
+            # path create requires a path object
+            path.create(split_path, directory=True, force=True)
+            # path object is no longer required, cast to string
+            split_path = str(split_path)
+
+            # Execute the split of the whole zip
+            bash = BashCommands()
+            split_params = [
+                '-n', MAX_ZIP_SIZE,
+                '-b', split_path,
+                local_finalzip_path
+            ]
+            try:
+                out = bash.execute_command(
+                    '/usr/bin/zipsplit', split_params)
+            except ProcessExecutionError as e:
+
+                if 'Entry is larger than max split size' in e.stdout:
+                    reg = 'Entry too big to split, read, or write \((.*)\)'
+                    extra = None
+                    m = re.search(reg, e.stdout)
+                    if m:
+                        extra = m.group(1)
+                    return notify_error(
+                        ErrorCodes.ZIP_SPLIT_ENTRY_TOO_LARGE,
+                        myjson, backdoor, self, extra=extra
+                    )
+                else:
+                    log.error(e.stdout)
+
+                return notify_error(
+                    ErrorCodes.ZIP_SPLIT_ERROR,
+                    myjson, backdoor, self, extra=str(local_finalzip_path)
+                )
+            # Parsing the zipsplit output to determine the output name
+            # Long names are truncated to 7 characters, we want to come
+            # back to the previous names
+            out_array = out.split('\n')
+            # example of out_array[1]:
+            # creating: /usr/share/orders/zip_split/130900/order_p1.zip
+            regexp = 'creating: %s/(.*)1.zip' % split_path
+            m = re.search(regexp, out_array[1])
+            if not m:
+                return notify_error(
+                    ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
+                    myjson, backdoor, self, extra=str(local_finalzip_path)
+                )
+
+            prefix = m.group(1)
+            for index in range(1, 100):
+                subzip_file = path.append_compress_extension(
+                    "%s%d" % (prefix, index)
+                )
+                subzip_path = path.join(split_path, subzip_file)
+
+                if not path.file_exists_and_nonzero(subzip_path):
+                    log.warning("%s not found, break the loop", subzip_path)
+                    break
+
+                subzip_ifile = path.append_compress_extension(
+                    "%s%d" % (base_filename, index)
+                )
+                subzip_ipath = path.join(order_path, subzip_ifile)
+
+                subzip_file = path.append_compress_extension(
+                    "%s%d" % (prefix, index)
+                )
+                log.info("Uploading %s -> %s", subzip_path, subzip_ipath)
+                imain.put(str(subzip_path), str(subzip_ipath))
+
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
@@ -763,11 +929,11 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
 
 @celery_app.task(bind=True)
-def delete_order(self, order_id, order_path, myjson):
+def delete_orders(self, orders_path, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("Delete request for order path %s", order_path)
+        log.info("Delete request for order path %s", orders_path)
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
@@ -776,32 +942,58 @@ def delete_order(self, order_id, order_path, myjson):
 
         backdoor = params.pop('backdoor', False)
 
-        imain = celery_app.get_service(service='irods')
-
-        if not imain.is_collection(order_path):
+        orders = myjson['parameters'].pop('orders', None)
+        if orders is None:
             return notify_error(
-                ErrorCodes.ORDER_NOT_FOUD,
+                ErrorCodes.MISSING_ORDERS_PARAMETER,
                 myjson, backdoor, self
             )
 
-        ##################
-        # TODO: remove the iticket?
-        pass
+        imain = celery_app.get_service(service='irods')
 
-        # TODO: I should also revoke the task?
+        errors = []
+        total = len(orders)
+        counter = 0
+        for order in orders:
 
-        imain.remove(order_path, recursive=True)
+            counter += 1
+            self.update_state(state="PROGRESS", meta={
+                'total': total, 'step': counter, 'errors': len(errors)})
 
+            order_path = path.join(orders_path, order)
+            log.info(order_path)
+
+            if not imain.is_collection(order_path):
+                errors.append({
+                    "error": ErrorCodes.ORDER_NOT_FOUND[0],
+                    "description": ErrorCodes.ORDER_NOT_FOUND[1],
+                    "subject": order,
+                })
+
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+                continue
+
+            ##################
+            # TODO: remove the iticket?
+            pass
+
+            # TODO: I should also revoke the task?
+
+            imain.remove(order_path, recursive=True)
+
+        if len(errors) > 0:
+            myjson['errors'] = errors
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
 
 @celery_app.task(bind=True)
-def delete_batch(self, batch_id, batch_path, myjson):
+def delete_batches(self, batches_path, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("Delete request for batch path %s", batch_path)
+        log.info("Delete request for batch path %s", batches_path)
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
@@ -810,15 +1002,40 @@ def delete_batch(self, batch_id, batch_path, myjson):
 
         backdoor = params.pop('backdoor', False)
 
-        imain = celery_app.get_service(service='irods')
-        if not imain.is_collection(batch_path):
+        batches = myjson['parameters'].pop('batches', None)
+        if batches is None:
             return notify_error(
-                ErrorCodes.BATCH_NOT_FOUD,
+                ErrorCodes.MISSING_BATCHES_PARAMETER,
                 myjson, backdoor, self
             )
 
-        imain.remove(batch_path, recursive=True)
+        imain = celery_app.get_service(service='irods')
 
+        errors = []
+        total = len(batches)
+        counter = 0
+        for batch in batches:
+
+            counter += 1
+            self.update_state(state="PROGRESS", meta={
+                'total': total, 'step': counter, 'errors': len(errors)})
+
+            batch_path = path.join(batches_path, batch)
+
+            if not imain.is_collection(batch_path):
+                errors.append({
+                    "error": ErrorCodes.BATCH_NOT_FOUND[0],
+                    "description": ErrorCodes.BATCH_NOT_FOUND[1],
+                    "subject": batch,
+                })
+
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter, 'errors': len(errors)})
+                continue
+            imain.remove(batch_path, recursive=True)
+
+        if len(errors) > 0:
+            myjson['errors'] = errors
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
@@ -862,3 +1079,32 @@ def pids_cached_to_json(self):
         for key in r.scan_iter("%s*" % pid_prefix):
             log.info("Key: %s = %s", key, r.get(key))
             # break
+
+
+@celery_app.task(bind=True)
+def list_resources(self, batch_path, order_path, myjson):
+
+    with celery_app.app.app_context():
+
+        imain = celery_app.get_service(service='irods')
+
+        param_key = 'parameters'
+        params = myjson.get(param_key, {})
+        backdoor = params.pop('backdoor', False)
+
+        if param_key not in myjson:
+            myjson[param_key] = {}
+
+        myjson[param_key]['batches'] = []
+        batches = imain.list(batch_path)
+        for n in batches:
+            myjson[param_key]['batches'].append(n)
+
+        myjson[param_key]['orders'] = []
+        orders = imain.list(order_path)
+        for n in orders:
+            myjson[param_key]['orders'].append(n)
+
+        ext_api.post(myjson, backdoor=backdoor)
+
+        return "COMPLETED"

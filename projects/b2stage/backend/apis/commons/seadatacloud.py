@@ -35,13 +35,17 @@ class ErrorCodes(object):
     UNZIP_ERROR_INVALID_FILE = ("4013", "Unable to create restricted zip file")
     MISSING_PARTNERS_IDS = ("4014", "Parameter b2access_ids is missing")
     INVALID_B2ACCESS_ID = ("4015", "Invalid b2access id")
-    ORDER_NOT_FOUD = ("4016", "Order does not exist or you lack permissions")
-    BATCH_NOT_FOUD = ("4017", "Batch does not exist or you lack permissions")
+    ORDER_NOT_FOUND = ("4016", "Order does not exist or you lack permissions")
+    BATCH_NOT_FOUND = ("4017", "Batch does not exist or you lack permissions")
     MISSING_PIDS_LIST = ("4018", "Parameter 'pids' is missing")
     UNABLE_TO_MOVE_IN_PRODUCTION = ("4019", "Cannot move file in production")
     UNABLE_TO_ASSIGN_PID = ("4020", "Unable to assign a PID to the file")
     B2HANDLE_ERROR = ("4021", "PID server (b2handle) unreachable")
     UNABLE_TO_DOWNLOAD_FILE = ("4022", "Unable to download the file")
+    ZIP_SPLIT_ERROR = ("4023", "Zip split unexpected error")
+    ZIP_SPLIT_ENTRY_TOO_LARGE = ("4024", "One or more files are larger than max zip size")
+    MISSING_BATCHES_PARAMETER = ("4025", "Parameter batches is missing")
+    MISSING_ORDERS_PARAMETER = ("4026", "Parameter orders is missing")
 
 
 class Metadata(object):
@@ -73,6 +77,8 @@ class ImportManagerAPI(object):
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
         payload['edmo_code'] = EDMO_CODE
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
+        if 'api_function' not in payload:
+            payload['api_function'] = 'unknown_function'
         payload['api_function'] += '_ready'
         payload['version'] = API_VERSION
 
