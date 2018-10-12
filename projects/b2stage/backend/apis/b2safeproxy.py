@@ -58,6 +58,7 @@ class B2safeProxy(EndpointResource):
             msg = "Missing username or password"
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+        authscheme = jargs.get('authscheme', 'credentials')
 
         #############
         func = self.get_service_instance
@@ -65,6 +66,7 @@ class B2safeProxy(EndpointResource):
             'service_name': "irods",
             'user': username,
             'password': password,
+            'authscheme': authscheme,
         }
 
         # we verify that irods connects with this credentials
