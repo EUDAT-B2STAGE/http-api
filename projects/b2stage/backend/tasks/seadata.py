@@ -1107,6 +1107,13 @@ def list_resources(self, batch_path, order_path, myjson):
         imain = celery_app.get_service(service='irods')
 
         param_key = 'parameters'
+
+        if param_key not in myjson:
+            myjson[param_key] = {}
+
+        myjson[param_key]['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
         params = myjson.get(param_key, {})
         backdoor = params.pop('backdoor', False)
 
