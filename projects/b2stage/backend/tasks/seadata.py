@@ -935,6 +935,9 @@ def delete_orders(self, orders_path, myjson):
 
         log.info("Delete request for order path %s", orders_path)
 
+        if 'parameters' not in myjson:
+            myjson['parameters'] = {}
+
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
 
