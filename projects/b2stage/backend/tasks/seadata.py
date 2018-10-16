@@ -951,11 +951,17 @@ def delete_orders(self, orders_path, myjson):
                 ErrorCodes.MISSING_ORDERS_PARAMETER,
                 myjson, backdoor, self
             )
+        total = len(orders)
+
+        if total == 0:
+            return notify_error(
+                ErrorCodes.EMPTY_ORDERS_PARAMETER,
+                myjson, backdoor, self
+            )
 
         imain = celery_app.get_service(service='irods')
 
         errors = []
-        total = len(orders)
         counter = 0
         for order in orders:
 
@@ -998,6 +1004,9 @@ def delete_batches(self, batches_path, myjson):
 
         log.info("Delete request for batch path %s", batches_path)
 
+        if 'parameters' not in myjson:
+            myjson['parameters'] = {}
+
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
 
@@ -1011,11 +1020,17 @@ def delete_batches(self, batches_path, myjson):
                 ErrorCodes.MISSING_BATCHES_PARAMETER,
                 myjson, backdoor, self
             )
+        total = len(batches)
+
+        if total == 0:
+            return notify_error(
+                ErrorCodes.EMPTY_BATCHES_PARAMETER,
+                myjson, backdoor, self
+            )
 
         imain = celery_app.get_service(service='irods')
 
         errors = []
-        total = len(batches)
         counter = 0
         for batch in batches:
 

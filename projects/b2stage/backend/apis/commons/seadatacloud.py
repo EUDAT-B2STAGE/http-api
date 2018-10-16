@@ -46,6 +46,8 @@ class ErrorCodes(object):
     ZIP_SPLIT_ENTRY_TOO_LARGE = ("4024", "One or more files are larger than max zip size")
     MISSING_BATCHES_PARAMETER = ("4025", "Parameter batches is missing")
     MISSING_ORDERS_PARAMETER = ("4026", "Parameter orders is missing")
+    EMPTY_BATCHES_PARAMETER = ("4027", "Parameter batches is empty")
+    EMPTY_ORDERS_PARAMETER = ("4028", "Parameter orders is empty")
 
 
 class Metadata(object):
