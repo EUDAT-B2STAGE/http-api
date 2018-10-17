@@ -42,13 +42,16 @@ class B2safeProxy(EndpointResource):
         from flask import request
         auth = request.authorization
 
+        default_authscheme = 'credentials'
         if auth is not None:
             username = auth.username
             password = auth.password
+            authscheme = default_authscheme
         else:
             jargs = self.get_input()
             username = jargs.get('username')
             password = jargs.get('password')
+            authscheme = jargs.get('authscheme', default_authscheme)
 
         if username == self._anonymous_user:
             password = 'WHATEVERYOUWANT:)'
@@ -58,7 +61,6 @@ class B2safeProxy(EndpointResource):
             msg = "Missing username or password"
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
-        authscheme = jargs.get('authscheme', 'credentials')
 
         #############
         func = self.get_service_instance
