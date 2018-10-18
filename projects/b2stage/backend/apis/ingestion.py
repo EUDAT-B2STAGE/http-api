@@ -55,7 +55,12 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 "Batch '%s' not yet filled" % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        return "Batch '%s' is enabled and filled" % batch_id
+        data = {}
+        data['batch'] = batch_id
+        data['status'] = 'enabled'
+        data['files'] = files
+        return data
+        # return "Batch '%s' is enabled and filled" % batch_id
 
     def put(self, batch_id, file_id):
         """
