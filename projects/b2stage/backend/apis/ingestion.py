@@ -58,7 +58,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         data = {}
         data['batch'] = batch_id
         data['status'] = 'enabled'
-        data['files'] = files
+        data['files'] = []
+        for f in files:
+            data['files'].append(f)
         return data
         # return "Batch '%s' is enabled and filled" % batch_id
 

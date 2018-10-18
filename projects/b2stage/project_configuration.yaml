@@ -42,7 +42,7 @@ variables:
     ## Seadata project variable
     SEADATA_PROJECT: 0
     SEADATA_EDMO_CODE:
-    SEADATA_API_VERSION: 1.0.4.0010
+    SEADATA_API_VERSION: 1.0.4.0011
     SEADATA_INGESTION_DIR: batches
     SEADATA_PRODUCTION_DIR: cloud
     SEADATA_ORDERS_DIR: orders
