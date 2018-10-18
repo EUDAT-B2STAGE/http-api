@@ -189,14 +189,16 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
             ipath = self.join_paths([data.get('path'), name])
             metadata, _ = imain.get_metadata(ipath)
-            # log.pp(metadata)
-            obj = {
-                'order': order_id,
-                'file': name,
-                'URL': metadata.get('download'),
-                'owner': data.get('owner')
-            }
-            response.append(obj)
+            data['URL'] = metadata.get('download')
+            # obj = {
+            #     'order': order_id,
+            #     'file': name,
+            #     'URL': metadata.get('download'),
+            #     'owner': data.get('owner')
+            #     'size': data.get('owner')
+            # }
+            # response.append(obj)
+            response.append(data)
 
         if len(response) < 1:
             error = "Order '%s': no files yet" % order_id
