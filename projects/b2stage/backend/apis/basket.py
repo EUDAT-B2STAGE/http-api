@@ -179,19 +179,22 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
-        ils = imain.list(order_path)
+        ils = imain.list(order_path, detailed=True)
         response = []
 
         for _, data in ils.items():
             name = data.get('name')
+            if name.endswith('_restricted.zip.bak'):
+                continue
+
             ipath = self.join_paths([data.get('path'), name])
             metadata, _ = imain.get_metadata(ipath)
             # log.pp(metadata)
             obj = {
                 'order': order_id,
-                'file': data.get('name'),
+                'file': name,
                 'URL': metadata.get('download'),
-                'owner': 'NOT IMPLEMENTED YET',  # FIXME: based on irods uname?
+                'owner': data.get('owner')
             }
             response.append(obj)
 
