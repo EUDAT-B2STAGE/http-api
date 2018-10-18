@@ -47,7 +47,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        files = imain.list(batch_path)
+        files = imain.list(batch_path, detailed=True)
         # log.pp(files)
         # if len(files) < 1:
         if len(files) != 1:
