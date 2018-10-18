@@ -180,6 +180,16 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         ils = imain.list(order_path, detailed=True)
+
+        u = get_order_zip_file(order_id, restricted=False, index=1)
+        r = get_order_zip_file(order_id, restricted=True, index=1)
+
+        if u in ils:
+            log.critical("Found %s" % u)
+
+        if r in ils:
+            log.critical("Found %s" % r)            
+
         response = []
 
         for _, data in ils.items():
