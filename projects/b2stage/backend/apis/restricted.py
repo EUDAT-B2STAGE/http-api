@@ -19,58 +19,6 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     - PUT /api/restricted/<order_id> with a zip_file
     """
 
-    # def get(self, order_id):
-    #     log.info("Received a test HTTP request")
-
-    #     # self.get_input()
-    #     # log.pp(self._args, prefix_line='Parsed args')
-
-    #     response = 'Hello world!'
-    #     return self.force_response(response)
-
-    """
-    def ingest_restricted_zip(self, icom, order_id, order_path, ipath):
-
-        # Copy files from the B2HOST environment
-        rancher = self.get_or_create_handle()
-
-        b2safe_connvar = {
-            'BATCH_SRC_PATH': order_path,
-            'BATCH_DEST_PATH': ipath,
-            # 'FILES': ' '.join(files),
-            'IRODS_HOST': icom.variables.get('host'),
-            'IRODS_PORT': icom.variables.get('port'),
-            'IRODS_ZONE_NAME': icom.variables.get('zone'),
-            'IRODS_USER_NAME': icom.variables.get('user'),
-            'IRODS_PASSWORD': icom.variables.get('password'),
-        }
-        # log.pp(b2safe_connvar)
-
-        # Launch a container to copy the data into B2HOST
-        cname = 'copy_zip'  # FIXME: move me into commons/seadata*py
-        cversion = '0.9'
-        image_tag = '%s:%s' % (cname, cversion)
-        container_name = self.get_container_name(order_id, image_tag)
-        # print(container_name)
-        docker_image_name = self.get_container_image(image_tag, prefix='eudat')
-        log.info("Request copy2prod; image: %s" % docker_image_name)
-
-        # remove if exists
-        rancher.remove_container_by_name(container_name)
-        # launch
-        rancher.run(
-            container_name=container_name, image_name=docker_image_name,
-            private=True, pull=False,
-            wait_stopped=True,
-            extras={
-                'environment': b2safe_connvar,
-                # 'dataVolumes': [self.mount_batch_volume(batch_id)],
-            },
-        )
-        # errors = rancher.run(
-        # log.pp(errors)
-    """
-
     def stream_to_irods(self, icom, ipath):
 
         ########################
