@@ -23,6 +23,17 @@ BATCHES_DIR = seadata_vars.get('batch_dir')     # "batches"
 ORDERS_DIR = seadata_vars.get('orders_dir')     # "orders"
 PRODUCTION_DIR = seadata_vars.get('cloud_dir')  # "cloud"
 
+'''
+These are the paths to the data on the host
+that runs containers, and how they are mounted
+into the containers.
+
+Prepended before this is the Rancher localpath,
+defaulting to /usr/share.
+'''
+FS_PREFIX_ON_HOST = 'ingestion'
+FS_PREFIX_IN_CONTAINER = 'batch'
+
 CONTAINERS_VARS = detector.load_group(label='containers')
 
 
@@ -45,6 +56,12 @@ class ClusterContainerEndpoint(EndpointResource):
             self._credentials = detector.load_group(label='resources')
         return self._credentials
 
+    '''
+    Create a Rancher object and feed it with
+    config that starts with "RESOURCES_",
+    including the localpath, which is set to
+    "/usr/share".
+    '''
     def get_or_create_handle(self):
 
         if self._handle is None:
@@ -57,15 +74,46 @@ class ClusterContainerEndpoint(EndpointResource):
     def join_paths(self, paths):
         return str(path.build(paths))
 
+
+
+    '''
+    Return the path where the data is located
+    on the Rancher host (if called with batch_id)
+    or where the data is located mounted inside
+    the Rancher containers.
+
+    Host:      /usr/share/ingestion/<batch_id>
+    Container: /usr/share/batch/
+
+    Deprecated, because confusing - returning a different
+    path depending on whether batch_id is provided or not!
+
+    Will be replaced by two functions:
+      get_ingestion_path_in_container()
+    and
+      get_ingestion_path_on_host(batch_id)
+    '''
     def get_ingestion_path(self, batch_id=None):
         paths = [self._handle._localpath]
         if batch_id is None:
-            paths.append('batch')
+            paths.append(FS_PREFIX_IN_CONTAINER) # "batch"
         else:
-            paths.append('ingestion')
+            paths.append(FS_PREFIX_ON_HOST) # "ingestion"
             paths.append(batch_id)
         return str(path.build(paths))
 
+    '''
+    Return the bind-mount string for bind-mounting
+    the directory containing a batch into Rancher
+    containers.
+
+    The start of the path can be configured, see:
+        RESOURCES_LOCALPATH=/usr/local
+    The directory name is fixed.
+
+    Example:
+    /usr/share/ingestion/<batch_id>:/usr/share/batch
+    '''
     def mount_batch_volume(self, batch_id):
         host_path = self.get_ingestion_path(batch_id)
         container_fixed_path = self.get_ingestion_path()
