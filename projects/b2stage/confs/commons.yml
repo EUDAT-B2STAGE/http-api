@@ -25,6 +25,11 @@ services:
       ####################
       ##### SEADATA
       SEADATA_PROJECT: ${SEADATA_PROJECT}
+      # The names of the directories in the irods zone
+      # for pre-production batches, for production batches,
+      # and for orders being prepared.
+      # TODO Why this step? Why set BATCH_DIR to INGESTION_DIR,
+      # why not keep one consistent name?
       SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
       SEADATA_CLOUD_DIR: ${SEADATA_PRODUCTION_DIR}
       SEADATA_ORDERS_DIR: ${SEADATA_ORDERS_DIR}

@@ -43,6 +43,9 @@ variables:
     SEADATA_PROJECT: 0
     SEADATA_EDMO_CODE:
     SEADATA_API_VERSION: 1.0.4.0011
+    # The names of the directories in the irods zone
+    # for pre-production batches, for production batches,
+    # and for orders being prepared.
     SEADATA_INGESTION_DIR: batches
     SEADATA_PRODUCTION_DIR: cloud
     SEADATA_ORDERS_DIR: orders

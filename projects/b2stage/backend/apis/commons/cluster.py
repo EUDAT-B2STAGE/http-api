@@ -10,9 +10,18 @@ log = get_logger(__name__)
 
 DEFAULT_IMAGE_PREFIX = 'docker'
 
-BATCHES_DIR = seadata_vars.get('batch_dir')
-ORDERS_DIR = seadata_vars.get('orders_dir')
-PRODUCTION_DIR = seadata_vars.get('cloud_dir')
+'''
+These are the names of the directories in the irods
+zone for ingestion (i.e. pre-production) batches,
+for production batches, and for orders being prepared.
+
+They are being defined in b2stage/confs/commons.yml,
+which references config values defined in 
+b2stage/project_configuration.yml
+'''
+BATCHES_DIR = seadata_vars.get('batch_dir')     # "batches"
+ORDERS_DIR = seadata_vars.get('orders_dir')     # "orders"
+PRODUCTION_DIR = seadata_vars.get('cloud_dir')  # "cloud"
 
 CONTAINERS_VARS = detector.load_group(label='containers')
 
@@ -69,6 +78,16 @@ class ClusterContainerEndpoint(EndpointResource):
             filename = filename.replace('%s%s' % (sep, extension), '')
         return "%s%s%s" % (filename, sep, extension)
 
+
+    '''
+    Helper to construct a path of a data object
+    inside irods.
+
+    Note: Helper, only used inside this file.
+    Note: The icom irods_client is of class
+    IrodsPythonClient, defined in module
+    rapydo/http-api/restapi/flask_ext/flask_irods/client
+    '''
     def get_path_with_suffix(self, icom, mypath, suffix=None):
         paths = [mypath]
         if suffix is not None:
@@ -77,12 +96,41 @@ class ClusterContainerEndpoint(EndpointResource):
         suffix_path = str(path.build(paths))
         return icom.get_current_zone(suffix=suffix_path)
 
+    '''
+    Return path of the batch inside irods, once the
+    batch is in production.
+
+    It consists of the irods zone (retrieved from
+    the irods client object), the production batch
+    directory (from config) and the batch_id if given.
+
+    Example: /myIrodsZone/cloud/<batch_id>
+    '''
     def get_production_path(self, icom, batch_id=None):
         return self.get_path_with_suffix(icom, PRODUCTION_DIR, batch_id)
 
+    '''
+    Return path of the batch inside irods, before
+    the batch goes to production.
+
+    It consists of the irods zone (retrieved from
+    the irods client object), the ingestion batch
+    directory (from config) and the batch_id if given.
+
+    Example: /myIrodsZone/batches/<batch_id>
+    '''
     def get_batch_path(self, icom, batch_id=None):
         return self.get_path_with_suffix(icom, BATCHES_DIR, batch_id)
 
+    '''
+    Return path of the order inside irods.
+
+    It consists of the irods zone (retrieved from
+    the irods client object), the order directory
+    (from config) and the order_id if given.
+
+    Example: /myIrodsZone/orders/<order_id>
+    '''
     def get_order_path(self, icom, order_id=None):
         return self.get_path_with_suffix(icom, ORDERS_DIR, order_id)
 
