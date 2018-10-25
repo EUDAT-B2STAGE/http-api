@@ -115,32 +115,6 @@ class ClusterContainerEndpoint(EndpointResource):
         return str(path.build(paths))
 
     '''
-    Return the path where the data is located
-    on the Rancher host (if called with batch_id)
-    or where the data is located mounted inside
-    the Rancher containers.
-
-    Host:      /usr/share/ingestion/<batch_id>
-    Container: /usr/share/batch/
-
-    Deprecated, because confusing - returning a different
-    path depending on whether batch_id is provided or not!
-
-    Will be replaced by two functions:
-      get_ingestion_path_in_container()
-    and
-      get_ingestion_path_on_host(batch_id)
-    '''
-    def get_ingestion_path(self, batch_id=None):
-        paths = [self._handle._localpath]
-        if batch_id is None:
-            paths.append(FS_PREFIX_IN_CONTAINER) # "batch"
-        else:
-            paths.append(FS_PREFIX_ON_HOST) # "ingestion"
-            paths.append(batch_id)
-        return str(path.build(paths))
-
-    '''
     Return the bind-mount string for bind-mounting
     the directory containing a batch into Rancher
     containers.
