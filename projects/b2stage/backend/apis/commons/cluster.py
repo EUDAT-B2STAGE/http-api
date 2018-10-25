@@ -74,7 +74,45 @@ class ClusterContainerEndpoint(EndpointResource):
     def join_paths(self, paths):
         return str(path.build(paths))
 
+    '''
+    Return the path where the data is located
+    on the Rancher host.
 
+    The start of the path can be configured, see:
+        RESOURCES_LOCALPATH=/usr/local
+    The directory name is fixed.
+
+    Example:
+    /usr/share/ingestion/<batch_id>
+    '''
+    def get_ingestion_path_on_host(self, batch_id):
+        paths = [self._handle._localpath] # "/usr/share" (default)
+        paths.append(FS_PREFIX_ON_HOST)   # "ingestion"
+        paths.append(batch_id)
+        return str(path.build(paths))
+
+    '''
+    Return the path where the data is located
+    mounted inside the Rancher containers.
+
+    The start of the path can be configured, see:
+        RESOURCES_LOCALPATH=/usr/local
+    The directory name is fixed.
+
+    Note: The batch_id is not part of the path,
+    as every container only works on one batch
+    anyway. With every batch being mounted into
+    the same path, the programs inside the container
+    can easily operate on whichever data is inside
+    that directory.
+
+    Example:
+    /usr/share/batch/
+    '''
+    def get_ingestion_path_in_container(self):
+        paths = [self._handle._localpath]    # "/usr/share" (default)
+        paths.append(FS_PREFIX_IN_CONTAINER) # "batch"
+        return str(path.build(paths))
 
     '''
     Return the path where the data is located
@@ -115,8 +153,8 @@ class ClusterContainerEndpoint(EndpointResource):
     /usr/share/ingestion/<batch_id>:/usr/share/batch
     '''
     def mount_batch_volume(self, batch_id):
-        host_path = self.get_ingestion_path(batch_id)
-        container_fixed_path = self.get_ingestion_path()
+        host_path = self.get_ingestion_path_on_host(batch_id)
+        container_fixed_path = self.get_ingestion_path_in_container()
         return "%s:%s" % (host_path, container_fixed_path)
 
     def get_input_zip_filename(self, filename=None, extension='zip', sep='.'):
@@ -184,7 +222,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
 
     def get_batch_zipfile_path(self, batch_id, filename=None):
-        container_fixed_path = self.get_ingestion_path()
+        container_fixed_path = self.get_ingestion_path_in_container()
         batch_file = self.get_input_zip_filename(filename)
         return str(path.build([container_fixed_path, batch_file]))
 

@@ -167,7 +167,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         else:
             # # CONTAINERS VERSION
             rancher = self.get_or_create_handle()
-            idest = self.get_ingestion_path()
+            idest = self.get_ingestion_path_in_container()
 
             b2safe_connvar = {
                 'BATCH_SRC_PATH': ipath,
