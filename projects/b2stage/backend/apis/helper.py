@@ -19,7 +19,7 @@ class Helper(Endpoint):
     def get(self, batch_id):
 
         imain = self.get_service_instance(service_name='irods')
-        ipath = self.get_production_path(imain)
+        ipath = self.get_irods_production_path(imain)
         collections = imain.list(ipath)
 
         tasks = {}

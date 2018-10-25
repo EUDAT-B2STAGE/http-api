@@ -171,7 +171,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
     Example: /myIrodsZone/cloud/<batch_id>
     '''
-    def get_production_path(self, irods_client, batch_id=None):
+    def get_irods_production_path(self, irods_client, batch_id=None):
         return self.get_irods_path(irods_client, PRODUCTION_DIR, batch_id)
 
     '''
@@ -184,7 +184,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
     Example: /myIrodsZone/batches/<batch_id>
     '''
-    def get_batch_path(self, irods_client, batch_id=None):
+    def get_irods_batch_path(self, irods_client, batch_id=None):
         return self.get_irods_path(irods_client, BATCHES_DIR, batch_id)
 
     '''
@@ -196,7 +196,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
     Example: /myIrodsZone/orders/<order_id>
     '''
-    def get_order_path(self, irods_client, order_id=None):
+    def get_irods_order_path(self, irods_client, order_id=None):
         return self.get_irods_path(irods_client, ORDERS_DIR, order_id)
 
 

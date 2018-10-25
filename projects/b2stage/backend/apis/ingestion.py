@@ -36,7 +36,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # obj = self.init_endpoint()
         # icom = obj.icommands
 
-        batch_path = self.get_batch_path(imain, batch_id)
+        batch_path = self.get_irods_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
 
         ########################
@@ -83,7 +83,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         icom = obj.icommands
         errors = None
 
-        batch_path = self.get_batch_path(icom, batch_id)
+        batch_path = self.get_irods_batch_path(icom, batch_id)
         log.info("Batch path: %s", batch_path)
 
         ########################
@@ -251,14 +251,14 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # NOTE: Main API user is the key to let this happen
         imain = self.get_service_instance(service_name='irods')
 
-        batch_path = self.get_batch_path(imain, batch_id)
+        batch_path = self.get_irods_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
 
         ##################
         # Does it already exist? Is it a collection?
         if not imain.is_collection(batch_path):
             # Enable the batch
-            batch_path = self.get_batch_path(imain, batch_id)
+            batch_path = self.get_irods_batch_path(imain, batch_id)
             # Create the path and set permissions
             imain.create_collection_inheritable(batch_path, obj.username)
             # # Remove anonymous access to this batch
@@ -287,7 +287,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         json_input = self.get_input()
 
         imain = self.get_service_instance(service_name='irods')
-        batch_path = self.get_batch_path(imain)
+        batch_path = self.get_irods_batch_path(imain)
         log.debug("Batch path: %s", batch_path)
 
         task = CeleryExt.delete_batches.apply_async(

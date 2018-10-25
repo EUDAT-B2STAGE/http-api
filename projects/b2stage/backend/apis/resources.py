@@ -69,7 +69,7 @@ class Resources(ClusterContainerEndpoint):
         ###########################
         # get name from batch
         imain = self.get_service_instance(service_name='irods')
-        batch_path = self.get_batch_path(imain, batch_id)
+        batch_path = self.get_irods_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
         try:
             files = imain.list(batch_path)
