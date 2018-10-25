@@ -123,6 +123,11 @@ class ClusterContainerEndpoint(EndpointResource):
         RESOURCES_LOCALPATH=/usr/local
     The directory name is fixed.
 
+    TODO: Isn't this a problem - so when I want
+    to locate my data to, let's say, /data/foo,
+    then it will be mounted inside the container
+    also to /data/foo, and will not be found, right?
+
     Example:
     /usr/share/ingestion/<batch_id>:/usr/share/batch
     '''
