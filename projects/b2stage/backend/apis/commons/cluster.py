@@ -84,17 +84,17 @@ class ClusterContainerEndpoint(EndpointResource):
     inside irods.
 
     Note: Helper, only used inside this file.
-    Note: The icom irods_client is of class
+    Note: The irods_client is of class
     IrodsPythonClient, defined in module
     rapydo/http-api/restapi/flask_ext/flask_irods/client
     '''
-    def get_path_with_suffix(self, icom, mypath, suffix=None):
+    def get_path_with_suffix(self, irods_client, mypath, suffix=None):
         paths = [mypath]
         if suffix is not None:
             paths.append(suffix)
         from utilities import path
         suffix_path = str(path.build(paths))
-        return icom.get_current_zone(suffix=suffix_path)
+        return irods_client.get_current_zone(suffix=suffix_path)
 
     '''
     Return path of the batch inside irods, once the
@@ -106,8 +106,8 @@ class ClusterContainerEndpoint(EndpointResource):
 
     Example: /myIrodsZone/cloud/<batch_id>
     '''
-    def get_production_path(self, icom, batch_id=None):
-        return self.get_path_with_suffix(icom, PRODUCTION_DIR, batch_id)
+    def get_production_path(self, irods_client, batch_id=None):
+        return self.get_path_with_suffix(irods_client, PRODUCTION_DIR, batch_id)
 
     '''
     Return path of the batch inside irods, before
@@ -119,8 +119,8 @@ class ClusterContainerEndpoint(EndpointResource):
 
     Example: /myIrodsZone/batches/<batch_id>
     '''
-    def get_batch_path(self, icom, batch_id=None):
-        return self.get_path_with_suffix(icom, BATCHES_DIR, batch_id)
+    def get_batch_path(self, irods_client, batch_id=None):
+        return self.get_path_with_suffix(irods_client, BATCHES_DIR, batch_id)
 
     '''
     Return path of the order inside irods.
@@ -131,8 +131,9 @@ class ClusterContainerEndpoint(EndpointResource):
 
     Example: /myIrodsZone/orders/<order_id>
     '''
-    def get_order_path(self, icom, order_id=None):
-        return self.get_path_with_suffix(icom, ORDERS_DIR, order_id)
+    def get_order_path(self, irods_client, order_id=None):
+        return self.get_path_with_suffix(irods_client, ORDERS_DIR, order_id)
+
 
     def get_batch_zipfile_path(self, batch_id, filename=None):
         container_fixed_path = self.get_ingestion_path()
