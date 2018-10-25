@@ -127,9 +127,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ########################
         zip_name = self.get_input_zip_filename(file_id)
-        ipath = self.complete_path(batch_path, zip_name)
+        zip_path_irods = self.complete_path(batch_path, zip_name)
+        # E.g. /myIrodsZone/batches/<batch_id>/<zip-name>
 
-        if backdoor and icom.is_dataobject(ipath):
+        if backdoor and icom.is_dataobject(zip_path_irods):
             response['status'] = 'exists'
 
             # Log end (of upload) into RabbitMQ
@@ -143,10 +144,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return response
 
         ########################
-        log.verbose("Cloud filename: %s", ipath)
+        log.verbose("Cloud filename: %s", zip_path_irods) # ingestion
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
-            iout = icom.write_in_streaming(destination=ipath, force=True)
+            iout = icom.write_in_streaming(destination=zip_path_irods, force=True)
         except BaseException as e:
             log.error("Failed streaming to iRODS: %s", e)
             return self.send_errors(
@@ -162,7 +163,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             # # CELERY VERSION
             log.info("Submit async celery task")
             task = CeleryExt.send_to_workers_task.apply_async(
-                args=[batch_id, ipath, zip_name, backdoor])
+                args=[batch_id, zip_path_irods, zip_name, backdoor])
             log.warning("Async job: %s", task.id)
         else:
             # # CONTAINERS VERSION
@@ -170,7 +171,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             path_inside_cont = self.get_ingestion_path_in_container()
 
             b2safe_connvar = {
-                'BATCH_SRC_PATH': ipath,
+                'BATCH_SRC_PATH': zip_path_irods,
                 'BATCH_DEST_PATH': path_inside_cont,
                 'IRODS_HOST': icom.variables.get('host'),
                 'IRODS_PORT': icom.variables.get('port'),
