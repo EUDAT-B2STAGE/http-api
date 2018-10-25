@@ -167,11 +167,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         else:
             # # CONTAINERS VERSION
             rancher = self.get_or_create_handle()
-            idest = self.get_ingestion_path_in_container()
+            path_inside_cont = self.get_ingestion_path_in_container()
 
             b2safe_connvar = {
                 'BATCH_SRC_PATH': ipath,
-                'BATCH_DEST_PATH': idest,
+                'BATCH_DEST_PATH': path_inside_cont,
                 'IRODS_HOST': icom.variables.get('host'),
                 'IRODS_PORT': icom.variables.get('port'),
                 'IRODS_ZONE_NAME': icom.variables.get('zone'),
