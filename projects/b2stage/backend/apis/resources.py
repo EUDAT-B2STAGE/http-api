@@ -174,14 +174,25 @@ class Resources(ClusterContainerEndpoint):
         # log.pp(envs)
         # return 'Hello'
 
-        json_path = self.get_ingestion_path('temporary_json_files')
+        # TODO: to be put into the configuration
+        NFS_PATH = "/nfs/share"
+        TEMP_JSON_PATH = 'temporary_json_files'
+        JSON_CONTAINER_PATH = "/json_input"
+
+        # path on API VM
+        api_json_path = os.join(NFS_PATH, TEMP_JSON_PATH)
+
+        # path on QC VM
+        qc_json_path = self.get_ingestion_path(TEMP_JSON_PATH)
+
         # if not exist create
-        json_path = os.path.join(json_path, batch_id)
+        api_json_path = os.path.join(api_json_path, batch_id)
 
-        json_container_path = "/json_input"
+        qc_json_path = os.path.join(qc_json_path, batch_id)
 
-        log.critical(json_path)
-        log.critical(json_container_path)
+        log.critical(api_json_path)
+        log.critical(qc_json_path)
+        log.critical(JSON_CONTAINER_PATH)
 
         ###########################
         errors = rancher.run(
