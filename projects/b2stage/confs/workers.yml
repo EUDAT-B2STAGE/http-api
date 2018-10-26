@@ -50,9 +50,6 @@ services:
   celeryui:
     build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
-    #command: start_flower
-    #command: sleep infinity
-    command: flower --basic_auth=import:whereistherabbithole --port=5555 persistent=True -A restapi.flask_ext.flask_celery.worker.celery_app -n flower_monitor
     user: developer
     hostname: flower
     environment:
