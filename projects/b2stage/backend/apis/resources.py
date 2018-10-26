@@ -5,6 +5,7 @@ Launch containers for quality checks in Seadata
 """
 import os
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.cluster import BATCHES_DIR
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -180,7 +181,7 @@ class Resources(ClusterContainerEndpoint):
         JSON_CONTAINER_PATH = "/json_input"
 
         # path on API VM
-        api_json_path = os.path.join(NFS_PATH, TEMP_JSON_PATH)
+        api_json_path = os.path.join(NFS_PATH, BATCHES_DIR, TEMP_JSON_PATH)
 
         # path on QC VM
         qc_json_path = self.get_ingestion_path(TEMP_JSON_PATH)
