@@ -1,8 +1,8 @@
 version: '3'
 
-# volumes:
-#   letsencrypt_certs:
-#     driver: local
+volumes:
+  localdata:
+    driver: local
 
 services:
 
