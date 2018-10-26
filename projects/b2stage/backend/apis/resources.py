@@ -181,15 +181,15 @@ class Resources(ClusterContainerEndpoint):
         JSON_CONTAINER_PATH = "/json_input"
 
         # path on API VM
-        api_json_path = os.path.join(NFS_PATH, BATCHES_DIR, TEMP_JSON_PATH)
+        api_json_path = os.path.join(NFS_PATH, BATCHES_DIR, TEMP_JSON_PATH, batch_id)
 
         # path on QC VM
         qc_json_path = self.get_ingestion_path(TEMP_JSON_PATH)
-
-        # if not exist create
-        api_json_path = os.path.join(api_json_path, batch_id)
-
         qc_json_path = os.path.join(qc_json_path, batch_id)
+
+        if not os.path.exists(api_json_path):
+            log.info("Creating olfder %s", api_json_path)
+            os.makedirs(api_json_path)
 
         log.critical(api_json_path)
         log.critical(qc_json_path)
@@ -203,7 +203,7 @@ class Resources(ClusterContainerEndpoint):
             extras={
                 'dataVolumes': [
                     self.mount_batch_volume(batch_id),
-                    # "%s:%s" % (json_path, json_container_path)
+                    "%s:%s" % (qc_json_path, JSON_CONTAINER_PATH)
                 ],
                 # 'command': ['/bin/sleep', '999999'],
                 'environment': envs,
