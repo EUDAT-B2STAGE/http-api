@@ -176,35 +176,37 @@ class Resources(ClusterContainerEndpoint):
         # return 'Hello'
 
         # TODO: to be put into the configuration
-        NFS_PATH = "/nfs/share"
-        TEMP_JSON_PATH = 'temporary_json_files'
-        JSON_CONTAINER_PATH = "/json_input"
+        tmp_json_path = self.get_batch_path(imain, 'temporary_json_files')
 
-        # path on API VM
-        api_json_path = os.path.join(NFS_PATH, BATCHES_DIR, TEMP_JSON_PATH)
+        log.critical(tmp_json_path)
+        # NFS_PATH = "/nfs/share"
+        # JSON_CONTAINER_PATH = "/json_input"
 
-        if not os.path.exists(api_json_path):
-            log.info("Creating folder %s", api_json_path)
-            os.mkdir(api_json_path)
+        # # path on API VM
+        # api_json_path = os.path.join(NFS_PATH, BATCHES_DIR, TEMP_JSON_PATH)
 
-        api_json_path = os.path.join(api_json_path, batch_id)
+        # if not os.path.exists(api_json_path):
+        #     log.info("Creating folder %s", api_json_path)
+        #     os.mkdir(api_json_path)
 
-        if not os.path.exists(api_json_path):
-            log.info("Creating folder %s", api_json_path)
-            os.mkdir(api_json_path)
+        # api_json_path = os.path.join(api_json_path, batch_id)
 
-        # path on QC VM
-        qc_json_path = self.get_ingestion_path(TEMP_JSON_PATH)
-        qc_json_path = os.path.join(qc_json_path, batch_id)
+        # if not os.path.exists(api_json_path):
+        #     log.info("Creating folder %s", api_json_path)
+        #     os.mkdir(api_json_path)
 
-        json_input = os.path.join(api_json_path, 'input.json')
-        if os.path.exists(json_input):
-            log.warning("Json input (%s) already exist, deleting", json_input)
-            os.remove(json_input)
+        # # path on QC VM
+        # qc_json_path = self.get_ingestion_path(TEMP_JSON_PATH)
+        # qc_json_path = os.path.join(qc_json_path, batch_id)
 
-        log.critical(api_json_path)
-        log.critical(qc_json_path)
-        log.critical(JSON_CONTAINER_PATH)
+        # json_input = os.path.join(api_json_path, 'input.json')
+        # if os.path.exists(json_input):
+        #     log.warning("Json input (%s) already exist, deleting", json_input)
+        #     os.remove(json_input)
+
+        # log.critical(api_json_path)
+        # log.critical(qc_json_path)
+        # log.critical(JSON_CONTAINER_PATH)
 
         ###########################
         errors = rancher.run(
@@ -212,11 +214,7 @@ class Resources(ClusterContainerEndpoint):
             image_name=docker_image_name,
             private=True,
             extras={
-                'dataVolumes': [
-                    self.mount_batch_volume(batch_id),
-                    "%s:%s" % (qc_json_path, JSON_CONTAINER_PATH)
-                ],
-                # 'command': ['/bin/sleep', '999999'],
+                'dataVolumes': [self.mount_batch_volume(batch_id)],
                 'environment': envs,
             }
         )
