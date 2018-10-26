@@ -180,7 +180,7 @@ class Resources(ClusterContainerEndpoint):
         JSON_CONTAINER_PATH = "/json_input"
 
         # path on API VM
-        api_json_path = os.join(NFS_PATH, TEMP_JSON_PATH)
+        api_json_path = os.path.join(NFS_PATH, TEMP_JSON_PATH)
 
         # path on QC VM
         qc_json_path = self.get_ingestion_path(TEMP_JSON_PATH)
