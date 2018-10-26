@@ -3,7 +3,7 @@
 """
 Launch containers for quality checks in Seadata
 """
-
+import os
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
@@ -174,13 +174,26 @@ class Resources(ClusterContainerEndpoint):
         # log.pp(envs)
         # return 'Hello'
 
+        json_path = self.get_ingestion_path('temporary_json_files')
+        # if not exist create
+        json_path = os.path.join(json_path, batch_id)
+
+        json_container_path = "/json_input"
+
+        log.critical(json_path)
+        log.critical(json_container_path)
+
         ###########################
         errors = rancher.run(
             container_name=container_name,
             image_name=docker_image_name,
             private=True,
             extras={
-                'dataVolumes': [self.mount_batch_volume(batch_id)],
+                'dataVolumes': [
+                    self.mount_batch_volume(batch_id),
+                    # "%s:%s" % (json_path, json_container_path)
+                ],
+                # 'command': ['/bin/sleep', '999999'],
                 'environment': envs,
             }
         )
