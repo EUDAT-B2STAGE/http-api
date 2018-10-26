@@ -24,6 +24,18 @@ from utilities.logs import get_logger, logging
 # TODO: move me into the configuration
 MAX_ZIP_SIZE = 2147483648  # 2 gb
 ####################
+
+
+'''
+These are the paths of the locations on the
+local filesystem inside the celery worker
+containers where the data is copied to / expected
+to reside.
+
+Note: The bind-mount from the host is defined
+in workers.yml, so if you change the /usr/local
+here, you need to change it there too.
+'''
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
 
@@ -81,6 +93,17 @@ def notify_error(error, myjson, backdoor, task, extra=None):
 
 
 ####################
+'''
+This task copies data from irods to the B2HOST
+filesystem, so that it is available for
+pre-production qc checks.
+
+The data is copied from irods_path (usually
+/myzone/batches/<batch_id>) to a path on the
+local filesystem inside the celery worker
+container (/usr/share/batches/<batch_id>),
+which is a directory mounted from the host.
+'''
 @celery_app.task(bind=True)
 def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
 

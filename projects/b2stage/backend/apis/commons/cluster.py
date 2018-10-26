@@ -33,6 +33,7 @@ defaulting to /usr/share.
 '''
 FS_PREFIX_ON_HOST = 'ingestion'
 FS_PREFIX_IN_CONTAINER = 'batch'
+# TODO Add these to config? At least the one on the host!
 
 CONTAINERS_VARS = detector.load_group(label='containers')
 
@@ -111,6 +112,9 @@ class ClusterContainerEndpoint(EndpointResource):
     '''
     def get_ingestion_path_in_container(self):
         paths = [self._handle._localpath]    # "/usr/share" (default)
+        # TODO Should this really be the same as on the
+        # host, and configurable??? Don't the containers expect
+        # the data always in the exact same directory?
         paths.append(FS_PREFIX_IN_CONTAINER) # "batch"
         return str(path.build(paths))
 
