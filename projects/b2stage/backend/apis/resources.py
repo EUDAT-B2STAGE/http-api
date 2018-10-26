@@ -181,15 +181,26 @@ class Resources(ClusterContainerEndpoint):
         JSON_CONTAINER_PATH = "/json_input"
 
         # path on API VM
-        api_json_path = os.path.join(NFS_PATH, BATCHES_DIR, TEMP_JSON_PATH, batch_id)
+        api_json_path = os.path.join(NFS_PATH, BATCHES_DIR, TEMP_JSON_PATH)
+
+        if not os.path.exists(api_json_path):
+            log.info("Creating folder %s", api_json_path)
+            os.mkdir(api_json_path)
+
+        api_json_path = os.path.join(api_json_path, batch_id)
+
+        if not os.path.exists(api_json_path):
+            log.info("Creating folder %s", api_json_path)
+            os.mkdir(api_json_path)
 
         # path on QC VM
         qc_json_path = self.get_ingestion_path(TEMP_JSON_PATH)
         qc_json_path = os.path.join(qc_json_path, batch_id)
 
-        if not os.path.exists(api_json_path):
-            log.info("Creating olfder %s", api_json_path)
-            os.makedirs(api_json_path)
+        json_input = os.path.join(api_json_path, 'input.json')
+        if os.path.exists(json_input):
+            log.warning("Json input (%s) already exist, deleting", json_input)
+            os.remove(json_input)
 
         log.critical(api_json_path)
         log.critical(qc_json_path)
