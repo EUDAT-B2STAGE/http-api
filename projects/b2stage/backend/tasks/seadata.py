@@ -269,17 +269,15 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         ###############
         # Notify the CDI API
         if testing_mode:
-            log.verbose('skipping CDI API (setting backdoor=true)')
-            ext_api.post(myjson, backdoor=True)
+            backdoor = True
 
-        else:
-            myjson[param_key]['pids'] = out_data
-            msg = prepare_message(self, isjson=True)
-            for key, value in msg.items():
-                myjson[key] = value
-            if len(errors) > 0:
-                myjson['errors'] = errors
-            ext_api.post(myjson, backdoor=backdoor)
+        myjson[param_key]['pids'] = out_data
+        msg = prepare_message(self, isjson=True)
+        for key, value in msg.items():
+            myjson[key] = value
+        if len(errors) > 0:
+            myjson['errors'] = errors
+        ext_api.post(myjson, backdoor=backdoor)
 
         out = {
             'total': total, 'step': counter,
