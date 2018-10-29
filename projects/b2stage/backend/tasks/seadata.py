@@ -165,7 +165,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         elements = params.get('pids', {})
         backdoor = params.pop('backdoor', False)
         total = len(elements)
-        testing_mode = myjson.get('test_mode', 'empty') == 'initial_load'
         self.update_state(state="PROGRESS", meta={
             'total': total, 'step': counter, 'errors': len(errors)})
 
@@ -268,9 +267,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
         ###############
         # Notify the CDI API
-        if testing_mode:
-            backdoor = True
-
         myjson[param_key]['pids'] = out_data
         msg = prepare_message(self, isjson=True)
         for key, value in msg.items():
