@@ -32,8 +32,11 @@ Prepended before this is the RESOURCES_LOCALPATH,
 defaulting to /usr/share.
 '''
 FS_MIDDLE_PATH_ON_HOST = seadata_vars.get('workspace_ingestion') # 'ingestion'
-FS_PREFIX_IN_CONTAINER = 'batch'
-# TODO Add these to config? At least the one on the host!
+FS_PATH_IN_CONTAINER = '/usr/share/batch'  # THIS CANNOT CHANGE, otherwise QC containers will not work anymore!
+# At least, the 'batch' part has to be like this, I am quite sure.
+# About the '/usr/share', I am not sure, it might be read form some
+# environmental variable passed to the container. But it is safe
+# to leave it hard-coded like this.
 
 CONTAINERS_VARS = detector.load_group(label='containers')
 
@@ -111,11 +114,7 @@ class ClusterContainerEndpoint(EndpointResource):
     /usr/share/batch/
     '''
     def get_ingestion_path_in_container(self):
-        paths = [self._handle._localpath]    # "/usr/share" (default)
-        # TODO Should this really be the same as on the
-        # host, and configurable??? Don't the containers expect
-        # the data always in the exact same directory?
-        paths.append(FS_PREFIX_IN_CONTAINER) # "batch"
+        paths = [FS_PATH_IN_CONTAINER]    # "/usr/share/batch" (hard-coded)
         return str(path.build(paths))
 
     '''
