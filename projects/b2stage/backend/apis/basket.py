@@ -250,7 +250,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # ##################
         key = 'file_name'
         if key not in params:
-            params[key] = filename = "order_%s_unrestricted" % order_id
+            params[key] = "order_%s_unrestricted" % order_id
         filename = params.get(key)
 
         ##################
