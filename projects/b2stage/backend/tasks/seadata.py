@@ -960,9 +960,13 @@ def delete_orders(self, orders_path, myjson):
 
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
+            # TODO Raise error already here!
+            # Or even before reaching asynchronous job...
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
+        # TODO Why? We end up with two different request_ids,
+        # one from the client, one from our system.
 
         params = myjson.get('parameters', {})
 
