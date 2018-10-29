@@ -155,6 +155,7 @@ class ClusterContainerEndpoint(EndpointResource):
         from utilities import path
         suffix_path = str(path.build(paths))
         return irods_client.get_current_zone(suffix=suffix_path)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     '''
     Return path of the batch inside irods, once the
@@ -168,6 +169,7 @@ class ClusterContainerEndpoint(EndpointResource):
     '''
     def get_irods_production_path(self, irods_client, batch_id=None):
         return self.get_irods_path(irods_client, PRODUCTION_DIR, batch_id)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     '''
     Return path of the batch inside irods, before
@@ -181,6 +183,7 @@ class ClusterContainerEndpoint(EndpointResource):
     '''
     def get_irods_batch_path(self, irods_client, batch_id=None):
         return self.get_irods_path(irods_client, INGESTION_DIR, batch_id)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     '''
     Return path of the order inside irods.
@@ -193,6 +196,7 @@ class ClusterContainerEndpoint(EndpointResource):
     '''
     def get_irods_order_path(self, irods_client, order_id=None):
         return self.get_irods_path(irods_client, ORDERS_DIR, order_id)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_batch_zipfile_path(self, batch_id, filename=None):
         container_fixed_path = self.get_ingestion_path_in_container()
