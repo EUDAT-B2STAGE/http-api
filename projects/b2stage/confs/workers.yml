@@ -15,7 +15,7 @@ services:
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -n worker-%h
     volumes:
-      - ${CELERY_LOCALPATH}:/usr/share # /usr/share in container is hard-coded in tasks, so if changed here, must be changed there too!
+      - ${RESOURCES_LOCALPATH}:/usr/share # /usr/share in container is hard-coded in tasks, so if changed here, must be changed there too!
     environment:
       CELERY_EXTERNAL: 1
       #############################

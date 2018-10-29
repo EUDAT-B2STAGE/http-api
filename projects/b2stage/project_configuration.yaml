@@ -106,11 +106,13 @@ variables:
     ##: OTHERs / FIXED
     UPLOAD_PATH: /uploads
     FULL_JWT: false
+    # This path is the host directory that is bind-mounted
+    # into the Rancher containers and into the Celery
+    # worker containers. (Has to be the same, as they
+    # exchange data).
     # This path needs permissions to user 1001
     # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /usr/share
-    # This path is the one mounted into the celery workers
-    CELERY_LOCALPATH: /usr/share
     # Email to be notified for proxy certificates expiration (letsencrypt)
     SMTP_ADMIN:
     ############################
