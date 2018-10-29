@@ -6,6 +6,7 @@ Launch containers for quality checks in Seadata
 import os
 import json
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -14,7 +15,7 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 
-class Resources(ClusterContainerEndpoint):
+class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, batch_id, qc_name):
