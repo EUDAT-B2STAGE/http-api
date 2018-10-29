@@ -187,7 +187,8 @@ class Resources(ClusterContainerEndpoint):
             log.info("Removing collection %s", tmp_json_path)
             imain.remove(tmp_json_path, recursive=True)
 
-        imain.create_directory(tmp_json_path)
+        obj = self.init_endpoint()
+        imain.create_collection_inheritable(tmp_json_path, obj.username)
 
         json_input_file = "input.json"
         json_input_path = os.path.join(tmp_json_path, json_input_file)
