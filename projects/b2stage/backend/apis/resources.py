@@ -4,8 +4,8 @@
 Launch containers for quality checks in Seadata
 """
 import os
+import json
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
-from b2stage.apis.commons.cluster import BATCHES_DIR
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -154,8 +154,7 @@ class Resources(ClusterContainerEndpoint):
         # log.verbose("Container path: %s", cpath)
         from utilities import path
         envs['BATCH_DIR_PATH'] = path.dir_name(cfilepath)
-        import json
-        envs['JSON_INPUT'] = json.dumps(input_json)
+        # envs['JSON_INPUT'] = json.dumps(input_json)
         from b2stage.apis.commons.queue import QUEUE_VARS
         from b2stage.apis.commons.cluster import CONTAINERS_VARS
         for key, value in QUEUE_VARS.items():
@@ -176,37 +175,25 @@ class Resources(ClusterContainerEndpoint):
         # return 'Hello'
 
         # TODO: to be put into the configuration
-        tmp_json_path = self.get_batch_path(imain, 'temporary_json_files')
+        tmp_json_path = self.get_batch_path(imain, 'json_inputs')
 
-        log.critical(tmp_json_path)
-        # NFS_PATH = "/nfs/share"
-        # JSON_CONTAINER_PATH = "/json_input"
+        if not imain.exists(tmp_json_path):
+            log.info("Creating collection %s", tmp_json_path)
+            imain.create_directory(tmp_json_path)
 
-        # # path on API VM
-        # api_json_path = os.path.join(NFS_PATH, BATCHES_DIR, TEMP_JSON_PATH)
+        tmp_json_path = os.path.join(tmp_json_path, batch_id)
 
-        # if not os.path.exists(api_json_path):
-        #     log.info("Creating folder %s", api_json_path)
-        #     os.mkdir(api_json_path)
+        if imain.exists(tmp_json_path):
+            log.info("Removing collection %s", tmp_json_path)
+            imain.remove(tmp_json_path, recursive=True)
 
-        # api_json_path = os.path.join(api_json_path, batch_id)
+        imain.create_directory(tmp_json_path)
 
-        # if not os.path.exists(api_json_path):
-        #     log.info("Creating folder %s", api_json_path)
-        #     os.mkdir(api_json_path)
+        json_input_file = "input.json"
+        json_input_path = os.path.join('tmp_json_path', json_input_file)
 
-        # # path on QC VM
-        # qc_json_path = self.get_ingestion_path(TEMP_JSON_PATH)
-        # qc_json_path = os.path.join(qc_json_path, batch_id)
-
-        # json_input = os.path.join(api_json_path, 'input.json')
-        # if os.path.exists(json_input):
-        #     log.warning("Json input (%s) already exist, deleting", json_input)
-        #     os.remove(json_input)
-
-        # log.critical(api_json_path)
-        # log.critical(qc_json_path)
-        # log.critical(JSON_CONTAINER_PATH)
+        imain.write_file_content(json_input_path, json.dumps(input_json))
+        envs['JSON_INPUT'] = json_input_path
 
         ###########################
         errors = rancher.run(
