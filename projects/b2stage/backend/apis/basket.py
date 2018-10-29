@@ -42,7 +42,7 @@ log = get_logger(__name__)
 TMPDIR = '/tmp'
 
 
-def get_order_zip_file(order_id, restricted=False, index=None):
+def get_order_zip_file_name(order_id, restricted=False, index=None):
 
     index = '' if index is None else index
     label = "restricted" if restricted else "unrestricted"
@@ -74,7 +74,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if index == 0:
             index = None
 
-        return get_order_zip_file(
+        return get_order_zip_file_name(
             order_id,
             restricted=restricted,
             index=index)
@@ -181,14 +181,14 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ##################
         ils = imain.list(order_path, detailed=True)
 
-        u = get_order_zip_file(order_id, restricted=False, index=1)
+        u = get_order_zip_file_name(order_id, restricted=False, index=1)
         if u in ils:
-            u = get_order_zip_file(order_id, restricted=False, index=None)
+            u = get_order_zip_file_name(order_id, restricted=False, index=None)
             ils.pop(u, None)
 
-        r = get_order_zip_file(order_id, restricted=True, index=1)
+        r = get_order_zip_file_name(order_id, restricted=True, index=1)
         if r in ils:
-            r = get_order_zip_file(order_id, restricted=True, index=None)
+            r = get_order_zip_file_name(order_id, restricted=True, index=None)
             ils.pop(r, None)
 
         response = []
@@ -328,7 +328,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     def get_download(self, imain, order_id, order_path, files,
                      restricted=False, index=None):
 
-        zip_file_name = get_order_zip_file(order_id, restricted, index)
+        zip_file_name = get_order_zip_file_name(order_id, restricted, index)
 
         if zip_file_name not in files:
             return None
@@ -396,24 +396,26 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         response = []
 
-        files = imain.list(order_path, detailed=True)
+        files_in_irods = imain.list(order_path, detailed=True)
+
+        # Going through all possible file names of zip files
 
         # unrestricted zip
         # info = self.get_download(
-        #     imain, order_id, order_path, files,
+        #     imain, order_id, order_path, files_in_irods,
         #     restricted=False, index=None)
         # if info is not None:
         #     response.append(info)
 
         # checking for splitted unrestricted zip
         info = self.get_download(
-            imain, order_id, order_path, files,
+            imain, order_id, order_path, files_in_irods,
             restricted=False, index=1)
 
         # No split zip found, looking for the single unrestricted zip
         if info is None:
             info = self.get_download(
-                imain, order_id, order_path, files,
+                imain, order_id, order_path, files_in_irods,
                 restricted=False, index=None)
             if info is not None:
                 response.append(info)
@@ -422,20 +424,20 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             response.append(info)
             for index in range(2, 100):
                 info = self.get_download(
-                    imain, order_id, order_path, files,
+                    imain, order_id, order_path, files_in_irods,
                     restricted=False, index=index)
                 if info is not None:
                     response.append(info)
 
         # checking for splitted restricted zip
         info = self.get_download(
-            imain, order_id, order_path, files,
+            imain, order_id, order_path, files_in_irods,
             restricted=True, index=1)
 
         # No split zip found, looking for the single restricted zip
         if info is None:
             info = self.get_download(
-                imain, order_id, order_path, files,
+                imain, order_id, order_path, files_in_irods,
                 restricted=True, index=None)
             if info is not None:
                 response.append(info)
@@ -444,7 +446,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             response.append(info)
             for index in range(2, 100):
                 info = self.get_download(
-                    imain, order_id, order_path, files,
+                    imain, order_id, order_path, files_in_irods,
                     restricted=True, index=index)
                 if info is not None:
                     response.append(info)
