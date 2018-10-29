@@ -28,10 +28,10 @@ These are the paths to the data on the host
 that runs containers, and how they are mounted
 into the containers.
 
-Prepended before this is the Rancher localpath,
+Prepended before this is the RESOURCES_LOCALPATH,
 defaulting to /usr/share.
 '''
-FS_PREFIX_ON_HOST = 'ingestion'
+FS_MIDDLE_PATH_ON_HOST = seadata_vars.get('workspace_ingestion') # 'ingestion'
 FS_PREFIX_IN_CONTAINER = 'batch'
 # TODO Add these to config? At least the one on the host!
 
@@ -88,7 +88,7 @@ class ClusterContainerEndpoint(EndpointResource):
     '''
     def get_ingestion_path_on_host(self, batch_id):
         paths = [self._handle._localpath] # "/usr/share" (default)
-        paths.append(FS_PREFIX_ON_HOST)   # "ingestion"
+        paths.append(FS_MIDDLE_PATH_ON_HOST)   # "ingestion"
         paths.append(batch_id)
         return str(path.build(paths))
 

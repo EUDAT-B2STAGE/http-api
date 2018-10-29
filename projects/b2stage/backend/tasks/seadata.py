@@ -17,6 +17,7 @@ from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from restapi.services.detect import detector
+from b2stage.apis.commons.seadatacloud import seadata_vars
 
 from utilities.logs import get_logger, logging
 
@@ -36,8 +37,11 @@ Note: The bind-mount from the host is defined
 in workers.yml, so if you change the /usr/local
 here, you need to change it there too.
 '''
-mybatchpath = '/usr/share/batches'
-myorderspath = '/usr/share/orders'
+where_mounted = '/usr/share'
+middle_path_ingestion = seadata_vars.get('workspace_ingestion') # 'ingestion'
+middle_path_orders = seadata_vars.get('workspace_orders')       # 'orders'
+mybatchpath  = where_mounted +'/'+ middle_path_ingestion
+myorderspath = where_mounted +'/'+ middle_path_orders
 
 ext_api = ImportManagerAPI()
 log = get_logger(__name__)
