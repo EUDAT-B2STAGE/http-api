@@ -3,8 +3,10 @@
 """
 Launch containers for quality checks in Seadata
 """
-
+import os
+import json
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
@@ -13,7 +15,7 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 
-class Resources(ClusterContainerEndpoint):
+class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, batch_id, qc_name):
@@ -153,8 +155,6 @@ class Resources(ClusterContainerEndpoint):
         # log.verbose("Container path: %s", cpath)
         from utilities import path
         envs['BATCH_DIR_PATH'] = path.dir_name(cfilepath)
-        import json
-        envs['JSON_INPUT'] = json.dumps(input_json)
         from b2stage.apis.commons.queue import QUEUE_VARS
         from b2stage.apis.commons.cluster import CONTAINERS_VARS
         for key, value in QUEUE_VARS.items():
@@ -173,6 +173,30 @@ class Resources(ClusterContainerEndpoint):
         # # envs['BATCH_ZIPFILE_PATH'] = cpath
         # log.pp(envs)
         # return 'Hello'
+
+        # TODO: to be put into the configuration
+        tmp_json_path = self.get_batch_path(imain, 'json_inputs')
+
+        if not imain.exists(tmp_json_path):
+            log.info("Creating collection %s", tmp_json_path)
+            imain.create_directory(tmp_json_path)
+
+        tmp_json_path = os.path.join(tmp_json_path, batch_id)
+
+        if imain.exists(tmp_json_path):
+            log.info("Removing collection %s", tmp_json_path)
+            imain.remove(tmp_json_path, recursive=True)
+
+        obj = self.init_endpoint()
+        imain.create_collection_inheritable(tmp_json_path, obj.username)
+
+        json_input_file = "input.json"
+        json_input_path = os.path.join(tmp_json_path, json_input_file)
+        imain.create_file(json_input_path)
+        imain.write_file_content(json_input_path, json.dumps(input_json))
+        envs['JSON_FILE'] = json_input_path
+        # Temporary added, to be removed once JSON_FILE will work
+        envs['JSON_INPUT'] = json.dumps(input_json)
 
         ###########################
         errors = rancher.run(

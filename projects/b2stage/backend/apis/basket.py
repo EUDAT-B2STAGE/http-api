@@ -248,7 +248,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             order_id = str(order_id)
 
         # ##################
-        filename = params.get('file_name', 'unrestricted')
+        key = 'file_name'
+        if key not in params:
+            params[key] = "order_%s_unrestricted" % order_id
+        filename = params.get(key)
+
         ##################
         # PIDS: can be empty if restricted
         key = 'pids'

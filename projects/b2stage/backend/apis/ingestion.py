@@ -91,22 +91,20 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         if not icom.is_collection(batch_path):
 
             err_msg = ("Batch '%s' not enabled or you have no permissions"
-                % batch_id)
-            
+                       % batch_id)
             # Log error into RabbitMQ
-            log_msg = prepare_message(self,
-                user = ingestion_user,
-                log_string = 'failure',
-                info = dict(
-                    batch_id = batch_id,
-                    file_id = file_id,
-                    error = err_msg
+            log_msg = prepare_message(
+                self, user=ingestion_user,
+                log_string='failure',
+                info=dict(
+                    batch_id=batch_id,
+                    file_id=file_id,
+                    error=err_msg
                 )
             )
             log_into_queue(self, log_msg)
 
-            return self.send_errors(err_msg,
-                code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(err_msg, code=hcodes.HTTP_BAD_REQUEST)
 
         ########################
         # NOTE: only streaming is allowed, as it is more performant
@@ -135,10 +133,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
             # Log end (of upload) into RabbitMQ
             # In case it already existed!
-            log_msg = prepare_message(self,
-                user = ingestion_user,
-                log_string = 'end', # TODO True?
-                status = response['status']
+            log_msg = prepare_message(
+                self,
+                user=ingestion_user,
+                log_string='end',  # TODO True?
+                status=response['status']
             )
             log_into_queue(self, log_msg)
             return response
