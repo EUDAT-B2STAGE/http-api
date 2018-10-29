@@ -37,7 +37,7 @@ Note: The bind-mount from the host is defined
 in workers.yml, so if you change the /usr/local
 here, you need to change it there too.
 '''
-where_mounted = '/usr/share'
+where_mounted = '/usr/share' # hard-coded, should be left this way!
 middle_path_ingestion = seadata_vars.get('workspace_ingestion') # 'ingestion'
 middle_path_orders = seadata_vars.get('workspace_orders')       # 'orders'
 mybatchpath  = where_mounted +'/'+ middle_path_ingestion
@@ -105,7 +105,7 @@ pre-production qc checks.
 The data is copied from irods_path (usually
 /myzone/batches/<batch_id>) to a path on the
 local filesystem inside the celery worker
-container (/usr/share/batches/<batch_id>),
+container (/usr/share/ingestion/<batch_id>),
 which is a directory mounted from the host.
 '''
 @celery_app.task(bind=True)

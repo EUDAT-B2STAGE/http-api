@@ -82,16 +82,15 @@ class ClusterContainerEndpoint(EndpointResource):
     Return the path where the data is located
     on the Rancher host.
 
-    The start of the path can be configured,
-    see: RESOURCES_LOCALPATH=/usr/local
-    The directory name is fixed.
+    The parts of the path can be configured,
+    see: RESOURCES_LOCALPATH=/usr/share
+    see: SEADATA_WORKSPACE_INGESTION=ingestion
 
-    Example:
-    /usr/share/ingestion/<batch_id>
+    Example: /usr/share/ingestion/<batch_id>
     '''
     def get_ingestion_path_on_host(self, batch_id):
-        paths = [self._handle._localpath] # "/usr/share" (default)
-        paths.append(FS_MIDDLE_PATH_ON_HOST)   # "ingestion"
+        paths = [self._handle._localpath]      # "/usr/share" (default)
+        paths.append(FS_MIDDLE_PATH_ON_HOST)   # "ingestion"  (default)
         paths.append(batch_id)
         return str(path.build(paths))
 
@@ -110,8 +109,7 @@ class ClusterContainerEndpoint(EndpointResource):
     can easily operate on whichever data is inside
     that directory.
 
-    Example:
-    /usr/share/batch/
+    Example: /usr/share/batch/
     '''
     def get_ingestion_path_in_container(self):
         paths = [FS_PATH_IN_CONTAINER]    # "/usr/share/batch" (hard-coded)
@@ -122,17 +120,11 @@ class ClusterContainerEndpoint(EndpointResource):
     the directory containing a batch into Rancher
     containers.
 
-    The start of the path can be configured,
-    see: RESOURCES_LOCALPATH=/usr/local
-    The directory name is fixed.
+    The parts of the path can be configured,
+    see: RESOURCES_LOCALPATH=/usr/share
+    see: SEADATA_WORKSPACE_INGESTION=ingestion
 
-    TODO: Isn't this a problem - so when I want
-    to locate my data to, let's say, /data/foo,
-    then it will be mounted inside the container
-    also to /data/foo, and will not be found, right?
-
-    Example:
-    /usr/share/ingestion/<batch_id>:/usr/share/batch
+    Example: /usr/share/ingestion/<batch_id>:/usr/share/batch
     '''
     def mount_batch_volume(self, batch_id):
         host_path = self.get_ingestion_path_on_host(batch_id)
