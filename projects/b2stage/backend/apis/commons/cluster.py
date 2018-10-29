@@ -191,10 +191,8 @@ class ClusterContainerEndpoint(EndpointResource):
 
     Example: /myIrodsZone/orders/<order_id>
     '''
-    def get_order_path(self, irods_client, order_id=None):
+    def get_irods_order_path(self, irods_client, order_id=None):
         return self.get_irods_path(irods_client, ORDERS_DIR, order_id)
-        # TODO Rename to get_irods_order_path for clarity!
-
 
     def get_batch_zipfile_path(self, batch_id, filename=None):
         container_fixed_path = self.get_ingestion_path_in_container()

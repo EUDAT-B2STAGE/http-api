@@ -90,7 +90,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         imain = self.get_service_instance(service_name='irods')
-        order_path = self.get_order_path(imain, order_id)
+        order_path = self.get_irods_order_path(imain, order_id)
 
         zip_file_name = self.get_filename_from_type(order_id, ftype)
 
@@ -172,7 +172,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         imain = self.get_service_instance(service_name='irods')
-        order_path = self.get_order_path(imain, order_id)
+        order_path = self.get_irods_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
         if not imain.is_collection(order_path):
             error = "Order '%s': not existing" % order_id
@@ -267,7 +267,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # Create the path
         log.info("Order request: %s", order_id)
         imain = self.get_service_instance(service_name='irods')
-        order_path = self.get_order_path(imain, order_id)
+        order_path = self.get_irods_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
         if not imain.is_collection(order_path):
             obj = self.init_endpoint()
@@ -400,7 +400,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # obj = self.init_endpoint()
         # icom = obj.icommands
         imain = self.get_service_instance(service_name='irods')
-        order_path = self.get_order_path(imain, order_id)
+        order_path = self.get_irods_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
 
         response = []
@@ -474,7 +474,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         json_input = self.get_input()
 
         imain = self.get_service_instance(service_name='irods')
-        order_path = self.get_order_path(imain)
+        order_path = self.get_irods_order_path(imain)
         log.debug("Order path: %s", order_path)
 
         task = CeleryExt.delete_orders.apply_async(

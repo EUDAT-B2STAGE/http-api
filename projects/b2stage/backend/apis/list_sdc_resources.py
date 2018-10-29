@@ -16,7 +16,7 @@ class ListResources(Endpoint):
         task = CeleryExt.list_resources.apply_async(
             args=[
                 self.get_irods_batch_path(imain),
-                self.get_order_path(imain),
+                self.get_irods_order_path(imain),
                 json_input
             ]
         )
