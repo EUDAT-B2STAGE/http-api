@@ -174,7 +174,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         for element in elements:
 
             tmp = element.get('temp_id')  # do not pop
-            current = path.last_part(tmp)
+            current_file_name = path.last_part(tmp)
             local_element = path.join(local_path, tmp, return_str=False)
 
             # log.info('Element: %s', element)
@@ -195,7 +195,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
             ###############
             # 1. copy file (irods)
-            ifile = path.join(irods_path, current, return_str=True)
+            ifile = path.join(irods_path, current_file_name, return_str=True)
             try:
                 imain.put(str(local_element), ifile)
             except BaseException as e:
@@ -209,7 +209,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 self.update_state(state="PROGRESS", meta={
                     'total': total, 'step': counter, 'errors': len(errors)})
                 continue
-            log.debug("Moved: %s" % current)
+            log.debug("Moved: %s" % current_file_name)
 
             ###############
             # 2. request pid (irule)
