@@ -155,7 +155,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # log.verbose("Container path: %s", cpath)
         from utilities import path
         envs['BATCH_DIR_PATH'] = path.dir_name(cfilepath)
-        # envs['JSON_INPUT'] = json.dumps(input_json)
         from b2stage.apis.commons.queue import QUEUE_VARS
         from b2stage.apis.commons.cluster import CONTAINERS_VARS
         for key, value in QUEUE_VARS.items():
@@ -195,7 +194,9 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         json_input_path = os.path.join(tmp_json_path, json_input_file)
         imain.create_file(json_input_path)
         imain.write_file_content(json_input_path, json.dumps(input_json))
-        envs['JSON_INPUT'] = json_input_path
+        envs['JSON_FILE'] = json_input_path
+        # Temporary added, to be removed once JSON_FILE will work
+        envs['JSON_INPUT'] = json.dumps(input_json)
 
         ###########################
         errors = rancher.run(
