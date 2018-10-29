@@ -63,8 +63,8 @@ class ClusterContainerEndpoint(EndpointResource):
     '''
     Create a Rancher object and feed it with
     config that starts with "RESOURCES_",
-    including the localpath, which is set to
-    "/usr/share".
+    including the localpath, which is
+    set to "/nfs/share".
     '''
     def get_or_create_handle(self):
 
