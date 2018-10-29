@@ -248,10 +248,15 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             order_id = str(order_id)
 
         # ##################
+        # Get filename from json input. But it has to follow a
+        # specific pattern, so we ignore client input if it does not...
+        filename = "order_%s_unrestricted" % order_id
         key = 'file_name'
-        if key not in params:
-            params[key] = "order_%s_unrestricted" % order_id
-        filename = params.get(key)
+        if key in params and not params[key] == filename:
+            log.warn('Client provided wrong filename (%s), will use: %s'
+                % (params[key], filename))
+        params[key] = filename
+
 
         ##################
         # PIDS: can be empty if restricted
