@@ -175,7 +175,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # return 'Hello'
 
         # TODO: to be put into the configuration
-        tmp_json_path = self.get_batch_path(imain, 'json_inputs')
+        tmp_json_path = self.get_irods_path(imain, 'json_inputs')
 
         if not imain.exists(tmp_json_path):
             log.info("Creating collection %s", tmp_json_path)
