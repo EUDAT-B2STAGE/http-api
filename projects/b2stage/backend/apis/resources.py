@@ -190,7 +190,7 @@ class Resources(ClusterContainerEndpoint):
         imain.create_directory(tmp_json_path)
 
         json_input_file = "input.json"
-        json_input_path = os.path.join('tmp_json_path', json_input_file)
+        json_input_path = os.path.join(tmp_json_path, json_input_file)
         imain.create_file(json_input_path)
         imain.write_file_content(json_input_path, json.dumps(input_json))
         envs['JSON_INPUT'] = json_input_path
