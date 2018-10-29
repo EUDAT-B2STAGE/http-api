@@ -139,7 +139,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             state="STARTING", meta={'total': None, 'step': 0, 'errors': 0})
 
         ###############
-        log.info("I'm %s" % self.request.id)
+        log.info("I'm %s (move_to_production_task)!" % self.request.id)
         local_path = path.join(mybatchpath, batch_id, return_str=True)
         # log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
         # icom = celery_app.get_service(service='irods', user='httpapi')
@@ -290,7 +290,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s" % self.request.id)
+        log.info("I'm %s (unrestricted_order)" % self.request.id)
 
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
@@ -1086,7 +1086,7 @@ def cache_batch_pids(self, irods_path):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s" % self.request.id)
+        log.info("I'm %s (cache_batch_pids)" % self.request.id)
         log.warning("Working off: %s", irods_path)
         imain = celery_app.get_service(service='irods')
 
