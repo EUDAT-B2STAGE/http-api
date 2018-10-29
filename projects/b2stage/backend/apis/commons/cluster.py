@@ -82,8 +82,8 @@ class ClusterContainerEndpoint(EndpointResource):
     Return the path where the data is located
     on the Rancher host.
 
-    The start of the path can be configured, see:
-        RESOURCES_LOCALPATH=/usr/local
+    The start of the path can be configured,
+    see: RESOURCES_LOCALPATH=/usr/local
     The directory name is fixed.
 
     Example:
@@ -99,8 +99,8 @@ class ClusterContainerEndpoint(EndpointResource):
     Return the path where the data is located
     mounted inside the Rancher containers.
 
-    The start of the path can be configured, see:
-        RESOURCES_LOCALPATH=/usr/local
+    The start of the path can be configured,
+    see: RESOURCES_LOCALPATH=/usr/local
     The directory name is fixed.
 
     Note: The batch_id is not part of the path,
@@ -122,8 +122,8 @@ class ClusterContainerEndpoint(EndpointResource):
     the directory containing a batch into Rancher
     containers.
 
-    The start of the path can be configured, see:
-        RESOURCES_LOCALPATH=/usr/local
+    The start of the path can be configured,
+    see: RESOURCES_LOCALPATH=/usr/local
     The directory name is fixed.
 
     TODO: Isn't this a problem - so when I want
