@@ -19,9 +19,9 @@ They are being defined in b2stage/confs/commons.yml,
 which references config values defined in 
 b2stage/project_configuration.yml
 '''
-BATCHES_DIR = seadata_vars.get('batch_dir')     # "batches"
-ORDERS_DIR = seadata_vars.get('orders_dir')     # "orders"
-PRODUCTION_DIR = seadata_vars.get('cloud_dir')  # "cloud"
+INGESTION_DIR = seadata_vars.get('ingestion_dir')    # "batches"
+ORDERS_DIR = seadata_vars.get('orders_dir')          # "orders"
+PRODUCTION_DIR = seadata_vars.get('production_dir')  # "cloud"
 
 '''
 These are the paths to the data on the host
@@ -189,7 +189,7 @@ class ClusterContainerEndpoint(EndpointResource):
     Example: /myIrodsZone/batches/<batch_id>
     '''
     def get_irods_batch_path(self, irods_client, batch_id=None):
-        return self.get_irods_path(irods_client, BATCHES_DIR, batch_id)
+        return self.get_irods_path(irods_client, INGESTION_DIR, batch_id)
 
     '''
     Return path of the order inside irods.
