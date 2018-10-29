@@ -64,7 +64,6 @@ services:
     volumes:
       # B2HANDLE credentials to solve PID metadata in write mode
       - ${VANILLA_DIR}/data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
-      - ${LOCAL_DATA}:/data
     #   # FIX missing IP / DNS
     #   - ${VANILLA_DIR}/projects/b2stage/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
     #   # # DEBUG modifications on submodules
