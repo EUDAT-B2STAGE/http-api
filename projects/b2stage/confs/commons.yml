@@ -28,9 +28,9 @@ services:
       # The names of the directories in the irods zone
       # for pre-production batches, for production batches,
       # and for orders being prepared.
-      SEADATA_INGESTION_DIR: ${SEADATA_INGESTION_DIR}
-      SEADATA_PRODUCTION_DIR: ${SEADATA_PRODUCTION_DIR}
-      SEADATA_ORDERS_DIR: ${SEADATA_ORDERS_DIR}
+      SEADATA_INGESTION_COLL: ${SEADATA_INGESTION_COLL}
+      SEADATA_PRODUCTION_COLL: ${SEADATA_PRODUCTION_COLL}
+      SEADATA_ORDERS_COLL: ${SEADATA_ORDERS_COLL}
 
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
@@ -127,9 +127,9 @@ services:
       ## SEADATA
       SEADATA_PROJECT: ${SEADATA_PROJECT}
       SEADATA_EDMO_CODE: ${SEADATA_EDMO_CODE}
-      SEADATA_INGESTION_DIR: ${SEADATA_INGESTION_DIR}
-      SEADATA_PRODUCTION_DIR: ${SEADATA_PRODUCTION_DIR}
-      SEADATA_ORDERS_DIR: ${SEADATA_ORDERS_DIR}
+      SEADATA_INGESTION_COLL: ${SEADATA_INGESTION_COLL}
+      SEADATA_PRODUCTION_COLL: ${SEADATA_PRODUCTION_COLL}
+      SEADATA_ORDERS_COLL: ${SEADATA_ORDERS_COLL}
       # The name of the directory in the local fs during ingestions
       # (to be mounted to celery workers and rancher containers)
       SEADATA_WORKSPACE_INGESTION: ${SEADATA_WORKSPACE_INGESTION} # host fs!
