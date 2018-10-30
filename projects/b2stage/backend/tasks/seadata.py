@@ -110,6 +110,11 @@ which is a directory mounted from the host.
 '''
 @celery_app.task(bind=True)
 def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
+    # TODO Running into permission errors
+    # Inside container, celery runs as "developer", uid:gid is: 23480:999
+    # Somehow only rancher can write into /ingestion, it seems!
+ 
+    log.info("I'm %s (send_to_workers_task)!" % self.request.id)
 
     local_path = path.join(mybatchpath, batch_id)
     path.create(local_path, directory=True, force=True)
