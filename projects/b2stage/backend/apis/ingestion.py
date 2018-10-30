@@ -156,12 +156,19 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             log.info("irods call %s", iout)
             # NOTE: permissions are inherited thanks to the POST call
 
+        log.info("Submit async celery task")
+        task = CeleryExt.copy_from_b2safe_to_b2host.apply_async(
+            args=[batch_id, zip_path_irods, zip_name, backdoor])
+        log.warning("Async job: %s", task.id)
+
+        # OLD WAY
+        """
         ###########################
         # Also copy file to the B2HOST environment
         if backdoor:
             # # CELERY VERSION
             log.info("Submit async celery task")
-            task = CeleryExt.send_to_workers_task.apply_async(
+            task = CeleryExt.copy_from_b2safe_to_b2host.apply_async(
                 args=[batch_id, zip_path_irods, zip_name, backdoor])
             log.warning("Async job: %s", task.id)
         else:
@@ -184,8 +191,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             cversion = '0.7'  # release 1.0?
             image_tag = '%s:%s' % (cname, cversion)
             container_name = self.get_container_name(batch_id, image_tag)
-            docker_image_name = self.get_container_image(
-                image_tag, prefix='eudat')
+            docker_image_name = self.get_container_image(image_tag, prefix='eudat')
             log.info("Requesting copy: %s" % docker_image_name)
             errors = rancher.run(
                 container_name=container_name, image_name=docker_image_name,
@@ -211,7 +217,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             else:
                 response['status'] = 'failure'
         response['errors'] = errors
-        # response = "Batch '%s' filled" % batch_id
+        """
 
         # Log end (of upload) into RabbitMQ
         log_msg = prepare_message(
@@ -219,7 +225,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             user=ingestion_user, log_string='end')
         log_into_queue(self, log_msg)
 
-        return self.force_response(response)
+        # return self.force_response(response)
+        return self.return_async_id(task.id)
 
     def post(self):
         """
