@@ -24,6 +24,18 @@ from utilities.logs import get_logger, logging
 # TODO: move me into the configuration
 MAX_ZIP_SIZE = 2147483648  # 2 gb
 ####################
+
+
+'''
+These are the paths of the locations on the
+local filesystem inside the celery worker
+containers where the data is copied to / expected
+to reside.
+
+Note: The bind-mount from the host is defined
+in workers.yml, so if you change the /usr/local
+here, you need to change it there too.
+'''
 mybatchpath = '/usr/share/batches'
 myorderspath = '/usr/share/orders'
 
@@ -81,6 +93,17 @@ def notify_error(error, myjson, backdoor, task, extra=None):
 
 
 ####################
+'''
+This task copies data from irods to the B2HOST
+filesystem, so that it is available for
+pre-production qc checks.
+
+The data is copied from irods_path (usually
+/myzone/batches/<batch_id>) to a path on the
+local filesystem inside the celery worker
+container (/usr/share/batches/<batch_id>),
+which is a directory mounted from the host.
+'''
 @celery_app.task(bind=True)
 def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
 
@@ -116,7 +139,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             state="STARTING", meta={'total': None, 'step': 0, 'errors': 0})
 
         ###############
-        log.info("I'm %s" % self.request.id)
+        log.info("I'm %s (move_to_production_task)!" % self.request.id)
         local_path = path.join(mybatchpath, batch_id, return_str=True)
         # log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
         # icom = celery_app.get_service(service='irods', user='httpapi')
@@ -151,7 +174,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         for element in elements:
 
             tmp = element.get('temp_id')  # do not pop
-            current = path.last_part(tmp)
+            current_file_name = path.last_part(tmp)
             local_element = path.join(local_path, tmp, return_str=False)
 
             # log.info('Element: %s', element)
@@ -172,7 +195,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
             ###############
             # 1. copy file (irods)
-            ifile = path.join(irods_path, current, return_str=True)
+            ifile = path.join(irods_path, current_file_name, return_str=True)
             try:
                 imain.put(str(local_element), ifile)
             except BaseException as e:
@@ -186,7 +209,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 self.update_state(state="PROGRESS", meta={
                     'total': total, 'step': counter, 'errors': len(errors)})
                 continue
-            log.debug("Moved: %s" % current)
+            log.debug("Moved: %s" % current_file_name)
 
             ###############
             # 2. request pid (irule)
@@ -267,7 +290,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s" % self.request.id)
+        log.info("I'm %s (unrestricted_order)" % self.request.id)
 
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
@@ -1063,7 +1086,7 @@ def cache_batch_pids(self, irods_path):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s" % self.request.id)
+        log.info("I'm %s (cache_batch_pids)" % self.request.id)
         log.warning("Working off: %s", irods_path)
         imain = celery_app.get_service(service='irods')
 

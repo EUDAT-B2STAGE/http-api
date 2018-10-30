@@ -106,11 +106,11 @@ class ImportManagerAPI(object):
         from utilities import htmlcodes as hcodes
         if r.status_code != hcodes.HTTP_OK_BASIC:
             log.error(
-                "CDI: failed to call external APIs (status: %s)",
-                r.status_code)
+                "CDI: failed to call external APIs (status: %s, uri: %s)",
+                (r.status_code, self._uri))
             return False
         else:
             log.info(
-                "CDI: called POST on external APIs (status: %s)",
-                r.status_code)
+                "CDI: called POST on external APIs (status: %s, uri: %s)",
+                (r.status_code, self._uri))
             return True

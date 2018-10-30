@@ -75,7 +75,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         # 1. check if irods path exists
         imain = self.get_service_instance(service_name='irods')
-        self.batch_path = self.get_batch_path(imain, batch_id)
+        self.batch_path = self.get_irods_batch_path(imain, batch_id)
         log.debug("Batch path: %s", self.batch_path)
 
         if not imain.is_collection(self.batch_path):
@@ -85,7 +85,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ################
         # 2. make batch_id directory in production if not existing
-        self.prod_path = self.get_production_path(imain, batch_id)
+        self.prod_path = self.get_irods_production_path(imain, batch_id)
         log.debug("Production path: %s", self.prod_path)
         obj = self.init_endpoint()
         imain.create_collection_inheritable(self.prod_path, obj.username)

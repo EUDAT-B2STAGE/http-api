@@ -19,7 +19,10 @@ log = get_logger(__name__)
 # PERPAGE_LIMIT = 50
 PERPAGE_LIMIT = 1000
 
-
+# Dev note:
+# This object initialized in get_or_create_handle() in
+# module "b2stage/backend/apis/commons/cluster.py".
+# It receives all config that starts with "RESOURCES".
 class Rancher(object):
 
     def __init__(self,
@@ -34,7 +37,7 @@ class Rancher(object):
         self._project_uri = "%s/projects/%s/schemas" % (url, project)
         self._hub_uri = hub
         self._hub_credentials = (hubuser, hubpass)
-        self._localpath = localpath
+        self._localpath = localpath # default /usr/share
         self._qclabel = qclabel
 
         ####################
