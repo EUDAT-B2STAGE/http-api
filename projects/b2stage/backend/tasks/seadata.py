@@ -17,6 +17,7 @@ from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from restapi.services.detect import detector
+from b2stage.apis.commons.seadatacloud import seadata_vars
 
 from utilities.logs import get_logger, logging
 
@@ -36,8 +37,11 @@ Note: The bind-mount from the host is defined
 in workers.yml, so if you change the /usr/local
 here, you need to change it there too.
 '''
-mybatchpath = '/usr/share/batches'
-myorderspath = '/usr/share/orders'
+where_mounted = '/usr/share' # hard-coded, should be left this way!
+middle_path_ingestion = seadata_vars.get('workspace_ingestion') # 'ingestion'
+middle_path_orders = seadata_vars.get('workspace_orders')       # 'orders'
+mybatchpath  = where_mounted +'/'+ middle_path_ingestion
+myorderspath = where_mounted +'/'+ middle_path_orders
 
 ext_api = ImportManagerAPI()
 log = get_logger(__name__)
@@ -159,7 +163,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         elements = params.get('pids', {})
         backdoor = params.pop('backdoor', False)
         total = len(elements)
-        testing_mode = myjson.get('test_mode', 'empty') == 'initial_load'
         self.update_state(state="PROGRESS", meta={
             'total': total, 'step': counter, 'errors': len(errors)})
 
@@ -262,16 +265,13 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
         ###############
         # Notify the CDI API
-        if testing_mode:
-            log.verbose('skipping CDI API')
-        else:
-            myjson[param_key]['pids'] = out_data
-            msg = prepare_message(self, isjson=True)
-            for key, value in msg.items():
-                myjson[key] = value
-            if len(errors) > 0:
-                myjson['errors'] = errors
-            ext_api.post(myjson, backdoor=backdoor)
+        myjson[param_key]['pids'] = out_data
+        msg = prepare_message(self, isjson=True)
+        for key, value in msg.items():
+            myjson[key] = value
+        if len(errors) > 0:
+            myjson['errors'] = errors
+        ext_api.post(myjson, backdoor=backdoor)
 
         out = {
             'total': total, 'step': counter,
@@ -958,9 +958,13 @@ def delete_orders(self, orders_path, myjson):
 
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
+            # TODO Raise error already here!
+            # Or even before reaching asynchronous job...
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
+        # TODO Why? We end up with two different request_ids,
+        # one from the client, one from our system.
 
         params = myjson.get('parameters', {})
 

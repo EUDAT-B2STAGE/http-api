@@ -28,12 +28,15 @@ These are the paths to the data on the host
 that runs containers, and how they are mounted
 into the containers.
 
-Prepended before this is the Rancher localpath,
+Prepended before this is the RESOURCES_LOCALPATH,
 defaulting to /usr/share.
 '''
-FS_PREFIX_ON_HOST = 'ingestion'
-FS_PREFIX_IN_CONTAINER = 'batch'
-# TODO Add these to config? At least the one on the host!
+FS_MIDDLE_PATH_ON_HOST = seadata_vars.get('workspace_ingestion') # 'ingestion'
+FS_PATH_IN_CONTAINER = '/usr/share/batch'  # THIS CANNOT CHANGE, otherwise QC containers will not work anymore!
+# At least, the 'batch' part has to be like this, I am quite sure.
+# About the '/usr/share', I am not sure, it might be read form some
+# environmental variable passed to the container. But it is safe
+# to leave it hard-coded like this.
 
 CONTAINERS_VARS = detector.load_group(label='containers')
 
@@ -60,8 +63,8 @@ class ClusterContainerEndpoint(EndpointResource):
     '''
     Create a Rancher object and feed it with
     config that starts with "RESOURCES_",
-    including the localpath, which is set to
-    "/usr/share".
+    including the localpath, which is
+    set to "/nfs/share".
     '''
     def get_or_create_handle(self):
 
@@ -79,16 +82,15 @@ class ClusterContainerEndpoint(EndpointResource):
     Return the path where the data is located
     on the Rancher host.
 
-    The start of the path can be configured, see:
-        RESOURCES_LOCALPATH=/usr/local
-    The directory name is fixed.
+    The parts of the path can be configured,
+    see: RESOURCES_LOCALPATH=/usr/share
+    see: SEADATA_WORKSPACE_INGESTION=ingestion
 
-    Example:
-    /usr/share/ingestion/<batch_id>
+    Example: /usr/share/ingestion/<batch_id>
     '''
     def get_ingestion_path_on_host(self, batch_id):
-        paths = [self._handle._localpath] # "/usr/share" (default)
-        paths.append(FS_PREFIX_ON_HOST)   # "ingestion"
+        paths = [self._handle._localpath]      # "/usr/share" (default)
+        paths.append(FS_MIDDLE_PATH_ON_HOST)   # "ingestion"  (default)
         paths.append(batch_id)
         return str(path.build(paths))
 
@@ -96,8 +98,8 @@ class ClusterContainerEndpoint(EndpointResource):
     Return the path where the data is located
     mounted inside the Rancher containers.
 
-    The start of the path can be configured, see:
-        RESOURCES_LOCALPATH=/usr/local
+    The start of the path can be configured,
+    see: RESOURCES_LOCALPATH=/usr/local
     The directory name is fixed.
 
     Note: The batch_id is not part of the path,
@@ -107,15 +109,10 @@ class ClusterContainerEndpoint(EndpointResource):
     can easily operate on whichever data is inside
     that directory.
 
-    Example:
-    /usr/share/batch/
+    Example: /usr/share/batch/
     '''
     def get_ingestion_path_in_container(self):
-        paths = [self._handle._localpath]    # "/usr/share" (default)
-        # TODO Should this really be the same as on the
-        # host, and configurable??? Don't the containers expect
-        # the data always in the exact same directory?
-        paths.append(FS_PREFIX_IN_CONTAINER) # "batch"
+        paths = [FS_PATH_IN_CONTAINER]    # "/usr/share/batch" (hard-coded)
         return str(path.build(paths))
 
     '''
@@ -123,17 +120,11 @@ class ClusterContainerEndpoint(EndpointResource):
     the directory containing a batch into Rancher
     containers.
 
-    The start of the path can be configured, see:
-        RESOURCES_LOCALPATH=/usr/local
-    The directory name is fixed.
+    The parts of the path can be configured,
+    see: RESOURCES_LOCALPATH=/usr/share
+    see: SEADATA_WORKSPACE_INGESTION=ingestion
 
-    TODO: Isn't this a problem - so when I want
-    to locate my data to, let's say, /data/foo,
-    then it will be mounted inside the container
-    also to /data/foo, and will not be found, right?
-
-    Example:
-    /usr/share/ingestion/<batch_id>:/usr/share/batch
+    Example: /usr/share/ingestion/<batch_id>:/usr/share/batch
     '''
     def mount_batch_volume(self, batch_id):
         host_path = self.get_ingestion_path_on_host(batch_id)
@@ -164,6 +155,7 @@ class ClusterContainerEndpoint(EndpointResource):
         from utilities import path
         suffix_path = str(path.build(paths))
         return irods_client.get_current_zone(suffix=suffix_path)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     '''
     Return path of the batch inside irods, once the
@@ -177,6 +169,7 @@ class ClusterContainerEndpoint(EndpointResource):
     '''
     def get_irods_production_path(self, irods_client, batch_id=None):
         return self.get_irods_path(irods_client, PRODUCTION_DIR, batch_id)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     '''
     Return path of the batch inside irods, before
@@ -190,6 +183,7 @@ class ClusterContainerEndpoint(EndpointResource):
     '''
     def get_irods_batch_path(self, irods_client, batch_id=None):
         return self.get_irods_path(irods_client, INGESTION_DIR, batch_id)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     '''
     Return path of the order inside irods.
@@ -200,10 +194,9 @@ class ClusterContainerEndpoint(EndpointResource):
 
     Example: /myIrodsZone/orders/<order_id>
     '''
-    def get_order_path(self, irods_client, order_id=None):
+    def get_irods_order_path(self, irods_client, order_id=None):
         return self.get_irods_path(irods_client, ORDERS_DIR, order_id)
-        # TODO Rename to get_irods_order_path for clarity!
-
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_batch_zipfile_path(self, batch_id, filename=None):
         container_fixed_path = self.get_ingestion_path_in_container()
