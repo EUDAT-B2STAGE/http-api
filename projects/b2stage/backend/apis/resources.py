@@ -222,11 +222,15 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 # print("TEST", edict)
                 if edict.get('code') == 'NotUnique':
                     response['status'] = 'existing'
+                    code = hcodes.HTTP_BAD_CONFLICT
                 else:
                     response['status'] = 'could NOT be started'
                     response['description'] = edict
+                    code = hcodes.HTTP_BAD_REQUEST
             else:
                 response['status'] = 'failure'
+                code = hcodes.HTTP_BAD_REQUEST
+                return self.force_response(response, code=code)
 
         return response
 
