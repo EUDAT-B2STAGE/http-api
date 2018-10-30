@@ -96,26 +96,19 @@ def notify_error(error, myjson, backdoor, task, extra=None):
     return 'Failed'
 
 
-####################
-'''
-This task copies data from irods to the B2HOST
-filesystem, so that it is available for
-pre-production qc checks.
-
-The data is copied from irods_path (usually
-/myzone/batches/<batch_id>) to a path on the
-local filesystem inside the celery worker
-container (/usr/share/ingestion/<batch_id>),
-which is a directory mounted from the host.
-'''
 @celery_app.task(bind=True)
-def send_to_workers_task(self, batch_id, irods_path, zip_name, backdoor):
-    # TODO Running into permission errors
-    # Inside container, celery runs as "developer", uid:gid is: 23480:999
-    # Somehow only rancher can write into /ingestion, it seems!
- 
-    log.info("I'm %s (send_to_workers_task)!" % self.request.id)
+def copy_from_b2safe_to_b2host(self, batch_id, irods_path, zip_name, backdoor):
+    '''
+    This task copies data from irods to the B2HOST
+    filesystem, so that it is available for
+    pre-production qc checks.
 
+    The data is copied from irods_path (usually
+    /myzone/batches/<batch_id>) to a path on the
+    local filesystem inside the celery worker
+    container (/usr/share/batches/<batch_id>),
+    which is a directory mounted from the host.
+    '''
     local_path = path.join(mybatchpath, batch_id)
     path.create(local_path, directory=True, force=True)
     local_element = path.join(local_path, zip_name)
