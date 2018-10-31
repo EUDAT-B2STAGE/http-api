@@ -228,10 +228,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # Temporary added, to be removed once JSON_FILE will work
         envs['JSON_INPUT'] = json.dumps(input_json)
 
-        log.warning("json_path_backend = %s", json_path_backend)
-        log.warning("json_path_qc = %s", json_path_qc)
-        log.warning("JSON_FILE = %s", envs['JSON_FILE'])
-
         ###########################
         errors = rancher.run(
             container_name=container_name,
@@ -243,8 +239,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                     "%s:%s" % (json_path_qc, QC_MOUNTPOINT)
 
                 ],
-                'environment': envs,
-                'command': ['/bin/sleep', '999999'],
+                'environment': envs
             }
         )
 

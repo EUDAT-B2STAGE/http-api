@@ -47,8 +47,10 @@ variables:
     # for pre-production batches, for production batches,
     # and for orders being prepared.
     SEADATA_INGESTION_COLL: batches  # on irods!
-    SEADATA_PRODUCTION_COLL: cloud   # on irods!
     SEADATA_ORDERS_COLL: orders      # on irods!
+    SEADATA_PRODUCTION_COLL: cloud   # on irods!
+
+    # TODO: it should be batches as on irods [I already changed locally via .projectrc]
     SEADATA_WORKSPACE_INGESTION: ingestion # on filesystem (to be mounted to celery workers and rancher containers)
     SEADATA_WORKSPACE_ORDERS: orders       # on filesystem (to be mounted to celery workers and rancher containers)
     # SEADATA_BATCH_PROD_FILES_COLL: production
