@@ -113,6 +113,10 @@ variables:
     # This path needs permissions to user 1001
     # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /nfs/share
+    # This is the mount point of $RESOURCES_LOCALPATH inside the containers
+    # Note that this variable has only effect in backend and celery containers
+    # while QC containers uses an hard-code mount point (/usr/share)
+    RESOURCES_MOUNTPOINT: /usr/share
     # Email to be notified for proxy certificates expiration (letsencrypt)
     SMTP_ADMIN:
     ############################

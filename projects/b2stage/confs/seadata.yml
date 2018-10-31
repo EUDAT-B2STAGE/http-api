@@ -54,7 +54,7 @@ services:
 
       # THE ONLY READ DIFFERENCE BETWEEN THE EUDAT PRODUCTION.YML
       # SAME AS CELERY in WORKERS.YML
-      - ${RESOURCES_LOCALPATH}:/usr/share # /usr/share in container is hard-coded in tasks, so if changed here, must be changed there too!
+      - ${RESOURCES_LOCALPATH}:${RESOURCES_MOUNTPOINT}
   postgres:
     # restart: always
     restart: on-failure:5
