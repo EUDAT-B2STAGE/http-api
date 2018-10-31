@@ -203,27 +203,34 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # Mount point of the json dir into the QC container
         QC_MOUNTPOINT = '/json'
 
-        tmp_json_path = os.path.join(MOUNTPOINT, INGESTION_DIR, JSON_DIR)
+        json_path_backend = os.path.join(MOUNTPOINT, INGESTION_DIR, JSON_DIR)
 
-        if not os.path.exists(tmp_json_path):
-            log.info("Creating folder %s", tmp_json_path)
-            os.mkdir(tmp_json_path)
+        if not os.path.exists(json_path_backend):
+            log.info("Creating folder %s", json_path_backend)
+            os.mkdir(json_path_backend)
 
-        tmp_json_path = os.path.join(tmp_json_path, batch_id)
+        json_path_backend = os.path.join(json_path_backend, batch_id)
 
-        if not os.path.exists(tmp_json_path):
-            log.info("Creating folder %s", tmp_json_path)
-            os.mkdir(tmp_json_path)
+        if not os.path.exists(json_path_backend):
+            log.info("Creating folder %s", json_path_backend)
+            os.mkdir(json_path_backend)
 
         json_input_file = "input.%s.json" % int(time.time())
-        json_input_path = os.path.join(tmp_json_path, json_input_file)
+        json_input_path = os.path.join(json_path_backend, json_input_file)
         with open(json_input_path, "w+") as f:
             f.write(json.dumps(input_json))
+
+        json_path_qc = self.get_ingestion_path_on_host(JSON_DIR)
+        json_path_qc = os.path.join(json_path_qc, batch_id)
         # envs['JSON_FILE'] = json_input_path
         envs['JSON_FILE'] = os.path.join(QC_MOUNTPOINT, json_input_file)
 
         # Temporary added, to be removed once JSON_FILE will work
         envs['JSON_INPUT'] = json.dumps(input_json)
+
+        log.warning("json_path_backend = %s", json_path_backend)
+        log.warning("json_path_qc = %s", json_path_qc)
+        log.warning("JSON_FILE = %s", envs['JSON_FILE'])
 
         ###########################
         errors = rancher.run(
@@ -233,10 +240,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             extras={
                 'dataVolumes': [
                     self.mount_batch_volume(batch_id),
-                    "%s:%s" % (tmp_json_path, QC_MOUNTPOINT)
+                    "%s:%s" % (json_path_qc, QC_MOUNTPOINT)
 
                 ],
                 'environment': envs,
+                'command': ['/bin/sleep', '999999'],
             }
         )
 
