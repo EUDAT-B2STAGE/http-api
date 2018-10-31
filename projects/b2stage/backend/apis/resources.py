@@ -197,7 +197,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # SAVE JSON INPUT ON FILE SYSTEM
         # TODO: to be put into the configuration
         JSON_DIR = 'json_inputs'
-        tmp_json_path = os.path.joint(MOUNTPOINT, INGESTION_DIR, JSON_DIR)
+        tmp_json_path = os.path.join(MOUNTPOINT, INGESTION_DIR, JSON_DIR)
 
         if not os.path.exists(tmp_json_path):
             log.info("Creating folder %s", tmp_json_path)
