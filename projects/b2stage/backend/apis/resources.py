@@ -225,9 +225,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # envs['JSON_FILE'] = json_input_path
         envs['JSON_FILE'] = os.path.join(QC_MOUNTPOINT, json_input_file)
 
-        # Temporary added, to be removed once JSON_FILE will work
-        envs['JSON_INPUT'] = json.dumps(input_json)
-
         ###########################
         errors = rancher.run(
             container_name=container_name,
