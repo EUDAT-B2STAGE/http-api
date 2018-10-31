@@ -22,6 +22,7 @@ b2stage/project_configuration.yml
 INGESTION_DIR = seadata_vars.get('ingestion_coll')    # "batches"
 ORDERS_DIR = seadata_vars.get('orders_coll')          # "orders"
 PRODUCTION_DIR = seadata_vars.get('production_coll')  # "cloud"
+MOUNTPOINT = seadata_vars.get('resources_mountpoint')  # "/usr/share"
 
 '''
 These are the paths to the data on the host

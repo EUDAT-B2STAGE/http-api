@@ -5,7 +5,9 @@ Launch containers for quality checks in Seadata
 """
 import os
 import json
+import time
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
@@ -98,10 +100,9 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # Parameters (and checks)
         envs = {}
         input_json = self.get_input()
-        # input_json = self._args.get('input', {})
 
-        # backdoor check
-        bd = input_json.pop('eudat_backdoor', False)  # TODO: remove me
+        # TODO: backdoor check - remove me
+        bd = input_json.pop('eudat_backdoor', False)
         if bd:
             im_prefix = 'eudat'
         else:
@@ -170,31 +171,50 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         envs['DB_USERNAME_EDIT'] = CONTAINERS_VARS.get('dbextrauser')
         envs['DB_PASSWORD_EDIT'] = CONTAINERS_VARS.get('dbextrapass')
 
-        # # envs['BATCH_ZIPFILE_PATH'] = cpath
-        # log.pp(envs)
-        # return 'Hello'
+        # # SAVE JSON INPUT IN IRODS
+        # # TODO: to be put into the configuration
+        # tmp_json_path = self.get_irods_path(imain, 'json_inputs')
 
+        # if not imain.exists(tmp_json_path):
+        #     log.info("Creating collection %s", tmp_json_path)
+        #     imain.create_directory(tmp_json_path)
+
+        # tmp_json_path = os.path.join(tmp_json_path, batch_id)
+
+        # if imain.exists(tmp_json_path):
+        #     log.info("Removing collection %s", tmp_json_path)
+        #     imain.remove(tmp_json_path, recursive=True)
+
+        # obj = self.init_endpoint()
+        # imain.create_collection_inheritable(tmp_json_path, obj.username)
+
+        # json_input_file = "input.json"
+        # json_input_path = os.path.join(tmp_json_path, json_input_file)
+        # imain.create_file(json_input_path)
+        # imain.write_file_content(json_input_path, json.dumps(input_json))
+        # envs['JSON_FILE'] = json_input_path
+
+        # SAVE JSON INPUT ON FILE SYSTEM
         # TODO: to be put into the configuration
-        tmp_json_path = self.get_irods_path(imain, 'json_inputs')
+        JSON_DIR = 'json_inputs'
+        tmp_json_path = os.path.joint(MOUNTPOINT, INGESTION_DIR, JSON_DIR)
 
-        if not imain.exists(tmp_json_path):
-            log.info("Creating collection %s", tmp_json_path)
-            imain.create_directory(tmp_json_path)
+        if not os.path.exists(tmp_json_path):
+            log.info("Creating folder %s", tmp_json_path)
+            os.mkdir(tmp_json_path)
 
         tmp_json_path = os.path.join(tmp_json_path, batch_id)
 
-        if imain.exists(tmp_json_path):
-            log.info("Removing collection %s", tmp_json_path)
-            imain.remove(tmp_json_path, recursive=True)
+        if not os.path.exists(tmp_json_path):
+            log.info("Creating folder %s", tmp_json_path)
+            os.mkdir(tmp_json_path)
 
-        obj = self.init_endpoint()
-        imain.create_collection_inheritable(tmp_json_path, obj.username)
-
-        json_input_file = "input.json"
+        json_input_file = "input.%s.json" % int(time.time())
         json_input_path = os.path.join(tmp_json_path, json_input_file)
-        imain.create_file(json_input_path)
-        imain.write_file_content(json_input_path, json.dumps(input_json))
+        with open(json_input_path, "w+") as f:
+            f.write(json.dumps(input_json))
         envs['JSON_FILE'] = json_input_path
+
         # Temporary added, to be removed once JSON_FILE will work
         envs['JSON_INPUT'] = json.dumps(input_json)
 
