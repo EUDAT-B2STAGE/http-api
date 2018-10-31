@@ -26,7 +26,7 @@ from utilities.logs import get_logger, logging
 MAX_ZIP_SIZE = 2147483648  # 2 gb
 ####################
 
-
+log = get_logger(__name__)
 '''
 These are the paths of the locations on the
 local filesystem inside the celery worker
@@ -38,13 +38,14 @@ in workers.yml, so if you change the /usr/local
 here, you need to change it there too.
 '''
 mount_point = seadata_vars.get('mountpoint')  # '/usr/share'
+if mount_point is None:
+    log.exit("Unable to obtain variable: RESOURCES_MOUNTPOINT")
 middle_path_ingestion = seadata_vars.get('workspace_ingestion')  # 'ingestion'
 middle_path_orders = seadata_vars.get('workspace_orders')  # 'orders'
 mybatchpath = os.path.join(mount_point, middle_path_ingestion)
 myorderspath = os.path.join(mount_point, middle_path_orders)
 
 ext_api = ImportManagerAPI()
-log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
 
 #####################
