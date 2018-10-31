@@ -195,8 +195,14 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # envs['JSON_FILE'] = json_input_path
 
         # SAVE JSON INPUT ON FILE SYSTEM
+
+        # FOLDER inside /batches to store temporary json inputs
         # TODO: to be put into the configuration
         JSON_DIR = 'json_inputs'
+
+        # Mount point of the json dir into the QC container
+        QC_MOUNTPOINT = '/json'
+
         tmp_json_path = os.path.join(MOUNTPOINT, INGESTION_DIR, JSON_DIR)
 
         if not os.path.exists(tmp_json_path):
@@ -213,7 +219,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         json_input_path = os.path.join(tmp_json_path, json_input_file)
         with open(json_input_path, "w+") as f:
             f.write(json.dumps(input_json))
-        envs['JSON_FILE'] = json_input_path
+        # envs['JSON_FILE'] = json_input_path
+        envs['JSON_FILE'] = os.path.join(QC_MOUNTPOINT, json_input_file)
 
         # Temporary added, to be removed once JSON_FILE will work
         envs['JSON_INPUT'] = json.dumps(input_json)
@@ -224,7 +231,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             image_name=docker_image_name,
             private=True,
             extras={
-                'dataVolumes': [self.mount_batch_volume(batch_id)],
+                'dataVolumes': [
+                    self.mount_batch_volume(batch_id),
+                    "%s:%s" % (tmp_json_path, QC_MOUNTPOINT)
+
+                ],
                 'environment': envs,
             }
         )
