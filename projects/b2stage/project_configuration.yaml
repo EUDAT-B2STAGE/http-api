@@ -116,7 +116,7 @@ variables:
     # This is the mount point of $RESOURCES_LOCALPATH inside the containers
     # Note that this variable has only effect in backend and celery containers
     # while QC containers uses an hard-code mount point (/usr/share)
-    RESOURCES_MOUNTPOINT: /usr/share
+    SEADATA_RESOURCES_MOUNTPOINT: /usr/share
     # Email to be notified for proxy certificates expiration (letsencrypt)
     SMTP_ADMIN:
     ############################

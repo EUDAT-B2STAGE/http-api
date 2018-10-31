@@ -37,9 +37,9 @@ Note: The bind-mount from the host is defined
 in workers.yml, so if you change the /usr/local
 here, you need to change it there too.
 '''
-mount_point = seadata_vars.get('mountpoint')  # '/usr/share'
+mount_point = seadata_vars.get('resources_mountpoint')  # '/usr/share'
 if mount_point is None:
-    log.exit("Unable to obtain variable: RESOURCES_MOUNTPOINT")
+    log.exit("Unable to obtain variable: SEADATA_RESOURCES_MOUNTPOINT")
 middle_path_ingestion = seadata_vars.get('workspace_ingestion')  # 'ingestion'
 middle_path_orders = seadata_vars.get('workspace_orders')  # 'orders'
 mybatchpath = os.path.join(mount_point, middle_path_ingestion)

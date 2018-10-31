@@ -54,7 +54,7 @@ services:
 
       # THE ONLY READ DIFFERENCE BETWEEN THE EUDAT PRODUCTION.YML
       # SAME AS CELERY in WORKERS.YML
-      - ${RESOURCES_LOCALPATH}:${RESOURCES_MOUNTPOINT}
+      - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
   postgres:
     # restart: always
     restart: on-failure:5
