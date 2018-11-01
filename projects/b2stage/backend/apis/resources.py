@@ -236,7 +236,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         if bd:
             extra_params['command'] = ['/bin/sleep', '999999']
 
-        log.info(extra_params)
+        # log.info(extra_params)
         ###########################
         errors = rancher.run(
             container_name=container_name,
