@@ -19,10 +19,16 @@ They are being defined in b2stage/confs/commons.yml,
 which references config values defined in
 b2stage/project_configuration.yml
 '''
-INGESTION_DIR = seadata_vars.get('ingestion_coll')    # "batches"
-ORDERS_DIR = seadata_vars.get('orders_coll')          # "orders"
-PRODUCTION_DIR = seadata_vars.get('production_coll')  # "cloud"
+INGESTION_COLL = seadata_vars.get('ingestion_coll')    # "batches"
+ORDERS_COLL = seadata_vars.get('orders_coll')          # "orders"
+PRODUCTION_COLL = seadata_vars.get('production_coll')  # "cloud"
 MOUNTPOINT = seadata_vars.get('resources_mountpoint')  # "/usr/share"
+
+'''
+These are the names of the directories on the file system
+'''
+INGESTION_DIR = seadata_vars.get('workspace_ingestion')    # "ingestion"
+ORDERS_DIR = seadata_vars.get('workspace_orders')          # "orders"
 
 '''
 These are the paths to the data on the host
@@ -170,7 +176,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
         Example: /myIrodsZone/cloud/<batch_id>
         '''
-        return self.get_irods_path(irods_client, PRODUCTION_DIR, batch_id)
+        return self.get_irods_path(irods_client, PRODUCTION_COLL, batch_id)
         # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_irods_batch_path(self, irods_client, batch_id=None):
@@ -184,7 +190,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
         Example: /myIrodsZone/batches/<batch_id>
         '''
-        return self.get_irods_path(irods_client, INGESTION_DIR, batch_id)
+        return self.get_irods_path(irods_client, INGESTION_COLL, batch_id)
         # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_irods_order_path(self, irods_client, order_id=None):
@@ -197,7 +203,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
         Example: /myIrodsZone/orders/<order_id>
         '''
-        return self.get_irods_path(irods_client, ORDERS_DIR, order_id)
+        return self.get_irods_path(irods_client, ORDERS_COLL, order_id)
         # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_batch_zipfile_path(self, batch_id, filename=None):
