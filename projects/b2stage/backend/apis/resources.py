@@ -225,19 +225,24 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # envs['JSON_FILE'] = json_input_path
         envs['JSON_FILE'] = os.path.join(QC_MOUNTPOINT, json_input_file)
 
+        extra_params = {
+            'dataVolumes': [
+                self.mount_batch_volume(batch_id),
+                "%s:%s" % (json_path_qc, QC_MOUNTPOINT)
+
+            ],
+            'environment': envs
+        }
+        if bd:
+            extra_params['command'] = ['/bin/sleep', '999999']
+
+        log.info(extra_params)
         ###########################
         errors = rancher.run(
             container_name=container_name,
             image_name=docker_image_name,
             private=True,
-            extras={
-                'dataVolumes': [
-                    self.mount_batch_volume(batch_id),
-                    "%s:%s" % (json_path_qc, QC_MOUNTPOINT)
-
-                ],
-                'environment': envs
-            }
+            extras=extra_params
         )
 
         response = {

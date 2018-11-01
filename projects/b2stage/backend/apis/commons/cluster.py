@@ -28,7 +28,7 @@ MOUNTPOINT = seadata_vars.get('resources_mountpoint')  # "/usr/share"
 These are the paths to the data on the hosts
 that runs containers (both backend, celery and QC containers)
 '''
-INGESTION_DIR = seadata_vars.get('workspace_ingestion')    # "ingestion"
+INGESTION_DIR = seadata_vars.get('workspace_ingestion')    # "batches"
 ORDERS_DIR = seadata_vars.get('workspace_orders')          # "orders"
 
 '''
@@ -98,7 +98,7 @@ class ClusterContainerEndpoint(EndpointResource):
         Example: /usr/share/ingestion/<batch_id>
         '''
         paths = [self._handle._localpath]      # "/usr/share" (default)
-        paths.append(INGESTION_DIR)   # "ingestion"  (default)
+        paths.append(INGESTION_DIR)   # "batches"  (default)
         paths.append(batch_id)
         return str(path.build(paths))
 
