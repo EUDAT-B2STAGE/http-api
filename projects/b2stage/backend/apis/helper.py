@@ -10,9 +10,6 @@ from restapi.flask_ext.flask_celery import CeleryExt
 
 log = get_logger(__name__)
 
-# TODO: make this a parameter
-prefix_batches = 'import01june_rabbithole_500000_'
-
 
 class Helper(Endpoint):
 
@@ -25,7 +22,7 @@ class Helper(Endpoint):
         tasks = {}
         for collection in collections:
             current = os.path.join(ipath, collection)
-            if collection.startswith(prefix_batches):
+            if collection.startswith(batch_id):
                 task = CeleryExt.cache_batch_pids.apply_async(args=[current])
                 log.info("Async job: %s", task.id)
                 tasks[collection] = task.id
