@@ -1134,7 +1134,7 @@ def cache_batch_pids(self, irods_path):
             self.update_state(state="PROGRESS", meta=stats)
 
         self.update_state(state="COMPLETED", meta=stats)
-        log.pp(stats)
+        log.info(stats)
         return stats
 
 
