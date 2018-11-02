@@ -1089,30 +1089,53 @@ def cache_batch_pids(self, irods_path):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s (cache_batch_pids)" % self.request.id)
-        log.warning("Working off: %s", irods_path)
+        log.info("Task cache_batch_pids working on: %s", irods_path)
         imain = celery_app.get_service(service='irods')
 
-        counter = 0
+        stats = {
+            'total': 0,
+            'skipped': 0,
+            'cached': 0,
+            'errors': 0,
+        }
+
         for current in imain.list(irods_path):
             ifile = path.join(irods_path, current, return_str=True)
-            counter += 1
-            self.update_state(state="PROGRESS", meta={'count': counter})
-            log.verbose('file %s: %s', counter, ifile)
+            stats['total'] += 1
+
             pid = r.get(ifile)
             if pid is not None:
-                log.debug('PID: %s', pid)
-            else:
-                metadata, _ = imain.get_metadata(ifile)
-                pid = metadata.get('PID')
-                if pid is None:
-                    log.warning("Cannot find pid for: %s", ifile)
-                else:
-                    r.set(pid, ifile)
-                    r.set(ifile, pid)
-                    log.very_verbose("Set cache: %s", current)
-                    # break
-        self.update_state(state="COMPLETED", meta={'count': counter})
+                stats['skipped'] += 1
+                log.debug(
+                    '%d: file %s already cached with PID: %s',
+                    stats['total'], ifile, pid
+                )
+                self.update_state(state="PROGRESS", meta=stats)
+                continue
+
+            metadata, _ = imain.get_metadata(ifile)
+            pid = metadata.get('PID')
+            if pid is None:
+                stats['errors'] += 1
+                log.warning(
+                    '%d: file %s has not a PID assigned',
+                    stats['total'], ifile, pid
+                )
+                self.update_state(state="PROGRESS", meta=stats)
+                continue
+
+            r.set(pid, ifile)
+            r.set(ifile, pid)
+            log.very_verbose(
+                '%d: file %s cached with PID %s',
+                stats['total'], ifile, pid
+            )
+            stats['cached'] += 1
+            self.update_state(state="PROGRESS", meta=stats)
+
+        self.update_state(state="COMPLETED", meta=stats)
+        log.pp(stats)
+        return stats
 
 
 @celery_app.task(bind=True)
