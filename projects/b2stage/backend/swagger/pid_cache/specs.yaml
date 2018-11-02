@@ -1,0 +1,13 @@
+
+depends_on:
+  - SEADATA_PROJECT
+
+file: pid_cache
+class: PidCache
+schema:
+  expose: true
+mapping:
+  one: "/pidcache"
+  all: "/pidcache/<batch_id>"
+labels:
+  - helper

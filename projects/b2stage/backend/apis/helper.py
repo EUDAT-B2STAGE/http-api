@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+"""
+This class is deprecated, use the /api/pidcache endpoint
+provided by the PidCache class into pid_cache.py
+"""
 
 import os
-# from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint as Endpoint
-# from restapi.services.detect import detector
 from utilities.logs import get_logger
 from restapi.flask_ext.flask_celery import CeleryExt
 
@@ -14,6 +16,8 @@ log = get_logger(__name__)
 class Helper(Endpoint):
 
     def get(self, batch_id):
+
+        log.warning("This endpoint is deprecated, use POST /api/pidcache instead")
 
         imain = self.get_service_instance(service_name='irods')
         ipath = self.get_irods_production_path(imain)
@@ -31,6 +35,8 @@ class Helper(Endpoint):
         return tasks
 
     def post(self):
+
+        log.warning("This endpoint is deprecated, use GET /api/pidcache instead")
 
         task = CeleryExt.pids_cached_to_json.apply_async()
         log.warning("Async job: %s", task.id)
