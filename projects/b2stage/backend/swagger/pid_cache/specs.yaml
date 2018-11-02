@@ -7,7 +7,7 @@ class: PidCache
 schema:
   expose: true
 mapping:
-  one: "/pidcache"
-  all: "/pidcache/<batch_id>"
+  all: "/pidcache"
+  one: "/pidcache/<batch_id>"
 labels:
   - helper
