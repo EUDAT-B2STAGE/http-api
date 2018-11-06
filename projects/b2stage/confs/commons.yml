@@ -28,11 +28,9 @@ services:
       # The names of the directories in the irods zone
       # for pre-production batches, for production batches,
       # and for orders being prepared.
-      # TODO Why this step? Why set BATCH_DIR to INGESTION_DIR,
-      # why not keep one consistent name?
-      SEADATA_INGESTION_DIR: ${SEADATA_INGESTION_DIR}
-      SEADATA_PRODUCTION_DIR: ${SEADATA_PRODUCTION_DIR}
-      SEADATA_ORDERS_DIR: ${SEADATA_ORDERS_DIR}
+      SEADATA_INGESTION_COLL: ${SEADATA_INGESTION_COLL}
+      SEADATA_PRODUCTION_COLL: ${SEADATA_PRODUCTION_COLL}
+      SEADATA_ORDERS_COLL: ${SEADATA_ORDERS_COLL}
 
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
@@ -129,11 +127,16 @@ services:
       ## SEADATA
       SEADATA_PROJECT: ${SEADATA_PROJECT}
       SEADATA_EDMO_CODE: ${SEADATA_EDMO_CODE}
-      SEADATA_INGESTION_DIR: ${SEADATA_INGESTION_DIR}
-      SEADATA_PRODUCTION_DIR: ${SEADATA_PRODUCTION_DIR}
-      SEADATA_ORDERS_DIR: ${SEADATA_ORDERS_DIR}
+      SEADATA_INGESTION_COLL: ${SEADATA_INGESTION_COLL}
+      SEADATA_PRODUCTION_COLL: ${SEADATA_PRODUCTION_COLL}
+      SEADATA_ORDERS_COLL: ${SEADATA_ORDERS_COLL}
+      # The name of the directory in the local fs during ingestions
+      # (to be mounted to celery workers and rancher containers)
+      SEADATA_WORKSPACE_INGESTION: ${SEADATA_WORKSPACE_INGESTION} # host fs!
+      SEADATA_WORKSPACE_ORDERS: ${SEADATA_WORKSPACE_ORDERS}       # host fs!
       SEADATA_API_IM_URL: ${SEADATA_API_IM_URL}
       SEADATA_API_VERSION: ${SEADATA_API_VERSION}
+      SEADATA_RESOURCES_MOUNTPOINT: ${SEADATA_RESOURCES_MOUNTPOINT}
       # rancher
       RESOURCES_URL: ${RESOURCES_URL}
       RESOURCES_KEY: ${RESOURCES_KEY}

@@ -161,64 +161,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             args=[batch_id, zip_path_irods, zip_name, backdoor])
         log.warning("Async job: %s", task.id)
 
-        # OLD WAY
-        """
-        ###########################
-        # Also copy file to the B2HOST environment
-        if backdoor:
-            # # CELERY VERSION
-            log.info("Submit async celery task")
-            task = CeleryExt.copy_from_b2safe_to_b2host.apply_async(
-                args=[batch_id, zip_path_irods, zip_name, backdoor])
-            log.warning("Async job: %s", task.id)
-        else:
-            # # CONTAINERS VERSION
-            rancher = self.get_or_create_handle()
-            path_inside_cont = self.get_ingestion_path_in_container()
-
-            b2safe_connvar = {
-                'BATCH_SRC_PATH': zip_path_irods,
-                'BATCH_DEST_PATH': path_inside_cont,
-                'IRODS_HOST': icom.variables.get('host'),
-                'IRODS_PORT': icom.variables.get('port'),
-                'IRODS_ZONE_NAME': icom.variables.get('zone'),
-                'IRODS_USER_NAME': icom.variables.get('user'),
-                'IRODS_PASSWORD': icom.variables.get('password'),
-            }
-
-            # Launch a container to copy the data into B2HOST
-            cname = 'copy_zip'
-            cversion = '0.7'  # release 1.0?
-            image_tag = '%s:%s' % (cname, cversion)
-            container_name = self.get_container_name(batch_id, image_tag)
-            docker_image_name = self.get_container_image(image_tag, prefix='eudat')
-            log.info("Requesting copy: %s" % docker_image_name)
-            errors = rancher.run(
-                container_name=container_name, image_name=docker_image_name,
-                private=True, pull=False,
-                extras={
-                    'environment': b2safe_connvar,
-                    'dataVolumes': [self.mount_batch_volume(batch_id)],
-                },
-            )
-
-        ########################
-
-        if errors is not None:
-            if isinstance(errors, dict):
-                edict = errors.get('error', {})
-                # errors = edict
-                # print("TEST", edict)
-                if edict.get('code') == 'NotUnique':
-                    response['status'] = 'existing'
-                else:
-                    response['status'] = 'Copy could NOT be started'
-                    response['description'] = edict
-            else:
-                response['status'] = 'failure'
-        response['errors'] = errors
-        """
-
         # Log end (of upload) into RabbitMQ
         log_msg = prepare_message(
             self, status=response['status'],

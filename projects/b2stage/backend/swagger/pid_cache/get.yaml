@@ -1,0 +1,11 @@
+
+common:
+  custom:
+    publish: false
+    authentication: true
+
+all:
+  summary: Retrieve values from the PID cache
+  responses:
+    '200':
+      description: Async job started

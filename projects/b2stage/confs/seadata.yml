@@ -1,0 +1,96 @@
+version: '3'
+
+volumes:
+  localdata:
+    driver: local
+
+services:
+
+  backend:
+    restart: on-failure:5
+    # TO TEST the failure:
+    # 1. go inside backend
+    # 2. ps aux --forest
+    # 3. kill process 1 and the tree branches
+
+    # restart: always
+    # command: sleep infinity
+    environment:
+      APP_MODE: production
+      DEBUG_LEVEL: INFO
+      NGINX_ACTIVE: "True"
+
+      ##################
+      # EUDAT RELATED
+      ## /api/login is not enabled in production
+      MAIN_LOGIN_ENABLE: 0
+      ## If you don't provide credentials b2access will not be enabled
+      # B2ACCESS_ENV: staging
+      B2ACCESS_ENV: production
+
+      # SEADATA CELERY
+      CELERY_ENABLE: ${SEADATA_PROJECT}
+      CELERY_EXTERNAL: 1
+      CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
+      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+      CELERY_BROKER_USER: ${CELERY_BROKER_USER}
+      CELERY_BROKER_PASSWORD: ${CELERY_BROKER_PASSWORD}
+      CELERY_BROKER_VHOST: ${CELERY_BROKER_VHOST}
+
+      CELERY_BACKEND: ${CELERY_BACKEND}
+      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
+      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
+      CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
+      CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+
+    depends_on:
+      - postgres
+    expose:
+      - 8080
+    volumes:
+      # B2HANDLE credentials to solve PID metadata in write mode
+      - ${VANILLA_DIR}/data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
+
+      # THE ONLY READ DIFFERENCE BETWEEN THE EUDAT PRODUCTION.YML
+      # SAME AS CELERY in WORKERS.YML
+      - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
+  postgres:
+    # restart: always
+    restart: on-failure:5
+    # Activate a production ready configuration
+    volumes:
+      - ${SUBMODULE_DIR}/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
+
+  proxy:
+    restart: always
+    environment:
+      ACTIVATE: 1
+    volumes:
+      # SSL / HTTPS
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/production_nofrontend.conf:/etc/nginx/sites-enabled/production
+      # 502 Bad Gateway
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/proxy/badgateway.html:/usr/share/nginx/html/custom_502.html
+    ports:
+      - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
+      - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
+
+  # if using self signed certificates
+  # and trying to test locally:
+  restclient:
+    environment:
+
+      # ACTIVATE: 1
+      ACTIVATE: 0 # change for debugging
+
+      APP_HOST: --verify /tmp/certs/real/fullchain1.pem https://${PROJECT_DOMAIN}
+      APP_PORT:
+      DOMAIN: ${PROJECT_DOMAIN}
+      PROXY_HOST: ${PROXY_HOST}
+      IRODS_GUEST_USER: ${IRODS_USER}
+    networks:
+      proxy_net:
+    depends_on:
+      - proxy
+    volumes:
+      - letsencrypt_certs:/tmp/certs

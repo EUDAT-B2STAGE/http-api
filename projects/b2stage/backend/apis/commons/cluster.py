@@ -16,24 +16,35 @@ zone for ingestion (i.e. pre-production) batches,
 for production batches, and for orders being prepared.
 
 They are being defined in b2stage/confs/commons.yml,
-which references config values defined in 
+which references config values defined in
 b2stage/project_configuration.yml
 '''
-INGESTION_DIR = seadata_vars.get('ingestion_dir')    # "batches"
-ORDERS_DIR = seadata_vars.get('orders_dir')          # "orders"
-PRODUCTION_DIR = seadata_vars.get('production_dir')  # "cloud"
+INGESTION_COLL = seadata_vars.get('ingestion_coll')    # "batches"
+ORDERS_COLL = seadata_vars.get('orders_coll')          # "orders"
+PRODUCTION_COLL = seadata_vars.get('production_coll')  # "cloud"
+MOUNTPOINT = seadata_vars.get('resources_mountpoint')  # "/usr/share"
 
 '''
-These are the paths to the data on the host
-that runs containers, and how they are mounted
-into the containers.
+These are the paths to the data on the hosts
+that runs containers (both backend, celery and QC containers)
+'''
+INGESTION_DIR = seadata_vars.get('workspace_ingestion')    # "batches"
+ORDERS_DIR = seadata_vars.get('workspace_orders')          # "orders"
 
-Prepended before this is the Rancher localpath,
+'''
+These are how the paths to the data on the host
+are mounted into the containers.
+
+Prepended before this is the RESOURCES_LOCALPATH,
 defaulting to /usr/share.
 '''
-FS_PREFIX_ON_HOST = 'ingestion'
-FS_PREFIX_IN_CONTAINER = 'batch'
-# TODO Add these to config? At least the one on the host!
+
+# THIS CANNOT CHANGE, otherwise QC containers will not work anymore!
+FS_PATH_IN_CONTAINER = '/usr/share/batch'
+# At least, the 'batch' part has to be like this, I am quite sure.
+# About the '/usr/share', I am not sure, it might be read form some
+# environmental variable passed to the container. But it is safe
+# to leave it hard-coded like this.
 
 CONTAINERS_VARS = detector.load_group(label='containers')
 
@@ -57,13 +68,13 @@ class ClusterContainerEndpoint(EndpointResource):
             self._credentials = detector.load_group(label='resources')
         return self._credentials
 
-    '''
-    Create a Rancher object and feed it with
-    config that starts with "RESOURCES_",
-    including the localpath, which is set to
-    "/usr/share".
-    '''
     def get_or_create_handle(self):
+        '''
+        Create a Rancher object and feed it with
+        config that starts with "RESOURCES_",
+        including the localpath, which is
+        set to "/nfs/share".
+        '''
 
         if self._handle is None:
             from b2stage.apis.services.rancher import Rancher
@@ -75,67 +86,55 @@ class ClusterContainerEndpoint(EndpointResource):
     def join_paths(self, paths):
         return str(path.build(paths))
 
-    '''
-    Return the path where the data is located
-    on the Rancher host.
-
-    The start of the path can be configured, see:
-        RESOURCES_LOCALPATH=/usr/local
-    The directory name is fixed.
-
-    Example:
-    /usr/share/ingestion/<batch_id>
-    '''
     def get_ingestion_path_on_host(self, batch_id):
-        paths = [self._handle._localpath] # "/usr/share" (default)
-        paths.append(FS_PREFIX_ON_HOST)   # "ingestion"
+        '''
+        Return the path where the data is located
+        on the Rancher host.
+
+        The parts of the path can be configured,
+        see: RESOURCES_LOCALPATH=/usr/share
+        see: SEADATA_WORKSPACE_INGESTION=ingestion
+
+        Example: /usr/share/ingestion/<batch_id>
+        '''
+        paths = [self._handle._localpath]      # "/usr/share" (default)
+        paths.append(INGESTION_DIR)   # "batches"  (default)
         paths.append(batch_id)
         return str(path.build(paths))
 
-    '''
-    Return the path where the data is located
-    mounted inside the Rancher containers.
-
-    The start of the path can be configured, see:
-        RESOURCES_LOCALPATH=/usr/local
-    The directory name is fixed.
-
-    Note: The batch_id is not part of the path,
-    as every container only works on one batch
-    anyway. With every batch being mounted into
-    the same path, the programs inside the container
-    can easily operate on whichever data is inside
-    that directory.
-
-    Example:
-    /usr/share/batch/
-    '''
     def get_ingestion_path_in_container(self):
-        paths = [self._handle._localpath]    # "/usr/share" (default)
-        # TODO Should this really be the same as on the
-        # host, and configurable??? Don't the containers expect
-        # the data always in the exact same directory?
-        paths.append(FS_PREFIX_IN_CONTAINER) # "batch"
+        '''
+        Return the path where the data is located
+        mounted inside the Rancher containers.
+
+        The start of the path can be configured,
+        see: RESOURCES_LOCALPATH=/usr/local
+        The directory name is fixed.
+
+        Note: The batch_id is not part of the path,
+        as every container only works on one batch
+        anyway. With every batch being mounted into
+        the same path, the programs inside the container
+        can easily operate on whichever data is inside
+        that directory.
+
+        Example: /usr/share/batch/
+        '''
+        paths = [FS_PATH_IN_CONTAINER]    # "/usr/share/batch" (hard-coded)
         return str(path.build(paths))
 
-    '''
-    Return the bind-mount string for bind-mounting
-    the directory containing a batch into Rancher
-    containers.
-
-    The start of the path can be configured, see:
-        RESOURCES_LOCALPATH=/usr/local
-    The directory name is fixed.
-
-    TODO: Isn't this a problem - so when I want
-    to locate my data to, let's say, /data/foo,
-    then it will be mounted inside the container
-    also to /data/foo, and will not be found, right?
-
-    Example:
-    /usr/share/ingestion/<batch_id>:/usr/share/batch
-    '''
     def mount_batch_volume(self, batch_id):
+        '''
+        Return the bind-mount string for bind-mounting
+        the directory containing a batch into Rancher
+        containers.
+
+        The parts of the path can be configured,
+        see: RESOURCES_LOCALPATH=/usr/share
+        see: SEADATA_WORKSPACE_INGESTION=ingestion
+
+        Example: /usr/share/ingestion/<batch_id>:/usr/share/batch
+        '''
         host_path = self.get_ingestion_path_on_host(batch_id)
         container_fixed_path = self.get_ingestion_path_in_container()
         return "%s:%s" % (host_path, container_fixed_path)
@@ -147,63 +146,64 @@ class ClusterContainerEndpoint(EndpointResource):
             filename = filename.replace('%s%s' % (sep, extension), '')
         return "%s%s%s" % (filename, sep, extension)
 
-
-    '''
-    Helper to construct a path of a data object
-    inside irods.
-
-    Note: Helper, only used inside this file.
-    Note: The irods_client is of class
-    IrodsPythonClient, defined in module
-    rapydo/http-api/restapi/flask_ext/flask_irods/client
-    '''
     def get_irods_path(self, irods_client, mypath, suffix=None):
+        '''
+        Helper to construct a path of a data object
+        inside irods.
+
+        Note: Helper, only used inside this file.
+        Note: The irods_client is of class
+        IrodsPythonClient, defined in module
+        rapydo/http-api/restapi/flask_ext/flask_irods/client
+        '''
         paths = [mypath]
         if suffix is not None:
             paths.append(suffix)
         from utilities import path
         suffix_path = str(path.build(paths))
         return irods_client.get_current_zone(suffix=suffix_path)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
-    '''
-    Return path of the batch inside irods, once the
-    batch is in production.
-
-    It consists of the irods zone (retrieved from
-    the irods client object), the production batch
-    directory (from config) and the batch_id if given.
-
-    Example: /myIrodsZone/cloud/<batch_id>
-    '''
     def get_irods_production_path(self, irods_client, batch_id=None):
-        return self.get_irods_path(irods_client, PRODUCTION_DIR, batch_id)
+        '''
+        Return path of the batch inside irods, once the
+        batch is in production.
 
-    '''
-    Return path of the batch inside irods, before
-    the batch goes to production.
+        It consists of the irods zone (retrieved from
+        the irods client object), the production batch
+        directory (from config) and the batch_id if given.
 
-    It consists of the irods zone (retrieved from
-    the irods client object), the ingestion batch
-    directory (from config) and the batch_id if given.
+        Example: /myIrodsZone/cloud/<batch_id>
+        '''
+        return self.get_irods_path(irods_client, PRODUCTION_COLL, batch_id)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
-    Example: /myIrodsZone/batches/<batch_id>
-    '''
     def get_irods_batch_path(self, irods_client, batch_id=None):
-        return self.get_irods_path(irods_client, INGESTION_DIR, batch_id)
+        '''
+        Return path of the batch inside irods, before
+        the batch goes to production.
 
-    '''
-    Return path of the order inside irods.
+        It consists of the irods zone (retrieved from
+        the irods client object), the ingestion batch
+        directory (from config) and the batch_id if given.
 
-    It consists of the irods zone (retrieved from
-    the irods client object), the order directory
-    (from config) and the order_id if given.
+        Example: /myIrodsZone/batches/<batch_id>
+        '''
+        return self.get_irods_path(irods_client, INGESTION_COLL, batch_id)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
-    Example: /myIrodsZone/orders/<order_id>
-    '''
-    def get_order_path(self, irods_client, order_id=None):
-        return self.get_irods_path(irods_client, ORDERS_DIR, order_id)
-        # TODO Rename to get_irods_order_path for clarity!
+    def get_irods_order_path(self, irods_client, order_id=None):
+        '''
+        Return path of the order inside irods.
 
+        It consists of the irods zone (retrieved from
+        the irods client object), the order directory
+        (from config) and the order_id if given.
+
+        Example: /myIrodsZone/orders/<order_id>
+        '''
+        return self.get_irods_path(irods_client, ORDERS_COLL, order_id)
+        # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_batch_zipfile_path(self, batch_id, filename=None):
         container_fixed_path = self.get_ingestion_path_in_container()

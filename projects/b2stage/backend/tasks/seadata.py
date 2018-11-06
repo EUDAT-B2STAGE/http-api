@@ -17,6 +17,7 @@ from b2stage.apis.commons.seadatacloud import \
     Metadata as md, ImportManagerAPI, ErrorCodes
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from restapi.services.detect import detector
+from b2stage.apis.commons.seadatacloud import seadata_vars
 
 from utilities.logs import get_logger, logging
 
@@ -25,7 +26,7 @@ from utilities.logs import get_logger, logging
 MAX_ZIP_SIZE = 2147483648  # 2 gb
 ####################
 
-
+log = get_logger(__name__)
 '''
 These are the paths of the locations on the
 local filesystem inside the celery worker
@@ -36,11 +37,15 @@ Note: The bind-mount from the host is defined
 in workers.yml, so if you change the /usr/local
 here, you need to change it there too.
 '''
-mybatchpath = '/usr/share/batches'
-myorderspath = '/usr/share/orders'
+mount_point = seadata_vars.get('resources_mountpoint')  # '/usr/share'
+if mount_point is None:
+    log.exit("Unable to obtain variable: SEADATA_RESOURCES_MOUNTPOINT")
+middle_path_ingestion = seadata_vars.get('workspace_ingestion')  # 'ingestion'
+middle_path_orders = seadata_vars.get('workspace_orders')  # 'orders'
+mybatchpath = os.path.join(mount_point, middle_path_ingestion)
+myorderspath = os.path.join(mount_point, middle_path_orders)
 
 ext_api = ImportManagerAPI()
-log = get_logger(__name__)
 celery_app = CeleryExt.celery_app
 
 #####################
@@ -159,7 +164,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         elements = params.get('pids', {})
         backdoor = params.pop('backdoor', False)
         total = len(elements)
-        testing_mode = myjson.get('test_mode', 'empty') == 'initial_load'
         self.update_state(state="PROGRESS", meta={
             'total': total, 'step': counter, 'errors': len(errors)})
 
@@ -262,16 +266,13 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
         ###############
         # Notify the CDI API
-        if testing_mode:
-            log.verbose('skipping CDI API')
-        else:
-            myjson[param_key]['pids'] = out_data
-            msg = prepare_message(self, isjson=True)
-            for key, value in msg.items():
-                myjson[key] = value
-            if len(errors) > 0:
-                myjson['errors'] = errors
-            ext_api.post(myjson, backdoor=backdoor)
+        myjson[param_key]['pids'] = out_data
+        msg = prepare_message(self, isjson=True)
+        for key, value in msg.items():
+            myjson[key] = value
+        if len(errors) > 0:
+            myjson['errors'] = errors
+        ext_api.post(myjson, backdoor=backdoor)
 
         out = {
             'total': total, 'step': counter,
@@ -958,9 +959,13 @@ def delete_orders(self, orders_path, myjson):
 
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
+            # TODO Raise error already here!
+            # Or even before reaching asynchronous job...
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
+        # TODO Why? We end up with two different request_ids,
+        # one from the client, one from our system.
 
         params = myjson.get('parameters', {})
 
@@ -1084,30 +1089,53 @@ def cache_batch_pids(self, irods_path):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s (cache_batch_pids)" % self.request.id)
-        log.warning("Working off: %s", irods_path)
+        log.info("Task cache_batch_pids working on: %s", irods_path)
         imain = celery_app.get_service(service='irods')
 
-        counter = 0
+        stats = {
+            'total': 0,
+            'skipped': 0,
+            'cached': 0,
+            'errors': 0,
+        }
+
         for current in imain.list(irods_path):
             ifile = path.join(irods_path, current, return_str=True)
-            counter += 1
-            self.update_state(state="PROGRESS", meta={'count': counter})
-            log.verbose('file %s: %s', counter, ifile)
+            stats['total'] += 1
+
             pid = r.get(ifile)
             if pid is not None:
-                log.debug('PID: %s', pid)
-            else:
-                metadata, _ = imain.get_metadata(ifile)
-                pid = metadata.get('PID')
-                if pid is None:
-                    log.warning("Cannot find pid for: %s", ifile)
-                else:
-                    r.set(pid, ifile)
-                    r.set(ifile, pid)
-                    log.very_verbose("Set cache: %s", current)
-                    # break
-        self.update_state(state="COMPLETED", meta={'count': counter})
+                stats['skipped'] += 1
+                log.debug(
+                    '%d: file %s already cached with PID: %s',
+                    stats['total'], ifile, pid
+                )
+                self.update_state(state="PROGRESS", meta=stats)
+                continue
+
+            metadata, _ = imain.get_metadata(ifile)
+            pid = metadata.get('PID')
+            if pid is None:
+                stats['errors'] += 1
+                log.warning(
+                    '%d: file %s has not a PID assigned',
+                    stats['total'], ifile, pid
+                )
+                self.update_state(state="PROGRESS", meta=stats)
+                continue
+
+            r.set(pid, ifile)
+            r.set(ifile, pid)
+            log.very_verbose(
+                '%d: file %s cached with PID %s',
+                stats['total'], ifile, pid
+            )
+            stats['cached'] += 1
+            self.update_state(state="PROGRESS", meta=stats)
+
+        self.update_state(state="COMPLETED", meta=stats)
+        log.info(stats)
+        return stats
 
 
 @celery_app.task(bind=True)

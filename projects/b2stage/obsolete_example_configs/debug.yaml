@@ -1,80 +1,29 @@
 # ###############################################
 # Copyright 2011-2018 EUDAT CDI - www.eudat.eu
 # ###############################################
+
 variables:
   env:
 
     ###############################
-    ## Seadata project variable
-    SEADATA_PROJECT: 1
-    SEADATA_EDMO_CODE: toberequestedtoCDI
-    IRODS_ANONYMOUS: 1
-    SEADATA_INGESTION_DIR: batches
-    SEADATA_PRODUCTION_DIR: cloud
-    SEADATA_ORDERS_DIR: orders
-    SEADATA_API_IM_URL: https://some.url
-    ## RANCHER
-    RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
-    RESOURCES_KEY: put_some_value
-    RESOURCES_SECRET: put_some_value
-    RESOURCES_PROJECT: put_some_value
-    ## DOCKER HUB
-    RESOURCES_HUB: put_some_value
-    RESOURCES_HUBUSER: put_some_value
-    RESOURCES_HUBPASS: put_some_value
-    ## RABBIT SEADATA
-    RABBIT_HOST: put_some_value
-    RABBIT_PORT: put_some_value
-    RABBIT_VHOST: put_some_value
-    RABBIT_USER: put_some_value
-    RABBIT_PASSWORD: put_some_value
-    RABBIT_EXCHANGE: put_some_value
-    RABBIT_QUEUE: put_some_value
-    ## OTHERS
-    CONTAINERS_RABBITUSER: put_some_value
-    CONTAINERS_RABBITPASS: put_some_value
-    CONTAINERS_DBUSER: put_some_value
-    CONTAINERS_DBPASS: put_some_value
-    CONTAINERS_DBEXTRAUSER: put_some_value
-    CONTAINERS_DBEXTRAPASS: put_some_value
-
-#LOCAL
-    # IRODS_USER: irods
-    # IRODS_ZONE: tempZone
-    # IRODS_HOME: home
-    # IRODS_PASSWORD: chooseapasswordwisely
-    # IRODS_DN:           # automatically computed within the docker network
-    # IRODS_AUTHSCHEME:   # to be auto-detected
-    # IRODS_GUEST_USER: guest              # intended to work only with GSI
-    # IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
-
-#REMOTE
-    IRODS_HOST: HOST_IP
-    IRODS_ZONE: put_some_value
-    IRODS_HOME: home
-    IRODS_AUTHSCHEME: credentials
-    IRODS_USER: put_some_value
-    IRODS_PASSWORD: put_some_value
-    IRODS_DN:
-    IRODS_GUEST_USER:
-    IRODS_DEFAULT_ADMIN_USER:
-
-    ###############################
-    # Email to be notified for proxy certificates expiration (letsencrypt)
-    SMTP_ADMIN:
-
-    ###############################
-    ## B2SAFE SEADATA
-    # HANDLE_USER:
-    # HANDLE_PREFIX:
-    # HANDLE_PASS:
-
-    ###############################
     ## B2ACCESS
-    # Provide some existing credentials here
-    # if you want to provide endpoints to authenticate with B2ACCESS
+    # Register a B2ACCESS 'app' and use credentials here
+    # if you want to provide the endpoints to authenticate with B2ACCESS site
     B2ACCESS_ACCOUNT:
     B2ACCESS_SECRET:
+
+    ###############################
+    ## LOCAL (container) iRODS server
+    IRODS_USER: irods
+    IRODS_PASSWORD: chooseapasswordwisely # NOTE: must match ALCHEMY_PASSWORD
+    IRODS_ZONE: tempZone
+    IRODS_HOME: home
+    IRODS_GUEST_USER: guest              # intended to work only with GSI
+    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
+    IRODS_DN:           # automatically computed within the docker network
+    IRODS_AUTHSCHEME:   # to be auto-detected
+    # IRODS_AUTHSCHEME: credentials
+    # IRODS_AUTHSCHEME: GSI
 
     ###############################
     ## Dockerized DB
@@ -82,12 +31,51 @@ variables:
     ALCHEMY_PASSWORD: chooseapasswordwisely
     ALCHEMY_API_DB: SQL_API
 
+    ###############################
+    ## Experimental features
+    IRODS_ANONYMOUS: 0  # enable only if you know what it means
+    ENABLE_PUBLIC_ENDPOINT: 0  # experimental endpoint, depending on anonymous
+
+    ###############################
+    ## Seadata project variable
+    SEADATA_PROJECT: 0
+    SEADATA_EDMO_CODE:
+    SEADATA_INGESTION_COLL: batches
+    SEADATA_PRODUCTION_COLL: cloud
+    SEADATA_ORDERS_COLL: orders
+    # SEADATA_BATCH_PROD_FILES_COLL: production
+    ## IM APIs
+    SEADATA_API_IM_URL: https://some.url
+    ## RANCHER
+    RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
+    RESOURCES_KEY:
+    RESOURCES_SECRET:
+    RESOURCES_PROJECT:
+    ## PRIVATE DOCKERHUB
+    RESOURCES_HUB:
+    RESOURCES_HUBUSER:
+    RESOURCES_HUBPASS:
+    ## RABBIT SEADATA
+    RABBIT_HOST: rabbit.b2host.org
+    RABBIT_PORT: 5672
+    RABBIT_VHOST: elkstack
+    RABBIT_USER: elkuser
+    RABBIT_PASSWORD:
+    RABBIT_EXCHANGE: elkexchange
+    RABBIT_QUEUE: elkqueue
+    ## OTHERS
+    CONTAINERS_RABBITUSER:
+    CONTAINERS_RABBITPASS:
+    CONTAINERS_DBUSER:
+    CONTAINERS_DBPASS:
+    CONTAINERS_DBEXTRAUSER:
+    CONTAINERS_DBEXTRAPASS:
+
     #################
 
     AUTH_SERVICE: sqlalchemy
     API_MAIN_ENDPOINT: registered
     API_PUBLIC_ENDPOINT: public
-    ENABLE_PUBLIC_ENDPOINT: 0
     # COMPOSE_PROJECT_NAME: b2stage
     # PROJECT_DOMAIN: myserver.mydomain.dev
     # LETSENCRYPT_MODE: --staging
@@ -103,12 +91,15 @@ variables:
     ##: OTHERs / FIXED
     UPLOAD_PATH: /uploads
     FULL_JWT: false
-    # TO BE DEPRECATED
-    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
-    HANDLE_BASE: "https://url.to.epic/handles/"
     # This path needs permissions to user 1001
     # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /usr/share
+    # Email to be notified for proxy certificates expiration (letsencrypt)
+    SMTP_ADMIN:
+    ############################
+    # TO BE DEPRECATED
+    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
+    HANDLE_BASE: "https://url.to.epic/handles/"
 
     #################
     # base user/password

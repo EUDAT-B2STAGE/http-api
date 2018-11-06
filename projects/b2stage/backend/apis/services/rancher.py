@@ -37,7 +37,7 @@ class Rancher(object):
         self._project_uri = "%s/projects/%s/schemas" % (url, project)
         self._hub_uri = hub
         self._hub_credentials = (hubuser, hubpass)
-        self._localpath = localpath # default /usr/share
+        self._localpath = localpath # default /nfs/share
         self._qclabel = qclabel
 
         ####################
