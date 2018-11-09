@@ -42,7 +42,7 @@ variables:
     ## Seadata project variable
     SEADATA_PROJECT: 0
     SEADATA_EDMO_CODE:
-    SEADATA_API_VERSION: 1.0.4.0016
+    SEADATA_API_VERSION: 1.0.4.0018
     # The names of the directories in the irods zone
     # for pre-production batches, for production batches,
     # and for orders being prepared.

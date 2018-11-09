@@ -8,8 +8,10 @@ from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
+from utilities import path
 # from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
 
@@ -143,7 +145,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return response
 
         ########################
-        log.verbose("Cloud filename: %s", zip_path_irods) # ingestion
+        log.verbose("Cloud filename: %s", zip_path_irods)  # ingestion
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
             iout = icom.write_in_streaming(destination=zip_path_irods, force=True)
@@ -155,6 +157,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         else:
             log.info("irods call %s", iout)
             # NOTE: permissions are inherited thanks to the POST call
+
+        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        path.create(local_path, directory=True, force=True)
+        log.info("Created path: %s", local_path)
 
         log.info("Submit async celery task")
         task = CeleryExt.copy_from_b2safe_to_b2host.apply_async(
