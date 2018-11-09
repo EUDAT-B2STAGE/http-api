@@ -47,8 +47,6 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     def patch(self, order_id):
 
-        log.warning("This endpoint should be restricted to admins?")
-
         json_input = self.get_input()
 
         imain = self.get_service_instance(service_name='irods')
@@ -136,8 +134,6 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         return self.force_response(response)
 
     def post(self, order_id):
-
-        log.warning("This endpoint should be restricted to admins?")
 
         json_input = self.get_input()
 
