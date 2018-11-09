@@ -54,7 +54,6 @@ services:
   celeryui:
     build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
-    user: developer
     hostname: flower
     environment:
       AUTH_ENABLE: 0
