@@ -38,7 +38,6 @@ class Initializer(object):
                         }
                         user = sql.User(**userdata)
                         for r in roles:
-                            log.info("Retrieving role %s", r)
                             user.roles.append(
                                 sql.Role.query.filter_by(name=r).first())
                         sql.session.add(user)
