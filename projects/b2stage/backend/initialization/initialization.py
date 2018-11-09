@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 
-from restapi import app
 from utilities.uuid import getUUID
 from utilities.logs import get_logger
 
@@ -10,12 +9,16 @@ log = get_logger(__name__)
 
 class Initializer(object):
 
-    def __init__(self, services):
+    def __init__(self, services, app=None):
 
         sql = services.get('sqlalchemy', None)
 
         if sql is None:
             log.critical("Unable to retrieve sqlalchemy service")
+            return
+
+        if app is None:
+            log.critical("Unable to retrieve app context")
             return
 
         if os.environ.get('SEADATA_PROJECT', False):
