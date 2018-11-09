@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
+
+from utilities.uuid import getUUID
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -16,12 +18,19 @@ class Initializer(object):
             return
 
         if os.environ.get('SEADATA_PROJECT', False):
-            log.warnig("CUSTOM SDC init")
-        # # create user
-        # user = self.db.User(
-        #     email=username, name=username, surname='iCAT',
-        #     uuid=getUUID(), authmethod='irods', session=session,
-        # )
-        # # add role
-        # user.roles.append(
-        #     self.db.Role.query.filter_by(name=self.default_role).first())
+
+            for username in ['stresstest']:
+                log.info("Creating user %s", username)
+                userdata = {
+                    "uuid": getUUID(),
+                    "email": username,
+                    "name": username,
+                    "surname": 'iCAT',
+                    "authmethod": 'irods',
+                }
+                user = sql.User(**userdata)
+                for r in ['normal_user', 'staff_user']:
+                    user.roles.append(
+                        sql.Role.query.filter_by(name=r).first())
+                sql.session.add(user)
+                sql.session.commit()
