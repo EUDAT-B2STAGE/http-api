@@ -9,8 +9,14 @@ class Initializer(object):
 
     def __init__(self, services):
 
-        log.critical(os.environ)
-        log.critical(services)
+        sql = services.get('sqlalchemy', None)
+
+        if sql is None:
+            log.critical("Unable to retrieve sqlalchemy service")
+            return
+
+        if os.environ.get('SEADATA_PROJECT', False):
+            log.warnig("CUSTOM SDC init")
         # # create user
         # user = self.db.User(
         #     email=username, name=username, surname='iCAT',
