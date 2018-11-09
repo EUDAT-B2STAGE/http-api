@@ -31,11 +31,15 @@ class Initializer(object):
                         "surname": 'iCAT',
                         "authmethod": 'irods',
                     }
+                    log.info(userdata)
                     user = sql.User(**userdata)
                     for r in roles:
+                        log.info("Retrieving role %s", r)
                         user.roles.append(
                             sql.Role.query.filter_by(name=r).first())
+                    log.info("Adding user to session")
                     sql.session.add(user)
+                    log.info("Committing session")
                     sql.session.commit()
                     log.info("User %s created with roles: %s", username, roles)
                 except BaseException as e:
