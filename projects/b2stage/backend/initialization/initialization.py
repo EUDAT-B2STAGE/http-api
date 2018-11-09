@@ -19,18 +19,24 @@ class Initializer(object):
 
         if os.environ.get('SEADATA_PROJECT', False):
 
-            for username in ['stresstest']:
-                log.info("Creating user %s", username)
-                userdata = {
-                    "uuid": getUUID(),
-                    "email": username,
-                    "name": username,
-                    "surname": 'iCAT',
-                    "authmethod": 'irods',
-                }
-                user = sql.User(**userdata)
-                for r in ['normal_user', 'staff_user']:
-                    user.roles.append(
-                        sql.Role.query.filter_by(name=r).first())
-                sql.session.add(user)
-                sql.session.commit()
+            users = ['stresstest']
+            roles = ['normal_user', 'staff_user']
+            for username in users:
+                try:
+                    log.info("Creating user %s", username)
+                    userdata = {
+                        "uuid": getUUID(),
+                        "email": username,
+                        "name": username,
+                        "surname": 'iCAT',
+                        "authmethod": 'irods',
+                    }
+                    user = sql.User(**userdata)
+                    for r in roles:
+                        user.roles.append(
+                            sql.Role.query.filter_by(name=r).first())
+                    sql.session.add(user)
+                    sql.session.commit()
+                    log.info("User %s created with roles: %s", username, roles)
+                except BaseException as e:
+                    log.error("Errors creating user %s: %s", username, str(e))
