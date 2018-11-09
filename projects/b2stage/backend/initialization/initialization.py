@@ -8,6 +8,7 @@ log = get_logger(__name__)
 class Initializer(object):
 
     def __init__(self, services):
+
         log.critical(os.environ)
         log.critical(services)
         # # create user
