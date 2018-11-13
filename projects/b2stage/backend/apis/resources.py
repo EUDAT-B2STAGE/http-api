@@ -76,7 +76,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         batch_path = self.get_irods_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
         try:
-            files = imain.list(batch_path)
+            imain.list(batch_path)
+            # files = imain.list(batch_path)
         except BaseException as e:
             log.warning(e.__class__.__name__)
             log.error(e)
@@ -84,17 +85,17 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 "Batch '%s' not found (or no permissions)" % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST
             )
-        else:
-            # if len(files) < 1:
-            if len(files) != 1:
-                log.error('Misconfiguration: %s files in %s (expected 1).' % (len(files), batch_path))
-                return self.send_errors(
-                    'Misconfiguration for batch_id: %s' % batch_id,
-                    code=hcodes.HTTP_BAD_NOTFOUND
-                )
-            else:
-                # log.pp(files)
-                file_id = list(files.keys()).pop()
+        # if len(files) != 1:
+        #     log.error(
+        #         'Misconfiguration: %s files in %s (expected 1).',
+        #         len(files), batch_path)
+        #     return self.send_errors(
+        #         'Misconfiguration for batch_id: %s' % batch_id,
+        #         code=hcodes.HTTP_BAD_NOTFOUND
+        #     )
+        # file_id = list(files.keys()).pop()
+
+        # TODO: check if on filesystem of file is already uploaded
 
         ###################
         # Parameters (and checks)
@@ -152,10 +153,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         ###########################
         # ## ENVS
         rancher = self.get_or_create_handle()
-        cfilepath = self.get_batch_zipfile_path(batch_id, filename=file_id)
-        # log.verbose("Container path: %s", cpath)
-        from utilities import path
-        envs['BATCH_DIR_PATH'] = path.dir_name(cfilepath)
+
+        host_ingestion_path = self.get_ingestion_path_on_host(batch_id)
+        container_ingestion_path = self.get_ingestion_path_in_container()
+
+        envs['BATCH_DIR_PATH'] = container_ingestion_path
         from b2stage.apis.commons.queue import QUEUE_VARS
         from b2stage.apis.commons.cluster import CONTAINERS_VARS
         for key, value in QUEUE_VARS.items():
@@ -170,31 +172,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         envs['DB_PASSWORD'] = CONTAINERS_VARS.get('dbpass')
         envs['DB_USERNAME_EDIT'] = CONTAINERS_VARS.get('dbextrauser')
         envs['DB_PASSWORD_EDIT'] = CONTAINERS_VARS.get('dbextrapass')
-
-        # # SAVE JSON INPUT IN IRODS
-        # # TODO: to be put into the configuration
-        # tmp_json_path = self.get_irods_path(imain, 'json_inputs')
-
-        # if not imain.exists(tmp_json_path):
-        #     log.info("Creating collection %s", tmp_json_path)
-        #     imain.create_directory(tmp_json_path)
-
-        # tmp_json_path = os.path.join(tmp_json_path, batch_id)
-
-        # if imain.exists(tmp_json_path):
-        #     log.info("Removing collection %s", tmp_json_path)
-        #     imain.remove(tmp_json_path, recursive=True)
-
-        # obj = self.init_endpoint()
-        # imain.create_collection_inheritable(tmp_json_path, obj.username)
-
-        # json_input_file = "input.json"
-        # json_input_path = os.path.join(tmp_json_path, json_input_file)
-        # imain.create_file(json_input_path)
-        # imain.write_file_content(json_input_path, json.dumps(input_json))
-        # envs['JSON_FILE'] = json_input_path
-
-        # SAVE JSON INPUT ON FILE SYSTEM
 
         # FOLDER inside /batches to store temporary json inputs
         # TODO: to be put into the configuration
@@ -222,12 +199,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         json_path_qc = self.get_ingestion_path_on_host(JSON_DIR)
         json_path_qc = os.path.join(json_path_qc, batch_id)
-        # envs['JSON_FILE'] = json_input_path
         envs['JSON_FILE'] = os.path.join(QC_MOUNTPOINT, json_input_file)
 
         extra_params = {
             'dataVolumes': [
-                self.mount_batch_volume(batch_id),
+                "%s:%s" % (host_ingestion_path, container_ingestion_path),
                 "%s:%s" % (json_path_qc, QC_MOUNTPOINT)
 
             ],

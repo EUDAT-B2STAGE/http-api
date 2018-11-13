@@ -123,22 +123,6 @@ class ClusterContainerEndpoint(EndpointResource):
         paths = [FS_PATH_IN_CONTAINER]    # "/usr/share/batch" (hard-coded)
         return str(path.build(paths))
 
-    def mount_batch_volume(self, batch_id):
-        '''
-        Return the bind-mount string for bind-mounting
-        the directory containing a batch into Rancher
-        containers.
-
-        The parts of the path can be configured,
-        see: RESOURCES_LOCALPATH=/usr/share
-        see: SEADATA_WORKSPACE_INGESTION=ingestion
-
-        Example: /usr/share/ingestion/<batch_id>:/usr/share/batch
-        '''
-        host_path = self.get_ingestion_path_on_host(batch_id)
-        container_fixed_path = self.get_ingestion_path_in_container()
-        return "%s:%s" % (host_path, container_fixed_path)
-
     def get_input_zip_filename(self, filename=None, extension='zip', sep='.'):
         if filename is None:
             filename = 'input'
@@ -204,11 +188,6 @@ class ClusterContainerEndpoint(EndpointResource):
         '''
         return self.get_irods_path(irods_client, ORDERS_COLL, order_id)
         # TODO: Move to other module, has nothing to do with Rancher cluster!
-
-    def get_batch_zipfile_path(self, batch_id, filename=None):
-        container_fixed_path = self.get_ingestion_path_in_container()
-        batch_file = self.get_input_zip_filename(filename)
-        return str(path.build([container_fixed_path, batch_file]))
 
     def return_async_id(self, request_id):
         # dt = "20170712T15:33:11"
