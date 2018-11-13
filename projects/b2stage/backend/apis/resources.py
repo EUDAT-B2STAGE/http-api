@@ -198,9 +198,12 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # envs['JSON_FILE'] = json_input_path
         envs['JSON_FILE'] = os.path.join(QC_MOUNTPOINT, json_input_file)
 
+        host_path = self.get_ingestion_path_on_host(batch_id)
+        container_fixed_path = self.get_ingestion_path_in_container()
+
         extra_params = {
             'dataVolumes': [
-                self.mount_batch_volume(batch_id),
+                "%s:%s" % (host_path, container_fixed_path),
                 "%s:%s" % (json_path_qc, QC_MOUNTPOINT)
 
             ],
