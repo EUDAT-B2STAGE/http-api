@@ -76,7 +76,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         batch_path = self.get_irods_batch_path(imain, batch_id)
         log.info("Batch path: %s", batch_path)
         try:
-            files = imain.list(batch_path)
+            imain.list(batch_path)
+            # files = imain.list(batch_path)
         except BaseException as e:
             log.warning(e.__class__.__name__)
             log.error(e)
@@ -84,15 +85,17 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 "Batch '%s' not found (or no permissions)" % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST
             )
-        if len(files) != 1:
-            log.error(
-                'Misconfiguration: %s files in %s (expected 1).',
-                len(files), batch_path)
-            return self.send_errors(
-                'Misconfiguration for batch_id: %s' % batch_id,
-                code=hcodes.HTTP_BAD_NOTFOUND
-            )
-        file_id = list(files.keys()).pop()
+        # if len(files) != 1:
+        #     log.error(
+        #         'Misconfiguration: %s files in %s (expected 1).',
+        #         len(files), batch_path)
+        #     return self.send_errors(
+        #         'Misconfiguration for batch_id: %s' % batch_id,
+        #         code=hcodes.HTTP_BAD_NOTFOUND
+        #     )
+        # file_id = list(files.keys()).pop()
+
+        # TODO: check if on filesystem of file is already uploaded
 
         ###################
         # Parameters (and checks)
