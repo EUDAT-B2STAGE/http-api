@@ -148,7 +148,7 @@ def copy_from_b2host_to_b2safe(self, batch_id, irods_path, zip_path, backdoor):
     # path.create(local_path, directory=True, force=True)
     # local_element = path.join(local_path, zip_name)
 
-    if not path.file_exists_and_nonzero(zip_path):
+    if not os.path.isfile(zip_path):
         error = "Unable to copy on B2SAFE, file not found: %s" % zip_path
         log.error(error)
         self.update_state(state="FAILED", meta={
