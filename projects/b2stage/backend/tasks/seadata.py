@@ -134,7 +134,7 @@ def copy_from_b2safe_to_b2host(self, batch_id, irods_path, zip_name, backdoor):
 
 
 @celery_app.task(bind=True)
-def copy_from_b2host_to_b2safe(self, batch_id, irods_path, zip_path, username, backdoor):
+def copy_from_b2host_to_b2safe(self, batch_id, irods_path, zip_path, backdoor):
     '''
     This task copies data from B2HOST filesystem to irods
 
