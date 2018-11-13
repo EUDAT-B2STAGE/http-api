@@ -83,7 +83,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # get irods session
         obj = self.init_endpoint()
         icom = obj.icommands
-        errors = None
 
         batch_path = self.get_irods_batch_path(icom, batch_id)
         log.info("Batch path: %s", batch_path)
@@ -130,6 +129,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         zip_path_irods = self.complete_path(batch_path, zip_name)
         # E.g. /myIrodsZone/batches/<batch_id>/<zip-name>
 
+        # This path is created by the POST method, important to keep this check here
         if backdoor and icom.is_dataobject(zip_path_irods):
             response['status'] = 'exists'
 
@@ -145,26 +145,40 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return response
 
         ########################
-        log.verbose("Cloud filename: %s", zip_path_irods)  # ingestion
-        try:
-            # NOTE: we know this will always be Compressed Files (binaries)
-            iout = icom.write_in_streaming(destination=zip_path_irods, force=True)
-        except BaseException as e:
-            log.error("Failed streaming to iRODS: %s", e)
-            return self.send_errors(
-                "Failed streaming towards B2SAFE cloud",
-                code=hcodes.HTTP_SERVER_ERROR)
-        else:
-            log.info("irods call %s", iout)
-            # NOTE: permissions are inherited thanks to the POST call
+        log.verbose("Cloud path: %s", zip_path_irods)  # ingestion
 
         local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
         path.create(local_path, directory=True, force=True)
-        log.info("Created path: %s", local_path)
+        zip_path = path.join(local_path, zip_name)
+        log.info("Local path: %s", zip_path)
+
+        # try:
+        #     # NOTE: we know this will always be Compressed Files (binaries)
+        #     iout = icom.write_in_streaming(destination=zip_path_irods, force=True)
+        # except BaseException as e:
+        #     log.error("Failed streaming to iRODS: %s", e)
+        #     return self.send_errors(
+        #         "Failed streaming towards B2SAFE cloud",
+        #         code=hcodes.HTTP_SERVER_ERROR)
+        # else:
+        #     log.info("irods call %s", iout)
+        #     # NOTE: permissions are inherited thanks to the POST call
+
+        try:
+            # NOTE: we know this will always be Compressed Files (binaries)
+            out = self.upload_chunked(destination=zip_path, force=True)
+        except BaseException as e:
+            log.error("Failed streaming to %s: %s", str(zip_path), e)
+            return self.send_errors(
+                "Failed streaming zip path to file system",
+                code=hcodes.HTTP_SERVER_ERROR)
+        else:
+            log.info("File uploaded: %s", out)
 
         log.info("Submit async celery task")
-        task = CeleryExt.copy_from_b2safe_to_b2host.apply_async(
-            args=[batch_id, zip_path_irods, zip_name, backdoor])
+        # task = CeleryExt.copy_from_b2safe_to_b2host.apply_async(
+        task = CeleryExt.copy_from_b2host_to_b2safe.apply_async(
+            args=[batch_id, zip_path_irods, zip_path, obj.username, backdoor])
         log.warning("Async job: %s", task.id)
 
         # Log end (of upload) into RabbitMQ
