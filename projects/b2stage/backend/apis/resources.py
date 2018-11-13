@@ -150,10 +150,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         ###########################
         # ## ENVS
         rancher = self.get_or_create_handle()
-        cfilepath = self.get_batch_zipfile_path(batch_id, filename=file_id)
-        # log.verbose("Container path: %s", cpath)
-        from utilities import path
-        envs['BATCH_DIR_PATH'] = path.dir_name(cfilepath)
+
+        host_ingestion_path = self.get_ingestion_path_on_host(batch_id)
+        container_ingestion_path = self.get_ingestion_path_in_container()
+
+        envs['BATCH_DIR_PATH'] = container_ingestion_path
         from b2stage.apis.commons.queue import QUEUE_VARS
         from b2stage.apis.commons.cluster import CONTAINERS_VARS
         for key, value in QUEUE_VARS.items():
@@ -195,15 +196,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         json_path_qc = self.get_ingestion_path_on_host(JSON_DIR)
         json_path_qc = os.path.join(json_path_qc, batch_id)
-        # envs['JSON_FILE'] = json_input_path
         envs['JSON_FILE'] = os.path.join(QC_MOUNTPOINT, json_input_file)
-
-        host_path = self.get_ingestion_path_on_host(batch_id)
-        container_fixed_path = self.get_ingestion_path_in_container()
 
         extra_params = {
             'dataVolumes': [
-                "%s:%s" % (host_path, container_fixed_path),
+                "%s:%s" % (host_ingestion_path, container_ingestion_path),
                 "%s:%s" % (json_path_qc, QC_MOUNTPOINT)
 
             ],

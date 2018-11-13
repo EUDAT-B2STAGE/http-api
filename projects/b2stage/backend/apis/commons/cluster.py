@@ -189,11 +189,6 @@ class ClusterContainerEndpoint(EndpointResource):
         return self.get_irods_path(irods_client, ORDERS_COLL, order_id)
         # TODO: Move to other module, has nothing to do with Rancher cluster!
 
-    def get_batch_zipfile_path(self, batch_id, filename=None):
-        container_fixed_path = self.get_ingestion_path_in_container()
-        batch_file = self.get_input_zip_filename(filename)
-        return str(path.build([container_fixed_path, batch_file]))
-
     def return_async_id(self, request_id):
         # dt = "20170712T15:33:11"
         dt = datetime.strftime(datetime.now(), '%Y%m%dT%H:%M:%S')
