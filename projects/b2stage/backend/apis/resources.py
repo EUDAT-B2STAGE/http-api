@@ -84,17 +84,15 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 "Batch '%s' not found (or no permissions)" % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST
             )
-        else:
-            # if len(files) < 1:
-            if len(files) != 1:
-                log.error('Misconfiguration: %s files in %s (expected 1).' % (len(files), batch_path))
-                return self.send_errors(
-                    'Misconfiguration for batch_id: %s' % batch_id,
-                    code=hcodes.HTTP_BAD_NOTFOUND
-                )
-            else:
-                # log.pp(files)
-                file_id = list(files.keys()).pop()
+        if len(files) != 1:
+            log.error(
+                'Misconfiguration: %s files in %s (expected 1).',
+                len(files), batch_path)
+            return self.send_errors(
+                'Misconfiguration for batch_id: %s' % batch_id,
+                code=hcodes.HTTP_BAD_NOTFOUND
+            )
+        file_id = list(files.keys()).pop()
 
         ###################
         # Parameters (and checks)
@@ -170,31 +168,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         envs['DB_PASSWORD'] = CONTAINERS_VARS.get('dbpass')
         envs['DB_USERNAME_EDIT'] = CONTAINERS_VARS.get('dbextrauser')
         envs['DB_PASSWORD_EDIT'] = CONTAINERS_VARS.get('dbextrapass')
-
-        # # SAVE JSON INPUT IN IRODS
-        # # TODO: to be put into the configuration
-        # tmp_json_path = self.get_irods_path(imain, 'json_inputs')
-
-        # if not imain.exists(tmp_json_path):
-        #     log.info("Creating collection %s", tmp_json_path)
-        #     imain.create_directory(tmp_json_path)
-
-        # tmp_json_path = os.path.join(tmp_json_path, batch_id)
-
-        # if imain.exists(tmp_json_path):
-        #     log.info("Removing collection %s", tmp_json_path)
-        #     imain.remove(tmp_json_path, recursive=True)
-
-        # obj = self.init_endpoint()
-        # imain.create_collection_inheritable(tmp_json_path, obj.username)
-
-        # json_input_file = "input.json"
-        # json_input_path = os.path.join(tmp_json_path, json_input_file)
-        # imain.create_file(json_input_path)
-        # imain.write_file_content(json_input_path, json.dumps(input_json))
-        # envs['JSON_FILE'] = json_input_path
-
-        # SAVE JSON INPUT ON FILE SYSTEM
 
         # FOLDER inside /batches to store temporary json inputs
         # TODO: to be put into the configuration
