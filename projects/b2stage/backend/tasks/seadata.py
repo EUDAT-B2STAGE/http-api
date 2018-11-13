@@ -134,6 +134,43 @@ def copy_from_b2safe_to_b2host(self, batch_id, irods_path, zip_name, backdoor):
 
 
 @celery_app.task(bind=True)
+def copy_from_b2host_to_b2safe(self, batch_id, irods_path, zip_path, username, backdoor):
+    '''
+    This task copies data from B2HOST filesystem to irods
+
+    The data is copied from the path on the
+    local filesystem inside the celery worker
+    container (/usr/share/batches/<batch_id>),
+    which is a directory mounted from the host,
+    to the irods_path (usually /myzone/batches/<batch_id>)
+    '''
+    # local_path = path.join(mybatchpath, batch_id)
+    # path.create(local_path, directory=True, force=True)
+    # local_element = path.join(local_path, zip_name)
+
+    if not path.file_exists_and_nonzero(zip_path):
+        error = "Unable to copy on B2SAFE, file not found: %s" % zip_path
+        log.error(error)
+        self.update_state(state="FAILED", meta={
+            'errors': error
+        })
+        return 'Failed'
+
+    with celery_app.app.app_context():
+
+        imain = celery_app.get_service(service='irods')
+        log.debug("Copying %s", zip_path)
+        # imain.open(irods_path, local_element)
+        imain.put(zip_path, irods_path)
+
+        # NOTE: permissions are inherited thanks to the ACL already SET
+        # Not needed to set ownership to username
+        log.info("Copied: %s", irods_path)
+
+    return str(irods_path)
+
+
+@celery_app.task(bind=True)
 def move_to_production_task(self, batch_id, irods_path, myjson):
 
     with celery_app.app.app_context():
