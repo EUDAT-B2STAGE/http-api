@@ -386,6 +386,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     myjson, backdoor, self
                 )
             log.verbose('Handle called')
+            # TODO: you should cache the obtained PID?
 
             ################
             if b2handle_output is None:
