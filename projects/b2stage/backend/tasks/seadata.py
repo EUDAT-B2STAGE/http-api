@@ -74,22 +74,27 @@ logging.getLogger('b2handle').setLevel(logging.WARNING)
 b2handle_client = b2handle.instantiate_for_read_access()
 
 
-def notify_error(error, myjson, backdoor, task, extra=None):
+def notify_error(error, payload, backdoor, task, extra=None):
 
     error_message = "Error %s: %s" % (error[0], error[1])
     log.error(error_message)
     if extra:
         log.error(str(extra))
 
-    myjson['errors'] = []
-    myjson['errors'].append(
+    payload['errors'] = []
+    payload['errors'].append(
         {
             "error": error[0],
             "description": error[1],
         }
     )
-    if not backdoor:
-        ext_api.post(myjson)
+    if backdoor:
+        log.warning(
+            "The following json should be sent to ImportManagerAPI, " +
+            "but you enabled the backdoor")
+        log.info(payload)
+    else:
+        ext_api.post(payload)
 
     task_errors = [error_message]
     if extra:
