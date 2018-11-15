@@ -515,8 +515,8 @@ class EudatEndpoint(B2accessUtilities):
             return BATCH_MISCONFIGURATION, files
 
         # 1 file on irods -> everything is ok
-        # if fnum == 1:
-        #     return ENABLED_BATCH, files
+        if fnum == 1:
+            return ENABLED_BATCH, files
 
         # No files on irods, let's check on filesystem
         files = []
