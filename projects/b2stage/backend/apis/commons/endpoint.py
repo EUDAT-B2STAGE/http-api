@@ -519,7 +519,7 @@ class EudatEndpoint(B2accessUtilities):
             ENABLED_BATCH, files
 
         # No files on irods, let's check on filesystem
-        files = [x for x in local_path.glob("*") if x.is_file()]
+        files = [str(x) for x in local_path.glob("*") if x.is_file()]
         fnum = len(files)
         if fnum <= 0:
             return NOT_FILLED_BATCH, files
