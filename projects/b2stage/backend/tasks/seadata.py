@@ -81,11 +81,14 @@ def notify_error(error, myjson, backdoor, task, extra=None):
     if extra:
         log.error(str(extra))
 
-    if not backdoor:
-        myjson['errors'] = {
+    myjson['errors'] = []
+    myjson['errors'].append(
+        {
             "error": error[0],
             "description": error[1],
         }
+    )
+    if not backdoor:
         ext_api.post(myjson)
 
     task_errors = [error_message]
