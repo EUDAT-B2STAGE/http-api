@@ -515,11 +515,14 @@ class EudatEndpoint(B2accessUtilities):
             return BATCH_MISCONFIGURATION, files
 
         # 1 file on irods -> everything is ok
-        if fnum == 1:
-            ENABLED_BATCH, files
+        # if fnum == 1:
+        #     return ENABLED_BATCH, files
 
         # No files on irods, let's check on filesystem
-        files = [str(x) for x in local_path.glob("*") if x.is_file()]
+        files = []
+        for x in local_path.glob("*"):
+            if x.is_file():
+                files.append(os.path.basename(str(x)))
         fnum = len(files)
         if fnum <= 0:
             return NOT_FILLED_BATCH, files
