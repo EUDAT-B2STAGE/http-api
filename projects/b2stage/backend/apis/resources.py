@@ -7,9 +7,13 @@ import os
 import json
 import time
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
+from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
+from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION 
 from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from utilities import htmlcodes as hcodes
+from utilities import path
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
@@ -74,17 +78,39 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # get name from batch
         imain = self.get_service_instance(service_name='irods')
         batch_path = self.get_irods_batch_path(imain, batch_id)
-        log.info("Batch path: %s", batch_path)
-        try:
-            imain.list(batch_path)
-            # files = imain.list(batch_path)
-        except BaseException as e:
-            log.warning(e.__class__.__name__)
-            log.error(e)
+        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        log.info("Batch irods path: %s", batch_path)
+        log.info("Batch local path: %s", local_path)
+        batch_status, batch_files = self.get_batch_status(imain, batch_path, local_path)
+
+        if batch_status == MISSING_BATCH:
             return self.send_errors(
                 "Batch '%s' not found (or no permissions)" % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST
             )
+
+        if batch_status == NOT_FILLED_BATCH:
+            return self.send_errors(
+                "Batch '%s' not yet filled" % batch_id,
+                code=hcodes.HTTP_BAD_REQUEST)
+
+        if batch_status == BATCH_MISCONFIGURATION:
+            log.error(
+                'Misconfiguration: %s files in %s (expected 1)',
+                len(batch_files), batch_path)
+            return self.send_errors(
+                "Misconfiguration for batch_id %s" % batch_id,
+                code=hcodes.HTTP_BAD_NOTFOUND)
+
+        # try:
+        #     files = imain.list(batch_path)
+        # except BaseException as e:
+        #     log.warning(e.__class__.__name__)
+        #     log.error(e)
+        #     return self.send_errors(
+        #         "Batch '%s' not found (or no permissions)" % batch_id,
+        #         code=hcodes.HTTP_BAD_REQUEST
+        #     )
         # if len(files) != 1:
         #     log.error(
         #         'Misconfiguration: %s files in %s (expected 1).',
