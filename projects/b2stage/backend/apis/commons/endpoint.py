@@ -20,6 +20,12 @@ from utilities.logs import get_logger
 
 log = get_logger(__name__)
 
+MISSING_BATCH = 0
+NOT_FILLED_BATCH = 1
+PARTIALLY_ENABLED_BATCH = 2
+ENABLED_BATCH = 3
+BATCH_MISCONFIGURATION = 4
+
 
 # class EudatEndpoint(EndpointResource):
 class EudatEndpoint(B2accessUtilities):
@@ -491,3 +497,34 @@ class EudatEndpoint(B2accessUtilities):
             response.append({filename: content})
 
         return response
+
+    def get_batch_status(self, imain, irods_path, local_path):
+
+        files = {}
+        if not imain.is_collection(irods_path):
+            return MISSING_BATCH, files
+
+        if not local_path.exists():
+            return MISSING_BATCH, files
+
+        files = imain.list(irods_path, detailed=True)
+
+        # Too many files on irods
+        fnum = len(files)
+        if fnum > 1:
+            return BATCH_MISCONFIGURATION, files
+
+        # 1 file on irods -> everything is ok
+        if fnum == 1:
+            return ENABLED_BATCH, files
+
+        # No files on irods, let's check on filesystem
+        files = []
+        for x in local_path.glob("*"):
+            if x.is_file():
+                files.append(os.path.basename(str(x)))
+        fnum = len(files)
+        if fnum <= 0:
+            return NOT_FILLED_BATCH, files
+
+        return PARTIALLY_ENABLED_BATCH, files

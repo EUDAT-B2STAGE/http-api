@@ -5,6 +5,9 @@ Ingestion process submission to upload the SeaDataNet marine data.
 """
 
 from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
+from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
+from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
@@ -39,30 +42,50 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # icom = obj.icommands
 
         batch_path = self.get_irods_batch_path(imain, batch_id)
-        log.info("Batch path: %s", batch_path)
+        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        log.info("Batch irods path: %s", batch_path)
+        log.info("Batch local path: %s", local_path)
+
+        batch_status, batch_files = self.get_batch_status(imain, batch_path, local_path)
 
         ########################
-        # Check if the folder exists and is empty
-        if not imain.is_collection(batch_path):
+        # if not imain.is_collection(batch_path):
+        if batch_status == MISSING_BATCH:
             return self.send_errors(
                 "Batch '%s' not enabled or you have no permissions"
                 % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        files = imain.list(batch_path, detailed=True)
-        # log.pp(files)
-        # if len(files) < 1:
-        if len(files) != 1:
+        # files = imain.list(batch_path, detailed=True)
+        # if len(files) != 1:
+        #     return self.send_errors(
+        #         "Batch '%s' not yet filled" % batch_id,
+        #         code=hcodes.HTTP_BAD_REQUEST)
+
+        if batch_status == NOT_FILLED_BATCH:
             return self.send_errors(
                 "Batch '%s' not yet filled" % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST)
 
+        if batch_status == BATCH_MISCONFIGURATION:
+            log.error(
+                'Misconfiguration: %s files in %s (expected 1)',
+                len(batch_files), batch_path)
+            return self.send_errors(
+                "Misconfiguration for batch_id %s" % batch_id,
+                code=hcodes.HTTP_BAD_NOTFOUND)
+
         data = {}
         data['batch'] = batch_id
-        data['status'] = 'enabled'
-        data['files'] = []
-        for _, f in files.items():
-            data['files'].append(f)
+        if batch_status == ENABLED_BATCH:
+            data['status'] = 'enabled'
+        elif batch_status == PARTIALLY_ENABLED_BATCH:
+            data['status'] = 'partially_enabled'
+
+        # data['files'] = []
+        # for _, f in files.items():
+        #     data['files'].append(f)
+        data['files'] = batch_files
         return data
         # return "Batch '%s' is enabled and filled" % batch_id
 
