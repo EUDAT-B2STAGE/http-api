@@ -1,0 +1,10 @@
+
+file: airods
+class: AirodsList
+schema:
+  expose: true
+mapping:
+  airodslist: "/airods/list"
+labels:
+  #- custom
+  - airods
