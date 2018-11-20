@@ -13,11 +13,6 @@ from utilities.logs import get_logger
 import dateutil.parser
 import uuid
 import subprocess
-<<<<<<< HEAD
-=======
-
-#from b2stage.apis.commons.endpoint import EudatEndpoint
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
 
 from irods.query import SpecificQuery
 from irods.models import Collection, DataObject, User, UserGroup, UserAuth
@@ -80,10 +75,7 @@ class Airods(EndpointResource):
             
             icom = self.get_service_instance(service_name='irods') #, user='rods', password='sdor' 
             
-<<<<<<< HEAD
             # @TODO: have to implement the TOTAL download not only the first - for time being-
-=======
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
             myobj = myfirstvalue[0].irods_path
                
             try:
@@ -210,7 +202,6 @@ class AirodsMeta(EndpointResource):
 
 
         
-<<<<<<< HEAD
 #######################
 # REST CLASS AirodsList
 #
@@ -218,30 +209,15 @@ class AirodsMeta(EndpointResource):
 # =============
 # (list of endpoints to stage data)
 #
-=======
-#################
-# REST CLASS AirodsList
-#
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
 class AirodsList(EndpointResource):
     
     def get(self):
         
         icom = self.get_service_instance(service_name='irods') #, user='rods', password='sdor' 
-<<<<<<< HEAD
         
         session = icom.prc
         sql = "select zone_name, zone_conn_string, r_comment   from r_zone_main where r_comment LIKE 'stag%'" #where zone_type_name = 'remote'"
         
-=======
-            
-        ####################################################
-
-        #print ('start - QUERY!')
-        session = icom.prc
-        sql = "select zone_name, zone_conn_string, r_comment   from r_zone_main where r_comment LIKE 'stag%'" #where zone_type_name = 'remote'"
-        #alias = 'list_zone_max'
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
         queryResponse = {}
         #columns = [DataObject.zone_id, DataObject.zone_name] # optional, if we want to get results by key 
         query = SpecificQuery(session, sql)
@@ -250,7 +226,6 @@ class AirodsList(EndpointResource):
 
         for result in query:
             
-<<<<<<< HEAD
             queryResponse['Endpoint']=result[0]
             if result[1]:
                 queryResponse['URL'] =result[1]
@@ -261,29 +236,6 @@ class AirodsList(EndpointResource):
         _ = query.remove()
             
             
-=======
-            #print('Endpoint: '+result[0])
-            queryResponse['Endpoint']=result[0]
-            if result[1]:
-                #print('URL: '+result[1])
-                queryResponse['URL'] =result[1]
-            #else:
-                #print('URL: ')
-            if result[2]:
-                #print('description: '+result[2])
-                queryResponse['description'] =result[2]
-            #else:
-                #print('description: ')
-            
-
-            #print('{} {}'.format(result[zone_id], result[zone_name]))
-
-
-        _ = query.remove()
-            
-            
-           ####################################################
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
         return [queryResponse]
     
 
@@ -292,17 +244,12 @@ class AirodsList(EndpointResource):
     
 
         
-<<<<<<< HEAD
 ########################
 # REST CLASS AirodsStage
 #
 # AIRODS - STAGE
 # =============
 # (stage to endpoints selected data)
-=======
-#################
-# REST CLASS AirodsStage
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
 # 
 class AirodsStage( EndpointResource):
     
@@ -318,13 +265,8 @@ class AirodsStage( EndpointResource):
         # MONGO
         myargs = self.get_input()
         print(myargs)
-<<<<<<< HEAD
         documentResult1 = []
         myLine = {}
-=======
-        documentResult1 = {}
-        
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
         mycollection = mongohd.wf_do
         
         myStartDate = dateutil.parser.parse(myargs.get("start"))
@@ -353,25 +295,14 @@ class AirodsStage( EndpointResource):
         
         # STAGE
         if ipath:
-<<<<<<< HEAD
             
             i = 0  #my counter
-=======
-            #myLine = ['remote_collection_ID: '+ dest_path ]
-            #documentResult1.append(myLine)
-            myLine = self.queryIcat(icom, myargs.get("endpoint"), dest_path)
-            
-            documentResult1['remote_info']=myLine 
-            
-            i = 0
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
             for document in myfirstvalue:
                 
                 stageOk=self.icopy(icom, document.irods_path, dest_path+'/'+document.fileId)
                                 
                 if stageOk :
                     
-<<<<<<< HEAD
                     myLine['file_ID']=str(document.fileId)
                     myLine['PID']=str(document.dc_identifier)
                     i = i+1
@@ -394,24 +325,6 @@ class AirodsStage( EndpointResource):
         return ['total files staged: '+str(i), documentResult1]
     
     # DO a COPY on Remote endpoint via irule
-=======
-                    documentResult1['file_ID_'+str(i)]=str(document.fileId)
-                    i = i+1
-                else:
-                    
-                    documentResult1['DO-NOT-OK']='stage DO '+document.fileId+': NOT OK'
-                
-            documentResult1['total DO staged']= str(i)   
-        
-        else:
-            
-            documentResult1['DIR-NOT-OK']='stage dir:'+dest_path+' NOT OK'
-        
-        
-        return [documentResult1]
-    
-    # COPY on Remote endpoint via irule
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
     def icopy(self, icom, irods_path, dest_path):
         
         """ EUDAT RULE for Replica (exploited for copy) """
@@ -438,11 +351,7 @@ class AirodsStage( EndpointResource):
         return [rule_output]
     
     
-<<<<<<< HEAD
     # Exec a Rule
-=======
-    # Rule
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
     def rule(self, icom, name, body, inputs, output=False):
         
         import textwrap
@@ -500,11 +409,7 @@ class AirodsStage( EndpointResource):
             return raw_out
         
         
-<<<<<<< HEAD
     # Exec a Query
-=======
-    # Query
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
     def queryIcat(self, icom, zone_name, dest_path):
         
         session = icom.prc
@@ -545,13 +450,10 @@ class AirodsStage( EndpointResource):
 
 #################
 # REST CLASS AirodsFree
-<<<<<<< HEAD
 #
 # AIRODS - FREE
 # =============
 # (free up space on the remote endpoints)
-=======
->>>>>>> 1e6f9a62ba9d857873e752877ddbd553fff65d55
 #        
 class AirodsFree( EndpointResource):
     
