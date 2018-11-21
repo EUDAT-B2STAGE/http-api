@@ -24,10 +24,10 @@ services:
 
       ####################
       ##### SEADATA
-      SEADATA_PROJECT: ${SEADATA_PROJECT}
-      SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
-      SEADATA_CLOUD_DIR: ${SEADATA_PRODUCTION_DIR}
-      SEADATA_ORDERS_DIR: ${SEADATA_ORDERS_DIR}
+      # SEADATA_PROJECT: ${SEADATA_PROJECT}
+      # SEADATA_BATCH_DIR: ${SEADATA_INGESTION_DIR}
+      # SEADATA_CLOUD_DIR: ${SEADATA_PRODUCTION_DIR}
+      # SEADATA_ORDERS_DIR: ${SEADATA_ORDERS_DIR}
 
     volumes:
       - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
@@ -100,11 +100,11 @@ services:
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
 
       # mongodb connection
-      MONGO_ENABLE: 0
-      # # MONGO_ENABLE: 1
-      # MONGO_HOST: ${MONGO_HOST}
-      # MONGO_DATABASE: ${MONGO_DATABASE}
-      # MONGO_PORT: ${MONGO_PORT}
+      # MONGO_ENABLE: 0
+      MONGO_ENABLE: 1
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_DATABASE: ${MONGO_DATABASE}
+      MONGO_PORT: ${MONGO_PORT}
 
       # neo connection
       GRAPHDB_ENABLE: 0
