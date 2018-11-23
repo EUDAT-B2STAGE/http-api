@@ -288,6 +288,12 @@ class B2accessUtilities(EndpointResource):
         """
 
         rule_output = icom.rule('get_pid', body, inputs, output=True)
+        try:
+            rule_output = json.loads(rule_output)
+        except BaseException:
+            log.error("Unable to convert rule output as json: %s", rule_output)
+            return None
+
         for user in rule_output:
             log.warning(user)
             if email in rule_output[user]:
