@@ -277,3 +277,26 @@ class B2accessUtilities(EndpointResource):
         log.very_verbose("Updated %s" % irods_user)
 
         return True
+
+    def get_irods_user_from_b2access(self, icom, email):
+        """ EUDAT RULE for b2access-to-b2safe user mapping """
+
+        inputs = {}
+        body = """
+            EUDATGetPAMusers(*json_map);
+            writeLine("stdout", *json_map);
+        """
+
+        rule_output = icom.rule('get_pid', body, inputs, output=True)
+        try:
+            rule_output = json.loads(rule_output)
+        except BaseException:
+            log.error("Unable to convert rule output as json: %s", rule_output)
+            return None
+
+        for user in rule_output:
+            log.warning(user)
+            if email in rule_output[user]:
+                log.critical("Found!")
+                return user
+        return None

@@ -257,6 +257,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             # ianonymous.set_permissions(
             #     batch_path,
             #     permission='null', userOrGroup=icom.anonymous_user)
+            local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+            path.create(local_path, directory=True, force=True)
 
             ##################
             response = "Batch '%s' enabled" % batch_id
