@@ -277,3 +277,26 @@ class B2accessUtilities(EndpointResource):
         log.very_verbose("Updated %s" % irods_user)
 
         return True
+
+    def get_irods_user_from_b2access(self, icom, email):
+        return None
+
+    # def pid_request(self, icom, ipath):
+    #     """ EUDAT RULE for PID """
+
+    #     outvar = 'newPID'
+    #     inputs = {
+    #         '*path': '"%s"' % ipath,
+    #         '*fixed': '"true"',
+    #         # empty variables
+    #         '*parent_pid': '""',
+    #         '*ror': '""',
+    #         '*fio': '""',
+    #     }
+    #     body = """
+    #         EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *%s);
+    #         writeLine("stdout", *%s);
+    #     """ % (outvar, outvar)
+
+    #     rule_output = icom.rule('get_pid', body, inputs, output=True)
+    #     return self.pid_name_fix(rule_output)

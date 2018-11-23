@@ -97,24 +97,30 @@ class Authorize(EudatEndpoint):
         # copied from auth/sqlalchemy:store_oauth2_user
         # DN very strange: the current key is something like 'urn:oid:2.5.4.49'
         # is it going to change?
-        b2access_dn = None
-        for key, _ in b2access_user.data.items():
-            if 'urn:oid' in key:
-                b2access_dn = b2access_user.data.get(key)
+        # b2access_dn = None
+        # for key, _ in b2access_user.data.items():
+        #     if 'urn:oid' in key:
+        #         b2access_dn = b2access_user.data.get(key)
 
         b2access_email = b2access_user.data.get('email')
-        log.info("B2ACCESS DN = %s", b2access_dn)
+        # log.info("B2ACCESS DN = %s", b2access_dn)
         log.info("B2ACCESS email = %s", b2access_email)
 
         icom = self.get_service_instance(service_name='irods')
 
-        irods_user = icom.get_user_from_dn(b2access_dn)
+        irods_user = self.get_irods_user_from_b2access(icom, b2access_email)
+        # irods_user = icom.get_user_from_dn(b2access_dn)
 
         if irods_user is None:
             err = "B2ACCESS credentials (%s) do not match any user in B2SAFE" \
-                % b2access_dn
+                % b2access_email
             log.error(err)
             return self.send_errors(err)
+        # if irods_user is None:
+        #     err = "B2ACCESS credentials (%s) do not match any user in B2SAFE" \
+        #         % b2access_dn
+        #     log.error(err)
+        #     return self.send_errors(err)
 
         # Update db to save the irods user related to this user account
         auth.associate_object_to_attr(extuser, 'irodsuser', irods_user)
