@@ -288,6 +288,9 @@ class B2accessUtilities(EndpointResource):
         """
 
         rule_output = icom.rule('get_pid', body, inputs, output=True)
-        log.critical(rule_output)
-    #     return self.pid_name_fix(rule_output)
+        for user in rule_output:
+            log.warning(user)
+            if email in rule_output[user]:
+                log.critical("Found!")
+                return user
         return None
