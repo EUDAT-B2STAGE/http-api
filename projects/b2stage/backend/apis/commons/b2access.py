@@ -165,8 +165,7 @@ class B2accessUtilities(EndpointResource):
         resp = b2access.post(
             url=b2access.access_token_url,
             data=refresh_data,
-            # token=refresh_token
-            token=None
+            token=refresh_token
         )
         log.critical(resp)
         log.critical(resp.__dict__)
