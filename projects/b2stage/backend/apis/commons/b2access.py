@@ -163,7 +163,7 @@ class B2accessUtilities(EndpointResource):
             "scope": ['USER_PROFILE', 'GENERATE_USER_CERTIFICATE']
         }
         resp = b2access.post(
-            url='oauth2/token',
+            url=b2access._request_token_url,
             data=refresh_data,
             token=refresh_token
         )
