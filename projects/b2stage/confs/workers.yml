@@ -52,7 +52,8 @@ services:
     environment:
       AUTH_ENABLE: 0
       CELERY_EXTERNAL: 1
-    
+      CELERYUI_USER: ${CELERYUI_USER}
+      CELERYUI_PASSWORD: ${CELERYUI_PASSWORD} 
       #############################
       ACTIVATE: 1
       MAIN_LOGIN_ENABLE: 0
