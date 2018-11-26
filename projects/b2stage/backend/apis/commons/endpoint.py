@@ -106,7 +106,7 @@ class EudatEndpoint(B2accessUtilities):
         external_user = self.auth.oauth_from_local(internal_user)
 
         b2access = self.create_b2access_client(self.auth, decorate=True)
-        self.refresh_b2access_token(b2access)
+        self.refresh_b2access_token(b2access, external_user.refresh_token)
 
         refreshed = False
         try:

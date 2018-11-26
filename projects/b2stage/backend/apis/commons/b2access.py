@@ -141,7 +141,7 @@ class B2accessUtilities(EndpointResource):
 
         return b2access_user, intuser, extuser
 
-    def refresh_b2access_token(self, b2access):
+    def refresh_b2access_token(self, b2access, refresh_token):
         # b2access_refresh_token
         """
             curl -X POST
@@ -158,18 +158,18 @@ class B2accessUtilities(EndpointResource):
         log.critical(b2access)
         log.critical(b2access.__dict__)
         refresh_data = {
-            "grant_type": "refresh_token",
-            "client_id": "myClientID",
-            "client_secret": "myClientSecret",
+            "grant_type": refresh_token,
+            "client_id": b2access._consumer_key,
+            "client_secret": b2access._consumer_secret,
             "refresh_token": "myRefreshToken",
             "scope": ['USER_PROFILE', 'GENERATE_USER_CERTIFICATE']
         }
-        # b2access.post(
-        #     url='https://b2stage-test.cineca.it/api/oauth2/token',
-        #     data=refresh_data
-        # )
         log.critical(refresh_data)
-
+        resp = b2access.post(
+            url='oauth2/token',
+            data=refresh_data
+        )
+        log.critical(resp)
 
     # B2ACCESS proxy certificates are no longer required
     # def obtain_proxy_certificate(self, auth, extuser):
