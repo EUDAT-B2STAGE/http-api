@@ -160,7 +160,6 @@ class Authorize(EudatEndpoint):
 
         # FIXME: Create a method to reply with standard Bearer oauth response
         # return self.send_credentials(local_token, extra, metas)
-
         return self.force_response(
             defined_content={
                 'token': local_token,

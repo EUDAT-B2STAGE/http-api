@@ -141,6 +141,36 @@ class B2accessUtilities(EndpointResource):
 
         return b2access_user, intuser, extuser
 
+    def refresh_b2access_token(self, b2access):
+        # b2access_refresh_token
+        """
+            curl -X POST
+                 -u 'myClientID':'myClientSecret'
+                 -d '
+                     client_id=myClientID&
+                     client_secret=myClientSecret&
+                     grant_type=refresh_token&
+                     refresh_token=myRefreshToken&
+                     scope=openid%20email%20profile'
+                  'https://unity.eudat-aai.fz-juelich.de/oauth2/token'
+        """
+
+        log.critical(b2access)
+        log.critical(b2access.__dict__)
+        refresh_data = {
+            "grant_type": "refresh_token",
+            "client_id": "myClientID",
+            "client_secret": "myClientSecret",
+            "refresh_token": "myRefreshToken",
+            "scope": ['USER_PROFILE', 'GENERATE_USER_CERTIFICATE']
+        }
+        # b2access.post(
+        #     url='https://b2stage-test.cineca.it/api/oauth2/token',
+        #     data=refresh_data
+        # )
+        log.critical(refresh_data)
+
+
     # B2ACCESS proxy certificates are no longer required
     # def obtain_proxy_certificate(self, auth, extuser):
     #     """
@@ -295,8 +325,6 @@ class B2accessUtilities(EndpointResource):
             return None
 
         for user in rule_output:
-            log.warning(user)
             if email in rule_output[user]:
-                log.critical("Found!")
                 return user
         return None
