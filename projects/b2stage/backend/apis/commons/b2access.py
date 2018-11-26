@@ -158,16 +158,17 @@ class B2accessUtilities(EndpointResource):
         log.critical(b2access)
         log.critical(b2access.__dict__)
         refresh_data = {
-            "grant_type": refresh_token,
+            "grant_type": "refresh_token",
             "client_id": b2access._consumer_key,
             "client_secret": b2access._consumer_secret,
-            "refresh_token": "myRefreshToken",
+            "refresh_token": refresh_token,
             "scope": ['USER_PROFILE', 'GENERATE_USER_CERTIFICATE']
         }
         log.critical(refresh_data)
         resp = b2access.post(
             url='oauth2/token',
-            data=refresh_data
+            data=refresh_data,
+            token=refresh_token
         )
         log.critical(resp)
 
