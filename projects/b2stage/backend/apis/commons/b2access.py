@@ -160,7 +160,7 @@ class B2accessUtilities(EndpointResource):
             "client_id": b2access._consumer_key,
             "client_secret": b2access._consumer_secret,
             "refresh_token": refresh_token,
-            "scope": ['USER_PROFILE', 'GENERATE_USER_CERTIFICATE']
+            # "scope": ['USER_PROFILE', 'GENERATE_USER_CERTIFICATE']
         }
         resp = b2access.post(
             url=b2access._request_token_url,
