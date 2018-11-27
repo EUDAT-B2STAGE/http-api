@@ -159,6 +159,7 @@ class B2accessUtilities(EndpointResource):
         client_id = b2access._consumer_key
         client_secret = b2access._consumer_secret
 
+        log.info("Refresh token = %s", refresh_token)
         refresh_data = {
             "grant_type": "refresh_token",
             "client_id": client_id,
@@ -179,6 +180,8 @@ class B2accessUtilities(EndpointResource):
         )
         log.critical(resp)
         log.critical(resp.__dict__)
+
+        raise NotImplementedError('B2access refresh token request')
 
     # B2ACCESS proxy certificates are no longer required
     # def obtain_proxy_certificate(self, auth, extuser):
