@@ -171,12 +171,19 @@ class B2accessUtilities(EndpointResource):
         ).decode("ascii")
         headers = {'Authorization': 'Basic %s' % auth_hash}
 
-        resp = b2access.post(
-            url=b2access.access_token_url,
+        # resp = b2access.post(
+        #     url=b2access.access_token_url,
+        #     data=refresh_data,
+        #     headers=headers,
+        #     token=refresh_token
+        # )
+        import requests
+        resp = requests.post(
+            b2access.access_token_url,
             data=refresh_data,
-            headers=headers,
-            token=refresh_token
+            headers=headers
         )
+
         log.info("Refresh token = %s", refresh_token)
         log.critical(b2access.access_token_url)
         log.critical(headers)
