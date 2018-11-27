@@ -9,6 +9,7 @@ import json
 import gssapi
 from flask import session
 from base64 import b64encode
+from base64 import encode
 from datetime import datetime as dt
 from restapi.rest.definition import EndpointResource
 from flask_oauthlib.client import OAuthResponse
@@ -167,10 +168,14 @@ class B2accessUtilities(EndpointResource):
             "refresh_token": refresh_token,
             "scope": ['USER_PROFILE']
         }
-        userpass = b64encode(
-            str.encode("%s:%s" % (client_id, client_secret))
-        ).decode("ascii")
-        headers = {'Authorization': 'Basic %s' % (userpass,)}
+        # userpass = b64encode(
+        #     str.encode("%s:%s" % (client_id, client_secret))
+        # ).decode("ascii")
+        # headers = {'Authorization': 'Basic %s' % (userpass,)}
+        hash_string = encode("%s:%s" % (client_id, client_secret))
+        headers = {
+            "Authorization": "Basic %s" % hash_string
+        }
 
         resp = b2access.post(
             url=b2access.access_token_url,
