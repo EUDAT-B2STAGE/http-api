@@ -8,6 +8,7 @@ import re
 import json
 import gssapi
 from flask import session
+from base64 import b64encode
 from datetime import datetime as dt
 from restapi.rest.definition import EndpointResource
 from flask_oauthlib.client import OAuthResponse
@@ -155,17 +156,25 @@ class B2accessUtilities(EndpointResource):
                   'https://unity.eudat-aai.fz-juelich.de/oauth2/token'
         """
 
+        client_id = b2access._consumer_key
+        client_secret = b2access._consumer_secret
+
         refresh_data = {
             "grant_type": "refresh_token",
-            "client_id": b2access._consumer_key,
-            "client_secret": b2access._consumer_secret,
+            "client_id": client_id,
+            "client_secret": client_secret,
             "refresh_token": refresh_token,
-            "scope": ['USER_PROFILE', 'GENERATE_USER_CERTIFICATE']
+            "scope": ['USER_PROFILE']
         }
+        userpass = b64encode(
+            str.encode("%s:%s" % (client_id, client_secret))
+        ).decode("ascii")
+        headers = {'Authorization': 'Basic %s' % (userpass,)}
 
         resp = b2access.post(
             url=b2access.access_token_url,
             data=refresh_data,
+            headers=headers,
             token=refresh_token
         )
         log.critical(resp)
