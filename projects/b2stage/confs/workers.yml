@@ -108,8 +108,8 @@ services:
     networks:
       db_net:
       worker_net:
-    depends_on:
-      - rabbit
+    # depends_on:
+    #   - rabbit
     environment:
 
       CURRENT_UID: ${CURRENT_UID}
