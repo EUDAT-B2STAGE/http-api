@@ -143,17 +143,16 @@ class B2accessUtilities(EndpointResource):
         return b2access_user, intuser, extuser
 
     def refresh_b2access_token(self, b2access, refresh_token):
-        # b2access_refresh_token
         """
             curl -X POST
                  -u 'myClientID':'myClientSecret'
                  -d '
-                     client_id=myClientID&
-                     client_secret=myClientSecret&
                      grant_type=refresh_token&
                      refresh_token=myRefreshToken&
-                     scope=openid%20email%20profile'
+                     scope=USER_PROFILE'
                   'https://unity.eudat-aai.fz-juelich.de/oauth2/token'
+
+            OR -H "Authorization Basic base64(client_id:client_secret)" instead of -u
         """
 
         client_id = b2access._consumer_key
@@ -183,13 +182,11 @@ class B2accessUtilities(EndpointResource):
             data=refresh_data,
             headers=headers
         )
+        resp.json()
 
-        log.info("Refresh token = %s", refresh_token)
-        log.critical(b2access.access_token_url)
-        log.critical(headers)
-        log.critical(refresh_data)
-        log.critical(resp)
-        log.critical(resp.__dict__)
+        access_token = resp['access_token']
+
+        log.critical(access_token)
 
         raise NotImplementedError('B2access refresh token request')
 
