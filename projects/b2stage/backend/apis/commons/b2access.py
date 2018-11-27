@@ -182,7 +182,7 @@ class B2accessUtilities(EndpointResource):
             data=refresh_data,
             headers=headers
         )
-        resp.json()
+        resp = resp.json()
 
         access_token = resp['access_token']
 
