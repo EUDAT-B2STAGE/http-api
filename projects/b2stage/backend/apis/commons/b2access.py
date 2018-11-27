@@ -160,7 +160,6 @@ class B2accessUtilities(EndpointResource):
         client_id = b2access._consumer_key
         client_secret = b2access._consumer_secret
 
-        log.info("Refresh token = %s", refresh_token)
         refresh_data = {
             "grant_type": "refresh_token",
             "client_id": client_id,
@@ -183,6 +182,10 @@ class B2accessUtilities(EndpointResource):
             headers=headers,
             token=refresh_token
         )
+        log.info("Refresh token = %s", refresh_token)
+        log.critical(b2access.access_token_url)
+        log.critical(headers)
+        log.critical(refresh_data)
         log.critical(resp)
         log.critical(resp.__dict__)
 
