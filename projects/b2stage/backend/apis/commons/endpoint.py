@@ -130,7 +130,7 @@ class EudatEndpoint(B2accessUtilities):
 
                 b2access = self.create_b2access_client(self.auth, decorate=True)
                 access_token = self.refresh_b2access_token(
-                    self.auth, external_user.irodsuser,
+                    self.auth, external_user.email,
                     b2access, external_user.refresh_token)
 
                 if access_token is not None:
