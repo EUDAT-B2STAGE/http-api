@@ -102,10 +102,9 @@ class EudatEndpoint(B2accessUtilities):
             valid_credentials=True, is_proxy=proxy, refreshed=refreshed
         )
 
-    def irodsuser_from_b2access(self, internal_user):
+    def irodsuser_from_b2access(self, internal_user, refreshed=False):
         external_user = self.auth.oauth_from_local(internal_user)
 
-        refreshed = False
         try:
             icom = self.get_service_instance(
                 service_name='irods',
@@ -122,13 +121,21 @@ class EudatEndpoint(B2accessUtilities):
                     "Missing refresh token cannot request for a new token")
                 raise RestApiException('Invalid PAM credentials')
             else:
+
+                if refreshed:
+                    log.info("B2access token already refreshed, cannot request new one")
+                    raise RestApiException('Invalid PAM credentials')
                 log.info(
                     "B2access token is no longer valid, requesting new token")
 
                 b2access = self.create_b2access_client(self.auth, decorate=True)
-                self.refresh_b2access_token(b2access, external_user.refresh_token)
+                access_token = self.refresh_b2access_token(
+                    self.auth, external_user.irodsuser,
+                    b2access, external_user.refresh_token)
 
-                refreshed = True
+                if access_token is not None:
+                    return self.irodsuser_from_b2access(internal_user, refreshed=True)
+                raise RestApiException('Failed to refresh b2access token')
 
         except BaseException as e:
             raise RestApiException(

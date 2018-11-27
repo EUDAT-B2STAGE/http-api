@@ -7,6 +7,7 @@ B2ACCESS utilities
 import re
 import json
 import gssapi
+import requests
 from flask import session
 from base64 import b64encode
 from datetime import datetime as dt
@@ -142,7 +143,7 @@ class B2accessUtilities(EndpointResource):
 
         return b2access_user, intuser, extuser
 
-    def refresh_b2access_token(self, b2access, refresh_token):
+    def refresh_b2access_token(self, auth, b2access_user, b2access, refresh_token):
         """
             curl -X POST
                  -u 'myClientID':'myClientSecret'
@@ -176,7 +177,6 @@ class B2accessUtilities(EndpointResource):
         #     headers=headers,
         #     token=refresh_token
         # )
-        import requests
         resp = requests.post(
             b2access.access_token_url,
             data=refresh_data,
@@ -186,9 +186,19 @@ class B2accessUtilities(EndpointResource):
 
         access_token = resp['access_token']
 
-        log.critical(access_token)
+        # Store b2access information inside the db
+        intuser, extuser = auth.store_oauth2_user(
+            "b2access", b2access_user,
+            access_token, refresh_token
+        )
+        # In case of error this account already existed...
+        if intuser is None:
+            log.error("Failed to store new access token")
+            return None
 
-        raise NotImplementedError('B2access refresh token request')
+        log.info("New access token = %s", access_token)
+
+        return access_token
 
     # B2ACCESS proxy certificates are no longer required
     # def obtain_proxy_certificate(self, auth, extuser):
