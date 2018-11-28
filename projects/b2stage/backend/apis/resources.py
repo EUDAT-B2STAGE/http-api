@@ -170,14 +170,26 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         #     name = '%s_%s' % (pkey, key)
         #     envs[name.upper()] = value
 
+        response = {
+            'batch_id': batch_id,
+            'qc_name': qc_name,
+            'status': 'executed',
+            'input': input_json,
+        }
+
         ###################
         rancher = self.get_or_create_handle()
-        # TODO: only one quality check at the time on the same batch
-        # should I ps containers before launching?
         container_name = self.get_container_name(batch_id, qc_name)
+
+        # Duplicated quality checks on the same batch are not allowed
         container_obj = rancher.get_container_object(container_name)
         if container_obj is not None:
-            log.critical("%s already exists!", container_name)
+            log.error("%s already exists!", container_name)
+            response['status'] = 'existing'
+            code = hcodes.HTTP_BAD_CONFLICT
+            return self.force_response(
+                response, errors=[response['status']], code=code)
+
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
         ###########################
@@ -250,17 +262,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             extras=extra_params
         )
 
-        response = {
-            'batch_id': batch_id,
-            'qc_name': qc_name,
-            'status': 'executed',
-            'input': input_json,
-        }
-
         if errors is not None:
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
-                # print("TEST", edict)
+
+                # This case should never happens, since already verified before
                 if edict.get('code') == 'NotUnique':
                     response['status'] = 'existing'
                     code = hcodes.HTTP_BAD_CONFLICT
