@@ -174,6 +174,9 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # TODO: only one quality check at the time on the same batch
         # should I ps containers before launching?
         container_name = self.get_container_name(batch_id, qc_name)
+        container_obj = self.get_container_object(container_name)
+        if container_obj is not None:
+            log.critical("%s already exists!", container_name)
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
         ###########################
