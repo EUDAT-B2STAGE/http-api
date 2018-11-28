@@ -171,17 +171,17 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         #     envs[name.upper()] = value
 
         ###################
+        rancher = self.get_or_create_handle()
         # TODO: only one quality check at the time on the same batch
         # should I ps containers before launching?
         container_name = self.get_container_name(batch_id, qc_name)
-        container_obj = self.get_container_object(container_name)
+        container_obj = rancher.get_container_object(container_name)
         if container_obj is not None:
             log.critical("%s already exists!", container_name)
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
         ###########################
         # ## ENVS
-        rancher = self.get_or_create_handle()
 
         host_ingestion_path = self.get_ingestion_path_on_host(batch_id)
         container_ingestion_path = self.get_ingestion_path_in_container()
