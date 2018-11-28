@@ -184,7 +184,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # Duplicated quality checks on the same batch are not allowed
         container_obj = rancher.get_container_object(container_name)
         if container_obj is not None:
-            log.error("%s already exists!", container_name)
+            log.error("Docker container %s already exists!", container_name)
             response['status'] = 'existing'
             code = hcodes.HTTP_BAD_CONFLICT
             return self.force_response(
@@ -291,6 +291,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container_name = self.get_container_name(batch_id, qc_name)
         rancher = self.get_or_create_handle()
         rancher.remove_container_by_name(container_name)
+        container_obj = rancher.get_container_object(container_name)
+        log.critical(container_obj)
         log.info("About to remove: %s", container_name)
 
         response = {
