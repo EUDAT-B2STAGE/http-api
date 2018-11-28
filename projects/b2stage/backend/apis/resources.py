@@ -292,7 +292,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         rancher = self.get_or_create_handle()
         rancher.remove_container_by_name(container_name)
         # wait up to 10 seconds to verify the deletion
-        log.info("About to remove: %s", container_name)
+        log.info("Removing: %s...", container_name)
         removed = False
         for i in range(0, 20):
             time.sleep(0.5)
@@ -300,15 +300,21 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             if container_obj is None:
                 log.info("%s removed", container_name)
                 removed = True
+                break
             else:
-                log.debug("%s still exists", container_name)
+                log.very_verbose("%s still exists", container_name)
 
         if not removed:
             log.warning("%s still in removal status", container_name)
-
-        response = {
-            'batch_id': batch_id,
-            'qc_name': qc_name,
-            'status': 'removed',
-        }
+            response = {
+                'batch_id': batch_id,
+                'qc_name': qc_name,
+                'status': 'not_yet_removed',
+            }
+        else:
+            response = {
+                'batch_id': batch_id,
+                'qc_name': qc_name,
+                'status': 'removed',
+            }
         return response
