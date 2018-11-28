@@ -8,8 +8,8 @@ import json
 import time
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
-from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
-from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION 
+# from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
+from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from utilities import htmlcodes as hcodes
@@ -291,9 +291,20 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container_name = self.get_container_name(batch_id, qc_name)
         rancher = self.get_or_create_handle()
         rancher.remove_container_by_name(container_name)
-        container_obj = rancher.get_container_object(container_name)
-        log.critical(container_obj)
+        # wait up to 10 seconds to verify the deletion
         log.info("About to remove: %s", container_name)
+        removed = False
+        for i in range(0, 20):
+            time.sleep(0.5)
+            container_obj = rancher.get_container_object(container_name)
+            if container_obj is None:
+                log.info("%s removed", container_name)
+                removed = True
+            else:
+                log.debug("%s still exists", container_name)
+
+        if not removed:
+            log.warning("%s still in removal status", container_name)
 
         response = {
             'batch_id': batch_id,
