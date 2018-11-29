@@ -1,0 +1,10 @@
+
+file: airods
+class: AirodsStage
+schema:
+  expose: true
+mapping:
+  airodsstage: "/airods/stage"
+labels:
+  #- custom
+  - airods

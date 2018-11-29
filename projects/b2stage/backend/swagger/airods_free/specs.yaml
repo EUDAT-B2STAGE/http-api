@@ -1,0 +1,10 @@
+
+file: airods
+class: AirodsFree
+schema:
+  expose: true
+mapping:
+  airodsFree: "/airods/free"
+labels:
+  #- custom
+  - airods
