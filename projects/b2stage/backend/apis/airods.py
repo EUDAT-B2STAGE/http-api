@@ -346,12 +346,13 @@ class AirodsStage( EndpointResource):
         """ % (outvar, outvar)
         
 
-        rule_output = self.rule(icom, 'do_stage', body, inputs, output=True)
+        rule_output = icom.rule( 'do_stage', body, inputs, output=True)
         
         return [rule_output]
     
     
     # Exec a Rule
+    """
     def rule(self, icom, name, body, inputs, output=False):
         
         import textwrap
@@ -360,11 +361,11 @@ class AirodsStage( EndpointResource):
         user_current = icom.prc.username
         zone_current = icom.prc.zone
         
-        rule_body = textwrap.dedent('''\
-            %s {{
-                %s
-        }}''' % (name, body))
-
+        #rule_body = textwrap.dedent(''' #\
+        #    %s {{
+        #        %s
+        #}}''' % (name, body))
+        '''
         outname = None
         if output:
             outname = 'ruleExecOut'
@@ -407,7 +408,7 @@ class AirodsStage( EndpointResource):
                 return buf
 
             return raw_out
-        
+        """
         
     # Exec a Query
     def queryIcat(self, icom, zone_name, dest_path):
