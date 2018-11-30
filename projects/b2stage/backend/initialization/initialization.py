@@ -24,7 +24,7 @@ class Initializer(object):
         if os.environ.get('SEADATA_PROJECT', False):
 
             with app.app_context():
-                users = os.environ.get('SEADATA_PRIVILEGED_USERS')
+                users = os.environ.get('SEADATA_PRIVILEGED_USERS', [])
                 users = users.replace(' ', '').split(',')
                 # users = ['stresstest', 'svanderhorst']
                 roles = ['normal_user', 'staff_user']
