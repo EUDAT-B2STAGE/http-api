@@ -24,14 +24,22 @@ class Initializer(object):
         if os.environ.get('SEADATA_PROJECT', False):
 
             with app.app_context():
-                users = os.environ.get('SEADATA_PRIVILEGED_USERS', "")
-                users = users.replace(' ', '').split(',')
+                users = os.environ.get('SEADATA_PRIVILEGED_USERS')
+
+                if users is None or users == "":
+                    users = []
+                else:
+                    users = users.replace(' ', '').split(',')
                 # users = ['stresstest', 'svanderhorst']
                 roles = ['normal_user', 'staff_user']
                 if len(users) == 0:
                     log.info("No privileged user found")
                 else:
                     for username in users:
+
+                        if username == "":
+                            log.warning("Invalid username: [%s]", username)
+                            continue
                         try:
                             log.info("Creating user %s", username)
                             userdata = {
