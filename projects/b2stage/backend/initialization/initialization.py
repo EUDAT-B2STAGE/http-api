@@ -24,24 +24,29 @@ class Initializer(object):
         if os.environ.get('SEADATA_PROJECT', False):
 
             with app.app_context():
-                users = ['stresstest', 'svanderhorst']
+                users = os.environ.get('SEADATA_PRIVILEGED_USERS')
+                users = users.replace(' ', '').split(',')
+                # users = ['stresstest', 'svanderhorst']
                 roles = ['normal_user', 'staff_user']
-                for username in users:
-                    try:
-                        log.info("Creating user %s", username)
-                        userdata = {
-                            "uuid": getUUID(),
-                            "email": username,
-                            "name": username,
-                            "surname": 'iCAT',
-                            "authmethod": 'irods',
-                        }
-                        user = sql.User(**userdata)
-                        for r in roles:
-                            user.roles.append(
-                                sql.Role.query.filter_by(name=r).first())
-                        sql.session.add(user)
-                        sql.session.commit()
-                        log.info("User %s created with roles: %s", username, roles)
-                    except BaseException as e:
-                        log.error("Errors creating user %s: %s", username, str(e))
+                if len(users) == 0:
+                    log.info("No privileged user found")
+                else:
+                    for username in users:
+                        try:
+                            log.info("Creating user %s", username)
+                            userdata = {
+                                "uuid": getUUID(),
+                                "email": username,
+                                "name": username,
+                                "surname": 'iCAT',
+                                "authmethod": 'irods',
+                            }
+                            user = sql.User(**userdata)
+                            for r in roles:
+                                user.roles.append(
+                                    sql.Role.query.filter_by(name=r).first())
+                            sql.session.add(user)
+                            sql.session.commit()
+                            log.info("User %s created with roles: %s", username, roles)
+                        except BaseException as e:
+                            log.error("Errors creating user %s: %s", username, str(e))

@@ -49,6 +49,7 @@ variables:
     SEADATA_INGESTION_COLL: batches  # on irods!
     SEADATA_ORDERS_COLL: orders      # on irods!
     SEADATA_PRODUCTION_COLL: cloud   # on irods!
+    SEADATA_PRIVILEGED_USERS:  # command separated list of privileges users
 
     SEADATA_WORKSPACE_INGESTION: batches # on filesystem (to be mounted to celery workers and rancher containers)
     SEADATA_WORKSPACE_ORDERS: orders       # on filesystem (to be mounted to celery workers and rancher containers)
