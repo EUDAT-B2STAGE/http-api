@@ -114,9 +114,9 @@ Currently B2ACCESS and B2SAFE are facing problems in sharing certificated creden
 
 ## features
 
-- #39 automatical refresh of B2ACCESS certificate proxy 
-- #45 pids endpoint 
-- #54 checksum in metadata 
+- #39 automatical refresh of B2ACCESS certificate proxy
+- #45 pids endpoint
+- #54 checksum in metadata
 - First regular milestone reached in two weeks
 
 ---
@@ -139,7 +139,7 @@ Currently B2ACCESS and B2SAFE are facing problems in sharing certificated creden
 - Branch dedicated to a community [use case](https://github.com/EUDAT-B2STAGE/http-api/tree/mongo)
 - Starting the integration of [gitbook](https://rapydo.gitbooks.io/rapydo/content/) for the documentation
 - User (development) testing
-- Lots of bug fixes 
+- Lots of bug fixes
 
 ---
 

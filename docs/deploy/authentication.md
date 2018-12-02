@@ -1,5 +1,4 @@
-
-# Authentication mechanisms
+# Authentication mechanisms #
 
 Before deploying in production your B2STAGE HTTP-API server you should evaluate which mechanisms suites your use case for authentication.
 
@@ -7,8 +6,7 @@ There are two main available options:
 1. a **local** authentication based on the accounts registered in the B2SAFE connected server
 2. a **global** EUDAT authentication relying on the B2ACCESS service
 
-
-## B2ACCESS 
+## B2ACCESS ##
 
 [B2ACCESS](https://eudat.eu/b2access) is the service that holds the official/global EUDAT authentication across the whole international infrastructure.
 
