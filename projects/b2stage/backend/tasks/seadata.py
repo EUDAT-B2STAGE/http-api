@@ -850,6 +850,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         imain = celery_app.get_service(service='irods')
 
         errors = []
+        local_finalzip_path = None
         for index in range(0, list_len):
             zip_file = zip_files[index]
             file_size = file_sizes[index]
@@ -1038,7 +1039,9 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
         self.update_state(state="COMPLETED")
 
-        if os.path.getsize(local_finalzip_path) > MAX_ZIP_SIZE:
+        if local_finalzip_path is None:
+            log.warning("local_finalzip_path is None, unable to check size")
+        elif os.path.getsize(local_finalzip_path) > MAX_ZIP_SIZE:
             log.warning("Zip too large, splitting %s", local_finalzip_path)
 
             # Create a sub folder for split files. If already exists,
