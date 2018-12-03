@@ -895,6 +895,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         if local_file_size == file_size:
             log.info("File size verified")
         else:
+            log.error("Expected file size %s", file_size)
             return notify_error(
                 ErrorCodes.FILESIZE_DOESNT_MATCH,
                 myjson, backdoor, self
@@ -940,6 +941,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         if local_file_count == file_count:
             log.info("File count verified")
         else:
+            log.error("Expected %s files", file_count)
             return notify_error(
                 ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
                 myjson, backdoor, self
