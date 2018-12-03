@@ -851,6 +851,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
         errors = []
         local_finalzip_path = None
+        log.info("Merging %s zip files", list_len)
         for index in range(0, list_len):
             zip_file = zip_files[index]
             file_size = file_sizes[index]
