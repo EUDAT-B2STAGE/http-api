@@ -871,8 +871,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                     "description": ErrorCodes.FILENAME_DOESNT_EXIST[1],
                     "subject": partial_zip,
                 })
-
-            continue
+                continue
 
             # 2 - copy partial_zip in local-dir
             local_dir = path.join(myorderspath, order_id)
@@ -897,8 +896,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                     "description": ErrorCodes.CHECKSUM_DOESNT_MATCH[1],
                     "subject": partial_zip,
                 })
-
-            continue
+                continue
 
             # 4 - verify size
             local_file_size = os.path.getsize(local_zip_path)
@@ -911,7 +909,6 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                     "description": ErrorCodes.FILESIZE_DOESNT_MATCH[1],
                     "subject": partial_zip,
                 })
-
                 continue
 
             # 5 - decompress
