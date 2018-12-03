@@ -850,7 +850,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         imain = celery_app.get_service(service='irods')
 
         zip_file = zip_files.pop()
-        file_sizes = file_sizes.pop()
+        file_size = file_sizes.pop()
         file_count = file_counts.pop()
         file_checksum = file_checksums.pop()
 
