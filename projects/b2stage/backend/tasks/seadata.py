@@ -696,6 +696,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         # Make sure you have a path with no trailing slash
         order_path = order_path.rstrip('/')
 
+        # NAME OF FINAL ZIP
         # filename = 'order_%s' % order_id
         filename = params.get('file_name')
         if filename is None:
@@ -703,6 +704,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 ErrorCodes.MISSING_FILENAME_PARAM,
                 myjson, backdoor, self
             )
+
         base_filename = filename
         if filename.endswith('.zip'):
             log.warning('%s already contains extention .zip', filename)
@@ -712,58 +714,151 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         # final_zip = self.complete_path(order_path, filename)
         final_zip = order_path + '/' + filename.rstrip('/')
 
-        # myjson['parameters']['zipfile_name'] = final_zip
+        log.info("order_id = %s", order_id)
+        log.info("order_path = %s", order_path)
+        log.info("final_zip = %s", final_zip)
+
+        # ############################################
+
+        # INPUT PARAMETERS CHECKS
 
         # zip file uploaded from partner
-        zip_file = params.get('zipfile_name')
-        if zip_file is None:
+        zip_files = params.get('zipfile_name')
+        if zip_files is None:
             return notify_error(
                 ErrorCodes.MISSING_ZIPFILENAME_PARAM,
                 myjson, backdoor, self
             )
 
-        if not zip_file.endswith('.zip'):
-            zip_file = path.append_compress_extension(zip_file)
-        # partial_zip = self.complete_path(order_path, zip_file)
-        partial_zip = order_path + '/' + zip_file.rstrip('/')
-
-        log.info("order_id = %s", order_id)
-        log.info("order_path = %s", order_path)
-        log.info("partial_zip = %s", partial_zip)
-        log.info("final_zip = %s", final_zip)
-
-        file_size = params.get("file_size")
-        if file_size is None:
+        file_sizes = params.get("file_size")
+        if file_sizes is None:
             return notify_error(
                 ErrorCodes.MISSING_FILESIZE_PARAM,
                 myjson, backdoor, self
             )
-        try:
-            file_size = int(file_size)
-        except BaseException:
-            return notify_error(
-                ErrorCodes.INVALID_FILESIZE_PARAM,
-                myjson, backdoor, self
-            )
 
-        file_count = params.get("data_file_count")
-        if file_count is None:
+        file_counts = params.get("data_file_count")
+        if file_counts is None:
             return notify_error(
                 ErrorCodes.MISSING_FILECOUNT_PARAM,
                 myjson, backdoor, self
             )
-        try:
-            file_count = int(file_count)
-        except BaseException:
+
+        file_checksums = params.get("file_checksum")
+        if file_checksums is None:
+            return notify_error(
+                ErrorCodes.MISSING_CHECKSUM_PARAM,
+                myjson, backdoor, self
+            )
+
+        if not isinstance(zip_files, list):
+            return notify_error(
+                ErrorCodes.INVALID_ZIPFILENAME_PARAM,
+                myjson, backdoor, self
+            )
+
+        if not isinstance(file_sizes, list):
+            return notify_error(
+                ErrorCodes.INVALID_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
+        if not isinstance(file_counts, list):
             return notify_error(
                 ErrorCodes.INVALID_FILECOUNT_PARAM,
                 myjson, backdoor, self
             )
+        if not isinstance(file_checksums, list):
+            return notify_error(
+                ErrorCodes.INVALID_CHECKSUM_PARAM,
+                myjson, backdoor, self
+            )
+
+        zip_files_len = len(zip_files)
+        file_sizes_len = len(file_sizes)
+        file_counts_len = len(file_counts)
+        file_checksums_len = len(file_checksums)
+        list_len = max(
+            zip_files_len,
+            file_sizes_len,
+            file_counts_len,
+            file_checksums_len
+        )
+
+        if zip_files_len != list_len:
+            log.warning(
+                "Invalid zip_filename length %s, expected %s",
+                zip_files_len,
+                list_len
+            )
+            return notify_error(
+                ErrorCodes.INVALID_ZIPFILENAME_LENGTH,
+                myjson, backdoor, self
+            )
+
+        if file_sizes_len != list_len:
+            log.warning(
+                "Invalid file_size length %s, expected %s",
+                file_sizes_len,
+                list_len
+            )
+            return notify_error(
+                ErrorCodes.INVALID_FILESIZE_LENGTH,
+                myjson, backdoor, self
+            )
+
+        if file_counts_len != list_len:
+            log.warning(
+                "Invalid file_count length %s, expected %s",
+                file_counts_len,
+                list_len
+            )
+            return notify_error(
+                ErrorCodes.INVALID_FILECOUNT_LENGTH,
+                myjson, backdoor, self
+            )
+
+        if file_checksums_len != list_len:
+            log.warning(
+                "Invalid file_checksum length %s, expected %s",
+                file_checksums_len,
+                list_len
+            )
+            return notify_error(
+                ErrorCodes.INVALID_CHECKSUM_LENGTH,
+                myjson, backdoor, self
+            )
+
+        for v in file_sizes:
+            try:
+                v = int(v)
+            except BaseException:
+                return notify_error(
+                    ErrorCodes.INVALID_FILESIZE_PARAM,
+                    myjson, backdoor, self
+                )
+
+        for v in file_counts:
+            try:
+                v = int(v)
+            except BaseException:
+                return notify_error(
+                    ErrorCodes.INVALID_FILECOUNT_PARAM,
+                    myjson, backdoor, self
+                )
 
         self.update_state(state="PROGRESS")
-
-        file_checksum = params.get("file_checksum")
         imain = celery_app.get_service(service='irods')
+
+        zip_file = zip_files.pop()
+        file_sizes = file_sizes.pop()
+        file_count = file_counts.pop()
+        file_checksum = file_checksums.pop()
+
+        if not zip_file.endswith('.zip'):
+            zip_file = path.append_compress_extension(zip_file)
+        partial_zip = order_path + '/' + zip_file.rstrip('/')
+
+        log.info("partial_zip = %s", partial_zip)
 
         # 1 - check if partial_zip exists
         if not imain.exists(partial_zip):
