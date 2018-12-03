@@ -698,7 +698,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
         # NAME OF FINAL ZIP
         # filename = 'order_%s' % order_id
-        filename = params.get('file_name')
+        filename = params.get('zipfile_name')
         if filename is None:
             return notify_error(
                 ErrorCodes.MISSING_FILENAME_PARAM,
@@ -723,7 +723,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         # INPUT PARAMETERS CHECKS
 
         # zip file uploaded from partner
-        zip_files = params.get('zipfile_name')
+        zip_files = params.get('file_name')
         if zip_files is None:
             return notify_error(
                 ErrorCodes.MISSING_ZIPFILENAME_PARAM,
