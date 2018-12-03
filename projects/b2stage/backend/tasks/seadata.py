@@ -938,7 +938,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
             local_file_count += 1
         log.info("Unzipped %d files from %s", local_file_count, partial_zip)
 
-        if local_file_count == file_count:
+        if local_file_count == int(file_count):
             log.info("File count verified")
         else:
             log.error("Expected %s files", file_count)
