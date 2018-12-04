@@ -1,6 +1,6 @@
 
-depends_on:
-  - not B2ACCESS_APPKEY
+# depends_on:
+#   - not B2ACCESS_APPKEY
 
 file: b2safeproxy
 class: B2safeProxy

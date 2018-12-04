@@ -1,3 +1,5 @@
+depends_on:
+  - SEADATA_PROJECT
 
 file: extlogs
 class: Extlogs
