@@ -55,6 +55,7 @@ class ErrorCodes(object):
     INVALID_FILESIZE_LENGTH = ("4033", "Unexpected lenght of file_size parameter")
     INVALID_FILECOUNT_LENGTH = ("4034", "Unexpected lenght of file_count parameter")
     INVALID_CHECKSUM_LENGTH = ("4035", "Unexpected lenght of file_checksum parameter")
+    INVALID_FILENAME_PARAM = ("4036", "Invalid parameter zipfile_name, a string is expected")
 
 class Metadata(object):
 

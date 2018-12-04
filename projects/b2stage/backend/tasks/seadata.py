@@ -704,6 +704,11 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 ErrorCodes.MISSING_FILENAME_PARAM,
                 myjson, backdoor, self
             )
+        if not isinstance(filename, str):
+            return notify_error(
+                ErrorCodes.INVALID_FILENAME_PARAM,
+                myjson, backdoor, self
+            )
 
         base_filename = filename
         if filename.endswith('.zip'):
