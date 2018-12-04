@@ -51,6 +51,9 @@ class B2safeProxy(EndpointResource):
             password = jargs.pop('password')
         authscheme = jargs.pop('authscheme', 'credentials')
 
+        if authscheme.upper() == 'PAM':
+            authscheme = 'PAM'
+
         if len(jargs) > 0:
             for j in jargs:
                 log.warning("Unknown input parameter: %s", j)
