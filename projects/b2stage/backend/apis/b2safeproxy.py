@@ -47,8 +47,8 @@ class B2safeProxy(EndpointResource):
             username = auth.username
             password = auth.password
         else:
-            username = jargs.pop('username')
-            password = jargs.pop('password')
+            username = jargs.pop('username', None)
+            password = jargs.pop('password', None)
         authscheme = jargs.pop('authscheme', 'credentials')
 
         if authscheme.upper() == 'PAM':
