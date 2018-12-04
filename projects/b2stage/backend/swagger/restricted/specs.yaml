@@ -1,3 +1,5 @@
+depends_on:
+  - SEADATA_PROJECT
 
 file: restricted
 class: Restricted
