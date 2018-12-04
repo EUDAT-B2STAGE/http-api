@@ -47,9 +47,13 @@ class B2safeProxy(EndpointResource):
             username = auth.username
             password = auth.password
         else:
-            username = jargs.get('username')
-            password = jargs.get('password')
-        authscheme = jargs.get('authscheme', 'credentials')
+            username = jargs.pop('username')
+            password = jargs.pop('password')
+        authscheme = jargs.pop('authscheme', 'credentials')
+
+        if len(jargs) > 0:
+            for j in jargs:
+                log.warning("Unknown input parameter: %s", j)
 
         if username == self._anonymous_user:
             password = 'WHATEVERYOUWANT:)'
