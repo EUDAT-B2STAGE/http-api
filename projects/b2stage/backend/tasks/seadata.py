@@ -737,7 +737,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 myjson, backdoor, self
             )
 
-        file_counts = params.get("data_file_count")
+        file_counts = params.get("file_count")
         if file_counts is None:
             return notify_error(
                 ErrorCodes.MISSING_FILECOUNT_PARAM,
