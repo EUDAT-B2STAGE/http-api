@@ -42,16 +42,14 @@ class B2safeProxy(EndpointResource):
         from flask import request
         auth = request.authorization
 
-        default_authscheme = 'credentials'
+        jargs = self.get_input()
         if auth is not None:
             username = auth.username
             password = auth.password
-            authscheme = default_authscheme
         else:
-            jargs = self.get_input()
             username = jargs.get('username')
             password = jargs.get('password')
-            authscheme = jargs.get('authscheme', default_authscheme)
+        authscheme = jargs.get('authscheme', 'credentials')
 
         if username == self._anonymous_user:
             password = 'WHATEVERYOUWANT:)'
