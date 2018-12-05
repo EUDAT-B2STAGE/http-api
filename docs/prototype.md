@@ -1,5 +1,4 @@
-
-# Prototype
+# Prototype #
 
 Hello EUDAT user!
 
@@ -23,7 +22,7 @@ The HTTP API prototype endpoints are accessible through the following two URI pr
 The status page for the current prototype is:
 https://b2stage-test.cineca.it/api/status
 
-This is the endpoint to call if you want to automatically verify if the server is responding to request. 
+This is the endpoint to call if you want to automatically verify if the server is responding to request.
 
 <!--
 This endpoint is also automatically monitored from the [uptime robot service](https://stats.uptimerobot.com/xGG9gTK3q).
@@ -33,7 +32,7 @@ This endpoint is also automatically monitored from the [uptime robot service](ht
 
 How do we understand which endpoint we need to call and which require authentication?
 
-The EUDAT B2STAGE HTTP API provide description of up-to-date specifications following the latest version (`3.0`) of the `openapi` standard from [Swagger](https://swagger.io/specification/). 
+The EUDAT B2STAGE HTTP API provide description of up-to-date specifications following the latest version (`3.0`) of the `openapi` standard from [Swagger](https://swagger.io/specification/).
 
 The description in `JSON` format is available at:
 https://b2stage-test.cineca.it/api/specs
@@ -57,7 +56,7 @@ Since the HTTP API server follows the `openapi` standard, you can query its endp
 
 ### python client
 
-You can find a [dedicated python module file](data/scripts/templates/client.py) to query the EUDAT B2STAGE HTTP-API. 
+You can find a [dedicated python module file](data/scripts/templates/client.py) to query the EUDAT B2STAGE HTTP-API.
 
 The script is already configured to work with a local deploy of the HTTP-API containers on your computer or to a remote host. Before using it open the file and [change](https://github.com/EUDAT-B2STAGE/http-api/blob/master/data/scripts/templates/client.py#L22-L23) the basic [parameters](https://github.com/EUDAT-B2STAGE/http-api/blob/master/data/scripts/templates/client.py#L27).
 

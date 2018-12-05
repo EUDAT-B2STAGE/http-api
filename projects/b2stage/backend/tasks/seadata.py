@@ -394,6 +394,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     myjson, backdoor, self
                 )
             log.verbose('Handle called')
+            # TODO: you should cache the obtained PID?
 
             ################
             if b2handle_output is None:
@@ -695,13 +696,20 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         # Make sure you have a path with no trailing slash
         order_path = order_path.rstrip('/')
 
+        # NAME OF FINAL ZIP
         # filename = 'order_%s' % order_id
-        filename = params.get('file_name')
+        filename = params.get('zipfile_name')
         if filename is None:
             return notify_error(
                 ErrorCodes.MISSING_FILENAME_PARAM,
                 myjson, backdoor, self
             )
+        if not isinstance(filename, str):
+            return notify_error(
+                ErrorCodes.INVALID_FILENAME_PARAM,
+                myjson, backdoor, self
+            )
+
         base_filename = filename
         if filename.endswith('.zip'):
             log.warning('%s already contains extention .zip', filename)
@@ -711,205 +719,332 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         # final_zip = self.complete_path(order_path, filename)
         final_zip = order_path + '/' + filename.rstrip('/')
 
-        # myjson['parameters']['zipfile_name'] = final_zip
+        log.info("order_id = %s", order_id)
+        log.info("order_path = %s", order_path)
+        log.info("final_zip = %s", final_zip)
+
+        # ############################################
+
+        # INPUT PARAMETERS CHECKS
 
         # zip file uploaded from partner
-        zip_file = params.get('zipfile_name')
-        if zip_file is None:
+        zip_files = params.get('file_name')
+        if zip_files is None:
             return notify_error(
                 ErrorCodes.MISSING_ZIPFILENAME_PARAM,
                 myjson, backdoor, self
             )
 
-        if not zip_file.endswith('.zip'):
-            zip_file = path.append_compress_extension(zip_file)
-        # partial_zip = self.complete_path(order_path, zip_file)
-        partial_zip = order_path + '/' + zip_file.rstrip('/')
-
-        log.info("order_id = %s", order_id)
-        log.info("order_path = %s", order_path)
-        log.info("partial_zip = %s", partial_zip)
-        log.info("final_zip = %s", final_zip)
-
-        file_size = params.get("file_size")
-        if file_size is None:
+        file_sizes = params.get("file_size")
+        if file_sizes is None:
             return notify_error(
                 ErrorCodes.MISSING_FILESIZE_PARAM,
                 myjson, backdoor, self
             )
-        try:
-            file_size = int(file_size)
-        except BaseException:
-            return notify_error(
-                ErrorCodes.INVALID_FILESIZE_PARAM,
-                myjson, backdoor, self
-            )
 
-        file_count = params.get("data_file_count")
-        if file_count is None:
+        file_counts = params.get("file_count")
+        if file_counts is None:
             return notify_error(
                 ErrorCodes.MISSING_FILECOUNT_PARAM,
                 myjson, backdoor, self
             )
-        try:
-            file_count = int(file_count)
-        except BaseException:
+
+        file_checksums = params.get("file_checksum")
+        if file_checksums is None:
+            return notify_error(
+                ErrorCodes.MISSING_CHECKSUM_PARAM,
+                myjson, backdoor, self
+            )
+
+        if not isinstance(zip_files, list):
+            return notify_error(
+                ErrorCodes.INVALID_ZIPFILENAME_PARAM,
+                myjson, backdoor, self
+            )
+
+        if not isinstance(file_sizes, list):
+            return notify_error(
+                ErrorCodes.INVALID_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
+        if not isinstance(file_counts, list):
             return notify_error(
                 ErrorCodes.INVALID_FILECOUNT_PARAM,
                 myjson, backdoor, self
             )
+        if not isinstance(file_checksums, list):
+            return notify_error(
+                ErrorCodes.INVALID_CHECKSUM_PARAM,
+                myjson, backdoor, self
+            )
+
+        zip_files_len = len(zip_files)
+        file_sizes_len = len(file_sizes)
+        file_counts_len = len(file_counts)
+        file_checksums_len = len(file_checksums)
+        list_len = max(
+            zip_files_len,
+            file_sizes_len,
+            file_counts_len,
+            file_checksums_len
+        )
+
+        if zip_files_len != list_len:
+            log.warning(
+                "Invalid zip_filename length %s, expected %s",
+                zip_files_len,
+                list_len
+            )
+            return notify_error(
+                ErrorCodes.INVALID_ZIPFILENAME_LENGTH,
+                myjson, backdoor, self
+            )
+
+        if file_sizes_len != list_len:
+            log.warning(
+                "Invalid file_size length %s, expected %s",
+                file_sizes_len,
+                list_len
+            )
+            return notify_error(
+                ErrorCodes.INVALID_FILESIZE_LENGTH,
+                myjson, backdoor, self
+            )
+
+        if file_counts_len != list_len:
+            log.warning(
+                "Invalid file_count length %s, expected %s",
+                file_counts_len,
+                list_len
+            )
+            return notify_error(
+                ErrorCodes.INVALID_FILECOUNT_LENGTH,
+                myjson, backdoor, self
+            )
+
+        if file_checksums_len != list_len:
+            log.warning(
+                "Invalid file_checksum length %s, expected %s",
+                file_checksums_len,
+                list_len
+            )
+            return notify_error(
+                ErrorCodes.INVALID_CHECKSUM_LENGTH,
+                myjson, backdoor, self
+            )
+
+        for v in file_sizes:
+            try:
+                v = int(v)
+            except BaseException:
+                return notify_error(
+                    ErrorCodes.INVALID_FILESIZE_PARAM,
+                    myjson, backdoor, self
+                )
+
+        for v in file_counts:
+            try:
+                v = int(v)
+            except BaseException:
+                return notify_error(
+                    ErrorCodes.INVALID_FILECOUNT_PARAM,
+                    myjson, backdoor, self
+                )
 
         self.update_state(state="PROGRESS")
-
-        file_checksum = params.get("file_checksum")
         imain = celery_app.get_service(service='irods')
 
-        # 1 - check if partial_zip exists
-        if not imain.exists(partial_zip):
-            return notify_error(
-                ErrorCodes.FILENAME_DOESNT_EXIST,
-                myjson, backdoor, self
-            )
+        errors = []
+        local_finalzip_path = None
+        log.info("Merging %s zip files", list_len)
+        for index in range(0, list_len):
+            zip_file = zip_files[index]
+            file_size = file_sizes[index]
+            file_count = file_counts[index]
+            file_checksum = file_checksums[index]
 
-        # 2 - copy partial_zip in local-dir
-        local_dir = path.join(myorderspath, order_id)
-        path.create(local_dir, directory=True, force=True)
-        log.info("Local dir = %s", local_dir)
+            if not zip_file.endswith('.zip'):
+                zip_file = path.append_compress_extension(zip_file)
+            partial_zip = order_path + '/' + zip_file.rstrip('/')
 
-        local_zip_path = path.join(
-            local_dir, os.path.basename(partial_zip))
-        imain.open(partial_zip, local_zip_path)
+            log.info("partial_zip = %s", partial_zip)
 
-        # 3 - verify checksum
-        log.info("Computing checksum...")
-        local_file_checksum = hashlib.md5(
-            open(local_zip_path, 'rb').read()
-        ).hexdigest()
+            # 1 - check if partial_zip exists
+            if not imain.exists(partial_zip):
+                errors.append({
+                    "error": ErrorCodes.FILENAME_DOESNT_EXIST[0],
+                    "description": ErrorCodes.FILENAME_DOESNT_EXIST[1],
+                    "subject": partial_zip,
+                })
+                continue
 
-        if local_file_checksum == file_checksum:
-            log.info("File checksum verified")
-        else:
-            return notify_error(
-                ErrorCodes.CHECKSUM_DOESNT_MATCH,
-                myjson, backdoor, self
-            )
+            # 2 - copy partial_zip in local-dir
+            local_dir = path.join(myorderspath, order_id)
+            path.create(local_dir, directory=True, force=True)
+            log.info("Local dir = %s", local_dir)
 
-        # 4 - verify size
-        local_file_size = os.path.getsize(local_zip_path)
-        if local_file_size == file_size:
-            log.info("File size verified")
-        else:
-            return notify_error(
-                ErrorCodes.FILESIZE_DOESNT_MATCH,
-                myjson, backdoor, self
-            )
+            local_zip_path = path.join(
+                local_dir, os.path.basename(partial_zip))
+            imain.open(partial_zip, local_zip_path)
 
-        # 5 - decompress
-        d = os.path.splitext(os.path.basename(partial_zip))[0]
-        local_unzipdir = path.join(local_dir, d)
+            # 3 - verify checksum
+            log.info("Computing checksum for %s...", partial_zip)
+            local_file_checksum = hashlib.md5(
+                open(local_zip_path, 'rb').read()
+            ).hexdigest()
 
-        if os.path.isdir(local_unzipdir):
-            log.warning("%s already exist, removing it", local_unzipdir)
-            rmtree(local_unzipdir, ignore_errors=True)
+            if local_file_checksum == file_checksum:
+                log.info("File checksum verified for %s", partial_zip)
+            else:
+                errors.append({
+                    "error": ErrorCodes.CHECKSUM_DOESNT_MATCH[0],
+                    "description": ErrorCodes.CHECKSUM_DOESNT_MATCH[1],
+                    "subject": partial_zip,
+                })
+                continue
 
-        path.create(local_dir, directory=True, force=True)
-        log.info("Local unzip dir = %s", local_unzipdir)
+            # 4 - verify size
+            local_file_size = os.path.getsize(local_zip_path)
+            if local_file_size == file_size:
+                log.info("File size verified for %s", partial_zip)
+            else:
+                log.error("Expected file size %s for %s", file_size, partial_zip)
+                errors.append({
+                    "error": ErrorCodes.FILESIZE_DOESNT_MATCH[0],
+                    "description": ErrorCodes.FILESIZE_DOESNT_MATCH[1],
+                    "subject": partial_zip,
+                })
+                continue
 
-        log.info("Unzipping %s", partial_zip)
-        zip_ref = None
-        try:
-            zip_ref = zipfile.ZipFile(local_zip_path, 'r')
-        except FileNotFoundError:
-            return notify_error(
-                ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
-                myjson, backdoor, self, extra=local_zip_path
-            )
-        except zipfile.BadZipFile:
-            return notify_error(
-                ErrorCodes.UNZIP_ERROR_INVALID_FILE,
-                myjson, backdoor, self, extra=local_zip_path
-            )
+            # 5 - decompress
+            d = os.path.splitext(os.path.basename(partial_zip))[0]
+            local_unzipdir = path.join(local_dir, d)
 
-        if zip_ref is not None:
-            zip_ref.extractall(local_unzipdir)
-            zip_ref.close()
+            if os.path.isdir(local_unzipdir):
+                log.warning("%s already exist, removing it", local_unzipdir)
+                rmtree(local_unzipdir, ignore_errors=True)
 
-        # 6 - verify num files?
-        local_file_count = 0
-        for f in os.listdir(local_unzipdir):
-            # log.info(f)
-            local_file_count += 1
-        log.info("Unzipped %d files from %s", local_file_count, partial_zip)
+            path.create(local_dir, directory=True, force=True)
+            log.info("Local unzip dir = %s", local_unzipdir)
 
-        if local_file_count == file_count:
-            log.info("File count verified")
-        else:
-            return notify_error(
-                ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
-                myjson, backdoor, self
-            )
-
-        # 7 - check if final_zip exists
-        if not imain.exists(final_zip):
-            # 8 - if not, simply copy partial_zip -> final_zip
-            log.info("Final zip does not exist, copying partial zip")
-            try:
-                imain.icopy(partial_zip, final_zip)
-            except IrodsException as e:
-                return notify_error(
-                    ErrorCodes.B2SAFE_UPLOAD_ERROR,
-                    myjson, backdoor, self, extra=str(e)
-                )
-            local_finalzip_path = local_zip_path
-        else:
-            # 9 - if already exists merge zips
-            log.info("Already exists, merge zip files")
-
-            log.info("Copying zipfile locally")
-            local_finalzip_path = path.join(
-                local_dir, os.path.basename(final_zip))
-            imain.open(final_zip, local_finalzip_path)
-
-            log.info("Reading local zipfile")
+            log.info("Unzipping %s", partial_zip)
             zip_ref = None
             try:
-                zip_ref = zipfile.ZipFile(local_finalzip_path, 'a')
+                zip_ref = zipfile.ZipFile(local_zip_path, 'r')
             except FileNotFoundError:
-                return notify_error(
-                    ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
-                    myjson, backdoor, self, extra=local_finalzip_path
-                )
+                log.error("Unable to find %s", local_zip_path)
+                errors.append({
+                    "error": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[0],
+                    "description": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[1],
+                    "subject": partial_zip,
+                })
+                continue
+
             except zipfile.BadZipFile:
-                return notify_error(
-                    ErrorCodes.UNZIP_ERROR_INVALID_FILE,
-                    myjson, backdoor, self, extra=local_finalzip_path
-                )
+                log.error("Invalid zip fip file %s", local_zip_path)
+                errors.append({
+                    "error": ErrorCodes.UNZIP_ERROR_INVALID_FILE[0],
+                    "description": ErrorCodes.UNZIP_ERROR_INVALID_FILE[1],
+                    "subject": partial_zip,
+                })
+                continue
 
-            log.info("Adding files to local zipfile")
             if zip_ref is not None:
+                zip_ref.extractall(local_unzipdir)
+                zip_ref.close()
+
+            # 6 - verify num files?
+            local_file_count = 0
+            for f in os.listdir(local_unzipdir):
+                local_file_count += 1
+            log.info("Unzipped %d files from %s", local_file_count, partial_zip)
+
+            if local_file_count == int(file_count):
+                log.info("File count verified for %s", partial_zip)
+            else:
+                log.error("Expected %s files for %s", file_count, partial_zip)
+                errors.append({
+                    "error": ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT[0],
+                    "description": ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT[1],
+                    "subject": partial_zip,
+                })
+                continue
+
+            # 7 - check if final_zip exists
+            if not imain.exists(final_zip):
+                # 8 - if not, simply copy partial_zip -> final_zip
+                log.info("Final zip does not exist, copying partial zip")
                 try:
-                    for f in os.listdir(local_unzipdir):
-                        # log.debug("Adding %s", f)
-                        zip_ref.write(
-                            os.path.join(local_unzipdir, f), f)
-                    zip_ref.close()
-                except BaseException:
-                    return notify_error(
-                        ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
-                        myjson, backdoor, self, extra=local_finalzip_path
-                    )
+                    imain.icopy(partial_zip, final_zip)
+                except IrodsException as e:
+                    log.error(str(e))
+                    errors.append({
+                        "error": ErrorCodes.B2SAFE_UPLOAD_ERROR[0],
+                        "description": ErrorCodes.B2SAFE_UPLOAD_ERROR[1],
+                        "subject": partial_zip,
+                    })
+                    continue
+                local_finalzip_path = local_zip_path
+            else:
+                # 9 - if already exists merge zips
+                log.info("Already exists, merge zip files")
 
-            log.info("Creating a backup copy of final zip")
-            imain.move(final_zip, final_zip + ".bak")
+                log.info("Copying zipfile locally")
+                local_finalzip_path = path.join(
+                    local_dir, os.path.basename(final_zip))
+                imain.open(final_zip, local_finalzip_path)
 
-            log.info("Uploading final updated zip")
-            imain.put(local_finalzip_path, final_zip)
+                log.info("Reading local zipfile")
+                zip_ref = None
+                try:
+                    zip_ref = zipfile.ZipFile(local_finalzip_path, 'a')
+                except FileNotFoundError:
+                    log.error("Local file not found: %s", local_finalzip_path)
+                    errors.append({
+                        "error": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[0],
+                        "description": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[1],
+                        "subject": partial_zip,
+                    })
+                    continue
+
+                except zipfile.BadZipFile:
+                    log.error("Invalid local file not: %s", local_finalzip_path)
+                    errors.append({
+                        "error": ErrorCodes.UNZIP_ERROR_INVALID_FILE[0],
+                        "description": ErrorCodes.UNZIP_ERROR_INVALID_FILE[1],
+                        "subject": partial_zip,
+                    })
+                    continue
+
+                log.info("Adding files to local zipfile")
+                if zip_ref is not None:
+                    try:
+                        for f in os.listdir(local_unzipdir):
+                            # log.debug("Adding %s", f)
+                            zip_ref.write(
+                                os.path.join(local_unzipdir, f), f)
+                        zip_ref.close()
+                    except BaseException:
+                        errors.append({
+                            "error": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[0],
+                            "description": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[1],
+                            "subject": partial_zip,
+                        })
+                        continue
+
+                log.info("Creating a backup copy of final zip")
+                imain.move(final_zip, final_zip + ".bak")
+
+                log.info("Uploading final updated zip")
+                imain.put(local_finalzip_path, final_zip)
+
+                imain.remove(partial_zip)
 
         self.update_state(state="COMPLETED")
 
-        imain.remove(partial_zip)
-
-        if os.path.getsize(local_finalzip_path) > MAX_ZIP_SIZE:
+        if local_finalzip_path is None:
+            log.warning("local_finalzip_path is None, unable to check size")
+        elif os.path.getsize(local_finalzip_path) > MAX_ZIP_SIZE:
             log.warning("Zip too large, splitting %s", local_finalzip_path)
 
             # Create a sub folder for split files. If already exists,
@@ -987,6 +1122,8 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 log.info("Uploading %s -> %s", subzip_path, subzip_ipath)
                 imain.put(str(subzip_path), str(subzip_ipath))
 
+        if len(errors) > 0:
+            myjson['errors'] = errors
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 

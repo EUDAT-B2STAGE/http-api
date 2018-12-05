@@ -1,6 +1,5 @@
-
-file: pamtest 
-class: PAMTest 
+file: pamtest
+class: PAMTest
 schema:
   expose: true
 mapping:

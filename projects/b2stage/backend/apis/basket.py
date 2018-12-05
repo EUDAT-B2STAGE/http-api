@@ -182,11 +182,13 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ils = imain.list(order_path, detailed=True)
 
         u = get_order_zip_file_name(order_id, restricted=False, index=1)
+        # if a splitted unrestricted zip exists, skip the unsplitted file
         if u in ils:
             u = get_order_zip_file_name(order_id, restricted=False, index=None)
             ils.pop(u, None)
 
         r = get_order_zip_file_name(order_id, restricted=True, index=1)
+        # if a splitted restricted zip exists, skip the unsplitted file
         if r in ils:
             r = get_order_zip_file_name(order_id, restricted=True, index=None)
             ils.pop(r, None)
@@ -211,9 +213,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # response.append(obj)
             response.append(data)
 
-        if len(response) < 1:
-            error = "Order '%s': no files yet" % order_id
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        # if len(response) < 1:
+        #     error = "Order '%s': no files yet" % order_id
+        #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
         msg = prepare_message(self, log_string='end', status='completed')

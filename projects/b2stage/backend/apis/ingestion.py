@@ -201,7 +201,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.info("Submit async celery task")
         # task = CeleryExt.copy_from_b2safe_to_b2host.apply_async(
         task = CeleryExt.copy_from_b2host_to_b2safe.apply_async(
-            args=[batch_id, zip_path_irods, str(zip_path), backdoor])
+            args=[batch_id, zip_path_irods, str(zip_path), backdoor],
+            queue='ingestion', routing_key='ingestion')
         log.warning("Async job: %s", task.id)
 
         # Log end (of upload) into RabbitMQ
@@ -285,7 +286,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.debug("Batch path: %s", batch_path)
 
         task = CeleryExt.delete_batches.apply_async(
-            args=[batch_path, json_input]
+            args=[batch_path, json_input],
+            queue='ingestion', routing_key='ingestion'
         )
         log.warning("Async job: %s", task.id)
         return self.return_async_id(task.id)

@@ -8,8 +8,8 @@ import json
 import time
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
-from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
-from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION 
+# from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
+from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from utilities import htmlcodes as hcodes
@@ -170,15 +170,30 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         #     name = '%s_%s' % (pkey, key)
         #     envs[name.upper()] = value
 
+        response = {
+            'batch_id': batch_id,
+            'qc_name': qc_name,
+            'status': 'executed',
+            'input': input_json,
+        }
+
         ###################
-        # TODO: only one quality check at the time on the same batch
-        # should I ps containers before launching?
+        rancher = self.get_or_create_handle()
         container_name = self.get_container_name(batch_id, qc_name)
+
+        # Duplicated quality checks on the same batch are not allowed
+        container_obj = rancher.get_container_object(container_name)
+        if container_obj is not None:
+            log.error("Docker container %s already exists!", container_name)
+            response['status'] = 'existing'
+            code = hcodes.HTTP_BAD_CONFLICT
+            return self.force_response(
+                response, errors=[response['status']], code=code)
+
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
         ###########################
         # ## ENVS
-        rancher = self.get_or_create_handle()
 
         host_ingestion_path = self.get_ingestion_path_on_host(batch_id)
         container_ingestion_path = self.get_ingestion_path_in_container()
@@ -247,17 +262,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             extras=extra_params
         )
 
-        response = {
-            'batch_id': batch_id,
-            'qc_name': qc_name,
-            'status': 'executed',
-            'input': input_json,
-        }
-
         if errors is not None:
             if isinstance(errors, dict):
                 edict = errors.get('error', {})
-                # print("TEST", edict)
+
+                # This case should never happens, since already verified before
                 if edict.get('code') == 'NotUnique':
                     response['status'] = 'existing'
                     code = hcodes.HTTP_BAD_CONFLICT
@@ -282,11 +291,30 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container_name = self.get_container_name(batch_id, qc_name)
         rancher = self.get_or_create_handle()
         rancher.remove_container_by_name(container_name)
-        log.info("About to remove: %s", container_name)
+        # wait up to 10 seconds to verify the deletion
+        log.info("Removing: %s...", container_name)
+        removed = False
+        for i in range(0, 20):
+            time.sleep(0.5)
+            container_obj = rancher.get_container_object(container_name)
+            if container_obj is None:
+                log.info("%s removed", container_name)
+                removed = True
+                break
+            else:
+                log.very_verbose("%s still exists", container_name)
 
-        response = {
-            'batch_id': batch_id,
-            'qc_name': qc_name,
-            'status': 'removed',
-        }
+        if not removed:
+            log.warning("%s still in removal status", container_name)
+            response = {
+                'batch_id': batch_id,
+                'qc_name': qc_name,
+                'status': 'not_yet_removed',
+            }
+        else:
+            response = {
+                'batch_id': batch_id,
+                'qc_name': qc_name,
+                'status': 'removed',
+            }
         return response

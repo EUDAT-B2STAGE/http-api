@@ -26,8 +26,6 @@ log = get_logger(__name__)
 
 class B2accessUtilities(EndpointResource):
 
-    _certs = None
-
     def create_b2access_client(self, auth, decorate=False):
         """ Create the b2access Flask oauth2 object """
 
@@ -222,9 +220,7 @@ class B2accessUtilities(EndpointResource):
     #     b2access_prod = auth._oauth2.get('prod')
 
     #     # Call the oauth2 object requesting a certificate
-    #     if self._certs is None:
-    #         self._certs = Certificates()
-    #     proxy_file = self._certs.proxy_from_ca(b2accessCA, prod=b2access_prod)
+    #     proxy_file = Certificates.proxy_from_ca(b2accessCA, prod=b2access_prod)
 
     #     # Save the proxy filename into the database
     #     if proxy_file is None:
@@ -274,9 +270,7 @@ class B2accessUtilities(EndpointResource):
         auth.associate_object_to_attr(user, 'irodsuser', irods_user)
 
         # Copy certificate in the dedicated path, and update db info
-        if self._certs is None:
-            self._certs = Certificates()
-        crt = self._certs.save_proxy_cert(
+        crt = Certificates.save_proxy_cert(
             user.proxyfile, unityid=user.unity, user=irods_user)
         auth.associate_object_to_attr(user, 'proxyfile', crt)
 

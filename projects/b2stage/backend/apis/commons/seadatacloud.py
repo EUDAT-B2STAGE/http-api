@@ -22,9 +22,9 @@ class ErrorCodes(object):
     MISSING_ZIPFILENAME_PARAM = ("4000", "Parameter zipfile_name is missing")
     MISSING_FILENAME_PARAM = ("4001", "Parameter file_name is missing")
     MISSING_FILESIZE_PARAM = ("4002", "Parameter file_size is missing")
-    INVALID_FILESIZE_PARAM = ("4003", "Invalid parameter file_size")
+    INVALID_FILESIZE_PARAM = ("4003", "Invalid parameter file_size, list of integers expected")
     MISSING_FILECOUNT_PARAM = ("4004", "Parameter file_count is missing")
-    INVALID_FILECOUNT_PARAM = ("4005", "Invalid parameter file_count")
+    INVALID_FILECOUNT_PARAM = ("4005", "Invalid parameter file_count, list of integers expected")
     FILENAME_DOESNT_EXIST = ("4006", "Partner zip (zipfile_name) does not exist")
     CHECKSUM_DOESNT_MATCH = ("4007", "Checksum does not match")
     FILESIZE_DOESNT_MATCH = ("4008", "File size does not match")
@@ -48,7 +48,14 @@ class ErrorCodes(object):
     MISSING_ORDERS_PARAMETER = ("4026", "Parameter orders is missing")
     EMPTY_BATCHES_PARAMETER = ("4027", "Parameter batches is empty")
     EMPTY_ORDERS_PARAMETER = ("4028", "Parameter orders is empty")
-
+    MISSING_CHECKSUM_PARAM = ("4029", "Parameter file_checksum is missing")
+    INVALID_ZIPFILENAME_PARAM = ("4030", "Invalid parameter zipfile_name, list expected")
+    INVALID_CHECKSUM_PARAM = ("4031", "Invalid parameter file_checksum, list expected")
+    INVALID_ZIPFILENAME_LENGTH = ("4032", "Unexpected lenght of zipfile_name parameter")
+    INVALID_FILESIZE_LENGTH = ("4033", "Unexpected lenght of file_size parameter")
+    INVALID_FILECOUNT_LENGTH = ("4034", "Unexpected lenght of file_count parameter")
+    INVALID_CHECKSUM_LENGTH = ("4035", "Unexpected lenght of file_checksum parameter")
+    INVALID_FILENAME_PARAM = ("4036", "Invalid parameter zipfile_name, a string is expected")
 
 class Metadata(object):
 

@@ -1,23 +1,21 @@
-
-# B2SAFE dockerized
+# B2SAFE dockerized ##
 
 This is an effort to maintain an updated iRODS image working,
 with B2SAFE extensions installed at the latest version.
 
-## Prototype
+## Prototype ##
 
 Currently the prototype is based on the HTTP-API development branch.
 
-The first draft is composed of three containers: 
+The first draft is composed of three containers:
 
 1. a simple iRODS `iCAT` server `v4.2.2` with Globus/GSI installed
 2. Postgresql for the iCAT database
 3. A client to check connecting to iRODS from another container at the very least
 
-## Quick start
+## Quick start ##
 
 ```bash
-
 # NOTE: do not pull from existing repository
 # remove any existing repo instead:
 rm -rf myb2safe

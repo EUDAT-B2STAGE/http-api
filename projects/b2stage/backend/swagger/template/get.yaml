@@ -3,8 +3,7 @@ common:
     authentication: false
 
 helloworld:
-  summary: Unauthenticated hello world 
+  summary: Unauthenticated hello world
   responses:
     '200':
-      description: Hello world returned 
-
+      description: Hello world returned

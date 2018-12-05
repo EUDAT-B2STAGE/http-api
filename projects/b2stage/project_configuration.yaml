@@ -42,13 +42,14 @@ variables:
     ## Seadata project variable
     SEADATA_PROJECT: 0
     SEADATA_EDMO_CODE:
-    SEADATA_API_VERSION: 1.0.4.0018
+    SEADATA_API_VERSION: 1.0.4.0021
     # The names of the directories in the irods zone
     # for pre-production batches, for production batches,
     # and for orders being prepared.
     SEADATA_INGESTION_COLL: batches  # on irods!
     SEADATA_ORDERS_COLL: orders      # on irods!
     SEADATA_PRODUCTION_COLL: cloud   # on irods!
+    SEADATA_PRIVILEGED_USERS:  # command separated list of privileges users
 
     SEADATA_WORKSPACE_INGESTION: batches # on filesystem (to be mounted to celery workers and rancher containers)
     SEADATA_WORKSPACE_ORDERS: orders       # on filesystem (to be mounted to celery workers and rancher containers)

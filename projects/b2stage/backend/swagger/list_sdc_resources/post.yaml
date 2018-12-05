@@ -1,11 +1,10 @@
-
 common:
   custom:
     # publish: false
     authentication: true
 
 list:
-  summary: Request a list of existing batches and orders 
+  summary: Request a list of existing batches and orders
   responses:
     '200':
       description: "returning id of async request"

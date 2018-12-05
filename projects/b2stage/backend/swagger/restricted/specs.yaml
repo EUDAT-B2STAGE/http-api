@@ -1,6 +1,9 @@
 depends_on:
   - SEADATA_PROJECT
 
+depends_on:
+  - SEADATA_PROJECT
+
 file: restricted
 class: Restricted
 schema:

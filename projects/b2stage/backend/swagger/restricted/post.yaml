@@ -2,6 +2,10 @@ common:
   custom:
     # authentication: false
     authentication: true
+    authorized:
+      - admin_root
+      - staff_user
+    required_roles: any
 
 restricted:
   summary: Merge zip uploaded by a partner with the main order zip

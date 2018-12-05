@@ -301,7 +301,7 @@ class Rancher(object):
                 while True:
                     co = self.get_container_object(container_name)
                     log.debug('Container "%s": %s (%s, %s: %s)', container_name, co.state, co.transitioning, co.transitioningMessage, co.transitioningProgress)
-                    
+
                     # Add errors returned by rancher to the errors object:
                     if isinstance(co.transitioningMessage, str):
                         if  'error' in co.transitioningMessage.lower():
