@@ -213,9 +213,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # response.append(obj)
             response.append(data)
 
-        if len(response) < 1:
-            error = "Order '%s': no files yet" % order_id
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+        # if len(response) < 1:
+        #     error = "Order '%s': no files yet" % order_id
+        #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
         msg = prepare_message(self, log_string='end', status='completed')
