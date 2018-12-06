@@ -294,7 +294,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # wait up to 10 seconds to verify the deletion
         log.info("Removing: %s...", container_name)
         removed = False
-        for i in range(0, 20):
+        for _ in range(0, 20):
             time.sleep(0.5)
             container_obj = rancher.get_container_object(container_name)
             if container_obj is None:
