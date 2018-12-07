@@ -2,7 +2,11 @@
 withid:
   custom:
     authentication: true
-  summary: Check if the ingestion batch is enabled and filled
+  summary: Check if the ingestion batch is enabled
   responses:
+    '404':
+      description: Batch not enabled or lack of permissions
+    '400':
+      description: Batch misconfiguration
     '200':
-      description: File is either enabled or filled
+      description: Batch enabled

@@ -6,8 +6,4 @@ order:
   summary: "List orders"
   responses:
     '200':
-      description: The list of zip files available, if any
-    '404':
-      description: Batch not enabled or lack of permissions
-    '400':
-      description: Batch misconfiguration
+      description: The list of zip files available
