@@ -54,7 +54,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return self.send_errors(
                 "Batch '%s' not enabled or you have no permissions"
                 % batch_id,
-                code=hcodes.HTTP_BAD_REQUEST)
+                code=hcodes.HTTP_BAD_NOTFOUND)
 
         if batch_status == BATCH_MISCONFIGURATION:
             log.error(
@@ -62,7 +62,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 len(batch_files), batch_path)
             return self.send_errors(
                 "Misconfiguration for batch_id %s" % batch_id,
-                code=hcodes.HTTP_BAD_NOTFOUND)
+                code=hcodes.HTTP_BAD_REQUEST)
 
         # files = imain.list(batch_path, detailed=True)
         # if len(files) != 1:
