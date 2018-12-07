@@ -56,17 +56,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        # files = imain.list(batch_path, detailed=True)
-        # if len(files) != 1:
-        #     return self.send_errors(
-        #         "Batch '%s' not yet filled" % batch_id,
-        #         code=hcodes.HTTP_BAD_REQUEST)
-
-        if batch_status == NOT_FILLED_BATCH:
-            return self.send_errors(
-                "Batch '%s' not yet filled" % batch_id,
-                code=hcodes.HTTP_BAD_REQUEST)
-
         if batch_status == BATCH_MISCONFIGURATION:
             log.error(
                 'Misconfiguration: %s files in %s (expected 1)',
@@ -75,9 +64,22 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 "Misconfiguration for batch_id %s" % batch_id,
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
+        # files = imain.list(batch_path, detailed=True)
+        # if len(files) != 1:
+        #     return self.send_errors(
+        #         "Batch '%s' not yet filled" % batch_id,
+        #         code=hcodes.HTTP_BAD_REQUEST)
+
+        # if batch_status == NOT_FILLED_BATCH:
+        #     return self.send_errors(
+        #         "Batch '%s' not yet filled" % batch_id,
+        #         code=hcodes.HTTP_BAD_REQUEST)
+
         data = {}
         data['batch'] = batch_id
-        if batch_status == ENABLED_BATCH:
+        if batch_status == NOT_FILLED_BATCH:
+            data['status'] = 'not_filled'
+        elif batch_status == ENABLED_BATCH:
             data['status'] = 'enabled'
         elif batch_status == PARTIALLY_ENABLED_BATCH:
             data['status'] = 'partially_enabled'
