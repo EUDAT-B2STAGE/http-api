@@ -130,7 +130,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             )
             log_into_queue(self, log_msg)
 
-            return self.send_errors(err_msg, code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(err_msg, code=hcodes.HTTP_BAD_NOTFOUND)
 
         ########################
         # NOTE: only streaming is allowed, as it is more performant

@@ -13,3 +13,5 @@ withidandfile:
   responses:
     '200':
       description: File was uploaded without errors
+    '404'
+      description: Batch not enabled or lack of permissions

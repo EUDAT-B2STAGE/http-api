@@ -6,6 +6,9 @@ withoutid:
   responses:
     '200':
       description: The batch for the specified identifier has been activated
+    '400':
+      description: Bad request (missing parameters)
+
   parameters:
     - name: batch_id
       in: query

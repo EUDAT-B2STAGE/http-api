@@ -176,7 +176,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.debug("Order path: %s", order_path)
         if not imain.is_collection(order_path):
             error = "Order '%s': not existing" % order_id
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
         ##################
         ils = imain.list(order_path, detailed=True)

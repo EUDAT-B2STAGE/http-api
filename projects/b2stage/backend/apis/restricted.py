@@ -87,7 +87,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ###############
         error = "Order '%s' not enabled or you have no permissions" % order_id
         if not imain.is_collection(order_path):
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
         else:
             metadata, _ = imain.get_metadata(order_path)
             key = 'restricted'
