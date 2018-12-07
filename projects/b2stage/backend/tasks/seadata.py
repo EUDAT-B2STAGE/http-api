@@ -220,9 +220,10 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
         for element in elements:
 
-            tmp = element.get('temp_id')  # do not pop
-            current_file_name = path.last_part(tmp)
-            local_element = path.join(local_path, tmp, return_str=False)
+            temp_id = element.get('temp_id')  # do not pop
+            record_id = element.get('format_n_code')
+            current_file_name = path.last_part(temp_id)
+            local_element = path.join(local_path, temp_id, return_str=False)
 
             # log.info('Element: %s', element)
             # if local_element in files:
@@ -233,7 +234,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 errors.append({
                     "error": ErrorCodes.INGESTION_FILE_NOT_FOUND[0],
                     "description": ErrorCodes.INGESTION_FILE_NOT_FOUND[1],
-                    "subject": tmp,
+                    "subject": record_id,
                 })
 
                 self.update_state(state="PROGRESS", meta={
@@ -250,7 +251,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 errors.append({
                     "error": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[0],
                     "description": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[1],
-                    "subject": tmp,
+                    "subject": record_id,
                 })
 
                 self.update_state(state="PROGRESS", meta={
@@ -267,7 +268,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 errors.append({
                     "error": ErrorCodes.UNABLE_TO_ASSIGN_PID[0],
                     "description": ErrorCodes.UNABLE_TO_ASSIGN_PID[1],
-                    "subject": tmp,
+                    "subject": record_id,
                 })
 
                 self.update_state(state="PROGRESS", meta={
