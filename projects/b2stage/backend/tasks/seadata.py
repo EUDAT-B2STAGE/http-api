@@ -875,7 +875,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 errors.append({
                     "error": ErrorCodes.FILENAME_DOESNT_EXIST[0],
                     "description": ErrorCodes.FILENAME_DOESNT_EXIST[1],
-                    "subject": partial_zip,
+                    "subject": zip_file,
                 })
                 continue
 
@@ -900,7 +900,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 errors.append({
                     "error": ErrorCodes.CHECKSUM_DOESNT_MATCH[0],
                     "description": ErrorCodes.CHECKSUM_DOESNT_MATCH[1],
-                    "subject": partial_zip,
+                    "subject": zip_file,
                 })
                 continue
 
@@ -916,7 +916,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 errors.append({
                     "error": ErrorCodes.FILESIZE_DOESNT_MATCH[0],
                     "description": ErrorCodes.FILESIZE_DOESNT_MATCH[1],
-                    "subject": partial_zip,
+                    "subject": zip_file,
                 })
                 continue
 
@@ -940,7 +940,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 errors.append({
                     "error": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[0],
                     "description": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[1],
-                    "subject": partial_zip,
+                    "subject": zip_file,
                 })
                 continue
 
@@ -949,7 +949,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 errors.append({
                     "error": ErrorCodes.UNZIP_ERROR_INVALID_FILE[0],
                     "description": ErrorCodes.UNZIP_ERROR_INVALID_FILE[1],
-                    "subject": partial_zip,
+                    "subject": zip_file,
                 })
                 continue
 
@@ -970,7 +970,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 errors.append({
                     "error": ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT[0],
                     "description": ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT[1],
-                    "subject": partial_zip,
+                    "subject": zip_file,
                 })
                 continue
 
@@ -985,7 +985,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                     errors.append({
                         "error": ErrorCodes.B2SAFE_UPLOAD_ERROR[0],
                         "description": ErrorCodes.B2SAFE_UPLOAD_ERROR[1],
-                        "subject": partial_zip,
+                        "subject": zip_file,
                     })
                     continue
                 local_finalzip_path = local_zip_path
@@ -1007,7 +1007,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                     errors.append({
                         "error": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[0],
                         "description": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[1],
-                        "subject": partial_zip,
+                        "subject": zip_file,
                     })
                     continue
 
@@ -1016,7 +1016,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                     errors.append({
                         "error": ErrorCodes.UNZIP_ERROR_INVALID_FILE[0],
                         "description": ErrorCodes.UNZIP_ERROR_INVALID_FILE[1],
-                        "subject": partial_zip,
+                        "subject": zip_file,
                     })
                     continue
 
@@ -1032,7 +1032,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                         errors.append({
                             "error": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[0],
                             "description": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[1],
-                            "subject": partial_zip,
+                            "subject": zip_file,
                         })
                         continue
 
