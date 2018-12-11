@@ -909,7 +909,10 @@ def merge_restricted_order(self, order_id, order_path, myjson):
             if local_file_size == file_size:
                 log.info("File size verified for %s", partial_zip)
             else:
-                log.error("Expected file size %s for %s", file_size, partial_zip)
+                log.error(
+                    "File size %s for %s, expected %s",
+                    local_file_size, partial_zip, file_size
+                )
                 errors.append({
                     "error": ErrorCodes.FILESIZE_DOESNT_MATCH[0],
                     "description": ErrorCodes.FILESIZE_DOESNT_MATCH[1],
@@ -1009,7 +1012,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                     continue
 
                 except zipfile.BadZipFile:
-                    log.error("Invalid local file not: %s", local_finalzip_path)
+                    log.error("Invalid local file: %s", local_finalzip_path)
                     errors.append({
                         "error": ErrorCodes.UNZIP_ERROR_INVALID_FILE[0],
                         "description": ErrorCodes.UNZIP_ERROR_INVALID_FILE[1],
