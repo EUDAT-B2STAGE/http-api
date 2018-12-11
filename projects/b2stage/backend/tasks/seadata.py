@@ -1047,7 +1047,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         self.update_state(state="COMPLETED")
 
         if local_finalzip_path is None:
-            log.warning("local_finalzip_path is None, unable to check size")
+            log.warning("local_finalzip_path is None, unable to check size of file zip")
         elif os.path.getsize(local_finalzip_path) > MAX_ZIP_SIZE:
             log.warning("Zip too large, splitting %s", local_finalzip_path)
 
