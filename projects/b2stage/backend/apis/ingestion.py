@@ -11,7 +11,7 @@ from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
-from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
+from b2stage.apis.commons.cluster import INGESTION_DIR, LOCALPATH
 from b2stage.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
 from utilities import path
@@ -42,7 +42,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # icom = obj.icommands
 
         batch_path = self.get_irods_batch_path(imain, batch_id)
-        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        local_path = path.join(LOCALPATH, INGESTION_DIR, batch_id)
         log.info("Batch irods path: %s", batch_path)
         log.info("Batch local path: %s", local_path)
 
@@ -172,7 +172,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ########################
         log.verbose("Cloud path: %s", zip_path_irods)  # ingestion
 
-        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        local_path = path.join(LOCALPATH, INGESTION_DIR, batch_id)
         path.create(local_path, directory=True, force=True)
         zip_path = path.join(local_path, zip_name)
         log.info("Local path: %s", zip_path)

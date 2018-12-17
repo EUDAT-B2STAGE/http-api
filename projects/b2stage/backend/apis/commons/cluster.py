@@ -22,6 +22,18 @@ b2stage/project_configuration.yml
 INGESTION_COLL = seadata_vars.get('ingestion_coll')    # "batches"
 ORDERS_COLL = seadata_vars.get('orders_coll')          # "orders"
 PRODUCTION_COLL = seadata_vars.get('production_coll')  # "cloud"
+
+'''
+This is where the data sits on the celery/rancher host
+(to be mounted to inside the celery and rancher containers).
+'''
+res_vars = detector.load_group(label='resources')
+LOCALPATH = res_vars.get('localpath')  # "/nfs/share"
+
+'''
+This is where the data that sits on the celery host
+is mounted to inside the celery containers.
+'''
 MOUNTPOINT = seadata_vars.get('resources_mountpoint')  # "/usr/share"
 
 '''
@@ -32,13 +44,9 @@ INGESTION_DIR = seadata_vars.get('workspace_ingestion')    # "batches"
 ORDERS_DIR = seadata_vars.get('workspace_orders')          # "orders"
 
 '''
-These are how the paths to the data on the host
-are mounted into the containers.
-
-Prepended before this is the RESOURCES_LOCALPATH,
-defaulting to /usr/share.
+This are where the data that sits on the Rancher host
+is mounted to inside the QC containers (running on rancher).
 '''
-
 # THIS CANNOT CHANGE, otherwise QC containers will not work anymore!
 FS_PATH_IN_CONTAINER = '/usr/share/batch'
 # At least, the 'batch' part has to be like this, I am quite sure.
@@ -91,13 +99,13 @@ class ClusterContainerEndpoint(EndpointResource):
         Return the path where the data is located
         on the Rancher host.
 
-        The parts of the path can be configured,
-        see: RESOURCES_LOCALPATH=/usr/share
+        The first part of the path can be configured,
+        see: RESOURCES_LOCALPATH=/nfs/share
         see: SEADATA_WORKSPACE_INGESTION=ingestion
 
-        Example: /usr/share/ingestion/<batch_id>
+        Example: /nfs/share/ingestion/<batch_id>
         '''
-        paths = [self._handle._localpath]      # "/usr/share" (default)
+        paths = [self._handle._localpath]      # "/nfs/share" (default)
         paths.append(INGESTION_DIR)   # "batches"  (default)
         paths.append(batch_id)
         return str(path.build(paths))
@@ -106,10 +114,6 @@ class ClusterContainerEndpoint(EndpointResource):
         '''
         Return the path where the data is located
         mounted inside the Rancher containers.
-
-        The start of the path can be configured,
-        see: RESOURCES_LOCALPATH=/usr/local
-        The directory name is fixed.
 
         Note: The batch_id is not part of the path,
         as every container only works on one batch
