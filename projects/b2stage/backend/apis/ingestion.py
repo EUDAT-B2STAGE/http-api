@@ -260,8 +260,18 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             # ianonymous.set_permissions(
             #     batch_path,
             #     permission='null', userOrGroup=icom.anonymous_user)
-            local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
-            path.create(local_path, directory=True, force=True)
+
+            # Create directory on file system:
+            try:
+                local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+                log.info("Batch local path: %s", local_path)
+                path.create(local_path, directory=True, force=True)
+            except FileNotFoundError as e:
+                err_msg = ('Could not create directory "%s" (%s)' % (local_path, e))
+                log.critical(err_msg)
+                log.info('Please delete collection here!!') # TODO!
+                return self.send_errors(err_msg,
+                    code=hcodes.HTTP_SERVER_ERROR)
 
             ##################
             response = "Batch '%s' enabled" % batch_id
