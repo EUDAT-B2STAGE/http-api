@@ -449,7 +449,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         'errors': len(errors)})
                     continue
 
-                log.debug("Copy to local: %s", local_file)
+                # log.debug("Copy to local: %s", local_file)
             #########################
             #########################
 
