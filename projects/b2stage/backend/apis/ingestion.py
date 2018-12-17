@@ -247,7 +247,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         imain = self.get_service_instance(service_name='irods')
 
         batch_path = self.get_irods_batch_path(imain, batch_id)
-        log.info("Batch path: %s", batch_path)
+        log.info("Batch irods path: %s", batch_path)
 
         ##################
         # Does it already exist? Is it a collection?
