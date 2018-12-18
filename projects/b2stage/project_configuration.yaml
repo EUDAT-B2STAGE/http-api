@@ -5,6 +5,7 @@
 variables:
   env:
 
+    LOG_LEVEL: INFO # global, but can be configured separately in conf/*.yml files
     BACKEND_BUILD_MODE: backendirods
 
     ###############################

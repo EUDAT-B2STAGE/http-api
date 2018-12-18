@@ -65,7 +65,7 @@ services:
       ##############################
       # set this inside the MODE yaml files you want to use
       # FLASK_DEBUG: 1
-      DEBUG_LEVEL: VERY_VERBOSE
+      DEBUG_LEVEL: ${LOG_LEVEL}
       APP_MODE: debug
       ##############################
 
