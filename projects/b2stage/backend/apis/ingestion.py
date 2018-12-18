@@ -246,35 +246,40 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # NOTE: Main API user is the key to let this happen
         imain = self.get_service_instance(service_name='irods')
 
+        # Paths
         batch_path = self.get_irods_batch_path(imain, batch_id)
         log.info("Batch irods path: %s", batch_path)
+        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        log.info("Batch local path: %s", local_path)
 
         ##################
         # Does it already exist? Is it a collection?
-        if not imain.is_collection(batch_path):
+        if not (imain.is_collection(batch_path) and path.file_exists_and_nonzero(local_path)):
 
-            # Create the path and set permissions in irods
-            batch_path = self.get_irods_batch_path(imain, batch_id)
+            # Create the collection and set permissions in irods
             imain.create_collection_inheritable(batch_path, obj.username)
             # # Remove anonymous access to this batch
             # ianonymous.set_permissions(
             #     batch_path,
             #     permission='null', userOrGroup=icom.anonymous_user)
 
-            # Create directory on file system:
+            # Create superdirectory and directory on file system:
             try:
-                local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
-                log.info("Batch local path: %s", local_path)
+                # TODO: REMOVE THIS WHEN path.create() has parents=True!
+                import os
+                superdir = os.path.join(LOCALPATH, INGESTION_DIR)
+                if not os.path.exists(superdir):
+                    log.debug('Creating %s...', superdir)
+                    os.mkdir(superdir)
+                    log.info('Created %s...', superdir)
                 path.create(local_path, directory=True, force=True)
-            except FileNotFoundError as e:
+            except (FileNotFoundError, PermissionError) as e:
                 err_msg = ('Could not create directory "%s" (%s)' % (local_path, e))
                 log.critical(err_msg)
                 log.info('Removing collection from irods (%s)' % batch_path)
                 imain.remove(batch_path, recursive=True, force=True)
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
-
-
 
             ##################
             response = "Batch '%s' enabled" % batch_id
