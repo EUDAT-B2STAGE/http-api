@@ -253,6 +253,14 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # Does it already exist? Is it a collection?
         if not imain.is_collection(batch_path):
 
+            # Create the path and set permissions in irods
+            batch_path = self.get_irods_batch_path(imain, batch_id)
+            imain.create_collection_inheritable(batch_path, obj.username)
+            # # Remove anonymous access to this batch
+            # ianonymous.set_permissions(
+            #     batch_path,
+            #     permission='null', userOrGroup=icom.anonymous_user)
+
             # Create directory on file system:
             try:
                 local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
@@ -261,16 +269,12 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             except FileNotFoundError as e:
                 err_msg = ('Could not create directory "%s" (%s)' % (local_path, e))
                 log.critical(err_msg)
+                log.info('Removing collection from irods (%s)' % batch_path)
+                imain.remove(batch_path, recursive=True, force=True)
                 return self.send_errors(err_msg,
                     code=hcodes.HTTP_SERVER_ERROR)
 
-            # Create the path and set permissions in irods
-            batch_path = self.get_irods_batch_path(imain, batch_id)
-            imain.create_collection_inheritable(batch_path, obj.username)
-            # # Remove anonymous access to this batch
-            # ianonymous.set_permissions(
-            #     batch_path,
-            #     permission='null', userOrGroup=icom.anonymous_user)
+
 
             ##################
             response = "Batch '%s' enabled" % batch_id
