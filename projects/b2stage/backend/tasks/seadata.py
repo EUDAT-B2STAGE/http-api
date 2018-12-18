@@ -418,7 +418,6 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     'total': total, 'step': counter, 'verified': verified,
                     'errors': len(errors)}
                 )
-
         log.debug("PID files: %s", len(files))
 
         # Recover files
@@ -460,7 +459,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     'verified': verified,
                     'errors': len(errors)}
                 )
-                log.info("Processed %s pids, %s verified", counter, verified)
+                log.info("%s pids already processed", counter)
             # # Set current file to the metadata collection
             # if pid not in metadata:
             #     md = {pid: ipath}
