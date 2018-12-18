@@ -454,11 +454,13 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             #########################
 
             counter += 1
-            self.update_state(state="PROGRESS", meta={
-                'total': total, 'step': counter,
-                'verified': verified,
-                'errors': len(errors)}
-            )
+            if counter % 1000 == 0:
+                self.update_state(state="PROGRESS", meta={
+                    'total': total, 'step': counter,
+                    'verified': verified,
+                    'errors': len(errors)}
+                )
+                log.info("Processed %s pids, %s verified", counter, verified)
             # # Set current file to the metadata collection
             # if pid not in metadata:
             #     md = {pid: ipath}
