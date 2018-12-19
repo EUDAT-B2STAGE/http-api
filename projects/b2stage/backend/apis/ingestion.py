@@ -267,7 +267,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             try:
                 # TODO: REMOVE THIS WHEN path.create() has parents=True!
                 import os
-                superdir = os.path.join(LOCALPATH, INGESTION_DIR)
+                superdir = os.path.join(MOUNTPOINT, INGESTION_DIR)
                 if not os.path.exists(superdir):
                     log.debug('Creating %s...', superdir)
                     os.mkdir(superdir)
