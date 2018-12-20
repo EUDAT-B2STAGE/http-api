@@ -475,14 +475,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         json_input = self.get_input()
 
-        # Need error codes in https://github.com/EUDAT-B2STAGE/http-api/blob/1.0.4/projects/b2stage/backend/apis/commons/seadatacloud.py
-        #if not 'request_id' in json_input.keys():
-        #    error = "Request ID is missing"
-        #    return self.send_errors(error, code=hcodes.FOOBARBAZ)
-        #if not 'parameters' in json_input.keys() and 'orders' in json_input['parameters'].keys():
-        #    error = "List of orders to be deleted missing."
-        #    return self.send_errors(error, code=hcodes.FOOBARBAZ)
-
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_irods_order_path(imain)
         log.debug("Order path: %s", order_path)
