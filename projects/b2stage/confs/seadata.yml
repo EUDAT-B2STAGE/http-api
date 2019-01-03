@@ -94,3 +94,8 @@ services:
       - proxy
     volumes:
       - letsencrypt_certs:/tmp/certs
+
+  mongodb:
+    environment:
+      # Override ACTIVATE: ${ACTIVATE_MONGODB} in backend.yml
+      ACTIVATE: 0 
