@@ -1,10 +1,8 @@
-
-## Development operations
+## Development operations ##
 
 A set of snippets that helped in the past.
 
-
-### test irods auth proxy
+### test irods auth proxy ##
 
 Create users (also in different iRODS zones) and test them with the proxy from the HTTP API:
 
@@ -25,7 +23,7 @@ iadmin mkuser $USER#$ZONE2 rodsuser
 
 and in another shell
 
-```bash 
+```bash
 rapydo shell restclient
 
 USER=paolobeta

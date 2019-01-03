@@ -5,6 +5,7 @@
 variables:
   env:
 
+    LOG_LEVEL: INFO # global, but can be configured separately in conf/*.yml files
     BACKEND_BUILD_MODE: backendirods
 
     ###############################
@@ -42,10 +43,18 @@ variables:
     ## Seadata project variable
     SEADATA_PROJECT: 0
     SEADATA_EDMO_CODE:
-    SEADATA_INGESTION_DIR: batches
-    SEADATA_PRODUCTION_DIR: cloud
-    SEADATA_ORDERS_DIR: orders
-    SEADATA_BATCH_PROD_FILES_DIR: production
+    SEADATA_API_VERSION: 1.0.4.0022
+    # The names of the directories in the irods zone
+    # for pre-production batches, for production batches,
+    # and for orders being prepared.
+    SEADATA_INGESTION_COLL: batches  # on irods!
+    SEADATA_ORDERS_COLL: orders      # on irods!
+    SEADATA_PRODUCTION_COLL: cloud   # on irods!
+    SEADATA_PRIVILEGED_USERS:  # command separated list of privileges users
+
+    SEADATA_WORKSPACE_INGESTION: batches # on filesystem (to be mounted to celery workers and rancher containers)
+    SEADATA_WORKSPACE_ORDERS: orders       # on filesystem (to be mounted to celery workers and rancher containers)
+    # SEADATA_BATCH_PROD_FILES_COLL: production
     ## IM APIs
     SEADATA_API_IM_URL: https://some.url
     ## RANCHER
@@ -66,6 +75,8 @@ variables:
     RABBIT_PASSWORD:
     RABBIT_EXCHANGE: elkexchange
     RABBIT_QUEUE: elkqueue
+    # RABBIT_SSL_ENABLED: false # can be 0, 1, true, false
+    RABBIT_SSL_ENABLED: 0 # can be 0, 1, true, false
     ## OTHERS
     REDIS_HOST: redis-cache-1
     REDIS_PREFIX: 01T10
@@ -98,9 +109,17 @@ variables:
     ##: OTHERs / FIXED
     UPLOAD_PATH: /uploads
     FULL_JWT: false
+    # This path is the host directory that is bind-mounted
+    # into the Rancher containers and into the Celery
+    # worker containers. (Has to be the same, as they
+    # exchange data).
     # This path needs permissions to user 1001
     # as owner of subdir 'ingestion' and 'cloud'
-    RESOURCES_LOCALPATH: /usr/share
+    RESOURCES_LOCALPATH: /nfs/share
+    # This is the mount point of $RESOURCES_LOCALPATH inside the containers
+    # Note that this variable has only effect in backend and celery containers
+    # while QC containers uses an hard-code mount point (/usr/share)
+    SEADATA_RESOURCES_MOUNTPOINT: /usr/share
     # Email to be notified for proxy certificates expiration (letsencrypt)
     SMTP_ADMIN:
     ############################
@@ -134,8 +153,8 @@ variables:
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing data in EUDAT domains
-  version: 1.0.3
-  rapydo: 0.6.2
+  version: 1.0.4
+  rapydo: 0.6.3
 
 tags:
   # EUDAT related
@@ -183,8 +202,12 @@ releases:
     rapydo: 0.6.1
     status: released
   '1.0.3':
-    type: development
+    type: stable
     rapydo: 0.6.2
+    status: released
+  '1.0.4':
+    type: development
+    rapydo: 0.6.3
     status: development
 
 controller:

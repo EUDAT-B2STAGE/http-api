@@ -1,22 +1,19 @@
+# Start-up the project #
 
-# Start-up the project
-
-
-## 1. cloning 
+## 1. cloning ##
 
 To clone the working code:
 
 ```bash
-$ VERSION=1.0.3 \
+$ VERSION=1.0.4 \
     && git clone https://github.com/EUDAT-B2STAGE/http-api.git \
     && cd http-api \
-    && git checkout $VERSION  
+    && git checkout $VERSION
 
 # now you will have the current latest release
 ```
 
-
-## 2. configure
+## 2. configure ##
 
 Now that you have all necessary software installed, before launching services you should consider editing the main configuration:
 
@@ -32,10 +29,10 @@ Here's what you need to use it:
 
 ```bash
 # install and use the rapydo controller
-$ data/scripts/prerequisites.sh 
+$ data/scripts/prerequisites.sh
 # you have now the executable 'rapydo'
 $ rapydo --version
-# If you use a shell different from bash (e.g. zsh) 
+# If you use a shell different from bash (e.g. zsh)
 # you can try also the short alias 'do'
 $ do --help
 ```
@@ -54,7 +51,7 @@ $ rapydo init
 If you wish to __**manually upgrade**__:
 
 ```bash
-VERSION="0.6.2"
+VERSION="0.6.3"
 git checkout $VERSION
 
 # supposely the rapydo framework has been updated, so you need to check:

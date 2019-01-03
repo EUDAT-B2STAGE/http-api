@@ -9,9 +9,9 @@ source ~/.bash_aliases
 # Start up
 if [ ! -z "SEADATA_PROJECT" ]; then
 
-    BATCHES_PATH="/$IRODS_ZONE/$SEADATA_BATCH_DIR"
-    PROD_PATH="/$IRODS_ZONE/$SEADATA_CLOUD_DIR"
-    ORDERS_PATH="/$IRODS_ZONE/$SEADATA_ORDERS_DIR"
+    BATCHES_PATH="/$IRODS_ZONE/$SEADATA_INGESTION_COLL"
+    PROD_PATH="/$IRODS_ZONE/$SEADATA_PRODUCTION_COLL"
+    ORDERS_PATH="/$IRODS_ZONE/$SEADATA_ORDERS_COLL"
 
     # NOTE: we are using the main HTTP API irods user
     # to manage batches across nodes

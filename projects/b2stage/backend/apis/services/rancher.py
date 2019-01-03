@@ -19,7 +19,10 @@ log = get_logger(__name__)
 # PERPAGE_LIMIT = 50
 PERPAGE_LIMIT = 1000
 
-
+# Dev note:
+# This object initialized in get_or_create_handle() in
+# module "b2stage/backend/apis/commons/cluster.py".
+# It receives all config that starts with "RESOURCES".
 class Rancher(object):
 
     def __init__(self,
@@ -34,7 +37,7 @@ class Rancher(object):
         self._project_uri = "%s/projects/%s/schemas" % (url, project)
         self._hub_uri = hub
         self._hub_credentials = (hubuser, hubpass)
-        self._localpath = localpath
+        self._localpath = localpath # default /nfs/share
         self._qclabel = qclabel
 
         ####################
@@ -234,7 +237,7 @@ class Rancher(object):
 
     def run(self,
             container_name, image_name, wait_running=None,
-            private=False, extras=None, wait_stopped=False, pull=True,
+            private=False, extras=None, wait_stopped=None, pull=True,
             ):
 
         ############
@@ -298,7 +301,7 @@ class Rancher(object):
                 while True:
                     co = self.get_container_object(container_name)
                     log.debug('Container "%s": %s (%s, %s: %s)', container_name, co.state, co.transitioning, co.transitioningMessage, co.transitioningProgress)
-                    
+
                     # Add errors returned by rancher to the errors object:
                     if isinstance(co.transitioningMessage, str):
                         if  'error' in co.transitioningMessage.lower():

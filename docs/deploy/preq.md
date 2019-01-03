@@ -1,5 +1,4 @@
-
-# Deployment pre-requisites
+# Deployment pre-requisites #
 
 In order to deploy this project you need to install the `RAPyDO controller` and use it to startup the services on a `Docker` environment with containers.
 
@@ -7,14 +6,13 @@ The following instruction are based on the hyphotesis that you will work on a `U
 
 Command line examples were heavily tested on `bash` terminal (version `4.4.0`, but all versions `4.x` and `3.x` should work). Also keep in mind that installing tools into your machine is suggested through your preferred OS package manager (e.g. `apt`, `yum`, `brew`, etc.).
 
+## Base tools ##
 
-## Base tools
-
-### Python 3
+### Python 3 ###
 
 - The `python 3.4+` interpreter installed together with its main package manager `pip3`.
 
-Most of distributions comes bundled with `python 2.7+`, which is not suitable for our project. Once again use a package manager if possible. 
+Most of distributions comes bundled with `python 2.7+`, which is not suitable for our project. Once again use a package manager if possible.
 For example:
 
 - in `Ubuntu` you would base your request on `apt` commands, e.g.
@@ -24,7 +22,7 @@ sudo apt-get update && sudo apt-get install python3-pip
 
 - in CentOS you would need to use `yum`, e.g.
 ```bash
-sudo yum -y update  
+sudo yum -y update
 # warning: this command above can install a lot of packages
 # if your system is not quite up-to-date
 
@@ -69,9 +67,9 @@ sudo systemctl start docker
 # in Ubuntu it should be already running
 ```
 
-For Mac and Windows users dedicated applications were written: 
+For Mac and Windows users dedicated applications were written:
 
-- [Docker for Mac](https://www.docker.com/docker-mac)  
+- [Docker for Mac](https://www.docker.com/docker-mac)
 - [Docker for Windows](https://www.docker.com/docker-windows)
 
 As alternative, the best way to get Docker ecosystem/tools working

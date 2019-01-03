@@ -1,24 +1,22 @@
+# MODES #
 
-# MODES
-
-There are two main modes to work with the HTTP-API server developed with `rapydo`. 
+There are two main modes to work with the HTTP-API server developed with `rapydo`.
 
 The main one - called `debug` - is for developers: you are expected to test, debug and develop new code. The other options is mode `production`, suited for deploying your server in a real use case scenario on top of your already running `B2SAFE` instance.
 
-## debug mode
+## debug mode ##
 
 NOTE: follow this paragraph only if you plan to develop new features on the HTTP API.
 
 ```bash
-################
 # bring up the docker containers in `debug` mode
 $ rapydo start
 # NOTE: this above is equivalent to default value `do --mode debug start`
 
-# laungh the restful http-api server 
+# laungh the restful http-api server
 $ rapydo shell backend --command 'restapi launch'
 # or
-$ rapydo shell backend 
+$ rapydo shell backend
 [container shell]$ restapi launch
 ```
 
@@ -53,7 +51,7 @@ Some important points before going further:
 
 1. Please follow this paragraph only if you plan to deploy the HTTP API server in production, typically associated with an existing `B2SAFE` server in production.
 2. Usually in production you have a domain name associated to your host IP (e.g. `b2stage-test.cineca.it` to 240.bla.bla.bla). But you can just use 'localhost' if this is not the case.
-3. You may consider to register a `B2ACCESS` "app" account on the development server for the HTTP API application, to be used in the `configuration.yaml` file; otherwise the endpoint `/auth/askauth` and the related OAUTH2 based B2ACCESS authentication would not work.  
+3. You may consider to register a `B2ACCESS` "app" account on the development server for the HTTP API application, to be used in the `configuration.yaml` file; otherwise the endpoint `/auth/askauth` and the related OAUTH2 based B2ACCESS authentication would not work.
 
 Primary step is to set up your configuration
 
@@ -109,9 +107,9 @@ $ rapydo shell --user root backend
 less /var/log/uwsgi/*log
 # check processes
 ps aux --forest
-# here uwsgi (as developer) and nginx (as www-data) should be running 
+# here uwsgi (as developer) and nginx (as www-data) should be running
 
-## if you only get 'no app loaded' from uWSGI, 
+## if you only get 'no app loaded' from uWSGI,
 
 $ rapydo shell backend
 # launch by hand a server instance

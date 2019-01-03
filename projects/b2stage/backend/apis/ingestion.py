@@ -5,10 +5,16 @@ Ingestion process submission to upload the SeaDataNet marine data.
 """
 
 from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
+from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
+from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from restapi.services.uploader import Uploader
+from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
+from utilities import path
 # from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
 
@@ -35,26 +41,55 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # obj = self.init_endpoint()
         # icom = obj.icommands
 
-        batch_path = self.get_batch_path(imain, batch_id)
-        log.info("Batch path: %s", batch_path)
+        batch_path = self.get_irods_batch_path(imain, batch_id)
+        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        log.info("Batch irods path: %s", batch_path)
+        log.info("Batch local path: %s", local_path)
+
+        batch_status, batch_files = self.get_batch_status(imain, batch_path, local_path)
 
         ########################
-        # Check if the folder exists and is empty
-        if not imain.is_collection(batch_path):
+        # if not imain.is_collection(batch_path):
+        if batch_status == MISSING_BATCH:
             return self.send_errors(
                 "Batch '%s' not enabled or you have no permissions"
                 % batch_id,
-                code=hcodes.HTTP_BAD_REQUEST)
+                code=hcodes.HTTP_BAD_NOTFOUND)
 
-        files = imain.list(batch_path)
-        # log.pp(files)
-        # if len(files) < 1:
-        if len(files) != 1:
+        if batch_status == BATCH_MISCONFIGURATION:
+            log.error(
+                'Misconfiguration: %s files in %s (expected 1)',
+                len(batch_files), batch_path)
             return self.send_errors(
-                "Batch '%s' not yet filled" % batch_id,
+                "Misconfiguration for batch_id %s" % batch_id,
                 code=hcodes.HTTP_BAD_REQUEST)
 
-        return "Batch '%s' is enabled and filled" % batch_id
+        # files = imain.list(batch_path, detailed=True)
+        # if len(files) != 1:
+        #     return self.send_errors(
+        #         "Batch '%s' not yet filled" % batch_id,
+        #         code=hcodes.HTTP_BAD_REQUEST)
+
+        # if batch_status == NOT_FILLED_BATCH:
+        #     return self.send_errors(
+        #         "Batch '%s' not yet filled" % batch_id,
+        #         code=hcodes.HTTP_BAD_REQUEST)
+
+        data = {}
+        data['batch'] = batch_id
+        if batch_status == NOT_FILLED_BATCH:
+            data['status'] = 'not_filled'
+        elif batch_status == ENABLED_BATCH:
+            data['status'] = 'enabled'
+        elif batch_status == PARTIALLY_ENABLED_BATCH:
+            data['status'] = 'partially_enabled'
+
+        # data['files'] = []
+        # for _, f in files.items():
+        #     data['files'].append(f)
+        data['files'] = batch_files
+        return data
+        # return "Batch '%s' is enabled and filled" % batch_id
 
     def put(self, batch_id, file_id):
         """
@@ -73,9 +108,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # get irods session
         obj = self.init_endpoint()
         icom = obj.icommands
-        errors = None
 
-        batch_path = self.get_batch_path(icom, batch_id)
+        batch_path = self.get_irods_batch_path(icom, batch_id)
         log.info("Batch path: %s", batch_path)
 
         ########################
@@ -83,22 +117,20 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         if not icom.is_collection(batch_path):
 
             err_msg = ("Batch '%s' not enabled or you have no permissions"
-                % batch_id)
-            
+                       % batch_id)
             # Log error into RabbitMQ
-            log_msg = prepare_message(self,
-                user = ingestion_user,
-                log_string = 'failure',
-                info = dict(
-                    batch_id = batch_id,
-                    file_id = file_id,
-                    error = err_msg
+            log_msg = prepare_message(
+                self, user=ingestion_user,
+                log_string='failure',
+                info=dict(
+                    batch_id=batch_id,
+                    file_id=file_id,
+                    error=err_msg
                 )
             )
             log_into_queue(self, log_msg)
 
-            return self.send_errors(err_msg,
-                code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(err_msg, code=hcodes.HTTP_BAD_NOTFOUND)
 
         ########################
         # NOTE: only streaming is allowed, as it is more performant
@@ -119,92 +151,61 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         ########################
         zip_name = self.get_input_zip_filename(file_id)
-        ipath = self.complete_path(batch_path, zip_name)
+        zip_path_irods = self.complete_path(batch_path, zip_name)
+        # E.g. /myIrodsZone/batches/<batch_id>/<zip-name>
 
-        if backdoor and icom.is_dataobject(ipath):
+        # This path is created by the POST method, important to keep this check here
+        if backdoor and icom.is_dataobject(zip_path_irods):
             response['status'] = 'exists'
 
             # Log end (of upload) into RabbitMQ
             # In case it already existed!
-            log_msg = prepare_message(self,
-                user = ingestion_user,
-                log_string = 'end', # TODO True?
-                status = response['status']
+            log_msg = prepare_message(
+                self,
+                user=ingestion_user,
+                log_string='end',  # TODO True?
+                status=response['status']
             )
             log_into_queue(self, log_msg)
             return response
 
         ########################
-        log.verbose("Cloud filename: %s", ipath)
+        log.verbose("Cloud path: %s", zip_path_irods)  # ingestion
+
+        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        path.create(local_path, directory=True, force=True)
+        zip_path = path.join(local_path, zip_name)
+        log.info("Local path: %s", zip_path)
+
+        # try:
+        #     # NOTE: we know this will always be Compressed Files (binaries)
+        #     iout = icom.write_in_streaming(destination=zip_path_irods, force=True)
+        # except BaseException as e:
+        #     log.error("Failed streaming to iRODS: %s", e)
+        #     return self.send_errors(
+        #         "Failed streaming towards B2SAFE cloud",
+        #         code=hcodes.HTTP_SERVER_ERROR)
+        # else:
+        #     log.info("irods call %s", iout)
+        #     # NOTE: permissions are inherited thanks to the POST call
+
         try:
             # NOTE: we know this will always be Compressed Files (binaries)
-            iout = icom.write_in_streaming(destination=ipath, force=True)
+            out = self.upload_chunked(destination=zip_path, force=True)
         except BaseException as e:
-            log.error("Failed streaming to iRODS: %s", e)
+            log.error("Failed streaming to %s: %s", str(zip_path), e)
             return self.send_errors(
-                "Failed streaming towards B2SAFE cloud",
+                "Failed streaming zip path to file system",
                 code=hcodes.HTTP_SERVER_ERROR)
         else:
-            log.info("irods call %s", iout)
-            # NOTE: permissions are inherited thanks to the POST call
+            log.info("File uploaded: %s", out)
 
-        ###########################
-        # Also copy file to the B2HOST environment
-        if backdoor:
-            # # CELERY VERSION
-            log.info("Submit async celery task")
-            from restapi.flask_ext.flask_celery import CeleryExt
-            task = CeleryExt.send_to_workers_task.apply_async(
-                args=[batch_id, ipath, zip_name, backdoor])
-            log.warning("Async job: %s", task.id)
-        else:
-            # # CONTAINERS VERSION
-            rancher = self.get_or_create_handle()
-            idest = self.get_ingestion_path()
-
-            b2safe_connvar = {
-                'BATCH_SRC_PATH': ipath,
-                'BATCH_DEST_PATH': idest,
-                'IRODS_HOST': icom.variables.get('host'),
-                'IRODS_PORT': icom.variables.get('port'),
-                'IRODS_ZONE_NAME': icom.variables.get('zone'),
-                'IRODS_USER_NAME': icom.variables.get('user'),
-                'IRODS_PASSWORD': icom.variables.get('password'),
-            }
-
-            # Launch a container to copy the data into B2HOST
-            cname = 'copy_zip'
-            cversion = '0.7'  # release 1.0?
-            image_tag = '%s:%s' % (cname, cversion)
-            container_name = self.get_container_name(batch_id, image_tag)
-            docker_image_name = self.get_container_image(
-                image_tag, prefix='eudat')
-            log.info("Requesting copy: %s" % docker_image_name)
-            errors = rancher.run(
-                container_name=container_name, image_name=docker_image_name,
-                private=True, pull=False,
-                extras={
-                    'environment': b2safe_connvar,
-                    'dataVolumes': [self.mount_batch_volume(batch_id)],
-                },
-            )
-
-        ########################
-
-        if errors is not None:
-            if isinstance(errors, dict):
-                edict = errors.get('error', {})
-                # errors = edict
-                # print("TEST", edict)
-                if edict.get('code') == 'NotUnique':
-                    response['status'] = 'existing'
-                else:
-                    response['status'] = 'Copy could NOT be started'
-                    response['description'] = edict
-            else:
-                response['status'] = 'failure'
-        response['errors'] = errors
-        # response = "Batch '%s' filled" % batch_id
+        log.info("Submit async celery task")
+        # task = CeleryExt.copy_from_b2safe_to_b2host.apply_async(
+        task = CeleryExt.copy_from_b2host_to_b2safe.apply_async(
+            args=[batch_id, zip_path_irods, str(zip_path), backdoor],
+            queue='ingestion', routing_key='ingestion')
+        log.warning("Async job: %s", task.id)
 
         # Log end (of upload) into RabbitMQ
         log_msg = prepare_message(
@@ -212,8 +213,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             user=ingestion_user, log_string='end')
         log_into_queue(self, log_msg)
 
-
-        return self.force_response(response)
+        # return self.force_response(response)
+        return self.return_async_id(task.id)
 
     def post(self):
         """
@@ -245,20 +246,40 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # NOTE: Main API user is the key to let this happen
         imain = self.get_service_instance(service_name='irods')
 
-        batch_path = self.get_batch_path(imain, batch_id)
-        log.info("Batch path: %s", batch_path)
+        # Paths
+        batch_path = self.get_irods_batch_path(imain, batch_id)
+        log.info("Batch irods path: %s", batch_path)
+        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        log.info("Batch local path: %s", local_path)
 
         ##################
         # Does it already exist? Is it a collection?
-        if not imain.is_collection(batch_path):
-            # Enable the batch
-            batch_path = self.get_batch_path(imain, batch_id)
-            # Create the path and set permissions
+        if not (imain.is_collection(batch_path) and path.file_exists_and_nonzero(local_path)):
+
+            # Create the collection and set permissions in irods
             imain.create_collection_inheritable(batch_path, obj.username)
             # # Remove anonymous access to this batch
             # ianonymous.set_permissions(
             #     batch_path,
             #     permission='null', userOrGroup=icom.anonymous_user)
+
+            # Create superdirectory and directory on file system:
+            try:
+                # TODO: REMOVE THIS WHEN path.create() has parents=True!
+                import os
+                superdir = os.path.join(MOUNTPOINT, INGESTION_DIR)
+                if not os.path.exists(superdir):
+                    log.debug('Creating %s...', superdir)
+                    os.mkdir(superdir)
+                    log.info('Created %s...', superdir)
+                path.create(local_path, directory=True, force=True)
+            except (FileNotFoundError, PermissionError) as e:
+                err_msg = ('Could not create directory "%s" (%s)' % (local_path, e))
+                log.critical(err_msg)
+                log.info('Removing collection from irods (%s)' % batch_path)
+                imain.remove(batch_path, recursive=True, force=True)
+                return self.send_errors(err_msg,
+                    code=hcodes.HTTP_SERVER_ERROR)
 
             ##################
             response = "Batch '%s' enabled" % batch_id
@@ -275,3 +296,18 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log_into_queue(self, log_msg)
 
         return self.force_response(response)
+
+    def delete(self):
+
+        json_input = self.get_input()
+
+        imain = self.get_service_instance(service_name='irods')
+        batch_path = self.get_irods_batch_path(imain)
+        log.debug("Batch path: %s", batch_path)
+
+        task = CeleryExt.delete_batches.apply_async(
+            args=[batch_path, json_input],
+            queue='ingestion', routing_key='ingestion'
+        )
+        log.warning("Async job: %s", task.id)
+        return self.return_async_id(task.id)

@@ -1,8 +1,8 @@
 version: '3'
 
-# volumes:
-#   letsencrypt_certs:
-#     driver: local
+volumes:
+  localdata:
+    driver: local
 
 services:
 
@@ -21,7 +21,7 @@ services:
       # ACTIVATE: 1
       APP_MODE: production
       # FLASK_DEBUG: 0
-      DEBUG_LEVEL: INFO
+      DEBUG_LEVEL: ${LOG_LEVEL}
       NGINX_ACTIVE: "True"
 
       ##################
@@ -29,8 +29,10 @@ services:
       ## /api/login is not enabled in production
       MAIN_LOGIN_ENABLE: 0
       ## If you don't provide credentials b2access will not be enabled
+      # B2ACCESS_ENV: production
       # B2ACCESS_ENV: staging
-      B2ACCESS_ENV: production
+      # B2ACCESS_ENV: development
+      B2ACCESS_ENV: ${B2ACCESS_ENV}
 
       # SEADATA CELERY
       CELERY_ENABLE: ${SEADATA_PROJECT}
@@ -49,10 +51,10 @@ services:
       CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
 
       # SEADATA ELASTIC LOGS
-      ELASTIC_ENABLE: ${SEADATA_PROJECT}
-      ELASTIC_EXTERNAL: 1
-      ELASTIC_HOST: ${ELASTIC_HOST}
-      ELASTIC_PORT: ${ELASTIC_PORT}
+      # ELASTIC_ENABLE: ${SEADATA_PROJECT}
+      # ELASTIC_EXTERNAL: 1
+      # ELASTIC_HOST: ${ELASTIC_HOST}
+      # ELASTIC_PORT: ${ELASTIC_PORT}
 
       ##################
     depends_on:
