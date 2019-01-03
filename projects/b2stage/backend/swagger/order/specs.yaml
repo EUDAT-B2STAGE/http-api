@@ -9,7 +9,6 @@ schema:
 mapping:
   basket: "/orders"
   order: "/orders/<string:order_id>"
-  # download: "/orders/<string:order_id>/download/<string:code>"
 labels:
   - seadatacloud
   # - resources

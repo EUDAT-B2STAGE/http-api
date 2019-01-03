@@ -1,5 +1,4 @@
-
-# Registered APIs
+# Registered APIs #
 
 > NOTE: The endpoint called *registered* corresponds to a domain in iRODS, where each data object carries a persistent identifier (PID). The HTTP API itself does **not** assign the PID, this is done by iRODS rules, e.g. eventhooks in iRODS calliong the B2SAFE PID registration rule.
 
@@ -9,7 +8,7 @@
 
 The registered APIs allow the management of entities on B2SAFE.
 The following operations are currently available:
-- list, upload, download and rename files (objects in iRODS) 
+- list, upload, download and rename files (objects in iRODS)
 - create and rename directories (collection in iRODS).
 
 The endpoint methods will use the directory namespace (iRODS full path) to identify entities .
@@ -34,7 +33,7 @@ The examples in this section use cURL commands. For information about cURL, see 
 # Get 'filename.txt' metadata
 $ curl \
   -H "Authorization: Bearer <auth_token>"  \
-  <http_server:port>/api/registered/path/to/directory/filename.txt 
+  <http_server:port>/api/registered/path/to/directory/filename.txt
 ```
 ##### Response
 ```json
@@ -75,7 +74,7 @@ $ curl \
 # Download 'filename.txt'
 $ curl -o localFileName \
   -H "Authorization: Bearer <auth_token>" \
-  <http_server:port>/api/registered/path/to/directory/filename.txt?download=true 
+  <http_server:port>/api/registered/path/to/directory/filename.txt?download=true
 ```
 ##### Response
 ```json
@@ -88,48 +87,48 @@ Content of filename.txt
 # Get list of entities inside 'directory'
 $ curl \
   -H "Authorization: Bearer <auth_token>" \
-  <http_server:port>/api/registered/path/to/directory/ 
+  <http_server:port>/api/registered/path/to/directory/
 ```
 ##### Response
 ```json
 {
   "Meta": {
-    "data_type": "<class 'list'>", 
-    "elements": 2, 
-    "errors": 0, 
+    "data_type": "<class 'list'>",
+    "elements": 2,
+    "errors": 0,
     "status": 200
-  }, 
+  },
   "Response": {
     "data": [
       {
         "filename.txt": {
-          "dataobject": "filename.txt", 
-          "link": "<http_server:port>/api/registered/path/to/directory/filename.txt", 
-          "location": "irods://rodserver.dockerized.io/path/to/directory/", 
+          "dataobject": "filename.txt",
+          "link": "<http_server:port>/api/registered/path/to/directory/filename.txt",
+          "location": "irods://rodserver.dockerized.io/path/to/directory/",
           "metadata": {
-            "PID": "123/1234567890", 
-            "checksum": "1234567890", 
-            "name": "filename.txt", 
+            "PID": "123/1234567890",
+            "checksum": "1234567890",
+            "name": "filename.txt",
             "object_type": "dataobject"
-          }, 
+          },
           "path": "/path/to/directory"
         }
-      }, 
+      },
       {
         "test": {
-          "dataobject": "test", 
-          "link": "<http_server:port>/api/registered/path/to/directory/test", 
-          "location": "irods://rodserver.dockerized.io/path/to/directory", 
+          "dataobject": "test",
+          "link": "<http_server:port>/api/registered/path/to/directory/test",
+          "location": "irods://rodserver.dockerized.io/path/to/directory",
           "metadata": {
-            "PID": null, 
+            "PID": null,
             "checksum": "9876543210",
-            "name": "test", 
+            "name": "test",
             "object_type": "dataobject"
-          }, 
+          },
           "path": "/path/to/directory"
         }
       }
-    ], 
+    ],
     "errors": null
   }
 }
@@ -164,13 +163,13 @@ $ curl -X PUT \
 $ curl -X PUT \
   -H "Authorization: Bearer <auth_token>" \
   -F file=@myfile2 \
-  <http_server:port>/api/registered/path/to/directory/filename?force=true 
+  <http_server:port>/api/registered/path/to/directory/filename?force=true
 
 # Form upload 'myfile' and get the PID in the response
 $ curl -X PUT \
   -H "Authorization: Bearer <auth_token>" \
   -F file=@myfile2 \
-  <http_server:port>/api/registered/path/to/directory/filename?pid_await=true 
+  <http_server:port>/api/registered/path/to/directory/filename?pid_await=true
 ```
 ##### Example: Streaming upload
 ```bash
@@ -220,7 +219,7 @@ with open('/tmp/file', 'rb') as f:
 ### Create a new directory
 | Parameter | Type | Description
 |-----------|------|-------------
-| path (required) | string | Absolute directory path to be created 
+| path (required) | string | Absolute directory path to be created
 <!-- | force | bool | Force recursive creation -->
 
 ##### Example
@@ -236,17 +235,17 @@ $ curl -X POST \
 ```json
 {
   "Meta": {
-    "data_type": "<class 'dict'>", 
-    "elements": 3, 
-    "errors": 0, 
+    "data_type": "<class 'dict'>",
+    "elements": 3,
+    "errors": 0,
     "status": 200
-  }, 
+  },
   "Response": {
     "data": {
-      "link": "<http_server:port>/api/registered/path/to/directory/new_directory", 
-      "location": "irods://rodserver.dockerized.io/path/to/directory/new_directory", 
+      "link": "<http_server:port>/api/registered/path/to/directory/new_directory",
+      "location": "irods://rodserver.dockerized.io/path/to/directory/new_directory",
       "path": "/path/to/directory/new_directory
-    }, 
+    },
     "errors": null
   }
 }
@@ -273,18 +272,18 @@ curl -X PATCH \
 ```json
 {
   "Meta": {
-    "data_type": "<class 'dict'>", 
-    "elements": 4, 
-    "errors": 0, 
+    "data_type": "<class 'dict'>",
+    "elements": 4,
+    "errors": 0,
     "status": 200
-  }, 
+  },
   "Response": {
     "data": {
-      "filename": "filename2", 
-      "link": "<http_server:port>/api/registered/path/to/directory/filename2", 
-      "location": "irods://b2safe.cineca.it/path/to/directory/filename2", 
+      "filename": "filename2",
+      "link": "<http_server:port>/api/registered/path/to/directory/filename2",
+      "location": "irods://b2safe.cineca.it/path/to/directory/filename2",
       "path": "/path/to/directory"
-    }, 
+    },
     "errors": null
   }
 }
@@ -308,18 +307,18 @@ curl -X PATCH \
 ```json
 {
   "Meta": {
-    "data_type": "<class 'dict'>", 
-    "elements": 4, 
-    "errors": 0, 
+    "data_type": "<class 'dict'>",
+    "elements": 4,
+    "errors": 0,
     "status": 200
-  }, 
+  },
   "Response": {
     "data": {
-      "filename": "test1", 
-      "link": "<http_server:port>/api/registered/path/to/directory2", 
-      "location": "irods://b2safe.cineca.it/path/to/directory2", 
+      "filename": "test1",
+      "link": "<http_server:port>/api/registered/path/to/directory2",
+      "location": "irods://b2safe.cineca.it/path/to/directory2",
       "path": "/path/to"
-    }, 
+    },
     "errors": null
   }
 }

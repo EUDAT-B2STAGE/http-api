@@ -1,16 +1,13 @@
-
-# Quick start
+# Quick start #
 
 This is a reference page to quick start your knowledge of the project.
 
+## Using the prototype online ##
 
-## Using the prototype online
-
-The quickest way to deploy or develop the current project state is to test online our [prototype](https://b2stage-test.cineca.it/api/status). 
+The quickest way to deploy or develop the current project state is to test online our [prototype](https://b2stage-test.cineca.it/api/status).
 Also see the [dedicated instructions](prototype.md). Please feel free [to report or comment](https://gitter.im/EUDAT-B2STAGE/http-api) to help us improve!
 
-
-## Set-up your "debug" instance (in very few commands)
+## Set-up your "debug" instance (in very few commands) ##
 
 If you feel comfortable with a terminal shell you could spin your first instace easily. Please head to the [pre-requisites](deploy/preq.md) page first, to make sure your current machine is qualified to host the project.
 
@@ -93,6 +90,7 @@ project_configuration:
 You can now start your HTTP api server in production mode.
 
 ```bash
+
 # remove containers in debug mode
 rapydo remove
 
@@ -100,7 +98,7 @@ rapydo start  # in production, thanks to the projectrc setup
 # Hint: double check open ports 80 and 443 from the outside world
 
 # issues a valid free SSL certificate with "Let's Encrypt"
-rapydo ssl-certificate  
+rapydo ssl-certificate
 
 # check your server is alive and running on HTTPS protocol
 curl -i https://YOURDOMAIN.com/api/status

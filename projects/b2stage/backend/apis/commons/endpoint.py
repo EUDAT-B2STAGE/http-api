@@ -5,6 +5,7 @@ Common functions for EUDAT endpoints
 """
 
 import os
+from irods import exception as iexceptions
 # from restapi.rest.definition import EndpointResource
 from restapi.exceptions import RestApiException
 from b2stage.apis.commons.b2access import B2accessUtilities
@@ -18,6 +19,12 @@ from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
+
+MISSING_BATCH = 0
+NOT_FILLED_BATCH = 1
+PARTIALLY_ENABLED_BATCH = 2
+ENABLED_BATCH = 3
+BATCH_MISCONFIGURATION = 4
 
 
 # class EudatEndpoint(EndpointResource):
@@ -47,48 +54,39 @@ class EudatEndpoint(B2accessUtilities):
         # NOTE: icom = irods commands handler (official python driver PRC)
 
         proxy = False
+        refreshed = False
         external_user = None
 
         if internal_user is None:
             raise AttributeError("Missing user association to token")
 
         if internal_user.authmethod == 'credentials':
-            icom = self.irodsuser_from_b2stage(internal_user)
-        elif internal_user.authmethod == 'irods':
-            icom = self.irodsuser_from_b2safe(internal_user)
-        elif internal_user.authmethod == 'oauth2':
-            icom, external_user, proxy = \
-                self.irodsuser_from_b2access(internal_user)
-        else:
-            log.exit("Unknown credentials provided")
 
-        #################################
-        # Verify if irods certificates are ok
-        refreshed = False
-        try:
+            icom = self.irodsuser_from_b2stage(internal_user)
+
+        elif internal_user.authmethod == 'irods':
+
+            icom = self.irodsuser_from_b2safe(internal_user)
+
+        elif internal_user.authmethod == 'b2access-cert':
+
+            icom, external_user, refreshed, errors = \
+                self.irodsuser_from_b2access_cert(internal_user)
+            proxy = True
+            if errors is not None:
+                return errors
+
+        elif internal_user.authmethod == 'b2access':
+            icom, external_user, refreshed = \
+                self.irodsuser_from_b2access(internal_user)
             # icd and ipwd do not give error with wrong certificates...
             # so the minimum command is ils inside the home dir
             icom.list()
-            if proxy:
-                log.debug("Current proxy certificate is valid")
 
-        # Catch exceptions on this irods test
-        # To manipulate the reply to be given to the user
-        except BaseException as e:
-            log.warning("Catched exception %s" % type(e))
-
-            if proxy:
-                error = self.check_proxy_certificate(external_user, e)
-                if error is None:
-                    refreshed = True
-                else:
-                    # Case of error to be printed
-                    return self.parse_gss_failure(error)
-            else:
-                raise e
+        else:
+            log.error("Unknown credentials provided")
 
         #################################
-        # database connection
         sql = self.get_service_instance('sqlalchemy')
         # update user variable to account email, which should be always unique
         user = internal_user.email
@@ -104,19 +102,78 @@ class EudatEndpoint(B2accessUtilities):
             valid_credentials=True, is_proxy=proxy, refreshed=refreshed
         )
 
-    def irodsuser_from_b2access(self, internal_user):
-        """ Certificates X509 and authority delegation """
-        proxy = True
+    def irodsuser_from_b2access(self, internal_user, refreshed=False):
         external_user = self.auth.oauth_from_local(internal_user)
 
-        return \
-            self.get_service_instance(
-                service_name='irods', only_check_proxy=True,
-                user=external_user.irodsuser, password=None,
-                gss=proxy, proxy_file=external_user.proxyfile,
-            ), \
-            external_user, \
-            proxy
+        try:
+            icom = self.get_service_instance(
+                service_name='irods',
+                user=external_user.irodsuser,
+                password=external_user.token,
+                authscheme='PAM'
+            )
+
+            log.debug("Current b2access token is valid")
+        except iexceptions.PAM_AUTH_PASSWORD_FAILED:
+
+            if external_user.refresh_token is None:
+                log.warning(
+                    "Missing refresh token cannot request for a new token")
+                raise RestApiException('Invalid PAM credentials')
+            else:
+
+                if refreshed:
+                    log.info("B2access token already refreshed, cannot request new one")
+                    raise RestApiException('Invalid PAM credentials')
+                log.info(
+                    "B2access token is no longer valid, requesting new token")
+
+                b2access = self.create_b2access_client(self.auth, decorate=True)
+                access_token = self.refresh_b2access_token(
+                    self.auth, external_user.email,
+                    b2access, external_user.refresh_token)
+
+                if access_token is not None:
+                    return self.irodsuser_from_b2access(internal_user, refreshed=True)
+                raise RestApiException('Failed to refresh b2access token')
+
+        except BaseException as e:
+            raise RestApiException(
+                "Unexpected error: %s (%s)" % (type(e), str(e)))
+
+        return icom, external_user, refreshed
+
+    # B2access with certificates are no longer used
+    def irodsuser_from_b2access_cert(self, internal_user):
+        """ Certificates X509 and authority delegation """
+        external_user = self.auth.oauth_from_local(internal_user)
+
+        icom = self.get_service_instance(
+            service_name='irods', only_check_proxy=True,
+            user=external_user.irodsuser, password=None,
+            gss=True, proxy_file=external_user.proxyfile,
+        )
+
+        refreshed = False
+        try:
+            # icd and ipwd do not give error with wrong credentials...
+            # so the minimum command is ils inside the home dir
+            icom.list()
+            log.debug("Current proxy certificate is valid")
+
+        # Catch exceptions on this irods test
+        # To manipulate the reply to be given to the user
+        except BaseException as e:
+            log.warning("Catched exception %s" % type(e))
+
+            error = self.check_proxy_certificate(external_user, e)
+            if error is None:
+                refreshed = True
+            else:
+                # Case of error to be printed
+                return None, None, None, self.parse_gss_failure(error)
+
+        return icom, external_user, refreshed, None
 
     def irodsuser_from_b2safe(self, user):
 
@@ -127,8 +184,10 @@ class EudatEndpoint(B2accessUtilities):
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
-        return self.get_service_instance(
+        icom = self.get_service_instance(
             service_name='irods', user_session=user)
+
+        return icom
 
     def irodsuser_from_b2stage(self, internal_user):
         """
@@ -143,10 +202,12 @@ class EudatEndpoint(B2accessUtilities):
             # 'guest' irods mode is only for debugging purpose
             raise ValueError("Invalid authentication")
 
-        return self.get_service_instance(
+        icom = self.get_service_instance(
             service_name='irods', only_check_proxy=True,
             user=IRODS_VARS.get('guest_user'), password=None, gss=True,
         )
+
+        return icom
 
     def parse_gss_failure(self, error_object):
 
@@ -444,3 +505,34 @@ class EudatEndpoint(B2accessUtilities):
             response.append({filename: content})
 
         return response
+
+    def get_batch_status(self, imain, irods_path, local_path):
+
+        files = {}
+        if not imain.is_collection(irods_path):
+            return MISSING_BATCH, files
+
+        if not local_path.exists():
+            return MISSING_BATCH, files
+
+        files = imain.list(irods_path, detailed=True)
+
+        # Too many files on irods
+        fnum = len(files)
+        if fnum > 1:
+            return BATCH_MISCONFIGURATION, files
+
+        # 1 file on irods -> everything is ok
+        if fnum == 1:
+            return ENABLED_BATCH, files
+
+        # No files on irods, let's check on filesystem
+        files = []
+        for x in local_path.glob("*"):
+            if x.is_file():
+                files.append(os.path.basename(str(x)))
+        fnum = len(files)
+        if fnum <= 0:
+            return NOT_FILLED_BATCH, files
+
+        return PARTIALLY_ENABLED_BATCH, files

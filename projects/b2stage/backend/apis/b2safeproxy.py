@@ -42,13 +42,21 @@ class B2safeProxy(EndpointResource):
         from flask import request
         auth = request.authorization
 
+        jargs = self.get_input()
         if auth is not None:
             username = auth.username
             password = auth.password
         else:
-            jargs = self.get_input()
-            username = jargs.get('username')
-            password = jargs.get('password')
+            username = jargs.pop('username', None)
+            password = jargs.pop('password', None)
+        authscheme = jargs.pop('authscheme', 'credentials')
+
+        if authscheme.upper() == 'PAM':
+            authscheme = 'PAM'
+
+        if len(jargs) > 0:
+            for j in jargs:
+                log.warning("Unknown input parameter: %s", j)
 
         if username == self._anonymous_user:
             password = 'WHATEVERYOUWANT:)'
@@ -65,6 +73,7 @@ class B2safeProxy(EndpointResource):
             'service_name': "irods",
             'user': username,
             'password': password,
+            'authscheme': authscheme,
         }
 
         # we verify that irods connects with this credentials

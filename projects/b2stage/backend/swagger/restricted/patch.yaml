@@ -2,6 +2,10 @@
 restricted:
   custom:
     authentication: true
+    authorized:
+      - admin_root
+      - staff_user
+    required_roles: any
   summary: enabling data centres to upload restricted data
   responses:
     '200':

@@ -8,3 +8,10 @@ upload:
   responses:
     '200':
       description: upload has been completed without errors
+    '404':
+      description: order not found or lack of permissions
+    '400':
+      description: errors in order metadata
+    '409':
+      description: zip already exists
+

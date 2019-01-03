@@ -1,10 +1,8 @@
-
-# Other operations
+# Other operations #
 
 Here we have more informations for further debugging/developing the project
 
-
-## launch interfaces
+## launch interfaces ##
 
 To explore data and query parameters there are few other services as options:
 
@@ -25,7 +23,7 @@ open http://$SERVER:81/adminer
 
 ## add valid b2handle credentials
 
-To resolve non-public `PID`s prefixes for the `EPIC HANDLE` project we may leverage the `B2HANDLE` library providing existing credentials. 
+To resolve non-public `PID`s prefixes for the `EPIC HANDLE` project we may leverage the `B2HANDLE` library providing existing credentials.
 
 You can do so by copying such files into the dedicated directory:
 
@@ -45,7 +43,7 @@ rapydo clean --rm  # very DANGEROUS
 
 ## hack the certificates volume
 
-This hack is necessary if you want to raw copy a Certification Authority credential. 
+This hack is necessary if you want to raw copy a Certification Authority credential.
 It may be needed if your current B2SAFE host DN was produced with an internal certification authority which is not recognized from other clients.
 
 ```bash

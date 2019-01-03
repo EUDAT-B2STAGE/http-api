@@ -2,13 +2,12 @@
 depends_on:
   - SEADATA_PROJECT
 
-file: helper
-class: Helper
+file: list_sdc_resources
+class: ListResources
 schema:
   expose: true
 mapping:
-  helper: "/helper"
-  singlehelper: "/helper/<batch_id>"
+  list: "/resourceslist"
 labels:
   # - custom
   - helper
