@@ -23,14 +23,16 @@ from utilities.logs import get_logger
 
 log = get_logger(__name__)
 
+# 12 h
+IRODS_CONNECTION_TTL = 43200
+
 
 class B2accessUtilities(EndpointResource):
 
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
         return self.get_service_instance(
-            service_name='irods'
-            # add cache_expiration... 12 h?
+            service_name='irods', cache_expiration=IRODS_CONNECTION_TTL
         )
 
     def create_b2access_client(self, auth, decorate=False):
