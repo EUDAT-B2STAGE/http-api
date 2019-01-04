@@ -128,7 +128,11 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # use anonymous to get the session here
         # because the ticket supply breaks the iuser session permissions
         icom = self.get_service_instance(
-            service_name='irods', user='anonymous', password='null')
+            service_name='irods',
+            user='anonymous',
+            password='null',
+            authscheme='credentials'
+        )
         # obj = self.init_endpoint()
         # icom = obj.icommands
         icom.ticket_supply(code)
