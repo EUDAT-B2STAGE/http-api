@@ -38,8 +38,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # get irods session
 
         imain = self.get_service_instance(service_name='irods')
-        # obj = self.init_endpoint()
-        # icom = obj.icommands
 
         batch_path = self.get_irods_batch_path(imain, batch_id)
         local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
@@ -241,7 +239,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ##################
         # Get irods session
         obj = self.init_endpoint()
-        # icom = obj.icommands
 
         # NOTE: Main API user is the key to let this happen
         imain = self.get_service_instance(service_name='irods')

@@ -387,7 +387,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     def put(self, order_id):
 
         ##################
-        # imain = self.get_service_instance(service_name='irods')
         # TODO: push pdonorio/prc
         # tickets = imain.list_tickets()
         # print(tickets)
@@ -399,8 +398,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             self, json={'order_id': order_id}, log_string='start')
         log_into_queue(self, msg)
 
-        # obj = self.init_endpoint()
-        # icom = obj.icommands
         imain = self.get_service_instance(service_name='irods')
         order_path = self.get_irods_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
