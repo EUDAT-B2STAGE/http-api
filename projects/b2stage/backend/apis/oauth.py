@@ -17,7 +17,6 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 
-# class OauthLogin(B2accessUtilities):
 class OauthLogin(EudatEndpoint):
     """
     Endpoint which redirects to B2ACCESS server online,
@@ -54,7 +53,6 @@ class OauthLogin(EudatEndpoint):
         return self.force_response(response)
 
 
-# class Authorize(B2accessUtilities):
 class Authorize(EudatEndpoint):
     """
     Previous endpoint will redirect here if authorization was granted.
@@ -106,7 +104,8 @@ class Authorize(EudatEndpoint):
         # log.info("B2ACCESS DN = %s", b2access_dn)
         log.info("B2ACCESS email = %s", b2access_email)
 
-        imain = self.get_service_instance(service_name='irods')
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
 
         irods_user = self.get_irods_user_from_b2access(imain, b2access_email)
         # irods_user = imain.get_user_from_dn(b2access_dn)
@@ -200,26 +199,3 @@ class B2accesProxyEndpoint(EudatEndpoint):
                 return {"Skipped": "Not using a certificate proxy."}
 
         return {"Info": "Unknown status."}
-
-
-#######################################
-# JUST TO TEST
-#######################################
-
-# # class TestB2access(B2accessUtilities):
-# class TestB2access(EudatEndpoint):
-#     """ development tests """
-
-#     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-#     def get(self):
-
-#         ##########################
-#         # get the response
-#         r = self.init_endpoint()
-#         # log.pp(r)
-#         if r.errors is not None:
-#             return self.send_errors(errors=r.errors)
-#         log.pp(r)
-
-#         ##########################
-#         return {'list': r.icommands.list()}
