@@ -97,7 +97,8 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
 
         #################
         # get the metadata
-        imain = self.get_service_instance(service_name='irods')
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         metadata, _ = imain.get_metadata(ipath)
         log.pp(metadata)
 

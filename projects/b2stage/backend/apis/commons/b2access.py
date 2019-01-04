@@ -27,6 +27,7 @@ log = get_logger(__name__)
 class B2accessUtilities(EndpointResource):
 
     def get_main_irods_connection(self):
+        # NOTE: Main API user is the key to let this happen
         return self.get_service_instance(
             service_name='irods'
             # add cache_expiration... 12 h?

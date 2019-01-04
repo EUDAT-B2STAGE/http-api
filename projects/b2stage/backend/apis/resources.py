@@ -76,7 +76,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ###########################
         # get name from batch
-        imain = self.get_service_instance(service_name='irods')
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         batch_path = self.get_irods_batch_path(imain, batch_id)
         local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
         log.info("Batch irods path: %s", batch_path)

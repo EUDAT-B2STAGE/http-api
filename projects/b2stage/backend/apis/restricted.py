@@ -49,7 +49,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         json_input = self.get_input()
 
-        imain = self.get_service_instance(service_name='irods')
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain, order_id)
         obj = self.init_endpoint()
 
@@ -80,7 +81,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.info("Order restricted: %s", order_id)
 
         # Create the path
-        imain = self.get_service_instance(service_name='irods')
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
 
@@ -137,7 +139,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         json_input = self.get_input()
 
-        imain = self.get_service_instance(service_name='irods')
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain, order_id)
 
         task = CeleryExt.merge_restricted_order.apply_async(

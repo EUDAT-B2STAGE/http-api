@@ -134,8 +134,6 @@ class Authorize(EudatEndpoint):
 
         # iRODS informations: get/set from current B2ACCESS response
 
-        imain = self.get_service_instance(service_name='irods')
-
         irods_user = self.set_irods_username(imain, auth, extuser)
 
         if irods_user is None:

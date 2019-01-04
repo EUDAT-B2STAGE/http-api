@@ -11,7 +11,8 @@ class ListResources(Endpoint):
 
     def post(self):
 
-        imain = self.get_service_instance(service_name='irods')
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         json_input = self.get_input()
         task = CeleryExt.list_resources.apply_async(
             args=[
