@@ -44,6 +44,11 @@ services:
       CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
       CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
 
+      # Override MONGO_ENABLE: ${ACTIVATE_MONGODB} in commons.yml
+      # and used by EPOS to start MONGO as auth backend
+      # in SeaData mongo is only used as celery backend
+      MONGO_ENABLE: 0 
+
     depends_on:
       - postgres
     expose:
