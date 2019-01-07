@@ -112,7 +112,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         log.info("Batch path: %s", batch_path)
 
         ########################
-        # Check if the folder exists and is empty
+        # Check if the folder exists and it is empty
         if not icom.is_collection(batch_path):
 
             err_msg = ("Batch '%s' not enabled or you have no permissions"
@@ -130,6 +130,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             log_into_queue(self, log_msg)
 
             return self.send_errors(err_msg, code=hcodes.HTTP_BAD_NOTFOUND)
+
+        log.warning("DEBUG print: batch path exist")
 
         ########################
         # NOTE: only streaming is allowed, as it is more performant
