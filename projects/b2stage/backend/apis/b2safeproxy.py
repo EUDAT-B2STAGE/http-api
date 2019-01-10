@@ -77,14 +77,10 @@ class B2safeProxy(B2accessUtilities):
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
         if authscheme.upper() == 'B2ACCESS':
-            log.warning(authscheme)
             authscheme = 'PAM'
-            log.warning("Connecting to irods...")
             imain = self.get_main_irods_connection()
-            log.warning("Mapping %s", username)
 
             username = self.get_irods_user_from_b2access(imain, username)
-            log.warning("Retrieved user = %s", username)
 
         #############
         func = self.get_service_instance
