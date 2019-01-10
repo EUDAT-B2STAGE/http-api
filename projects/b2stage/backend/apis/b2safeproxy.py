@@ -71,7 +71,7 @@ class B2safeProxy(B2accessUtilities):
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
-        if authscheme.upper() == 'B2ACCESS':
+        if authscheme.upper() == 'OPENID':
             authscheme = 'PAM'
             imain = self.get_main_irods_connection()
 
