@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from restapi import decorators as decorate
-from restapi.rest.definition import EndpointResource
+from b2stage.apis.commons.b2access import B2accessUtilities
 from restapi.exceptions import RestApiException
 from restapi.flask_ext.flask_irods.client import get_and_verify_irods_session
 from utilities import htmlcodes as hcodes
@@ -10,7 +10,7 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 
-class B2safeProxy(EndpointResource):
+class B2safeProxy(B2accessUtilities):
     """ Login to B2SAFE: directly. """
 
     _anonymous_user = 'anonymous'
@@ -51,21 +51,36 @@ class B2safeProxy(EndpointResource):
             password = jargs.pop('password', None)
         authscheme = jargs.pop('authscheme', 'credentials')
 
-        if authscheme.upper() == 'PAM':
-            authscheme = 'PAM'
+        # token is an alias for password parmeter
+        if password is None:
+            password = jargs.pop('token', None)
 
         if len(jargs) > 0:
             for j in jargs:
                 log.warning("Unknown input parameter: %s", j)
 
+        if authscheme.upper() == 'PAM':
+            authscheme = 'PAM'
+
         if username == self._anonymous_user:
             password = 'WHATEVERYOUWANT:)'
 
-        if username is None or password is None or \
-           username.strip() == '' or password.strip() == '':
+        if username.strip() == '':
+            username = None
+
+        if password.strip() == '':
+            password = None
+
+        if username is None or password is None:
             msg = "Missing username or password"
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+
+        if authscheme.upper() == 'B2ACCESS':
+            authscheme = 'PAM'
+            imain = self.get_main_irods_connection()
+
+            username = self.get_irods_user_from_b2access(imain, username)
 
         #############
         func = self.get_service_instance
