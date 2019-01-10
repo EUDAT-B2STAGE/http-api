@@ -65,13 +65,8 @@ class B2safeProxy(B2accessUtilities):
         if username == self._anonymous_user:
             password = 'WHATEVERYOUWANT:)'
 
-        if username.strip() == '':
-            username = None
-
-        if password.strip() == '':
-            password = None
-
-        if username is None or password is None:
+        if username is None or password is None \
+           or username.strip() == '' or password.strip() == '':
             msg = "Missing username or password"
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
