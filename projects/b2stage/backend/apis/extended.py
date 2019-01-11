@@ -50,6 +50,10 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
             url = url.replace('https://', '')
             url = url.replace('http://', '')
 
+            log.warning(url)
+            log.warning(route)
+            log.warning(url.startswith(route))
+
             if (url.startswith(route)):
                 url = url.replace(route, '/')
                 r = self.init_endpoint()
