@@ -53,10 +53,6 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
         url = url.replace('https://', '')
         url = url.replace('http://', '')
 
-        log.warning(rroute)
-        log.warning(proute)
-        log.warning(url)
-
         # If local HTTP-API perform a direct download
         if url.startswith(rroute):
             url = url.replace(rroute, '/')
