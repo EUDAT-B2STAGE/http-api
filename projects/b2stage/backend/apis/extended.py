@@ -13,6 +13,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/master/docs/user/endpoints.md
 from restapi.flask_ext.flask_irods.client import IrodsException
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 
+from restapi.services.uploader import Uploader
 from restapi.services.download import Downloader
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
@@ -22,7 +23,7 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 
-class PIDEndpoint(Downloader, B2HandleEndpoint):
+class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     """ Handling PID on endpoint requests """
 
     def eudat_pid(self, pid):
