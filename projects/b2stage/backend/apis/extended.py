@@ -46,8 +46,8 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
         from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
         from b2stage.apis.commons import PUBLIC_ENDPOINT
 
-        rroute = '%s/%s/' % (CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT)
-        proute = '%s/%s/' % (CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT)
+        rroute = '%s%s/' % (CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT)
+        proute = '%s%s/' % (CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT)
         # route = route.replace('http://', '')
 
         url = url.replace('https://', '')
