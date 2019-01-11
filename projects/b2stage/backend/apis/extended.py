@@ -43,12 +43,9 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
             # If local HTTP-API perform a direct download
             from b2stage.apis.commons import \
                 CURRENT_HTTPAPI_SERVER, API_URL, CURRENT_MAIN_ENDPOINT
-            route = '%s/%s/%s/' % (
+            route = '%s%s/%s/' % (
                 CURRENT_HTTPAPI_SERVER, API_URL, CURRENT_MAIN_ENDPOINT)
             # route = route.replace('http://', '')
-            log.warning(CURRENT_HTTPAPI_SERVER)
-            log.warning(API_URL)
-            log.warning(CURRENT_MAIN_ENDPOINT)
 
             url = url.replace('https://', '')
             url = url.replace('http://', '')
