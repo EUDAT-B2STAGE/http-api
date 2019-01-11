@@ -42,14 +42,20 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
 
         # download is requested, trigger file download
 
-        from b2stage.apis.commons import \
-            CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT, PUBLIC_ENDPOINT
+        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER
+        from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
+        from b2stage.apis.commons import PUBLIC_ENDPOINT
+
         rroute = '%s/%s/' % (CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT)
         proute = '%s/%s/' % (CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT)
         # route = route.replace('http://', '')
 
         url = url.replace('https://', '')
         url = url.replace('http://', '')
+
+        log.warning(rroute)
+        log.warning(proute)
+        log.warning(url)
 
         # If local HTTP-API perform a direct download
         if url.startswith(rroute):
