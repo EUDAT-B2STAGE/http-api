@@ -14,7 +14,7 @@ services:
     environment:
       # ACTIVATE: 1
       # FLASK_DEBUG: 1
-      DEBUG_LEVEL: VERY_VERBOSE
+      DEBUG_LEVEL: ${LOG_LEVEL}
       # APP_MODE: debug
       # this variables is switch to 1 with a send in .travis.yaml
       TESTING: 0
