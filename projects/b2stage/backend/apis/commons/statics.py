@@ -49,7 +49,7 @@ HEADER = """<!DOCTYPE html>
 # TODO: get year from python
 FOOTER = """
     <footer class="footer">
-     <p>&copy; EUDAT 2018</p>
+     <p>&copy; EUDAT 2019</p>
     </footer>
  </div>
 </body>

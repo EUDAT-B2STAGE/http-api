@@ -13,8 +13,8 @@ from tests import RestTestsAuthenticatedBase
 from utilities.logs import get_logger
 
 __authors__ = [
-    'Roberto Mucci (r.mucci@cineca.it)',
-    "Paolo D'Onorio De Meo <p.donoriodemeo@cineca.it>",
+    'Roberto Mucci (m.dantonio@cineca.it)',
+    "Paolo D'Onorio De Meo <m.dantonio@cineca.it>",
 ]
 
 log = get_logger(__name__)
