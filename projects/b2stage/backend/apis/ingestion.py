@@ -9,6 +9,7 @@ from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
 from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
 from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from restapi.services.uploader import Uploader
+from restapi.exceptions import RestApiException
 from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
@@ -90,7 +91,76 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         return data
         # return "Batch '%s' is enabled and filled" % batch_id
 
-    def put(self, batch_id, file_id):
+    def put(self, batch_id):
+        json_input = self.get_input()
+
+        obj = self.init_endpoint()
+        imain = self.get_main_irods_connection()
+
+        batch_path = self.get_irods_batch_path(imain, batch_id)
+        log.info("Batch irods path: %s", batch_path)
+        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+        log.info("Batch local path: %s", local_path)
+
+        """
+        Create the batch folder if not exists
+        """
+
+        # Log start (of enable) into RabbitMQ
+        log_msg = prepare_message(
+            self, json={'batch_id': batch_id},
+            user=ingestion_user, log_string='start')
+        log_into_queue(self, log_msg)
+
+        ##################
+        # Does it already exist?
+        # Create the collection and set permissions in irods
+        if not imain.is_collection(batch_path):
+
+            imain.create_collection_inheritable(batch_path, obj.username)
+        else:
+            log.warning("Irods batch collection already exists")
+
+        # Create the folder on filesystem
+        if not path.file_exists_and_nonzero(local_path):
+
+            # Create superdirectory and directory on file system:
+            try:
+                # TODO: REMOVE THIS WHEN path.create() has parents=True!
+                import os
+                superdir = os.path.join(MOUNTPOINT, INGESTION_DIR)
+                if not os.path.exists(superdir):
+                    log.debug('Creating %s...', superdir)
+                    os.mkdir(superdir)
+                    log.info('Created %s...', superdir)
+                path.create(local_path, directory=True, force=True)
+            except (FileNotFoundError, PermissionError) as e:
+                err_msg = ('Could not create directory "%s" (%s)' % (local_path, e))
+                log.critical(err_msg)
+                log.info('Removing collection from irods (%s)' % batch_path)
+                imain.remove(batch_path, recursive=True, force=True)
+                return self.send_errors(err_msg, code=hcodes.HTTP_SERVER_ERROR)
+
+        else:
+            log.debug("Batch path already exists on filesytem")
+
+        # Log end (of enable) into RabbitMQ
+        log_msg = prepare_message(
+            self, status='enabled', user=ingestion_user, log_string='end')
+        log_into_queue(self, log_msg)
+
+        """
+            Download the file into the batch folder
+        """
+
+        task = CeleryExt.ingest_batch.apply_async(
+            args=[batch_path, local_path, json_input],
+            queue='ingestion', routing_key='ingestion'
+        )
+        log.warning("Async job: %s", task.id)
+        return self.return_async_id(task.id)
+
+    def put_old_upload(self, batch_id, file_id):
         """
         Let the Replication Manager upload a zip file into a batch folder
         """
@@ -218,6 +288,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         return self.return_async_id(task.id)
 
     def post(self):
+
+        raise RestApiException("This endpoint is deprecated")
         """
         Create the batch folder if not exists
         """

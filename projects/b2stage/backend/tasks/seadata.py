@@ -106,6 +106,13 @@ def notify_error(error, payload, backdoor, task, extra=None):
 
 
 @celery_app.task(bind=True)
+def ingest_batch(self, batch_path, local_path, myjson):
+    log.critical(myjson)
+    pass
+
+
+# DEPRECATED - TO BE DELETED
+@celery_app.task(bind=True)
 def copy_from_b2safe_to_b2host(self, batch_id, irods_path, zip_name, backdoor):
     '''
     This task copies data from irods to the B2HOST

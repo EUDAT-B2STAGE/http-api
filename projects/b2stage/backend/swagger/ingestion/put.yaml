@@ -1,17 +1,11 @@
 
 # withid:
-withidandfile:
+download:
   custom:
     authentication: true
-  summary: Upload a zip file to the ingestion cloud
-  parameters:
-    - name: file
-      in: formData
-      description: file data to be uploaded
-      required: true
-      type: file
+  summary: Request to import a zip file to the ingestion cloud
   responses:
     '200':
-      description: File was uploaded without errors
+      description: Request unqueued for download
     '404':
       description: Batch not enabled or lack of permissions
