@@ -1,16 +1,11 @@
 
-withoutid:
+# withid:
+download:
   custom:
     authentication: true
-  summary: Enable a batch to be ingested in the submission process
+  summary: Request to import a zip file to the ingestion cloud
   responses:
     '200':
-      description: The batch for the specified identifier has been activated
-    '400':
-      description: Bad request (missing parameters)
-
-  parameters:
-    - name: batch_id
-      in: query
-      type: string
-      description: the identifier associated to this ingestion workflow
+      description: Request unqueued for download
+    '404':
+      description: Batch not enabled or lack of permissions
