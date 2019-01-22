@@ -185,7 +185,7 @@ def ingest_batch(self, batch_path, local_path, myjson):
             ext_api.post(myjson, backdoor=backdoor)
             return errors
 
-        log.warning("Request status = %s", r.status_code)
+        log.info("Request status = %s", r.status_code)
         batch_file = path.join(local_path, file_name)
 
         with open(batch_file, 'wb') as f:
