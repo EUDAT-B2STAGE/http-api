@@ -107,8 +107,9 @@ def notify_error(error, payload, backdoor, task, extra=None):
 
 @celery_app.task(bind=True)
 def ingest_batch(self, batch_path, local_path, myjson):
+    log.critical(batch_path)
+    log.critical(local_path)
     log.critical(myjson)
-    pass
 
 
 # DEPRECATED - TO BE DELETED
