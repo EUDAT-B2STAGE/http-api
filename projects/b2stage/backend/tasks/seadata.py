@@ -116,11 +116,64 @@ def ingest_batch(self, batch_path, local_path, myjson):
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
 
-        # if elements is None:
-        #     return notify_error(
-        #         ErrorCodes.MISSING_PIDS_LIST,
-        #         myjson, backdoor, self
-        #     )
+        batch_number = params.get("batch_number")
+        if batch_number is None:
+            return notify_error(
+                ErrorCodes.MISSING_BATCH_NUMBER_PARAM,
+                myjson, backdoor, self
+            )
+
+        download_path = params.get("download_path")
+        if download_path is None:
+            return notify_error(
+                ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
+                myjson, backdoor, self
+            )
+
+        file_counts = params.get("data_file_count")
+        if file_counts is None:
+            return notify_error(
+                ErrorCodes.MISSING_FILECOUNT_PARAM,
+                myjson, backdoor, self
+            )
+
+        zip_files = params.get('file_name')
+        if zip_files is None:
+            return notify_error(
+                ErrorCodes.MISSING_ZIPFILENAME_PARAM,
+                myjson, backdoor, self
+            )
+
+        file_sizes = params.get("file_size")
+        if file_sizes is None:
+            return notify_error(
+                ErrorCodes.MISSING_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
+
+        file_checksums = params.get("file_checksum")
+        if file_checksums is None:
+            return notify_error(
+                ErrorCodes.MISSING_CHECKSUM_PARAM,
+                myjson, backdoor, self
+            )
+
+        file_counts = params.get("data_file_count")
+        if file_counts is None:
+            return notify_error(
+                ErrorCodes.MISSING_FILECOUNT_PARAM,
+                myjson, backdoor, self
+            )
+
+        """
+        TO DO
+         1 - download from download path
+         2 - check file size
+         3 - check file checksum
+         4 - unzip file
+         5 - check file count
+         6 - copy on irods
+        """
 
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
