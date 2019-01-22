@@ -166,12 +166,14 @@ def ingest_batch(self, batch_path, local_path, myjson):
                 myjson, backdoor, self
             )
 
-        r = requests.get(download_path)
+        r = requests.get(download_path, stream=True)
 
         batch_file = path.join(local_path, file_name)
 
         with open(batch_file, 'wb') as f:
-            f.write(r.content)
+            for chunk in r.iter_content(chunk_size=1024): 
+                if chunk: # filter out keep-alive new chunks
+                    f.write(chunk)
         """
         TO DO
          1 - download from download path
