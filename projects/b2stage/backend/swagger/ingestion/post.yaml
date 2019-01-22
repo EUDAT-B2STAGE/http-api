@@ -1,6 +1,6 @@
 
 # withid:
-download:
+withid:
   custom:
     authentication: true
   summary: Request to import a zip file to the ingestion cloud
