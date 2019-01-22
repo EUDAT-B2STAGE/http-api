@@ -118,6 +118,7 @@ def ingest_batch(self, batch_path, local_path, myjson):
 
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
+        errors = []
 
         batch_number = params.get("batch_number")
         if batch_number is None:
@@ -173,10 +174,16 @@ def ingest_batch(self, batch_path, local_path, myjson):
         log.info("Downloading file from %s", download_url)
         r = requests.get(download_url, stream=True)
         if r.status_code == 404:
-            return notify_error(
-                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
-                myjson, backdoor, self
-            )
+            errors.append({
+                "error": ErrorCodes.UNREACHABLE_DOWNLOAD_PATH[0],
+                "description": ErrorCodes.UNREACHABLE_DOWNLOAD_PATH[1],
+                "subject": download_url,
+            })
+            if len(errors) > 0:
+                myjson['errors'] = errors
+
+            ext_api.post(myjson, backdoor=backdoor)
+            return errors
 
         log.warning("Request status = %s", r.status_code)
         batch_file = path.join(local_path, file_name)

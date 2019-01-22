@@ -56,6 +56,9 @@ class ErrorCodes(object):
     INVALID_FILECOUNT_LENGTH = ("4034", "Unexpected lenght of file_count parameter")
     INVALID_CHECKSUM_LENGTH = ("4035", "Unexpected lenght of file_checksum parameter")
     INVALID_FILENAME_PARAM = ("4036", "Invalid parameter zipfile_name, a string is expected")
+    MISSING_BATCH_NUMBER_PARAM = ("4037", "Parameter batch_number is missing")
+    UNREACHABLE_DOWNLOAD_PATH = ("4039", "Download path is unreachable")
+
 
 class Metadata(object):
 
