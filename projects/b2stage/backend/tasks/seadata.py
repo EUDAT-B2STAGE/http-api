@@ -5,6 +5,7 @@ import hashlib
 import zipfile
 import json
 import re
+import requests
 from shutil import rmtree, unpack_archive
 from socket import gethostname
 from plumbum.commands.processes import ProcessExecutionError
@@ -130,29 +131,29 @@ def ingest_batch(self, batch_path, local_path, myjson):
                 myjson, backdoor, self
             )
 
-        file_counts = params.get("data_file_count")
-        if file_counts is None:
+        file_count = params.get("data_file_count")
+        if file_count is None:
             return notify_error(
                 ErrorCodes.MISSING_FILECOUNT_PARAM,
                 myjson, backdoor, self
             )
 
-        zip_files = params.get('file_name')
-        if zip_files is None:
+        file_name = params.get('file_name')
+        if file_name is None:
             return notify_error(
                 ErrorCodes.MISSING_ZIPFILENAME_PARAM,
                 myjson, backdoor, self
             )
 
-        file_sizes = params.get("file_size")
-        if file_sizes is None:
+        file_size = params.get("file_size")
+        if file_size is None:
             return notify_error(
                 ErrorCodes.MISSING_FILESIZE_PARAM,
                 myjson, backdoor, self
             )
 
-        file_checksums = params.get("file_checksum")
-        if file_checksums is None:
+        file_checksum = params.get("file_checksum")
+        if file_checksum is None:
             return notify_error(
                 ErrorCodes.MISSING_CHECKSUM_PARAM,
                 myjson, backdoor, self
@@ -165,6 +166,12 @@ def ingest_batch(self, batch_path, local_path, myjson):
                 myjson, backdoor, self
             )
 
+        r = requests.get(download_path)
+
+        batch_file = path.join(local_path, file_name)
+
+        with open(batch_file, 'wb') as f:
+            f.write(r.content)
         """
         TO DO
          1 - download from download path
