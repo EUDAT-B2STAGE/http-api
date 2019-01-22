@@ -154,7 +154,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         """
 
         task = CeleryExt.ingest_batch.apply_async(
-            args=[batch_path, local_path, json_input],
+            args=[batch_path, str(local_path), json_input],
             queue='ingestion', routing_key='ingestion'
         )
         log.warning("Async job: %s", task.id)
