@@ -113,6 +113,8 @@ def ingest_batch(self, batch_path, local_path, myjson):
 
     with celery_app.app.app_context():
         log.info("I'm %s (unrestricted_order)" % self.request.id)
+        log.info("Batch irods path: %s", batch_path)
+        log.info("Batch local path: %s", local_path)
 
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
@@ -168,7 +170,7 @@ def ingest_batch(self, batch_path, local_path, myjson):
 
         # 1 - download the file
         download_url = os.path.join(download_path, file_name)
-        log.info("Download file from %s", download_url)
+        log.info("Downloading file from %s", download_url)
         r = requests.get(download_url, stream=True)
         if r.status_code == 404:
             return notify_error(
@@ -1182,8 +1184,6 @@ def delete_orders(self, orders_path, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("Delete request for order path %s", orders_path)
-
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
             # TODO Raise error already here!
@@ -1223,7 +1223,7 @@ def delete_orders(self, orders_path, myjson):
                 'total': total, 'step': counter, 'errors': len(errors)})
 
             order_path = path.join(orders_path, order)
-            log.info(order_path)
+            log.info("Delete request for order path: %s", order_path)
 
             if not imain.is_collection(order_path):
                 errors.append({
@@ -1255,8 +1255,6 @@ def delete_orders(self, orders_path, myjson):
 def delete_batches(self, batches_path, myjson):
 
     with celery_app.app.app_context():
-
-        log.info("Delete request for batch path %s", batches_path)
 
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
@@ -1293,6 +1291,7 @@ def delete_batches(self, batches_path, myjson):
                 'total': total, 'step': counter, 'errors': len(errors)})
 
             batch_path = path.join(batches_path, batch)
+            log.info("Delete request for batch path %s", batch_path)
 
             if not imain.is_collection(batch_path):
                 errors.append({
