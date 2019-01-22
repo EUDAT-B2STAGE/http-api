@@ -18,6 +18,7 @@ from b2stage.apis.commons.seadatacloud import \
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from restapi.services.detect import detector
 from b2stage.apis.commons.seadatacloud import seadata_vars
+from restapi.flask_ext.flask_celery import send_errors_by_email
 
 from utilities.logs import get_logger, logging
 
@@ -106,14 +107,28 @@ def notify_error(error, payload, backdoor, task, extra=None):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def ingest_batch(self, batch_path, local_path, myjson):
-    log.critical(batch_path)
-    log.critical(local_path)
-    log.critical(myjson)
+
+    with celery_app.app.app_context():
+        log.info("I'm %s (unrestricted_order)" % self.request.id)
+
+        params = myjson.get('parameters', {})
+        backdoor = params.pop('backdoor', False)
+
+        # if elements is None:
+        #     return notify_error(
+        #         ErrorCodes.MISSING_PIDS_LIST,
+        #         myjson, backdoor, self
+        #     )
+
+        ext_api.post(myjson, backdoor=backdoor)
+        return "COMPLETED"
 
 
 # DEPRECATED - TO BE DELETED
 @celery_app.task(bind=True)
+@send_errors_by_email
 def copy_from_b2safe_to_b2host(self, batch_id, irods_path, zip_name, backdoor):
     '''
     This task copies data from irods to the B2HOST
@@ -150,6 +165,7 @@ def copy_from_b2safe_to_b2host(self, batch_id, irods_path, zip_name, backdoor):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def copy_from_b2host_to_b2safe(self, batch_id, irods_path, zip_path, backdoor):
     '''
     This task copies data from B2HOST filesystem to irods
@@ -187,6 +203,7 @@ def copy_from_b2host_to_b2safe(self, batch_id, irods_path, zip_path, backdoor):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def move_to_production_task(self, batch_id, irods_path, myjson):
 
     with celery_app.app.app_context():
@@ -339,6 +356,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
     with celery_app.app.app_context():
@@ -617,6 +635,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def create_restricted_order(self, order_id, order_path, username, myjson):
 
     with celery_app.app.app_context():
@@ -692,6 +711,7 @@ def create_restricted_order(self, order_id, order_path, username, myjson):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def merge_restricted_order(self, order_id, order_path, myjson):
 
     with celery_app.app.app_context():
@@ -1146,6 +1166,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def delete_orders(self, orders_path, myjson):
 
     with celery_app.app.app_context():
@@ -1219,6 +1240,7 @@ def delete_orders(self, orders_path, myjson):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def delete_batches(self, batches_path, myjson):
 
     with celery_app.app.app_context():
@@ -1280,6 +1302,7 @@ def delete_batches(self, batches_path, myjson):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def cache_batch_pids(self, irods_path):
 
     with celery_app.app.app_context():
@@ -1334,6 +1357,7 @@ def cache_batch_pids(self, irods_path):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def pids_cached_to_json(self):
 
     with celery_app.app.app_context():
@@ -1344,6 +1368,7 @@ def pids_cached_to_json(self):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def list_resources(self, batch_path, order_path, myjson):
 
     with celery_app.app.app_context():
