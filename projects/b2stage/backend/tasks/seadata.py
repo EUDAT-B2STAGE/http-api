@@ -166,6 +166,7 @@ def ingest_batch(self, batch_path, local_path, myjson):
                 myjson, backdoor, self
             )
 
+        # 1 - download the file
         download_url = os.path.join(download_path, file_name)
         log.info("Download file from %s", download_url)
         r = requests.get(download_url, stream=True)
@@ -182,94 +183,34 @@ def ingest_batch(self, batch_path, local_path, myjson):
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
-        """
-        TO DO
-         1 - download from download path
-         2 - check file size
-         3 - check file checksum
-         4 - unzip file
-         5 - check file count
-         6 - copy on irods
-        """
+        # 2 - check if download file exists
+        # 3 - check file size
+        # 4 - check file checksum
+        # 5 - unzip file
+        # 6 - check file count
 
-        ext_api.post(myjson, backdoor=backdoor)
-        return "COMPLETED"
+        # 7 - copy file from B2HOST filesystem to irods
 
-
-# DEPRECATED - TO BE DELETED
-@celery_app.task(bind=True)
-@send_errors_by_email
-def copy_from_b2safe_to_b2host(self, batch_id, irods_path, zip_name, backdoor):
-    '''
-    This task copies data from irods to the B2HOST
-    filesystem, so that it is available for
-    pre-production qc checks.
-
-    The data is copied from irods_path (usually
-    /myzone/batches/<batch_id>) to a path on the
-    local filesystem inside the celery worker
-    container (/usr/share/batches/<batch_id>),
-    which is a directory mounted from the host.
-    '''
-    local_path = path.join(mybatchpath, batch_id)
-    path.create(local_path, directory=True, force=True)
-    local_element = path.join(local_path, zip_name)
-
-    with celery_app.app.app_context():
-
-        ###############
-        # pull the path from irods
-        imain = celery_app.get_service(service='irods')
-        log.debug("Copying %s", irods_path)
-        imain.open(irods_path, local_element)
-        log.info("Copied: %s", local_path)
-
-        ###############
-        # if backdoor unzip it
-        if backdoor:
-            log.warning('Backdoor! Unzipping: %s', local_element)
-            if path.file_exists_and_nonzero(local_element):
-                unpack_archive(str(local_element), str(local_path), 'zip')
-
-    return str(local_element)
-
-
-@celery_app.task(bind=True)
-@send_errors_by_email
-def copy_from_b2host_to_b2safe(self, batch_id, irods_path, zip_path, backdoor):
-    '''
-    This task copies data from B2HOST filesystem to irods
-
-    The data is copied from the path on the
-    local filesystem inside the celery worker
-    container (/usr/share/batches/<batch_id>),
-    which is a directory mounted from the host,
-    to the irods_path (usually /myzone/batches/<batch_id>)
-    '''
-    # local_path = path.join(mybatchpath, batch_id)
-    # path.create(local_path, directory=True, force=True)
-    # local_element = path.join(local_path, zip_name)
-
-    if not os.path.isfile(zip_path):
-        error = "Unable to copy on B2SAFE, file not found: %s" % zip_path
-        log.error(error)
-        self.update_state(state="FAILED", meta={
-            'errors': error
-        })
-        return 'Failed'
-
-    with celery_app.app.app_context():
+        '''
+        The data is copied from the path on the
+        local filesystem inside the celery worker
+        container (/usr/share/batches/<batch_id>),
+        which is a directory mounted from the host,
+        to the irods_path (usually /myzone/batches/<batch_id>)
+        '''
 
         imain = celery_app.get_service(service='irods')
-        log.debug("Copying %s", zip_path)
+        irods_batch_file = os.path.join(batch_path, file_name)
+        log.debug("Copying %s into %s...", batch_file, irods_batch_file)
         # imain.open(irods_path, local_element)
-        imain.put(zip_path, irods_path)
+        imain.put(batch_file, irods_batch_file)
 
         # NOTE: permissions are inherited thanks to the ACL already SET
         # Not needed to set ownership to username
-        log.info("Copied: %s", irods_path)
+        log.info("Copied: %s", irods_batch_file)
 
-    return str(irods_path)
+        ext_api.post(myjson, backdoor=backdoor)
+        return "COMPLETED"
 
 
 @celery_app.task(bind=True)
