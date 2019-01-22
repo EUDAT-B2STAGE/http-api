@@ -166,7 +166,8 @@ def ingest_batch(self, batch_path, local_path, myjson):
                 myjson, backdoor, self
             )
 
-        r = requests.get(os.join(download_path, file_name), stream=True)
+        download_url = os.path.join(download_path, file_name)
+        r = requests.get(download_url, stream=True)
 
         log.warning("Request status = %s", r.status_code)
         batch_file = path.join(local_path, file_name)
