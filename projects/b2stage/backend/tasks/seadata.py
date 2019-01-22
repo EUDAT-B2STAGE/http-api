@@ -167,6 +167,7 @@ def ingest_batch(self, batch_path, local_path, myjson):
             )
 
         download_url = os.path.join(download_path, file_name)
+        raise BaseException(download_url)
         log.info("Download file from %s", download_url)
         r = requests.get(download_url, stream=True)
         if r.status_code == 404:
