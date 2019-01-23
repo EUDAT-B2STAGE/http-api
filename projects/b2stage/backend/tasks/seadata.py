@@ -949,6 +949,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
         log.info("File count verified for %s", local_zip_path)
 
+        log.info("Verifying final zip: %s", final_zip)
         # 6 - check if final_zip exists
         if not imain.exists(final_zip):
             # 7 - if not, simply copy partial_zip -> final_zip
