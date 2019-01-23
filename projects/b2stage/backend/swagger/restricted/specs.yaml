@@ -9,11 +9,8 @@ class: Restricted
 schema:
   expose: true
 mapping:
-  # restrictedid: "/restricted/<string:order_id>"
   restricted: "/restricted/<string:order_id>"
-  upload: "/restricted/<string:order_id>/add/<string:file_id>"
-  # enable: "/restricted"
+  # upload: "/restricted/<string:order_id>/add/<string:file_id>"
 labels:
   - seadatacloud
   - restricted
-  # - order

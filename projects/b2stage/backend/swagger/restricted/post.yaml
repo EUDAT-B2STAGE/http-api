@@ -8,7 +8,7 @@ common:
     required_roles: any
 
 restricted:
-  summary: Merge zip uploaded by a partner with the main order zip
+  summary: Request to import a zip file into a restricted order
   responses:
     '200':
-      description: merge has been completed without errors
+      description: Request unqueued for download
