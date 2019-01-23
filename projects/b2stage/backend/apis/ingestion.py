@@ -153,7 +153,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             Download the file into the batch folder
         """
 
-        task = CeleryExt.ingest_batch.apply_async(
+        task = CeleryExt.download_batch.apply_async(
             args=[batch_path, str(local_path), json_input],
             queue='ingestion', routing_key='ingestion'
         )

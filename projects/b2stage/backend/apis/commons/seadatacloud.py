@@ -19,7 +19,7 @@ class ErrorCodes(object):
     INGESTION_FILE_NOT_FOUND = ("50", "File requested not found")
 
     # addzip_restricted_order
-    MISSING_ZIPFILENAME_PARAM = ("4000", "Parameter zipfile_name is missing")
+    MISSING_ZIPFILENAME_PARAM = ("4000", "Parameter filename is missing")
     MISSING_FILENAME_PARAM = ("4001", "Parameter file_name is missing")
     MISSING_FILESIZE_PARAM = ("4002", "Parameter file_size is missing")
     INVALID_FILESIZE_PARAM = ("4003", "Invalid parameter file_size, list of integers expected")
@@ -58,6 +58,7 @@ class ErrorCodes(object):
     INVALID_FILENAME_PARAM = ("4036", "Invalid parameter zipfile_name, a string is expected")
     MISSING_BATCH_NUMBER_PARAM = ("4037", "Parameter batch_number is missing")
     UNREACHABLE_DOWNLOAD_PATH = ("4039", "Download path is unreachable")
+    MISSING_ORDER_NUMBER_PARAM = ("4040", "Parameter order_number is missing")
 
 
 class Metadata(object):
