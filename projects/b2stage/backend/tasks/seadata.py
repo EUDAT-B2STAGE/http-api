@@ -142,6 +142,14 @@ def download_batch(self, batch_path, local_path, myjson):
                 myjson, backdoor, self
             )
 
+        try:
+            int(file_count)
+        except BaseException:
+            return notify_error(
+                ErrorCodes.INVALID_FILECOUNT_PARAM,
+                myjson, backdoor, self
+            )
+
         file_name = params.get('file_name')
         if file_name is None:
             return notify_error(
@@ -153,6 +161,14 @@ def download_batch(self, batch_path, local_path, myjson):
         if file_size is None:
             return notify_error(
                 ErrorCodes.MISSING_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
+
+        try:
+            int(file_size)
+        except BaseException:
+            return notify_error(
+                ErrorCodes.INVALID_FILESIZE_PARAM,
                 myjson, backdoor, self
             )
 
@@ -199,7 +215,7 @@ def download_batch(self, batch_path, local_path, myjson):
 
         # 3 - verify size
         local_file_size = os.path.getsize(batch_file)
-        if local_file_size != file_size:
+        if local_file_size != int(file_size):
             log.error(
                 "File size %s for %s, expected %s",
                 local_file_size, batch_file, file_size
@@ -788,11 +804,25 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 ErrorCodes.MISSING_FILESIZE_PARAM,
                 myjson, backdoor, self
             )
+        try:
+            int(file_size)
+        except BaseException:
+            return notify_error(
+                ErrorCodes.INVALID_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
 
         file_count = params.get("data_file_count")
         if file_count is None:
             return notify_error(
                 ErrorCodes.MISSING_FILECOUNT_PARAM,
+                myjson, backdoor, self
+            )
+        try:
+            int(file_count)
+        except BaseException:
+            return notify_error(
+                ErrorCodes.INVALID_FILECOUNT_PARAM,
                 myjson, backdoor, self
             )
 
@@ -855,7 +885,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
         # 3 - verify size
         local_file_size = os.path.getsize(local_zip_path)
-        if local_file_size != file_size:
+        if local_file_size != int(file_size):
             log.error(
                 "File size %s for %s, expected %s",
                 local_file_size, local_zip_path, file_size
