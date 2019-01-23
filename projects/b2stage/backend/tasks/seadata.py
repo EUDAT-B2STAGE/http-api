@@ -277,6 +277,8 @@ def download_batch(self, batch_path, local_path, myjson):
 
         log.info("File count verified for %s", batch_file)
 
+        rmtree(local_unzipdir, ignore_errors=True)
+
         # 7 - copy file from B2HOST filesystem to irods
 
         '''
