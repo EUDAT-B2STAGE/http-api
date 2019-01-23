@@ -59,6 +59,7 @@ class ErrorCodes(object):
     MISSING_BATCH_NUMBER_PARAM = ("4037", "Parameter batch_number is missing")
     UNREACHABLE_DOWNLOAD_PATH = ("4039", "Download path is unreachable")
     MISSING_ORDER_NUMBER_PARAM = ("4040", "Parameter order_number is missing")
+    MISSING_DOWNLOAD_PATH_PARAM = ("4041", "Parameter download_path is missing")
 
 
 class Metadata(object):
