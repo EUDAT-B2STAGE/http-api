@@ -153,7 +153,7 @@ def download_batch(self, batch_path, local_path, myjson):
         file_name = params.get('file_name')
         if file_name is None:
             return notify_error(
-                ErrorCodes.MISSING_ZIPFILENAME_PARAM,
+                ErrorCodes.MISSING_FILENAME_PARAM,
                 myjson, backdoor, self
             )
 
@@ -299,6 +299,7 @@ def download_batch(self, batch_path, local_path, myjson):
         # Not needed to set ownership to username
         log.info("Copied: %s", irods_batch_file)
 
+        log.warning(myjson)
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
@@ -766,12 +767,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         filename = params.get('zipfile_name')
         if filename is None:
             return notify_error(
-                ErrorCodes.MISSING_FILENAME_PARAM,
-                myjson, backdoor, self
-            )
-        if not isinstance(filename, str):
-            return notify_error(
-                ErrorCodes.INVALID_FILENAME_PARAM,
+                ErrorCodes.MISSING_ZIPFILENAME_PARAM,
                 myjson, backdoor, self
             )
 
@@ -796,7 +792,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         file_name = params.get('filename')
         if file_name is None:
             return notify_error(
-                ErrorCodes.MISSING_ZIPFILENAME_PARAM,
+                ErrorCodes.MISSING_FILENAME_PARAM,
                 myjson, backdoor, self
             )
 
@@ -957,7 +953,6 @@ def download_restricted_order(self, order_id, order_path, myjson):
             try:
                 log.warning("Temporary skipped copy on irods")
                 # imain.icopy(local_zip_path, final_zip)
-                pass
             except IrodsException as e:
                 log.error(str(e))
                 return notify_error(
