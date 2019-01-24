@@ -183,7 +183,7 @@ def download_batch(self, batch_path, local_path, myjson):
         download_url = os.path.join(download_path, file_name)
         log.info("Downloading file from %s", download_url)
         r = requests.get(download_url, stream=True, verify=False)
-        if r.status_code == 404:
+        if r.status_code != 200:
 
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
@@ -845,7 +845,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         download_url = os.path.join(download_path, file_name)
         log.info("Downloading file from %s", download_url)
         r = requests.get(download_url, stream=True, verify=False)
-        if r.status_code == 404:
+        if r.status_code != 200:
 
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
