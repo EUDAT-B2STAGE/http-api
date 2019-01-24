@@ -121,6 +121,11 @@ def download_batch(self, batch_path, local_path, myjson):
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
 
+        log.warning(myjson)
+        ext_api.post(myjson, backdoor=backdoor)
+        if True:
+            return "STOP"
+
         batch_number = params.get("batch_number")
         if batch_number is None:
             return notify_error(
@@ -299,7 +304,6 @@ def download_batch(self, batch_path, local_path, myjson):
         # Not needed to set ownership to username
         log.info("Copied: %s", irods_batch_file)
 
-        log.warning(myjson)
         ext_api.post(myjson, backdoor=backdoor)
         return "COMPLETED"
 
