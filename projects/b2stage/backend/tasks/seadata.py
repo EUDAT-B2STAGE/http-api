@@ -121,8 +121,8 @@ def download_batch(self, batch_path, local_path, myjson):
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
 
-        log.warning(myjson)
-        ext_api.post(myjson, backdoor=backdoor)
+        request_edmo_code = myjson.get('edmo_code')
+        ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
         if True:
             return "STOP"
 
