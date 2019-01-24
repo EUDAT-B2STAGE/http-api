@@ -205,7 +205,7 @@ def download_batch(self, batch_path, local_path, myjson):
             open(batch_file, 'rb').read()
         ).hexdigest()
 
-        if local_file_checksum != file_checksum:
+        if local_file_checksum.lower() != file_checksum.lower():
             return notify_error(
                 ErrorCodes.CHECKSUM_DOESNT_MATCH,
                 myjson, backdoor, self,
@@ -873,7 +873,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             open(local_zip_path, 'rb').read()
         ).hexdigest()
 
-        if local_file_checksum != file_checksum:
+        if local_file_checksum.lower() != file_checksum.lower():
             return notify_error(
                 ErrorCodes.CHECKSUM_DOESNT_MATCH,
                 myjson, backdoor, self,
