@@ -789,7 +789,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         # INPUT PARAMETERS CHECKS
 
         # zip file uploaded from partner
-        file_name = params.get('filename')
+        file_name = params.get('file_name')
         if file_name is None:
             return notify_error(
                 ErrorCodes.MISSING_FILENAME_PARAM,
