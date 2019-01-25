@@ -1311,13 +1311,36 @@ def cache_batch_pids(self, irods_path):
 
 @celery_app.task(bind=True)
 @send_errors_by_email
-def pids_cached_to_json(self):
+def inspect_pids_cache(self):
 
     with celery_app.app.app_context():
 
-        for key in r.scan_iter("%s*" % pid_prefix):
-            log.info("Key: %s = %s", key, r.get(key))
-            # break
+        log.info("Inspecting cache...")
+        counter = 0
+        cache = {}
+        # for key in r.scan_iter("%s*" % pid_prefix):
+        for key in r.scan_iter("*"):
+            folder = os.path.dirname(r.get(key))
+
+            prefix = key.split("/")[0]
+            if prefix not in cache:
+                cache[prefix] = {}
+
+            if folder not in cache[prefix]:
+                cache[prefix][folder] = 1
+            else:
+                cache[prefix][folder] += 1
+
+            counter += 1
+            if counter % 10000 == 0:
+                log.info("%d pids inspected...", counter - 1)
+
+        for prefix in cache:
+            for path in cache[prefix]:
+                log.info(
+                    "%d pids with prefix %s from path: %s",
+                    cache[prefix][path], prefix, path
+                )
 
 
 @celery_app.task(bind=True)
