@@ -1333,7 +1333,7 @@ def inspect_pids_cache(self):
 
             counter += 1
             if counter % 10000 == 0:
-                log.info("%d pids inspected...", counter - 1)
+                log.info("%d pids inspected...", counter)
 
         for prefix in cache:
             for pid_path in cache[prefix]:
