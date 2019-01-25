@@ -967,9 +967,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             # 7 - if not, simply copy partial_zip -> final_zip
             log.info("Final zip does not exist, copying partial zip")
             try:
-                log.warning("Temporary skipped copy on irods")
-                log.critical("imain.icopy(%s, %s)", local_zip_path, final_zip)
-                # imain.icopy(local_zip_path, final_zip)
+                imain.put(local_zip_path, final_zip)
             except IrodsException as e:
                 log.error(str(e))
                 return notify_error(
