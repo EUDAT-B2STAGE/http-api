@@ -1322,7 +1322,7 @@ def inspect_pids_cache(self):
         for key in r.scan_iter("*"):
             folder = os.path.dirname(r.get(key))
 
-            prefix = key.split("/")[0]
+            prefix = str(key).split("/")[0]
             if prefix not in cache:
                 cache[prefix] = {}
 
@@ -1336,10 +1336,10 @@ def inspect_pids_cache(self):
                 log.info("%d pids inspected...", counter - 1)
 
         for prefix in cache:
-            for path in cache[prefix]:
+            for pid_path in cache[prefix]:
                 log.info(
                     "%d pids with prefix %s from path: %s",
-                    cache[prefix][path], prefix, path
+                    cache[prefix][pid_path], prefix, pid_path
                 )
 
 
