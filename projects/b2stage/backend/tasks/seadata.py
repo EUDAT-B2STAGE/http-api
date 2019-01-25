@@ -114,7 +114,7 @@ def notify_error(error, payload, backdoor, task, extra=None, subject=None):
 def download_batch(self, batch_path, local_path, myjson):
 
     with celery_app.app.app_context():
-        log.info("I'm %s (unrestricted_order)" % self.request.id)
+        log.info("I'm %s (download_batch)" % self.request.id)
         log.info("Batch irods path: %s", batch_path)
         log.info("Batch local path: %s", local_path)
 
@@ -182,7 +182,15 @@ def download_batch(self, batch_path, local_path, myjson):
         # 1 - download the file
         download_url = os.path.join(download_path, file_name)
         log.info("Downloading file from %s", download_url)
-        r = requests.get(download_url, stream=True, verify=False)
+        try:
+            r = requests.get(download_url, stream=True, verify=False)
+        except requests.exceptions.ConnectionError:
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
+
         if r.status_code != 200:
 
             return notify_error(
@@ -844,7 +852,15 @@ def download_restricted_order(self, order_id, order_path, myjson):
         # 1 - download in local-dir
         download_url = os.path.join(download_path, file_name)
         log.info("Downloading file from %s", download_url)
-        r = requests.get(download_url, stream=True, verify=False)
+        try:
+            r = requests.get(download_url, stream=True, verify=False)
+        except requests.exceptions.ConnectionError:
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
+
         if r.status_code != 200:
 
             return notify_error(
