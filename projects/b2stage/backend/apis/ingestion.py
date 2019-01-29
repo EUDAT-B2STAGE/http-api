@@ -9,7 +9,6 @@ from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
 from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
 from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from restapi.services.uploader import Uploader
-from restapi.exceptions import RestApiException
 from restapi.flask_ext.flask_celery import CeleryExt
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
@@ -167,10 +166,12 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # imain = self.get_service_instance(service_name='irods')
         imain = self.get_main_irods_connection()
         batch_path = self.get_irods_batch_path(imain)
-        log.debug("Batch path: %s", batch_path)
+        local_batch_path = path.join(MOUNTPOINT, INGESTION_DIR)
+        log.debug("Batch collection: %s", batch_path)
+        log.debug("Batch path: %s", local_batch_path)
 
         task = CeleryExt.delete_batches.apply_async(
-            args=[batch_path, json_input],
+            args=[batch_path, local_batch_path, json_input],
             queue='ingestion', routing_key='ingestion'
         )
         log.warning("Async job: %s", task.id)

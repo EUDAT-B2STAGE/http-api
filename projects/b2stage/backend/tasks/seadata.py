@@ -1123,7 +1123,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
 @celery_app.task(bind=True)
 @send_errors_by_email
-def delete_orders(self, orders_path, myjson):
+def delete_orders(self, orders_path, local_orders_path, myjson):
 
     with celery_app.app.app_context():
 
@@ -1166,7 +1166,9 @@ def delete_orders(self, orders_path, myjson):
                 'total': total, 'step': counter, 'errors': len(errors)})
 
             order_path = path.join(orders_path, order)
-            log.info("Delete request for order path: %s", order_path)
+            local_order_path = path.join(local_orders_path, order)
+            log.info("Delete request for order collection: %s", order_path)
+            log.info("Delete request for order path: %s", local_order_path)
 
             if not imain.is_collection(order_path):
                 errors.append({
@@ -1187,6 +1189,10 @@ def delete_orders(self, orders_path, myjson):
 
             imain.remove(order_path, recursive=True)
 
+            if os.path.isdir(local_order_path):
+                rmtree(local_order_path, ignore_errors=True)
+
+
         if len(errors) > 0:
             myjson['errors'] = errors
         ext_api.post(myjson, backdoor=backdoor)
@@ -1195,7 +1201,7 @@ def delete_orders(self, orders_path, myjson):
 
 @celery_app.task(bind=True)
 @send_errors_by_email
-def delete_batches(self, batches_path, myjson):
+def delete_batches(self, batches_path, local_batches_path, myjson):
 
     with celery_app.app.app_context():
 
@@ -1234,7 +1240,9 @@ def delete_batches(self, batches_path, myjson):
                 'total': total, 'step': counter, 'errors': len(errors)})
 
             batch_path = path.join(batches_path, batch)
-            log.info("Delete request for batch path %s", batch_path)
+            local_batch_path = path.join(local_batches_path, batch)
+            log.info("Delete request for batch collection %s", batch_path)
+            log.info("Delete request for batch path %s", local_batch_path)
 
             if not imain.is_collection(batch_path):
                 errors.append({
@@ -1247,6 +1255,9 @@ def delete_batches(self, batches_path, myjson):
                     'total': total, 'step': counter, 'errors': len(errors)})
                 continue
             imain.remove(batch_path, recursive=True)
+
+            if os.path.isdir(local_batch_path):
+                rmtree(local_batch_path, ignore_errors=True)
 
         if len(errors) > 0:
             myjson['errors'] = errors

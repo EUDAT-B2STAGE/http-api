@@ -23,6 +23,7 @@ DELETE /api/order/<OID>
 import urllib.parse
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.cluster import ORDERS_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
 from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
@@ -483,10 +484,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # imain = self.get_service_instance(service_name='irods')
         imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain)
-        log.debug("Order path: %s", order_path)
+        local_order_path = path.join(MOUNTPOINT, ORDERS_DIR)
+        log.debug("Order collection: %s", order_path)
+        log.debug("Order path: %s", local_order_path)
 
         task = CeleryExt.delete_orders.apply_async(
-            args=[order_path, json_input]
+            args=[order_path, local_order_path, json_input]
         )
         log.warning("Async job: %s", task.id)
         return self.return_async_id(task.id)
