@@ -484,7 +484,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # imain = self.get_service_instance(service_name='irods')
         imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain)
-        local_order_path = path.join(MOUNTPOINT, ORDERS_DIR)
+        local_order_path = str(path.join(MOUNTPOINT, ORDERS_DIR))
         log.debug("Order collection: %s", order_path)
         log.debug("Order path: %s", local_order_path)
 

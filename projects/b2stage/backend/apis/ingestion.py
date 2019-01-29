@@ -166,7 +166,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # imain = self.get_service_instance(service_name='irods')
         imain = self.get_main_irods_connection()
         batch_path = self.get_irods_batch_path(imain)
-        local_batch_path = path.join(MOUNTPOINT, INGESTION_DIR)
+        local_batch_path = str(path.join(MOUNTPOINT, INGESTION_DIR))
         log.debug("Batch collection: %s", batch_path)
         log.debug("Batch path: %s", local_batch_path)
 
