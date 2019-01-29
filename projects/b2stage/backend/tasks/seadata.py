@@ -179,6 +179,13 @@ def download_batch(self, batch_path, local_path, myjson):
                 myjson, backdoor, self
             )
 
+        imain = celery_app.get_service(service='irods')
+        if not imain.is_collection(batch_path):
+            return notify_error(
+                ErrorCodes.BATCH_NOT_FOUND,
+                myjson, backdoor, self
+            )
+
         # 1 - download the file
         download_url = os.path.join(download_path, file_name)
         log.info("Downloading file from %s", download_url)
@@ -297,7 +304,6 @@ def download_batch(self, batch_path, local_path, myjson):
         to the irods_path (usually /myzone/batches/<batch_id>)
         '''
 
-        imain = celery_app.get_service(service='irods')
         irods_batch_file = os.path.join(batch_path, file_name)
         log.debug("Copying %s into %s...", batch_file, irods_batch_file)
 
@@ -755,6 +761,13 @@ def download_restricted_order(self, order_id, order_path, myjson):
         # Make sure you have a path with no trailing slash
         order_path = order_path.rstrip('/')
 
+        imain = celery_app.get_service(service='irods')
+        if not imain.is_collection(order_path):
+            return notify_error(
+                ErrorCodes.ORDER_NOT_FOUND,
+                myjson, backdoor, self
+            )
+
         order_number = params.get("order_number")
         if order_number is None:
             return notify_error(
@@ -840,7 +853,6 @@ def download_restricted_order(self, order_id, order_path, myjson):
             )
 
         self.update_state(state="PROGRESS")
-        imain = celery_app.get_service(service='irods')
 
         errors = []
         local_finalzip_path = None
@@ -1191,7 +1203,6 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
 
             if os.path.isdir(local_order_path):
                 rmtree(local_order_path, ignore_errors=True)
-
 
         if len(errors) > 0:
             myjson['errors'] = errors
