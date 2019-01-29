@@ -103,27 +103,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 "Misconfiguration for batch_id %s" % batch_id,
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
-        # try:
-        #     files = imain.list(batch_path)
-        # except BaseException as e:
-        #     log.warning(e.__class__.__name__)
-        #     log.error(e)
-        #     return self.send_errors(
-        #         "Batch '%s' not found (or no permissions)" % batch_id,
-        #         code=hcodes.HTTP_BAD_REQUEST
-        #     )
-        # if len(files) != 1:
-        #     log.error(
-        #         'Misconfiguration: %s files in %s (expected 1).',
-        #         len(files), batch_path)
-        #     return self.send_errors(
-        #         'Misconfiguration for batch_id: %s' % batch_id,
-        #         code=hcodes.HTTP_BAD_NOTFOUND
-        #     )
-        # file_id = list(files.keys()).pop()
-
-        # TODO: check if on filesystem of file is already uploaded
-
         ###################
         # Parameters (and checks)
         envs = {}
@@ -153,23 +132,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                     'Missing JSON key: %s' % key,
                     code=hcodes.HTTP_BAD_REQUEST
                 )
-            # else:
-            #     envs[key.upper()] = value
-
-        ###################
-        # # check batch id also from the parameters
-        # batch_j = input_json.get(pkey, {}).get("batch_number", 'UNKNOWN')
-        # if batch_j != batch_id:
-        #     return self.send_errors(
-        #         "Wrong JSON batch id: '%s' instead of '%s'" % (
-        #             batch_j, batch_id
-        #         ), code=hcodes.HTTP_BAD_REQUEST
-        #     )
-
-        ###################
-        # for key, value in input_json.get(pkey, {}).items():
-        #     name = '%s_%s' % (pkey, key)
-        #     envs[name.upper()] = value
 
         response = {
             'batch_id': batch_id,
