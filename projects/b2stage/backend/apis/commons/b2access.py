@@ -168,8 +168,6 @@ class B2accessUtilities(EndpointResource):
 
         refresh_data = {
             "grant_type": "refresh_token",
-            # "client_id": client_id,
-            # "client_secret": client_secret,
             "refresh_token": refresh_token,
             "scope": 'USER_PROFILE'
         }
@@ -178,12 +176,6 @@ class B2accessUtilities(EndpointResource):
         ).decode("ascii")
         headers = {'Authorization': 'Basic %s' % auth_hash}
 
-        # resp = b2access.post(
-        #     url=b2access.access_token_url,
-        #     data=refresh_data,
-        #     headers=headers,
-        #     token=refresh_token
-        # )
         resp = requests.post(
             b2access.access_token_url,
             data=refresh_data,
