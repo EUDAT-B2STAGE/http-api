@@ -34,7 +34,11 @@ class Public(B2HandleEndpoint):
         ####################
         # check if public, with anonymous access in irods
         icom = self.get_service_instance(
-            service_name='irods', user='anonymous', password='null')
+            service_name='irods',
+            user='anonymous',
+            password='null',
+            authscheme='credentials'
+        )
 
         path, resource, _, force = \
             self.get_file_parameters(icom, path=location)
