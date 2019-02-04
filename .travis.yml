@@ -9,6 +9,7 @@ services:
 - docker
 env:
 - PROJECT=b2stage
+- PROJECT=seadata
 # - TESTING_MODE=1
 
 # # installation
