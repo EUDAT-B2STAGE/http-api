@@ -1,7 +1,10 @@
 version: '3'
 
+volumes:
+
 services:
 
+  backend:
     environment:
 
       CELERY_ENABLE: 1
