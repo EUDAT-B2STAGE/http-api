@@ -1,8 +1,0 @@
-file: pamtest
-class: PAMTest
-schema:
-  expose: true
-mapping:
-  pamtest: "/pamtest"
-labels:
-  - helpers
