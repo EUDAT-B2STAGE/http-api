@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from b2stage.apis.commons.cluster import ClusterContainerEndpoint as Endpoint
+from seadata.apis.commons.cluster import ClusterContainerEndpoint as Endpoint
 from utilities.logs import get_logger
 from restapi.flask_ext.flask_celery import CeleryExt
 

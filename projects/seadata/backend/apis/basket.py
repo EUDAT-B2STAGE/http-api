@@ -22,8 +22,8 @@ DELETE /api/order/<OID>
 # IMPORTS
 import urllib.parse
 # from restapi.rest.definition import EndpointResource
-from b2stage.apis.commons.cluster import ClusterContainerEndpoint
-from b2stage.apis.commons.cluster import ORDERS_DIR, MOUNTPOINT
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
+from seadata.apis.commons.cluster import ORDERS_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
 from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT

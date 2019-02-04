@@ -6,15 +6,12 @@ Move data from ingestion to production
 
 #################
 # IMPORTS
-from b2stage.apis.commons.cluster import ClusterContainerEndpoint
-# from b2stage.apis.commons.endpoint import EudatEndpoint
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
-# from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.seadatacloud import Metadata as md
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
-# from restapi.services.detect import detector
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -22,7 +19,6 @@ log = get_logger(__name__)
 
 #################
 # REST CLASS
-# class Approve(EndpointResource):
 class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')

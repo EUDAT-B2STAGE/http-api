@@ -10,9 +10,9 @@ from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
 from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_celery import CeleryExt
-from b2stage.apis.commons.cluster import ClusterContainerEndpoint
-from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
-from b2stage.apis.commons.queue import log_into_queue, prepare_message
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
+from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
+from seadata.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
 from utilities import path
 # from restapi.flask_ext.flask_irods.client import IrodsException

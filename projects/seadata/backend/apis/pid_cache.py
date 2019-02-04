@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from restapi import decorators as decorate
 from restapi.exceptions import RestApiException
 from utilities import htmlcodes as hcodes

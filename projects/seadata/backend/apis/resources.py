@@ -6,11 +6,10 @@ Launch containers for quality checks in Seadata
 import os
 import json
 import time
-from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
-# from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
 from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
-from b2stage.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
+from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from utilities import htmlcodes as hcodes
 from utilities import path
@@ -162,8 +161,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container_ingestion_path = self.get_ingestion_path_in_container()
 
         envs['BATCH_DIR_PATH'] = container_ingestion_path
-        from b2stage.apis.commons.queue import QUEUE_VARS
-        from b2stage.apis.commons.cluster import CONTAINERS_VARS
+        from seadata.apis.commons.queue import QUEUE_VARS
+        from seadata.apis.commons.cluster import CONTAINERS_VARS
         for key, value in QUEUE_VARS.items():
             if key in ['enable']:
                 continue

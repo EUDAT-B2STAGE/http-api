@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from b2stage.apis.commons.endpoint import EudatEndpoint
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_celery import CeleryExt
-from b2stage.apis.commons.cluster import ClusterContainerEndpoint
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
