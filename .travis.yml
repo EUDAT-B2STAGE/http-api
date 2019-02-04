@@ -29,10 +29,10 @@ script:
 # remove skips
 
 # set TESTING mode
-- sed -i "20s/0/1/" projects/${PROJECT}/confs/debug.yml
+- sed -i "9s/0/1/" projects/${PROJECT}/confs/debug.yml
 # test anonymous (IRODS_ANONYMOUS / ENABLE_PUBLIC_ENDPOINT)
-- sed -i "38s/0/1/" projects/${PROJECT}/project_configuration.yaml
 - sed -i "39s/0/1/" projects/${PROJECT}/project_configuration.yaml
+- sed -i "40s/0/1/" projects/${PROJECT}/project_configuration.yaml
 # - rm projects/${PROJECT}/backend/swagger/publish/SKIP
 
 # startup and launch tests
