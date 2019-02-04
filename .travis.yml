@@ -35,9 +35,9 @@ script:
 # - rm projects/b2stage/backend/swagger/publish/SKIP
 
 # startup and launch tests
-- rapydo --development init && rapydo --development start
-- rapydo --development shell backend --command 'restapi tests --wait'
+- rapydo --project b2stage --development init && rapydo --project b2stage --development start
+- rapydo --project b2stage --development shell backend --command 'restapi tests --wait'
 
 # coverage within a docker container
 after_success:
-- rapydo --development --log-level VERBOSE coverall
+- rapydo --project b2stage --development --log-level VERBOSE coverall
