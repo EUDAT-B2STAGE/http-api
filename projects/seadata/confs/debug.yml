@@ -48,13 +48,6 @@ services:
 
   icat:
 
-
-    # build:
-    #   context: ${SUBMODULE_DIR}/build-templates/b2safe
-    #   # args:
-    #   #   RAPYDO_VERSION: ${RAPYDO_VERSION}
-    # image: rapydo/b2safe:${RAPYDO_VERSION}
-
     environment:
       ACTIVATE: 1
       POSTGRES_HOST: "${ALCHEMY_HOST}"
