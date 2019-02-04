@@ -1,0 +1,7 @@
+publish:
+  custom:
+    authentication: true
+  summary: set the path to be readable for the anonymous user
+  responses:
+    '200':
+      description: return a boolean 'published'

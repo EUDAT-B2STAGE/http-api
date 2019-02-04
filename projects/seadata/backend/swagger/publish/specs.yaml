@@ -1,0 +1,16 @@
+
+depends_on:
+  - IRODS_ANONYMOUS
+  - ENABLE_PUBLIC_ENDPOINT
+
+file: publish
+class: Publish
+schema:
+  expose: true
+mapping:
+  publish: "/publish/<path:location>"
+ids:
+  location: the filesystem path to your digital entities/objects
+labels:
+  - eudat
+  - publish

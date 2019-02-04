@@ -1,0 +1,13 @@
+
+common:
+  custom:
+    # authentication: false
+    authentication: true
+    # authorized:
+    #   - staff_user
+
+qc:
+  summary: Resources management
+  responses:
+    '200':
+      description: unknown

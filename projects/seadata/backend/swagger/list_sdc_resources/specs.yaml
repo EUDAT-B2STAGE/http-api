@@ -1,0 +1,13 @@
+
+depends_on:
+  - SEADATA_PROJECT
+
+file: list_sdc_resources
+class: ListResources
+schema:
+  expose: true
+mapping:
+  list: "/resourceslist"
+labels:
+  # - custom
+  - helper

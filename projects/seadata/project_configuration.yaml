@@ -1,0 +1,230 @@
+# ###############################################
+# Copyright 2011-2019 EUDAT CDI - www.eudat.eu
+# ###############################################
+
+variables:
+  env:
+
+    LOG_LEVEL: INFO # global, but can be configured separately in conf/*.yml files
+    BACKEND_BUILD_MODE: backendirods
+
+    ###############################
+    ## B2ACCESS
+    # Register a B2ACCESS 'app' and use credentials here
+    # if you want to provide the endpoints to authenticate with B2ACCESS site
+    B2ACCESS_ACCOUNT:
+    B2ACCESS_SECRET:
+
+    ###############################
+    ## LOCAL (container) iRODS server
+    IRODS_USER: irods
+    IRODS_PASSWORD: chooseapasswordwisely # NOTE: must match ALCHEMY_PASSWORD
+    IRODS_ZONE: tempZone
+    IRODS_HOME: home
+    IRODS_GUEST_USER: guest              # intended to work only with GSI
+    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
+    IRODS_DN:           # automatically computed within the docker network
+    IRODS_AUTHSCHEME:   # to be auto-detected
+    # IRODS_AUTHSCHEME: credentials
+    # IRODS_AUTHSCHEME: GSI
+
+    ###############################
+    ## Dockerized DB
+    ALCHEMY_USER: rods
+    ALCHEMY_PASSWORD: chooseapasswordwisely
+    ALCHEMY_API_DB: SQL_API
+
+    ###############################
+    ## Experimental features
+    IRODS_ANONYMOUS: 0  # enable only if you know what it means
+    ENABLE_PUBLIC_ENDPOINT: 0  # experimental endpoint, depending on anonymous
+
+    ###############################
+    ## Seadata project variable
+    SEADATA_PROJECT: 0
+    SEADATA_EDMO_CODE:
+    SEADATA_API_VERSION: 1.0.5.0002
+    # The names of the directories in the irods zone
+    # for pre-production batches, for production batches,
+    # and for orders being prepared.
+    SEADATA_INGESTION_COLL: batches  # on irods!
+    SEADATA_ORDERS_COLL: orders      # on irods!
+    SEADATA_PRODUCTION_COLL: cloud   # on irods!
+    SEADATA_PRIVILEGED_USERS:  # command separated list of privileges users
+
+    SEADATA_WORKSPACE_INGESTION: batches # on filesystem (to be mounted to celery workers and rancher containers)
+    SEADATA_WORKSPACE_ORDERS: orders       # on filesystem (to be mounted to celery workers and rancher containers)
+    # SEADATA_BATCH_PROD_FILES_COLL: production
+    ## IM APIs
+    SEADATA_API_IM_URL: https://some.url
+    ## RANCHER
+    RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
+    RESOURCES_QCLABEL: qc
+    RESOURCES_KEY:
+    RESOURCES_SECRET:
+    RESOURCES_PROJECT:
+    ## PRIVATE DOCKERHUB
+    RESOURCES_HUB:
+    RESOURCES_HUBUSER:
+    RESOURCES_HUBPASS:
+    ## RABBIT SEADATA
+    RABBIT_HOST: rabbit.b2host.org
+    RABBIT_PORT: 5672
+    RABBIT_VHOST: elkstack
+    RABBIT_USER: elkuser
+    RABBIT_PASSWORD:
+    RABBIT_EXCHANGE: elkexchange
+    RABBIT_QUEUE: elkqueue
+    # RABBIT_SSL_ENABLED: false # can be 0, 1, true, false
+    RABBIT_SSL_ENABLED: 0 # can be 0, 1, true, false
+    ## OTHERS
+    REDIS_HOST: redis-cache-1
+    REDIS_PREFIX: 01T10
+    CONTAINERS_RABBITUSER:
+    CONTAINERS_RABBITPASS:
+    CONTAINERS_DBUSER:
+    CONTAINERS_DBPASS:
+    CONTAINERS_DBEXTRAUSER:
+    CONTAINERS_DBEXTRAPASS:
+    CONTAINERS_WAIT_STOPPED: false # can be 0, 1, true, false
+    CONTAINERS_WAIT_RUNNING: false # can be 0, 1, true, false
+
+    #################
+
+    AUTH_SERVICE: sqlalchemy
+    API_MAIN_ENDPOINT: registered
+    API_PUBLIC_ENDPOINT: public
+    # COMPOSE_PROJECT_NAME: b2stage
+    # PROJECT_DOMAIN: myserver.mydomain.dev
+    # LETSENCRYPT_MODE: --staging
+    LETSENCRYPT_MODE:
+    # irods fixed
+    IRODS_DB: ICAT
+    IRODS_CHUNKSIZE: 1048576
+    ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
+    B2ACCESS_CAS: /tmp/certificates/b2access
+    # sqlalchemy fixed:
+    ALCHEMY_ENGINE: postgresql
+    ALCHEMY_DBS: 'ICAT SQL_API'
+    ##: OTHERs / FIXED
+    UPLOAD_PATH: /uploads
+    FULL_JWT: false
+    # This path is the host directory that is bind-mounted
+    # into the Rancher containers and into the Celery
+    # worker containers. (Has to be the same, as they
+    # exchange data).
+    # This path needs permissions to user 1001
+    # as owner of subdir 'ingestion' and 'cloud'
+    RESOURCES_LOCALPATH: /nfs/share
+    # This is the mount point of $RESOURCES_LOCALPATH inside the containers
+    # Note that this variable has only effect in backend and celery containers
+    # while QC containers uses an hard-code mount point (/usr/share)
+    SEADATA_RESOURCES_MOUNTPOINT: /usr/share
+    # Email to be notified for proxy certificates expiration (letsencrypt)
+    SMTP_ADMIN:
+    SMTP_NOREPLY:
+    SMTP_PORT:
+    SMTP_PASSWORD:
+    SMTP_USERNAME:
+
+    ############################
+    # TO BE DEPRECATED
+    HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
+    HANDLE_BASE: "https://url.to.epic/handles/"
+
+    #################
+    # base user/password
+
+  # backend:
+  #   credentials:
+  #     username: someotheruser
+  #     password: somepassword
+  #     # warning: do not change base roles for the database
+  #     roles:
+  #       user: normal_user
+  #       internal: staff_user
+  #       admin: admin_root
+  #       default: normal_user
+
+  #################
+  repos:
+    irods-client:
+      branch: master
+      online_url: https://github.com/irods/python-irodsclient.git
+      path: prc
+      if: true
+
+##################################################
+project:
+  title: SeaDataCloud HTTP-API
+  description: Processing data in SeaDataCloud project
+  version: 1.0.5
+  rapydo: 0.6.4
+  from: b2stage
+  from-submodules: false
+
+tags:
+  # EUDAT related
+  eudat: all endpoints associated to EUDAT services
+  b2access: request/refresh authorization from B2ACCESS
+  b2safe: proxy access to irods b2safe credentials
+  registered: upload, download, list and delete objects
+  pids: resolve and download data from EUDAT Persistent IDentifier
+  publish: allow public access to data objects
+  public: landing page
+  # Other subprojects
+  seadatacloud: endpoints related to the SeaDataCloud project
+  ingestion: submission of files to be approved into the cloud
+  order: request an order from the interface
+  # internal: for internal testing purpose only
+
+# Keep track of releases and dependencies
+releases:
+  '0.5.1':
+    type: beta
+    rapydo: null
+    status: released
+  '0.5.2':
+    type: beta
+    rapydo: null
+    status: discontinued
+  '0.6.0':
+    type: RC1
+    rapydo: 0.5.3
+    status: released
+  '0.6.1':
+    type: RC2
+    rapydo: 0.5.4
+    status: released
+  '1.0.0':
+    type: stable
+    rapydo: 0.6.0
+    status: released
+  '1.0.1':
+    type: patch
+    rapydo: 0.6.1
+    status: released
+  '1.0.2':
+    type: patch
+    rapydo: 0.6.1
+    status: released
+  '1.0.3':
+    type: stable
+    rapydo: 0.6.2
+    status: released
+  '1.0.4':
+    type: stable
+    rapydo: 0.6.3
+    status: released
+  '1.0.5':
+    type: development
+    rapydo: 0.6.4
+    status: development
+
+controller:
+  commands:
+    irods_restart:
+      description: Try to restart the current iCAT server instance
+      command: service irods restart
+      service: icat
+      user: root

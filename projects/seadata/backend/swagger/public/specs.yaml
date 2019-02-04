@@ -1,0 +1,15 @@
+
+depends_on:
+  - IRODS_ANONYMOUS
+  - ENABLE_PUBLIC_ENDPOINT
+
+file: public
+class: Public
+schema:
+  expose: true
+mapping:
+  public: "/public/<path:location>"
+labels:
+  - eudat
+  - pids
+  - public

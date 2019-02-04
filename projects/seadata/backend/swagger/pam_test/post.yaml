@@ -1,0 +1,9 @@
+common:
+  custom:
+    publish: false
+
+pamtest:
+  summary: Test PAM auth
+  responses:
+    '200':
+      description: "returning auth token"

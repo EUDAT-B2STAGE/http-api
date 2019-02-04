@@ -1,0 +1,9 @@
+common:
+  custom:
+    authentication: true
+
+order:
+  summary: "Request a link to download an order (if already prepared)"
+  responses:
+    '200':
+      description: "The link to download the order (expires in 2 days)"

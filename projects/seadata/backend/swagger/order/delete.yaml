@@ -1,0 +1,9 @@
+common:
+  custom:
+    authentication: true
+
+basket:
+  summary: "Remove one or more orders"
+  responses:
+    '200':
+      description: Async job submitted for orders removal

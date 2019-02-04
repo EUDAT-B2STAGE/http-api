@@ -1,0 +1,182 @@
+version: '3'
+
+services:
+
+  backend:
+    environment:
+      ACTIVATE: 
+
+  rabbit:
+    environment:
+      ACTIVATE: ${ACTIVATE_RABBIT}
+    ports:
+      - ${CELERY_BROKER_PORT}:${CELERY_BROKER_PORT}
+
+  mongodb:
+    environment:
+      ACTIVATE: ${ACTIVATE_MONGODB}
+    ports:
+      - ${CELERY_BACKEND_PORT}:${CELERY_BACKEND_PORT}
+
+  celery:
+    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
+    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
+    command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q celery -n worker-%h
+    volumes:
+      - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
+    environment:
+      CELERY_EXTERNAL: 1
+      #############################
+      ACTIVATE: 1
+      MAIN_LOGIN_ENABLE: 0
+      DEBUG_ENDPOINTS: 1
+      APP_MODE: production
+      DEBUG_LEVEL: ${LOG_LEVEL}
+      PROJECT_DOMAIN: ${PROJECT_DOMAIN}
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_EDMO_CODE: ${SEADATA_EDMO_CODE}
+      SEADATA_API_IM_URL: ${SEADATA_API_IM_URL}
+      SEADATA_API_VERSION: ${SEADATA_API_VERSION}
+      # on rancher/celery host filesystem:
+      SEADATA_WORKSPACE_INGESTION: ${SEADATA_WORKSPACE_INGESTION}
+      SEADATA_WORKSPACE_ORDERS: ${SEADATA_WORKSPACE_ORDERS}
+      SEADATA_RESOURCES_MOUNTPOINT: ${SEADATA_RESOURCES_MOUNTPOINT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PREFIX: ${REDIS_PREFIX}
+      IRODS_ENABLE: 1
+      IRODS_HOST: ${IRODS_HOST}
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_HOME: ${IRODS_HOME}
+      IRODS_DN: ${IRODS_DN}
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
+      IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
+
+      SMTP_ADMIN: ${SMTP_ADMIN}
+      SMTP_NOREPLY: ${SMTP_NOREPLY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+
+  celeryui:
+    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
+    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
+    hostname: flower
+    environment:
+      AUTH_ENABLE: 0
+      CELERY_EXTERNAL: 1
+      CELERYUI_USER: ${CELERYUI_USER}
+      CELERYUI_PASSWORD: ${CELERYUI_PASSWORD}
+      #############################
+      ACTIVATE: 1
+      MAIN_LOGIN_ENABLE: 0
+      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      DEBUG_ENDPOINTS: 1
+      APP_MODE: production
+      DEBUG_LEVEL: ${LOG_LEVEL}
+      PROJECT_DOMAIN: ${PROJECT_DOMAIN}
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_EDMO_CODE: ${SEADATA_EDMO_CODE}
+      SEADATA_API_IM_URL: ${SEADATA_API_IM_URL}
+      SEADATA_API_VERSION: ${SEADATA_API_VERSION}
+      SEADATA_WORKSPACE_INGESTION: ${SEADATA_WORKSPACE_INGESTION}
+      SEADATA_WORKSPACE_ORDERS: ${SEADATA_WORKSPACE_ORDERS}
+      SEADATA_RESOURCES_MOUNTPOINT: ${SEADATA_RESOURCES_MOUNTPOINT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PREFIX: ${REDIS_PREFIX}
+      IRODS_ENABLE: 1
+      IRODS_HOST: ${IRODS_HOST}
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_HOME: ${IRODS_HOME}
+      IRODS_DN: ${IRODS_DN}
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
+      IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
+      # SEADATA ELASTIC LOGS
+      # ELASTIC_ENABLE: ${SEADATA_PROJECT}
+      # ELASTIC_EXTERNAL: 1
+      # ELASTIC_HOST: ${ELASTIC_HOST}
+      # ELASTIC_PORT: ${ELASTIC_PORT}
+
+    # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
+
+  ingestion_celery:
+    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
+    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
+    entrypoint: docker-entrypoint-celery
+    command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q ingestion -n worker-%h
+    user: developer
+    working_dir: /code
+    volumes:
+      # configuration files
+      - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      # Vanilla code
+      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+      # JWT tokens secret
+      - jwt_tokens:${JWT_APP_SECRETS}
+
+      - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
+    networks:
+      db_net:
+      worker_net:
+    # depends_on:
+    #   - rabbit
+    environment:
+
+      CURRENT_UID: ${CURRENT_UID}
+      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+
+      CELERY_ENABLE: 1
+
+      CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
+      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
+      CELERY_BROKER_USER: ${CELERY_BROKER_USER}
+      CELERY_BROKER_PASSWORD: ${CELERY_BROKER_PASSWORD}
+      CELERY_BROKER_VHOST: ${CELERY_BROKER_VHOST}
+
+      CELERY_BACKEND: ${CELERY_BACKEND}
+      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
+      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
+      CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
+      CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
+
+      CELERY_EXTERNAL: 1
+      #############################
+      ACTIVATE: 1
+      MAIN_LOGIN_ENABLE: 0
+      DEBUG_ENDPOINTS: 1
+      APP_MODE: production
+      DEBUG_LEVEL: ${LOG_LEVEL}
+      PROJECT_DOMAIN: ${PROJECT_DOMAIN}
+      SEADATA_PROJECT: ${SEADATA_PROJECT}
+      SEADATA_EDMO_CODE: ${SEADATA_EDMO_CODE}
+      SEADATA_API_IM_URL: ${SEADATA_API_IM_URL}
+      SEADATA_API_VERSION: ${SEADATA_API_VERSION}
+      # on rancher/celery host filesystem:
+      SEADATA_WORKSPACE_INGESTION: ${SEADATA_WORKSPACE_INGESTION}
+      SEADATA_WORKSPACE_ORDERS: ${SEADATA_WORKSPACE_ORDERS}
+      SEADATA_RESOURCES_MOUNTPOINT: ${SEADATA_RESOURCES_MOUNTPOINT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PREFIX: ${REDIS_PREFIX}
+      IRODS_ENABLE: 1
+      IRODS_HOST: ${IRODS_HOST}
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_HOME: ${IRODS_HOME}
+      IRODS_DN: ${IRODS_DN}
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
+      IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
+
+      SMTP_ADMIN: ${SMTP_ADMIN}
+      SMTP_NOREPLY: ${SMTP_NOREPLY}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}

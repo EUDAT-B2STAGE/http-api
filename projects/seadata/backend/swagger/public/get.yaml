@@ -1,0 +1,13 @@
+
+public:
+  summary: Let non-authenticated users get data about a public data-object
+  custom:
+    authentication: false
+  parameters:
+    - name: download
+      description: Activate file downloading (if PID points to a single file)
+      in: query
+      type: boolean
+  responses:
+    '200':
+      description: Informations about the data-object

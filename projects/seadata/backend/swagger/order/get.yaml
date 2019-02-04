@@ -1,0 +1,9 @@
+common:
+  custom:
+    authentication: true
+
+order:
+  summary: "List orders"
+  responses:
+    '200':
+      description: The list of zip files available

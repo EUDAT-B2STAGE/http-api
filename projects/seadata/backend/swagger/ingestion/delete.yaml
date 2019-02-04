@@ -1,0 +1,8 @@
+withoutid:
+  custom:
+    authentication: true
+
+  summary: Delete one or more ingestion batches
+  responses:
+    '200':
+      description: Async job submitted for ingestion batches removal

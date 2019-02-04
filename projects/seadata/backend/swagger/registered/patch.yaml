@@ -1,0 +1,15 @@
+
+single:
+  summary: Update an entity name
+  custom:
+    authentication: true
+    authorized:
+      - normal_user
+  parameters:
+    - name: new file name
+      in: body
+      schema:
+        $ref: "#/definitions/FileUpdate"
+  responses:
+    '200':
+      description: File name updated

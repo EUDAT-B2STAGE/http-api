@@ -1,0 +1,8 @@
+
+publish:
+  custom:
+    authentication: true
+  summary: Check if the path is currently readable for the anonymous user
+  responses:
+    '200':
+      description: return a boolean 'published'

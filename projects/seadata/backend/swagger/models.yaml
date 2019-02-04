@@ -1,0 +1,50 @@
+
+definitions:
+
+  FileUpdate:
+    required:
+      - newname
+    properties:
+      resource:
+        type: string
+      newname:
+        type: string
+        description: B2SAFE resource
+
+  FileDelete:
+    properties:
+      # debugclean:
+      #   type: string
+      #   description: Only for debug mode
+      resource:
+        type: string
+
+  # FileObject:
+  #   properties:
+  #     resource:
+  #       type: string
+  #       # description: yep
+
+  # ForceObject:
+  #   properties:
+  #     force:
+  #       type: boolean
+  #       default: false
+
+  # FileList:
+  #   required:
+  #     - filelist
+  #   properties:
+  #     filelist:
+  #       type: object
+
+  SeadataPost:
+    required:
+      - request_id
+    properties:
+      request_id:
+        type: string
+        description: Main id
+      edmo_code:
+        type: string
+        description: EDMO code

@@ -1,0 +1,29 @@
+
+common:
+  # parameters:
+  #   - name: resource
+  #     description: iRODS resource
+  #     in: query
+  #     type: string
+  custom:
+    authentication: true
+    authorized:
+      - normal_user
+
+# all:
+#   # TOFIX: decide if this option is allowed
+#   summary: Get data from the current user home page
+#   responses:
+#     '200':
+#       description: The directory and/or files list
+
+single:
+  summary: Retrieve a single digital entity/object information or download it
+  parameters:
+    - name: download
+      description: activate file downloading (if path is a single file)
+      in: query
+      type: boolean
+  responses:
+    '200':
+      description: "Returns the digital object information or file content if download is activated or the list of objects related to the requested path (PID is returned if available)"
