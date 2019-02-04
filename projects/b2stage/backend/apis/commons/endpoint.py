@@ -44,8 +44,6 @@ class EudatEndpoint(B2accessUtilities):
         # internal_user = user internal to the API
         # external_user = user from oauth (B2ACCESS)
         internal_user = self.get_current_user()
-        # VERIFY FOR SEADATA
-        # print("TEST", internal_user)
         log.debug("Token user: %s" % internal_user)
 
         #################################

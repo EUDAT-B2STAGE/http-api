@@ -121,11 +121,6 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     def get(self, pid):
         """ Get metadata or file from pid """
 
-        # if pid is None:
-        #     return self.send_errors(
-        #         message='Missing PID inside URI',
-        #         code=hcodes.HTTP_BAD_REQUEST)
-
         from b2stage.apis.commons.seadatacloud import SEADATA_ENABLED
         if SEADATA_ENABLED:
             return self.seadata_pid(pid)

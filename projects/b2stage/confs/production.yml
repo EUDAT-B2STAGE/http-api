@@ -34,29 +34,6 @@ services:
       # B2ACCESS_ENV: development
       B2ACCESS_ENV: ${B2ACCESS_ENV}
 
-      # SEADATA CELERY
-      CELERY_ENABLE: ${SEADATA_PROJECT}
-      CELERY_EXTERNAL: 1
-      CELERY_BROKER: ${CELERY_BROKER}
-      CELERY_BROKER_HOST: ${CELERY_BROKER_HOST}
-      CELERY_BROKER_PORT: ${CELERY_BROKER_PORT}
-      CELERY_BROKER_USER: ${CELERY_BROKER_USER}
-      CELERY_BROKER_PASSWORD: ${CELERY_BROKER_PASSWORD}
-      CELERY_BROKER_VHOST: ${CELERY_BROKER_VHOST}
-
-      CELERY_BACKEND: ${CELERY_BACKEND}
-      CELERY_BACKEND_HOST: ${CELERY_BACKEND_HOST}
-      CELERY_BACKEND_PORT: ${CELERY_BACKEND_PORT}
-      CELERY_BACKEND_USER: ${CELERY_BACKEND_USER}
-      CELERY_BACKEND_PASSWORD: ${CELERY_BACKEND_PASSWORD}
-
-      # SEADATA ELASTIC LOGS
-      # ELASTIC_ENABLE: ${SEADATA_PROJECT}
-      # ELASTIC_EXTERNAL: 1
-      # ELASTIC_HOST: ${ELASTIC_HOST}
-      # ELASTIC_PORT: ${ELASTIC_PORT}
-
-      ##################
     depends_on:
       # - icat
       - postgres
@@ -78,11 +55,8 @@ services:
     restart: always
     environment:
       ACTIVATE: 1
-      # DOMAIN: ${PROJECT_DOMAIN}
-      # MODE: ${LETSENCRYPT_MODE}
     volumes:
       # SSL / HTTPS
-      # - letsencrypt_certs:/etc/letsencrypt
       - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/production_nofrontend.conf:/etc/nginx/sites-enabled/production
       # 502 Bad Gateway
       - ${PROJECT_DIR}/builds/proxy/badgateway.html:/usr/share/nginx/html/custom_502.html
