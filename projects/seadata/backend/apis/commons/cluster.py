@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from seadata.apis.commons.seadatacloud import seadata_vars
 from restapi.rest.definition import EndpointResource
-from b2stage.apis.commons.seadatacloud import seadata_vars
 from restapi.services.detect import detector
 from utilities import path
 from utilities.logs import get_logger

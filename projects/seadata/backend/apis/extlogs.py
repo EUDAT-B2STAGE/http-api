@@ -26,7 +26,7 @@ class Extlogs(EndpointResource):
 
         ################################
         # FIXME: remove this vars
-        from b2stage.apis.commons.queue import QUEUE_VARS as qvars
+        from seadata.apis.commons.queue import QUEUE_VARS as qvars
         # Add size=100 as param?
         url = '%s://%s:%s/app_%s-%s/_search?q=*:*' % (
             'http', qvars.get('host'), 9200,

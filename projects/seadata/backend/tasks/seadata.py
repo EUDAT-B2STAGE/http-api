@@ -8,18 +8,20 @@ import requests
 from shutil import rmtree
 from socket import gethostname
 from plumbum.commands.processes import ProcessExecutionError
-from utilities.basher import BashCommands
-from utilities import path
+
+from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
+from seadata.apis.commons.queue import prepare_message
+from seadata.apis.commons.seadatacloud import Metadata as md, ImportManagerAPI
+from seadata.apis.commons.seadatacloud import ErrorCodes
+from seadata.apis.commons.seadatacloud import seadata_vars
+
 from restapi.flask_ext.flask_celery import CeleryExt
 from restapi.flask_ext.flask_irods.client import IrodsException
-from b2stage.apis.commons.queue import prepare_message
-from b2stage.apis.commons.seadatacloud import Metadata as md, ImportManagerAPI
-from b2stage.apis.commons.seadatacloud import ErrorCodes
-from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from restapi.services.detect import detector
-from b2stage.apis.commons.seadatacloud import seadata_vars
 from restapi.flask_ext.flask_celery import send_errors_by_email
 
+from utilities.basher import BashCommands
+from utilities import path
 from utilities.logs import get_logger, logging
 
 # Size in bytes

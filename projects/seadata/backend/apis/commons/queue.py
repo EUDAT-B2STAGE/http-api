@@ -52,14 +52,14 @@ def prepare_message(instance, user=None, isjson=False, **params):
     logmsg['request_id'] = instance_id
     # logmsg['request_id'] = instance_id[len(instance_id) - 6:]
 
-    from b2stage.apis.commons.seadatacloud import seadata_vars
+    from seadata.apis.commons.seadatacloud import seadata_vars
     logmsg['edmo_code'] = seadata_vars.get('edmo_code')
 
     from datetime import datetime
     logmsg['datetime'] = datetime.now().strftime("%Y%m%dT%H:%M:%S")
 
     if isjson:
-        return logmsg # TODO Why this? Why does isjson exist at all?
+        return logmsg  # TODO Why this? Why does isjson exist at all?
 
     from restapi.services.authentication import BaseAuthentication as Service
     ip, _ = Service.get_host_info()

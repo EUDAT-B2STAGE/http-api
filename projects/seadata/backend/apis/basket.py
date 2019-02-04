@@ -26,11 +26,9 @@ from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.cluster import ORDERS_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
-from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
+from seadata.apis.commons.seadatacloud import ORDERS_ENDPOINT
 from restapi.flask_ext.flask_celery import CeleryExt
-# from b2stage.apis.commons.endpoint import EudatEndpoint
-# from b2stage.apis.commons.seadatacloud import Metadata as md
-from b2stage.apis.commons.queue import log_into_queue, prepare_message
+from seadata.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException

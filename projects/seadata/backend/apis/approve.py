@@ -4,14 +4,12 @@
 Move data from ingestion to production
 """
 
-#################
-# IMPORTS
-from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from b2stage.apis.commons.seadatacloud import Metadata as md
-from utilities import htmlcodes as hcodes
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
+from seadata.apis.commons.seadatacloud import Metadata as md
 from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
+from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
