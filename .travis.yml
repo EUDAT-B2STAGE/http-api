@@ -29,16 +29,16 @@ script:
 # remove skips
 
 # set TESTING mode
-- sed -i "20s/0/1/" projects/b2stage/confs/debug.yml
+- sed -i "20s/0/1/" projects/${PROJECT}/confs/debug.yml
 # test anonymous (IRODS_ANONYMOUS / ENABLE_PUBLIC_ENDPOINT)
-- sed -i "38s/0/1/" projects/b2stage/project_configuration.yaml
-- sed -i "39s/0/1/" projects/b2stage/project_configuration.yaml
-# - rm projects/b2stage/backend/swagger/publish/SKIP
+- sed -i "38s/0/1/" projects/${PROJECT}/project_configuration.yaml
+- sed -i "39s/0/1/" projects/${PROJECT}/project_configuration.yaml
+# - rm projects/${PROJECT}/backend/swagger/publish/SKIP
 
 # startup and launch tests
-- rapydo --project b2stage --development init && rapydo --project b2stage --development start
-- rapydo --project b2stage --development shell backend --command 'restapi tests --wait'
+- rapydo --project ${PROJECT} --development init && rapydo --project ${PROJECT} --development start
+- rapydo --project ${PROJECT} --development shell backend --command 'restapi tests --wait'
 
 # coverage within a docker container
 after_success:
-- rapydo --project b2stage --development --log-level VERBOSE coverall
+- rapydo --project ${PROJECT} --development --log-level VERBOSE coverall
