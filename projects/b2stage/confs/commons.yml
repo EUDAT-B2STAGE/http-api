@@ -19,7 +19,9 @@ services:
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
 
     volumes:
-      - ${PROJECT_DIR}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
+      # Workaroud to make this works in extended mode
+      # - ${PROJECT_DIR}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
+      - ${VANILLA_DIR}/projects/b2stage/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
 
   postgres:
     environment:
