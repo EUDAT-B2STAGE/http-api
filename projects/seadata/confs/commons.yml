@@ -33,7 +33,7 @@ services:
       SEADATA_ORDERS_COLL: ${SEADATA_ORDERS_COLL}
 
     volumes:
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
+      - ${PROJECT_DIR}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
 
   postgres:
     environment:

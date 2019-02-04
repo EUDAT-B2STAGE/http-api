@@ -160,8 +160,8 @@ project:
   description: Processing data in SeaDataCloud project
   version: 1.0.5
   rapydo: 0.6.4
-  from: b2stage
-  from-submodules: false
+  # from: b2stage
+  # from-submodules: false
 
 tags:
   # EUDAT related

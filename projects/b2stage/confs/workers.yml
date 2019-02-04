@@ -19,7 +19,7 @@ services:
       - ${CELERY_BACKEND_PORT}:${CELERY_BACKEND_PORT}
 
   celery:
-    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
+    build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q celery -n worker-%h
     volumes:
@@ -61,7 +61,7 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD}
 
   celeryui:
-    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
+    build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     hostname: flower
     environment:
@@ -104,7 +104,7 @@ services:
     # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
 
   ingestion_celery:
-    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/celery
+    build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q ingestion -n worker-%h
@@ -113,9 +113,9 @@ services:
     volumes:
       # configuration files
       - ${SUBMODULE_DIR}/rapydo-confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/project_configuration.yaml:/code/confs/project_configuration.yaml
+      - ${PROJECT_DIR}/project_configuration.yaml:/code/confs/project_configuration.yaml
       # Vanilla code
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/backend:/code/${COMPOSE_PROJECT_NAME}
+      - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
       # JWT tokens secret
       - jwt_tokens:${JWT_APP_SECRETS}
 

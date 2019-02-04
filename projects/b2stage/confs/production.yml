@@ -66,17 +66,12 @@ services:
     volumes:
       # B2HANDLE credentials to solve PID metadata in write mode
       - ${VANILLA_DIR}/data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
-    #   # FIX missing IP / DNS
-    #   - ${VANILLA_DIR}/projects/b2stage/builds/backend/fixip.sh:/docker-entrypoint.d/fixip.sh
-    #   # # DEBUG modifications on submodules
-    #   # - ${SUBMODULE_DIR}/http-api/restapi:/usr/local/lib/python3.6/dist-packages/restapi
 
   postgres:
     # restart: always
     restart: on-failure:5
     # Activate a production ready configuration
     volumes:
-      # - ${SUBMODULE_DIR}/build-templates/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
       - ${SUBMODULE_DIR}/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
 
   proxy:
@@ -90,7 +85,7 @@ services:
       # - letsencrypt_certs:/etc/letsencrypt
       - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/production_nofrontend.conf:/etc/nginx/sites-enabled/production
       # 502 Bad Gateway
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/proxy/badgateway.html:/usr/share/nginx/html/custom_502.html
+      - ${PROJECT_DIR}/builds/proxy/badgateway.html:/usr/share/nginx/html/custom_502.html
     ports:
       - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
       - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
