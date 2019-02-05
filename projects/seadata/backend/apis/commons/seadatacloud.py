@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from restapi.services.detect import detector
+from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -130,3 +131,46 @@ class ImportManagerAPI(object):
                 "CDI: called POST on external APIs (status: %s, uri: %s)",
                 (r.status_code, self._uri))
             return True
+
+
+# NOTE this function is outside the previous class, and self is passed as parameter
+def seadata_pid(self, pid):
+
+    response = {
+        'PID': pid,
+        'verified': False,
+        'metadata': {},
+    }
+
+    #################
+    # b2handle to verify PID
+    b2handle_output = self.check_pid_content(pid)
+    if b2handle_output is None:
+        error = {'B2HANDLE': 'not found'}
+        log.error(error)
+        return self.send_warnings(
+            response,
+            errors=error, code=hcodes.HTTP_BAD_REQUEST)
+    else:
+        log.verbose("PID %s verified", pid)
+        response['verified'] = True
+        log.pp(b2handle_output)
+
+    #################
+    ipath = self.parse_pid_dataobject_path(b2handle_output)
+    from utilities import path
+    response['temp_id'] = path.last_part(ipath)
+    response['batch_id'] = path.last_part(path.dir_name(ipath))
+
+    #################
+    # get the metadata
+    # imain = self.get_service_instance(service_name='irods')
+    imain = self.get_main_irods_connection()
+    metadata, _ = imain.get_metadata(ipath)
+    log.pp(metadata)
+
+    for key, value in metadata.items():
+        if key in Metadata.keys:
+            response['metadata'][key] = value
+
+    return response
