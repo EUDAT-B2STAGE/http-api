@@ -23,13 +23,17 @@ script:
 # set TESTING mode
 - sed -i "9s/0/1/" projects/${PROJECT}/confs/debug.yml
 # test anonymous (IRODS_ANONYMOUS / ENABLE_PUBLIC_ENDPOINT)
-- sed -i "39s/0/1/" projects/${PROJECT}/project_configuration.yaml
+#- sed -i "39s/0/1/" projects/${PROJECT}/project_configuration.yaml
 - sed -i "40s/0/1/" projects/${PROJECT}/project_configuration.yaml
 
 - touch .projectrc
 - cat <<EOF > .projectrc
 project: ${PROJECT}
 development: True
+project_configuration:
+  variables:
+    env:
+      IRODS_ANONYMOUS: 1
 EOF
 
 - rapydo init
