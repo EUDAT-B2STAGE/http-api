@@ -26,18 +26,7 @@ script:
 #- sed -i "39s/0/1/" projects/${PROJECT}/project_configuration.yaml
 #- sed -i "40s/0/1/" projects/${PROJECT}/project_configuration.yaml
 
-- touch .projectrc
-- cat <<EOF > .projectrc
-project: ${PROJECT}
-development: True
-project_configuration:
-  variables:
-    env:
-      IRODS_ANONYMOUS: 1
-      ENABLE_PUBLIC_ENDPOINT: 1
-      ACTIVATE_TESTING_MODE: 1
-EOF
-
+- /bin/bash templates/create_testing_projectrc.sh 
 - rapydo init
 - rapydo pull
 - rapydo start
