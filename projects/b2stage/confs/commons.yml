@@ -50,18 +50,12 @@ services:
       PROFILE_DISABLED: 1   # disable /auth/profile operations
       ADMINER_DISABLED: 1   # disable /admin/users operations
 
-      ##############################
-      # set this inside the MODE yaml files you want to use
-      # FLASK_DEBUG: 1
       DEBUG_LEVEL: ${LOG_LEVEL}
-      APP_MODE: debug
-      ##############################
 
-      # project/package/prefix name
-      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
+      # TODO: to be removed
       PROJECT_DOMAIN: ${PROJECT_DOMAIN}
+
       UPLOAD_PATH: ${UPLOAD_PATH}
-      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       PUBLIC_ENDPOINT: ${API_PUBLIC_ENDPOINT}
       ENABLE_PUBLIC_ENDPOINT: ${ENABLE_PUBLIC_ENDPOINT}
@@ -98,7 +92,6 @@ services:
       MONGO_PORT: ${MONGO_PORT}
 
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
-      # HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json
 
   restclient:
     environment:
