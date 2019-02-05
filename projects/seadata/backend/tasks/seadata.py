@@ -1035,7 +1035,11 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     )
 
             log.info("Creating a backup copy of final zip")
-            imain.move(final_zip, final_zip + ".bak")
+            backup_zip = final_zip + ".bak"
+            if imain.is_dataobject(backup_zip):
+                log.info("%s already exists, removing previous backup")
+                imain.remove(backup_zip)
+            imain.move(final_zip, backup_zip)
 
             log.info("Uploading final updated zip")
             imain.put(local_finalzip_path, final_zip)
