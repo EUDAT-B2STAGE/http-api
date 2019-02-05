@@ -99,6 +99,7 @@ variables:
 
     ###############################
     ## Seadata project variable
+    # Note: not used anymore
     SEADATA_PROJECT: 0
 
 # Keep track of releases and dependencies
