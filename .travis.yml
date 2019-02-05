@@ -33,12 +33,18 @@ script:
 # test anonymous (IRODS_ANONYMOUS / ENABLE_PUBLIC_ENDPOINT)
 - sed -i "39s/0/1/" projects/${PROJECT}/project_configuration.yaml
 - sed -i "40s/0/1/" projects/${PROJECT}/project_configuration.yaml
-# - rm projects/${PROJECT}/backend/swagger/publish/SKIP
+
+- touch .projectrc
+- echo "project: ${PROJECT}" >> .projectrc
+- echo "development: True" >> .projectrc
 
 # startup and launch tests
-- rapydo --project ${PROJECT} --development init && rapydo --project ${PROJECT} --development start
-- rapydo --project ${PROJECT} --development shell backend --command 'restapi tests --wait'
+
+- rapydo init
+- rapydo pull
+- rapydo start
+- rapydo shell backend --command 'restapi tests --wait'
 
 # coverage within a docker container
 after_success:
-- rapydo --project ${PROJECT} --development --log-level VERBOSE coverall
+- rapydo --log-level VERBOSE coverall
