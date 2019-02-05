@@ -24,16 +24,6 @@ services:
       DEBUG_LEVEL: ${LOG_LEVEL}
       NGINX_ACTIVE: "True"
 
-      ##################
-      # EUDAT RELATED
-      ## /api/login is not enabled in production
-      MAIN_LOGIN_ENABLE: 0
-      ## If you don't provide credentials b2access will not be enabled
-      # B2ACCESS_ENV: production
-      # B2ACCESS_ENV: staging
-      # B2ACCESS_ENV: development
-      B2ACCESS_ENV: ${B2ACCESS_ENV}
-
     depends_on:
       # - icat
       - postgres

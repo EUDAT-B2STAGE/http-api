@@ -102,6 +102,10 @@ variables:
     IRODS_DB: ICAT
     IRODS_CHUNKSIZE: 1048576
     ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
+
+    B2ACCESS_ENV: development
+    # B2ACCESS_ENV: staging
+    # B2ACCESS_ENV: production
     B2ACCESS_CAS: /tmp/certificates/b2access
     # sqlalchemy fixed:
     ALCHEMY_ENGINE: postgresql

@@ -66,6 +66,7 @@ services:
       PUBLIC_ENDPOINT: ${API_PUBLIC_ENDPOINT}
       ENABLE_PUBLIC_ENDPOINT: ${ENABLE_PUBLIC_ENDPOINT}
       # app credentials to work inside the b2access environment
+      B2ACCESS_ENV: ${B2ACCESS_ENV}
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
 
