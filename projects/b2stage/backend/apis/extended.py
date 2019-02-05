@@ -121,8 +121,8 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     def get(self, pid):
         """ Get metadata or file from pid """
 
-        from b2stage.apis.commons.seadatacloud import SEADATA_ENABLED
-        if SEADATA_ENABLED:
+        try:
+            from seadata.apis.commons.seadatacloud import SEADATA_ENABLED
             return self.seadata_pid(pid)
-        else:
+        except BaseException:
             return self.eudat_pid(pid)
