@@ -18,6 +18,10 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain, order_id)
+        if not imain.is_collection(order_path):
+            obj = self.init_endpoint()
+            # Create the path and set permissions
+            imain.create_collection_inheritable(order_path, obj.username)
 
         task = CeleryExt.download_restricted_order.apply_async(
             args=[order_id, order_path, json_input]
