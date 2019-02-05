@@ -6,7 +6,7 @@ services:
 
     environment:
       # this variables is switch to 1 with a sed in .travis.yaml
-      TESTING: 0
+      TESTING: ${ACTIVATE_TESTING_MODE}
 
       #################
       # EUDAT RELATED
