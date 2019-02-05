@@ -11,10 +11,13 @@ variables:
     ## Experimental features
     IRODS_ANONYMOUS: 0  # enable only if you know what it means
     ENABLE_PUBLIC_ENDPOINT: 0  # experimental endpoint, depending on anonymous
+    # 72 hours
+    TOKEN_LONG_TTL: 259200
+    TOKEN_SHORT_TTL: 259200
 
     ###############################
     ## Seadata project variable
-    SEADATA_PROJECT: 0
+    SEADATA_PROJECT: 1
     SEADATA_EDMO_CODE:
     SEADATA_API_VERSION: 1.0.5.0012
     # The names of the directories in the irods zone
@@ -25,11 +28,11 @@ variables:
     SEADATA_PRODUCTION_COLL: cloud   # on irods!
     SEADATA_PRIVILEGED_USERS:  # command separated list of privileges users
 
-    SEADATA_WORKSPACE_INGESTION: batches # on filesystem (to be mounted to celery workers and rancher containers)
+    SEADATA_WORKSPACE_INGESTION: batches  # on filesystem (to be mounted to celery workers and rancher containers)
     SEADATA_WORKSPACE_ORDERS: orders       # on filesystem (to be mounted to celery workers and rancher containers)
     # SEADATA_BATCH_PROD_FILES_COLL: production
     ## IM APIs
-    SEADATA_API_IM_URL: https://some.url
+    SEADATA_API_IM_URL: http://importmanager.seadatanet.org/api_v1
     ## RANCHER
     RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
     RESOURCES_QCLABEL: qc
