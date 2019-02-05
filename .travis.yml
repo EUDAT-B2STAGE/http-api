@@ -9,8 +9,7 @@ services:
 - docker
 env:
 - PROJECT=b2stage
-- PROJECT=seadata
-# - TESTING_MODE=1
+# - PROJECT=seadata
 
 install:
 - data/scripts/prerequisites.sh
@@ -20,15 +19,9 @@ script:
 - docker --version && docker-compose --version
 - pip list --format columns | grep docker && pip search rapydo-
 
-# set TESTING mode
-#- sed -i "9s/0/1/" projects/${PROJECT}/confs/debug.yml
-# test anonymous (IRODS_ANONYMOUS / ENABLE_PUBLIC_ENDPOINT)
-#- sed -i "39s/0/1/" projects/${PROJECT}/project_configuration.yaml
-#- sed -i "40s/0/1/" projects/${PROJECT}/project_configuration.yaml
-
 - /bin/bash templates/create_testing_projectrc.sh 
 - rapydo init
-#- rapydo pull
+- rapydo pull
 - rapydo start
 - rapydo shell backend --command 'restapi tests --wait'
 
