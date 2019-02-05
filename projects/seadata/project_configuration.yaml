@@ -2,6 +2,19 @@
 # Copyright 2011-2019 EUDAT CDI - www.eudat.eu
 # ###############################################
 
+project:
+  title: SeaDataCloud HTTP-API
+  description: Processing data in SeaDataCloud project
+  version: 1.0.5
+  rapydo: 0.6.4
+  extends: b2stage
+  extends-from: projects
+
+tags:
+  seadatacloud: endpoints related to the SeaDataCloud project
+  ingestion: submission of files to be approved into the cloud
+  order: request an order from the interface
+
 variables:
   env:
 
@@ -77,16 +90,3 @@ variables:
     # while QC containers uses an hard-code mount point (/usr/share)
     SEADATA_RESOURCES_MOUNTPOINT: /usr/share
     # Email to be notified for proxy certificates expiration (letsencrypt)
-
-project:
-  title: SeaDataCloud HTTP-API
-  description: Processing data in SeaDataCloud project
-  version: 1.0.5
-  rapydo: 0.6.4
-  extends: b2stage
-  extends-from: projects
-
-tags:
-  seadatacloud: endpoints related to the SeaDataCloud project
-  ingestion: submission of files to be approved into the cloud
-  order: request an order from the interface

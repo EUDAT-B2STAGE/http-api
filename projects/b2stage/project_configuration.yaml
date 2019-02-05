@@ -2,7 +2,30 @@
 # Copyright 2011-2019 EUDAT CDI - www.eudat.eu
 # ###############################################
 
+project:
+  title: EUDAT-B2STAGE HTTP-API server
+  description: Processing data in EUDAT domains
+  version: 1.0.5
+  rapydo: 0.6.4
+
+tags:
+  eudat: all endpoints associated to EUDAT services
+  b2access: request/refresh authorization from B2ACCESS
+  b2safe: proxy access to irods b2safe credentials
+  registered: upload, download, list and delete objects
+  pids: resolve and download data from EUDAT Persistent IDentifier
+  publish: allow public access to data objects
+  public: landing page
+
 variables:
+
+  repos:
+    irods-client:
+      branch: master
+      online_url: https://github.com/irods/python-irodsclient.git
+      path: prc
+      if: true
+
   env:
 
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
@@ -39,11 +62,6 @@ variables:
     IRODS_ANONYMOUS: 0  # enable only if you know what it means
     ENABLE_PUBLIC_ENDPOINT: 0  # experimental endpoint, depending on anonymous
 
-    ###############################
-    ## Seadata project variable
-    SEADATA_PROJECT: 0
-
-
     AUTH_SERVICE: sqlalchemy
     API_MAIN_ENDPOINT: registered
     API_PUBLIC_ENDPOINT: public
@@ -79,29 +97,9 @@ variables:
     HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
     HANDLE_BASE: "https://url.to.epic/handles/"
 
-  repos:
-    irods-client:
-      branch: master
-      online_url: https://github.com/irods/python-irodsclient.git
-      path: prc
-      if: true
-
-##################################################
-project:
-  title: EUDAT-B2STAGE HTTP-API server
-  description: Processing data in EUDAT domains
-  version: 1.0.5
-  rapydo: 0.6.4
-
-tags:
-  # EUDAT related
-  eudat: all endpoints associated to EUDAT services
-  b2access: request/refresh authorization from B2ACCESS
-  b2safe: proxy access to irods b2safe credentials
-  registered: upload, download, list and delete objects
-  pids: resolve and download data from EUDAT Persistent IDentifier
-  publish: allow public access to data objects
-  public: landing page
+    ###############################
+    ## Seadata project variable
+    SEADATA_PROJECT: 0
 
 # Keep track of releases and dependencies
 releases:
