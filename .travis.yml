@@ -28,7 +28,7 @@ script:
 
 - /bin/bash templates/create_testing_projectrc.sh 
 - rapydo init
-- rapydo pull
+#- rapydo pull
 - rapydo start
 - rapydo shell backend --command 'restapi tests --wait'
 
