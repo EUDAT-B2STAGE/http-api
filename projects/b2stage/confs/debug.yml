@@ -65,7 +65,7 @@ services:
 
   restclient:
     environment:
-      ACTIVATE: 1
+      ACTIVATE: 0
       APP_HOST: ${FLASK_HOST}
       APP_PORT: :${FLASK_DEFAULT_PORT}
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
