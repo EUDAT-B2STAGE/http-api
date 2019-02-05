@@ -30,7 +30,7 @@ script:
 - rapydo init
 - rapydo pull
 - rapydo start
-- docker logs ${PROJECT}_backend_1
+- docker logs -f ${PROJECT}_backend_1
 - rapydo shell backend --command 'restapi tests --wait'
 
 # coverage within a docker container
