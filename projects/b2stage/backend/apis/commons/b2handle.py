@@ -15,7 +15,6 @@ try:
 except BaseException:
     b2handle, credentials, handleexceptions = [None] * 3
 from utilities import htmlcodes as hcodes
-from utilities import path
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -57,23 +56,14 @@ class PIDgenerator(object):
         url = metadata.get(key)
         if url is None:
             return url
-        # NOTE: this would only work until the protocol is unchanged
-        url = url.replace('irods://', '')
+        else:
+            # NOTE: this would only work until the protocol is unchanged
+            url = url.replace('irods://', '')
 
+        from utilities import path
         # path_pieces = url.split(path.os.sep)[1:]
         path_pieces = url.split(path.os.sep)
         path_pieces[0] = path.os.sep
-
-        # TEMPORARY FIX, waiting to decide final PID structure
-        try:
-            if path_pieces[2] == 'api' and path_pieces[3] == 'registered':
-                path_pieces[0] = "/"
-                path_pieces[1] = "/"
-                path_pieces[2] = "/"
-                path_pieces[3] = "/"
-
-        except BaseException:
-            log.error("Error parsing URL, not enough tokens? %s", path_pieces)
         # print("pieces", path_pieces)
         ipath = str(path.build(path_pieces))
         log.verbose("Data object: %s", ipath)
