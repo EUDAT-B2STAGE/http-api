@@ -67,11 +67,12 @@ class PIDgenerator(object):
 
         # TEMPORARY FIX, waiting to decide final PID structure
         try:
-            if path_pieces[2] == 'api' and path_pieces[3] == 'registered':
+            if path_pieces[3] == 'api' and path_pieces[4] == 'registered':
                 path_pieces[0] = "/"
                 path_pieces[1] = "/"
                 path_pieces[2] = "/"
                 path_pieces[3] = "/"
+                path_pieces[4] = "/"
 
         except BaseException:
             log.error("Error parsing URL, not enough tokens? %s", path_pieces)
