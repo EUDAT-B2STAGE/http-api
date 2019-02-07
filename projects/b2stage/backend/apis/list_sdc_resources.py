@@ -21,5 +21,5 @@ class ListResources(Endpoint):
                 json_input
             ]
         )
-        log.warning("Async job: %s", task.id)
+        log.info("Async job: %s", task.id)
         return self.return_async_id(task.id)

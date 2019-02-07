@@ -302,7 +302,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.info("Submit async celery task")
             task = CeleryExt.unrestricted_order.apply_async(
                 args=[order_id, order_path, zip_file_name, json_input])
-            log.warning("Async job: %s", task.id)
+            log.info("Async job: %s", task.id)
             return self.return_async_id(task.id)
 
         # ################
@@ -491,5 +491,5 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         task = CeleryExt.delete_orders.apply_async(
             args=[order_path, local_order_path, json_input]
         )
-        log.warning("Async job: %s", task.id)
+        log.info("Async job: %s", task.id)
         return self.return_async_id(task.id)
