@@ -31,6 +31,8 @@ variables:
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
     BACKEND_BUILD_MODE: backendirods
 
+    ALLOW_ACCESS_TOKEN_PARAMETER: True
+
     ###############################
     ## B2ACCESS
     # Register a B2ACCESS 'app' and use credentials here
