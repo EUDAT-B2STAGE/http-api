@@ -332,18 +332,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         ###############
         log.info("I'm %s (move_to_production_task)!" % self.request.id)
         local_path = path.join(mybatchpath, batch_id, return_str=True)
-        # log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
-        # icom = celery_app.get_service(service='irods', user='httpapi')
         imain = celery_app.get_service(service='irods')
 
-        ###############
-        # from glob import glob
-        # # files = glob(path.join(local_path, '*', return_str=True))
-        # all_files = path.join(local_path, '**', '*', return_str=True)
-        # files = glob(all_files, recursive=True)
-        # log.info(files)
-
-        ###############
         out_data = []
         errors = []
         counter = 0
@@ -418,7 +408,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     'total': total, 'step': counter, 'errors': len(errors)})
                 continue
             log.info('PID: %s', PID)
-            # # save inside the cache? (both)
+            # # save inside the cache
             r.set(PID, ifile)
             r.set(ifile, PID)
 

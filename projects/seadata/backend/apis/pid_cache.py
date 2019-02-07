@@ -17,7 +17,7 @@ class PidCache(ClusterContainerEndpoint):
     def get(self):
 
         task = CeleryExt.inspect_pids_cache.apply_async()
-        log.warning("Async job: %s", task.id)
+        log.info("Async job: %s", task.id)
         return self.return_async_id(task.id)
 
     @decorate.catch_error()

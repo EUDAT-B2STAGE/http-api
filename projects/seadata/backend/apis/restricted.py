@@ -26,5 +26,5 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         task = CeleryExt.download_restricted_order.apply_async(
             args=[order_id, order_path, json_input]
         )
-        log.warning("Async job: %s", task.id)
+        log.info("Async job: %s", task.id)
         return self.return_async_id(task.id)
