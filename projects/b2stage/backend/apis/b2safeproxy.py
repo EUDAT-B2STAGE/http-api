@@ -104,7 +104,10 @@ class B2safeProxy(B2accessUtilities):
         imain = self.get_service_instance(service_name='irods')
 
         user_home = imain.get_user_home(irods_user)
-        response['b2safe_home'] = user_home
+        if imain.is_collection(user_home):
+            response['b2safe_home'] = user_home
+        else:
+            response['b2safe_home'] = imain.get_user_home(append_user=False)
         response['b2safe_user'] = irods_user
 
         return self.force_response(defined_content=response)
