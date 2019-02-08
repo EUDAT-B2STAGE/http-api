@@ -74,7 +74,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if not imain.is_collection(self.batch_path):
             return self.send_errors(
                 "Batch '%s' not enabled (or no permissions)" % batch_id,
-                code=hcodes.HTTP_BAD_REQUEST)
+                code=hcodes.HTTP_BAD_NOTFOUND)
 
         ################
         # 2. make batch_id directory in production if not existing

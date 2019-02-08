@@ -86,13 +86,13 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         if batch_status == MISSING_BATCH:
             return self.send_errors(
                 "Batch '%s' not found (or no permissions)" % batch_id,
-                code=hcodes.HTTP_BAD_REQUEST
+                code=hcodes.HTTP_BAD_NOTFOUND
             )
 
         if batch_status == NOT_FILLED_BATCH:
             return self.send_errors(
                 "Batch '%s' not yet filled" % batch_id,
-                code=hcodes.HTTP_BAD_REQUEST)
+                code=hcodes.HTTP_BAD_RESOURCE)
 
         if batch_status == BATCH_MISCONFIGURATION:
             log.error(
@@ -100,7 +100,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 len(batch_files), batch_path)
             return self.send_errors(
                 "Misconfiguration for batch_id %s" % batch_id,
-                code=hcodes.HTTP_BAD_NOTFOUND)
+                code=hcodes.HTTP_BAD_RESOURCE)
 
         ###################
         # Parameters (and checks)
@@ -235,10 +235,10 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 else:
                     response['status'] = 'could NOT be started'
                     response['description'] = edict
-                    code = hcodes.HTTP_BAD_REQUEST
+                    code = hcodes.HTTP_SERVER_ERROR
             else:
                 response['status'] = 'failure'
-                code = hcodes.HTTP_BAD_REQUEST
+                code = hcodes.HTTP_SERVER_ERROR
             return self.force_response(
                 response, errors=[response['status']], code=code)
 

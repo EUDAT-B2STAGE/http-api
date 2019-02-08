@@ -208,21 +208,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             ipath = self.join_paths([data.get('path'), name])
             metadata, _ = imain.get_metadata(ipath)
             data['URL'] = metadata.get('download')
-            # obj = {
-            #     'order': order_id,
-            #     'file': name,
-            #     'URL': metadata.get('download'),
-            #     'owner': data.get('owner')
-            #     'size': data.get('owner')
-            # }
-            # response.append(obj)
             response.append(data)
 
-        # if len(response) < 1:
-        #     error = "Order '%s': no files yet" % order_id
-        #     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-
-        ##################
         msg = prepare_message(self, log_string='end', status='completed')
         log_into_queue(self, msg)
         return response
@@ -242,8 +229,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if len(params) < 1:
             error = "'%s' missing" % main_key
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
-        # else:
-        #     log.pp(params)
 
         ##################
         key = 'order_number'

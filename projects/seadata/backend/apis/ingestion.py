@@ -61,18 +61,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 len(batch_files), batch_path)
             return self.send_errors(
                 "Misconfiguration for batch_id %s" % batch_id,
-                code=hcodes.HTTP_BAD_REQUEST)
-
-        # files = imain.list(batch_path, detailed=True)
-        # if len(files) != 1:
-        #     return self.send_errors(
-        #         "Batch '%s' not yet filled" % batch_id,
-        #         code=hcodes.HTTP_BAD_REQUEST)
-
-        # if batch_status == NOT_FILLED_BATCH:
-        #     return self.send_errors(
-        #         "Batch '%s' not yet filled" % batch_id,
-        #         code=hcodes.HTTP_BAD_REQUEST)
+                code=hcodes.HTTP_BAD_RESOURCE)
 
         data = {}
         data['batch'] = batch_id
@@ -83,12 +72,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         elif batch_status == PARTIALLY_ENABLED_BATCH:
             data['status'] = 'partially_enabled'
 
-        # data['files'] = []
-        # for _, f in files.items():
-        #     data['files'].append(f)
         data['files'] = batch_files
         return data
-        # return "Batch '%s' is enabled and filled" % batch_id
 
     def post(self, batch_id):
         json_input = self.get_input()
