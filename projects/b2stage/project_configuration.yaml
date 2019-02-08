@@ -67,8 +67,6 @@ variables:
     AUTH_SERVICE: sqlalchemy
     API_MAIN_ENDPOINT: registered
     API_PUBLIC_ENDPOINT: public
-    # COMPOSE_PROJECT_NAME: b2stage
-    # PROJECT_DOMAIN: myserver.mydomain.dev
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
     # irods fixed
