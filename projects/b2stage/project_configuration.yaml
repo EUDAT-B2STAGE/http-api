@@ -19,7 +19,7 @@ tags:
 
 variables:
 
-  repos:
+  submodules:
     irods-client:
       branch: master
       online_url: https://github.com/irods/python-irodsclient.git
