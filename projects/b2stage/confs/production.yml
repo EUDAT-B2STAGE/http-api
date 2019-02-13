@@ -7,14 +7,6 @@ volumes:
 services:
 
   backend:
-    restart: on-failure:5
-    # TO TEST the failure:
-    # 1. go inside backend
-    # 2. ps aux --forest
-    # 3. kill process 1 and the tree branches
-
-    # restart: always
-    # command: sleep infinity
     environment:
       ##################
       # Base info
@@ -35,14 +27,11 @@ services:
       - ${VANILLA_DIR}/data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
 
   postgres:
-    # restart: always
-    restart: on-failure:5
     # Activate a production ready configuration
     volumes:
       - ${SUBMODULE_DIR}/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
 
   proxy:
-    restart: always
     environment:
       ACTIVATE: 1
     volumes:
