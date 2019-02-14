@@ -20,7 +20,8 @@ Here's step-by-step tutorial to work with the HTTP API project:
 # get the code
 git clone https://github.com/EUDAT-B2STAGE/http-api.git latest
 cd latest
-git checkout 1.0.3
+git checkout 1.0.6
+(please verify latest branch, this command can change)
 
 ################
 # install the corrensponding rapydo framework version
@@ -140,4 +141,4 @@ rapydo -h
 
 ## What's more
 
-Finally to dig more into details you may now [head back to the index](README.md#documentation) to read the other parts of the documentation.
+Finally to dig more into details you may now [head back to the index](../README.md#documentation) to read the other parts of the documentation.
