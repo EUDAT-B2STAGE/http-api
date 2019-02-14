@@ -1,0 +1,87 @@
+# This is a template file for SeaDataCloud
+
+# This section override rapydo default parameters and are automatically appended to every rapydo command
+
+# Equivalent to rapydo --log-level INFO any_command
+log-level: INFO
+
+# If enabled submodules/utils and submodules/http-api will be mounted on backend container. This will allow you to update these package into the container without rebuilding the docker image
+# Equivalent to rapydo --log-level INFO any_command
+# development: True
+
+
+project: seadata
+mode: production
+hostname: your.host.name
+
+# This section override projects defaults. Here the minimum configuration for SeadataCloud is reported, but you can add any other variables found in .env file
+# .env file is produced by mixing the following configuration
+# 1 - submodules/rapydo-confs/projects_defaults.yaml
+# 2 - projects/b2stage/project_configuration.yaml
+# 3 - projects/seadata/project_configuration.yaml
+# 4 - this file
+
+project_configuration:
+  variables:
+    env:
+
+      # REQUIRED VARIABLES
+
+      SEADATA_EDMO_CODE: your_edmo_code
+      SEADATA_PRIVILEGED_USERS: list,irods,users,with,privileges
+
+      IRODS_HOST: your_irods_host
+      IRODS_ZONE: your_irods_zone
+      IRODS_USER: your_irods_admin_username
+      IRODS_PASSWORD: your_irods_admin_password
+      # credentials = user defined in b2safe
+      # Other allowed values: PAM, GSI
+      IRODS_AUTHSCHEME: credentials
+
+      # Rancher
+      RESOURCES_URL: https://your_rancher_host/v2-beta
+      RESOURCES_KEY: your_rancher_api_key
+      RESOURCES_SECRET: your_rancher_api_secret
+      RESOURCES_PROJECT: your_rancher_project
+      # label assigned to quality check host, default is qc
+      # RESOURCES_QCLABEL: qc 
+
+      # GRNET private docker hub
+      RESOURCES_HUB: snf-773873.vm.okeanos.grnet.gr
+      # RESOURCES_HUB: registry-sdc.argo.grnet.gr 
+      RESOURCES_HUBUSER: private_docker_hub_user
+      RESOURCES_HUBPASS: private_docker_hub_password
+  
+      # DKRZ RabbitMQ for logging
+      RABBIT_HOST: sdc-b2host-test.dkrz.de
+      RABBIT_PORT: 5672
+      RABBIT_VHOST: elkstack_tests
+      RABBIT_USER: your_rabbit_user
+      RABBIT_PASSWORD: your_rabbit_password
+      RABBIT_EXCHANGE: eudat_qc
+      RABBIT_QUEUE: maris_elk_test
+
+      CELERY_BROKER_HOST: your_rabbitmq_host
+      CELERY_BACKEND_HOST: your_mongodb_host
+      CELERY_BACKEND_PORT: your_mongodb_port__default_is_27017
+
+      REDIS_HOST: your_pid_queue_host
+
+      # Used from proxy for ssl certificate expiration warnings
+      # Also used by celery to notify about errors, if other SMTP variables are filled
+      SMTP_ADMIN: admin_email@yourhost.com
+
+      # OPTIONAL VARIABLES
+
+      SMTP_NOREPLY: from_address@yourhost.com
+      SMTP_HOST: your_smtp_host
+      SMTP_PORT: your_smtp_port
+      SMTP_USERNAME: your_smtp_username
+      SMTP_PASSWORD: your_smtp_password
+
+      # Set whatever you want, credentials will be injected in flower
+      CELERYUI_USER: your_flower_username
+      CELERYUI_PASSWORD: your_flower_password
+
+      # Default log level for HTTP APIs
+      LOG_LEVEL: DEBUG

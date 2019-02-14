@@ -67,12 +67,12 @@ variables:
     ## OTHERS
     REDIS_HOST: redis-cache-1
     REDIS_PREFIX: 01T10
-    CONTAINERS_RABBITUSER:
-    CONTAINERS_RABBITPASS:
-    CONTAINERS_DBUSER:
-    CONTAINERS_DBPASS:
-    CONTAINERS_DBEXTRAUSER:
-    CONTAINERS_DBEXTRAPASS:
+    # CONTAINERS_RABBITUSER:
+    # CONTAINERS_RABBITPASS:
+    # CONTAINERS_DBUSER:
+    # CONTAINERS_DBPASS:
+    # CONTAINERS_DBEXTRAUSER:
+    # CONTAINERS_DBEXTRAPASS:
     CONTAINERS_WAIT_STOPPED: false # can be 0, 1, true, false
     CONTAINERS_WAIT_RUNNING: false # can be 0, 1, true, false
 
@@ -87,4 +87,6 @@ variables:
     # Note that this variable has only effect in backend and celery containers
     # while QC containers uses an hard-code mount point (/usr/share)
     SEADATA_RESOURCES_MOUNTPOINT: /usr/share
-    # Email to be notified for proxy certificates expiration (letsencrypt)
+   
+    CELERY_BACKEND: MONGODB
+    CELERY_BACKEND_PORT: 27017
