@@ -171,10 +171,10 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             elif key == 'password':
                 value = CONTAINERS_VARS.get('rabbitpass')
             envs['LOGS_' + key.upper()] = value
-        envs['DB_USERNAME'] = CONTAINERS_VARS.get('dbuser')
-        envs['DB_PASSWORD'] = CONTAINERS_VARS.get('dbpass')
-        envs['DB_USERNAME_EDIT'] = CONTAINERS_VARS.get('dbextrauser')
-        envs['DB_PASSWORD_EDIT'] = CONTAINERS_VARS.get('dbextrapass')
+        # envs['DB_USERNAME'] = CONTAINERS_VARS.get('dbuser')
+        # envs['DB_PASSWORD'] = CONTAINERS_VARS.get('dbpass')
+        # envs['DB_USERNAME_EDIT'] = CONTAINERS_VARS.get('dbextrauser')
+        # envs['DB_PASSWORD_EDIT'] = CONTAINERS_VARS.get('dbextrapass')
 
         # FOLDER inside /batches to store temporary json inputs
         # TODO: to be put into the configuration
