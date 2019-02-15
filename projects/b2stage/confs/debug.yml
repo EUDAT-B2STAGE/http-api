@@ -25,10 +25,6 @@ services:
       - icat
       - postgres
 
-    volumes:
-      # Custom python repos
-      - ${SUBMODULE_DIR}/prc/irods:${PYTHON_PATH}/irods
-
   icat:
 
     environment:
