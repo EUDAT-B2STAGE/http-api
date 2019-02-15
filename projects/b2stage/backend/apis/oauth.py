@@ -54,8 +54,7 @@ class OauthLogin(EudatEndpoint):
 class Authorize(EudatEndpoint):
     """
     Previous endpoint will redirect here if authorization was granted.
-    Use the B2ACCESS token to retrieve info about the user,
-    and to store the proxyfile.
+    Use the B2ACCESS token to retrieve info about the user
     """
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
@@ -142,9 +141,6 @@ class B2accesProxyEndpoint(EudatEndpoint):
         if r.valid_credentials:
             if r.refreshed:
                 return {"Expired": "New proxy was generated."}
-            elif r.is_proxy:
-                log.debug("A valid proxy already exists")
-                return {"Verified": "Current proxy is valid."}
             else:
                 log.debug("Current user does not use a proxy")
                 return {"Skipped": "Not using a certificate proxy."}

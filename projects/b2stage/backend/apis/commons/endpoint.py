@@ -50,7 +50,6 @@ class EudatEndpoint(B2accessUtilities):
         # decide which type of auth we are dealing with
         # NOTE: icom = irods commands handler (official python driver PRC)
 
-        proxy = False
         refreshed = False
         external_user = None
 
@@ -65,18 +64,10 @@ class EudatEndpoint(B2accessUtilities):
 
             icom = self.irodsuser_from_b2safe(internal_user)
 
-        elif internal_user.authmethod == 'b2access-cert':
-
-            icom, external_user, refreshed, errors = \
-                self.irodsuser_from_b2access_cert(internal_user)
-            proxy = True
-            if errors is not None:
-                return errors
-
         elif internal_user.authmethod == 'b2access':
             icom, external_user, refreshed = \
                 self.irodsuser_from_b2access(internal_user)
-            # icd and ipwd do not give error with wrong certificates...
+            # icd and ipwd do not give error with wrong credentials...
             # so the minimum command is ils inside the home dir
             icom.list()
 
@@ -96,7 +87,7 @@ class EudatEndpoint(B2accessUtilities):
         return InitObj(
             username=user, extuser_object=external_user,
             icommands=icom, db_handler=sql,
-            valid_credentials=True, is_proxy=proxy, refreshed=refreshed
+            valid_credentials=True, refreshed=refreshed
         )
 
     def irodsuser_from_b2access(self, internal_user, refreshed=False):
@@ -140,38 +131,6 @@ class EudatEndpoint(B2accessUtilities):
 
         return icom, external_user, refreshed
 
-    # B2access with certificates are no longer used
-    def irodsuser_from_b2access_cert(self, internal_user):
-        """ Certificates X509 and authority delegation """
-        external_user = self.auth.oauth_from_local(internal_user)
-
-        icom = self.get_service_instance(
-            service_name='irods', only_check_proxy=True,
-            user=external_user.irodsuser, password=None,
-            gss=True, proxy_file=external_user.proxyfile,
-        )
-
-        refreshed = False
-        try:
-            # icd and ipwd do not give error with wrong credentials...
-            # so the minimum command is ils inside the home dir
-            icom.list()
-            log.debug("Current proxy certificate is valid")
-
-        # Catch exceptions on this irods test
-        # To manipulate the reply to be given to the user
-        except BaseException as e:
-            log.warning("Catched exception %s" % type(e))
-
-            error = self.check_proxy_certificate(external_user, e)
-            if error is None:
-                refreshed = True
-            else:
-                # Case of error to be printed
-                return None, None, None, self.parse_gss_failure(error)
-
-        return icom, external_user, refreshed, None
-
     def irodsuser_from_b2safe(self, user):
 
         if user.session is not None and len(user.session) > 0:
@@ -205,49 +164,6 @@ class EudatEndpoint(B2accessUtilities):
         )
 
         return icom
-
-    def parse_gss_failure(self, error_object):
-
-        errors = error_object.errors.copy()
-
-        for error in errors:
-
-            log.warning("GSS failure:\n%s" % error)
-
-            if 'GSS failure' in error or \
-               ('Invalid credential' in error and ' GSS ' in error):
-
-                import re
-                new_error = None
-
-                if "Unable to verify remote side's credentials" in error:
-                    regexp = r'OpenSSL Error:.+:([^\n]+)'
-                    pattern = re.compile(regexp)
-                    match = pattern.search(error)
-                    new_error = 'B2ACCESS proxy not trusted by B2SAFE'
-                    if match:
-                        new_error += ': ' + match.group(1).strip()
-
-                # globus_sysconfig: Error with certificate filename
-                elif 'Error with certificate filename' in error:
-
-                    regexp = r'globus_[^\:]+:([^\n]+)'
-                    pattern = re.compile(regexp)
-                    matches = pattern.findall(error)
-
-                    if matches:
-                        print(matches)
-                        last_error = matches.pop()
-                        if 'is not a valid file' in last_error:
-                            if 'File does not exist' in last_error:
-                                new_error = 'B2ACCESS proxy file not found'
-                            else:
-                                new_error = 'B2ACCESS proxy file invalid'
-
-                if new_error is not None:
-                    error_object.errors = [new_error]
-
-        return error_object
 
     def httpapi_location(self, ipath, api_path=None, remove_suffix=None):
         """ URI for retrieving with GET method """

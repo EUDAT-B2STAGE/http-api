@@ -53,8 +53,6 @@ class InitObj(object):
     # Service handlers
     icommands = attribute(default=None)
     db_handler = attribute(default=None)
-    # Verify certificates or normal credentials
-    is_proxy = attribute(default=False)
     valid_credentials = attribute(default=False)
     refreshed = attribute(default=False)
     # Save errors to report
