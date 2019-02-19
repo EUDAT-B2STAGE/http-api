@@ -563,19 +563,18 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             #########################
             if not path.file_exists_and_nonzero(local_file):
                 try:
-                    # with open(local_file, 'wb') as target:
-                    #     with imain.get_dataobject(ipath).open('r+') as source:
-                    #         for line in source:
-                    #             target.write(line)
-                    chunk_size = 1048576
-                    file_object = imain.get_dataobject(ipath)
-                    with file_object.open('r') as source:
+
+                    with imain.get_dataobject(ipath).open('r') as source:
                         with open(local_file, 'wb') as target:
+                            # for line in source:
+                            #     target.write(line)
+
                             while True:
+                                chunk_size = 1048576
                                 data = source.read(chunk_size)
                                 if not data:
                                     break
-                                # target.write(data)
+                                target.write(data)
                 except BaseException as e:
                     errors.append({
                         "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
