@@ -577,6 +577,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                                     break
                                 target.write(data)
                 except BaseException as e:
+                    log.critical(e)
                     errors.append({
                         "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
                         "description": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[1],
