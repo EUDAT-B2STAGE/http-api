@@ -485,6 +485,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         imain = celery_app.get_service(service='irods')
         # log.pp(order_path)
 
+        log.info("Retrieving paths for %s PIDs", len(pids))
         ##################
         # Verify pids
         files = {}
@@ -547,7 +548,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     'total': total, 'step': counter, 'verified': verified,
                     'errors': len(errors)}
                 )
-        log.debug("PID files: %s", len(files))
+        log.info("Retrieved paths for %s PIDs", len(files))
 
         # Recover files
         for pid, ipath in files.items():
@@ -575,6 +576,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                                 break
                             target.write(data)
                 except BaseException as e:
+                    log.critical(e)
                     errors.append({
                         "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
                         "description": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[1],
