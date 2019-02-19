@@ -570,7 +570,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     chunk_size = 1048576
                     with open(local_file, 'wb') as target:
                         file_object = imain.get_dataobject(ipath)
-                        with file_object.obj.open('r') as source:
+                        with file_object.open('r') as source:
                             while True:
                                 data = source.read(chunk_size)
                                 if not data:
