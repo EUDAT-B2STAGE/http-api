@@ -561,8 +561,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             #########################
             # FIXME: can this have better performances?
             #########################
-            # if not path.file_exists_and_nonzero(local_file):
-            if True:
+            if not path.file_exists_and_nonzero(local_file):
                 try:
                     # with open(local_file, 'wb') as target:
                     #     with imain.get_dataobject(ipath).open('r+') as source:
@@ -576,7 +575,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                                 data = source.read(chunk_size)
                                 if not data:
                                     break
-                                target.write(data)
+                                # target.write(data)
                 except BaseException as e:
                     errors.append({
                         "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
