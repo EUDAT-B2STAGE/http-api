@@ -12,6 +12,8 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/master/docs/user/endpoints.md
 
 from restapi.flask_ext.flask_irods.client import IrodsException
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT
+from b2stage.apis.commons import PUBLIC_ENDPOINT
 
 from restapi.services.uploader import Uploader
 from restapi.services.download import Downloader
@@ -40,12 +42,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
         if not self.download_parameter():
             return metadata
-
         # download is requested, trigger file download
-
-        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER
-        from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
-        from b2stage.apis.commons import PUBLIC_ENDPOINT
 
         rroute = '%s%s/' % (CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT)
         proute = '%s%s/' % (CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT)

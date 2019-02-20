@@ -108,6 +108,7 @@ class B2safeProxy(B2accessUtilities):
             response['b2safe_home'] = user_home
         else:
             response['b2safe_home'] = imain.get_user_home(append_user=False)
+
         response['b2safe_user'] = irods_user
 
         return self.force_response(defined_content=response)

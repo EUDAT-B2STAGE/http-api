@@ -1,3 +1,4 @@
+
 # The name of the REST class
 class: BasicEndpoint
 # The python file where your REST class is located
