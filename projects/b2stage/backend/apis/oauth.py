@@ -108,7 +108,6 @@ class Authorize(EudatEndpoint):
         imain = self.get_main_irods_connection()
 
         irods_user = self.get_irods_user_from_b2access(imain, b2access_email)
-        # irods_user = imain.get_user_from_dn(b2access_dn)
 
         if irods_user is None:
             err = "B2ACCESS credentials (%s) do not match any user in B2SAFE" \

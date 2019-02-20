@@ -23,7 +23,6 @@ class PidCache(ClusterContainerEndpoint):
     @decorate.catch_error()
     def post(self, batch_id):
 
-        # imain = self.get_service_instance(service_name='irods')
         imain = self.get_main_irods_connection()
         ipath = self.get_irods_production_path(imain)
 

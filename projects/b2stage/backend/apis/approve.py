@@ -72,8 +72,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ################
         # 1. check if irods path exists
-        # imain = self.get_service_instance(service_name='irods')
         imain = self.get_main_irods_connection()
+
         self.batch_path = self.get_irods_batch_path(imain, batch_id)
         log.debug("Batch path: %s", self.batch_path)
 

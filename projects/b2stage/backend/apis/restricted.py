@@ -27,4 +27,5 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             args=[order_id, order_path, json_input]
         )
         log.info("Async job: %s", task.id)
+
         return self.return_async_id(task.id)

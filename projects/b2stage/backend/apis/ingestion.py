@@ -101,17 +101,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
         log.info("Batch local path: %s", local_path)
 
-        """
-        Create the batch folder if not exists
-        """
-
         # Log start (of enable) into RabbitMQ
         log_msg = prepare_message(
             self, json={'batch_id': batch_id},
             user=ingestion_user, log_string='start')
         log_into_queue(self, log_msg)
 
-        ##################
+        # Create the batch folder if not exists
         # Does it already exist?
         # Create the collection and set permissions in irods
         if not imain.is_collection(batch_path):
@@ -175,4 +171,5 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             queue='ingestion', routing_key='ingestion'
         )
         log.info("Async job: %s", task.id)
+
         return self.return_async_id(task.id)

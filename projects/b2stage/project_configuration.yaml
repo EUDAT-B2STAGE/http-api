@@ -215,8 +215,12 @@ releases:
     rapydo: 0.6.3
     status: released
   '1.0.5':
-    type: development
+    type: stable
     rapydo: 0.6.4
+    status: released
+  '1.0.6':
+    type: development
+    rapydo: 0.6.5
     status: development
 
 controller:

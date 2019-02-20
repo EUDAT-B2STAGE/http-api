@@ -76,7 +76,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ###########################
         # get name from batch
-        # imain = self.get_service_instance(service_name='irods')
         imain = self.get_main_irods_connection()
         batch_path = self.get_irods_batch_path(imain, batch_id)
         local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
@@ -132,6 +131,13 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                     'Missing JSON key: %s' % key,
                     code=hcodes.HTTP_BAD_REQUEST
                 )
+
+        response = {
+            'batch_id': batch_id,
+            'qc_name': qc_name,
+            'status': 'executed',
+            'input': input_json,
+        }
 
         response = {
             'batch_id': batch_id,

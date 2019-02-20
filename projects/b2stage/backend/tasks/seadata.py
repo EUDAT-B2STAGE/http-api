@@ -112,7 +112,6 @@ def notify_error(error, payload, backdoor, task, extra=None, subject=None):
 @celery_app.task(bind=True)
 @send_errors_by_email
 def download_batch(self, batch_path, local_path, myjson):
-
     with celery_app.app.app_context():
         log.info("I'm %s (download_batch)" % self.request.id)
         log.info("Batch irods path: %s", batch_path)
@@ -406,7 +405,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     'total': total, 'step': counter, 'errors': len(errors)})
                 continue
             log.info('PID: %s', PID)
-            # # save inside the cache
+
+            # save inside the cache
             r.set(PID, ifile)
             r.set(ifile, PID)
 
@@ -740,6 +740,114 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 def download_restricted_order(self, order_id, order_path, myjson):
 
     with celery_app.app.app_context():
+        log.info('Enabling restricted: order id %s', order_id)
+
+        # Cleaning up input json
+        if 'order' in myjson['parameters']:
+            myjson['parameters'].pop('order', None)
+        if 'order_id' in myjson['parameters']:
+            myjson['parameters'].pop('order_id', None)
+        myjson['parameters']['order_number'] = order_id
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
+        if 'errors' not in myjson:
+            myjson['errors'] = []
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        imain = celery_app.get_service(service='irods')
+        # Make sure you have a path with no trailing slash
+        order_path = order_path.rstrip('/')
+
+        # restricted = params.get('b2access_ids')
+        restricted = myjson['parameters'].pop('b2access_ids', None)
+        if restricted is None:
+            return notify_error(
+                ErrorCodes.MISSING_PARTNERS_IDS,
+                myjson, backdoor, self
+            )
+
+        ##################
+        # Metadata handling
+        if not imain.is_collection(order_path):
+            # Create the path and set permissions
+            imain.create_collection_inheritable(order_path, username)
+            log.warning("Created %s because it did not exist", order_path)
+            log.info("Assigned permissions to %s", username)
+
+        valid_accounts = []
+        for account in restricted:
+            info = imain.get_user_info(account)
+            if info is None:
+                myjson["errors"].append({
+                    "error": ErrorCodes.INVALID_B2ACCESS_ID[0],
+                    "description": ErrorCodes.INVALID_B2ACCESS_ID[1],
+                    "subject": account,
+                })
+                continue
+            valid_accounts.append(account)
+
+
+        metadata, _ = imain.get_metadata(order_path)
+        # log.pp(metadata)
+
+        # Remove if existing
+        key = 'restricted'
+        if key in metadata:
+            imain.remove_metadata(order_path, key)
+            log.info("Merge: %s and %s", metadata.get(key), valid_accounts)
+            previous_restricted = json.loads(metadata.get(key))
+            valid_accounts = previous_restricted + valid_accounts
+
+        # Set restricted metadata
+        string = json.dumps(valid_accounts)
+        imain.set_metadata(order_path, restricted=string)
+        log.debug('Flagged restricted: %s', string)
+
+        ext_api.post(myjson, backdoor=backdoor)
+        return "COMPLETED"
+
+
+@celery_app.task(bind=True)
+def merge_restricted_order(self, order_id, order_path, myjson):
+
+    with celery_app.app.app_context():
+
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        # Make sure you have a path with no trailing slash
+        order_path = order_path.rstrip('/')
+
+        # NAME OF FINAL ZIP
+        # filename = 'order_%s' % order_id
+        filename = params.get('zipfile_name')
+        if filename is None:
+            return notify_error(
+                ErrorCodes.MISSING_FILENAME_PARAM,
+                myjson, backdoor, self
+            )
+        if not isinstance(filename, str):
+            return notify_error(
+                ErrorCodes.INVALID_FILENAME_PARAM,
+                myjson, backdoor, self
+            )
+
+        base_filename = filename
+        if filename.endswith('.zip'):
+            log.warning('%s already contains extention .zip', filename)
+            # TO DO: save base_filename as filename - .zip
+        else:
+            filename = path.append_compress_extension(filename)
+        # final_zip = self.complete_path(order_path, filename)
+        final_zip = order_path + '/' + filename.rstrip('/')
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
@@ -842,7 +950,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 myjson, backdoor, self
             )
 
-        self.update_state(state="PROGRESS")
+        # INPUT PARAMETERS CHECKS
 
         errors = []
         local_finalzip_path = None
@@ -982,15 +1090,53 @@ def download_restricted_order(self, order_id, order_path, myjson):
             # 8 - if already exists merge zips
             log.info("Already exists, merge zip files")
 
-            log.info("Copying zipfile locally")
-            local_finalzip_path = path.join(
-                local_dir, os.path.basename(final_zip))
-            imain.open(final_zip, local_finalzip_path)
+            # 3 - verify checksum
+            log.info("Computing checksum for %s...", partial_zip)
+            local_file_checksum = hashlib.md5(
+                open(local_zip_path, 'rb').read()
+            ).hexdigest()
 
-            log.info("Reading local zipfile")
+            if local_file_checksum == file_checksum:
+                log.info("File checksum verified for %s", partial_zip)
+            else:
+                errors.append({
+                    "error": ErrorCodes.CHECKSUM_DOESNT_MATCH[0],
+                    "description": ErrorCodes.CHECKSUM_DOESNT_MATCH[1],
+                    "subject": zip_file,
+                })
+                continue
+
+            # 4 - verify size
+            local_file_size = os.path.getsize(local_zip_path)
+            if local_file_size == file_size:
+                log.info("File size verified for %s", partial_zip)
+            else:
+                log.error(
+                    "File size %s for %s, expected %s",
+                    local_file_size, partial_zip, file_size
+                )
+                errors.append({
+                    "error": ErrorCodes.FILESIZE_DOESNT_MATCH[0],
+                    "description": ErrorCodes.FILESIZE_DOESNT_MATCH[1],
+                    "subject": zip_file,
+                })
+                continue
+
+            # 5 - decompress
+            d = os.path.splitext(os.path.basename(partial_zip))[0]
+            local_unzipdir = path.join(local_dir, d)
+
+            if os.path.isdir(local_unzipdir):
+                log.warning("%s already exist, removing it", local_unzipdir)
+                rmtree(local_unzipdir, ignore_errors=True)
+
+            path.create(local_dir, directory=True, force=True)
+            log.info("Local unzip dir = %s", local_unzipdir)
+
+            log.info("Unzipping %s", partial_zip)
             zip_ref = None
             try:
-                zip_ref = zipfile.ZipFile(local_finalzip_path, 'a')
+                zip_ref = zipfile.ZipFile(local_zip_path, 'r')
             except FileNotFoundError:
                 log.error("Local file not found: %s", local_finalzip_path)
                 return notify_error(
@@ -1007,7 +1153,6 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     subject=final_zip
                 )
 
-            log.info("Adding files to local zipfile")
             if zip_ref is not None:
                 try:
                     for f in os.listdir(local_unzipdir):
@@ -1029,10 +1174,52 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 imain.remove(backup_zip)
             imain.move(final_zip, backup_zip)
 
+            log.info("Reading local zipfile")
+            zip_ref = None
+            try:
+                zip_ref = zipfile.ZipFile(local_finalzip_path, 'a')
+            except FileNotFoundError:
+                log.error("Local file not found: %s", local_finalzip_path)
+                errors.append({
+                    "error": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[0],
+                    "description": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[1],
+                    "subject": zip_file,
+                })
+                continue
+
+            except zipfile.BadZipFile:
+                log.error("Invalid local file: %s", local_finalzip_path)
+                errors.append({
+                    "error": ErrorCodes.UNZIP_ERROR_INVALID_FILE[0],
+                    "description": ErrorCodes.UNZIP_ERROR_INVALID_FILE[1],
+                    "subject": zip_file,
+                })
+                continue
+
+            log.info("Adding files to local zipfile")
+            if zip_ref is not None:
+                try:
+                    for f in os.listdir(local_unzipdir):
+                        # log.debug("Adding %s", f)
+                        zip_ref.write(
+                            os.path.join(local_unzipdir, f), f)
+                    zip_ref.close()
+                except BaseException:
+                    errors.append({
+                        "error": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[0],
+                        "description": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[1],
+                        "subject": zip_file,
+                    })
+                    continue
+
+            log.info("Creating a backup copy of final zip")
+            imain.move(final_zip, final_zip + ".bak")
+
             log.info("Uploading final updated zip")
             imain.put(local_finalzip_path, final_zip)
 
-            # imain.remove(local_zip_path)
+            imain.remove(partial_zip)
+
         rmtree(local_unzipdir, ignore_errors=True)
 
         self.update_state(state="COMPLETED")
@@ -1142,7 +1329,6 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
         myjson['request_id'] = self.request.id
         # TODO Why? We end up with two different request_ids,
         # one from the client, one from our system.
-
         params = myjson.get('parameters', {})
 
         backdoor = params.pop('backdoor', False)
@@ -1323,7 +1509,6 @@ def cache_batch_pids(self, irods_path):
         self.update_state(state="COMPLETED", meta=stats)
         log.info(stats)
         return stats
-
 
 @celery_app.task(bind=True)
 @send_errors_by_email

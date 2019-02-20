@@ -203,10 +203,8 @@ class B2accessUtilities(EndpointResource):
     # def obtain_proxy_certificate(self, auth, extuser):
     #     """
     #     Ask B2ACCESS a valid proxy certificate to access irods data.
-
     #     Note: this certificates lasts 12 hours.
     #     """
-
     #     # To use the b2access token with oauth2 client
     #     # We have to save it into session
     #     key = 'b2access_token'

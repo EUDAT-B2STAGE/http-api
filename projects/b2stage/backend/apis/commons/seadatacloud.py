@@ -17,7 +17,6 @@ API_VERSION = seadata_vars.get('api_version')
 class ErrorCodes(object):
     PID_NOT_FOUND = ("41", "PID not found")
     INGESTION_FILE_NOT_FOUND = ("50", "File requested not found")
-
     # addzip_restricted_order
     MISSING_ZIPFILENAME_PARAM = ("4000", "Parameter zip_filename is missing")
     MISSING_FILENAME_PARAM = ("4001", "Parameter file_name is missing")
@@ -63,7 +62,6 @@ class ErrorCodes(object):
     UNABLE_TO_CREATE_ZIP_FILE = ("4042", "Unable to create merged zip file")
     INVALID_ZIP_SPLIT_OUTPUT = ("4043", "Unable to retrieve results from zip split")
 
-
 class Metadata(object):
 
     """ {
@@ -89,6 +87,7 @@ class ImportManagerAPI(object):
 
         if edmo_code is None:
             edmo_code = EDMO_CODE
+
         # if instance is not None:
         #     instance_id = str(id(instance))
         #     payload['request_id'] = instance_id
