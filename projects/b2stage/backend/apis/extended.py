@@ -14,6 +14,7 @@ from restapi.flask_ext.flask_irods.client import IrodsException
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 
 from restapi.services.uploader import Uploader
+from restapi.services.download import Downloader
 from utilities import htmlcodes as hcodes
 from restapi import decorators as decorate
 
@@ -22,7 +23,7 @@ from utilities.logs import get_logger
 log = get_logger(__name__)
 
 
-class PIDEndpoint(Uploader, B2HandleEndpoint):
+class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     """ Handling PID on endpoint requests """
 
     def eudat_pid(self, pid):
@@ -37,35 +38,42 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
                 message='B2HANDLE: empty URL_value returned',
                 code=hcodes.HTTP_BAD_NOTFOUND)
 
-        # If download is requested, trigger file download
-        if self.download_parameter():
+        if not self.download_parameter():
+            return metadata
 
-            # If local HTTP-API perform a direct download
-            from b2stage.apis.commons import \
-                CURRENT_HTTPAPI_SERVER, API_URL, CURRENT_MAIN_ENDPOINT
-            route = '%s/%s/%s/' % (
-                CURRENT_HTTPAPI_SERVER, API_URL, CURRENT_MAIN_ENDPOINT)
-            # route = route.replace('http://', '')
+        # download is requested, trigger file download
 
-            if (url.startswith(route)):
-                url = url.replace(route, '/')
-                r = self.init_endpoint()
-                if r.errors is not None:
-                    return self.send_errors(errors=r.errors)
-                url = self.download_object(r, url)
-            else:
-                # Perform a request to an external service?
-                return self.send_warnings(
-                    {'URL': url},
-                    errors=[
-                        "Data-object can't be downloaded by current " +
-                        "HTTP-API server '%s'" % CURRENT_HTTPAPI_SERVER
-                    ]
-                )
-            return url
+        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER
+        from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
+        from b2stage.apis.commons import PUBLIC_ENDPOINT
 
-        # When no download is requested
-        return metadata
+        rroute = '%s%s/' % (CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT)
+        proute = '%s%s/' % (CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT)
+        # route = route.replace('http://', '')
+
+        url = url.replace('https://', '')
+        url = url.replace('http://', '')
+
+        # If local HTTP-API perform a direct download
+        if url.startswith(rroute):
+            url = url.replace(rroute, '/')
+        elif url.startswith(proute):
+            url = url.replace(proute, '/')
+        else:
+            # Otherwise, perform a request to an external service?
+            return self.send_warnings(
+                {'URL': url},
+                errors=[
+                    "Data-object can't be downloaded by current " +
+                    "HTTP-API server '%s'" % CURRENT_HTTPAPI_SERVER
+                ]
+            )
+
+        r = self.init_endpoint()
+        if r.errors is not None:
+            return self.send_errors(errors=r.errors)
+        url = self.download_object(r, url)
+        return url
 
     def seadata_pid(self, pid):
 
@@ -97,7 +105,8 @@ class PIDEndpoint(Uploader, B2HandleEndpoint):
 
         #################
         # get the metadata
-        imain = self.get_service_instance(service_name='irods')
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         metadata, _ = imain.get_metadata(ipath)
         log.pp(metadata)
 

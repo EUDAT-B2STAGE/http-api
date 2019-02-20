@@ -5,7 +5,7 @@ Section: server
 Priority: optional
 Architecture: all
 Depends: python3 (>= 3.6), git (>= 1:2.14)
-Maintainer: Paolo D'Onorio De Meo <p.donoriodemeo@cineca.it>
+Maintainer: Paolo D'Onorio De Meo <m.dantonio@cineca.it>
 Description: EUDAT B2STAGE HTTP-API
  When you need some sunshine, just run this
  small program!

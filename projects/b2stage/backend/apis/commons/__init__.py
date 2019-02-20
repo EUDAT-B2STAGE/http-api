@@ -17,18 +17,15 @@ except AttributeError:
     IRODS_VARS = {}
 IRODS_EXTERNAL = IRODS_VARS.get('external', False)
 
-# CURRENT_B2SAFE_SERVER = 'b2safe.cineca.it'
 CURRENT_B2SAFE_SERVER = IRODS_VARS.get('host')
-# CURRENT_HTTPAPI_SERVER = 'b2stage-test.cineca.it'
 CURRENT_HTTPAPI_SERVER = detector.get_global_var('PROJECT_DOMAIN')
-
-# CURRENT_B2ACCESS_ENVIRONMENT = 'development'
 CURRENT_B2ACCESS_ENVIRONMENT = detector.get_global_var('B2ACCESS_ENV')
-# CURRENT_MAIN_ENDPOINT = 'registered'
-CURRENT_MAIN_ENDPOINT = "%s/%s" \
-    % (API_URL, detector.get_global_var('MAIN_ENDPOINT', default=''))
-PUBLIC_ENDPOINT = "%s/%s" \
-    % (API_URL, detector.get_global_var('PUBLIC_ENDPOINT', default=''))
+
+MAIN_ENDPOINT_NAME = detector.get_global_var('MAIN_ENDPOINT', default='')
+PUBLIC_ENDPOINT_NAME = detector.get_global_var('PUBLIC_ENDPOINT', default='')
+
+CURRENT_MAIN_ENDPOINT = "%s/%s" % (API_URL, MAIN_ENDPOINT_NAME)
+PUBLIC_ENDPOINT = "%s/%s" % (API_URL, PUBLIC_ENDPOINT_NAME)
 
 IRODS_PROTOCOL = 'irods'
 

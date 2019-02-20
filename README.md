@@ -66,4 +66,4 @@ NOTE: *the B2STAGE HTTP-API is an interface towards other EUDAT services which a
 
 ## Copyright ##
 
-Copyright 2011-2017 EUDAT CDI - www.eudat.eu
+Copyright 2011-2019 EUDAT CDI - www.eudat.eu

@@ -1,5 +1,5 @@
 # ###############################################
-# Copyright 2011-2018 EUDAT CDI - www.eudat.eu
+# Copyright 2011-2019 EUDAT CDI - www.eudat.eu
 # ###############################################
 
 variables:
@@ -43,7 +43,7 @@ variables:
     ## Seadata project variable
     SEADATA_PROJECT: 0
     SEADATA_EDMO_CODE:
-    SEADATA_API_VERSION: 1.0.4.0022
+    SEADATA_API_VERSION: 1.0.5.0002
     # The names of the directories in the irods zone
     # for pre-production batches, for production batches,
     # and for orders being prepared.
@@ -122,6 +122,11 @@ variables:
     SEADATA_RESOURCES_MOUNTPOINT: /usr/share
     # Email to be notified for proxy certificates expiration (letsencrypt)
     SMTP_ADMIN:
+    SMTP_NOREPLY:
+    SMTP_PORT:
+    SMTP_PASSWORD:
+    SMTP_USERNAME:
+
     ############################
     # TO BE DEPRECATED
     HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
@@ -153,8 +158,8 @@ variables:
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing data in EUDAT domains
-  version: 1.0.4
-  rapydo: 0.6.3
+  version: 1.0.5
+  rapydo: 0.6.4
 
 tags:
   # EUDAT related
@@ -206,8 +211,16 @@ releases:
     rapydo: 0.6.2
     status: released
   '1.0.4':
-    type: development
+    type: stable
     rapydo: 0.6.3
+    status: released
+  '1.0.5':
+    type: stable
+    rapydo: 0.6.4
+    status: released
+  '1.0.6':
+    type: development
+    rapydo: 0.6.5
     status: development
 
 controller:

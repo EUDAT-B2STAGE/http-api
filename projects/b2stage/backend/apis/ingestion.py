@@ -37,9 +37,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ########################
         # get irods session
 
-        imain = self.get_service_instance(service_name='irods')
-        # obj = self.init_endpoint()
-        # icom = obj.icommands
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
 
         batch_path = self.get_irods_batch_path(imain, batch_id)
         local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
@@ -91,146 +90,16 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         return data
         # return "Batch '%s' is enabled and filled" % batch_id
 
-    def put(self, batch_id, file_id):
-        """
-        Let the Replication Manager upload a zip file into a batch folder
-        """
+    def post(self, batch_id):
+        json_input = self.get_input()
 
-        log.info('Received request to upload batch "%s"' % batch_id)
-
-        # Log start (of upload) into RabbitMQ
-        log_msg = prepare_message(
-            self, json={'batch_id': batch_id, 'file_id': file_id},
-            user=ingestion_user, log_string='start')
-        log_into_queue(self, log_msg)
-
-        ########################
-        # get irods session
         obj = self.init_endpoint()
-        icom = obj.icommands
+        imain = self.get_main_irods_connection()
 
-        batch_path = self.get_irods_batch_path(icom, batch_id)
-        log.info("Batch path: %s", batch_path)
-
-        ########################
-        # Check if the folder exists and is empty
-        if not icom.is_collection(batch_path):
-
-            err_msg = ("Batch '%s' not enabled or you have no permissions"
-                       % batch_id)
-            # Log error into RabbitMQ
-            log_msg = prepare_message(
-                self, user=ingestion_user,
-                log_string='failure',
-                info=dict(
-                    batch_id=batch_id,
-                    file_id=file_id,
-                    error=err_msg
-                )
-            )
-            log_into_queue(self, log_msg)
-
-            return self.send_errors(err_msg, code=hcodes.HTTP_BAD_NOTFOUND)
-
-        ########################
-        # NOTE: only streaming is allowed, as it is more performant
-        ALLOWED_MIMETYPE_UPLOAD = 'application/octet-stream'
-        from flask import request
-        if request.mimetype != ALLOWED_MIMETYPE_UPLOAD:
-            return self.send_errors(
-                "Only mimetype allowed for upload: %s"
-                % ALLOWED_MIMETYPE_UPLOAD,
-                code=hcodes.HTTP_BAD_REQUEST)
-
-        ########################
-        backdoor = file_id == BACKDOOR_SECRET
-        response = {
-            'batch_id': batch_id,
-            'status': 'filled',
-        }
-
-        ########################
-        zip_name = self.get_input_zip_filename(file_id)
-        zip_path_irods = self.complete_path(batch_path, zip_name)
-        # E.g. /myIrodsZone/batches/<batch_id>/<zip-name>
-
-        # This path is created by the POST method, important to keep this check here
-        if backdoor and icom.is_dataobject(zip_path_irods):
-            response['status'] = 'exists'
-
-            # Log end (of upload) into RabbitMQ
-            # In case it already existed!
-            log_msg = prepare_message(
-                self,
-                user=ingestion_user,
-                log_string='end',  # TODO True?
-                status=response['status']
-            )
-            log_into_queue(self, log_msg)
-            return response
-
-        ########################
-        log.verbose("Cloud path: %s", zip_path_irods)  # ingestion
-
+        batch_path = self.get_irods_batch_path(imain, batch_id)
+        log.info("Batch irods path: %s", batch_path)
         local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
-        path.create(local_path, directory=True, force=True)
-        zip_path = path.join(local_path, zip_name)
-        log.info("Local path: %s", zip_path)
-
-        # try:
-        #     # NOTE: we know this will always be Compressed Files (binaries)
-        #     iout = icom.write_in_streaming(destination=zip_path_irods, force=True)
-        # except BaseException as e:
-        #     log.error("Failed streaming to iRODS: %s", e)
-        #     return self.send_errors(
-        #         "Failed streaming towards B2SAFE cloud",
-        #         code=hcodes.HTTP_SERVER_ERROR)
-        # else:
-        #     log.info("irods call %s", iout)
-        #     # NOTE: permissions are inherited thanks to the POST call
-
-        try:
-            # NOTE: we know this will always be Compressed Files (binaries)
-            out = self.upload_chunked(destination=zip_path, force=True)
-        except BaseException as e:
-            log.error("Failed streaming to %s: %s", str(zip_path), e)
-            return self.send_errors(
-                "Failed streaming zip path to file system",
-                code=hcodes.HTTP_SERVER_ERROR)
-        else:
-            log.info("File uploaded: %s", out)
-
-        log.info("Submit async celery task")
-        # task = CeleryExt.copy_from_b2safe_to_b2host.apply_async(
-        task = CeleryExt.copy_from_b2host_to_b2safe.apply_async(
-            args=[batch_id, zip_path_irods, str(zip_path), backdoor],
-            queue='ingestion', routing_key='ingestion')
-        log.warning("Async job: %s", task.id)
-
-        # Log end (of upload) into RabbitMQ
-        log_msg = prepare_message(
-            self, status=response['status'],
-            user=ingestion_user, log_string='end')
-        log_into_queue(self, log_msg)
-
-        # return self.force_response(response)
-        return self.return_async_id(task.id)
-
-    def post(self):
-        """
-        Create the batch folder if not exists
-        """
-
-        param_name = 'batch_id'
-        self.get_input()
-        batch_id = self._args.get(param_name, None)
-
-        if batch_id is None:
-            return self.send_errors(
-                "Mandatory parameter '%s' missing" % param_name,
-                code=hcodes.HTTP_BAD_REQUEST)
-
-        log.info('Received request to enable batch "%s"' % batch_id)
+        log.info("Batch local path: %s", local_path)
 
         # Log start (of enable) into RabbitMQ
         log_msg = prepare_message(
@@ -238,30 +107,17 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             user=ingestion_user, log_string='start')
         log_into_queue(self, log_msg)
 
-        ##################
-        # Get irods session
-        obj = self.init_endpoint()
-        # icom = obj.icommands
+        # Create the batch folder if not exists
+        # Does it already exist?
+        # Create the collection and set permissions in irods
+        if not imain.is_collection(batch_path):
 
-        # NOTE: Main API user is the key to let this happen
-        imain = self.get_service_instance(service_name='irods')
-
-        # Paths
-        batch_path = self.get_irods_batch_path(imain, batch_id)
-        log.info("Batch irods path: %s", batch_path)
-        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
-        log.info("Batch local path: %s", local_path)
-
-        ##################
-        # Does it already exist? Is it a collection?
-        if not (imain.is_collection(batch_path) and path.file_exists_and_nonzero(local_path)):
-
-            # Create the collection and set permissions in irods
             imain.create_collection_inheritable(batch_path, obj.username)
-            # # Remove anonymous access to this batch
-            # ianonymous.set_permissions(
-            #     batch_path,
-            #     permission='null', userOrGroup=icom.anonymous_user)
+        else:
+            log.warning("Irods batch collection already exists")
+
+        # Create the folder on filesystem
+        if not path.file_exists_and_nonzero(local_path):
 
             # Create superdirectory and directory on file system:
             try:
@@ -278,36 +134,39 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 log.critical(err_msg)
                 log.info('Removing collection from irods (%s)' % batch_path)
                 imain.remove(batch_path, recursive=True, force=True)
-                return self.send_errors(err_msg,
-                    code=hcodes.HTTP_SERVER_ERROR)
-
-            ##################
-            response = "Batch '%s' enabled" % batch_id
-            status = 'enabled'
+                return self.send_errors(err_msg, code=hcodes.HTTP_SERVER_ERROR)
 
         else:
-            log.debug("Already exists")
-            response = "Batch '%s' already exists" % batch_id
-            status = 'exists'
+            log.debug("Batch path already exists on filesytem")
 
         # Log end (of enable) into RabbitMQ
         log_msg = prepare_message(
-            self, status=status, user=ingestion_user, log_string='end')
+            self, status='enabled', user=ingestion_user, log_string='end')
         log_into_queue(self, log_msg)
 
-        return self.force_response(response)
+        # Download the file into the batch folder
+        task = CeleryExt.download_batch.apply_async(
+            args=[batch_path, str(local_path), json_input],
+            queue='ingestion', routing_key='ingestion'
+        )
+        log.info("Async job: %s", task.id)
+        return self.return_async_id(task.id)
 
     def delete(self):
 
         json_input = self.get_input()
 
-        imain = self.get_service_instance(service_name='irods')
+        # imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         batch_path = self.get_irods_batch_path(imain)
-        log.debug("Batch path: %s", batch_path)
+        local_batch_path = str(path.join(MOUNTPOINT, INGESTION_DIR))
+        log.debug("Batch collection: %s", batch_path)
+        log.debug("Batch path: %s", local_batch_path)
 
         task = CeleryExt.delete_batches.apply_async(
-            args=[batch_path, json_input],
+            args=[batch_path, local_batch_path, json_input],
             queue='ingestion', routing_key='ingestion'
         )
-        log.warning("Async job: %s", task.id)
+        log.info("Async job: %s", task.id)
+
         return self.return_async_id(task.id)

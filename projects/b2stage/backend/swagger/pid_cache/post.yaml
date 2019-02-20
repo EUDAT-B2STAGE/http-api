@@ -3,6 +3,10 @@ common:
   custom:
     publish: false
     authentication: true
+    authorized:
+      - admin_root
+      - staff_user
+    required_roles: any
 
 one:
   summary: Fill the PID cache

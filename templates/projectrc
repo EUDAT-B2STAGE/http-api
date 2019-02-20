@@ -2,8 +2,18 @@
 #log-level: VERBOSE
 #log-level: DEBUG
 log-level: INFO
+
 mode: debug
-development: True
-project: b2stage
 #mode: production
+
+development: True
+
+project: b2stage
+
 #hostname: b2stage.yourdomain.io
+
+project_configuration:
+  variables:
+    env:
+      IRODS_HOST: your_irods_host
+      # your own other local variables

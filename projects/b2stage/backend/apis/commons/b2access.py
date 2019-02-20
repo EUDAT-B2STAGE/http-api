@@ -23,8 +23,17 @@ from utilities.logs import get_logger
 
 log = get_logger(__name__)
 
+# 12 h
+IRODS_CONNECTION_TTL = 43200
+
 
 class B2accessUtilities(EndpointResource):
+
+    def get_main_irods_connection(self):
+        # NOTE: Main API user is the key to let this happen
+        return self.get_service_instance(
+            service_name='irods', cache_expiration=IRODS_CONNECTION_TTL
+        )
 
     def create_b2access_client(self, auth, decorate=False):
         """ Create the b2access Flask oauth2 object """
@@ -159,8 +168,6 @@ class B2accessUtilities(EndpointResource):
 
         refresh_data = {
             "grant_type": "refresh_token",
-            # "client_id": client_id,
-            # "client_secret": client_secret,
             "refresh_token": refresh_token,
             "scope": 'USER_PROFILE'
         }
@@ -169,12 +176,6 @@ class B2accessUtilities(EndpointResource):
         ).decode("ascii")
         headers = {'Authorization': 'Basic %s' % auth_hash}
 
-        # resp = b2access.post(
-        #     url=b2access.access_token_url,
-        #     data=refresh_data,
-        #     headers=headers,
-        #     token=refresh_token
-        # )
         resp = requests.post(
             b2access.access_token_url,
             data=refresh_data,
@@ -202,10 +203,8 @@ class B2accessUtilities(EndpointResource):
     # def obtain_proxy_certificate(self, auth, extuser):
     #     """
     #     Ask B2ACCESS a valid proxy certificate to access irods data.
-
     #     Note: this certificates lasts 12 hours.
     #     """
-
     #     # To use the b2access token with oauth2 client
     #     # We have to save it into session
     #     key = 'b2access_token'
