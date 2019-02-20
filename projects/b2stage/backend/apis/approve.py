@@ -33,17 +33,15 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         json_input = self.get_input()
         # log.pp(self._args, prefix_line='Parsed args')
 
-        param_key = 'parameters'
-        params = json_input.get(param_key, {})
+        params = json_input.get('parameters', {})
         if len(params) < 1:
             return self.send_errors(
-                "'%s' is empty" % param_key, code=hcodes.HTTP_BAD_REQUEST)
+                "parameters is empty", code=hcodes.HTTP_BAD_REQUEST)
 
-        key = 'pids'
-        files = params.get(key, {})
+        files = params.get('pids', {})
         if len(files) < 1:
             return self.send_errors(
-                "'%s' parameter is empty list" % key,
+                "pids' parameter is empty list",
                 code=hcodes.HTTP_BAD_REQUEST)
 
         filenames = []
@@ -74,7 +72,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ################
         # 1. check if irods path exists
-        imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
+
         self.batch_path = self.get_irods_batch_path(imain, batch_id)
         log.debug("Batch path: %s", self.batch_path)
 
@@ -97,6 +96,6 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         task = CeleryExt.move_to_production_task.apply_async(
             args=[batch_id, self.prod_path, json_input],
             queue='ingestion', routing_key='ingestion')
-        log.warning("Async job: %s", task.id)
+        log.info("Async job: %s", task.id)
 
         return self.return_async_id(task.id)

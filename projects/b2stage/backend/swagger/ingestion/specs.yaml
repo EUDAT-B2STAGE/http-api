@@ -9,7 +9,6 @@ schema:
 mapping:
   withoutid: "/ingestion"
   withid: "/ingestion/<string:batch_id>"
-  withidandfile: "/ingestion/<string:batch_id>/add/<string:file_id>"
 
 labels:
   - seadatacloud

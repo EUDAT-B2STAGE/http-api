@@ -27,7 +27,6 @@ ENABLED_BATCH = 3
 BATCH_MISCONFIGURATION = 4
 
 
-# class EudatEndpoint(EndpointResource):
 class EudatEndpoint(B2accessUtilities):
     """
         Extend normal API to init

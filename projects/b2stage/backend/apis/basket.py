@@ -23,6 +23,7 @@ DELETE /api/order/<OID>
 import urllib.parse
 # from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.cluster import ORDERS_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
 from b2stage.apis.commons.seadatacloud import ORDERS_ENDPOINT
@@ -89,7 +90,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log_into_queue(self, msg)
 
         ##################
-        imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain, order_id)
 
         zip_file_name = self.get_filename_from_type(order_id, ftype)
@@ -127,9 +128,12 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # use anonymous to get the session here
         # because the ticket supply breaks the iuser session permissions
         icom = self.get_service_instance(
-            service_name='irods', user='anonymous', password='null')
-        # obj = self.init_endpoint()
-        # icom = obj.icommands
+            service_name='irods',
+            user='anonymous',
+            password='null',
+            authscheme='credentials'
+        )
+
         icom.ticket_supply(code)
 
         if not icom.test_ticket(zip_ipath):
@@ -171,7 +175,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log_into_queue(self, msg)
 
         ##################
-        imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
         if not imain.is_collection(order_path):
@@ -255,10 +259,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         filename = "order_%s_unrestricted" % order_id
         key = 'file_name'
         if key in params and not params[key] == filename:
-            log.warn('Client provided wrong filename (%s), will use: %s'
-                % (params[key], filename))
+            log.warn(
+                'Client provided wrong filename (%s), will use: %s',
+                params[key], filename)
         params[key] = filename
-
 
         ##################
         # PIDS: can be empty if restricted
@@ -268,7 +272,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ##################
         # Create the path
         log.info("Order request: %s", order_id)
-        imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
         if not imain.is_collection(order_path):
@@ -294,7 +298,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.info("Submit async celery task")
             task = CeleryExt.unrestricted_order.apply_async(
                 args=[order_id, order_path, zip_file_name, json_input])
-            log.warning("Async job: %s", task.id)
+            log.info("Async job: %s", task.id)
             return self.return_async_id(task.id)
 
         # ################
@@ -387,7 +391,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     def put(self, order_id):
 
         ##################
-        # imain = self.get_service_instance(service_name='irods')
         # TODO: push pdonorio/prc
         # tickets = imain.list_tickets()
         # print(tickets)
@@ -399,9 +402,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             self, json={'order_id': order_id}, log_string='start')
         log_into_queue(self, msg)
 
-        # obj = self.init_endpoint()
-        # icom = obj.icommands
-        imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain, order_id)
         log.debug("Order path: %s", order_path)
 
@@ -475,20 +476,15 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         json_input = self.get_input()
 
-        # Need error codes in https://github.com/EUDAT-B2STAGE/http-api/blob/1.0.4/projects/b2stage/backend/apis/commons/seadatacloud.py
-        #if not 'request_id' in json_input.keys():
-        #    error = "Request ID is missing"
-        #    return self.send_errors(error, code=hcodes.FOOBARBAZ)
-        #if not 'parameters' in json_input.keys() and 'orders' in json_input['parameters'].keys():
-        #    error = "List of orders to be deleted missing."
-        #    return self.send_errors(error, code=hcodes.FOOBARBAZ)
-
-        imain = self.get_service_instance(service_name='irods')
+        imain = self.get_main_irods_connection()
         order_path = self.get_irods_order_path(imain)
-        log.debug("Order path: %s", order_path)
+        local_order_path = str(path.join(MOUNTPOINT, ORDERS_DIR))
+        log.debug("Order collection: %s", order_path)
+        log.debug("Order path: %s", local_order_path)
 
         task = CeleryExt.delete_orders.apply_async(
-            args=[order_path, json_input]
+            args=[order_path, local_order_path, json_input]
         )
-        log.warning("Async job: %s", task.id)
+        log.info("Async job: %s", task.id)
+
         return self.return_async_id(task.id)

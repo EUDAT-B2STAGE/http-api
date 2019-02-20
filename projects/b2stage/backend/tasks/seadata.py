@@ -3,9 +3,9 @@
 import os
 import hashlib
 import zipfile
-import json
 import re
-from shutil import rmtree, unpack_archive
+import requests
+from shutil import rmtree
 from socket import gethostname
 from plumbum.commands.processes import ProcessExecutionError
 from utilities.basher import BashCommands
@@ -13,11 +13,12 @@ from utilities import path
 from restapi.flask_ext.flask_celery import CeleryExt
 from restapi.flask_ext.flask_irods.client import IrodsException
 from b2stage.apis.commons.queue import prepare_message
-from b2stage.apis.commons.seadatacloud import \
-    Metadata as md, ImportManagerAPI, ErrorCodes
+from b2stage.apis.commons.seadatacloud import Metadata as md, ImportManagerAPI
+from b2stage.apis.commons.seadatacloud import ErrorCodes
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from restapi.services.detect import detector
 from b2stage.apis.commons.seadatacloud import seadata_vars
+from restapi.flask_ext.flask_celery import send_errors_by_email
 
 from utilities.logs import get_logger, logging
 
@@ -74,7 +75,7 @@ logging.getLogger('b2handle').setLevel(logging.WARNING)
 b2handle_client = b2handle.instantiate_for_read_access()
 
 
-def notify_error(error, payload, backdoor, task, extra=None):
+def notify_error(error, payload, backdoor, task, extra=None, subject=None):
 
     error_message = "Error %s: %s" % (error[0], error[1])
     log.error(error_message)
@@ -82,12 +83,15 @@ def notify_error(error, payload, backdoor, task, extra=None):
         log.error(str(extra))
 
     payload['errors'] = []
-    payload['errors'].append(
-        {
-            "error": error[0],
-            "description": error[1],
-        }
-    )
+    e = {
+        "error": error[0],
+        "description": error[1],
+    }
+    if subject is not None:
+        e['subject'] = subject
+
+    payload['errors'].append(e)
+
     if backdoor:
         log.warning(
             "The following json should be sent to ImportManagerAPI, " +
@@ -106,79 +110,215 @@ def notify_error(error, payload, backdoor, task, extra=None):
 
 
 @celery_app.task(bind=True)
-def copy_from_b2safe_to_b2host(self, batch_id, irods_path, zip_name, backdoor):
-    '''
-    This task copies data from irods to the B2HOST
-    filesystem, so that it is available for
-    pre-production qc checks.
-
-    The data is copied from irods_path (usually
-    /myzone/batches/<batch_id>) to a path on the
-    local filesystem inside the celery worker
-    container (/usr/share/batches/<batch_id>),
-    which is a directory mounted from the host.
-    '''
-    local_path = path.join(mybatchpath, batch_id)
-    path.create(local_path, directory=True, force=True)
-    local_element = path.join(local_path, zip_name)
-
+@send_errors_by_email
+def download_batch(self, batch_path, local_path, myjson):
     with celery_app.app.app_context():
+        log.info("I'm %s (download_batch)" % self.request.id)
+        log.info("Batch irods path: %s", batch_path)
+        log.info("Batch local path: %s", local_path)
 
-        ###############
-        # pull the path from irods
+        params = myjson.get('parameters', {})
+        backdoor = params.pop('backdoor', False)
+
+        batch_number = params.get("batch_number")
+        if batch_number is None:
+            return notify_error(
+                ErrorCodes.MISSING_BATCH_NUMBER_PARAM,
+                myjson, backdoor, self
+            )
+
+        download_path = params.get("download_path")
+        if download_path is None:
+            return notify_error(
+                ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
+                myjson, backdoor, self
+            )
+
+        file_count = params.get("data_file_count")
+        if file_count is None:
+            return notify_error(
+                ErrorCodes.MISSING_FILECOUNT_PARAM,
+                myjson, backdoor, self
+            )
+
+        try:
+            int(file_count)
+        except BaseException:
+            return notify_error(
+                ErrorCodes.INVALID_FILECOUNT_PARAM,
+                myjson, backdoor, self
+            )
+
+        file_name = params.get('file_name')
+        if file_name is None:
+            return notify_error(
+                ErrorCodes.MISSING_FILENAME_PARAM,
+                myjson, backdoor, self
+            )
+
+        file_size = params.get("file_size")
+        if file_size is None:
+            return notify_error(
+                ErrorCodes.MISSING_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
+
+        try:
+            int(file_size)
+        except BaseException:
+            return notify_error(
+                ErrorCodes.INVALID_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
+
+        file_checksum = params.get("file_checksum")
+        if file_checksum is None:
+            return notify_error(
+                ErrorCodes.MISSING_CHECKSUM_PARAM,
+                myjson, backdoor, self
+            )
+
         imain = celery_app.get_service(service='irods')
-        log.debug("Copying %s", irods_path)
-        imain.open(irods_path, local_element)
-        log.info("Copied: %s", local_path)
+        if not imain.is_collection(batch_path):
+            return notify_error(
+                ErrorCodes.BATCH_NOT_FOUND,
+                myjson, backdoor, self
+            )
 
-        ###############
-        # if backdoor unzip it
-        if backdoor:
-            log.warning('Backdoor! Unzipping: %s', local_element)
-            if path.file_exists_and_nonzero(local_element):
-                unpack_archive(str(local_element), str(local_path), 'zip')
+        # 1 - download the file
+        download_url = os.path.join(download_path, file_name)
+        log.info("Downloading file from %s", download_url)
+        try:
+            r = requests.get(download_url, stream=True, verify=False)
+        except requests.exceptions.ConnectionError:
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
 
-    return str(local_element)
+        if r.status_code != 200:
 
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
 
-@celery_app.task(bind=True)
-def copy_from_b2host_to_b2safe(self, batch_id, irods_path, zip_path, backdoor):
-    '''
-    This task copies data from B2HOST filesystem to irods
+        log.info("Request status = %s", r.status_code)
+        batch_file = path.join(local_path, file_name)
 
-    The data is copied from the path on the
-    local filesystem inside the celery worker
-    container (/usr/share/batches/<batch_id>),
-    which is a directory mounted from the host,
-    to the irods_path (usually /myzone/batches/<batch_id>)
-    '''
-    # local_path = path.join(mybatchpath, batch_id)
-    # path.create(local_path, directory=True, force=True)
-    # local_element = path.join(local_path, zip_name)
+        with open(batch_file, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:  # filter out keep-alive new chunks
+                    f.write(chunk)
 
-    if not os.path.isfile(zip_path):
-        error = "Unable to copy on B2SAFE, file not found: %s" % zip_path
-        log.error(error)
-        self.update_state(state="FAILED", meta={
-            'errors': error
-        })
-        return 'Failed'
+        # 2 - verify checksum
+        log.info("Computing checksum for %s...", batch_file)
+        local_file_checksum = hashlib.md5(
+            open(batch_file, 'rb').read()
+        ).hexdigest()
 
-    with celery_app.app.app_context():
+        if local_file_checksum.lower() != file_checksum.lower():
+            return notify_error(
+                ErrorCodes.CHECKSUM_DOESNT_MATCH,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+        log.info("File checksum verified for %s", batch_file)
 
-        imain = celery_app.get_service(service='irods')
-        log.debug("Copying %s", zip_path)
-        # imain.open(irods_path, local_element)
-        imain.put(zip_path, irods_path)
+        # 3 - verify size
+        local_file_size = os.path.getsize(batch_file)
+        if local_file_size != int(file_size):
+            log.error(
+                "File size %s for %s, expected %s",
+                local_file_size, batch_file, file_size
+            )
+            return notify_error(
+                ErrorCodes.FILESIZE_DOESNT_MATCH,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+
+        log.info("File size verified for %s", batch_file)
+
+        # 4 - decompress
+        d = os.path.splitext(os.path.basename(batch_file))[0]
+        local_unzipdir = path.join(local_path, d)
+
+        if os.path.isdir(local_unzipdir):
+            log.warning("%s already exist, removing it", local_unzipdir)
+            rmtree(local_unzipdir, ignore_errors=True)
+
+        path.create(local_unzipdir, directory=True, force=True)
+        log.info("Local unzip dir = %s", local_unzipdir)
+
+        log.info("Unzipping %s", batch_file)
+        zip_ref = None
+        try:
+            zip_ref = zipfile.ZipFile(batch_file, 'r')
+        except FileNotFoundError:
+            return notify_error(
+                ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+
+        except zipfile.BadZipFile:
+            return notify_error(
+                ErrorCodes.UNZIP_ERROR_INVALID_FILE,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+
+        if zip_ref is not None:
+            zip_ref.extractall(local_unzipdir)
+            zip_ref.close()
+
+        # 6 - verify num files?
+        local_file_count = 0
+        for f in os.listdir(local_unzipdir):
+            local_file_count += 1
+        log.info("Unzipped %d files from %s", local_file_count, batch_file)
+
+        if local_file_count != int(file_count):
+            log.error("Expected %s files for %s", file_count, batch_file)
+            return notify_error(
+                ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+
+        log.info("File count verified for %s", batch_file)
+
+        rmtree(local_unzipdir, ignore_errors=True)
+
+        # 7 - copy file from B2HOST filesystem to irods
+
+        """
+        The data is copied from the path on the
+        local filesystem inside the celery worker
+        container (/usr/share/batches/<batch_id>),
+        which is a directory mounted from the host,
+        to the irods_path (usually /myzone/batches/<batch_id>)
+        """
+
+        irods_batch_file = os.path.join(batch_path, file_name)
+        log.debug("Copying %s into %s...", batch_file, irods_batch_file)
+
+        imain.put(batch_file, irods_batch_file)
 
         # NOTE: permissions are inherited thanks to the ACL already SET
         # Not needed to set ownership to username
-        log.info("Copied: %s", irods_path)
+        log.info("Copied: %s", irods_batch_file)
 
-    return str(irods_path)
+        request_edmo_code = myjson.get('edmo_code')
+        ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
+        return "COMPLETED"
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def move_to_production_task(self, batch_id, irods_path, myjson):
 
     with celery_app.app.app_context():
@@ -189,18 +329,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
         ###############
         log.info("I'm %s (move_to_production_task)!" % self.request.id)
         local_path = path.join(mybatchpath, batch_id, return_str=True)
-        # log.warning("Vars:\n%s\n%s\n%s", local_path, irods_path, myjson)
-        # icom = celery_app.get_service(service='irods', user='httpapi')
         imain = celery_app.get_service(service='irods')
 
-        ###############
-        # from glob import glob
-        # # files = glob(path.join(local_path, '*', return_str=True))
-        # all_files = path.join(local_path, '**', '*', return_str=True)
-        # files = glob(all_files, recursive=True)
-        # log.info(files)
-
-        ###############
         out_data = []
         errors = []
         counter = 0
@@ -275,7 +405,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     'total': total, 'step': counter, 'errors': len(errors)})
                 continue
             log.info('PID: %s', PID)
-            # # save inside the cache? (both)
+
+            # save inside the cache
             r.set(PID, ifile)
             r.set(ifile, PID)
 
@@ -305,11 +436,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 'total': total, 'step': counter, 'errors': len(errors)}
             )
 
-        # ###############
-        # ifiles = imain.list(irods_path)
-        # log.info('irods content: %s', ifiles)
-        # log.verbose("\n")
-
         ###############
         # Notify the CDI API
         myjson[param_key]['pids'] = out_data
@@ -331,6 +457,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
     with celery_app.app.app_context():
@@ -609,7 +736,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
 
 @celery_app.task(bind=True)
-def create_restricted_order(self, order_id, order_path, username, myjson):
+@send_errors_by_email
+def download_restricted_order(self, order_id, order_path, myjson):
 
     with celery_app.app.app_context():
         log.info('Enabling restricted: order id %s', order_id)
@@ -721,6 +849,56 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         # final_zip = self.complete_path(order_path, filename)
         final_zip = order_path + '/' + filename.rstrip('/')
 
+        myjson['parameters']['request_id'] = myjson['request_id']
+        myjson['request_id'] = self.request.id
+
+        params = myjson.get('parameters', {})
+
+        backdoor = params.pop('backdoor', False)
+
+        # Make sure you have a path with no trailing slash
+        order_path = order_path.rstrip('/')
+
+        imain = celery_app.get_service(service='irods')
+        if not imain.is_collection(order_path):
+            return notify_error(
+                ErrorCodes.ORDER_NOT_FOUND,
+                myjson, backdoor, self
+            )
+
+        order_number = params.get("order_number")
+        if order_number is None:
+            return notify_error(
+                ErrorCodes.MISSING_ORDER_NUMBER_PARAM,
+                myjson, backdoor, self
+            )
+
+        # check if order_numer == order_id ?
+
+        download_path = params.get("download_path")
+        if download_path is None:
+            return notify_error(
+                ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
+                myjson, backdoor, self
+            )
+
+        # NAME OF FINAL ZIP
+        filename = params.get('zipfile_name')
+        if filename is None:
+            return notify_error(
+                ErrorCodes.MISSING_ZIPFILENAME_PARAM,
+                myjson, backdoor, self
+            )
+
+        base_filename = filename
+        if filename.endswith('.zip'):
+            log.warning('%s already contains extention .zip', filename)
+            # TO DO: save base_filename as filename - .zip
+        else:
+            filename = path.append_compress_extension(filename)
+
+        final_zip = order_path + '/' + filename.rstrip('/')
+
         log.info("order_id = %s", order_id)
         log.info("order_path = %s", order_path)
         log.info("final_zip = %s", final_zip)
@@ -730,164 +908,187 @@ def merge_restricted_order(self, order_id, order_path, myjson):
         # INPUT PARAMETERS CHECKS
 
         # zip file uploaded from partner
-        zip_files = params.get('file_name')
-        if zip_files is None:
+        file_name = params.get('file_name')
+        if file_name is None:
             return notify_error(
-                ErrorCodes.MISSING_ZIPFILENAME_PARAM,
+                ErrorCodes.MISSING_FILENAME_PARAM,
                 myjson, backdoor, self
             )
 
-        file_sizes = params.get("file_size")
-        if file_sizes is None:
+        file_size = params.get("file_size")
+        if file_size is None:
             return notify_error(
                 ErrorCodes.MISSING_FILESIZE_PARAM,
                 myjson, backdoor, self
             )
+        try:
+            int(file_size)
+        except BaseException:
+            return notify_error(
+                ErrorCodes.INVALID_FILESIZE_PARAM,
+                myjson, backdoor, self
+            )
 
-        file_counts = params.get("file_count")
-        if file_counts is None:
+        file_count = params.get("data_file_count")
+        if file_count is None:
             return notify_error(
                 ErrorCodes.MISSING_FILECOUNT_PARAM,
                 myjson, backdoor, self
             )
+        try:
+            int(file_count)
+        except BaseException:
+            return notify_error(
+                ErrorCodes.INVALID_FILECOUNT_PARAM,
+                myjson, backdoor, self
+            )
 
-        file_checksums = params.get("file_checksum")
-        if file_checksums is None:
+        file_checksum = params.get("file_checksum")
+        if file_checksum is None:
             return notify_error(
                 ErrorCodes.MISSING_CHECKSUM_PARAM,
                 myjson, backdoor, self
             )
 
-        if not isinstance(zip_files, list):
-            return notify_error(
-                ErrorCodes.INVALID_ZIPFILENAME_PARAM,
-                myjson, backdoor, self
-            )
-
-        if not isinstance(file_sizes, list):
-            return notify_error(
-                ErrorCodes.INVALID_FILESIZE_PARAM,
-                myjson, backdoor, self
-            )
-        if not isinstance(file_counts, list):
-            return notify_error(
-                ErrorCodes.INVALID_FILECOUNT_PARAM,
-                myjson, backdoor, self
-            )
-        if not isinstance(file_checksums, list):
-            return notify_error(
-                ErrorCodes.INVALID_CHECKSUM_PARAM,
-                myjson, backdoor, self
-            )
-
-        zip_files_len = len(zip_files)
-        file_sizes_len = len(file_sizes)
-        file_counts_len = len(file_counts)
-        file_checksums_len = len(file_checksums)
-        list_len = max(
-            zip_files_len,
-            file_sizes_len,
-            file_counts_len,
-            file_checksums_len
-        )
-
-        if zip_files_len != list_len:
-            log.warning(
-                "Invalid zip_filename length %s, expected %s",
-                zip_files_len,
-                list_len
-            )
-            return notify_error(
-                ErrorCodes.INVALID_ZIPFILENAME_LENGTH,
-                myjson, backdoor, self
-            )
-
-        if file_sizes_len != list_len:
-            log.warning(
-                "Invalid file_size length %s, expected %s",
-                file_sizes_len,
-                list_len
-            )
-            return notify_error(
-                ErrorCodes.INVALID_FILESIZE_LENGTH,
-                myjson, backdoor, self
-            )
-
-        if file_counts_len != list_len:
-            log.warning(
-                "Invalid file_count length %s, expected %s",
-                file_counts_len,
-                list_len
-            )
-            return notify_error(
-                ErrorCodes.INVALID_FILECOUNT_LENGTH,
-                myjson, backdoor, self
-            )
-
-        if file_checksums_len != list_len:
-            log.warning(
-                "Invalid file_checksum length %s, expected %s",
-                file_checksums_len,
-                list_len
-            )
-            return notify_error(
-                ErrorCodes.INVALID_CHECKSUM_LENGTH,
-                myjson, backdoor, self
-            )
-
-        for v in file_sizes:
-            try:
-                v = int(v)
-            except BaseException:
-                return notify_error(
-                    ErrorCodes.INVALID_FILESIZE_PARAM,
-                    myjson, backdoor, self
-                )
-
-        for v in file_counts:
-            try:
-                v = int(v)
-            except BaseException:
-                return notify_error(
-                    ErrorCodes.INVALID_FILECOUNT_PARAM,
-                    myjson, backdoor, self
-                )
-
-        self.update_state(state="PROGRESS")
-        imain = celery_app.get_service(service='irods')
+        # INPUT PARAMETERS CHECKS
 
         errors = []
         local_finalzip_path = None
-        log.info("Merging %s zip files", list_len)
-        for index in range(0, list_len):
-            zip_file = zip_files[index]
-            file_size = int(file_sizes[index])
-            file_count = file_counts[index]
-            file_checksum = file_checksums[index]
+        log.info("Merging zip file", file_name)
 
-            if not zip_file.endswith('.zip'):
-                zip_file = path.append_compress_extension(zip_file)
-            partial_zip = order_path + '/' + zip_file.rstrip('/')
+        if not file_name.endswith('.zip'):
+            file_name = path.append_compress_extension(file_name)
 
-            log.info("partial_zip = %s", partial_zip)
+        # 1 - download in local-dir
+        download_url = os.path.join(download_path, file_name)
+        log.info("Downloading file from %s", download_url)
+        try:
+            r = requests.get(download_url, stream=True, verify=False)
+        except requests.exceptions.ConnectionError:
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
 
-            # 1 - check if partial_zip exists
-            if not imain.exists(partial_zip):
-                errors.append({
-                    "error": ErrorCodes.FILENAME_DOESNT_EXIST[0],
-                    "description": ErrorCodes.FILENAME_DOESNT_EXIST[1],
-                    "subject": zip_file,
-                })
-                continue
+        if r.status_code != 200:
 
-            # 2 - copy partial_zip in local-dir
-            local_dir = path.join(myorderspath, order_id)
-            path.create(local_dir, directory=True, force=True)
-            log.info("Local dir = %s", local_dir)
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
 
-            local_zip_path = path.join(
-                local_dir, os.path.basename(partial_zip))
-            imain.open(partial_zip, local_zip_path)
+        log.info("Request status = %s", r.status_code)
+
+        local_dir = path.join(myorderspath, order_id)
+        path.create(local_dir, directory=True, force=True)
+        log.info("Local dir = %s", local_dir)
+
+        local_zip_path = path.join(local_dir, file_name)
+        log.info("partial_zip = %s", local_zip_path)
+
+        with open(local_zip_path, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:  # filter out keep-alive new chunks
+                    f.write(chunk)
+
+        # 2 - verify checksum
+        log.info("Computing checksum for %s...", local_zip_path)
+        local_file_checksum = hashlib.md5(
+            open(local_zip_path, 'rb').read()
+        ).hexdigest()
+
+        if local_file_checksum.lower() != file_checksum.lower():
+            return notify_error(
+                ErrorCodes.CHECKSUM_DOESNT_MATCH,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+        log.info("File checksum verified for %s", local_zip_path)
+
+        # 3 - verify size
+        local_file_size = os.path.getsize(local_zip_path)
+        if local_file_size != int(file_size):
+            log.error(
+                "File size %s for %s, expected %s",
+                local_file_size, local_zip_path, file_size
+            )
+            return notify_error(
+                ErrorCodes.FILESIZE_DOESNT_MATCH,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+
+        log.info("File size verified for %s", local_zip_path)
+
+        # 4 - decompress
+        d = os.path.splitext(os.path.basename(local_zip_path))[0]
+        local_unzipdir = path.join(local_dir, d)
+
+        if os.path.isdir(local_unzipdir):
+            log.warning("%s already exist, removing it", local_unzipdir)
+            rmtree(local_unzipdir, ignore_errors=True)
+
+        path.create(local_dir, directory=True, force=True)
+        log.info("Local unzip dir = %s", local_unzipdir)
+
+        log.info("Unzipping %s", local_zip_path)
+        zip_ref = None
+        try:
+            zip_ref = zipfile.ZipFile(local_zip_path, 'r')
+        except FileNotFoundError:
+            return notify_error(
+                ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+
+        except zipfile.BadZipFile:
+            return notify_error(
+                ErrorCodes.UNZIP_ERROR_INVALID_FILE,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+
+        if zip_ref is not None:
+            zip_ref.extractall(local_unzipdir)
+            zip_ref.close()
+
+        # 5 - verify num files?
+        local_file_count = 0
+        for f in os.listdir(local_unzipdir):
+            local_file_count += 1
+        log.info("Unzipped %d files from %s", local_file_count, local_zip_path)
+
+        if local_file_count != int(file_count):
+            log.error("Expected %s files for %s", file_count, local_zip_path)
+            return notify_error(
+                ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
+                myjson, backdoor, self,
+                subject=file_name
+            )
+
+        log.info("File count verified for %s", local_zip_path)
+
+        log.info("Verifying final zip: %s", final_zip)
+        # 6 - check if final_zip exists
+        if not imain.exists(final_zip):
+            # 7 - if not, simply copy partial_zip -> final_zip
+            log.info("Final zip does not exist, copying partial zip")
+            try:
+                imain.put(local_zip_path, final_zip)
+            except IrodsException as e:
+                log.error(str(e))
+                return notify_error(
+                    ErrorCodes.B2SAFE_UPLOAD_ERROR,
+                    myjson, backdoor, self,
+                    subject=file_name
+                )
+            local_finalzip_path = local_zip_path
+        else:
+            # 8 - if already exists merge zips
+            log.info("Already exists, merge zip files")
 
             # 3 - verify checksum
             log.info("Computing checksum for %s...", partial_zip)
@@ -937,7 +1138,48 @@ def merge_restricted_order(self, order_id, order_path, myjson):
             try:
                 zip_ref = zipfile.ZipFile(local_zip_path, 'r')
             except FileNotFoundError:
-                log.error("Unable to find %s", local_zip_path)
+                log.error("Local file not found: %s", local_finalzip_path)
+                return notify_error(
+                    ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
+                    myjson, backdoor, self,
+                    subject=final_zip
+                )
+
+            except zipfile.BadZipFile:
+                log.error("Invalid local file: %s", local_finalzip_path)
+                return notify_error(
+                    ErrorCodes.UNZIP_ERROR_INVALID_FILE,
+                    myjson, backdoor, self,
+                    subject=final_zip
+                )
+
+            if zip_ref is not None:
+                try:
+                    for f in os.listdir(local_unzipdir):
+                        # log.debug("Adding %s", f)
+                        zip_ref.write(
+                            os.path.join(local_unzipdir, f), f)
+                    zip_ref.close()
+                except BaseException:
+                    return notify_error(
+                        ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
+                        myjson, backdoor, self,
+                        subject=final_zip
+                    )
+
+            log.info("Creating a backup copy of final zip")
+            backup_zip = final_zip + ".bak"
+            if imain.is_dataobject(backup_zip):
+                log.info("%s already exists, removing previous backup")
+                imain.remove(backup_zip)
+            imain.move(final_zip, backup_zip)
+
+            log.info("Reading local zipfile")
+            zip_ref = None
+            try:
+                zip_ref = zipfile.ZipFile(local_finalzip_path, 'a')
+            except FileNotFoundError:
+                log.error("Local file not found: %s", local_finalzip_path)
                 errors.append({
                     "error": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[0],
                     "description": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[1],
@@ -946,7 +1188,7 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 continue
 
             except zipfile.BadZipFile:
-                log.error("Invalid zip fip file %s", local_zip_path)
+                log.error("Invalid local file: %s", local_finalzip_path)
                 errors.append({
                     "error": ErrorCodes.UNZIP_ERROR_INVALID_FILE[0],
                     "description": ErrorCodes.UNZIP_ERROR_INVALID_FILE[1],
@@ -954,96 +1196,31 @@ def merge_restricted_order(self, order_id, order_path, myjson):
                 })
                 continue
 
+            log.info("Adding files to local zipfile")
             if zip_ref is not None:
-                zip_ref.extractall(local_unzipdir)
-                zip_ref.close()
-
-            # 6 - verify num files?
-            local_file_count = 0
-            for f in os.listdir(local_unzipdir):
-                local_file_count += 1
-            log.info("Unzipped %d files from %s", local_file_count, partial_zip)
-
-            if local_file_count == int(file_count):
-                log.info("File count verified for %s", partial_zip)
-            else:
-                log.error("Expected %s files for %s", file_count, partial_zip)
-                errors.append({
-                    "error": ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT[0],
-                    "description": ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT[1],
-                    "subject": zip_file,
-                })
-                continue
-
-            # 7 - check if final_zip exists
-            if not imain.exists(final_zip):
-                # 8 - if not, simply copy partial_zip -> final_zip
-                log.info("Final zip does not exist, copying partial zip")
                 try:
-                    imain.icopy(partial_zip, final_zip)
-                except IrodsException as e:
-                    log.error(str(e))
+                    for f in os.listdir(local_unzipdir):
+                        # log.debug("Adding %s", f)
+                        zip_ref.write(
+                            os.path.join(local_unzipdir, f), f)
+                    zip_ref.close()
+                except BaseException:
                     errors.append({
-                        "error": ErrorCodes.B2SAFE_UPLOAD_ERROR[0],
-                        "description": ErrorCodes.B2SAFE_UPLOAD_ERROR[1],
-                        "subject": zip_file,
-                    })
-                    continue
-                local_finalzip_path = local_zip_path
-            else:
-                # 9 - if already exists merge zips
-                log.info("Already exists, merge zip files")
-
-                log.info("Copying zipfile locally")
-                local_finalzip_path = path.join(
-                    local_dir, os.path.basename(final_zip))
-                imain.open(final_zip, local_finalzip_path)
-
-                log.info("Reading local zipfile")
-                zip_ref = None
-                try:
-                    zip_ref = zipfile.ZipFile(local_finalzip_path, 'a')
-                except FileNotFoundError:
-                    log.error("Local file not found: %s", local_finalzip_path)
-                    errors.append({
-                        "error": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[0],
-                        "description": ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND[1],
+                        "error": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[0],
+                        "description": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[1],
                         "subject": zip_file,
                     })
                     continue
 
-                except zipfile.BadZipFile:
-                    log.error("Invalid local file: %s", local_finalzip_path)
-                    errors.append({
-                        "error": ErrorCodes.UNZIP_ERROR_INVALID_FILE[0],
-                        "description": ErrorCodes.UNZIP_ERROR_INVALID_FILE[1],
-                        "subject": zip_file,
-                    })
-                    continue
+            log.info("Creating a backup copy of final zip")
+            imain.move(final_zip, final_zip + ".bak")
 
-                log.info("Adding files to local zipfile")
-                if zip_ref is not None:
-                    try:
-                        for f in os.listdir(local_unzipdir):
-                            # log.debug("Adding %s", f)
-                            zip_ref.write(
-                                os.path.join(local_unzipdir, f), f)
-                        zip_ref.close()
-                    except BaseException:
-                        errors.append({
-                            "error": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[0],
-                            "description": ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE[1],
-                            "subject": zip_file,
-                        })
-                        continue
+            log.info("Uploading final updated zip")
+            imain.put(local_finalzip_path, final_zip)
 
-                log.info("Creating a backup copy of final zip")
-                imain.move(final_zip, final_zip + ".bak")
+            imain.remove(partial_zip)
 
-                log.info("Uploading final updated zip")
-                imain.put(local_finalzip_path, final_zip)
-
-                imain.remove(partial_zip)
+        rmtree(local_unzipdir, ignore_errors=True)
 
         self.update_state(state="COMPLETED")
 
@@ -1138,11 +1315,10 @@ def merge_restricted_order(self, order_id, order_path, myjson):
 
 
 @celery_app.task(bind=True)
-def delete_orders(self, orders_path, myjson):
+@send_errors_by_email
+def delete_orders(self, orders_path, local_orders_path, myjson):
 
     with celery_app.app.app_context():
-
-        log.info("Delete request for order path %s", orders_path)
 
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
@@ -1153,7 +1329,6 @@ def delete_orders(self, orders_path, myjson):
         myjson['request_id'] = self.request.id
         # TODO Why? We end up with two different request_ids,
         # one from the client, one from our system.
-
         params = myjson.get('parameters', {})
 
         backdoor = params.pop('backdoor', False)
@@ -1183,7 +1358,9 @@ def delete_orders(self, orders_path, myjson):
                 'total': total, 'step': counter, 'errors': len(errors)})
 
             order_path = path.join(orders_path, order)
-            log.info(order_path)
+            local_order_path = path.join(local_orders_path, order)
+            log.info("Delete request for order collection: %s", order_path)
+            log.info("Delete request for order path: %s", local_order_path)
 
             if not imain.is_collection(order_path):
                 errors.append({
@@ -1204,6 +1381,9 @@ def delete_orders(self, orders_path, myjson):
 
             imain.remove(order_path, recursive=True)
 
+            if os.path.isdir(local_order_path):
+                rmtree(local_order_path, ignore_errors=True)
+
         if len(errors) > 0:
             myjson['errors'] = errors
         ext_api.post(myjson, backdoor=backdoor)
@@ -1211,11 +1391,10 @@ def delete_orders(self, orders_path, myjson):
 
 
 @celery_app.task(bind=True)
-def delete_batches(self, batches_path, myjson):
+@send_errors_by_email
+def delete_batches(self, batches_path, local_batches_path, myjson):
 
     with celery_app.app.app_context():
-
-        log.info("Delete request for batch path %s", batches_path)
 
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
@@ -1252,6 +1431,9 @@ def delete_batches(self, batches_path, myjson):
                 'total': total, 'step': counter, 'errors': len(errors)})
 
             batch_path = path.join(batches_path, batch)
+            local_batch_path = path.join(local_batches_path, batch)
+            log.info("Delete request for batch collection %s", batch_path)
+            log.info("Delete request for batch path %s", local_batch_path)
 
             if not imain.is_collection(batch_path):
                 errors.append({
@@ -1265,6 +1447,9 @@ def delete_batches(self, batches_path, myjson):
                 continue
             imain.remove(batch_path, recursive=True)
 
+            if os.path.isdir(local_batch_path):
+                rmtree(local_batch_path, ignore_errors=True)
+
         if len(errors) > 0:
             myjson['errors'] = errors
         ext_api.post(myjson, backdoor=backdoor)
@@ -1272,6 +1457,7 @@ def delete_batches(self, batches_path, myjson):
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def cache_batch_pids(self, irods_path):
 
     with celery_app.app.app_context():
@@ -1324,18 +1510,42 @@ def cache_batch_pids(self, irods_path):
         log.info(stats)
         return stats
 
-
 @celery_app.task(bind=True)
-def pids_cached_to_json(self):
+@send_errors_by_email
+def inspect_pids_cache(self):
 
     with celery_app.app.app_context():
 
-        for key in r.scan_iter("%s*" % pid_prefix):
-            log.info("Key: %s = %s", key, r.get(key))
-            # break
+        log.info("Inspecting cache...")
+        counter = 0
+        cache = {}
+        # for key in r.scan_iter("%s*" % pid_prefix):
+        for key in r.scan_iter("*"):
+            folder = os.path.dirname(r.get(key))
+
+            prefix = str(key).split("/")[0]
+            if prefix not in cache:
+                cache[prefix] = {}
+
+            if folder not in cache[prefix]:
+                cache[prefix][folder] = 1
+            else:
+                cache[prefix][folder] += 1
+
+            counter += 1
+            if counter % 10000 == 0:
+                log.info("%d pids inspected...", counter)
+
+        for prefix in cache:
+            for pid_path in cache[prefix]:
+                log.info(
+                    "%d pids with prefix %s from path: %s",
+                    cache[prefix][pid_path], prefix, pid_path
+                )
 
 
 @celery_app.task(bind=True)
+@send_errors_by_email
 def list_resources(self, batch_path, order_path, myjson):
 
     with celery_app.app.app_context():

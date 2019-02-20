@@ -17,19 +17,18 @@ API_VERSION = seadata_vars.get('api_version')
 class ErrorCodes(object):
     PID_NOT_FOUND = ("41", "PID not found")
     INGESTION_FILE_NOT_FOUND = ("50", "File requested not found")
-
     # addzip_restricted_order
-    MISSING_ZIPFILENAME_PARAM = ("4000", "Parameter zipfile_name is missing")
+    MISSING_ZIPFILENAME_PARAM = ("4000", "Parameter zip_filename is missing")
     MISSING_FILENAME_PARAM = ("4001", "Parameter file_name is missing")
     MISSING_FILESIZE_PARAM = ("4002", "Parameter file_size is missing")
-    INVALID_FILESIZE_PARAM = ("4003", "Invalid parameter file_size, list of integers expected")
+    INVALID_FILESIZE_PARAM = ("4003", "Invalid parameter file_size, integer expected")
     MISSING_FILECOUNT_PARAM = ("4004", "Parameter file_count is missing")
-    INVALID_FILECOUNT_PARAM = ("4005", "Invalid parameter file_count, list of integers expected")
+    INVALID_FILECOUNT_PARAM = ("4005", "Invalid parameter file_count, integer expected")
     FILENAME_DOESNT_EXIST = ("4006", "Partner zip (zipfile_name) does not exist")
     CHECKSUM_DOESNT_MATCH = ("4007", "Checksum does not match")
     FILESIZE_DOESNT_MATCH = ("4008", "File size does not match")
-    UNZIP_ERROR_FILE_NOT_FOUND = ("4009", "Unzip error: partner zip not found")
-    UNZIP_ERROR_INVALID_FILE = ("4010", "Unzip error: partner zip is invalid")
+    UNZIP_ERROR_FILE_NOT_FOUND = ("4009", "Unzip error: zip file not found")
+    UNZIP_ERROR_INVALID_FILE = ("4010", "Unzip error: zip file is invalid")
     UNZIP_ERROR_WRONG_FILECOUNT = ("4011", "Unzip error: file count does not match")
     B2SAFE_UPLOAD_ERROR = ("4012", "Unable to upload restricted zip on b2safe")
     UNZIP_ERROR_INVALID_FILE = ("4013", "Unable to create restricted zip file")
@@ -56,6 +55,12 @@ class ErrorCodes(object):
     INVALID_FILECOUNT_LENGTH = ("4034", "Unexpected lenght of file_count parameter")
     INVALID_CHECKSUM_LENGTH = ("4035", "Unexpected lenght of file_checksum parameter")
     INVALID_FILENAME_PARAM = ("4036", "Invalid parameter zipfile_name, a string is expected")
+    MISSING_BATCH_NUMBER_PARAM = ("4037", "Parameter batch_number is missing")
+    UNREACHABLE_DOWNLOAD_PATH = ("4039", "Download path is unreachable")
+    MISSING_ORDER_NUMBER_PARAM = ("4040", "Parameter order_number is missing")
+    MISSING_DOWNLOAD_PATH_PARAM = ("4041", "Parameter download_path is missing")
+    UNABLE_TO_CREATE_ZIP_FILE = ("4042", "Unable to create merged zip file")
+    INVALID_ZIP_SPLIT_OUTPUT = ("4043", "Unable to retrieve results from zip split")
 
 class Metadata(object):
 
@@ -78,13 +83,16 @@ class ImportManagerAPI(object):
     _uri = seadata_vars.get('api_im_url')
 
     # def post(self, payload, instance=None):
-    def post(self, payload, backdoor=False):
+    def post(self, payload, backdoor=False, edmo_code=None):
+
+        if edmo_code is None:
+            edmo_code = EDMO_CODE
 
         # if instance is not None:
         #     instance_id = str(id(instance))
         #     payload['request_id'] = instance_id
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
-        payload['edmo_code'] = EDMO_CODE
+        payload['edmo_code'] = edmo_code
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
         if 'api_function' not in payload:
             payload['api_function'] = 'unknown_function'
