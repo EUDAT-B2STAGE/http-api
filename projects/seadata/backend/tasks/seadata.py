@@ -569,7 +569,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             # for line in source:
                             #     target.write(line)
 
-                            chunk_size = 1048576
+                            chunk_size = 10485760
                             while True:
                                 data = source.read(chunk_size)
                                 if not data:
