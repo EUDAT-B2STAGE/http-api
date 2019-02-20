@@ -144,10 +144,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             self, status='enabled', user=ingestion_user, log_string='end')
         log_into_queue(self, log_msg)
 
-        """
-            Download the file into the batch folder
-        """
-
+        # Download the file into the batch folder
         task = CeleryExt.download_batch.apply_async(
             args=[batch_path, str(local_path), json_input],
             queue='ingestion', routing_key='ingestion'

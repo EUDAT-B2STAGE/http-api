@@ -295,13 +295,13 @@ def download_batch(self, batch_path, local_path, myjson):
 
         # 7 - copy file from B2HOST filesystem to irods
 
-        '''
+        """
         The data is copied from the path on the
         local filesystem inside the celery worker
         container (/usr/share/batches/<batch_id>),
         which is a directory mounted from the host,
         to the irods_path (usually /myzone/batches/<batch_id>)
-        '''
+        """
 
         irods_batch_file = os.path.join(batch_path, file_name)
         log.debug("Copying %s into %s...", batch_file, irods_batch_file)
