@@ -390,7 +390,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 self.update_state(state="PROGRESS", meta={
                     'total': total, 'step': counter, 'errors': len(errors)})
                 continue
-            log.debug("Moved: %s" % current_file_name)
+            log.info("File copied on irods: %s" % ifile)
 
             ###############
             # 2. request pid (irule)
