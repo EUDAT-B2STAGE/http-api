@@ -411,16 +411,19 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             # # save inside the cache
             r.set(PID, ifile)
             r.set(ifile, PID)
+            log.debug('PID cache updated')
 
             ###############
             # 3. set metadata (icat)
             metadata, _ = imain.get_metadata(ifile)
-            # log.pp(metadata)
+
             for key in md.keys:
                 if key not in metadata:
                     value = element.get(key, '***MISSING***')
                     args = {'path': ifile, key: value}
                     imain.set_metadata(**args)
+
+            log.debug('Metadata set for %s', current_file_name)
 
             ###############
             # 4. remove the batch file?
