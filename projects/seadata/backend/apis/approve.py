@@ -49,14 +49,16 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # print("TEST", data)
             for key in md.keys:  # + [md.tid]:
                 value = data.get(key)
-                error = None
                 if value is None:
                     error = 'Missing parameter: %s' % key
-                else:
-                    value_len = len(value)
+                    return self.send_errors(
+                        error, code=hcodes.HTTP_BAD_REQUEST)
+
+                error = None
+                value_len = len(value)
                 if value_len > md.max_size:
                     error = "Param '%s': exceeds size %s" % (key, md.max_size)
-                if value_len < 1:
+                elif value_len < 1:
                     error = "Param '%s': empty" % key
                 if error is not None:
                     return self.send_errors(
