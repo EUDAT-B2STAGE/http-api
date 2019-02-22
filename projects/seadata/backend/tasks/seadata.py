@@ -395,8 +395,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             ###############
             # 2. request pid (irule)
             try:
-                # PID = pmaker.pid_request(imain, ifile)
-                PID = "temporary_disabled"
+                PID = pmaker.pid_request(imain, ifile)
             except BaseException as e:
                 log.error(e)
                 errors.append({
