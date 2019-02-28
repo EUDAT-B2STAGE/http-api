@@ -690,8 +690,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     subzip_path = path.join(split_path, subzip_file)
 
                     if not path.file_exists_and_nonzero(subzip_path):
-                        log.warning(
-                            "%s not found, break the loop", subzip_path)
+                        log.info("No more files to be uploaded")
                         break
 
                     subzip_ifile = path.append_compress_extension(
@@ -1117,7 +1116,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 subzip_path = path.join(split_path, subzip_file)
 
                 if not path.file_exists_and_nonzero(subzip_path):
-                    log.warning("%s not found, break the loop", subzip_path)
+                    log.info("No more files to be uploaded")
                     break
 
                 subzip_ifile = path.append_compress_extension(

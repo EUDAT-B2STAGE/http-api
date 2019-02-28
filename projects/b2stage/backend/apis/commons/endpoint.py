@@ -140,10 +140,15 @@ class EudatEndpoint(B2accessUtilities):
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
-        icom = self.get_service_instance(
-            service_name='irods', user_session=user)
+        try:
+            return self.get_service_instance(
+                service_name='irods', user_session=user)
+        except iexceptions.PAM_AUTH_PASSWORD_FAILED:
+            msg = "PAM Authentication failed, invalid password or token"
+            raise RestApiException(
+                msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
-        return icom
+        return None
 
     def irodsuser_from_b2stage(self, internal_user):
         """
