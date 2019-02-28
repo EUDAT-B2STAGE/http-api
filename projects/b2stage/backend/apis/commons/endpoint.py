@@ -147,10 +147,6 @@ class EudatEndpoint(B2accessUtilities):
             msg = "PAM Authentication failed, invalid password or token"
             raise RestApiException(
                 msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
-        except BaseException:
-            msg = "2.PAM Authentication failed, invalid password or token"
-            raise RestApiException(
-                msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
         return None
 
