@@ -1370,6 +1370,7 @@ def inspect_pids_cache(self):
                     "%d pids with prefix %s from path: %s",
                     cache[prefix][pid_path], prefix, pid_path
                 )
+        log.info("Total PIDs found: %s", counter)
 
 
 @celery_app.task(bind=True)
