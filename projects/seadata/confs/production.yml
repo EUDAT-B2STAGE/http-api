@@ -24,3 +24,7 @@ services:
 
     volumes:
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
+
+  mongodb:
+    environment:
+      ACTIVATE: 0
