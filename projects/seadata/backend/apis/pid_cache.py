@@ -2,6 +2,7 @@
 
 import os
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
+from b2stage.apis.commons.b2access import B2accessUtilities
 from restapi import decorators as decorate
 from restapi.exceptions import RestApiException
 from utilities import htmlcodes as hcodes
@@ -11,7 +12,7 @@ from restapi.flask_ext.flask_celery import CeleryExt
 log = get_logger(__name__)
 
 
-class PidCache(ClusterContainerEndpoint):
+class PidCache(ClusterContainerEndpoint, B2accessUtilities):
 
     @decorate.catch_error()
     def get(self):
