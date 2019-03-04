@@ -68,8 +68,13 @@ class EudatEndpoint(B2accessUtilities):
             icom, external_user, refreshed = \
                 self.irodsuser_from_b2access(internal_user)
             # icd and ipwd do not give error with wrong credentials...
-            # so the minimum command is ils inside the home dir
-            icom.list()
+            # so the minimum command is checking the existence of home dir
+
+            home = icom.get_user_home()
+            if icom.is_collection(home):
+                log.debug("%s verified", home)
+            else:
+                log.warning("User home not found %s", home)
 
         else:
             log.error("Unknown credentials provided")
