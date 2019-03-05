@@ -166,7 +166,8 @@ def seadata_pid(self, pid):
     # get the metadata
     imain = self.get_main_irods_connection()
     data_object = imain.get_dataobject(ipath)
-    log.critical(data_object)
+    response['creation'] = data_object.create_time
+    # response['modification'] = data_object.modify_time
     metadata, _ = imain.get_metadata(ipath)
 
     for key, value in metadata.items():
