@@ -155,7 +155,7 @@ def seadata_pid(self, pid):
     else:
         log.verbose("PID %s verified", pid)
         response['verified'] = True
-        log.pp(b2handle_output)
+        # log.pp(b2handle_output)
 
     #################
     ipath = self.parse_pid_dataobject_path(b2handle_output)
@@ -165,6 +165,7 @@ def seadata_pid(self, pid):
     #################
     # get the metadata
     imain = self.get_main_irods_connection()
+    log.critical("test")
     # info = imain.list(ipath, detailed=True)
     metadata, _ = imain.get_metadata(ipath)
     # log.pp(info)
