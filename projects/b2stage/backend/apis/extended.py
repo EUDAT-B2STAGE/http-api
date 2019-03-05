@@ -79,5 +79,5 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         try:
             from seadata.apis.commons.seadatacloud import seadata_pid
             return seadata_pid(self, pid)
-        except BaseException:
+        except ImportError:
             return self.eudat_pid(pid)
