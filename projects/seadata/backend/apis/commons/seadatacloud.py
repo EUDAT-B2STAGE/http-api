@@ -165,10 +165,9 @@ def seadata_pid(self, pid):
     #################
     # get the metadata
     imain = self.get_main_irods_connection()
-    imain.list(path=ipath, detailed=True)
-    # log.critical(info)
+    data_object = imain.get_dataobject(ipath)
+    log.critical(data_object)
     metadata, _ = imain.get_metadata(ipath)
-    # log.pp(info)
 
     for key, value in metadata.items():
         if key in Metadata.keys:
