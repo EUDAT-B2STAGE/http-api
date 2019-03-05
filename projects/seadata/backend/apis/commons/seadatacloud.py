@@ -3,6 +3,7 @@
 from datetime import datetime
 from restapi.services.detect import detector
 from utilities import htmlcodes as hcodes
+from utilities import path
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -158,7 +159,6 @@ def seadata_pid(self, pid):
 
     #################
     ipath = self.parse_pid_dataobject_path(b2handle_output)
-    from utilities import path
     response['temp_id'] = path.last_part(ipath)
     response['batch_id'] = path.last_part(path.dir_name(ipath))
 
@@ -166,8 +166,9 @@ def seadata_pid(self, pid):
     # get the metadata
     # imain = self.get_service_instance(service_name='irods')
     imain = self.get_main_irods_connection()
+    info = imain.list(ipath, detailed=True)
     metadata, _ = imain.get_metadata(ipath)
-    log.pp(metadata)
+    log.app(info)
 
     for key, value in metadata.items():
         if key in Metadata.keys:
