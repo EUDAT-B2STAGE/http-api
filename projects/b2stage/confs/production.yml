@@ -29,7 +29,7 @@ services:
   postgres:
     # Activate a production ready configuration
     volumes:
-      - ${SUBMODULE_DIR}/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
 
   proxy:
     environment:
