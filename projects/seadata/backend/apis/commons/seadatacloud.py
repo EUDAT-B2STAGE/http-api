@@ -77,7 +77,12 @@ class Metadata(object):
 
     tid = 'temp_id'
     keys = [
-        "cdi_n_code", "format_n_code", "data_format_l24", "version",
+        "cdi_n_code",
+        "format_n_code",
+        "data_format_l24",
+        "version",
+        "batch_date",
+        "test_mode",
     ]
     max_size = 10
 
@@ -86,14 +91,11 @@ class ImportManagerAPI(object):
 
     _uri = seadata_vars.get('api_im_url')
 
-    # def post(self, payload, instance=None):
     def post(self, payload, backdoor=False, edmo_code=None):
 
         if edmo_code is None:
             edmo_code = EDMO_CODE
-        # if instance is not None:
-        #     instance_id = str(id(instance))
-        #     payload['request_id'] = instance_id
+
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
         payload['edmo_code'] = edmo_code
         payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
@@ -165,8 +167,8 @@ def seadata_pid(self, pid):
     #################
     # get the metadata
     imain = self.get_main_irods_connection()
-    data_object = imain.get_dataobject(ipath)
-    response['creation'] = data_object.create_time
+    # data_object = imain.get_dataobject(ipath)
+    # response['creation'] = data_object.create_time
     # response['modification'] = data_object.modify_time
     metadata, _ = imain.get_metadata(ipath)
 
