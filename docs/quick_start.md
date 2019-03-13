@@ -20,14 +20,16 @@ Here's step-by-step tutorial to work with the HTTP API project:
 # get the code
 git clone https://github.com/EUDAT-B2STAGE/http-api.git latest
 cd latest
-git checkout 1.0.3
+git checkout 1.0.6
 
 ################
 # install the corrensponding rapydo framework version
-sudo -H data/scripts/prerequisites.sh
+sudo pip3 install rapydo-controller
+rapydo --project b2stage install --git 0.6.5
+
 # build and run
-rapydo init
-rapydo start
+rapydo --project b2stage init
+rapydo --project b2stage start
 
 ################
 # only required in debug mode
