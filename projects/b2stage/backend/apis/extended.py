@@ -63,6 +63,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
             url = url.replace(proute, '/')
         else:
             # Otherwise, perform a request to an external service?
+            log.critical("cannot download pid, sending warnings...")
             return self.send_warnings(
                 {'URL': url},
                 errors=[
@@ -71,7 +72,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
                 ],
                 head_method=head
             )
-
+        log.critical("downloading pid...")
         r = self.init_endpoint()
         if r.errors is not None:
             return self.send_errors(errors=r.errors, head_method=head)
