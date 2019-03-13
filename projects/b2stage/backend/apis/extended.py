@@ -35,21 +35,21 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         metadata, bad_response = self.get_pid_metadata(pid)
         if bad_response is not None:
             if head:
-                raise RestApiException(RestApiException=bad_response.code)
+                raise RestApiException(status_code=bad_response.code)
             else:
                 return bad_response
         url = metadata.get('URL')
         if url is None:
             error_code = hcodes.HTTP_BAD_NOTFOUND
             if head:
-                raise RestApiException(RestApiException=error_code.code)
+                raise RestApiException(status_code=error_code.code)
             else:
                 return self.send_errors(
                     message='B2HANDLE: empty URL_value returned', code=error_code)
 
         if not self.download_parameter():
             if head:
-                raise RestApiException(RestApiException=hcodes.HTTP_OK_BASIC)
+                raise RestApiException(status_code=hcodes.HTTP_OK_BASIC)
             else:
                 return metadata
         # download is requested, trigger file download
@@ -70,8 +70,8 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
             # Otherwise, perform a request to an external service?
             if head:
                 # HTTP_MULTIPLE_CHOICES ?
-                raise RestApiException(RestApiException=hcodes.HTTP_MULTIPLE_CHOICES)
-            else :
+                raise RestApiException(status_code=hcodes.HTTP_MULTIPLE_CHOICES)
+            else:
                 return self.send_warnings(
                     {'URL': url},
                     errors=[
@@ -83,12 +83,12 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         r = self.init_endpoint()
         if r.errors is not None:
             if head:
-                raise RestApiException(RestApiException=hcodes.HTTP_SERVER_ERROR)
+                raise RestApiException(status_code=hcodes.HTTP_SERVER_ERROR)
             else:
                 return self.send_errors(errors=r.errors)
         url = self.download_object(r, url)
         if head:
-            raise RestApiException(RestApiException=hcodes.HTTP_OK_BASIC)
+            raise RestApiException(status_code=hcodes.HTTP_OK_BASIC)
         else:
             return url
 
