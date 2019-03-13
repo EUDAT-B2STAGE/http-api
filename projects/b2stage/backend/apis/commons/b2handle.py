@@ -173,7 +173,7 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
 
         return data, None, hcodes.HTTP_FOUND
 
-    def get_pid_metadata(self, pid):
+    def get_pid_metadata(self, pid, head_method=False):
 
         # First test: check if credentials exists and works
         client, authenticated = self.connect_client(
@@ -192,6 +192,10 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
         if error is not None:
             log.error("B2HANDLE problem: %s", error)
             return data, \
-                self.send_errors(message='B2HANDLE: %s' % error, code=code)
+                self.send_errors(
+                    message='B2HANDLE: %s' % error,
+                    code=code,
+                    head_method=head_method
+                )
         else:
             return data, None

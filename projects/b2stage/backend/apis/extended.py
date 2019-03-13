@@ -32,26 +32,21 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     def eudat_pid(self, pid, head=False):
 
         # recover metadata from pid
-        metadata, bad_response = self.get_pid_metadata(pid)
+        metadata, bad_response = self.get_pid_metadata(pid, head_method=head)
         if bad_response is not None:
-            if head:
-                raise RestApiException(status_code=bad_response.code)
-            else:
-                return bad_response
+            return bad_response
         url = metadata.get('URL')
         if url is None:
-            error_code = hcodes.HTTP_BAD_NOTFOUND
-            if head:
-                raise RestApiException(status_code=error_code.code)
-            else:
-                return self.send_errors(
-                    message='B2HANDLE: empty URL_value returned', code=error_code)
+            return self.send_errors(
+                message='B2HANDLE: empty URL_value returned',
+                code=hcodes.HTTP_BAD_NOTFOUND,
+                head_method=head
+            )
 
         if not self.download_parameter():
             if head:
-                raise RestApiException(status_code=hcodes.HTTP_OK_BASIC)
-            else:
-                return metadata
+                return self.force_response("", code=hcodes.HTTP_OK_BASIC)
+            return metadata
         # download is requested, trigger file download
 
         rroute = '%s%s/' % (CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT)
@@ -68,29 +63,24 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
             url = url.replace(proute, '/')
         else:
             # Otherwise, perform a request to an external service?
-            if head:
-                # HTTP_MULTIPLE_CHOICES ?
-                raise RestApiException(status_code=hcodes.HTTP_MULTIPLE_CHOICES)
-            else:
-                return self.send_warnings(
-                    {'URL': url},
-                    errors=[
-                        "Data-object can't be downloaded by current " +
-                        "HTTP-API server '%s'" % CURRENT_HTTPAPI_SERVER
-                    ]
-                )
+            return self.send_warnings(
+                {'URL': url},
+                errors=[
+                    "Data-object can't be downloaded by current " +
+                    "HTTP-API server '%s'" % CURRENT_HTTPAPI_SERVER
+                ],
+                head_method=head
+            )
 
         r = self.init_endpoint()
         if r.errors is not None:
-            if head:
-                raise RestApiException(status_code=hcodes.HTTP_SERVER_ERROR)
-            else:
-                return self.send_errors(errors=r.errors)
+            return self.send_errors(errors=r.errors, head_method=head)
         url = self.download_object(r, url)
+
         if head:
-            raise RestApiException(status_code=hcodes.HTTP_OK_BASIC)
-        else:
-            return url
+            return self.force_response("", code=hcodes.HTTP_OK_BASIC)
+
+        return url
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, pid):
