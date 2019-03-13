@@ -312,8 +312,7 @@ class EudatEndpoint(B2accessUtilities):
             )
 
         if head:
-            data_object = icom.get_dataobject(path)
-            if data_object.readable():
+            if icom.readable(path):
                 return self.force_response(
                     defined_content='',
                     code=hcodes.HTTP_OK_BASIC,
