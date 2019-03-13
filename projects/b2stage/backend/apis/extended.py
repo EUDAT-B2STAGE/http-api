@@ -75,12 +75,8 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         r = self.init_endpoint()
         if r.errors is not None:
             return self.send_errors(errors=r.errors, head_method=head)
-        url = self.download_object(r, url)
 
-        if head:
-            return self.force_response("", code=hcodes.HTTP_OK_BASIC)
-
-        return url
+        return self.download_object(r, url, head=head)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, pid):

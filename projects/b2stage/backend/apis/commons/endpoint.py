@@ -299,7 +299,7 @@ class EudatEndpoint(B2accessUtilities):
             filename, path, resource, force)
         return path, resource, filename, force
 
-    def download_object(self, r, path):
+    def download_object(self, r, path, head=False):
         icom = r.icommands
         username = r.username
         path, resource, filename, force = \
@@ -307,7 +307,23 @@ class EudatEndpoint(B2accessUtilities):
         is_collection = icom.is_collection(path)
         if is_collection:
             return self.send_errors(
-                'Collection: recursive download is not allowed')
+                'Collection: recursive download is not allowed',
+                head_method=head
+            )
+
+        if head:
+            data_object = icom.get_dataobject(path)
+            if data_object.readable():
+                return self.force_response(
+                    defined_content='',
+                    code=hcodes.HTTP_OK_BASIC,
+                    head_method=head
+                )
+            else:
+                return self.send_errors(
+                    code=hcodes.HTTP_BAD_NOTFOUND,
+                    head_method=head
+                )
 
         if filename is None:
             filename = self.filename_from_path(path)
