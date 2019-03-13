@@ -13,7 +13,6 @@ services:
       # ACTIVATE: 1
       APP_MODE: production
       # FLASK_DEBUG: 0
-      DEBUG_LEVEL: ${LOG_LEVEL}
       NGINX_ACTIVE: "True"
 
     depends_on:
