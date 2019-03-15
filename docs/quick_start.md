@@ -33,7 +33,7 @@ rapydo --project b2stage start
 
 ################
 # only required in debug mode
-rapydo shell backend --command 'restapi launch'
+rapydo --project b2stage shell backend --command 'restapi launch'
 ```
 
 If everything worked so far you may now try a test against your own server:
