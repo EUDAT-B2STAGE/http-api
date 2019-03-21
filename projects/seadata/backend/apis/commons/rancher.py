@@ -359,7 +359,8 @@ class Rancher(object):
                 continue
 
             # 'host_type=qc'
-            host_label = glom(element, "element.labels.host_label", default=None)
+            host_label = glom(element, "labels.host_label", default=None)
+            log.critical(host_label)
 
             if host_label is not None:
                 expected = self.internal_labels(pull=False)
