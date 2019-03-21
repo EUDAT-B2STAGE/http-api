@@ -41,6 +41,7 @@ class Rancher(object):
         self._hub_credentials = (hubuser, hubpass)
         self._localpath = localpath # default /nfs/share
         self._qclabel = qclabel
+        self._hostlabel = 'io.rancher.scheduler.affinity:host_label'
 
         ####################
         self.connect(key, secret)
@@ -222,12 +223,11 @@ class Rancher(object):
         Define Rancher docker labels
         """
         # to launch containers only on selected host(s)
-        host_label = "io.rancher.scheduler.affinity:host_label"
         label_key = 'host_type'
         label_value = self._qclabel
 
         obj = {
-            host_label: "%s=%s" % (label_key, label_value),
+            self._hostlabel: "%s=%s" % (label_key, label_value),
         }
 
         if pull:
@@ -359,8 +359,11 @@ class Rancher(object):
                 continue
 
             # 'host_type=qc'
-            host_label = glom(element, "labels.host_label", default=None)
+            labels = element.labels
+
+            host_label = labels.get(self._hostlabel)
             log.critical(element.labels)
+            log.critical(host_label)
 
             if host_label is not None:
                 expected = self.internal_labels(pull=False)
