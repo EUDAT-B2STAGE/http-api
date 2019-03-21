@@ -352,6 +352,7 @@ class Rancher(object):
 
         ####################################
         for element in containers:
+            log.critical(element.__dict__)
             # NOTE: container name is unique in the whole cluster env
             # print(element.get('name'), container_name)
             if element.name == container_name:
