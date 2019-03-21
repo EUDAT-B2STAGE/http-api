@@ -11,7 +11,6 @@ https://github.com/rancher/validation-tests/tree/master/tests/v2_validation/catt
 """
 
 import time
-from glom import glom
 from seadata.apis.commons.cluster import CONTAINERS_VARS
 from utilities.logs import get_logger
 log = get_logger(__name__)
@@ -39,7 +38,7 @@ class Rancher(object):
         self._project_uri = "%s/projects/%s/schemas" % (url, project)
         self._hub_uri = hub
         self._hub_credentials = (hubuser, hubpass)
-        self._localpath = localpath # default /nfs/share
+        self._localpath = localpath  # default /nfs/share
         self._qclabel = qclabel
         self._hostlabel = 'io.rancher.scheduler.affinity:host_label'
 
