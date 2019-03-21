@@ -27,8 +27,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         """ Check my quality check container """
 
         # log.info("Request for resources")
-        container_name = self.get_container_name(batch_id, qc_name)
         rancher = self.get_or_create_handle()
+        container_name = self.get_container_name(batch_id, qc_name, rancher._qclabel)
         # resources = rancher.list()
         container = rancher.get_container_object(container_name)
         if container is None:
@@ -250,8 +250,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         Remove a quality check executed
         """
 
-        container_name = self.get_container_name(batch_id, qc_name)
         rancher = self.get_or_create_handle()
+        container_name = self.get_container_name(batch_id, qc_name, rancher._qclabel)
         rancher.remove_container_by_name(container_name)
         # wait up to 10 seconds to verify the deletion
         log.info("Removing: %s...", container_name)
