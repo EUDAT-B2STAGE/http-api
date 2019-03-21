@@ -357,9 +357,9 @@ class Rancher(object):
             if element.name != container_name:
                 continue
 
-            """This patch does not work since Rancher is not able to
-            execute containers with same name, also if deployed
-            on different hosts. Also if verified here, the run will fail later"""
+            # This patch does not work since Rancher is not able to
+            # execute containers with same name, also if deployed
+            # on different hosts. Also if verified here, the run will fail later"""
             # 'host_type=qc'
             # labels = element.labels
 
