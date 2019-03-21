@@ -11,10 +11,10 @@
 This project aims at developing a B2STAGE HTTP-API fot the EUDAT CDI.
 The primary goal is to allow users to ingest and retrieve data via a standard RESTful HTTP interface in order to:
 
--   hide the underlying technology from users,
--   lower the entry barrier to using EUDAT services,
--   simplify integration into existing workflows,
--   allow direct access to data assets held with the EUDAT CDI.
+-  hide the underlying technology from users,
+-  lower the entry barrier to using EUDAT services,
+-  simplify integration into existing workflows,
+-  allow direct access to data assets held with the EUDAT CDI.
 <!--
 Over the EUDAT2020 project other functionalities will be added: the development road map is available on the [EUDAT Wiki](https://confluence.csc.fi/display/EUDAT2/Service+building+roadmap)
 -->
@@ -26,31 +26,30 @@ The first stable release is focused on the interaction with the `B2SAFE` service
 
 ### Get started ###
 
--   try a [quick start](docs/quick_start.md)
--   see the latest [webinar](https://pdonorio.github.io/chapters/webinars/b2stage)
--   a demo [prototype](docs/prototype.md) of the current functionalities
+-  try a [quick start](docs/quick_start.md)
+-  see the latest [webinar](https://pdonorio.github.io/chapters/webinars/b2stage)
+-  a demo [prototype](docs/prototype.md) of the current functionalities
 
 ### User guide ###
 
--   [use](docs/user/user.md) an existing instance of the `HTTP-API`
--   [main authentication](docs/user/authentication.md) based on `B2ACCESS`
--   [alternative authentication](docs/user/authentication_b2safe.md) based on `B2SAFE`
--   [endpoints](docs/user/endpoints.md) description and examples
+-  [use](docs/user/user.md) an existing instance of the `HTTP-API`
+-  [main authentication](docs/user/authentication.md) based on `B2ACCESS`
+-  [alternative authentication](docs/user/authentication_b2safe.md) based on `B2SAFE`
+-  [endpoints](docs/user/endpoints.md) description and examples
 
 ### Administration ###
 
--   read the [pre-requisites](docs/deploy/preq.md) prior to installation
--   [startup](docs/deploy/startup.md) a working copy
--   deploy in two [modes](docs/deploy/modes.md)
--   define the [authentication mechanism](docs/deploy/authentication.md) to be applied
--   maintenance operations:
-    +   [debug](docs/deploy/debugging.md) the server operating on top of `B2SAFE` and fix eventual issues
-    +   keep your server [up-to-date](docs/deploy/updates.md)
+-  read the [pre-requisites](docs/deploy/preq.md) prior to installation
+-  [startup](docs/deploy/startup.md) a working copy
+-  deploy in two [modes](docs/deploy/modes.md)
+-  define the [authentication mechanism](docs/deploy/authentication.md) to be applied
+-  [debug](docs/deploy/debugging.md) the server operating on top of `B2SAFE` and fix eventual issues
+-  keep your server [up-to-date](docs/deploy/updates.md)
 
 ### Development ###
 
-- [add](docs/development/development.md) new features
-- extra [operations](docs/development/operations.md)
+-  [add](docs/development/development.md) new features
+-  extra [operations](docs/development/operations.md)
 
 
 ## Implementation ##
