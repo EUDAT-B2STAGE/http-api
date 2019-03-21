@@ -358,19 +358,22 @@ class Rancher(object):
             if element.name != container_name:
                 continue
 
+            """This patch does not work since Rancher is not able to
+            execute containers with same name, also if deployed
+            on different hosts. Also if verified here, the run will fail later"""
             # 'host_type=qc'
-            labels = element.labels
+            # labels = element.labels
 
-            host_label = labels.get(self._hostlabel)
+            # host_label = labels.get(self._hostlabel)
 
-            if host_label is not None:
-                expected = self.internal_labels(pull=False).get(self._hostlabel)
-                if host_label != expected:
-                    log.warning(
-                        "Found %s but deployed on %s (instead of %s). Skipping it",
-                        container_name, host_label, expected
-                    )
-                    continue
+            # if host_label is not None:
+            #     expected = self.internal_labels(pull=False).get(self._hostlabel)
+            #     if host_label != expected:
+            #         log.warning(
+            #             "Found %s but deployed on %s (instead of %s). Skipping it",
+            #             container_name, host_label, expected
+            #         )
+            #         continue
 
             return element
 
