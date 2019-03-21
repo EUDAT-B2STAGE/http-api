@@ -365,11 +365,9 @@ class Rancher(object):
 
             if host_label is not None:
                 expected = self.internal_labels(pull=False).get(self._hostlabel)
-                log.critical(host_label)
-                log.critical(expected)
                 if host_label != expected:
-                    log.info(
-                        "Skipping %s, it is deployed on %s (not %s)",
+                    log.warning(
+                        "Found %s but deployed on %s (instead of %s). Skipping it",
                         container_name, host_label, expected
                     )
                     continue
