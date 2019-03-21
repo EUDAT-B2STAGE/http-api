@@ -195,13 +195,17 @@ class ClusterContainerEndpoint(EndpointResource):
         return {'request_id': request_id, 'datetime': dt}
 
     @staticmethod
-    def get_container_name(batch_id, qc_name):
-        return '%s_%s' % (
-            batch_id,
-            qc_name
-            .replace('_', '').replace('-', '')
-            .replace(':', '').replace('.', '')
-        )
+    def get_container_name(batch_id, qc_name, qc_label=None):
+        qc_name = qc_name.replace(
+            '_', '').replace(
+            '-', '').replace(
+            ':', '').replace(
+            '.', '')
+
+        if qc_label is None:
+            return '%s_%s' % (batch_id, qc_name)
+
+        return '%s_%s_%s' % (batch_id, qc_label, qc_name)
 
     @staticmethod
     def get_container_image(qc_name, prefix=None):
