@@ -362,11 +362,9 @@ class Rancher(object):
             labels = element.labels
 
             host_label = labels.get(self._hostlabel)
-            log.critical(element.labels)
-            log.critical(host_label)
 
             if host_label is not None:
-                expected = self.internal_labels(pull=False)
+                expected = self.internal_labels(pull=False).get(self._hostlabel)
                 log.critical(host_label)
                 log.critical(expected)
                 if host_label != expected:
