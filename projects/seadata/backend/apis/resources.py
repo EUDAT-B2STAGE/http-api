@@ -141,8 +141,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ###################
         rancher = self.get_or_create_handle()
-        log.critical(rancher._qclabel)
-        container_name = self.get_container_name(batch_id, qc_name)
+        container_name = self.get_container_name(batch_id, qc_name, rancher._qclabel)
 
         # Duplicated quality checks on the same batch are not allowed
         container_obj = rancher.get_container_object(container_name)
