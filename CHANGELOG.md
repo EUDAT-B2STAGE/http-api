@@ -150,7 +150,7 @@ Currently B2ACCESS and B2SAFE are facing problems in sharing certificated creden
 
 ## features
 
--    Swagger integration
+-   Swagger integration
 -   Core refactoring to follow what swagger has unlocked
 -   B2SAFE and B2ACCESS development integration for online prototype
 -   `http-api-base` merge from concurrent projects
