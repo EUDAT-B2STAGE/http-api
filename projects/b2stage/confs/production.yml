@@ -13,7 +13,6 @@ services:
       # ACTIVATE: 1
       APP_MODE: production
       # FLASK_DEBUG: 0
-      DEBUG_LEVEL: ${LOG_LEVEL}
       NGINX_ACTIVE: "True"
 
     depends_on:
@@ -29,7 +28,7 @@ services:
   postgres:
     # Activate a production ready configuration
     volumes:
-      - ${SUBMODULE_DIR}/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
+      - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
 
   proxy:
     environment:

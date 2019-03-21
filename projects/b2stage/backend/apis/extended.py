@@ -11,6 +11,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/master/docs/user/endpoints.md
 """
 
 from restapi.flask_ext.flask_irods.client import IrodsException
+from restapi.exceptions import RestApiException
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons import PUBLIC_ENDPOINT
@@ -28,19 +29,23 @@ log = get_logger(__name__)
 class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     """ Handling PID on endpoint requests """
 
-    def eudat_pid(self, pid):
+    def eudat_pid(self, pid, head=False):
 
         # recover metadata from pid
-        metadata, bad_response = self.get_pid_metadata(pid)
+        metadata, bad_response = self.get_pid_metadata(pid, head_method=head)
         if bad_response is not None:
             return bad_response
         url = metadata.get('URL')
         if url is None:
             return self.send_errors(
                 message='B2HANDLE: empty URL_value returned',
-                code=hcodes.HTTP_BAD_NOTFOUND)
+                code=hcodes.HTTP_BAD_NOTFOUND,
+                head_method=head
+            )
 
         if not self.download_parameter():
+            if head:
+                return self.force_response("", code=hcodes.HTTP_OK_BASIC)
             return metadata
         # download is requested, trigger file download
 
@@ -63,14 +68,14 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
                 errors=[
                     "Data-object can't be downloaded by current " +
                     "HTTP-API server '%s'" % CURRENT_HTTPAPI_SERVER
-                ]
+                ],
+                head_method=head
             )
-
         r = self.init_endpoint()
         if r.errors is not None:
-            return self.send_errors(errors=r.errors)
-        url = self.download_object(r, url)
-        return url
+            return self.send_errors(errors=r.errors, head_method=head)
+
+        return self.download_object(r, url, head=head)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, pid):
@@ -79,5 +84,11 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         try:
             from seadata.apis.commons.seadatacloud import seadata_pid
             return seadata_pid(self, pid)
-        except BaseException:
-            return self.eudat_pid(pid)
+        except ImportError:
+            return self.eudat_pid(pid, head=False)
+
+    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    def head(self, pid):
+        """ Get metadata or file from pid """
+
+        return self.eudat_pid(pid, head=True)
