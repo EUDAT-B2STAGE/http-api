@@ -11,6 +11,7 @@ https://github.com/rancher/validation-tests/tree/master/tests/v2_validation/catt
 """
 
 import time
+from glom import glom
 from seadata.apis.commons.cluster import CONTAINERS_VARS
 from utilities.logs import get_logger
 log = get_logger(__name__)
@@ -352,12 +353,26 @@ class Rancher(object):
 
         ####################################
         for element in containers:
-            log.critical(element.__dict__)
+
             # NOTE: container name is unique in the whole cluster env
-            # print(element.get('name'), container_name)
-            if element.name == container_name:
-                # print("found", element)
-                return element
+            if element.name != container_name:
+                continue
+
+            # 'host_type=qc'
+            host_label = glom(element, "element.labels.host_label", default=None)
+
+            if host_label is not None:
+                expected = self.internal_labels(pull=False)
+                log.critical(host_label)
+                log.critical(expected)
+                if host_label != expected:
+                    log.info(
+                        "Skipping %s, it is deployed on %s (not %s)",
+                        container_name, host_label, expected
+                    )
+                    continue
+
+            return element
 
         return None
 
