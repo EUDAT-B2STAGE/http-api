@@ -140,7 +140,15 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         }
 
         ###################
-        rancher = self.get_or_create_handle()
+        try:
+            rancher = self.get_or_create_handle()
+        except BaseException as e:
+            log.critical(str(e))
+            return self.send_errors(
+                'Cannot establish a connection with Rancher',
+                code=hcodes.HTTP_SERVER_ERROR
+            )
+
         container_name = self.get_container_name(batch_id, qc_name, rancher._qclabel)
 
         # Duplicated quality checks on the same batch are not allowed
