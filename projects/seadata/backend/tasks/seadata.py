@@ -582,7 +582,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     errors.append({
                         "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
                         "description": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[1],
-                        "subject": filename
+                        "subject_alt": filename,
+                        "subject": pid
                     })
                     self.update_state(state="PROGRESS", meta={
                         'total': total, 'step': counter,
