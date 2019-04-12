@@ -7,12 +7,14 @@ services:
       ACTIVATE: 
 
   rabbit:
+    restart: always
     environment:
       ACTIVATE: ${ACTIVATE_RABBIT}
     ports:
       - ${CELERY_BROKER_PORT}:${CELERY_BROKER_PORT}
 
   mongodb:
+    restart: always
     environment:
       ACTIVATE: ${ACTIVATE_MONGODB}
     ports:
