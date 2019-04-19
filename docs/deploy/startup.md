@@ -51,7 +51,7 @@ $ rapydo init
 If you wish to __**manually upgrade**__:
 
 ```bash
-VERSION="0.6.5"
+VERSION="0.6.6"
 git checkout $VERSION
 
 # supposely the rapydo framework has been updated, so you need to check:
