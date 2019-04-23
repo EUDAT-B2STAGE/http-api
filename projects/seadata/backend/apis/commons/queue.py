@@ -98,6 +98,9 @@ It needs the following info from config:
 def log_into_queue(instance, dictionary_message):
     """ RabbitMQ in the EUDAT infrastructure """
 
+    # temporary disabled
+    return False
+
     log.verbose('LOG MESSAGE to be passed to log-queue: %s ' % dictionary_message)
 
     current_exchange = QUEUE_VARS.get('exchange')
