@@ -87,10 +87,14 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             self, json=json, user='anonymous', log_string='start')
         log_into_queue(self, msg)
 
+        log.info("DOWNLOAD DEBUG 1: %s (code '%s')", order_id, code)
+
         ##################
         # imain = self.get_service_instance(service_name='irods')
         imain = self.get_main_irods_connection()
+        log.info("DOWNLOAD DEBUG 2: %s (code '%s')", order_id, code)
         order_path = self.get_irods_order_path(imain, order_id)
+        log.info("DOWNLOAD DEBUG 3: %s (code '%s') - %s", order_id, code, order_path)
 
         zip_file_name = self.get_filename_from_type(order_id, ftype)
 
@@ -102,6 +106,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         error = "Order '%s' not found (or no permissions)" % order_id
 
         log.debug("Checking zip irods path: %s", zip_ipath)
+        log.info("DOWNLOAD DEBUG 4: %s (code '%s') - %s", order_id, code, zip_ipath)
         if not imain.is_dataobject(zip_ipath):
             log.error("File not found %s", zip_ipath)
             return self.send_errors(
@@ -109,12 +114,17 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_BAD_NOTFOUND
             )
 
+        log.info("DOWNLOAD DEBUG 5: %s (code '%s')", order_id, code)
+
         # TOFIX: we should use a database or cache to save this,
         # not irods metadata (known for low performances)
         metadata, _ = imain.get_metadata(zip_ipath)
+        log.info("DOWNLOAD DEBUG 6: %s (code '%s')", order_id, code)
         iticket_code = metadata.get('iticket_code')
+        log.info("DOWNLOAD DEBUG 7: %s (code '%s')", order_id, code)
 
         encoded_code = urllib.parse.quote_plus(code)
+        log.info("DOWNLOAD DEBUG 8: %s (code '%s')", order_id, code)
 
         if iticket_code != encoded_code:
             log.error("iticket code does not match %s", zip_ipath)
@@ -132,10 +142,12 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             password='null',
             authscheme='credentials'
         )
+        log.info("DOWNLOAD DEBUG 9: %s (code '%s')", order_id, code)
         # obj = self.init_endpoint()
         # icom = obj.icommands
         icom.ticket_supply(code)
 
+        log.info("DOWNLOAD DEBUG 10: %s (code '%s')", order_id, code)
         if not icom.test_ticket(zip_ipath):
             log.error("Invalid iticket code %s", zip_ipath)
             return self.send_errors(
@@ -162,6 +174,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         msg = prepare_message(
             self, json=json, log_string='end', status='sent')
         log_into_queue(self, msg)
+        log.info("DOWNLOAD DEBUG 11: %s (code '%s')", order_id, code)
         return icom.stream_ticket(zip_ipath, headers=headers)
 
 
