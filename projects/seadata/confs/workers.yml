@@ -21,6 +21,7 @@ services:
       - ${CELERY_BACKEND_PORT}:${CELERY_BACKEND_PORT}
 
   celery:
+    restart: on-failure:5
     build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q celery -n worker-%h
@@ -56,6 +57,7 @@ services:
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
 
   celeryui:
+    restart: on-failure:5
     build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     hostname: flower
@@ -99,6 +101,7 @@ services:
     # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
 
   ingestion_celery:
+    restart: on-failure:5
     build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
