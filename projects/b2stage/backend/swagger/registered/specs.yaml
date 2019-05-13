@@ -1,5 +1,3 @@
-depends_on:
-  - not SEADATA_PROJECT
 
 # The name of the REST class
 class: BasicEndpoint

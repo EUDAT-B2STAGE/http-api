@@ -56,9 +56,9 @@ Since the HTTP API server follows the `openapi` standard, you can query its endp
 
 ### python client
 
-You can find a [dedicated python module file](data/scripts/templates/client.py) to query the EUDAT B2STAGE HTTP-API.
+You can find a [dedicated python module file](../data/scripts/templates/client.py) to query the EUDAT B2STAGE HTTP-API.
 
-The script is already configured to work with a local deploy of the HTTP-API containers on your computer or to a remote host. Before using it open the file and [change](https://github.com/EUDAT-B2STAGE/http-api/blob/master/data/scripts/templates/client.py#L22-L23) the basic [parameters](https://github.com/EUDAT-B2STAGE/http-api/blob/master/data/scripts/templates/client.py#L27).
+The script is already configured to work with a local deploy of the HTTP-API containers on your computer or to a remote host. Before using it open the file and [change](../data/scripts/templates/client.py#L22-L23) the basic [parameters](../data/scripts/templates/client.py#L27).
 
 #### local
 

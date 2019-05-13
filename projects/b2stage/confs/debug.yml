@@ -1,28 +1,11 @@
-
 version: '3'
 
 services:
 
   backend:
-    # command: sleep infinity
-
-    # build: ../../../builds/backend
-    # # # Convention: use project/service:SOME_LABEL
-    # # # where SOME_LABEL != template, e.g. "custom"
-    # image: ${COMPOSE_PROJECT_NAME}/backend:custom
-
     environment:
-      # ACTIVATE: 1
-      # FLASK_DEBUG: 1
-      DEBUG_LEVEL: ${LOG_LEVEL}
-      # APP_MODE: debug
-      # this variables is switch to 1 with a send in .travis.yaml
-      TESTING: 0
+      TESTING: ${ACTIVATE_TESTING_MODE}
 
-      #################
-      # EUDAT RELATED
-      B2ACCESS_ENV: development
-      # B2ACCESS_ENV: staging
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
       #################
@@ -39,21 +22,10 @@ services:
     ports:
       - 8080:${FLASK_DEFAULT_PORT}
     depends_on:
-      - icat
+      # - icat
       - postgres
-      # - mongodb
-    volumes:
-      # Custom python repos
-      - ${SUBMODULE_DIR}/prc/irods:${PYTHON_PATH}/irods
 
   icat:
-
-
-    # build:
-    #   context: ${SUBMODULE_DIR}/build-templates/b2safe
-    #   # args:
-    #   #   RAPYDO_VERSION: ${RAPYDO_VERSION}
-    # image: rapydo/b2safe:${RAPYDO_VERSION}
 
     environment:
       ACTIVATE: 1
@@ -72,8 +44,7 @@ services:
       - etcconf:/etc
       - irodshome:/home/${IRODS_USER}
       - irodsvar:/var/lib/${IRODS_USER}
-      ####################
-      ## CERTIFICATES
+      # CERTIFICATES
       - sharedcerts:/opt/certificates
       # adds GSI users in our irods instance
       - ${SUBMODULE_DIR}/build-templates/icat/extra_gsi_users.sh:/docker-entrypoint.d/gsi.sh
@@ -90,7 +61,7 @@ services:
 
   restclient:
     environment:
-      ACTIVATE: 1
+      ACTIVATE: 0
       APP_HOST: ${FLASK_HOST}
       APP_PORT: :${FLASK_DEFAULT_PORT}
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
@@ -102,9 +73,6 @@ services:
     depends_on:
       - backend
 
-  # postgres:
-  #   volumes:
-  #     - ${SUBMODULE_DIR}/build-templates/postgres/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
   swaggerui:
     environment:
       API_URL: http://localhost:8080/api/specs

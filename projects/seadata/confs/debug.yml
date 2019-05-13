@@ -1,0 +1,17 @@
+version: '3'
+
+# no specific configuration for debug, all inherited from b2stage
+
+services:
+
+  rabbit:
+    environment:
+      ACTIVATE: ${ACTIVATE_RABBIT}
+    ports:
+      - ${CELERY_BROKER_PORT}:${CELERY_BROKER_PORT}
+
+  mongodb:
+    environment:
+      ACTIVATE: ${ACTIVATE_MONGODB}
+    ports:
+      - ${CELERY_BACKEND_PORT}:${CELERY_BACKEND_PORT}

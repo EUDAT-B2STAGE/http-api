@@ -4,9 +4,7 @@
 B2ACCESS utilities
 """
 
-import re
 import json
-import gssapi
 import requests
 from flask import session
 from base64 import b64encode
@@ -18,7 +16,7 @@ from urllib3.exceptions import HTTPError
 from restapi.services.oauth2clients import decorate_http_request
 from utilities.certificates import Certificates
 from utilities import htmlcodes as hcodes
-from b2stage.apis.commons import IRODS_EXTERNAL, InitObj
+from b2stage.apis.commons import IRODS_EXTERNAL
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -198,137 +196,6 @@ class B2accessUtilities(EndpointResource):
         log.info("New access token = %s", access_token)
 
         return access_token
-
-    # B2ACCESS proxy certificates are no longer required
-    # def obtain_proxy_certificate(self, auth, extuser):
-    #     """
-    #     Ask B2ACCESS a valid proxy certificate to access irods data.
-    #     Note: this certificates lasts 12 hours.
-    #     """
-    #     # To use the b2access token with oauth2 client
-    #     # We have to save it into session
-    #     key = 'b2access_token'
-    #     if key not in session or session.get(key, None) is None:
-    #         session[key] = (extuser.token, '')
-
-    #     # # invalidate token, for debug purpose
-    #     # session[key] = ('ABC', '')
-
-    #     # Create the object for accessing certificates in B2ACCESS
-    #     b2accessCA = auth._oauth2.get('b2accessCA')
-    #     b2access_prod = auth._oauth2.get('prod')
-
-    #     # Call the oauth2 object requesting a certificate
-    #     proxy_file = Certificates.proxy_from_ca(b2accessCA, prod=b2access_prod)
-
-    #     # Save the proxy filename into the database
-    #     if proxy_file is None:
-    #         log.pp(b2accessCA, "Failed oauth2")
-    #     else:
-    #         auth.store_proxy_cert(extuser, proxy_file)
-
-    #     return proxy_file
-
-    def set_irods_username(self, icom, auth, user):
-        """ Find out what is the irods username and save it """
-
-        # Does this user exist?
-        irods_user = icom.get_user_from_dn(user.certificate_dn)
-
-        if irods_user is None:
-            # Production / Real B2SAFE and irods instance
-            if IRODS_EXTERNAL:
-                log.error("No iRODS user related to certificate")
-                return None
-            # Using dockerized iRODS/B2SAFE
-
-            # NOTE: dockerized version does not know about the user
-            # because it has no sync script with B2ACCESS running
-
-            # NOTE: mapping is for common 'eudat' user for all.
-            # Of course it's only for debugging purpose.
-            irods_user = 'eudat'
-            # irods_user = user.unity
-
-            iadmin = self.get_service_instance(
-                service_name='irods', be_admin=True)
-
-            # User may exist without dn/certificate
-            if not iadmin.query_user_exists(irods_user):
-                # Add (as normal) user inside irods
-                iadmin.create_user(irods_user, admin=False)
-
-            irods_user_data = iadmin.list_user_attributes(irods_user)
-            if irods_user_data.get('dn') is None:
-                # Add DN to user access possibility
-                iadmin.modify_user_dn(
-                    irods_user,
-                    dn=user.certificate_dn, zone=irods_user_data['zone'])
-
-        # Update db to save the irods user related to this user account
-        auth.associate_object_to_attr(user, 'irodsuser', irods_user)
-
-        # Copy certificate in the dedicated path, and update db info
-        crt = Certificates.save_proxy_cert(
-            user.proxyfile, unityid=user.unity, user=irods_user)
-        auth.associate_object_to_attr(user, 'proxyfile', crt)
-
-        return irods_user
-
-    def check_proxy_certificate(self, extuser, e):
-
-        # Init the error and use it in above cases
-        error = str(e)
-
-        if isinstance(e, gssapi.raw.misc.GSSError):
-            # print("ECC", e)
-
-            # Proxy renewal operations on GSS errors
-            myre = r'credential:\s+([^\s]+)\s+' \
-                + r'with subject:\s+([^\n]+)\s+' \
-                + r'has expired\s+([0-9]+)\s+([^\s]+)\s+ago'
-            pattern = re.compile(myre)
-            mall = pattern.findall(error)
-            if len(mall) > 0:
-                m = mall.pop()
-                error = "'%s' became invalid %s %s ago. " \
-                    % (m[1], m[2], m[3])
-                log.info(error)
-
-                # Automatic regeneration
-                if self.refresh_proxy_certificate(extuser):
-                    log.info("Proxy refreshed")
-                    return None
-                else:
-                    error = \
-                        "B2ACCESS current Token is invalid or expired; " + \
-                        "please request a new one at %s" % '/auth/askauth'
-            else:
-                # Check other proxy problems
-                myre = r':\s+(Error reading[^\:\n]+:[^\n]+\n[^\n]+)\n'
-                pattern = re.compile(myre)
-                mall = pattern.findall(error)
-                if len(mall) > 0:
-                    m = mall.pop()
-                    error = 'Failed credentials: %s' % m.replace('\n', '')
-
-        return InitObj(errors=[error])
-
-    def refresh_proxy_certificate(self, extuser):
-
-        auth = self.auth
-        proxy_file = self.obtain_proxy_certificate(auth, extuser)
-        # check for errors
-        if proxy_file is None:
-            return False
-        else:
-            log.verbose("New proxy: %s" % proxy_file)
-
-        iadmin = self.get_service_instance('irods', be_admin=True)
-        irods_user = self.set_irods_username(iadmin, auth, extuser)
-        log.very_verbose("Updated %s" % irods_user)
-
-        return True
 
     def get_irods_user_from_b2access(self, icom, email):
         """ EUDAT RULE for b2access-to-b2safe user mapping """

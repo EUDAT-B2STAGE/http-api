@@ -18,22 +18,10 @@ services:
     environment:
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
 
-      ####################
-      ####################
-      # other projects variables
-
-      ####################
-      ##### SEADATA
-      SEADATA_PROJECT: ${SEADATA_PROJECT}
-      # The names of the directories in the irods zone
-      # for pre-production batches, for production batches,
-      # and for orders being prepared.
-      SEADATA_INGESTION_COLL: ${SEADATA_INGESTION_COLL}
-      SEADATA_PRODUCTION_COLL: ${SEADATA_PRODUCTION_COLL}
-      SEADATA_ORDERS_COLL: ${SEADATA_ORDERS_COLL}
-
     volumes:
-      - ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
+      # Workaroud to make this works in extended mode
+      # - ${PROJECT_DIR}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
+      - ${VANILLA_DIR}/projects/b2stage/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
 
   postgres:
     environment:
@@ -62,22 +50,12 @@ services:
       PROFILE_DISABLED: 1   # disable /auth/profile operations
       ADMINER_DISABLED: 1   # disable /admin/users operations
 
-      ##############################
-      # set this inside the MODE yaml files you want to use
-      # FLASK_DEBUG: 1
-      DEBUG_LEVEL: ${LOG_LEVEL}
-      APP_MODE: debug
-      ##############################
-
-      # project/package/prefix name
-      VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
-      PROJECT_DOMAIN: ${PROJECT_DOMAIN}
       UPLOAD_PATH: ${UPLOAD_PATH}
-      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       PUBLIC_ENDPOINT: ${API_PUBLIC_ENDPOINT}
       ENABLE_PUBLIC_ENDPOINT: ${ENABLE_PUBLIC_ENDPOINT}
       # app credentials to work inside the b2access environment
+      B2ACCESS_ENV: ${B2ACCESS_ENV}
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}
 
@@ -109,59 +87,6 @@ services:
       MONGO_PORT: ${MONGO_PORT}
 
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
-      # HANDLE_CREDENTIALS: ${HANDLE_CREDENTIALS_INTERNAL_PATH}/credentials.json
-
-      ####################
-      ####################
-      # other projects variables
-
-      ####################
-      ## SEADATA
-      SEADATA_PROJECT: ${SEADATA_PROJECT}
-      SEADATA_EDMO_CODE: ${SEADATA_EDMO_CODE}
-      SEADATA_INGESTION_COLL: ${SEADATA_INGESTION_COLL}
-      SEADATA_PRODUCTION_COLL: ${SEADATA_PRODUCTION_COLL}
-      SEADATA_ORDERS_COLL: ${SEADATA_ORDERS_COLL}
-      # The name of the directory in the local fs during ingestions
-      # (to be mounted to celery workers and rancher containers)
-      SEADATA_WORKSPACE_INGESTION: ${SEADATA_WORKSPACE_INGESTION} # host fs!
-      SEADATA_WORKSPACE_ORDERS: ${SEADATA_WORKSPACE_ORDERS}       # host fs!
-      SEADATA_API_IM_URL: ${SEADATA_API_IM_URL}
-      SEADATA_API_VERSION: ${SEADATA_API_VERSION}
-      SEADATA_RESOURCES_MOUNTPOINT: ${SEADATA_RESOURCES_MOUNTPOINT}
-      SEADATA_PRIVILEGED_USERS: ${SEADATA_PRIVILEGED_USERS}
-      # rancher
-      RESOURCES_URL: ${RESOURCES_URL}
-      RESOURCES_KEY: ${RESOURCES_KEY}
-      RESOURCES_SECRET: ${RESOURCES_SECRET}
-      RESOURCES_PROJECT: ${RESOURCES_PROJECT}
-      RESOURCES_QCLABEL: ${RESOURCES_QCLABEL}
-      RESOURCES_LOCALPATH: ${RESOURCES_LOCALPATH}
-      # hub
-      RESOURCES_HUB: ${RESOURCES_HUB}
-      RESOURCES_HUBUSER: ${RESOURCES_HUBUSER}
-      RESOURCES_HUBPASS: ${RESOURCES_HUBPASS}
-      # rabbit
-      RABBIT_ENABLE: ${SEADATA_PROJECT}
-      RABBIT_HOST: ${RABBIT_HOST}
-      RABBIT_PORT: ${RABBIT_PORT}
-      RABBIT_VHOST: ${RABBIT_VHOST}
-      RABBIT_USER: ${RABBIT_USER}
-      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
-      RABBIT_EXCHANGE: ${RABBIT_EXCHANGE}
-      RABBIT_QUEUE: ${RABBIT_QUEUE}
-      RABBIT_SSL_ENABLED: ${RABBIT_SSL_ENABLED}
-      # containers
-      CONTAINERS_DBUSER: ${CONTAINERS_DBUSER}
-      CONTAINERS_DBPASS: ${CONTAINERS_DBPASS}
-      CONTAINERS_DBEXTRAUSER: ${CONTAINERS_DBEXTRAUSER}
-      CONTAINERS_DBEXTRAPASS: ${CONTAINERS_DBEXTRAPASS}
-      CONTAINERS_RABBITUSER: ${CONTAINERS_RABBITUSER}
-      CONTAINERS_RABBITPASS: ${CONTAINERS_RABBITPASS}
-      CONTAINERS_WAIT_STOPPED: ${CONTAINERS_WAIT_STOPPED}
-      CONTAINERS_WAIT_RUNNING: ${CONTAINERS_WAIT_RUNNING}
-
-      ####################
 
   restclient:
     environment:

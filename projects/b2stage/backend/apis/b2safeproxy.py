@@ -103,17 +103,12 @@ class B2safeProxy(B2accessUtilities):
         }
         imain = self.get_service_instance(service_name='irods')
 
-        # from b2stage.apis.commons.seadatacloud import SEADATA_ENABLED
-        # if SEADATA_ENABLED:
-        #     from utilities import path
-        #     suffix_path = str(path.build(['batchs', irods_user]))
-        #     ingestion_path = imain.get_current_zone(suffix=suffix_path)
-        #     response['seadata_ingestion'] = \
-        #         ingestion_path  # avoid public access
-        # else:
-
         user_home = imain.get_user_home(irods_user)
-        response['b2safe_home'] = user_home
+        if imain.is_collection(user_home):
+            response['b2safe_home'] = user_home
+        else:
+            response['b2safe_home'] = imain.get_user_home(append_user=False)
+
         response['b2safe_user'] = irods_user
 
         return self.force_response(defined_content=response)
