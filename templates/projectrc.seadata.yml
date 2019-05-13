@@ -1,0 +1,98 @@
+# This is a template file for SeaDataCloud
+
+# This section overrides rapydo default parameters (automatically appended to every rapydo command)
+
+# Equivalent to rapydo --log-level INFO any_command
+log-level: INFO
+
+# If enabled submodules/utils and submodules/http-api will be mounted on backend container. This will allow you to update these package into the container without rebuilding the docker image
+# Equivalent to rapydo --development any_command
+# development: True
+
+# Equivalent to rapydo --project seadata any_command
+project: seadata
+
+# Equivalent to rapydo --mode production any_command
+mode: production
+
+# Will be used to create ssl certificates with Let's Encrypt
+# Equivalent to rapydo --hostname your.host.name any_command
+hostname: your.host.name
+
+# This section overrides project defaults. Here only the minimum configuration for SeadataCloud is reported, but you can add any other variable found in .env file
+# The .env file is produced by mixing the following configuration files:
+# 1 - submodules/rapydo-confs/projects_defaults.yaml
+# 2 - projects/b2stage/project_configuration.yaml
+# 3 - projects/seadata/project_configuration.yaml
+# 4 - this file
+
+project_configuration:
+  variables:
+    env:
+
+      # Can you obtain your code from http://seadatanet.maris2.nl
+      SEADATA_EDMO_CODE: your_edmo_code
+
+      # These user will be allowed to call privileged endpoints
+      # as POST /restricted and POST /pid_cache
+      SEADATA_PRIVILEGED_USERS: irods,users,with,privileges
+
+      # Based on where you deployed your irods/b2safe instance
+      IRODS_HOST: your_irods_host
+      IRODS_ZONE: your_irods_zone
+      IRODS_USER: your_irods_admin_username
+      IRODS_PASSWORD: your_irods_admin_password
+      # credentials = user defined in b2safe
+      # Other allowed values: PAM, GSI
+      IRODS_AUTHSCHEME: credentials
+
+      # Rancher
+      RESOURCES_URL: https://your_rancher_host/v2-beta
+      RESOURCES_KEY: your_rancher_api_key
+      RESOURCES_SECRET: your_rancher_api_secret
+      # Look at the URI or your environment in Rancher: https://your_rancher_host/env/your_rancher_project/infra/hosts
+      RESOURCES_PROJECT: your_rancher_project
+      # label assigned to quality check host in Rancher, default is qc
+      # RESOURCES_QCLABEL: qc 
+
+      # GRNET private docker hub
+      RESOURCES_HUB: private_docker_hub
+      # ask to GRNET for your credentials
+      RESOURCES_HUBUSER: private_docker_hub_user
+      RESOURCES_HUBPASS: private_docker_hub_password
+      # DKRZ RabbitMQ for logging
+      RABBIT_HOST: rabbitmq_logging_host
+      RABBIT_PORT: rabbitmq_logging_port
+      RABBIT_VHOST: rabbitmq_logging_virtual_host
+      # ask to DKRZ for your credentials
+      RABBIT_USER: your_rabbit_user
+      RABBIT_PASSWORD: your_rabbit_password
+      RABBIT_EXCHANGE: rabbitmq_exchange
+      RABBIT_QUEUE: rabbitmq_queue
+
+      # Based on where you deployed the --mode workers stack
+      CELERY_BROKER_HOST: your_rabbitmq_host
+      CELERY_BACKEND_HOST: your_mongodb_host
+      CELERY_BACKEND_PORT: your_mongodb_port__default_is_27017
+
+      # Based on where you deployed the Redis PID cache
+      REDIS_HOST: your_pid_queue_host
+
+      # Used from proxy for ssl certificate expiration warnings
+      # and to notify celery task errors (if other SMTP variables are set
+      SMTP_ADMIN: admin_email@yourhost.com
+
+      # The following variables are optional
+
+      SMTP_NOREPLY: from_address@yourhost.com
+      SMTP_HOST: your_smtp_host
+      SMTP_PORT: your_smtp_port
+      SMTP_USERNAME: your_smtp_username
+      SMTP_PASSWORD: your_smtp_password
+
+      # Set whatever you want, credentials will be injected in flower
+      CELERYUI_USER: your_flower_username
+      CELERYUI_PASSWORD: your_flower_password
+
+      # Default log level for HTTP APIs
+      LOG_LEVEL: DEBUG

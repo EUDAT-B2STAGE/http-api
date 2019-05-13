@@ -8,13 +8,8 @@ services:
     environment:
       ACTIVATE: 1
       FLASK_DEBUG: 1
-      DEBUG_LEVEL: ${LOG_LEVEL}
-      # DEBUG_LEVEL: VERBOSE
       APP_MODE: development
-      #################
-      # EUDAT RELATED
-      B2ACCESS_ENV: development
-      ##################
+
     depends_on:
       - icat
       - postgres
@@ -36,9 +31,3 @@ services:
       proxy_net:
     depends_on:
       - proxy
-
-# networks:
-#   app_net:
-#     ipam:
-#       config:
-#         - subnet: ${FLASK_SUBNET}/16

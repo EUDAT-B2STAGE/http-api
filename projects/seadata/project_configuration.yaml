@@ -1,0 +1,92 @@
+# ###############################################
+# Copyright 2011-2019 EUDAT CDI - www.eudat.eu
+# ###############################################
+
+project:
+  title: SeaDataCloud HTTP-API
+  description: Processing data in SeaDataCloud project
+  version: 1.0.6
+  rapydo: 0.6.5
+  extends: b2stage
+  extends-from: projects
+
+tags:
+  seadatacloud: endpoints related to the SeaDataCloud project
+  ingestion: submission of files to be approved into the cloud
+  order: request an order from the interface
+
+variables:
+  env:
+    SEADATA_API_VERSION: 1.0.6.0002
+
+    LOG_LEVEL: INFO # global, but can be configured separately in .projectrc 
+
+    ###############################
+    IRODS_ANONYMOUS: 1
+    # 72 hours
+    TOKEN_LONG_TTL: 259200
+    TOKEN_SHORT_TTL: 259200
+
+    ###############################
+    ## Seadata project variable
+    SEADATA_PROJECT: 1
+    SEADATA_EDMO_CODE:
+    # The names of the directories in the irods zone
+    # for pre-production batches, for production batches,
+    # and for orders being prepared.
+    SEADATA_INGESTION_COLL: batches  # on irods!
+    SEADATA_ORDERS_COLL: orders      # on irods!
+    SEADATA_PRODUCTION_COLL: cloud   # on irods!
+    SEADATA_PRIVILEGED_USERS:  # command separated list of privileges users
+
+    SEADATA_WORKSPACE_INGESTION: batches  # on filesystem (to be mounted to celery workers and rancher containers)
+    SEADATA_WORKSPACE_ORDERS: orders       # on filesystem (to be mounted to celery workers and rancher containers)
+    # SEADATA_BATCH_PROD_FILES_COLL: production
+    ## IM APIs
+    SEADATA_API_IM_URL: http://importmanager.seadatanet.org/api_v1
+    ## RANCHER
+    RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
+    RESOURCES_QCLABEL: qc
+    RESOURCES_KEY:
+    RESOURCES_SECRET:
+    RESOURCES_PROJECT:
+    ## PRIVATE DOCKERHUB
+    RESOURCES_HUB:
+    RESOURCES_HUBUSER:
+    RESOURCES_HUBPASS:
+    ## RABBIT SEADATA
+    RABBIT_HOST: rabbit.b2host.org
+    RABBIT_PORT: 5672
+    RABBIT_VHOST: elkstack
+    RABBIT_USER: elkuser
+    RABBIT_PASSWORD:
+    RABBIT_EXCHANGE: elkexchange
+    RABBIT_QUEUE: elkqueue
+    # RABBIT_SSL_ENABLED: false # can be 0, 1, true, false
+    RABBIT_SSL_ENABLED: 0 # can be 0, 1, true, false
+    ## OTHERS
+    REDIS_HOST: redis-cache-1
+    REDIS_PREFIX: 01T10
+    # CONTAINERS_RABBITUSER:
+    # CONTAINERS_RABBITPASS:
+    # CONTAINERS_DBUSER:
+    # CONTAINERS_DBPASS:
+    # CONTAINERS_DBEXTRAUSER:
+    # CONTAINERS_DBEXTRAPASS:
+    CONTAINERS_WAIT_STOPPED: false # can be 0, 1, true, false
+    CONTAINERS_WAIT_RUNNING: false # can be 0, 1, true, false
+
+    # This path is the host directory that is bind-mounted
+    # into the Rancher containers and into the Celery
+    # worker containers. (Has to be the same, as they
+    # exchange data).
+    # This path needs permissions to user 1001
+    # as owner of subdir 'ingestion' and 'cloud'
+    RESOURCES_LOCALPATH: /nfs/share
+    # This is the mount point of $RESOURCES_LOCALPATH inside the containers
+    # Note that this variable has only effect in backend and celery containers
+    # while QC containers uses an hard-code mount point (/usr/share)
+    SEADATA_RESOURCES_MOUNTPOINT: /usr/share
+   
+    CELERY_BACKEND: MONGODB
+    CELERY_BACKEND_PORT: 27017
