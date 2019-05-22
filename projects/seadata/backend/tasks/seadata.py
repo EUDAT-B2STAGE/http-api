@@ -136,6 +136,11 @@ def download_batch(self, batch_path, local_path, myjson):
                 ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
                 myjson, backdoor, self
             )
+        if download_path == '':
+            return notify_error(
+                ErrorCodes.EMPTY_DOWNLOAD_PATH_PARAM,
+                myjson, backdoor, self
+            )
 
         file_count = params.get("data_file_count")
         if file_count is None:
@@ -194,6 +199,13 @@ def download_batch(self, batch_path, local_path, myjson):
         try:
             r = requests.get(download_url, stream=True, verify=False)
         except requests.exceptions.ConnectionError:
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
+        except requests.exceptions.MissingSchema as e:
+            log.error(str(e))
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
