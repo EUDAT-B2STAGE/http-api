@@ -799,6 +799,11 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
                 myjson, backdoor, self
             )
+        if download_path == '':
+            return notify_error(
+                ErrorCodes.EMPTY_DOWNLOAD_PATH_PARAM,
+                myjson, backdoor, self
+            )
 
         # NAME OF FINAL ZIP
         filename = params.get('zipfile_name')
@@ -883,6 +888,13 @@ def download_restricted_order(self, order_id, order_path, myjson):
         try:
             r = requests.get(download_url, stream=True, verify=False)
         except requests.exceptions.ConnectionError:
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
+        except requests.exceptions.MissingSchema as e:
+            log.error(str(e))
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
