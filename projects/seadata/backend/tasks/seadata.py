@@ -1308,6 +1308,19 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
         return "COMPLETED"
 
 
+def recursive_list_files(imain, path):
+
+    data = []
+    for current in imain.list(path):
+        ifile = path.join(path, current, return_str=True)
+        if imain.is_dataobject(ifile):
+            data.append(ifile)
+        else:
+            data.extend(recursive_list_files(imain, ifile))
+
+    return data
+
+
 @celery_app.task(bind=True)
 @send_errors_by_email
 def cache_batch_pids(self, irods_path):
@@ -1324,7 +1337,8 @@ def cache_batch_pids(self, irods_path):
             'errors': 0,
         }
 
-        data = []
+        data = recursive_list_files(irods_path)
+        log.critical(len(data))
 
         for current in imain.list(irods_path):
             ifile = path.join(irods_path, current, return_str=True)
