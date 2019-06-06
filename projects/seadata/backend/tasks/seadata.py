@@ -1338,18 +1338,12 @@ def cache_batch_pids(self, irods_path):
         }
 
         data = recursive_list_files(imain, irods_path)
-        log.critical(len(data))
+        log.info("Found %s files", len(data))
 
-        for current in imain.list(irods_path):
-            ifile = path.join(irods_path, current, return_str=True)
-            if imain.is_collection(ifile):
-                continue
-            data.append(ifile)
+        # for current in imain.list(irods_path):
+        #     ifile = path.join(irods_path, current, return_str=True)
 
-        log.critical(len(data))
-
-        for current in imain.list(irods_path):
-            ifile = path.join(irods_path, current, return_str=True)
+        for ifile in data:
 
             stats['total'] += 1
 
