@@ -1324,8 +1324,19 @@ def cache_batch_pids(self, irods_path):
             'errors': 0,
         }
 
+        data = []
+
         for current in imain.list(irods_path):
             ifile = path.join(irods_path, current, return_str=True)
+            if self.is_collection(ifile):
+                continue
+            data.append(ifile)
+
+        log.critical(len(data))
+
+        for current in imain.list(irods_path):
+            ifile = path.join(irods_path, current, return_str=True)
+
             stats['total'] += 1
 
             pid = r.get(ifile)
