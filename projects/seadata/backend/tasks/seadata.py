@@ -1328,7 +1328,7 @@ def cache_batch_pids(self, irods_path):
 
         for current in imain.list(irods_path):
             ifile = path.join(irods_path, current, return_str=True)
-            if self.is_collection(ifile):
+            if imain.is_collection(ifile):
                 continue
             data.append(ifile)
 
