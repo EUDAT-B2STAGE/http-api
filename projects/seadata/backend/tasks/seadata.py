@@ -1337,7 +1337,7 @@ def cache_batch_pids(self, irods_path):
             'errors': 0,
         }
 
-        data = recursive_list_files(irods_path)
+        data = recursive_list_files(imain, irods_path)
         log.critical(len(data))
 
         for current in imain.list(irods_path):
