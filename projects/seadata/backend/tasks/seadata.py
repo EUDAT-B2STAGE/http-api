@@ -1308,11 +1308,11 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
         return "COMPLETED"
 
 
-def recursive_list_files(imain, path):
+def recursive_list_files(imain, irods_path):
 
     data = []
-    for current in imain.list(path):
-        ifile = path.join(path, current, return_str=True)
+    for current in imain.list(irods_path):
+        ifile = path.join(irods_path, current, return_str=True)
         if imain.is_dataobject(ifile):
             data.append(ifile)
         else:
