@@ -112,7 +112,7 @@ open http://petstore.swagger.io/?url=https://YOURDOMAIN.com/api/specs&docExpansi
 ### Periodically update the SSL certificate
 
 Certificates issued using "Let's encrypt" lasts 90 days.
-To make sure your certificate is always up-to-date you can setup a cron job to run every two months of the year.
+To make sure your certificate is always up-to-date you can setup a cron job to run every week.
 
 ```bash
 
@@ -120,8 +120,8 @@ To make sure your certificate is always up-to-date you can setup a cron job to r
 $ crontab -e
 
 # add this line
-30  0   1   2,4,6,8,10,12  *    cd /path/to/httpapi/code && rapydo ssl-certificate
-# runs the 1st day of even months of the year, at 00:30 AM
+30  0   *   *  1    cd /path/to/httpapi/code && rapydo ssl-certificate
+# runs every Monday at 00:30 AM
 
 # to check later on about cron jobs executions:
 less /var/log/cron
