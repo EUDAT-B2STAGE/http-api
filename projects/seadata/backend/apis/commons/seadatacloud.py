@@ -110,7 +110,7 @@ class ImportManagerAPI(object):
                 "The following json should be sent to ImportManagerAPI, " +
                 "but you enabled the backdoor")
             log.info(payload)
-            return True
+            return False
 
         from restapi.confs import PRODUCTION
         if not PRODUCTION:
@@ -123,6 +123,8 @@ class ImportManagerAPI(object):
         import requests
         # print("TEST", self._uri)
         r = requests.post(self._uri, json=payload)
+        log.info(r)
+        log.info(r.status_code)
 
         from utilities import htmlcodes as hcodes
         if r.status_code != hcodes.HTTP_OK_BASIC:
