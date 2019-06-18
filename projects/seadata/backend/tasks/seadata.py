@@ -328,7 +328,8 @@ def download_batch(self, batch_path, local_path, myjson):
         log.info("Copied: %s", irods_batch_file)
 
         request_edmo_code = myjson.get('edmo_code')
-        ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
+        ret = ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
+        log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
 
 
@@ -461,7 +462,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             myjson[key] = value
         if len(errors) > 0:
             myjson['errors'] = errors
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
 
         out = {
             'total': total, 'step': counter,
@@ -720,7 +722,6 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         #########################
         # NOTE: should I close the iRODS session ?
         #########################
-        pass
         # imain.prc
 
         ##################
@@ -747,7 +748,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             myjson['errors'] = errors
         myjson[reqkey] = self.request.id
         # log.pp(myjson)
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
 
         ##################
         out = {
@@ -1157,7 +1159,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
         if len(errors) > 0:
             myjson['errors'] = errors
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
 
         # 0 - avoid concurrent execution, introduce a cache like:
@@ -1238,7 +1241,8 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
 
         if len(errors) > 0:
             myjson['errors'] = errors
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
 
 
@@ -1304,7 +1308,8 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
 
         if len(errors) > 0:
             myjson['errors'] = errors
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
 
 
@@ -1449,6 +1454,7 @@ def list_resources(self, batch_path, order_path, myjson):
         for n in orders:
             myjson[param_key]['orders'].append(n)
 
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
 
         return "COMPLETED"

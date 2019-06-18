@@ -136,6 +136,9 @@ class ImportManagerAPI(object):
                 (r.status_code, self._uri))
             return True
 
+        log.warning("Unknown external APIs status")
+        return False
+
 
 # NOTE this function is outside the previous class, and self is passed as parameter
 def seadata_pid(self, pid):
