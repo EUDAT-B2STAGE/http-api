@@ -123,19 +123,18 @@ class ImportManagerAPI(object):
         import requests
         # print("TEST", self._uri)
         r = requests.post(self._uri, json=payload)
-        log.info(r)
-        log.info(r.status_code)
+        log.info("POST external IM API, status=%s, uri=%s", r.status_code, self._uri)
 
         from utilities import htmlcodes as hcodes
         if r.status_code != hcodes.HTTP_OK_BASIC:
             log.error(
                 "CDI: failed to call external APIs (status: %s, uri: %s)",
-                (r.status_code, self._uri))
+                r.status_code, self._uri)
             return False
         else:
             log.info(
                 "CDI: called POST on external APIs (status: %s, uri: %s)",
-                (r.status_code, self._uri))
+                r.status_code, self._uri)
             return True
 
         log.warning("Unknown external APIs status")
