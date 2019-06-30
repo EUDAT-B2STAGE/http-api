@@ -64,6 +64,7 @@ class ErrorCodes(object):
     MISSING_DOWNLOAD_PATH_PARAM = ("4041", "Parameter download_path is missing")
     UNABLE_TO_CREATE_ZIP_FILE = ("4042", "Unable to create merged zip file")
     INVALID_ZIP_SPLIT_OUTPUT = ("4043", "Unable to retrieve results from zip split")
+    EMPTY_DOWNLOAD_PATH_PARAM = ("4044", "Parameter download_path is empty")
 
 
 class Metadata(object):
@@ -109,7 +110,7 @@ class ImportManagerAPI(object):
                 "The following json should be sent to ImportManagerAPI, " +
                 "but you enabled the backdoor")
             log.info(payload)
-            return True
+            return False
 
         from restapi.confs import PRODUCTION
         if not PRODUCTION:
@@ -122,18 +123,22 @@ class ImportManagerAPI(object):
         import requests
         # print("TEST", self._uri)
         r = requests.post(self._uri, json=payload)
+        log.info("POST external IM API, status=%s, uri=%s", r.status_code, self._uri)
 
         from utilities import htmlcodes as hcodes
         if r.status_code != hcodes.HTTP_OK_BASIC:
             log.error(
                 "CDI: failed to call external APIs (status: %s, uri: %s)",
-                (r.status_code, self._uri))
+                r.status_code, self._uri)
             return False
         else:
             log.info(
                 "CDI: called POST on external APIs (status: %s, uri: %s)",
-                (r.status_code, self._uri))
+                r.status_code, self._uri)
             return True
+
+        log.warning("Unknown external APIs status")
+        return False
 
 
 # NOTE this function is outside the previous class, and self is passed as parameter

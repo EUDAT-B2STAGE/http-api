@@ -5,8 +5,8 @@
 project:
   title: SeaDataCloud HTTP-API
   description: Processing data in SeaDataCloud project
-  version: 1.0.6
-  rapydo: 0.6.5
+  version: 1.0.7
+  rapydo: 0.6.6
   extends: b2stage
   extends-from: projects
 
@@ -17,7 +17,7 @@ tags:
 
 variables:
   env:
-    SEADATA_API_VERSION: 1.0.6.0002
+    SEADATA_API_VERSION: 1.0.7.0002
 
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc 
 
@@ -43,7 +43,7 @@ variables:
     SEADATA_WORKSPACE_ORDERS: orders       # on filesystem (to be mounted to celery workers and rancher containers)
     # SEADATA_BATCH_PROD_FILES_COLL: production
     ## IM APIs
-    SEADATA_API_IM_URL: http://importmanager.seadatanet.org/api_v1
+    SEADATA_API_IM_URL: https://importmanager.seadatanet.org/api_v1
     ## RANCHER
     RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
     RESOURCES_QCLABEL: qc
