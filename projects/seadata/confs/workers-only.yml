@@ -7,18 +7,16 @@ services:
       ACTIVATE: 0
 
   rabbit:
-    restart: always
     environment:
-      ACTIVATE: ${ACTIVATE_RABBIT}
-    ports:
-      - ${CELERY_BROKER_PORT}:${CELERY_BROKER_PORT}
+      ACTIVATE: 0
 
   mongodb:
-    restart: always
     environment:
-      ACTIVATE: ${ACTIVATE_MONGODB}
-    ports:
-      - ${CELERY_BACKEND_PORT}:${CELERY_BACKEND_PORT}
+      ACTIVATE: 0
+
+  celeryui:
+    environment:
+      ACTIVATE: 0
 
   celery:
     restart: on-failure:5
@@ -55,50 +53,6 @@ services:
       IRODS_DN: ${IRODS_DN}
       IRODS_PASSWORD: ${IRODS_PASSWORD}
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
-
-  celeryui:
-    restart: on-failure:5
-    build: ${PROJECT_DIR}/builds/celery
-    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
-    hostname: flower
-    environment:
-      AUTH_ENABLE: 0
-      CELERY_EXTERNAL: 1
-      CELERYUI_USER: ${CELERYUI_USER}
-      CELERYUI_PASSWORD: ${CELERYUI_PASSWORD}
-      #############################
-      ACTIVATE: 1
-      MAIN_LOGIN_ENABLE: 0
-      JWT_APP_SECRETS: ${JWT_APP_SECRETS}
-      DEBUG_ENDPOINTS: 1
-      APP_MODE: production
-      DEBUG_LEVEL: ${LOG_LEVEL}
-      DOMAIN: ${PROJECT_DOMAIN}
-      SEADATA_PROJECT: ${SEADATA_PROJECT}
-      SEADATA_EDMO_CODE: ${SEADATA_EDMO_CODE}
-      SEADATA_API_IM_URL: ${SEADATA_API_IM_URL}
-      SEADATA_API_VERSION: ${SEADATA_API_VERSION}
-      SEADATA_WORKSPACE_INGESTION: ${SEADATA_WORKSPACE_INGESTION}
-      SEADATA_WORKSPACE_ORDERS: ${SEADATA_WORKSPACE_ORDERS}
-      SEADATA_RESOURCES_MOUNTPOINT: ${SEADATA_RESOURCES_MOUNTPOINT}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PREFIX: ${REDIS_PREFIX}
-      IRODS_ENABLE: 1
-      IRODS_HOST: ${IRODS_HOST}
-      IRODS_PORT: ${IRODS_PORT}
-      IRODS_USER: ${IRODS_USER}
-      IRODS_ZONE: ${IRODS_ZONE}
-      IRODS_HOME: ${IRODS_HOME}
-      IRODS_DN: ${IRODS_DN}
-      IRODS_PASSWORD: ${IRODS_PASSWORD}
-      IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
-      # SEADATA ELASTIC LOGS
-      # ELASTIC_ENABLE: ${SEADATA_PROJECT}
-      # ELASTIC_EXTERNAL: 1
-      # ELASTIC_HOST: ${ELASTIC_HOST}
-      # ELASTIC_PORT: ${ELASTIC_PORT}
-
-    # command: celery worker -c 1 -A rapydo.flask_ext.flask_celery.worker.celery_app
 
   ingestion_celery:
     restart: on-failure:5

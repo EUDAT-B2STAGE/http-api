@@ -136,6 +136,11 @@ def download_batch(self, batch_path, local_path, myjson):
                 ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
                 myjson, backdoor, self
             )
+        if download_path == '':
+            return notify_error(
+                ErrorCodes.EMPTY_DOWNLOAD_PATH_PARAM,
+                myjson, backdoor, self
+            )
 
         file_count = params.get("data_file_count")
         if file_count is None:
@@ -194,6 +199,13 @@ def download_batch(self, batch_path, local_path, myjson):
         try:
             r = requests.get(download_url, stream=True, verify=False)
         except requests.exceptions.ConnectionError:
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
+        except requests.exceptions.MissingSchema as e:
+            log.error(str(e))
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
@@ -316,7 +328,8 @@ def download_batch(self, batch_path, local_path, myjson):
         log.info("Copied: %s", irods_batch_file)
 
         request_edmo_code = myjson.get('edmo_code')
-        ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
+        ret = ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
+        log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
 
 
@@ -449,7 +462,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             myjson[key] = value
         if len(errors) > 0:
             myjson['errors'] = errors
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
 
         out = {
             'total': total, 'step': counter,
@@ -708,7 +722,6 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         #########################
         # NOTE: should I close the iRODS session ?
         #########################
-        pass
         # imain.prc
 
         ##################
@@ -735,7 +748,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             myjson['errors'] = errors
         myjson[reqkey] = self.request.id
         # log.pp(myjson)
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
 
         ##################
         out = {
@@ -785,6 +799,11 @@ def download_restricted_order(self, order_id, order_path, myjson):
         if download_path is None:
             return notify_error(
                 ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
+                myjson, backdoor, self
+            )
+        if download_path == '':
+            return notify_error(
+                ErrorCodes.EMPTY_DOWNLOAD_PATH_PARAM,
                 myjson, backdoor, self
             )
 
@@ -871,6 +890,13 @@ def download_restricted_order(self, order_id, order_path, myjson):
         try:
             r = requests.get(download_url, stream=True, verify=False)
         except requests.exceptions.ConnectionError:
+            return notify_error(
+                ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
+                myjson, backdoor, self,
+                subject=download_url
+            )
+        except requests.exceptions.MissingSchema as e:
+            log.error(str(e))
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
@@ -1039,7 +1065,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             log.info("Creating a backup copy of final zip")
             backup_zip = final_zip + ".bak"
             if imain.is_dataobject(backup_zip):
-                log.info("%s already exists, removing previous backup")
+                log.info("%s already exists, removing previous backup", backup_zip)
                 imain.remove(backup_zip)
             imain.move(final_zip, backup_zip)
 
@@ -1133,7 +1159,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
         if len(errors) > 0:
             myjson['errors'] = errors
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
 
         # 0 - avoid concurrent execution, introduce a cache like:
@@ -1214,7 +1241,8 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
 
         if len(errors) > 0:
             myjson['errors'] = errors
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
 
 
@@ -1280,8 +1308,22 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
 
         if len(errors) > 0:
             myjson['errors'] = errors
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
+
+
+def recursive_list_files(imain, irods_path):
+
+    data = []
+    for current in imain.list(irods_path):
+        ifile = path.join(irods_path, current, return_str=True)
+        if imain.is_dataobject(ifile):
+            data.append(ifile)
+        else:
+            data.extend(recursive_list_files(imain, ifile))
+
+    return data
 
 
 @celery_app.task(bind=True)
@@ -1300,8 +1342,14 @@ def cache_batch_pids(self, irods_path):
             'errors': 0,
         }
 
-        for current in imain.list(irods_path):
-            ifile = path.join(irods_path, current, return_str=True)
+        data = recursive_list_files(imain, irods_path)
+        log.info("Found %s files", len(data))
+
+        # for current in imain.list(irods_path):
+        #     ifile = path.join(irods_path, current, return_str=True)
+
+        for ifile in data:
+
             stats['total'] += 1
 
             pid = r.get(ifile)
@@ -1406,6 +1454,7 @@ def list_resources(self, batch_path, order_path, myjson):
         for n in orders:
             myjson[param_key]['orders'].append(n)
 
-        ext_api.post(myjson, backdoor=backdoor)
+        ret = ext_api.post(myjson, backdoor=backdoor)
+        log.info('CDI IM CALL = %s', ret)
 
         return "COMPLETED"
