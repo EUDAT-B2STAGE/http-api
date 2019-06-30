@@ -24,7 +24,7 @@ cd latest
 ################
 # install the corrensponding rapydo framework version
 sudo pip3 install rapydo-controller
-rapydo --project b2stage install --git 0.6.6
+rapydo --project b2stage install --git 0.6.7
 
 # build and run
 rapydo --project b2stage init
