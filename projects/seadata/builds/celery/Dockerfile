@@ -1,4 +1,4 @@
-FROM rapydo/backendirods:0.6.7
+FROM rapydo/backendirods:0.6.6
 MAINTAINER "Mattia D'Antonio <m.dantonio@cineca.it>"
 
 RUN apt-get update \

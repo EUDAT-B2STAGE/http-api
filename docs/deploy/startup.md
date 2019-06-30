@@ -5,7 +5,7 @@
 To clone the working code:
 
 ```bash
-$ VERSION=1.0.8 \
+$ VERSION=1.0.7 \
     && git clone https://github.com/EUDAT-B2STAGE/http-api.git \
     && cd http-api \
     && git checkout $VERSION
@@ -51,7 +51,7 @@ $ rapydo init
 If you wish to __**manually upgrade**__:
 
 ```bash
-VERSION="0.6.7"
+VERSION="0.6.6"
 git checkout $VERSION
 
 # supposely the rapydo framework has been updated, so you need to check:
