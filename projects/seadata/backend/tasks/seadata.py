@@ -246,7 +246,7 @@ def download_batch(self, batch_path, local_path, myjson):
         log.info("File checksum verified for %s", batch_file)
 
         # 3 - verify size
-        local_file_size = os.path.getsize(batch_file)
+        local_file_size = os.path.getsize(str(batch_file))
         if local_file_size != int(file_size):
             log.error(
                 "File size %s for %s, expected %s",
@@ -644,7 +644,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
             log.info("Copied zip to irods: %s", zip_ipath)
 
-            if os.path.getsize(zip_local_file) > MAX_ZIP_SIZE:
+            if os.path.getsize(str(zip_local_file)) > MAX_ZIP_SIZE:
                 log.warning("Zip too large, splitting %s", zip_local_file)
 
                 # Create a sub folder for split files. If already exists,
@@ -949,7 +949,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         log.info("File checksum verified for %s", local_zip_path)
 
         # 3 - verify size
-        local_file_size = os.path.getsize(local_zip_path)
+        local_file_size = os.path.getsize(str(local_zip_path))
         if local_file_size != int(file_size):
             log.error(
                 "File size %s for %s, expected %s",
@@ -1088,7 +1088,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
         if local_finalzip_path is None:
             log.warning("local_finalzip_path is None, unable to check size of file zip")
-        elif os.path.getsize(local_finalzip_path) > MAX_ZIP_SIZE:
+        elif os.path.getsize(str(local_finalzip_path)) > MAX_ZIP_SIZE:
             log.warning("Zip too large, splitting %s", local_finalzip_path)
 
             # Create a sub folder for split files. If already exists,
