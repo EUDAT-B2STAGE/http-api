@@ -324,7 +324,7 @@ def download_batch(self, batch_path, local_path, myjson):
         irods_batch_file = os.path.join(batch_path, file_name)
         log.debug("Copying %s into %s...", batch_file, irods_batch_file)
 
-        imain.put(batch_file, irods_batch_file)
+        imain.put(str(batch_file), irods_batch_file)
 
         # NOTE: permissions are inherited thanks to the ACL already SET
         # Not needed to set ownership to username
@@ -1018,7 +1018,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             # 7 - if not, simply copy partial_zip -> final_zip
             log.info("Final zip does not exist, copying partial zip")
             try:
-                imain.put(local_zip_path, final_zip)
+                imain.put(str(local_zip_path), final_zip)
             except IrodsException as e:
                 log.error(str(e))
                 return notify_error(
@@ -1079,7 +1079,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             imain.move(final_zip, backup_zip)
 
             log.info("Uploading final updated zip")
-            imain.put(local_finalzip_path, final_zip)
+            imain.put(str(local_finalzip_path), final_zip)
 
             # imain.remove(local_zip_path)
         rmtree(local_unzipdir, ignore_errors=True)
