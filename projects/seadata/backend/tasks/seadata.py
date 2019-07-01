@@ -264,7 +264,7 @@ def download_batch(self, batch_path, local_path, myjson):
         d = os.path.splitext(os.path.basename(str(batch_file)))[0]
         local_unzipdir = path.join(local_path, d)
 
-        if os.path.isdir(local_unzipdir):
+        if os.path.isdir(str(local_unzipdir)):
             log.warning("%s already exist, removing it", local_unzipdir)
             rmtree(local_unzipdir, ignore_errors=True)
 
@@ -967,7 +967,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         d = os.path.splitext(os.path.basename(str(local_zip_path)))[0]
         local_unzipdir = path.join(local_dir, d)
 
-        if os.path.isdir(local_unzipdir):
+        if os.path.isdir(str(local_unzipdir)):
             log.warning("%s already exist, removing it", local_unzipdir)
             rmtree(local_unzipdir, ignore_errors=True)
 
@@ -1245,7 +1245,7 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
 
             imain.remove(order_path, recursive=True)
 
-            if os.path.isdir(local_order_path):
+            if os.path.isdir(str(local_order_path)):
                 rmtree(local_order_path, ignore_errors=True)
 
         if len(errors) > 0:
@@ -1312,7 +1312,7 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
                 continue
             imain.remove(batch_path, recursive=True)
 
-            if os.path.isdir(local_batch_path):
+            if os.path.isdir(str(local_batch_path)):
                 rmtree(local_batch_path, ignore_errors=True)
 
         if len(errors) > 0:
