@@ -937,7 +937,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         # 2 - verify checksum
         log.info("Computing checksum for %s...", local_zip_path)
         local_file_checksum = hashlib.md5(
-            open(local_zip_path, 'rb').read()
+            open(str(local_zip_path), 'rb').read()
         ).hexdigest()
 
         if local_file_checksum.lower() != file_checksum.lower():
