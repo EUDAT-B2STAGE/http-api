@@ -223,7 +223,10 @@ def download_batch(self, batch_path, local_path, myjson):
         log.info("Request status = %s", r.status_code)
         batch_file = path.join(local_path, file_name)
 
-        with open(batch_file, 'wb') as f:
+        # from python 3.6
+        # with open(batch_file, 'wb') as f:
+        # up to python 3.5
+        with open(str(batch_file), 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
@@ -582,7 +585,10 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 try:
 
                     with imain.get_dataobject(ipath).open('r') as source:
-                        with open(local_file, 'wb') as target:
+                        # from python 3.6
+                        # with open(local_file, 'wb') as target:
+                        # up to python 3.5
+                        with open(str(local_file), 'wb') as target:
                             # for line in source:
                             #     target.write(line)
 
@@ -592,7 +598,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                                 if not data:
                                     break
                                 target.write(data)
-                except BaseException as e:
+                except BaseException:
                     errors.append({
                         "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
                         "description": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[1],
@@ -920,7 +926,10 @@ def download_restricted_order(self, order_id, order_path, myjson):
         local_zip_path = path.join(local_dir, file_name)
         log.info("partial_zip = %s", local_zip_path)
 
-        with open(local_zip_path, 'wb+') as f:
+        # from python 3.6
+        # with open(local_zip_path, 'wb') as f:
+        # up to python 3.5
+        with open(str(local_zip_path), 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
