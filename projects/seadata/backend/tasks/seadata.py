@@ -261,7 +261,7 @@ def download_batch(self, batch_path, local_path, myjson):
         log.info("File size verified for %s", batch_file)
 
         # 4 - decompress
-        d = os.path.splitext(os.path.basename(batch_file))[0]
+        d = os.path.splitext(os.path.basename(str(batch_file)))[0]
         local_unzipdir = path.join(local_path, d)
 
         if os.path.isdir(local_unzipdir):
@@ -964,7 +964,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         log.info("File size verified for %s", local_zip_path)
 
         # 4 - decompress
-        d = os.path.splitext(os.path.basename(local_zip_path))[0]
+        d = os.path.splitext(os.path.basename(str(local_zip_path)))[0]
         local_unzipdir = path.join(local_dir, d)
 
         if os.path.isdir(local_unzipdir):
@@ -1033,7 +1033,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
             log.info("Copying zipfile locally")
             local_finalzip_path = path.join(
-                local_dir, os.path.basename(final_zip))
+                local_dir, os.path.basename(str(final_zip)))
             imain.open(final_zip, local_finalzip_path)
 
             log.info("Reading local zipfile")
