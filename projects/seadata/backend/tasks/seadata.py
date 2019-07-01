@@ -274,7 +274,7 @@ def download_batch(self, batch_path, local_path, myjson):
         log.info("Unzipping %s", batch_file)
         zip_ref = None
         try:
-            zip_ref = zipfile.ZipFile(batch_file, 'r')
+            zip_ref = zipfile.ZipFile(str(batch_file), 'r')
         except FileNotFoundError:
             return notify_error(
                 ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
@@ -977,7 +977,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         log.info("Unzipping %s", local_zip_path)
         zip_ref = None
         try:
-            zip_ref = zipfile.ZipFile(local_zip_path, 'r')
+            zip_ref = zipfile.ZipFile(str(local_zip_path), 'r')
         except FileNotFoundError:
             return notify_error(
                 ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
@@ -1039,7 +1039,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             log.info("Reading local zipfile")
             zip_ref = None
             try:
-                zip_ref = zipfile.ZipFile(local_finalzip_path, 'a')
+                zip_ref = zipfile.ZipFile(str(local_finalzip_path), 'a')
             except FileNotFoundError:
                 log.error("Local file not found: %s", local_finalzip_path)
                 return notify_error(
