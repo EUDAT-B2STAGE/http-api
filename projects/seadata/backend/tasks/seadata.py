@@ -324,7 +324,7 @@ def download_batch(self, batch_path, local_path, myjson):
         irods_batch_file = os.path.join(batch_path, file_name)
         log.debug("Copying %s into %s...", batch_file, irods_batch_file)
 
-        imain.put(str(batch_file), irods_batch_file)
+        imain.put(str(batch_file), str(irods_batch_file))
 
         # NOTE: permissions are inherited thanks to the ACL already SET
         # Not needed to set ownership to username
@@ -394,7 +394,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             # 1. copy file (irods)
             ifile = path.join(irods_path, current_file_name, return_str=True)
             try:
-                imain.put(str(local_element), ifile)
+                imain.put(str(local_element), str(ifile))
             except BaseException as e:
                 log.error(e)
                 errors.append({
@@ -641,7 +641,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             ##################
             # Copy the zip into irods
             zip_ipath = path.join(order_path, zip_file_name, return_str=True)
-            imain.put(str(zip_local_file), zip_ipath)  # NOTE: always overwrite
+            imain.put(str(zip_local_file), str(zip_ipath))  # NOTE: always overwrite
             log.info("Copied zip to irods: %s", zip_ipath)
 
             if os.path.getsize(str(zip_local_file)) > MAX_ZIP_SIZE:
@@ -1018,7 +1018,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             # 7 - if not, simply copy partial_zip -> final_zip
             log.info("Final zip does not exist, copying partial zip")
             try:
-                imain.put(str(local_zip_path), final_zip)
+                imain.put(str(local_zip_path), str(final_zip))
             except IrodsException as e:
                 log.error(str(e))
                 return notify_error(
@@ -1079,7 +1079,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             imain.move(final_zip, backup_zip)
 
             log.info("Uploading final updated zip")
-            imain.put(str(local_finalzip_path), final_zip)
+            imain.put(str(local_finalzip_path), str(final_zip))
 
             # imain.remove(local_zip_path)
         rmtree(local_unzipdir, ignore_errors=True)
