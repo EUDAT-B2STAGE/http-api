@@ -920,7 +920,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         local_zip_path = path.join(local_dir, file_name)
         log.info("partial_zip = %s", local_zip_path)
 
-        with open(local_zip_path, 'wb') as f:
+        with open(local_zip_path, 'wb+') as f:
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
