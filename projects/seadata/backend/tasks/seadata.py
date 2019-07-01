@@ -635,7 +635,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             zip_local_file = path.join(local_dir, zip_file_name)
             log.debug("Zip local path: %s", zip_local_file)
             if not path.file_exists_and_nonzero(zip_local_file):
-                path.compress(local_zip_dir, str(zip_local_file))
+                path.compress(str(local_zip_dir), str(zip_local_file))
                 log.info("Compressed in: %s", zip_local_file)
 
             ##################
