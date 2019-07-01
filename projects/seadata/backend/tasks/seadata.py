@@ -234,7 +234,7 @@ def download_batch(self, batch_path, local_path, myjson):
         # 2 - verify checksum
         log.info("Computing checksum for %s...", batch_file)
         local_file_checksum = hashlib.md5(
-            open(batch_file, 'rb').read()
+            open(str(batch_file), 'rb').read()
         ).hexdigest()
 
         if local_file_checksum.lower() != file_checksum.lower():
@@ -1034,7 +1034,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             log.info("Copying zipfile locally")
             local_finalzip_path = path.join(
                 local_dir, os.path.basename(str(final_zip)))
-            imain.open(final_zip, local_finalzip_path)
+            imain.open(str(final_zip), str(local_finalzip_path))
 
             log.info("Reading local zipfile")
             zip_ref = None
