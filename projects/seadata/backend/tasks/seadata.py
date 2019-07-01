@@ -295,7 +295,7 @@ def download_batch(self, batch_path, local_path, myjson):
 
         # 6 - verify num files?
         local_file_count = 0
-        for f in os.listdir(local_unzipdir):
+        for f in os.listdir(str(local_unzipdir)):
             local_file_count += 1
         log.info("Unzipped %d files from %s", local_file_count, batch_file)
 
@@ -998,7 +998,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
         # 5 - verify num files?
         local_file_count = 0
-        for f in os.listdir(local_unzipdir):
+        for f in os.listdir(str(local_unzipdir)):
             local_file_count += 1
         log.info("Unzipped %d files from %s", local_file_count, local_zip_path)
 
@@ -1059,7 +1059,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             log.info("Adding files to local zipfile")
             if zip_ref is not None:
                 try:
-                    for f in os.listdir(local_unzipdir):
+                    for f in os.listdir(str(local_unzipdir)):
                         # log.debug("Adding %s", f)
                         zip_ref.write(
                             os.path.join(local_unzipdir, f), f)
