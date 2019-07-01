@@ -290,7 +290,7 @@ def download_batch(self, batch_path, local_path, myjson):
             )
 
         if zip_ref is not None:
-            zip_ref.extractall(local_unzipdir)
+            zip_ref.extractall(str(local_unzipdir))
             zip_ref.close()
 
         # 6 - verify num files?
@@ -993,7 +993,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             )
 
         if zip_ref is not None:
-            zip_ref.extractall(local_unzipdir)
+            zip_ref.extractall(str(local_unzipdir))
             zip_ref.close()
 
         # 5 - verify num files?
