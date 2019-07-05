@@ -24,11 +24,13 @@ services:
 
 
   redis:
-    image: redis:5.0.5 
+    image: redis:alpine
     command: redis-server --appendonly yes
     restart: on-failure:5
     volumes:
       # configuration files
       - redis_cache:/data
+    ports:
+      - 6379:6379
     environment:
       ACTIVATE: 1
