@@ -1,0 +1,33 @@
+version: '3'
+
+version: '3'
+
+# #####################
+# VOLUMES
+# #####################
+
+volumes:
+  redis_cache:
+    driver: local
+
+services:
+
+  backend:
+    environment:
+      ACTIVATE: 0
+  rabbit:
+    environment:
+      ACTIVATE: 0
+  mongodb:
+    environment:
+      ACTIVATE: 0
+
+
+  redis:
+    image: redis:5.0.5 
+    restart: on-failure:5
+    volumes:
+      # configuration files
+      - redis_cache:/data
+    environment:
+      ACTIVATE: 1
