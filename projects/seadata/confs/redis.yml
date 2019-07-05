@@ -25,6 +25,7 @@ services:
 
   redis:
     image: redis:5.0.5 
+    command: redis-server --appendonly yes
     restart: on-failure:5
     volumes:
       # configuration files
