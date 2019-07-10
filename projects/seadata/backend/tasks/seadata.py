@@ -1168,7 +1168,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
         if len(errors) > 0:
             myjson['errors'] = errors
-        ret = ext_api.post(myjson, backdoor=backdoor)
+        edmo_code = myjson.get('edmo_code', None)
+        ret = ext_api.post(myjson, backdoor=backdoor, edmo_code=edmo_code)
         log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
 
