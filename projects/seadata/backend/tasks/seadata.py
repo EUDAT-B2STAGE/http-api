@@ -77,7 +77,8 @@ logging.getLogger('b2handle').setLevel(logging.WARNING)
 b2handle_client = b2handle.instantiate_for_read_access()
 
 
-def notify_error(error, payload, backdoor, task, extra=None, subject=None):
+def notify_error(error, payload, backdoor, task,
+                 extra=None, subject=None, edmo_code=None):
 
     error_message = "Error %s: %s" % (error[0], error[1])
     log.error(error_message)
@@ -100,7 +101,7 @@ def notify_error(error, payload, backdoor, task, extra=None, subject=None):
             "but you enabled the backdoor")
         log.info(payload)
     else:
-        ext_api.post(payload)
+        ext_api.post(payload, edmo_code=edmo_code)
 
     task_errors = [error_message]
     if extra:
@@ -122,31 +123,36 @@ def download_batch(self, batch_path, local_path, myjson):
 
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
+        request_edmo_code = myjson.get('edmo_code', None)
 
         batch_number = params.get("batch_number")
         if batch_number is None:
             return notify_error(
                 ErrorCodes.MISSING_BATCH_NUMBER_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         download_path = params.get("download_path")
         if download_path is None:
             return notify_error(
                 ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
         if download_path == '':
             return notify_error(
                 ErrorCodes.EMPTY_DOWNLOAD_PATH_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         file_count = params.get("data_file_count")
         if file_count is None:
             return notify_error(
                 ErrorCodes.MISSING_FILECOUNT_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         try:
@@ -154,21 +160,24 @@ def download_batch(self, batch_path, local_path, myjson):
         except BaseException:
             return notify_error(
                 ErrorCodes.INVALID_FILECOUNT_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         file_name = params.get('file_name')
         if file_name is None:
             return notify_error(
                 ErrorCodes.MISSING_FILENAME_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         file_size = params.get("file_size")
         if file_size is None:
             return notify_error(
                 ErrorCodes.MISSING_FILESIZE_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         try:
@@ -176,21 +185,24 @@ def download_batch(self, batch_path, local_path, myjson):
         except BaseException:
             return notify_error(
                 ErrorCodes.INVALID_FILESIZE_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         file_checksum = params.get("file_checksum")
         if file_checksum is None:
             return notify_error(
                 ErrorCodes.MISSING_CHECKSUM_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         imain = celery_app.get_service(service='irods')
         if not imain.is_collection(batch_path):
             return notify_error(
                 ErrorCodes.BATCH_NOT_FOUND,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         # 1 - download the file
@@ -202,14 +214,16 @@ def download_batch(self, batch_path, local_path, myjson):
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
-                subject=download_url
+                subject=download_url,
+                edmo_code=request_edmo_code
             )
         except requests.exceptions.MissingSchema as e:
             log.error(str(e))
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
-                subject=download_url
+                subject=download_url,
+                edmo_code=request_edmo_code
             )
 
         if r.status_code != 200:
@@ -217,7 +231,8 @@ def download_batch(self, batch_path, local_path, myjson):
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
-                subject=download_url
+                subject=download_url,
+                edmo_code=request_edmo_code
             )
 
         log.info("Request status = %s", r.status_code)
@@ -241,7 +256,8 @@ def download_batch(self, batch_path, local_path, myjson):
             return notify_error(
                 ErrorCodes.CHECKSUM_DOESNT_MATCH,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
         log.info("File checksum verified for %s", batch_file)
 
@@ -255,7 +271,8 @@ def download_batch(self, batch_path, local_path, myjson):
             return notify_error(
                 ErrorCodes.FILESIZE_DOESNT_MATCH,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
 
         log.info("File size verified for %s", batch_file)
@@ -279,14 +296,16 @@ def download_batch(self, batch_path, local_path, myjson):
             return notify_error(
                 ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
 
         except zipfile.BadZipFile:
             return notify_error(
                 ErrorCodes.UNZIP_ERROR_INVALID_FILE,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
 
         if zip_ref is not None:
@@ -304,7 +323,8 @@ def download_batch(self, batch_path, local_path, myjson):
             return notify_error(
                 ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
 
         log.info("File count verified for %s", batch_file)
@@ -330,7 +350,6 @@ def download_batch(self, batch_path, local_path, myjson):
         # Not needed to set ownership to username
         log.info("Copied: %s", irods_batch_file)
 
-        request_edmo_code = myjson.get('edmo_code')
         ret = ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
         log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
@@ -781,6 +800,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         params = myjson.get('parameters', {})
 
         backdoor = params.pop('backdoor', False)
+        request_edmo_code = myjson.get('edmo_code', None)
 
         # Make sure you have a path with no trailing slash
         order_path = order_path.rstrip('/')
@@ -789,14 +809,16 @@ def download_restricted_order(self, order_id, order_path, myjson):
         if not imain.is_collection(order_path):
             return notify_error(
                 ErrorCodes.ORDER_NOT_FOUND,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         order_number = params.get("order_number")
         if order_number is None:
             return notify_error(
                 ErrorCodes.MISSING_ORDER_NUMBER_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         # check if order_numer == order_id ?
@@ -805,12 +827,14 @@ def download_restricted_order(self, order_id, order_path, myjson):
         if download_path is None:
             return notify_error(
                 ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
         if download_path == '':
             return notify_error(
                 ErrorCodes.EMPTY_DOWNLOAD_PATH_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         # NAME OF FINAL ZIP
@@ -818,7 +842,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
         if filename is None:
             return notify_error(
                 ErrorCodes.MISSING_ZIPFILENAME_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         base_filename = filename
@@ -843,42 +868,48 @@ def download_restricted_order(self, order_id, order_path, myjson):
         if file_name is None:
             return notify_error(
                 ErrorCodes.MISSING_FILENAME_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         file_size = params.get("file_size")
         if file_size is None:
             return notify_error(
                 ErrorCodes.MISSING_FILESIZE_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
         try:
             int(file_size)
         except BaseException:
             return notify_error(
                 ErrorCodes.INVALID_FILESIZE_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         file_count = params.get("data_file_count")
         if file_count is None:
             return notify_error(
                 ErrorCodes.MISSING_FILECOUNT_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
         try:
             int(file_count)
         except BaseException:
             return notify_error(
                 ErrorCodes.INVALID_FILECOUNT_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         file_checksum = params.get("file_checksum")
         if file_checksum is None:
             return notify_error(
                 ErrorCodes.MISSING_CHECKSUM_PARAM,
-                myjson, backdoor, self
+                myjson, backdoor, self,
+                edmo_code=request_edmo_code
             )
 
         self.update_state(state="PROGRESS")
@@ -899,14 +930,16 @@ def download_restricted_order(self, order_id, order_path, myjson):
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
-                subject=download_url
+                subject=download_url,
+                edmo_code=request_edmo_code
             )
         except requests.exceptions.MissingSchema as e:
             log.error(str(e))
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
-                subject=download_url
+                subject=download_url,
+                edmo_code=request_edmo_code
             )
 
         if r.status_code != 200:
@@ -914,7 +947,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
             return notify_error(
                 ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
                 myjson, backdoor, self,
-                subject=download_url
+                subject=download_url,
+                edmo_code=request_edmo_code
             )
 
         log.info("Request status = %s", r.status_code)
@@ -944,7 +978,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
             return notify_error(
                 ErrorCodes.CHECKSUM_DOESNT_MATCH,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
         log.info("File checksum verified for %s", local_zip_path)
 
@@ -958,7 +993,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
             return notify_error(
                 ErrorCodes.FILESIZE_DOESNT_MATCH,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
 
         log.info("File size verified for %s", local_zip_path)
@@ -982,14 +1018,16 @@ def download_restricted_order(self, order_id, order_path, myjson):
             return notify_error(
                 ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
 
         except zipfile.BadZipFile:
             return notify_error(
                 ErrorCodes.UNZIP_ERROR_INVALID_FILE,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
 
         if zip_ref is not None:
@@ -1007,7 +1045,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
             return notify_error(
                 ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
                 myjson, backdoor, self,
-                subject=file_name
+                subject=file_name,
+                edmo_code=request_edmo_code
             )
 
         log.info("File count verified for %s", local_zip_path)
@@ -1024,7 +1063,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 return notify_error(
                     ErrorCodes.B2SAFE_UPLOAD_ERROR,
                     myjson, backdoor, self,
-                    subject=file_name
+                    subject=file_name,
+                    edmo_code=request_edmo_code
                 )
             local_finalzip_path = local_zip_path
         else:
@@ -1045,7 +1085,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 return notify_error(
                     ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
                     myjson, backdoor, self,
-                    subject=final_zip
+                    subject=final_zip,
+                    edmo_code=request_edmo_code
                 )
 
             except zipfile.BadZipFile:
@@ -1053,7 +1094,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 return notify_error(
                     ErrorCodes.UNZIP_ERROR_INVALID_FILE,
                     myjson, backdoor, self,
-                    subject=final_zip
+                    subject=final_zip,
+                    edmo_code=request_edmo_code
                 )
 
             log.info("Adding files to local zipfile")
@@ -1068,7 +1110,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     return notify_error(
                         ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
                         myjson, backdoor, self,
-                        subject=final_zip
+                        subject=final_zip,
+                        edmo_code=request_edmo_code
                     )
 
             log.info("Creating a backup copy of final zip")
@@ -1121,14 +1164,16 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         extra = m.group(1)
                     return notify_error(
                         ErrorCodes.ZIP_SPLIT_ENTRY_TOO_LARGE,
-                        myjson, backdoor, self, extra=extra
+                        myjson, backdoor, self, extra=extra,
+                        edmo_code=request_edmo_code
                     )
                 else:
                     log.error(e.stdout)
 
                 return notify_error(
                     ErrorCodes.ZIP_SPLIT_ERROR,
-                    myjson, backdoor, self, extra=str(local_finalzip_path)
+                    myjson, backdoor, self, extra=str(local_finalzip_path),
+                    edmo_code=request_edmo_code
                 )
             # Parsing the zipsplit output to determine the output name
             # Long names are truncated to 7 characters, we want to come
@@ -1141,7 +1186,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
             if not m:
                 return notify_error(
                     ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
-                    myjson, backdoor, self, extra=str(local_finalzip_path)
+                    myjson, backdoor, self, extra=str(local_finalzip_path),
+                    edmo_code=request_edmo_code
                 )
 
             prefix = m.group(1)
@@ -1168,8 +1214,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
         if len(errors) > 0:
             myjson['errors'] = errors
-        edmo_code = myjson.get('edmo_code', None)
-        ret = ext_api.post(myjson, backdoor=backdoor, edmo_code=edmo_code)
+
+        ret = ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
         log.info('CDI IM CALL = %s', ret)
         return "COMPLETED"
 
