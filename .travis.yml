@@ -24,7 +24,9 @@ script:
 - rapydo pull
 - rapydo start
 - rapydo shell backend --command 'restapi tests --wait'
+- backend_container=$(docker-compose ps -q backend)
+- docker exec it $backend_container coveralls
 
 # coverage within a docker container
-after_success:
-- rapydo --log-level VERBOSE coverall
+# after_success:
+# - rapydo --log-level VERBOSE coverall
