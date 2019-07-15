@@ -1104,7 +1104,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     for f in os.listdir(str(local_unzipdir)):
                         # log.debug("Adding %s", f)
                         zip_ref.write(
-                            os.path.join(local_unzipdir, f), f)
+                            os.path.join(str(local_unzipdir), f), f)
                     zip_ref.close()
                 except BaseException as e:
                     log.error(e)
