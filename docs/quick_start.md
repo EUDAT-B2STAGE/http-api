@@ -112,7 +112,14 @@ open http://petstore.swagger.io/?url=https://YOURDOMAIN.com/api/specs&docExpansi
 ### Periodically update the SSL certificate
 
 Certificates issued using "Let's encrypt" lasts 90 days.
-To make sure your certificate is always up-to-date you can setup a cron job to run every two months of the year.
+To make sure your certificate is always up-to-date you can setup a cron job to run every week.
+
+Crontab have some limitations due to the simplified environment used to execute commands, to overcome that limitations you have to:
+
+1. provide absolute path to your rapydo executable (probably `/usr/local/bin/rapydo` ?)
+2. set `COMPOSE_INTERACTIVE_NO_CLI=1` to prevent Compose to use the Docker CLI for interactive `run` and `exec`operations.
+3. enable `--no-tty` flag to disable pseudo-tty allocation (by default docker-compose run                         allocates a TTY, not available from crontab)
+4. you will haven't access to the command output. If you desire, your can redirect the output on a file
 
 ```bash
 
@@ -120,11 +127,13 @@ To make sure your certificate is always up-to-date you can setup a cron job to r
 $ crontab -e
 
 # add this line
-30  0   1   2,4,6,8,10,12  *    cd /path/to/httpapi/code && rapydo ssl-certificate
-# runs the 1st day of even months of the year, at 00:30 AM
+30  0   *   *  1    cd /path/to/httpapi/code && COMPOSE_INTERACTIVE_NO_CLI=1 /usr/local/bin/rapydo ssl-certificate --no-tty > ~/cron.log 2>&1 
+# runs every Monday at 00:30 AM
 
 # to check later on about cron jobs executions:
 less /var/log/cron
+
+less ~/cron.log
 ```
 
 ## Other actions
