@@ -1107,7 +1107,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                             os.path.join(local_unzipdir, f), f)
                     zip_ref.close()
                 except BaseException as e:
-                    print(e)
+                    log.error(e)
                     return notify_error(
                         ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
                         myjson, backdoor, self,
