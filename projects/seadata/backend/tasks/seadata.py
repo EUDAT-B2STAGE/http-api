@@ -581,6 +581,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 ipath = pmaker.parse_pid_dataobject_path(b2handle_output)
                 log.verbose("PID verified: %s\n(%s)", pid, ipath)
                 files[pid] = ipath
+                r.set(pid, ipath)
+                r.set(ipath, pid)
 
                 verified += 1
                 self.update_state(state="PROGRESS", meta={
