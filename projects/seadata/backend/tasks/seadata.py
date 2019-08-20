@@ -283,7 +283,7 @@ def download_batch(self, batch_path, local_path, myjson):
 
         if os.path.isdir(str(local_unzipdir)):
             log.warning("%s already exist, removing it", local_unzipdir)
-            rmtree(local_unzipdir, ignore_errors=True)
+            rmtree(str(local_unzipdir), ignore_errors=True)
 
         path.create(local_unzipdir, directory=True, force=True)
         log.info("Local unzip dir = %s", local_unzipdir)
@@ -329,7 +329,7 @@ def download_batch(self, batch_path, local_path, myjson):
 
         log.info("File count verified for %s", batch_file)
 
-        rmtree(local_unzipdir, ignore_errors=True)
+        rmtree(str(local_unzipdir), ignore_errors=True)
 
         # 7 - copy file from B2HOST filesystem to irods
 
@@ -1005,7 +1005,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
         if os.path.isdir(str(local_unzipdir)):
             log.warning("%s already exist, removing it", local_unzipdir)
-            rmtree(local_unzipdir, ignore_errors=True)
+            rmtree(str(local_unzipdir), ignore_errors=True)
 
         path.create(local_dir, directory=True, force=True)
         log.info("Local unzip dir = %s", local_unzipdir)
@@ -1126,7 +1126,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             imain.put(str(local_finalzip_path), str(final_zip))
 
             # imain.remove(local_zip_path)
-        rmtree(local_unzipdir, ignore_errors=True)
+        rmtree(str(local_unzipdir), ignore_errors=True)
 
         self.update_state(state="COMPLETED")
 
@@ -1291,9 +1291,8 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
 
             imain.remove(order_path, recursive=True)
 
-            log.critical(local_order_path)
             if os.path.isdir(str(local_order_path)):
-                rmtree(local_order_path, ignore_errors=True)
+                rmtree(str(local_order_path), ignore_errors=True)
 
         if len(errors) > 0:
             myjson['errors'] = errors
@@ -1360,7 +1359,7 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
             imain.remove(batch_path, recursive=True)
 
             if os.path.isdir(str(local_batch_path)):
-                rmtree(local_batch_path, ignore_errors=True)
+                rmtree(str(local_batch_path), ignore_errors=True)
 
         if len(errors) > 0:
             myjson['errors'] = errors
