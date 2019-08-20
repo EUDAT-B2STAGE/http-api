@@ -728,7 +728,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 for index in range(1, 100):
                     index = str(index).zfill(2)
                     subzip_file = path.append_compress_extension(
-                        "%s%d" % (prefix, index)
+                        "%s%s" % (prefix, index)
                     )
                     subzip_path = path.join(split_path, subzip_file)
 
@@ -737,7 +737,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         break
 
                     subzip_ifile = path.append_compress_extension(
-                        "%s%d" % (base_filename, index)
+                        "%s%s" % (base_filename, index)
                     )
                     subzip_ipath = path.join(order_path, subzip_ifile)
 
@@ -1195,7 +1195,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
             for index in range(1, 100):
                 index = str(index).zfill(2)
                 subzip_file = path.append_compress_extension(
-                    "%s%d" % (prefix, index)
+                    "%s%s" % (prefix, index)
                 )
                 subzip_path = path.join(split_path, subzip_file)
 
@@ -1204,7 +1204,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     break
 
                 subzip_ifile = path.append_compress_extension(
-                    "%s%d" % (base_filename, index)
+                    "%s%s" % (base_filename, index)
                 )
                 subzip_ipath = path.join(order_path, subzip_ifile)
 
