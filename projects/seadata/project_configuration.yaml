@@ -55,6 +55,7 @@ variables:
     RESOURCES_HUBUSER:
     RESOURCES_HUBPASS:
     ## RABBIT SEADATA
+    ACTIVATE_LOGGING_RABBIT: 0
     RABBIT_HOST: rabbit.b2host.org
     RABBIT_PORT: 5672
     RABBIT_VHOST: elkstack
