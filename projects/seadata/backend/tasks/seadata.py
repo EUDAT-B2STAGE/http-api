@@ -726,7 +726,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 base_filename, _ = os.path.splitext(zip_file_name)
                 prefix = m.group(1)
                 for index in range(1, 100):
-                    index = str(index).zfill(2)
+                    # index = str(index).zfill(2)
                     subzip_file = path.append_compress_extension(
                         "%s%d" % (prefix, index)
                     )
