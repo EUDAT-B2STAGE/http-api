@@ -1291,6 +1291,7 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
 
             imain.remove(order_path, recursive=True)
 
+            log.critical(local_order_path)
             if os.path.isdir(str(local_order_path)):
                 rmtree(local_order_path, ignore_errors=True)
 
