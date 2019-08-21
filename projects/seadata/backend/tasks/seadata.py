@@ -709,7 +709,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         myjson, backdoor, self, extra=str(zip_local_file)
                     )
 
-                regexp = '^.*([0-9]+).zip$'
+                regexp = '^.*[^0-9]([0-9]+).zip$'
                 zip_files = os.listdir(split_path)
                 base_filename, _ = os.path.splitext(zip_file_name)
                 for subzip_file in zip_files:
@@ -720,7 +720,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
                             myjson, backdoor, self, extra=str(zip_local_file)
                         )
-                    index = m.group(1)
+                    index = m.group(1).lstrip('0')
                     subzip_path = path.join(split_path, subzip_file)
 
                     subzip_ifile = path.append_compress_extension(
@@ -1164,7 +1164,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     edmo_code=request_edmo_code
                 )
 
-            regexp = '^.*([0-9]+).zip$'
+            regexp = '^.*[^0-9]([0-9]+).zip$'
             zip_files = os.listdir(split_path)
             for subzip_file in zip_files:
                 m = re.search(regexp, subzip_file)
@@ -1174,7 +1174,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
                         myjson, backdoor, self, extra=str(local_finalzip_path)
                     )
-                index = m.group(1)
+                index = m.group(1).lstrip('0')
                 subzip_path = path.join(split_path, subzip_file)
 
                 subzip_ifile = path.append_compress_extension(
