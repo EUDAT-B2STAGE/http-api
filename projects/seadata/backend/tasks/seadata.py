@@ -665,7 +665,6 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             imain.put(str(zip_local_file), str(zip_ipath))  # NOTE: always overwrite
             log.info("Copied zip to irods: %s", zip_ipath)
 
-            MAX_ZIP_SIZE = 1000000
             if os.path.getsize(str(zip_local_file)) > MAX_ZIP_SIZE:
                 log.warning("Zip too large, splitting %s", zip_local_file)
 
