@@ -708,36 +708,22 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         myjson, backdoor, self, extra=str(zip_local_file)
                     )
 
-                # Parsing the zipsplit output to determine the output name
-                # Long names are truncated to 7 characters, we want to come
-                # back to the previous names
-                out_array = out.split('\n')
-                # example of out_array[1]:
-                # creating: /usr/share/orders/zip_split/130900/order-01.zip
-                regexp = 'creating: %s/(.*)1.zip' % split_path
-                m = re.search(regexp, out_array[1])
-                if not m:
-                    return notify_error(
-                        ErrorCodes.ZIP_SPLIT_ERROR,
-                        myjson, backdoor, self, extra=str(zip_local_file)
-                    )
-
-                # Remove the .zip extention
+                regexp = '^.*([0-9]+).zip$'
+                zip_files = os.listdir(split_path)
                 base_filename, _ = os.path.splitext(zip_file_name)
-                prefix = m.group(1)
-                for index in range(1, 100):
-                    # index = str(index).zfill(2)
-                    subzip_file = path.append_compress_extension(
-                        "%s%d" % (prefix, index)
-                    )
+                for subzip_file in zip_files:
+                    m = re.search(regexp, subzip_file)
+                    if not m:
+                        log.error("Cannot extract index from zip name: %s", subzip_file)
+                        return notify_error(
+                            ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
+                            myjson, backdoor, self, extra=str(zip_local_file)
+                        )
+                    index = m.group(1)
                     subzip_path = path.join(split_path, subzip_file)
 
-                    if not path.file_exists_and_nonzero(subzip_path):
-                        log.info("No more files to be uploaded")
-                        break
-
                     subzip_ifile = path.append_compress_extension(
-                        "%s%d" % (base_filename, index)
+                        "%s%s" % (base_filename, index)
                     )
                     subzip_ipath = path.join(order_path, subzip_ifile)
 
@@ -1176,35 +1162,22 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     myjson, backdoor, self, extra=str(local_finalzip_path),
                     edmo_code=request_edmo_code
                 )
-            # Parsing the zipsplit output to determine the output name
-            # Long names are truncated to 7 characters, we want to come
-            # back to the previous names
-            out_array = out.split('\n')
-            # example of out_array[1]:
-            # creating: /usr/share/orders/zip_split/130900/order_p1.zip
-            regexp = 'creating: %s/(.*)1.zip' % split_path
-            m = re.search(regexp, out_array[1])
-            if not m:
-                return notify_error(
-                    ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
-                    myjson, backdoor, self, extra=str(local_finalzip_path),
-                    edmo_code=request_edmo_code
-                )
 
-            prefix = m.group(1)
-            for index in range(1, 100):
-                # index = str(index).zfill(2)
-                subzip_file = path.append_compress_extension(
-                    "%s%d" % (prefix, index)
-                )
+            regexp = '^.*([0-9]+).zip$'
+            zip_files = os.listdir(split_path)
+            for subzip_file in zip_files:
+                m = re.search(regexp, subzip_file)
+                if not m:
+                    log.error("Cannot extract index from zip name: %s", subzip_file)
+                    return notify_error(
+                        ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
+                        myjson, backdoor, self, extra=str(local_finalzip_path)
+                    )
+                index = m.group(1)
                 subzip_path = path.join(split_path, subzip_file)
 
-                if not path.file_exists_and_nonzero(subzip_path):
-                    log.info("No more files to be uploaded")
-                    break
-
                 subzip_ifile = path.append_compress_extension(
-                    "%s%d" % (base_filename, index)
+                    "%s%s" % (base_filename, index)
                 )
                 subzip_ipath = path.join(order_path, subzip_ifile)
 
