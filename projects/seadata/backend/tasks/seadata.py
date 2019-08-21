@@ -26,8 +26,7 @@ from utilities.logs import get_logger, logging
 
 # Size in bytes
 # TODO: move me into the configuration
-# MAX_ZIP_SIZE = 2147483648  # 2 gb
-MAX_ZIP_SIZE = 2000000
+MAX_ZIP_SIZE = 2147483648  # 2 gb
 ####################
 
 log = get_logger(__name__)
@@ -666,6 +665,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             imain.put(str(zip_local_file), str(zip_ipath))  # NOTE: always overwrite
             log.info("Copied zip to irods: %s", zip_ipath)
 
+            MAX_ZIP_SIZE = 60232
             if os.path.getsize(str(zip_local_file)) > MAX_ZIP_SIZE:
                 log.warning("Zip too large, splitting %s", zip_local_file)
 
