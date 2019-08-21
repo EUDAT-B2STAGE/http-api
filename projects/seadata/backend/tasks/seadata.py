@@ -26,7 +26,8 @@ from utilities.logs import get_logger, logging
 
 # Size in bytes
 # TODO: move me into the configuration
-MAX_ZIP_SIZE = 2147483648  # 2 gb
+# MAX_ZIP_SIZE = 2147483648  # 2 gb
+MAX_ZIP_SIZE = 100000
 ####################
 
 log = get_logger(__name__)
