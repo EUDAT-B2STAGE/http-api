@@ -1290,12 +1290,17 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
 
+        params = myjson.get('parameters', {})
+        backdoor = params.pop('backdoor', False)
+
+        if 'request_id' not in myjson:
+            return notify_error(
+                ErrorCodes.MISSING_REQUESTID,
+                myjson, backdoor, self
+            )
+
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
-
-        params = myjson.get('parameters', {})
-
-        backdoor = params.pop('backdoor', False)
 
         batches = myjson['parameters'].pop('batches', None)
         if batches is None:
