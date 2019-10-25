@@ -45,19 +45,28 @@ class ErrorCodes(object):
     B2HANDLE_ERROR = ("4021", "PID server (b2handle) unreachable")
     UNABLE_TO_DOWNLOAD_FILE = ("4022", "Unable to download the file")
     ZIP_SPLIT_ERROR = ("4023", "Zip split unexpected error")
-    ZIP_SPLIT_ENTRY_TOO_LARGE = ("4024", "One or more files are larger than max zip size")
+    ZIP_SPLIT_ENTRY_TOO_LARGE = (
+        "4024",
+        "One or more files are larger than max zip size",
+    )
     MISSING_BATCHES_PARAMETER = ("4025", "Parameter batches is missing")
     MISSING_ORDERS_PARAMETER = ("4026", "Parameter orders is missing")
     EMPTY_BATCHES_PARAMETER = ("4027", "Parameter batches is empty")
     EMPTY_ORDERS_PARAMETER = ("4028", "Parameter orders is empty")
     MISSING_CHECKSUM_PARAM = ("4029", "Parameter file_checksum is missing")
-    INVALID_ZIPFILENAME_PARAM = ("4030", "Invalid parameter zipfile_name, list expected")
+    INVALID_ZIPFILENAME_PARAM = (
+        "4030",
+        "Invalid parameter zipfile_name, list expected",
+    )
     INVALID_CHECKSUM_PARAM = ("4031", "Invalid parameter file_checksum, list expected")
     INVALID_ZIPFILENAME_LENGTH = ("4032", "Unexpected lenght of zipfile_name parameter")
     INVALID_FILESIZE_LENGTH = ("4033", "Unexpected lenght of file_size parameter")
     INVALID_FILECOUNT_LENGTH = ("4034", "Unexpected lenght of file_count parameter")
     INVALID_CHECKSUM_LENGTH = ("4035", "Unexpected lenght of file_checksum parameter")
-    INVALID_FILENAME_PARAM = ("4036", "Invalid parameter zipfile_name, a string is expected")
+    INVALID_FILENAME_PARAM = (
+        "4036",
+        "Invalid parameter zipfile_name, a string is expected",
+    )
     MISSING_BATCH_NUMBER_PARAM = ("4037", "Parameter batch_number is missing")
     UNREACHABLE_DOWNLOAD_PATH = ("4039", "Download path is unreachable")
     MISSING_ORDER_NUMBER_PARAM = ("4040", "Parameter order_number is missing")
@@ -67,6 +76,7 @@ class ErrorCodes(object):
     EMPTY_DOWNLOAD_PATH_PARAM = ("4044", "Parameter download_path is empty")
     UNEXPECTED_ERROR = ("4045", "An unexpected error occurred")
     MISSING_REQUESTID = ("4046", "Request ID is missing")
+
 
 class Metadata(object):
 
@@ -108,34 +118,43 @@ class ImportManagerAPI(object):
 
         if backdoor:
             log.warning(
-                "The following json should be sent to ImportManagerAPI, " +
-                "but you enabled the backdoor")
+                "The following json should be sent to ImportManagerAPI, "
+                + "but you enabled the backdoor"
+            )
             log.info(payload)
             return False
 
         from restapi.confs import PRODUCTION
+
         if not PRODUCTION:
             log.warning(
-                "The following json should be sent to ImportManagerAPI, " +
-                "but you are not in production")
+                "The following json should be sent to ImportManagerAPI, "
+                + "but you are not in production"
+            )
             log.info(payload)
             return False
 
         import requests
+
         # print("TEST", self._uri)
         r = requests.post(self._uri, json=payload)
         log.info("POST external IM API, status=%s, uri=%s", r.status_code, self._uri)
 
         from utilities import htmlcodes as hcodes
+
         if r.status_code != hcodes.HTTP_OK_BASIC:
             log.error(
                 "CDI: failed to call external APIs (status: %s, uri: %s)",
-                r.status_code, self._uri)
+                r.status_code,
+                self._uri,
+            )
             return False
         else:
             log.info(
                 "CDI: called POST on external APIs (status: %s, uri: %s)",
-                r.status_code, self._uri)
+                r.status_code,
+                self._uri,
+            )
             return True
 
         log.warning("Unknown external APIs status")
@@ -145,11 +164,7 @@ class ImportManagerAPI(object):
 # NOTE this function is outside the previous class, and self is passed as parameter
 def seadata_pid(self, pid):
 
-    response = {
-        'PID': pid,
-        'verified': False,
-        'metadata': {},
-    }
+    response = {'PID': pid, 'verified': False, 'metadata': {}}
 
     #################
     # b2handle to verify PID
@@ -157,9 +172,7 @@ def seadata_pid(self, pid):
     if b2handle_output is None:
         error = {'B2HANDLE': 'not found'}
         log.error(error)
-        return self.send_warnings(
-            response,
-            errors=error, code=hcodes.HTTP_BAD_REQUEST)
+        return self.send_warnings(response, errors=error, code=hcodes.HTTP_BAD_REQUEST)
     else:
         log.verbose("PID %s verified", pid)
         response['verified'] = True

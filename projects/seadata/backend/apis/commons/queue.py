@@ -22,6 +22,8 @@ QUEUE_VARS = detector.load_group(label=QUEUE_SERVICE)
 :param params: The kv pairs to be in the log message.
 
 '''
+
+
 def prepare_message(instance, user=None, isjson=False, **params):
     """
 { # start
@@ -53,21 +55,26 @@ def prepare_message(instance, user=None, isjson=False, **params):
     # logmsg['request_id'] = instance_id[len(instance_id) - 6:]
 
     from seadata.apis.commons.seadatacloud import seadata_vars
+
     logmsg['edmo_code'] = seadata_vars.get('edmo_code')
 
     from datetime import datetime
+
     logmsg['datetime'] = datetime.now().strftime("%Y%m%dT%H:%M:%S")
 
     if isjson:
         return logmsg  # TODO Why this? Why does isjson exist at all?
 
     from restapi.services.authentication import BaseAuthentication as Service
+
     ip = Service.get_remote_ip()
     logmsg['ip_number'] = ip
 
     from flask import request
+
     # http://localhost:8080/api/pids/<PID>
     import re
+
     endpoint = re.sub(r"https?://[^\/]+", '', request.url)
     logmsg['program'] = request.method + ':' + endpoint
     if user is None:
@@ -95,6 +102,8 @@ It needs the following info from config:
 :param instance: Instance of the Logging service from rapydo.
 :param dictionary_message: The message to be logged (as JSON).
 '''
+
+
 def log_into_queue(instance, dictionary_message):
     """ RabbitMQ in the EUDAT infrastructure """
 
@@ -110,7 +119,10 @@ def log_into_queue(instance, dictionary_message):
     if app_name is None:
         app_name = routing_key
 
-    log.debug('Log-queue service: exchange "%s", routing key "%s", app name "%s"' % (current_exchange, routing_key, app_name))
+    log.debug(
+        'Log-queue service: exchange "%s", routing key "%s", app name "%s"'
+        % (current_exchange, routing_key, app_name)
+    )
 
     try:
 
@@ -120,8 +132,9 @@ def log_into_queue(instance, dictionary_message):
 
         msg_queue = instance.get_service_instance(QUEUE_SERVICE)
         log.verbose('Retrieved instance of log-queue service "%s"', QUEUE_SERVICE)
-        msg_queue.log_json_to_queue(dictionary_message, app_name, current_exchange, routing_key)
-
+        msg_queue.log_json_to_queue(
+            dictionary_message, app_name, current_exchange, routing_key
+        )
 
     except BaseException as e:
         log.error("Failed to log:\n%s(%s)", e.__class__.__name__, e)

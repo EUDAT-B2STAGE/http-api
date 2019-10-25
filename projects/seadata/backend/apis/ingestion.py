@@ -8,6 +8,7 @@ from b2stage.apis.commons.endpoint import EudatEndpoint
 from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
 from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
 from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
+from restapi.protocols.bearer import authentication
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_celery import CeleryExt
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
@@ -15,6 +16,7 @@ from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from seadata.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
 from utilities import path
+
 # from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
 
@@ -26,6 +28,43 @@ BACKDOOR_SECRET = 'howdeepistherabbithole'
 class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     """ Create batch folder and upload zip files inside it """
 
+    # schema_expose = True
+    labels = ['seadatacloud', 'ingestion']
+    depends_on = ['SEADATA_PROJECT']
+    GET = {
+        '/ingestion/<string:batch_id>': {
+            'custom': {},
+            'summary': 'Check if the ingestion batch is enabled',
+            'responses': {
+                '404': {'description': 'Batch not enabled or lack of permissions'},
+                '400': {'description': 'Batch misconfiguration'},
+                '200': {'description': 'Batch enabled'},
+            },
+        }
+    }
+    POST = {
+        '/ingestion/<string:batch_id>': {
+            'custom': {},
+            'summary': 'Request to import a zip file to the ingestion cloud',
+            'responses': {
+                '200': {'description': 'Request unqueued for download'},
+                '404': {'description': 'Batch not enabled or lack of permissions'},
+            },
+        }
+    }
+    DELETE = {
+        '/ingestion': {
+            'custom': {},
+            'summary': 'Delete one or more ingestion batches',
+            'responses': {
+                '200': {
+                    'description': 'Async job submitted for ingestion batches removal'
+                }
+            },
+        }
+    }
+
+    @authentication.required()
     def get(self, batch_id):
 
         log.info("Batch request: %s", batch_id)
@@ -51,17 +90,20 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         # if not imain.is_collection(batch_path):
         if batch_status == MISSING_BATCH:
             return self.send_errors(
-                "Batch '%s' not enabled or you have no permissions"
-                % batch_id,
-                code=hcodes.HTTP_BAD_NOTFOUND)
+                "Batch '%s' not enabled or you have no permissions" % batch_id,
+                code=hcodes.HTTP_BAD_NOTFOUND,
+            )
 
         if batch_status == BATCH_MISCONFIGURATION:
             log.error(
                 'Misconfiguration: %s files in %s (expected 1)',
-                len(batch_files), batch_path)
+                len(batch_files),
+                batch_path,
+            )
             return self.send_errors(
                 "Misconfiguration for batch_id %s" % batch_id,
-                code=hcodes.HTTP_BAD_RESOURCE)
+                code=hcodes.HTTP_BAD_RESOURCE,
+            )
 
         data = {}
         data['batch'] = batch_id
@@ -75,6 +117,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         data['files'] = batch_files
         return data
 
+    @authentication.required()
     def post(self, batch_id):
         json_input = self.get_input()
 
@@ -92,8 +135,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         # Log start (of enable) into RabbitMQ
         log_msg = prepare_message(
-            self, json={'batch_id': batch_id},
-            user=ingestion_user, log_string='start')
+            self, json={'batch_id': batch_id}, user=ingestion_user, log_string='start'
+        )
         log_into_queue(self, log_msg)
 
         ##################
@@ -112,6 +155,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             try:
                 # TODO: REMOVE THIS WHEN path.create() has parents=True!
                 import os
+
                 superdir = os.path.join(MOUNTPOINT, INGESTION_DIR)
                 if not os.path.exists(superdir):
                     log.debug('Creating %s...', superdir)
@@ -119,7 +163,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                     log.info('Created %s...', superdir)
                 path.create(local_path, directory=True, force=True)
             except (FileNotFoundError, PermissionError) as e:
-                err_msg = ('Could not create directory "%s" (%s)' % (local_path, e))
+                err_msg = 'Could not create directory "%s" (%s)' % (local_path, e)
                 log.critical(err_msg)
                 log.info('Removing collection from irods (%s)' % batch_path)
                 imain.remove(batch_path, recursive=True, force=True)
@@ -130,7 +174,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         # Log end (of enable) into RabbitMQ
         log_msg = prepare_message(
-            self, status='enabled', user=ingestion_user, log_string='end')
+            self, status='enabled', user=ingestion_user, log_string='end'
+        )
         log_into_queue(self, log_msg)
 
         """
@@ -139,11 +184,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         task = CeleryExt.download_batch.apply_async(
             args=[batch_path, str(local_path), json_input],
-            queue='ingestion', routing_key='ingestion'
+            queue='ingestion',
+            routing_key='ingestion',
         )
         log.info("Async job: %s", task.id)
         return self.return_async_id(task.id)
 
+    @authentication.required()
     def delete(self):
 
         json_input = self.get_input()
@@ -157,7 +204,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
         task = CeleryExt.delete_batches.apply_async(
             args=[batch_path, local_batch_path, json_input],
-            queue='ingestion', routing_key='ingestion'
+            queue='ingestion',
+            routing_key='ingestion',
         )
         log.info("Async job: %s", task.id)
         return self.return_async_id(task.id)

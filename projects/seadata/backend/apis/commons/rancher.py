@@ -13,6 +13,7 @@ https://github.com/rancher/validation-tests/tree/master/tests/v2_validation/catt
 import time
 from seadata.apis.commons.cluster import CONTAINERS_VARS
 from utilities.logs import get_logger
+
 log = get_logger(__name__)
 
 # PERPAGE_LIMIT = 5
@@ -25,10 +26,9 @@ PERPAGE_LIMIT = 1000
 # module "b2stage/backend/apis/commons/cluster.py".
 # It receives all config that starts with "RESOURCES".
 class Rancher(object):
-
-    def __init__(self,
-                 key, secret, url, project,
-                 hub, hubuser, hubpass, localpath, qclabel):
+    def __init__(
+        self, key, secret, url, project, hub, hubuser, hubpass, localpath, qclabel
+    ):
 
         ####################
         # SET URL
@@ -48,9 +48,10 @@ class Rancher(object):
 
     def connect(self, key, secret):
         import gdapi
+
         self._client = gdapi.Client(
-            url=self._project_uri,
-            access_key=key, secret_key=secret)
+            url=self._project_uri, access_key=key, secret_key=secret
+        )
 
     # def project_handle(self, project):
     #     return self._client.by_id_project(self._project)
@@ -95,6 +96,7 @@ class Rancher(object):
 
     def obj_to_dict(self, obj):
         import json
+
         return json.loads(obj.__repr__().replace("'", '"'))
 
     def all_containers_available(self):
@@ -109,7 +111,8 @@ class Rancher(object):
         while not is_all:
             marker = len(containers)
             onepage = self._client.list_container(
-                limit=PERPAGE_LIMIT, marker='m%s' % marker)
+                limit=PERPAGE_LIMIT, marker='m%s' % marker
+            )
             log.very_verbose('Containers list marker: %s', marker)
             pagination = onepage.get('pagination', {})
             # print(pagination)
@@ -184,6 +187,7 @@ class Rancher(object):
 
     def recover_logs(self, container_name):
         import websocket as ws
+
         container = self.get_container_object(container_name)
         logs = container.logs(follow=False, lines=100)
         uri = logs.url + '?token=' + logs.token
@@ -209,6 +213,7 @@ class Rancher(object):
         # print(catalog_url)
         try:
             import requests
+
             r = requests.get(catalog_url, auth=self._hub_credentials)
             catalog = r.json()
             # print("TEST", catalog)
@@ -225,9 +230,7 @@ class Rancher(object):
         label_key = 'host_type'
         label_value = self._qclabel
 
-        obj = {
-            self._hostlabel: "%s=%s" % (label_key, label_value),
-        }
+        obj = {self._hostlabel: "%s=%s" % (label_key, label_value)}
 
         if pull:
             # force to repull the image every time
@@ -236,10 +239,16 @@ class Rancher(object):
 
         return obj
 
-    def run(self,
-            container_name, image_name, wait_running=None,
-            private=False, extras=None, wait_stopped=None, pull=True,
-            ):
+    def run(
+        self,
+        container_name,
+        image_name,
+        wait_running=None,
+        private=False,
+        extras=None,
+        wait_stopped=None,
+        pull=True,
+    ):
 
         ############
         if private:
@@ -289,28 +298,44 @@ class Rancher(object):
             # Should we wait for the container?
             if wait_stopped is None:
                 x = CONTAINERS_VARS.get('wait_stopped')
-                wait_stopped = not(x.lower() == 'false' or int(x)==0)
+                wait_stopped = not (x.lower() == 'false' or int(x) == 0)
 
             if wait_running is None:
                 x = CONTAINERS_VARS.get('wait_running')
-                wait_running = not(x.lower() == 'false' or int(x)==0)
+                wait_running = not (x.lower() == 'false' or int(x) == 0)
 
             if wait_stopped or wait_running:
-                log.info('Launched container "%s" (external id: %s)!' % (container_name, container.externalId))
+                log.info(
+                    'Launched container "%s" (external id: %s)!'
+                    % (container_name, container.externalId)
+                )
 
                 # Wait for container to stop...
                 while True:
                     co = self.get_container_object(container_name)
-                    log.debug('Container "%s": %s (%s, %s: %s)', container_name, co.state, co.transitioning, co.transitioningMessage, co.transitioningProgress)
+                    log.debug(
+                        'Container "%s": %s (%s, %s: %s)',
+                        container_name,
+                        co.state,
+                        co.transitioning,
+                        co.transitioningMessage,
+                        co.transitioningProgress,
+                    )
 
                     # Add errors returned by rancher to the errors object:
                     if isinstance(co.transitioningMessage, str):
-                        if  'error' in co.transitioningMessage.lower():
+                        if 'error' in co.transitioningMessage.lower():
                             error = {'container': co.transitioningMessage}
 
                         # Simplify life of first-time deployers:
-                        if self._hub_uri in co.transitioningMessage and 'no basic auth credentials' in co.transitioningMessage:
-                            log.error('Message from Rancher: "%s". Possibly you first need to add the registry on the Rancher installation!', co.transitioningMessage)
+                        if (
+                            self._hub_uri in co.transitioningMessage
+                            and 'no basic auth credentials' in co.transitioningMessage
+                        ):
+                            log.error(
+                                'Message from Rancher: "%s". Possibly you first need to add the registry on the Rancher installation!',
+                                co.transitioningMessage,
+                            )
 
                     # Stop loop based on container state:
                     if co.state == 'error' or co.state == 'erroring':
@@ -334,7 +359,10 @@ class Rancher(object):
 
             # We will not wait for container to be created/running/stopped:
             else:
-                log.info("Launched: %s (external id: %s)!" % (container_name, container.externalId))
+                log.info(
+                    "Launched: %s (external id: %s)!"
+                    % (container_name, container.externalId)
+                )
             return None
 
     def get_container_object(self, container_name):

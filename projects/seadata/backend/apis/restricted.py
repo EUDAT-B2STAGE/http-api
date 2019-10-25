@@ -3,6 +3,7 @@
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from restapi.services.uploader import Uploader
+from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_celery import CeleryExt
 from utilities.logs import get_logger
 
@@ -11,7 +12,19 @@ log = get_logger(__name__)
 
 class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
+    # schema_expose = True
+    labels = ['seadatacloud', 'restricted']
+    depends_on = ['SEADATA_PROJECT']
+    POST = {
+        '/restricted/<string:order_id>': {
+            'custom': {},
+            'summary': 'Request to import a zip file into a restricted order',
+            'responses': {'200': {'description': 'Request unqueued for download'}},
+        }
+    }
+
     # Request for a file download into a restricted order
+    @authentication.required(roles=['admin_root', 'staff_user'], required_roles='any')
     def post(self, order_id):
 
         json_input = self.get_input()
