@@ -1,8 +1,0 @@
-
-ask:
-  custom:
-    authentication: false
-  summary: Redirection to B2ACCESS oauth2 login
-  responses:
-    '200':
-      description: redirected

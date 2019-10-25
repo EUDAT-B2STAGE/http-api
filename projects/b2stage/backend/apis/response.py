@@ -27,7 +27,7 @@ log.warning("Custom response: TO BE DEVELOPED AGAIN!")
 #         errors={},
 #         headers={}):
 
-    # return response, code, errors, headers
+# return response, code, errors, headers
 
 #     return ExtendedApiResource.flask_response("Hello")
 

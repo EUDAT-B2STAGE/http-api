@@ -10,6 +10,7 @@ FIXME: TO BE DEPRECATED
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from restapi import decorators as decorate
+from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
@@ -20,16 +21,38 @@ log = get_logger(__name__)
 ###############################
 # Classes
 
+
 class MetadataEndpoint(EudatEndpoint):
+
+    labels = ['helpers', 'eudat']
+    depends_on = ['TESTING']
+    PATCH = {
+        '/metadata/<path:location>': {
+            'summary': 'Add metadata to object',
+            'custom': {},
+            'parameters': [
+                {
+                    'name': 'metadata',
+                    'in': 'body',
+                    'required': True,
+                    'schema': {'type': 'array', 'items': {'type': 'string'}},
+                }
+            ],
+            'responses': {'200': {'description': 'Metadata added'}},
+        }
+    }
+
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required(roles=['normal_user'])
     def patch(self, location=None):
         """
         Add metadata to an object.
         """
 
         if location is None:
-            return self.send_errors('Location: missing filepath inside URI',
-                                    code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(
+                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
+            )
         location = self.fix_location(location)
 
         ###################
@@ -39,8 +62,7 @@ class MetadataEndpoint(EudatEndpoint):
             return self.send_errors(errors=r.errors)
         icom = r.icommands
 
-        path, resource, filename, force = \
-            self.get_file_parameters(icom, path=location)
+        path, resource, filename, force = self.get_file_parameters(icom, path=location)
 
         dct = {}
         pid = self._args.get('PID')
@@ -61,7 +83,5 @@ class MetadataEndpoint(EudatEndpoint):
         return {
             'metadata': out,
             'location': filename,
-            'link': self.httpapi_location(
-                location, api_path=CURRENT_MAIN_ENDPOINT
-            )
+            'link': self.httpapi_location(location, api_path=CURRENT_MAIN_ENDPOINT),
         }

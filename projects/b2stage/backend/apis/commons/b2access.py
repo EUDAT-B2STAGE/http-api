@@ -26,7 +26,6 @@ IRODS_CONNECTION_TTL = 43200
 
 
 class B2accessUtilities(EndpointResource):
-
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
         return self.get_service_instance(
@@ -55,22 +54,14 @@ class B2accessUtilities(EndpointResource):
             return (
                 b2a_token,
                 b2a_refresh_token,
-                'Server misconfiguration: oauth2 failed'
+                'Server misconfiguration: oauth2 failed',
             )
         except Exception as e:
             # raise e  # DEBUG
             log.critical("Failed to get authorized in B2ACCESS: %s", e)
-            return (
-                b2a_token,
-                b2a_refresh_token,
-                'B2ACCESS OAUTH2 denied: %s' % e
-            )
+            return (b2a_token, b2a_refresh_token, 'B2ACCESS OAUTH2 denied: %s' % e)
         if resp is None:
-            return (
-                b2a_token,
-                b2a_refresh_token,
-                'B2ACCESS denied: unknown error'
-            )
+            return (b2a_token, b2a_refresh_token, 'B2ACCESS denied: unknown error')
 
         b2a_token = resp.get('access_token')
         if b2a_token is None:
@@ -82,10 +73,9 @@ class B2accessUtilities(EndpointResource):
         log.info("Received refresh token: '%s'" % b2a_refresh_token)
         return (b2a_token, b2a_refresh_token, tuple())
 
-    def get_b2access_user_info(self, auth,
-                               b2access,
-                               b2access_token,
-                               b2access_refresh_token):
+    def get_b2access_user_info(
+        self, auth, b2access, b2access_token, b2access_refresh_token
+    ):
         """ Get user info from current b2access token """
 
         # To use the b2access token with oauth2 client
@@ -105,8 +95,9 @@ class B2accessUtilities(EndpointResource):
             if b2access_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:
-                errstring = "B2ACCESS token obtained failed with %s" \
-                    % b2access_user.status
+                errstring = (
+                    "B2ACCESS token obtained failed with %s" % b2access_user.status
+                )
         elif isinstance(b2access_user._resp, HTTPError):
             errstring = "Error from B2ACCESS: %s" % b2access_user._resp
         elif not hasattr(b2access_user, 'data'):
@@ -123,8 +114,7 @@ class B2accessUtilities(EndpointResource):
 
         # Store b2access information inside the db
         intuser, extuser = auth.store_oauth2_user(
-            "b2access", b2access_user,
-            b2access_token, b2access_refresh_token
+            "b2access", b2access_user, b2access_token, b2access_refresh_token
         )
         # In case of error this account already existed...
         if intuser is None:
@@ -167,17 +157,15 @@ class B2accessUtilities(EndpointResource):
         refresh_data = {
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
-            "scope": 'USER_PROFILE'
+            "scope": 'USER_PROFILE',
         }
-        auth_hash = b64encode(
-            str.encode("%s:%s" % (client_id, client_secret))
-        ).decode("ascii")
+        auth_hash = b64encode(str.encode("%s:%s" % (client_id, client_secret))).decode(
+            "ascii"
+        )
         headers = {'Authorization': 'Basic %s' % auth_hash}
 
         resp = requests.post(
-            b2access.access_token_url,
-            data=refresh_data,
-            headers=headers
+            b2access.access_token_url, data=refresh_data, headers=headers
         )
         resp = resp.json()
 
@@ -185,8 +173,7 @@ class B2accessUtilities(EndpointResource):
 
         # Store b2access information inside the db
         intuser, extuser = auth.store_oauth2_user(
-            "b2access", b2access_user,
-            access_token, refresh_token
+            "b2access", b2access_user, access_token, refresh_token
         )
         # In case of error this account already existed...
         if intuser is None:

@@ -14,14 +14,16 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 import os
 import time
 from flask import request, current_app
+
 # from werkzeug import secure_filename
 
 from b2stage.apis.commons import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
+from restapi import decorators as decorate
+from restapi.protocols.bearer import authentication
 from restapi.services.uploader import Uploader
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities import htmlcodes as hcodes
-from restapi import decorators as decorate
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -30,16 +32,124 @@ log = get_logger(__name__)
 ###############################
 # Classes
 
+
 class BasicEndpoint(Uploader, EudatEndpoint):
 
+    labels = ['eudat', 'registered']
+    GET = {
+        '/registered/<path:location>': {
+            'custom': {},
+            'summary': 'Retrieve a single digital entity/object information or download it',
+            'parameters': [
+                {
+                    'name': 'download',
+                    'description': 'activate file downloading (if path is a single file)',
+                    'in': 'query',
+                    'type': 'boolean',
+                }
+            ],
+            'responses': {
+                '200': {
+                    'description': 'Returns the digital object information or file content if download is activated or the list of objects related to the requested path (PID is returned if available)'
+                }
+            },
+        }
+    }
+    POST = {
+        '/registered': {
+            'summary': 'Create a new collection',
+            'custom': {},
+            'responses': {'200': {'description': 'Collection created'}},
+            'parameters': [
+                {
+                    'name': 'path',
+                    'in': 'query',
+                    'type': 'string',
+                    'description': 'the filesystem path to created collection',
+                }
+            ],
+        }
+    }
+    PUT = {
+        '/registered/<path:location>': {
+            'summary': 'Upload a new file',
+            'custom': {},
+            'responses': {'200': {'description': 'File created'}},
+            'parameters': [
+                {
+                    'name': 'file',
+                    'in': 'formData',
+                    'description': 'file data to be uploaded',
+                    'required': True,
+                    'type': 'file',
+                },
+                {
+                    'name': 'force',
+                    'in': 'query',
+                    'type': 'boolean',
+                    'description': 'force action even if getting warnings',
+                },
+                {
+                    'name': 'pid_await',
+                    'in': 'query',
+                    'type': 'boolean',
+                    'description': 'Returns PID in the JSON response',
+                },
+            ],
+        }
+    }
+    PATCH = {
+        '/registered/<path:location>': {
+            'summary': 'Update an entity name',
+            'custom': {},
+            'parameters': [
+                {
+                    'name': 'new file name',
+                    'in': 'body',
+                    'schema': {'$ref': '#/definitions/FileUpdate'},
+                }
+            ],
+            'responses': {'200': {'description': 'File name updated'}},
+        }
+    }
+    DELETE = {
+        '/registered': {
+            'custom': {},
+            'summary': 'Delete an entity',
+            'parameters': [
+                {
+                    'name': 'debugclean',
+                    'in': 'query',
+                    'type': 'boolean',
+                    'description': 'Only for debug mode',
+                }
+            ],
+            'responses': {'200': {'description': 'File name updated'}},
+        },
+        '/registered/<path:location>': {
+            'custom': {},
+            'summary': 'Delete an entity',
+            'parameters': [
+                {
+                    'name': 'debugclean',
+                    'in': 'query',
+                    'type': 'boolean',
+                    'description': 'Only for debug mode',
+                }
+            ],
+            'responses': {'200': {'description': 'File name updated'}},
+        },
+    }
+
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required(roles=['normal_user'])
     def get(self, location=None):
         """ Download file from filename """
 
         if location is None:
             return self.send_errors(
-                'Location: missing filepath inside URI',
-                code=hcodes.HTTP_BAD_REQUEST)
+                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
+            )
         location = self.fix_location(location)
 
         ###################
@@ -50,8 +160,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # get parameters with defaults
         icom = r.icommands
-        path, resource, filename, force = \
-            self.get_file_parameters(icom, path=location)
+        path, resource, filename, force = self.get_file_parameters(icom, path=location)
 
         is_collection = icom.is_collection(path)
         # Check if it's not a collection because the object does not exist
@@ -68,7 +177,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             if self._args.download and 'true' in self._args.download.lower():
                 if is_collection:
                     return self.send_errors(
-                        'Collection: recursive download is not allowed')
+                        'Collection: recursive download is not allowed'
+                    )
                 else:
                     # NOTE: we always send in chunks when downloading
                     return icom.read_in_streaming(path)
@@ -76,6 +186,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         return self.list_objects(icom, path, is_collection, location)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required(roles=['normal_user'])
     def post(self, location=None):
         """
         Handle [directory creation](docs/user/registered.md#post).
@@ -88,17 +199,17 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # Post does not accept the <ID> inside the URI
         if location is not None:
             return self.send_errors(
-                'Forbidden path inside URI; ' +
-                "Please pass the location string as body parameter 'path'",
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+                'Forbidden path inside URI; '
+                + "Please pass the location string as body parameter 'path'",
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
             )
 
         # Disable upload for POST method
         if 'file' in request.files:
             return self.send_errors(
-                'File upload forbidden for this method; ' +
-                'Please use the PUT method for this operation',
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+                'File upload forbidden for this method; '
+                + 'Please use the PUT method for this operation',
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
             )
 
         ###################
@@ -114,7 +225,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if path is None:
             return self.send_errors(
                 'Path to remote resource: only absolute paths are allowed',
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
             )
 
         ###################
@@ -134,12 +245,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         content = {
             'location': self.b2safe_location(path),
             'path': path,
-            'link': self.httpapi_location(path, api_path=CURRENT_MAIN_ENDPOINT)
+            'link': self.httpapi_location(path, api_path=CURRENT_MAIN_ENDPOINT),
         }
 
         return self.force_response(content, code=status)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required(roles=['normal_user'])
     def put(self, location=None):
         """
         Handle file upload. Test on docker client shell with:
@@ -175,8 +287,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
 
         if location is None:
-            return self.send_errors('Location: missing filepath inside URI',
-                                    code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(
+                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
+            )
         location = self.fix_location(location)
         # NOTE: location will act strange due to Flask internals
         # in case upload is served with streaming options,
@@ -189,8 +302,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             return self.send_errors(errors=r.errors)
         icom = r.icommands
         # get parameters with defaults
-        path, resource, filename, force = \
-            self.get_file_parameters(icom, path=location)
+        path, resource, filename, force = self.get_file_parameters(icom, path=location)
 
         # Manage both form and streaming upload
         ipath = None
@@ -203,12 +315,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             request.get_data()
 
             # Normal upload: inside the host tmp folder
-            response = super(BasicEndpoint, self) \
-                .upload(subfolder=r.username, force=force)
+            response = super(BasicEndpoint, self).upload(
+                subfolder=r.username, force=force
+            )
 
             # Check if upload response is success
-            content, errors, status = \
-                self.explode_response(response, get_all=True)
+            content, errors, status = self.explode_response(response, get_all=True)
 
             ###################
             # If files uploaded
@@ -216,8 +328,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             if isinstance(content, dict) and key_file in content:
                 original_filename = content[key_file]
-                abs_file = self.absolute_upload_file(
-                    original_filename, r.username)
+                abs_file = self.absolute_upload_file(original_filename, r.username)
                 log.info("File is '%s'" % abs_file)
 
                 ############################
@@ -237,8 +348,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     ipath = self.complete_path(path, filename)
                     log.verbose("Save into: %s", ipath)
                     iout = icom.save(
-                        abs_file,
-                        destination=ipath, force=force, resource=resource)
+                        abs_file, destination=ipath, force=force, resource=resource
+                    )
                     log.info("irods call %s", iout)
                 finally:
                     # Transaction rollback: remove local cache in any case
@@ -254,17 +365,19 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 # Handling (iRODS) path
                 ipath = self.complete_path(path, filename)
                 iout = icom.write_in_streaming(
-                    destination=ipath, force=force, resource=resource)
+                    destination=ipath, force=force, resource=resource
+                )
                 log.info("irods call %s", iout)
-                response = self.force_response({'filename': ipath},
-                                               code=hcodes.HTTP_OK_BASIC)
+                response = self.force_response(
+                    {'filename': ipath}, code=hcodes.HTTP_OK_BASIC
+                )
             except BaseException as e:
                 response = self.force_response(
                     errors={"Uploading failed": "{0}".format(e)},
-                    code=hcodes.HTTP_SERVER_ERROR)
+                    code=hcodes.HTTP_SERVER_ERROR,
+                )
 
-            content, errors, status = \
-                self.explode_response(response, get_all=True)
+            content, errors, status = self.explode_response(response, get_all=True)
 
         ###################
         # Reply to user
@@ -287,10 +400,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                         break
                     time.sleep(2)
                 if not pid:
-                    error_message = \
-                        ("Timeout waiting for PID from B2SAFE:"
-                         " the object registration may be still in progress."
-                         " File correctly uploaded.")
+                    error_message = (
+                        "Timeout waiting for PID from B2SAFE:"
+                        " the object registration may be still in progress."
+                        " File correctly uploaded."
+                    )
                     log.warning(error_message)
                     status = hcodes.HTTP_OK_ACCEPTED
                     errors = [error_message]
@@ -308,9 +422,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 'filename': filename,
                 'path': path,
                 'link': self.httpapi_location(
-                    ipath,
-                    api_path=CURRENT_MAIN_ENDPOINT,
-                    remove_suffix=path)
+                    ipath, api_path=CURRENT_MAIN_ENDPOINT, remove_suffix=path
+                ),
             }
 
         # log.pp(content)
@@ -318,17 +431,20 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             return self.force_response(content, errors=errors, code=status)
         else:
             return self.send_warnings(
-                content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED)
+                content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED
+            )
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required(roles=['normal_user'])
     def patch(self, location=None):
         """
         PATCH a record. E.g. change only the filename to a resource.
         """
 
         if location is None:
-            return self.send_errors('Location: missing filepath inside URI',
-                                    code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(
+                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
+            )
         location = self.fix_location(location)
 
         ###################
@@ -338,18 +454,21 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             return self.send_errors(errors=r.errors)
         icom = r.icommands
         # Note: ignore resource, get new filename as 'newname'
-        path, _, newfile, force = \
-            self.get_file_parameters(icom, path=location, newfile=True)
+        path, _, newfile, force = self.get_file_parameters(
+            icom, path=location, newfile=True
+        )
 
         if force:
             return self.send_errors(
                 "This operation cannot be forced in B2SAFE iRODS data objects",
-                code=hcodes.HTTP_BAD_REQUEST)
+                code=hcodes.HTTP_BAD_REQUEST,
+            )
 
         if newfile is None or newfile.strip() == '':
             return self.send_errors(
                 "New filename missing; use the 'newname' JSON parameter",
-                code=hcodes.HTTP_BAD_REQUEST)
+                code=hcodes.HTTP_BAD_REQUEST,
+            )
 
         # Get the base directory
         collection = icom.get_collection_from_path(location)
@@ -363,13 +482,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             'filename': newfile,
             'path': collection,
             'link': self.httpapi_location(
-                newpath,
-                api_path=CURRENT_MAIN_ENDPOINT,
-                remove_suffix=location
-            )
+                newpath, api_path=CURRENT_MAIN_ENDPOINT, remove_suffix=location
+            ),
         }
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required(roles=['normal_user'])
     def delete(self, location=None):
         """
         Remove an object or an empty directory on iRODS
@@ -399,15 +517,16 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 for key, obj in files.items():
                     icom.remove(
                         home + self._path_separator + obj['name'],
-                        recursive=obj['object_type'] == 'collection')
+                        recursive=obj['object_type'] == 'collection',
+                    )
                     log.debug("Removed %s" % obj['name'])
                 return "Cleaned"
 
         # TODO: only if it has a PID?
         return self.send_errors(
-            "Data objects/collections removal " +
-            "is NOT allowed inside the 'registered' domain",
-            code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED
+            "Data objects/collections removal "
+            + "is NOT allowed inside the 'registered' domain",
+            code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
         )
 
         # # Note: check not at the beginning to allow the "clean" operation

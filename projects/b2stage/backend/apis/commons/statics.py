@@ -40,10 +40,14 @@ HEADER = """<!DOCTYPE html>
         <h2 class="text-muted">%s service</h2>
       </div>
 """ % (
-    FRAMEWORK, ICODE,
-    FAVICO, EXTRA_CSS_BASE, TITLE,
-    LOGOS.get('eudat'), LOGOS.get('b2stage'),
-    TITLE
+    FRAMEWORK,
+    ICODE,
+    FAVICO,
+    EXTRA_CSS_BASE,
+    TITLE,
+    LOGOS.get('eudat'),
+    LOGOS.get('b2stage'),
+    TITLE,
 )
 
 # TODO: get year from python

@@ -1,8 +1,0 @@
-
-authproxy:
-  custom:
-    authentication: true
-  summary: Check and/or refresh current B2ACCESS proxy credentials
-  responses:
-    '200':
-      description: refresh status
