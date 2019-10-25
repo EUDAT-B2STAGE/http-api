@@ -21,16 +21,18 @@ DELETE /api/order/<OID>
 #################
 # IMPORTS
 import urllib.parse
+
 # from restapi.rest.definition import EndpointResource
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.cluster import ORDERS_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
 from seadata.apis.commons.seadatacloud import ORDERS_ENDPOINT
+from restapi import decorators as decorate
+from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_celery import CeleryExt
 from seadata.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
-from restapi import decorators as decorate
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities import path
 from utilities.logs import get_logger
@@ -54,6 +56,20 @@ def get_order_zip_file_name(order_id, restricted=False, index=None):
 # REST CLASSES
 class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
+    # schema_expose = True
+    labels = ['seadatacloud', 'order']
+    depends_on = ['SEADATA_PROJECT']
+    GET = {
+        '/orders/<string:order_id>/download/<string:ftype>/c/<string:code>': {
+            'custom': {},
+            'summary': 'Download an order',
+            'responses': {
+                '200': {'description': 'The order with all files compressed'},
+                '404': {'description': 'Order does not exist'},
+            },
+        }
+    }
+
     def get_filename_from_type(self, order_id, ftype):
         if len(ftype) < 2:
             return None
@@ -73,18 +89,14 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if index == 0:
             index = None
 
-        return get_order_zip_file_name(
-            order_id,
-            restricted=restricted,
-            index=index)
+        return get_order_zip_file_name(order_id, restricted=restricted, index=index)
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, order_id, ftype, code):
         """ downloading (not authenticated) """
         log.info("Order request: %s (code '%s')", order_id, code)
         json = {'order_id': order_id, 'code': code}
-        msg = prepare_message(
-            self, json=json, user='anonymous', log_string='start')
+        msg = prepare_message(self, json=json, user='anonymous', log_string='start')
         log_into_queue(self, msg)
 
         log.info("DOWNLOAD DEBUG 1: %s (code '%s')", order_id, code)
@@ -109,10 +121,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.info("DOWNLOAD DEBUG 4: %s (code '%s') - %s", order_id, code, zip_ipath)
         if not imain.is_dataobject(zip_ipath):
             log.error("File not found %s", zip_ipath)
-            return self.send_errors(
-                {order_id: error},
-                code=hcodes.HTTP_BAD_NOTFOUND
-            )
+            return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
 
         log.info("DOWNLOAD DEBUG 5: %s (code '%s')", order_id, code)
 
@@ -128,10 +137,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         if iticket_code != encoded_code:
             log.error("iticket code does not match %s", zip_ipath)
-            return self.send_errors(
-                {order_id: error},
-                code=hcodes.HTTP_BAD_NOTFOUND
-            )
+            return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
 
         # NOTE: very important!
         # use anonymous to get the session here
@@ -140,7 +146,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             service_name='irods',
             user='anonymous',
             password='null',
-            authscheme='credentials'
+            authscheme='credentials',
         )
         log.info("DOWNLOAD DEBUG 9: %s (code '%s')", order_id, code)
         # obj = self.init_endpoint()
@@ -151,8 +157,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if not icom.test_ticket(zip_ipath):
             log.error("Invalid iticket code %s", zip_ipath)
             return self.send_errors(
-                {order_id: "Invalid code"},
-                code=hcodes.HTTP_BAD_NOTFOUND
+                {order_id: "Invalid code"}, code=hcodes.HTTP_BAD_NOTFOUND
             )
 
         # # TODO: push pdonorio/prc
@@ -168,18 +173,63 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # return self.force_response(response)
         headers = {
             'Content-Transfer-Encoding': 'binary',
-            'Content-Disposition': "attachment; filename=%s" %
-            zip_file_name,
+            'Content-Disposition': "attachment; filename=%s" % zip_file_name,
         }
-        msg = prepare_message(
-            self, json=json, log_string='end', status='sent')
+        msg = prepare_message(self, json=json, log_string='end', status='sent')
         log_into_queue(self, msg)
         log.info("DOWNLOAD DEBUG 11: %s (code '%s')", order_id, code)
         return icom.stream_ticket(zip_ipath, headers=headers)
 
 
 class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
+
+    # schema_expose = True
+    labels = ['seadatacloud', 'order']
+    depends_on = ['SEADATA_PROJECT']
+    GET = {
+        '/orders/<string:order_id>': {
+            'custom': {},
+            'summary': 'List orders',
+            'responses': {'200': {'description': 'The list of zip files available'}},
+        }
+    }
+    POST = {
+        '/orders': {
+            'custom': {},
+            'summary': 'Request one order preparation',
+            'parameters': [
+                {
+                    'name': 'parameters',
+                    'in': 'body',
+                    'schema': {'$ref': '#/definitions/SeadataPost'},
+                }
+            ],
+            'responses': {'200': {'description': 'Asynchronous request launched'}},
+        }
+    }
+    PUT = {
+        '/orders/<string:order_id>': {
+            'custom': {},
+            'summary': 'Request a link to download an order (if already prepared)',
+            'responses': {
+                '200': {
+                    'description': 'The link to download the order (expires in 2 days)'
+                }
+            },
+        }
+    }
+    DELETE = {
+        '/orders': {
+            'custom': {},
+            'summary': 'Remove one or more orders',
+            'responses': {
+                '200': {'description': 'Async job submitted for orders removal'}
+            },
+        }
+    }
+
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required()
     def get(self, order_id):
         """ listing, not downloading """
 
@@ -228,6 +278,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         return response
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required()
     def post(self):
 
         ##################
@@ -260,7 +311,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if key in params and not params[key] == filename:
             log.warn(
                 'Client provided wrong filename (%s), will use: %s',
-                params[key], filename)
+                params[key],
+                filename,
+            )
         params[key] = filename
 
         ##################
@@ -297,7 +350,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if len(pids) > 0:
             log.info("Submit async celery task")
             task = CeleryExt.unrestricted_order.apply_async(
-                args=[order_id, order_path, zip_file_name, json_input])
+                args=[order_id, order_path, zip_file_name, json_input]
+            )
             log.info("Async job: %s", task.id)
             return self.return_async_id(task.id)
 
@@ -340,8 +394,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log.warning("Ticket: %s -> %s", ticket, encoded)
         return encoded
 
-    def get_download(self, imain, order_id, order_path, files,
-                     restricted=False, index=None):
+    def get_download(
+        self, imain, order_id, order_path, files, restricted=False, index=None
+    ):
 
         zip_file_name = get_order_zip_file_name(order_id, restricted, index)
 
@@ -363,8 +418,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             ftype += str(index)
 
         route = '%s%s/%s/%s/download/%s/c/%s' % (
-            CURRENT_HTTPAPI_SERVER, API_URL,
-            ORDERS_ENDPOINT, order_id, ftype, code
+            CURRENT_HTTPAPI_SERVER,
+            API_URL,
+            ORDERS_ENDPOINT,
+            order_id,
+            ftype,
+            code,
         )
 
         # If metadata already exists, remove them:
@@ -384,10 +443,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         return {
             'name': zip_file_name,
             'url': route,
-            'size': info.get('content_length', 0)
+            'size': info.get('content_length', 0),
         }
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required()
     def put(self, order_id):
 
         ##################
@@ -398,8 +458,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         log.info("Order request: %s", order_id)
-        msg = prepare_message(
-            self, json={'order_id': order_id}, log_string='start')
+        msg = prepare_message(self, json={'order_id': order_id}, log_string='start')
         log_into_queue(self, msg)
 
         # imain = self.get_service_instance(service_name='irods')
@@ -422,14 +481,19 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         # checking for splitted unrestricted zip
         info = self.get_download(
-            imain, order_id, order_path, files_in_irods,
-            restricted=False, index=1)
+            imain, order_id, order_path, files_in_irods, restricted=False, index=1
+        )
 
         # No split zip found, looking for the single unrestricted zip
         if info is None:
             info = self.get_download(
-                imain, order_id, order_path, files_in_irods,
-                restricted=False, index=None)
+                imain,
+                order_id,
+                order_path,
+                files_in_irods,
+                restricted=False,
+                index=None,
+            )
             if info is not None:
                 response.append(info)
         # When found one split, looking for more:
@@ -437,21 +501,26 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             response.append(info)
             for index in range(2, 100):
                 info = self.get_download(
-                    imain, order_id, order_path, files_in_irods,
-                    restricted=False, index=index)
+                    imain,
+                    order_id,
+                    order_path,
+                    files_in_irods,
+                    restricted=False,
+                    index=index,
+                )
                 if info is not None:
                     response.append(info)
 
         # checking for splitted restricted zip
         info = self.get_download(
-            imain, order_id, order_path, files_in_irods,
-            restricted=True, index=1)
+            imain, order_id, order_path, files_in_irods, restricted=True, index=1
+        )
 
         # No split zip found, looking for the single restricted zip
         if info is None:
             info = self.get_download(
-                imain, order_id, order_path, files_in_irods,
-                restricted=True, index=None)
+                imain, order_id, order_path, files_in_irods, restricted=True, index=None
+            )
             if info is not None:
                 response.append(info)
         # When found one split, looking for more:
@@ -459,8 +528,13 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             response.append(info)
             for index in range(2, 100):
                 info = self.get_download(
-                    imain, order_id, order_path, files_in_irods,
-                    restricted=True, index=index)
+                    imain,
+                    order_id,
+                    order_path,
+                    files_in_irods,
+                    restricted=True,
+                    index=index,
+                )
                 if info is not None:
                     response.append(info)
 
@@ -473,6 +547,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return self.force_response(response)
 
+    @authentication.required()
     def delete(self):
 
         json_input = self.get_input()

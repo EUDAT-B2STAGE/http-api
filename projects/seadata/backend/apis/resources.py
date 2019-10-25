@@ -14,6 +14,7 @@ from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from utilities import htmlcodes as hcodes
 from utilities import path
 from restapi import decorators as decorate
+from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
 
@@ -22,7 +23,33 @@ log = get_logger(__name__)
 
 class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
+    # schema_expose = True
+    labels = ['seadatacloud', 'ingestion']
+    depends_on = ['RESOURCES_PROJECT', 'SEADATA_PROJECT']
+    GET = {
+        '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
+            'custom': {},
+            'summary': 'Resources management',
+            'responses': {'200': {'description': 'unknown'}},
+        }
+    }
+    PUT = {
+        '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
+            'custom': {},
+            'summary': 'Launch a quality check as a docker container',
+            'responses': {'200': {'description': 'unknown'}},
+        }
+    }
+    DELETE = {
+        '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
+            'custom': {},
+            'summary': 'Remove a quality check if existing',
+            'responses': {'200': {'description': 'unknown'}},
+        }
+    }
+
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required()
     def get(self, batch_id, qc_name):
         """ Check my quality check container """
 
@@ -33,8 +60,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container = rancher.get_container_object(container_name)
         if container is None:
             return self.send_errors(
-                'Quality check does not exist',
-                code=hcodes.HTTP_BAD_NOTFOUND
+                'Quality check does not exist', code=hcodes.HTTP_BAD_NOTFOUND
             )
 
         logs = rancher.recover_logs(container_name)
@@ -70,6 +96,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         return response
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required()
     def put(self, batch_id, qc_name):
         """ Launch a quality check inside a container """
 
@@ -86,21 +113,24 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         if batch_status == MISSING_BATCH:
             return self.send_errors(
                 "Batch '%s' not found (or no permissions)" % batch_id,
-                code=hcodes.HTTP_BAD_NOTFOUND
+                code=hcodes.HTTP_BAD_NOTFOUND,
             )
 
         if batch_status == NOT_FILLED_BATCH:
             return self.send_errors(
-                "Batch '%s' not yet filled" % batch_id,
-                code=hcodes.HTTP_BAD_RESOURCE)
+                "Batch '%s' not yet filled" % batch_id, code=hcodes.HTTP_BAD_RESOURCE
+            )
 
         if batch_status == BATCH_MISCONFIGURATION:
             log.error(
                 'Misconfiguration: %s files in %s (expected 1)',
-                len(batch_files), batch_path)
+                len(batch_files),
+                batch_path,
+            )
             return self.send_errors(
                 "Misconfiguration for batch_id %s" % batch_id,
-                code=hcodes.HTTP_BAD_RESOURCE)
+                code=hcodes.HTTP_BAD_RESOURCE,
+            )
 
         ###################
         # Parameters (and checks)
@@ -118,9 +148,13 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # input parameters to be passed to container
         pkey = "parameters"
         param_keys = [
-            "request_id", "edmo_code", "datetime",
-            "api_function", "version", "test_mode",
-            pkey
+            "request_id",
+            "edmo_code",
+            "datetime",
+            "api_function",
+            "version",
+            "test_mode",
+            pkey,
         ]
         for key in param_keys:
             if key == pkey:
@@ -128,8 +162,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             value = input_json.get(key, None)
             if value is None:
                 return self.send_errors(
-                    'Missing JSON key: %s' % key,
-                    code=hcodes.HTTP_BAD_REQUEST
+                    'Missing JSON key: %s' % key, code=hcodes.HTTP_BAD_REQUEST
                 )
 
         response = {
@@ -146,7 +179,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             log.critical(str(e))
             return self.send_errors(
                 'Cannot establish a connection with Rancher',
-                code=hcodes.HTTP_SERVER_ERROR
+                code=hcodes.HTTP_SERVER_ERROR,
             )
 
         container_name = self.get_container_name(batch_id, qc_name, rancher._qclabel)
@@ -157,8 +190,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             log.error("Docker container %s already exists!", container_name)
             response['status'] = 'existing'
             code = hcodes.HTTP_BAD_CONFLICT
-            return self.force_response(
-                response, errors=[response['status']], code=code)
+            return self.force_response(response, errors=[response['status']], code=code)
 
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
@@ -171,6 +203,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         envs['BATCH_DIR_PATH'] = container_ingestion_path
         from seadata.apis.commons.queue import QUEUE_VARS
         from seadata.apis.commons.cluster import CONTAINERS_VARS
+
         for key, value in QUEUE_VARS.items():
             if key in ['enable']:
                 continue
@@ -215,10 +248,9 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         extra_params = {
             'dataVolumes': [
                 "%s:%s" % (host_ingestion_path, container_ingestion_path),
-                "%s:%s" % (json_path_qc, QC_MOUNTPOINT)
-
+                "%s:%s" % (json_path_qc, QC_MOUNTPOINT),
             ],
-            'environment': envs
+            'environment': envs,
         }
         if bd:
             extra_params['command'] = ['/bin/sleep', '999999']
@@ -229,7 +261,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             container_name=container_name,
             image_name=docker_image_name,
             private=True,
-            extras=extra_params
+            extras=extra_params,
         )
 
         if errors is not None:
@@ -247,12 +279,12 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             else:
                 response['status'] = 'failure'
                 code = hcodes.HTTP_SERVER_ERROR
-            return self.force_response(
-                response, errors=[response['status']], code=code)
+            return self.force_response(response, errors=[response['status']], code=code)
 
         return response
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required()
     def delete(self, batch_id, qc_name):
         """
         Remove a quality check executed
@@ -282,9 +314,5 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 'status': 'not_yet_removed',
             }
         else:
-            response = {
-                'batch_id': batch_id,
-                'qc_name': qc_name,
-                'status': 'removed',
-            }
+            response = {'batch_id': batch_id, 'qc_name': qc_name, 'status': 'removed'}
         return response

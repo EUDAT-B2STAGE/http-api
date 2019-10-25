@@ -8,6 +8,7 @@ from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.seadatacloud import Metadata as md
 from restapi import decorators as decorate
+from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
@@ -19,7 +20,26 @@ log = get_logger(__name__)
 # REST CLASS
 class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
+    # schema_expose = True
+    labels = ['seadatacloud', 'ingestion']
+    depends_on = ['SEADATA_PROJECT']
+    POST = {
+        '/ingestion/<string:batch_id>/approve': {
+            'custom': {},
+            'summary': 'Approve files in a batch that are passing all QCs',
+            'parameters': [
+                {
+                    'name': 'parameters',
+                    'in': 'body',
+                    'schema': {'$ref': '#/definitions/SeadataPost'},
+                }
+            ],
+            'responses': {'200': {'description': 'Registration executed'}},
+        }
+    }
+
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @authentication.required()
     def post(self, batch_id):
 
         ################
@@ -29,14 +49,13 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         params = json_input.get('parameters', {})
         if len(params) < 1:
-            return self.send_errors(
-                "parameters is empty", code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors("parameters is empty", code=hcodes.HTTP_BAD_REQUEST)
 
         files = params.get('pids', {})
         if len(files) < 1:
             return self.send_errors(
-                "pids' parameter is empty list",
-                code=hcodes.HTTP_BAD_REQUEST)
+                "pids' parameter is empty list", code=hcodes.HTTP_BAD_REQUEST
+            )
 
         filenames = []
         for data in files:
@@ -44,15 +63,15 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             if not isinstance(data, dict):
                 return self.send_errors(
                     "File list contains at least one wrong entry",
-                    code=hcodes.HTTP_BAD_REQUEST)
+                    code=hcodes.HTTP_BAD_REQUEST,
+                )
 
             # print("TEST", data)
             for key in md.keys:  # + [md.tid]:
                 value = data.get(key)
                 if value is None:
                     error = 'Missing parameter: %s' % key
-                    return self.send_errors(
-                        error, code=hcodes.HTTP_BAD_REQUEST)
+                    return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
                 error = None
                 value_len = len(value)
@@ -61,8 +80,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 elif value_len < 1:
                     error = "Param '%s': empty" % key
                 if error is not None:
-                    return self.send_errors(
-                        error, code=hcodes.HTTP_BAD_REQUEST)
+                    return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
             filenames.append(data.get(md.tid))
 
@@ -76,7 +94,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if not imain.is_collection(self.batch_path):
             return self.send_errors(
                 "Batch '%s' not enabled (or no permissions)" % batch_id,
-                code=hcodes.HTTP_BAD_NOTFOUND)
+                code=hcodes.HTTP_BAD_NOTFOUND,
+            )
 
         ################
         # 2. make batch_id directory in production if not existing
@@ -89,9 +108,12 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # ASYNC
         log.info("Submit async celery task")
         from restapi.flask_ext.flask_celery import CeleryExt
+
         task = CeleryExt.move_to_production_task.apply_async(
             args=[batch_id, self.prod_path, json_input],
-            queue='ingestion', routing_key='ingestion')
+            queue='ingestion',
+            routing_key='ingestion',
+        )
         log.info("Async job: %s", task.id)
 
         return self.return_async_id(task.id)

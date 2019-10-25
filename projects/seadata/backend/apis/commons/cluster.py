@@ -6,6 +6,7 @@ from restapi.rest.definition import EndpointResource
 from restapi.services.detect import detector
 from utilities import path
 from utilities.logs import get_logger
+
 log = get_logger(__name__)
 
 DEFAULT_IMAGE_PREFIX = 'docker'
@@ -19,8 +20,8 @@ They are being defined in b2stage/confs/commons.yml,
 which references config values defined in
 b2stage/project_configuration.yml
 '''
-INGESTION_COLL = seadata_vars.get('ingestion_coll')    # "batches"
-ORDERS_COLL = seadata_vars.get('orders_coll')          # "orders"
+INGESTION_COLL = seadata_vars.get('ingestion_coll')  # "batches"
+ORDERS_COLL = seadata_vars.get('orders_coll')  # "orders"
 PRODUCTION_COLL = seadata_vars.get('production_coll')  # "cloud"
 MOUNTPOINT = seadata_vars.get('resources_mountpoint')  # "/usr/share"
 
@@ -28,8 +29,8 @@ MOUNTPOINT = seadata_vars.get('resources_mountpoint')  # "/usr/share"
 These are the paths to the data on the hosts
 that runs containers (both backend, celery and QC containers)
 '''
-INGESTION_DIR = seadata_vars.get('workspace_ingestion')    # "batches"
-ORDERS_DIR = seadata_vars.get('workspace_orders')          # "orders"
+INGESTION_DIR = seadata_vars.get('workspace_ingestion')  # "batches"
+ORDERS_DIR = seadata_vars.get('workspace_orders')  # "orders"
 
 '''
 These are how the paths to the data on the host
@@ -65,6 +66,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
         if len(self._credentials) < 1:
             from restapi.services.detect import detector
+
             self._credentials = detector.load_group(label='resources')
         return self._credentials
 
@@ -78,6 +80,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
         if self._handle is None:
             from seadata.apis.commons.rancher import Rancher
+
             params = self.load_credentials()
             # log.pp(params)
             self._handle = Rancher(**params)
@@ -97,8 +100,8 @@ class ClusterContainerEndpoint(EndpointResource):
 
         Example: /usr/share/ingestion/<batch_id>
         '''
-        paths = [self._handle._localpath]      # "/usr/share" (default)
-        paths.append(INGESTION_DIR)   # "batches"  (default)
+        paths = [self._handle._localpath]  # "/usr/share" (default)
+        paths.append(INGESTION_DIR)  # "batches"  (default)
         paths.append(batch_id)
         return str(path.build(paths))
 
@@ -120,7 +123,7 @@ class ClusterContainerEndpoint(EndpointResource):
 
         Example: /usr/share/batch/
         '''
-        paths = [FS_PATH_IN_CONTAINER]    # "/usr/share/batch" (hard-coded)
+        paths = [FS_PATH_IN_CONTAINER]  # "/usr/share/batch" (hard-coded)
         return str(path.build(paths))
 
     def get_input_zip_filename(self, filename=None, extension='zip', sep='.'):
@@ -144,6 +147,7 @@ class ClusterContainerEndpoint(EndpointResource):
         if suffix is not None:
             paths.append(suffix)
         from utilities import path
+
         suffix_path = str(path.build(paths))
         return irods_client.get_current_zone(suffix=suffix_path)
         # TODO: Move to other module, has nothing to do with Rancher cluster!
@@ -196,11 +200,9 @@ class ClusterContainerEndpoint(EndpointResource):
 
     @staticmethod
     def get_container_name(batch_id, qc_name, qc_label=None):
-        qc_name = qc_name.replace(
-            '_', '').replace(
-            '-', '').replace(
-            ':', '').replace(
-            '.', '')
+        qc_name = (
+            qc_name.replace('_', '').replace('-', '').replace(':', '').replace('.', '')
+        )
 
         if qc_label is None:
             return '%s_%s' % (batch_id, qc_name)
