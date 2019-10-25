@@ -1,9 +1,0 @@
-common:
-  custom:
-    authentication: true
-
-extlogs:
-  summary: get logs from elastic
-  responses:
-    '200':
-      description: a dictionary of all filtered logs; timestamp is the key
