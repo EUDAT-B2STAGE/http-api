@@ -7,8 +7,8 @@ file: internal
 mapping:
   #all: "/metadata"
   single: "/metadata/<path:location>"
-ids:
-  location: the filesystem path to your digital entities/objects
+# ids:
+#   location: the filesystem path to your digital entities/objects
 labels:
   - helpers
   - eudat

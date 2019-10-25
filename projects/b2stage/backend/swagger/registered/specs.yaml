@@ -12,8 +12,8 @@ mapping:
 #   # expose: False
 #   expose: True
 #   # publish: True # should check the publish from the method
-ids:
-  location: the filesystem path to your digital entities/objects
+# ids:
+#   location: the filesystem path to your digital entities/objects
 labels:
   - eudat
   - registered
