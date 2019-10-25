@@ -17,6 +17,25 @@ log = get_logger(__name__)
 
 class Public(B2HandleEndpoint):
 
+    # schema_expose = True
+    labels = ['eudat', 'pids', 'public']
+    depends_on = ['IRODS_ANONYMOUS', 'ENABLE_PUBLIC_ENDPOINT']
+    GET = {
+        '/public/<path:location>': {
+            'summary': 'Let non-authenticated users get data about a public data-object',
+            'custom': {},
+            'parameters': [
+                {
+                    'name': 'download',
+                    'description': 'Activate file downloading (if PID points to a single file)',
+                    'in': 'query',
+                    'type': 'boolean',
+                }
+            ],
+            'responses': {'200': {'description': 'Informations about the data-object'}},
+        }
+    }
+
     @decorate.catch_error()
     def get(self, location):
 
@@ -27,8 +46,8 @@ class Public(B2HandleEndpoint):
         ####################
         if location is None:
             return self.send_errors(
-                'Location: missing filepath inside URI',
-                code=hcodes.HTTP_BAD_REQUEST)
+                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
+            )
         location = self.fix_location(location)
 
         ####################
@@ -37,28 +56,28 @@ class Public(B2HandleEndpoint):
             service_name='irods',
             user='anonymous',
             password='null',
-            authscheme='credentials'
+            authscheme='credentials',
         )
 
-        path, resource, _, force = \
-            self.get_file_parameters(icom, path=location)
+        path, resource, _, force = self.get_file_parameters(icom, path=location)
         is_collection = icom.is_collection(path)
         if is_collection:
-            body = "<h3> Failure </h3>" + \
-                "Path provided is a Collection.<br>" + \
-                "Listing is NOT yet implemented."
+            body = (
+                "<h3> Failure </h3>"
+                + "Path provided is a Collection.<br>"
+                + "Listing is NOT yet implemented."
+            )
             output = HEADER + body + FOOTER
 
             headers = {'Content-Type': 'text/html; charset=utf-8'}
             return WerkzeugResponse(
-                output,
-                status=hcodes.HTTP_BAD_REQUEST,
-                headers=headers,
+                output, status=hcodes.HTTP_BAD_REQUEST, headers=headers
             )
 
         ####################
         # check if browser
         from restapi.rest.response import get_accepted_formats, MIMETYPE_HTML
+
         accepted_formats = get_accepted_formats()
         if MIMETYPE_HTML not in accepted_formats:
             # print("NOT HTML")
@@ -69,10 +88,11 @@ class Public(B2HandleEndpoint):
 
         if self.download_parameter():
             import os
+
             filename = os.path.basename(path)
             headers = {
                 'Content-Type': 'application/octet-stream',
-                'Content-Disposition': 'attachment; filename="%s"' % filename
+                'Content-Disposition': 'attachment; filename="%s"' % filename,
             }
             return icom.read_in_streaming(path, headers=headers)
         else:
@@ -87,8 +107,7 @@ class Public(B2HandleEndpoint):
         # log.pp(tmp)
 
         # list content
-        jout = self.list_objects(
-            icom, path, is_collection, location, public=True)
+        jout = self.list_objects(icom, path, is_collection, location, public=True)
 
         metadata = ""
         try:
@@ -118,8 +137,10 @@ class Public(B2HandleEndpoint):
                 metadata += '</tr>\n'
 
         if info is None:
-            body = "<h3> Failure </h3>" + \
-                "Data Object NOT found, or no permission to access.<br>"
+            body = (
+                "<h3> Failure </h3>"
+                + "Data Object NOT found, or no permission to access.<br>"
+            )
         else:
             body = """
 <h3> Data Object landing page </h3>

@@ -9,6 +9,7 @@ NOTE: this package will be loaded only if IRODS_ANONYMOUS is set
 from utilities import htmlcodes as hcodes
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators as decorate
+from restapi.protocols.bearer import authentication
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
@@ -16,13 +17,42 @@ log = get_logger(__name__)
 
 class Publish(EudatEndpoint):
 
+    # schema_expose = True
+    labels = ['eudat', 'publish']
+    depends_on = ['IRODS_ANONYMOUS', 'ENABLE_PUBLIC_ENDPOINT']
+    GET = {
+        '/publish/<path:location>': {
+            'custom': {},
+            'summary': 'Check if the path is currently readable for the anonymous user',
+            'responses': {'200': {'description': "return a boolean 'published'"}},
+        }
+    }
+    PUT = {
+        '/publish/<path:location>': {
+            'custom': {},
+            'summary': 'set the path to be readable for the anonymous user',
+            'responses': {'200': {'description': "return a boolean 'published'"}},
+        }
+    }
+    DELETE = {
+        '/publish/<path:location>': {
+            'custom': {},
+            'summary': 'Ensure that the path is not accessible for the anonymous user',
+            'responses': {'200': {'description': "return a boolean 'published'"}},
+        }
+    }
+
     def base(self, location):
 
         if location is None:
-            return self.send_errors(
-                'Location: missing filepath inside URI',
-                code=hcodes.HTTP_BAD_REQUEST
-            ), None, None
+            return (
+                self.send_errors(
+                    'Location: missing filepath inside URI',
+                    code=hcodes.HTTP_BAD_REQUEST,
+                ),
+                None,
+                None,
+            )
         else:
             location = self.fix_location(location)
 
@@ -30,8 +60,9 @@ class Publish(EudatEndpoint):
         if r.errors is not None:
             return self.send_errors(errors=r.errors), None, None
 
-        path, resource, filename, _ = \
-            self.get_file_parameters(r.icommands, path=location)
+        path, resource, filename, _ = self.get_file_parameters(
+            r.icommands, path=location
+        )
 
         # if r.icommands.is_collection(path):
         #     return self.send_errors(
@@ -42,11 +73,14 @@ class Publish(EudatEndpoint):
 
         # Does this path exist?
         if not r.icommands.exists(path):
-            return self.send_errors(
-                errors=[{
-                    'path': "'%s': not existing or no permissions" % path
-                }], code=hcodes.HTTP_BAD_NOTFOUND), \
-                None, None
+            return (
+                self.send_errors(
+                    errors=[{'path': "'%s': not existing or no permissions" % path}],
+                    code=hcodes.HTTP_BAD_NOTFOUND,
+                ),
+                None,
+                None,
+            )
 
         return None, r, path
 
@@ -79,6 +113,7 @@ class Publish(EudatEndpoint):
     def publish_helper(self, icom, ipath, check_only=True, unpublish=False):
 
         from utilities import path
+
         current_zone = icom.get_current_zone()
         ipath_steps = path.parts(ipath)
         current = ''
@@ -89,13 +124,15 @@ class Publish(EudatEndpoint):
             # print("PUB STEP:", ipath_step, current, len(current))
 
             # to skip: root dir, zone and home
-            if len(ipath_step) == 1 \
-               or ipath_step == current_zone or ipath_step == 'home':
+            if (
+                len(ipath_step) == 1
+                or ipath_step == current_zone
+                or ipath_step == 'home'
+            ):
                 continue
 
             # find out if already published
-            check = self.single_path_check(
-                icom, current_zone, str(current))
+            check = self.single_path_check(icom, current_zone, str(current))
             # if only checking
             if check_only and not check:
                 return False
@@ -114,12 +151,11 @@ class Publish(EudatEndpoint):
         # prepare the url to access
         from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER
         from b2stage.apis.commons import PUBLIC_ENDPOINT
-        return '%s%s%s' % (
-            CURRENT_HTTPAPI_SERVER,
-            PUBLIC_ENDPOINT, path
-        )
+
+        return '%s%s%s' % (CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT, path)
 
     @decorate.catch_error()
+    @authentication.required()
     def get(self, location):
 
         error, handler, path = self.base(location)
@@ -133,7 +169,7 @@ class Publish(EudatEndpoint):
         if icom.is_collection(path):
             return self.send_errors(
                 'Collections are not allowed to be published',
-                code=hcodes.HTTP_BAD_REQUEST
+                code=hcodes.HTTP_BAD_REQUEST,
             )
         else:
             published = self.publish_helper(icom, path)
@@ -143,6 +179,7 @@ class Publish(EudatEndpoint):
             return response
 
     @decorate.catch_error()
+    @authentication.required()
     def put(self, location=None):
 
         error, handler, path = self.base(location)
@@ -156,7 +193,7 @@ class Publish(EudatEndpoint):
         if icom.is_collection(path):
             return self.send_errors(
                 'Collections are not allowed to be published',
-                code=hcodes.HTTP_BAD_REQUEST
+                code=hcodes.HTTP_BAD_REQUEST,
             )
 
         # if already set as the same don't do anything
@@ -168,6 +205,7 @@ class Publish(EudatEndpoint):
         return {'published': True, 'public_url': self.public_path(path)}
 
     @decorate.catch_error()
+    @authentication.required()
     def delete(self, location):
 
         error, handler, path = self.base(location)
@@ -181,7 +219,7 @@ class Publish(EudatEndpoint):
         if icom.is_collection(path):
             return self.send_errors(
                 'Collections are not allowed to be published',
-                code=hcodes.HTTP_BAD_REQUEST
+                code=hcodes.HTTP_BAD_REQUEST,
             )
 
         # if not already set as the same don't do anything

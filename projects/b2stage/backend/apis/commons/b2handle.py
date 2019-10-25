@@ -6,11 +6,10 @@ B2HANDLE utilities
 
 import os
 from b2stage.apis.commons.endpoint import EudatEndpoint
+
 try:
-    from b2handle.handleclient \
-        import EUDATHandleClient as b2handle
-    from b2handle.clientcredentials \
-        import PIDClientCredentials as credentials
+    from b2handle.handleclient import EUDATHandleClient as b2handle
+    from b2handle.clientcredentials import PIDClientCredentials as credentials
     from b2handle import handleexceptions
 except BaseException:
     b2handle, credentials, handleexceptions = [None] * 3
@@ -46,7 +45,10 @@ class PIDgenerator(object):
         body = """
             EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *%s);
             writeLine("stdout", *%s);
-        """ % (outvar, outvar)
+        """ % (
+            outvar,
+            outvar,
+        )
 
         rule_output = icom.rule('get_pid', body, inputs, output=True)
         return self.pid_name_fix(rule_output)
@@ -98,13 +100,14 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
     """
 
     eudat_pid_fields = [
-        "URL", "EUDAT/CHECKSUM", "EUDAT/UNPUBLISHED",
-        "EUDAT/UNPUBLISHED_DATE", "EUDAT/UNPUBLISHED_REASON"
+        "URL",
+        "EUDAT/CHECKSUM",
+        "EUDAT/UNPUBLISHED",
+        "EUDAT/UNPUBLISHED_DATE",
+        "EUDAT/UNPUBLISHED_REASON",
     ]
 
-    eudat_internal_fields = [
-        "EUDAT/FIXED_CONTENT", 'PID'
-    ]
+    eudat_internal_fields = ["EUDAT/FIXED_CONTENT", 'PID']
 
     def connect_client(self, force_no_credentials=False, disable_logs=False):
 
@@ -112,6 +115,7 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
 
             if disable_logs:
                 import logging
+
                 logging.getLogger('b2handle').setLevel(logging.WARNING)
 
             # With credentials
@@ -123,17 +127,16 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
                 file = os.environ.get('HANDLE_CREDENTIALS', None)
                 if file is not None:
                     from utilities import path
+
                     credentials_path = path.build(file)
                     found = path.file_exists_and_nonzero(credentials_path)
                     if not found:
-                        log.warning(
-                            "B2HANDLE credentials file not found %s", file)
+                        log.warning("B2HANDLE credentials file not found %s", file)
 
                 if found:
-                    self._handle_client = \
-                        b2handle.instantiate_with_credentials(
-                            credentials.load_from_JSON(file)
-                        )
+                    self._handle_client = b2handle.instantiate_with_credentials(
+                        credentials.load_from_JSON(file)
+                    )
                     log.debug("HANDLE client connected [w/ credentials]")
                     return self._handle_client, True
 
@@ -143,13 +146,15 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
         # from b2handle.handleclient import EUDATHandleClient as b2handle
         # client = b2handle.instantiate_for_read_access()
         client, authenticated = self.connect_client(
-            force_no_credentials=True, disable_logs=True)
+            force_no_credentials=True, disable_logs=True
+        )
         return client.retrieve_handle_record(pid)
 
     def handle_pid_fields(self, client, pid):
         """ Perform B2HANDLE request: retrieve URL from handle """
 
         import requests
+
         data = {}
         try:
             for field in self.eudat_pid_fields:
@@ -177,7 +182,8 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
 
         # First test: check if credentials exists and works
         client, authenticated = self.connect_client(
-            force_no_credentials=True, disable_logs=True)
+            force_no_credentials=True, disable_logs=True
+        )
         # client, authenticated = self.connect_client()
         data, error, code = self.handle_pid_fields(client, pid)
 
@@ -191,11 +197,11 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
         # Still getting error? Raise any B2HANDLE library problem
         if error is not None:
             log.error("B2HANDLE problem: %s", error)
-            return data, \
+            return (
+                data,
                 self.send_errors(
-                    message='B2HANDLE: %s' % error,
-                    code=code,
-                    head_method=head_method
-                )
+                    message='B2HANDLE: %s' % error, code=code, head_method=head_method
+                ),
+            )
         else:
             return data, None

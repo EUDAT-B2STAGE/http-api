@@ -6,14 +6,20 @@ Common functions for EUDAT endpoints
 
 import os
 from irods import exception as iexceptions
+
 # from restapi.rest.definition import EndpointResource
 from restapi.exceptions import RestApiException
 from b2stage.apis.commons.b2access import B2accessUtilities
 from b2stage.apis.commons import (
-    CURRENT_HTTPAPI_SERVER, CURRENT_B2SAFE_SERVER,
-    IRODS_PROTOCOL, HTTP_PROTOCOL, PRODUCTION,
-    IRODS_VARS, InitObj
+    CURRENT_HTTPAPI_SERVER,
+    CURRENT_B2SAFE_SERVER,
+    IRODS_PROTOCOL,
+    HTTP_PROTOCOL,
+    PRODUCTION,
+    IRODS_VARS,
+    InitObj,
 )
+
 # from restapi.confs import API_URL
 from utilities import htmlcodes as hcodes
 from utilities.logs import get_logger
@@ -65,8 +71,7 @@ class EudatEndpoint(B2accessUtilities):
             icom = self.irodsuser_from_b2safe(internal_user)
 
         elif internal_user.authmethod == 'b2access':
-            icom, external_user, refreshed = \
-                self.irodsuser_from_b2access(internal_user)
+            icom, external_user, refreshed = self.irodsuser_from_b2access(internal_user)
             # icd and ipwd do not give error with wrong credentials...
             # so the minimum command is checking the existence of home dir
 
@@ -87,12 +92,16 @@ class EudatEndpoint(B2accessUtilities):
         #####################################
         log.very_verbose(
             "Base objects for current requets [i{%s}, s{%s}, u {%s}]"
-            % (icom, sql, user))
+            % (icom, sql, user)
+        )
 
         return InitObj(
-            username=user, extuser_object=external_user,
-            icommands=icom, db_handler=sql,
-            valid_credentials=True, refreshed=refreshed
+            username=user,
+            extuser_object=external_user,
+            icommands=icom,
+            db_handler=sql,
+            valid_credentials=True,
+            refreshed=refreshed,
         )
 
     def irodsuser_from_b2access(self, internal_user, refreshed=False):
@@ -103,36 +112,36 @@ class EudatEndpoint(B2accessUtilities):
                 service_name='irods',
                 user=external_user.irodsuser,
                 password=external_user.token,
-                authscheme='PAM'
+                authscheme='PAM',
             )
 
             log.debug("Current b2access token is valid")
         except iexceptions.PAM_AUTH_PASSWORD_FAILED:
 
             if external_user.refresh_token is None:
-                log.warning(
-                    "Missing refresh token cannot request for a new token")
+                log.warning("Missing refresh token cannot request for a new token")
                 raise RestApiException('Invalid PAM credentials')
             else:
 
                 if refreshed:
                     log.info("B2access token already refreshed, cannot request new one")
                     raise RestApiException('Invalid PAM credentials')
-                log.info(
-                    "B2access token is no longer valid, requesting new token")
+                log.info("B2access token is no longer valid, requesting new token")
 
                 b2access = self.create_b2access_client(self.auth, decorate=True)
                 access_token = self.refresh_b2access_token(
-                    self.auth, external_user.email,
-                    b2access, external_user.refresh_token)
+                    self.auth,
+                    external_user.email,
+                    b2access,
+                    external_user.refresh_token,
+                )
 
                 if access_token is not None:
                     return self.irodsuser_from_b2access(internal_user, refreshed=True)
                 raise RestApiException('Failed to refresh b2access token')
 
         except BaseException as e:
-            raise RestApiException(
-                "Unexpected error: %s (%s)" % (type(e), str(e)))
+            raise RestApiException("Unexpected error: %s (%s)" % (type(e), str(e)))
 
         return icom, external_user, refreshed
 
@@ -142,16 +151,13 @@ class EudatEndpoint(B2accessUtilities):
             log.debug("Validated B2SAFE user: %s" % user.uuid)
         else:
             msg = "Current credentials not registered inside B2SAFE"
-            raise RestApiException(
-                msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+            raise RestApiException(msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
         try:
-            return self.get_service_instance(
-                service_name='irods', user_session=user)
+            return self.get_service_instance(service_name='irods', user_session=user)
         except iexceptions.PAM_AUTH_PASSWORD_FAILED:
             msg = "PAM Authentication failed, invalid password or token"
-            raise RestApiException(
-                msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+            raise RestApiException(msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
 
         return None
 
@@ -169,8 +175,11 @@ class EudatEndpoint(B2accessUtilities):
             raise ValueError("Invalid authentication")
 
         icom = self.get_service_instance(
-            service_name='irods', only_check_proxy=True,
-            user=IRODS_VARS.get('guest_user'), password=None, gss=True,
+            service_name='irods',
+            only_check_proxy=True,
+            user=IRODS_VARS.get('guest_user'),
+            password=None,
+            gss=True,
         )
 
         return icom
@@ -191,13 +200,18 @@ class EudatEndpoint(B2accessUtilities):
         # print("TEST", CURRENT_HTTPAPI_SERVER)
 
         return '%s://%s%s/%s' % (
-            HTTP_PROTOCOL, CURRENT_HTTPAPI_SERVER, api_path,
-            ipath.strip(self._path_separator))
+            HTTP_PROTOCOL,
+            CURRENT_HTTPAPI_SERVER,
+            api_path,
+            ipath.strip(self._path_separator),
+        )
 
     def b2safe_location(self, ipath):
         return '%s://%s/%s' % (
-            IRODS_PROTOCOL, CURRENT_B2SAFE_SERVER,
-            ipath.strip(self._path_separator))
+            IRODS_PROTOCOL,
+            CURRENT_B2SAFE_SERVER,
+            ipath.strip(self._path_separator),
+        )
 
     def fix_location(self, location):
         if not location.startswith(self._path_separator):
@@ -236,8 +250,7 @@ class EudatEndpoint(B2accessUtilities):
             path += '/' + filename.rstrip('/')
         return path
 
-    def get_file_parameters(self, icom,
-                            path=None, filename=None, newfile=False):
+    def get_file_parameters(self, icom, path=None, filename=None, newfile=False):
         """
         NOTE: resource is a complicated parameter:
         resources are meant for (iRODS) replicas;
@@ -291,38 +304,35 @@ class EudatEndpoint(B2accessUtilities):
                 else:
                     force = False
             elif isinstance(force, int):
-                force = (force == 1)
+                force = force == 1
 
         ############################
         log.verbose(
             "Parsed: file(%s), path(%s), res(%s), force(%s)",
-            filename, path, resource, force)
+            filename,
+            path,
+            resource,
+            force,
+        )
         return path, resource, filename, force
 
     def download_object(self, r, path, head=False):
         icom = r.icommands
         username = r.username
-        path, resource, filename, force = \
-            self.get_file_parameters(icom, path=path)
+        path, resource, filename, force = self.get_file_parameters(icom, path=path)
         is_collection = icom.is_collection(path)
         if is_collection:
             return self.send_errors(
-                'Collection: recursive download is not allowed',
-                head_method=head
+                'Collection: recursive download is not allowed', head_method=head
             )
 
         if head:
             if icom.readable(path):
                 return self.force_response(
-                    defined_content='',
-                    code=hcodes.HTTP_OK_BASIC,
-                    head_method=head
+                    defined_content='', code=hcodes.HTTP_OK_BASIC, head_method=head
                 )
             else:
-                return self.send_errors(
-                    code=hcodes.HTTP_BAD_NOTFOUND,
-                    head_method=head
-                )
+                return self.send_errors(code=hcodes.HTTP_BAD_NOTFOUND, head_method=head)
 
         if filename is None:
             filename = self.filename_from_path(path)
@@ -349,7 +359,7 @@ class EudatEndpoint(B2accessUtilities):
         # parse query parameters
         self.get_input()
         download = False
-        if (hasattr(self._args, 'download')):
+        if hasattr(self._args, 'download'):
             if self._args.download and 'true' in self._args.download.lower():
                 download = True
         return download
@@ -375,9 +385,10 @@ class EudatEndpoint(B2accessUtilities):
         # FILE (or not existing)
         else:
             collection = icom.get_collection_from_path(path)
-            current_filename = path[len(collection) + 1:]
+            current_filename = path[len(collection) + 1 :]
 
             from contextlib import suppress
+
             with suppress(IrodsException):
                 filelist = icom.list(path=collection)
                 data = EMPTY_RESPONSE
@@ -392,8 +403,9 @@ class EudatEndpoint(B2accessUtilities):
             # if a path that does not exist
             if len(data) < 1:
                 return self.send_errors(
-                    "Path does not exists or you don't have privileges: %s"
-                    % path, code=hcodes.HTTP_BAD_NOTFOUND)
+                    "Path does not exists or you don't have privileges: %s" % path,
+                    code=hcodes.HTTP_BAD_NOTFOUND,
+                )
 
         # Set the right context to each element
         response = []
@@ -437,7 +449,8 @@ class EudatEndpoint(B2accessUtilities):
                 'link': self.httpapi_location(
                     icom.get_absolute_path(filename, root=collection),
                     api_path=api_path,
-                    remove_suffix=location)
+                    remove_suffix=location,
+                ),
             }
 
             response.append({filename: content})
