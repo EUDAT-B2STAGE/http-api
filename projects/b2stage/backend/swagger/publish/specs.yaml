@@ -9,8 +9,8 @@ schema:
   expose: true
 mapping:
   publish: "/publish/<path:location>"
-ids:
-  location: the filesystem path to your digital entities/objects
+# ids:
+#   location: the filesystem path to your digital entities/objects
 labels:
   - eudat
   - publish

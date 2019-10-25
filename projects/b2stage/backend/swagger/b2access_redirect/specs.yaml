@@ -7,8 +7,6 @@ file: oauth
 baseuri: /auth
 mapping:
   ask: "/askauth"
-# ids:
-#   tmp: test
 labels:
   - eudat
   - b2access
