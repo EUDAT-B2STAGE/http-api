@@ -65,7 +65,8 @@ class ErrorCodes(object):
     UNABLE_TO_CREATE_ZIP_FILE = ("4042", "Unable to create merged zip file")
     INVALID_ZIP_SPLIT_OUTPUT = ("4043", "Unable to retrieve results from zip split")
     EMPTY_DOWNLOAD_PATH_PARAM = ("4044", "Parameter download_path is empty")
-
+    UNEXPECTED_ERROR = ("4045", "An unexpected error occurred")
+    MISSING_REQUESTID = ("4046", "Request ID is missing")
 
 class Metadata(object):
 

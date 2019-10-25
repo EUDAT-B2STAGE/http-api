@@ -1,0 +1,36 @@
+version: '3'
+
+version: '3'
+
+# #####################
+# VOLUMES
+# #####################
+
+volumes:
+  redis_cache:
+    driver: local
+
+services:
+
+  backend:
+    environment:
+      ACTIVATE: 0
+  rabbit:
+    environment:
+      ACTIVATE: 0
+  mongodb:
+    environment:
+      ACTIVATE: 0
+
+
+  redis:
+    image: redis:alpine
+    command: redis-server --appendonly yes
+    restart: on-failure:5
+    volumes:
+      # configuration files
+      - redis_cache:/data
+    ports:
+      - 6379:6379
+    environment:
+      ACTIVATE: 1

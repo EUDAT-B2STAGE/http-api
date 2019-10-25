@@ -5,8 +5,8 @@
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing data in EUDAT domains
-  version: 1.0.7
-  rapydo: 0.6.6
+  version: 1.0.8
+  rapydo: 0.6.7
 
 tags:
   eudat: all endpoints associated to EUDAT services
@@ -57,7 +57,9 @@ variables:
     ## Dockerized DB
     ALCHEMY_USER: rods
     ALCHEMY_PASSWORD: chooseapasswordwisely
-    ALCHEMY_API_DB: SQL_API
+    ALCHEMY_ENGINE: postgresql
+    ALCHEMY_DBS: 'ICAT SQL_API'
+    ALCHEMY_DB: SQL_API
 
     ###############################
     ## Experimental features
@@ -78,9 +80,6 @@ variables:
     # B2ACCESS_ENV: staging
     # B2ACCESS_ENV: production
     B2ACCESS_CAS: /tmp/certificates/b2access
-    # sqlalchemy fixed:
-    ALCHEMY_ENGINE: postgresql
-    ALCHEMY_DBS: 'ICAT SQL_API'
     ##: OTHERs / FIXED
     UPLOAD_PATH: /uploads
     FULL_JWT: false
@@ -145,8 +144,12 @@ releases:
     rapydo: 0.6.5
     status: released
   '1.0.7':
-    type: development
+    type: stable
     rapydo: 0.6.6
+    status: released
+  '1.0.8':
+    type: development
+    rapydo: 0.6.7
     status: development
 
 controller:

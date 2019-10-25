@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from seadata.apis.commons.cluster import ClusterContainerEndpoint as Endpoint
+from b2stage.apis.commons.endpoint import EudatEndpoint
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from utilities.logs import get_logger
 from restapi.flask_ext.flask_celery import CeleryExt
 
 log = get_logger(__name__)
 
 
-class ListResources(Endpoint):
+class ListResources(EudatEndpoint, ClusterContainerEndpoint):
 
     def post(self):
 
