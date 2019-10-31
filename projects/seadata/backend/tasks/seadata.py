@@ -8,6 +8,7 @@ import requests
 from shutil import rmtree
 from socket import gethostname
 from plumbum.commands.processes import ProcessExecutionError
+from glom import glom
 
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from seadata.apis.commons.queue import prepare_message
@@ -1214,7 +1215,15 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
             # TODO Raise error already here!
-            # Or even before reaching asynchronous job...
+            # Or even before reaching asynchronous job..
+        
+        backdoor = glom(myjson, "parameters.backdoor", default=False)
+
+        if 'request_id'not in myjson['parameters'].keys():
+            return notify_error(
+                    ErrorCodes. MISSING_REQUEST_ID,
+                    myjson, backdoor,self
+            )
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
@@ -1222,8 +1231,6 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
         # one from the client, one from our system.
 
         params = myjson.get('parameters', {})
-
-        backdoor = params.pop('backdoor', False)
 
         orders = myjson['parameters'].pop('orders', None)
         if orders is None:
@@ -1292,17 +1299,18 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
         if 'parameters' not in myjson:
             myjson['parameters'] = {}
 
-        params = myjson.get('parameters', {})
-        backdoor = params.pop('backdoor', False)
+        backdoor = glom(myjson, "parameters.backdoor", default=False)
 
-        if 'request_id' not in myjson:
+        if 'request_id'not in myjson['parameters'].keys():
             return notify_error(
-                ErrorCodes.MISSING_REQUESTID,
-                myjson, backdoor, self
+                    ErrorCodes. MISSING_REQUEST_ID,
+                    myjson, backdoor,self
             )
 
         myjson['parameters']['request_id'] = myjson['request_id']
         myjson['request_id'] = self.request.id
+
+        params = myjson.get('parameters', {})
 
         batches = myjson['parameters'].pop('batches', None)
         if batches is None:
