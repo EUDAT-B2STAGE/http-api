@@ -1245,7 +1245,7 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
         
         backdoor = glom(myjson, "parameters.backdoor", default=False)
 
-        if 'request_id'not in myjson['parameters'].keys():
+        if 'request_id'not in myjson:
             return notify_error(
                     ErrorCodes. MISSING_REQUEST_ID,
                     myjson, backdoor,self
@@ -1335,7 +1335,7 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
 
         backdoor = glom(myjson, "parameters.backdoor", default=False)
 
-        if 'request_id'not in myjson['parameters'].keys():
+        if 'request_id'not in myjson:
             return notify_error(
                     ErrorCodes. MISSING_REQUEST_ID,
                     myjson, backdoor,self
