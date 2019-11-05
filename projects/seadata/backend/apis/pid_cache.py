@@ -46,16 +46,22 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
     def post(self, batch_id):
 
         # imain = self.get_service_instance(service_name='irods')
-        imain = self.get_main_irods_connection()
-        ipath = self.get_irods_production_path(imain)
+        try:
+            imain = self.get_main_irods_connection()
+            ipath = self.get_irods_production_path(imain)
 
-        collection = os.path.join(ipath, batch_id)
-        if not imain.exists(collection):
-            raise RestApiException(
-                "Invalid batch id %s" % batch_id, status_code=hcodes.HTTP_BAD_NOTFOUND
+            collection = os.path.join(ipath, batch_id)
+            if not imain.exists(collection):
+                raise RestApiException(
+                    "Invalid batch id %s" % batch_id, status_code=hcodes.HTTP_BAD_NOTFOUND
+                )
+
+            task = CeleryExt.cache_batch_pids.apply_async(args=[collection])
+            log.info("Async job: %s", task.id)
+
+            return self.return_async_id(task.id)
+        except requests.exceptions.ReadTimeout:
+            return self.send_errors(
+                "irods is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
-
-        task = CeleryExt.cache_batch_pids.apply_async(args=[collection])
-        log.info("Async job: %s", task.id)
-
-        return self.return_async_id(task.id)

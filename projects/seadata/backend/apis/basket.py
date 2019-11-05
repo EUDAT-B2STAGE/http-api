@@ -103,82 +103,88 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # imain = self.get_service_instance(service_name='irods')
-        imain = self.get_main_irods_connection()
-        log.info("DOWNLOAD DEBUG 2: %s (code '%s')", order_id, code)
-        order_path = self.get_irods_order_path(imain, order_id)
-        log.info("DOWNLOAD DEBUG 3: %s (code '%s') - %s", order_id, code, order_path)
+        try:
+            imain = self.get_main_irods_connection()
+            log.info("DOWNLOAD DEBUG 2: %s (code '%s')", order_id, code)
+            order_path = self.get_irods_order_path(imain, order_id)
+            log.info("DOWNLOAD DEBUG 3: %s (code '%s') - %s", order_id, code, order_path)
 
-        zip_file_name = self.get_filename_from_type(order_id, ftype)
+            zip_file_name = self.get_filename_from_type(order_id, ftype)
 
-        if zip_file_name is None:
-            return self.send_errors("Invalid file type %s" % ftype)
+            if zip_file_name is None:
+                return self.send_errors("Invalid file type %s" % ftype)
 
-        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
+            zip_ipath = path.join(order_path, zip_file_name, return_str=True)
 
-        error = "Order '%s' not found (or no permissions)" % order_id
+            error = "Order '%s' not found (or no permissions)" % order_id
 
-        log.debug("Checking zip irods path: %s", zip_ipath)
-        log.info("DOWNLOAD DEBUG 4: %s (code '%s') - %s", order_id, code, zip_ipath)
-        if not imain.is_dataobject(zip_ipath):
-            log.error("File not found %s", zip_ipath)
-            return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
+            log.debug("Checking zip irods path: %s", zip_ipath)
+            log.info("DOWNLOAD DEBUG 4: %s (code '%s') - %s", order_id, code, zip_ipath)
+            if not imain.is_dataobject(zip_ipath):
+                log.error("File not found %s", zip_ipath)
+                return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
 
-        log.info("DOWNLOAD DEBUG 5: %s (code '%s')", order_id, code)
+            log.info("DOWNLOAD DEBUG 5: %s (code '%s')", order_id, code)
 
-        # TOFIX: we should use a database or cache to save this,
-        # not irods metadata (known for low performances)
-        metadata, _ = imain.get_metadata(zip_ipath)
-        log.info("DOWNLOAD DEBUG 6: %s (code '%s')", order_id, code)
-        iticket_code = metadata.get('iticket_code')
-        log.info("DOWNLOAD DEBUG 7: %s (code '%s')", order_id, code)
+            # TOFIX: we should use a database or cache to save this,
+            # not irods metadata (known for low performances)
+            metadata, _ = imain.get_metadata(zip_ipath)
+            log.info("DOWNLOAD DEBUG 6: %s (code '%s')", order_id, code)
+            iticket_code = metadata.get('iticket_code')
+            log.info("DOWNLOAD DEBUG 7: %s (code '%s')", order_id, code)
 
-        encoded_code = urllib.parse.quote_plus(code)
-        log.info("DOWNLOAD DEBUG 8: %s (code '%s')", order_id, code)
+            encoded_code = urllib.parse.quote_plus(code)
+            log.info("DOWNLOAD DEBUG 8: %s (code '%s')", order_id, code)
 
-        if iticket_code != encoded_code:
-            log.error("iticket code does not match %s", zip_ipath)
-            return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
+            if iticket_code != encoded_code:
+                log.error("iticket code does not match %s", zip_ipath)
+                return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
 
-        # NOTE: very important!
-        # use anonymous to get the session here
-        # because the ticket supply breaks the iuser session permissions
-        icom = self.get_service_instance(
-            service_name='irods',
-            user='anonymous',
-            password='null',
-            authscheme='credentials',
-        )
-        log.info("DOWNLOAD DEBUG 9: %s (code '%s')", order_id, code)
-        # obj = self.init_endpoint()
-        # icom = obj.icommands
-        icom.ticket_supply(code)
-
-        log.info("DOWNLOAD DEBUG 10: %s (code '%s')", order_id, code)
-        if not icom.test_ticket(zip_ipath):
-            log.error("Invalid iticket code %s", zip_ipath)
-            return self.send_errors(
-                {order_id: "Invalid code"}, code=hcodes.HTTP_BAD_NOTFOUND
+            # NOTE: very important!
+            # use anonymous to get the session here
+            # because the ticket supply breaks the iuser session permissions
+            icom = self.get_service_instance(
+                service_name='irods',
+                user='anonymous',
+                password='null',
+                authscheme='credentials',
             )
+            log.info("DOWNLOAD DEBUG 9: %s (code '%s')", order_id, code)
+            # obj = self.init_endpoint()
+            # icom = obj.icommands
+            icom.ticket_supply(code)
 
-        # # TODO: push pdonorio/prc
-        # tickets = imain.list_tickets()
-        # print(tickets)
+            log.info("DOWNLOAD DEBUG 10: %s (code '%s')", order_id, code)
+            if not icom.test_ticket(zip_ipath):
+                log.error("Invalid iticket code %s", zip_ipath)
+                return self.send_errors(
+                    {order_id: "Invalid code"}, code=hcodes.HTTP_BAD_NOTFOUND
+                )
 
-        # iticket mod "$TICKET" add user anonymous
-        # iticket mod "$TICKET" uses 1
-        # iticket mod "$TICKET" expire "2018-03-23.06:50:00"
+            # # TODO: push pdonorio/prc
+            # tickets = imain.list_tickets()
+            # print(tickets)
 
-        # ##################
-        # response = {order_id: 'valid'}
-        # return self.force_response(response)
-        headers = {
-            'Content-Transfer-Encoding': 'binary',
-            'Content-Disposition': "attachment; filename=%s" % zip_file_name,
-        }
-        msg = prepare_message(self, json=json, log_string='end', status='sent')
-        log_into_queue(self, msg)
-        log.info("DOWNLOAD DEBUG 11: %s (code '%s')", order_id, code)
-        return icom.stream_ticket(zip_ipath, headers=headers)
+            # iticket mod "$TICKET" add user anonymous
+            # iticket mod "$TICKET" uses 1
+            # iticket mod "$TICKET" expire "2018-03-23.06:50:00"
+
+            # ##################
+            # response = {order_id: 'valid'}
+            # return self.force_response(response)
+            headers = {
+                'Content-Transfer-Encoding': 'binary',
+                'Content-Disposition': "attachment; filename=%s" % zip_file_name,
+            }
+            msg = prepare_message(self, json=json, log_string='end', status='sent')
+            log_into_queue(self, msg)
+            log.info("DOWNLOAD DEBUG 11: %s (code '%s')", order_id, code)
+            return icom.stream_ticket(zip_ipath, headers=headers)
+        except requests.exceptions.ReadTimeout:
+            return self.send_errors(
+                "irods is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )
 
 
 class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
@@ -239,43 +245,49 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # imain = self.get_service_instance(service_name='irods')
-        imain = self.get_main_irods_connection()
-        order_path = self.get_irods_order_path(imain, order_id)
-        log.debug("Order path: %s", order_path)
-        if not imain.is_collection(order_path):
-            error = "Order '%s': not existing" % order_id
-            return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
+        try:
+            imain = self.get_main_irods_connection()
+            order_path = self.get_irods_order_path(imain, order_id)
+            log.debug("Order path: %s", order_path)
+            if not imain.is_collection(order_path):
+                error = "Order '%s': not existing" % order_id
+                return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
-        ##################
-        ils = imain.list(order_path, detailed=True)
+            ##################
+            ils = imain.list(order_path, detailed=True)
 
-        u = get_order_zip_file_name(order_id, restricted=False, index=1)
-        # if a splitted unrestricted zip exists, skip the unsplitted file
-        if u in ils:
-            u = get_order_zip_file_name(order_id, restricted=False, index=None)
-            ils.pop(u, None)
+            u = get_order_zip_file_name(order_id, restricted=False, index=1)
+            # if a splitted unrestricted zip exists, skip the unsplitted file
+            if u in ils:
+                u = get_order_zip_file_name(order_id, restricted=False, index=None)
+                ils.pop(u, None)
 
-        r = get_order_zip_file_name(order_id, restricted=True, index=1)
-        # if a splitted restricted zip exists, skip the unsplitted file
-        if r in ils:
-            r = get_order_zip_file_name(order_id, restricted=True, index=None)
-            ils.pop(r, None)
+            r = get_order_zip_file_name(order_id, restricted=True, index=1)
+            # if a splitted restricted zip exists, skip the unsplitted file
+            if r in ils:
+                r = get_order_zip_file_name(order_id, restricted=True, index=None)
+                ils.pop(r, None)
 
-        response = []
+            response = []
 
-        for _, data in ils.items():
-            name = data.get('name')
-            if name.endswith('_restricted.zip.bak'):
-                continue
+            for _, data in ils.items():
+                name = data.get('name')
+                if name.endswith('_restricted.zip.bak'):
+                    continue
 
-            ipath = self.join_paths([data.get('path'), name])
-            metadata, _ = imain.get_metadata(ipath)
-            data['URL'] = metadata.get('download')
-            response.append(data)
+                ipath = self.join_paths([data.get('path'), name])
+                metadata, _ = imain.get_metadata(ipath)
+                data['URL'] = metadata.get('download')
+                response.append(data)
 
-        msg = prepare_message(self, log_string='end', status='completed')
-        log_into_queue(self, msg)
-        return response
+            msg = prepare_message(self, log_string='end', status='completed')
+            log_into_queue(self, msg)
+            return response
+        except requests.exceptions.ReadTimeout:
+            return self.send_errors(
+                "irods is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )
 
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     @authentication.required()
@@ -325,59 +337,65 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # Create the path
         log.info("Order request: %s", order_id)
         # imain = self.get_service_instance(service_name='irods')
-        imain = self.get_main_irods_connection()
-        order_path = self.get_irods_order_path(imain, order_id)
-        log.debug("Order path: %s", order_path)
-        if not imain.is_collection(order_path):
-            obj = self.init_endpoint()
-            # Create the path and set permissions
-            imain.create_collection_inheritable(order_path, obj.username)
+        try:
+            imain = self.get_main_irods_connection()
+            order_path = self.get_irods_order_path(imain, order_id)
+            log.debug("Order path: %s", order_path)
+            if not imain.is_collection(order_path):
+                obj = self.init_endpoint()
+                # Create the path and set permissions
+                imain.create_collection_inheritable(order_path, obj.username)
 
-        ##################
-        # Does the zip already exists?
-        # zip_file_name = path.append_compress_extension(order_id)
-        zip_file_name = path.append_compress_extension(filename)
-        zip_ipath = path.join(order_path, zip_file_name, return_str=True)
-        if imain.is_dataobject(zip_ipath):
-            # give error here
-            # return {order_id: 'already exists'}
-            # json_input['status'] = 'exists'
-            json_input['parameters'] = {'status': 'exists'}
-            return json_input
+            ##################
+            # Does the zip already exists?
+            # zip_file_name = path.append_compress_extension(order_id)
+            zip_file_name = path.append_compress_extension(filename)
+            zip_ipath = path.join(order_path, zip_file_name, return_str=True)
+            if imain.is_dataobject(zip_ipath):
+                # give error here
+                # return {order_id: 'already exists'}
+                # json_input['status'] = 'exists'
+                json_input['parameters'] = {'status': 'exists'}
+                return json_input
 
-        ################
-        # ASYNC
-        if len(pids) > 0:
-            log.info("Submit async celery task")
-            task = CeleryExt.unrestricted_order.apply_async(
-                args=[order_id, order_path, zip_file_name, json_input]
+            ################
+            # ASYNC
+            if len(pids) > 0:
+                log.info("Submit async celery task")
+                task = CeleryExt.unrestricted_order.apply_async(
+                    args=[order_id, order_path, zip_file_name, json_input]
+                )
+                log.info("Async job: %s", task.id)
+                return self.return_async_id(task.id)
+
+            # ################
+            # msg = prepare_message(self, log_string='end')
+            # # msg = prepare_message(self, log_string='end', status='created')
+            # msg['parameters'] = {
+            #     "request_id": msg['request_id'],
+            #     "zipfile_name": params['file_name'],
+            #     "zipfile_count": 1,
+            # }
+            # log_into_queue(self, msg)
+
+            # ################
+            # # return {order_id: 'created'}
+            # # json_input['status'] = 'created'
+            # json_input['request_id'] = msg['request_id']
+            # json_input['parameters'] = msg['parameters']
+            # if len(errors) > 0:
+            #     json_input['errors'] = errors
+
+            # # call Import manager to notify
+            # api = API()
+            # api.post(json_input)
+
+            return {'status': 'enabled'}
+        except requests.exceptions.ReadTimeout:
+            return self.send_errors(
+                "irods is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
-            log.info("Async job: %s", task.id)
-            return self.return_async_id(task.id)
-
-        # ################
-        # msg = prepare_message(self, log_string='end')
-        # # msg = prepare_message(self, log_string='end', status='created')
-        # msg['parameters'] = {
-        #     "request_id": msg['request_id'],
-        #     "zipfile_name": params['file_name'],
-        #     "zipfile_count": 1,
-        # }
-        # log_into_queue(self, msg)
-
-        # ################
-        # # return {order_id: 'created'}
-        # # json_input['status'] = 'created'
-        # json_input['request_id'] = msg['request_id']
-        # json_input['parameters'] = msg['parameters']
-        # if len(errors) > 0:
-        #     json_input['errors'] = errors
-
-        # # call Import manager to notify
-        # api = API()
-        # api.post(json_input)
-
-        return {'status': 'enabled'}
 
     def no_slash_ticket(self, imain, path):
         """ irods ticket for HTTP """
@@ -462,90 +480,96 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         log_into_queue(self, msg)
 
         # imain = self.get_service_instance(service_name='irods')
-        imain = self.get_main_irods_connection()
-        order_path = self.get_irods_order_path(imain, order_id)
-        log.debug("Order path: %s", order_path)
+        try:
+            imain = self.get_main_irods_connection()
+            order_path = self.get_irods_order_path(imain, order_id)
+            log.debug("Order path: %s", order_path)
 
-        response = []
+            response = []
 
-        files_in_irods = imain.list(order_path, detailed=True)
+            files_in_irods = imain.list(order_path, detailed=True)
 
-        # Going through all possible file names of zip files
+            # Going through all possible file names of zip files
 
-        # unrestricted zip
-        # info = self.get_download(
-        #     imain, order_id, order_path, files_in_irods,
-        #     restricted=False, index=None)
-        # if info is not None:
-        #     response.append(info)
+            # unrestricted zip
+            # info = self.get_download(
+            #     imain, order_id, order_path, files_in_irods,
+            #     restricted=False, index=None)
+            # if info is not None:
+            #     response.append(info)
 
-        # checking for splitted unrestricted zip
-        info = self.get_download(
-            imain, order_id, order_path, files_in_irods, restricted=False, index=1
-        )
-
-        # No split zip found, looking for the single unrestricted zip
-        if info is None:
+            # checking for splitted unrestricted zip
             info = self.get_download(
-                imain,
-                order_id,
-                order_path,
-                files_in_irods,
-                restricted=False,
-                index=None,
+                imain, order_id, order_path, files_in_irods, restricted=False, index=1
             )
-            if info is not None:
-                response.append(info)
-        # When found one split, looking for more:
-        else:
-            response.append(info)
-            for index in range(2, 100):
+
+            # No split zip found, looking for the single unrestricted zip
+            if info is None:
                 info = self.get_download(
                     imain,
                     order_id,
                     order_path,
                     files_in_irods,
                     restricted=False,
-                    index=index,
+                    index=None,
                 )
                 if info is not None:
                     response.append(info)
-
-        # checking for splitted restricted zip
-        info = self.get_download(
-            imain, order_id, order_path, files_in_irods, restricted=True, index=1
-        )
-
-        # No split zip found, looking for the single restricted zip
-        if info is None:
-            info = self.get_download(
-                imain, order_id, order_path, files_in_irods, restricted=True, index=None
-            )
-            if info is not None:
+            # When found one split, looking for more:
+            else:
                 response.append(info)
-        # When found one split, looking for more:
-        else:
-            response.append(info)
-            for index in range(2, 100):
+                for index in range(2, 100):
+                    info = self.get_download(
+                        imain,
+                        order_id,
+                        order_path,
+                        files_in_irods,
+                        restricted=False,
+                        index=index,
+                    )
+                    if info is not None:
+                        response.append(info)
+
+            # checking for splitted restricted zip
+            info = self.get_download(
+                imain, order_id, order_path, files_in_irods, restricted=True, index=1
+            )
+
+            # No split zip found, looking for the single restricted zip
+            if info is None:
                 info = self.get_download(
-                    imain,
-                    order_id,
-                    order_path,
-                    files_in_irods,
-                    restricted=True,
-                    index=index,
+                    imain, order_id, order_path, files_in_irods, restricted=True, index=None
                 )
                 if info is not None:
                     response.append(info)
+            # When found one split, looking for more:
+            else:
+                response.append(info)
+                for index in range(2, 100):
+                    info = self.get_download(
+                        imain,
+                        order_id,
+                        order_path,
+                        files_in_irods,
+                        restricted=True,
+                        index=index,
+                    )
+                    if info is not None:
+                        response.append(info)
 
-        if len(response) == 0:
-            error = "Order '%s' not found (or no permissions)" % order_id
-            return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
+            if len(response) == 0:
+                error = "Order '%s' not found (or no permissions)" % order_id
+                return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
-        msg = prepare_message(self, log_string='end', status='enabled')
-        log_into_queue(self, msg)
+            msg = prepare_message(self, log_string='end', status='enabled')
+            log_into_queue(self, msg)
 
-        return self.force_response(response)
+            return self.force_response(response)
+        except requests.exceptions.ReadTimeout:
+            return self.send_errors(
+                "irods is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )
 
     @authentication.required()
     def delete(self):
@@ -553,14 +577,20 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         json_input = self.get_input()
 
         # imain = self.get_service_instance(service_name='irods')
-        imain = self.get_main_irods_connection()
-        order_path = self.get_irods_order_path(imain)
-        local_order_path = str(path.join(MOUNTPOINT, ORDERS_DIR))
-        log.debug("Order collection: %s", order_path)
-        log.debug("Order path: %s", local_order_path)
+        try:
+            imain = self.get_main_irods_connection()
+            order_path = self.get_irods_order_path(imain)
+            local_order_path = str(path.join(MOUNTPOINT, ORDERS_DIR))
+            log.debug("Order collection: %s", order_path)
+            log.debug("Order path: %s", local_order_path)
 
-        task = CeleryExt.delete_orders.apply_async(
-            args=[order_path, local_order_path, json_input]
-        )
-        log.info("Async job: %s", task.id)
-        return self.return_async_id(task.id)
+            task = CeleryExt.delete_orders.apply_async(
+                args=[order_path, local_order_path, json_input]
+            )
+            log.info("Async job: %s", task.id)
+            return self.return_async_id(task.id)
+        except requests.exceptions.ReadTimeout:
+            return self.send_errors(
+                "irods is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )

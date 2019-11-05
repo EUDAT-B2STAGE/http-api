@@ -28,14 +28,20 @@ class ListResources(EudatEndpoint, ClusterContainerEndpoint):
     def post(self):
 
         # imain = self.get_service_instance(service_name='irods')
-        imain = self.get_main_irods_connection()
-        json_input = self.get_input()
-        task = CeleryExt.list_resources.apply_async(
-            args=[
-                self.get_irods_batch_path(imain),
-                self.get_irods_order_path(imain),
-                json_input,
-            ]
-        )
-        log.info("Async job: %s", task.id)
-        return self.return_async_id(task.id)
+        try:
+            imain = self.get_main_irods_connection()
+            json_input = self.get_input()
+            task = CeleryExt.list_resources.apply_async(
+                args=[
+                    self.get_irods_batch_path(imain),
+                    self.get_irods_order_path(imain),
+                    json_input,
+                ]
+            )
+            log.info("Async job: %s", task.id)
+            return self.return_async_id(task.id)
+        except requests.exceptions.ReadTimeout:
+            return self.send_errors(
+                "irods is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )
