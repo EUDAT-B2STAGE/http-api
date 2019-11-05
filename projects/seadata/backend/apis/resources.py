@@ -103,33 +103,39 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         ###########################
         # get name from batch
         # imain = self.get_service_instance(service_name='irods')
-        imain = self.get_main_irods_connection()
-        batch_path = self.get_irods_batch_path(imain, batch_id)
-        local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
-        log.info("Batch irods path: %s", batch_path)
-        log.info("Batch local path: %s", local_path)
-        batch_status, batch_files = self.get_batch_status(imain, batch_path, local_path)
+        try:
+            imain = self.get_main_irods_connection()
+            batch_path = self.get_irods_batch_path(imain, batch_id)
+            local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
+            log.info("Batch irods path: %s", batch_path)
+            log.info("Batch local path: %s", local_path)
+            batch_status, batch_files = self.get_batch_status(imain, batch_path, local_path)
 
-        if batch_status == MISSING_BATCH:
-            return self.send_errors(
-                "Batch '%s' not found (or no permissions)" % batch_id,
-                code=hcodes.HTTP_BAD_NOTFOUND,
-            )
+            if batch_status == MISSING_BATCH:
+                return self.send_errors(
+                    "Batch '%s' not found (or no permissions)" % batch_id,
+                    code=hcodes.HTTP_BAD_NOTFOUND,
+                )
 
-        if batch_status == NOT_FILLED_BATCH:
-            return self.send_errors(
-                "Batch '%s' not yet filled" % batch_id, code=hcodes.HTTP_BAD_RESOURCE
-            )
+            if batch_status == NOT_FILLED_BATCH:
+                return self.send_errors(
+                    "Batch '%s' not yet filled" % batch_id, code=hcodes.HTTP_BAD_RESOURCE
+                )
 
-        if batch_status == BATCH_MISCONFIGURATION:
-            log.error(
-                'Misconfiguration: %s files in %s (expected 1)',
-                len(batch_files),
-                batch_path,
-            )
+            if batch_status == BATCH_MISCONFIGURATION:
+                log.error(
+                    'Misconfiguration: %s files in %s (expected 1)',
+                    len(batch_files),
+                    batch_path,
+                )
+                return self.send_errors(
+                    "Misconfiguration for batch_id %s" % batch_id,
+                    code=hcodes.HTTP_BAD_RESOURCE,
+                )
+        except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "Misconfiguration for batch_id %s" % batch_id,
-                code=hcodes.HTTP_BAD_RESOURCE,
+                "irods is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
         ###################

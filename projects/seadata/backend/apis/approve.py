@@ -87,33 +87,40 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         # 1. check if irods path exists
         # imain = self.get_service_instance(service_name='irods')
-        imain = self.get_main_irods_connection()
-        self.batch_path = self.get_irods_batch_path(imain, batch_id)
-        log.debug("Batch path: %s", self.batch_path)
+        try:
+            imain = self.get_main_irods_connection()
+            self.batch_path = self.get_irods_batch_path(imain, batch_id)
+            log.debug("Batch path: %s", self.batch_path)
 
-        if not imain.is_collection(self.batch_path):
-            return self.send_errors(
-                "Batch '%s' not enabled (or no permissions)" % batch_id,
-                code=hcodes.HTTP_BAD_NOTFOUND,
+            if not imain.is_collection(self.batch_path):
+                return self.send_errors(
+                    "Batch '%s' not enabled (or no permissions)" % batch_id,
+                    code=hcodes.HTTP_BAD_NOTFOUND,
+                )
+
+            ################
+            # 2. make batch_id directory in production if not existing
+            self.prod_path = self.get_irods_production_path(imain, batch_id)
+            log.debug("Production path: %s", self.prod_path)
+            obj = self.init_endpoint()
+            imain.create_collection_inheritable(self.prod_path, obj.username)
+
+            ################
+            # ASYNC
+            log.info("Submit async celery task")
+            from restapi.flask_ext.flask_celery import CeleryExt
+
+            task = CeleryExt.move_to_production_task.apply_async(
+                args=[batch_id, self.prod_path, json_input],
+                queue='ingestion',
+                routing_key='ingestion',
             )
+            log.info("Async job: %s", task.id)
 
-        ################
-        # 2. make batch_id directory in production if not existing
-        self.prod_path = self.get_irods_production_path(imain, batch_id)
-        log.debug("Production path: %s", self.prod_path)
-        obj = self.init_endpoint()
-        imain.create_collection_inheritable(self.prod_path, obj.username)
+            return self.return_async_id(task.id)
 
-        ################
-        # ASYNC
-        log.info("Submit async celery task")
-        from restapi.flask_ext.flask_celery import CeleryExt
-
-        task = CeleryExt.move_to_production_task.apply_async(
-            args=[batch_id, self.prod_path, json_input],
-            queue='ingestion',
-            routing_key='ingestion',
-        )
-        log.info("Async job: %s", task.id)
-
-        return self.return_async_id(task.id)
+        except requests.exceptions.ReadTimeout:
+            return self.send_errors(
+                "irods is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )
