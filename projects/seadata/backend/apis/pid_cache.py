@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import requests
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2access import B2accessUtilities
 from restapi import decorators as decorate

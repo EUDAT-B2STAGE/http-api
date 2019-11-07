@@ -4,6 +4,8 @@
 Ingestion process submission to upload the SeaDataNet marine data.
 """
 
+import requests
+
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
 from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH

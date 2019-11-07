@@ -21,6 +21,7 @@ DELETE /api/order/<OID>
 #################
 # IMPORTS
 import urllib.parse
+import requests
 
 # from restapi.rest.definition import EndpointResource
 from seadata.apis.commons.cluster import ClusterContainerEndpoint

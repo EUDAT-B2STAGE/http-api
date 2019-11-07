@@ -3,6 +3,7 @@
 """
 Move data from ingestion to production
 """
+import requests
 
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
