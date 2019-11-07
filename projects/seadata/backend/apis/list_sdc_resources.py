@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import requests
+
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 

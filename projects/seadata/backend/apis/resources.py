@@ -6,6 +6,7 @@ Launch containers for quality checks in Seadata
 import os
 import json
 import time
+import requests
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
 from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
