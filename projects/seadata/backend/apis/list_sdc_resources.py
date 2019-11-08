@@ -44,6 +44,6 @@ class ListResources(EudatEndpoint, ClusterContainerEndpoint):
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
