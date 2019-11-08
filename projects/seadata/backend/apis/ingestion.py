@@ -18,6 +18,7 @@ from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from seadata.apis.commons.queue import log_into_queue, prepare_message
 from utilities import htmlcodes as hcodes
 from utilities import path
+from irods.exception import NetworkException
 
 # from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities.logs import get_logger
@@ -121,9 +122,16 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return data
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
+        except NetworkException as e:
+            log.error(e)
+            return self.send_errors(
+                "Could not connect to B2SAFE host",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )
+
 
     @authentication.required()
     def post(self, batch_id):
@@ -200,7 +208,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
@@ -226,6 +234,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )

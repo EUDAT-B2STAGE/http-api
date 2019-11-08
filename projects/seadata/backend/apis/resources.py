@@ -135,7 +135,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 )
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 

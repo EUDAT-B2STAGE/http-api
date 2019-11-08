@@ -183,7 +183,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return icom.stream_ticket(zip_ipath, headers=headers)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
@@ -286,7 +286,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return response
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
@@ -394,7 +394,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return {'status': 'enabled'}
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
@@ -483,8 +483,14 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # imain = self.get_service_instance(service_name='irods')
         try:
             imain = self.get_main_irods_connection()
-            order_path = self.get_irods_order_path(imain, order_id)
-            log.debug("Order path: %s", order_path)
+            try:
+                order_path = self.get_irods_order_path(imain, order_id)
+                log.debug("Order path: %s", order_path)
+            except:
+                return self.send_errors(
+                    "Order not found",
+                    code=hcodes.HTTP_BAD_NOTFOUND
+                )
 
             response = []
 
@@ -568,7 +574,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.force_response(response)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
@@ -592,6 +598,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
-                "irods is temporarily unavailable",
+                "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
