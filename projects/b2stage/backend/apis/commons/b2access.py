@@ -9,14 +9,13 @@ import requests
 from flask import session
 from base64 import b64encode
 from datetime import datetime as dt
-from restapi.rest.definition import EndpointResource
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
 
+from restapi.rest.definition import EndpointResource
 from restapi.services.oauth2clients import decorate_http_request
-from utilities.certificates import Certificates
+
 from utilities import htmlcodes as hcodes
-from b2stage.apis.commons import IRODS_EXTERNAL
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
