@@ -20,7 +20,7 @@ services:
       COLUMNS: 160
 
     ports:
-      - 8080:${FLASK_DEFAULT_PORT}
+      - ${BACKEND_PORT}:${FLASK_DEFAULT_PORT}
     depends_on:
       # - icat
       - postgres
