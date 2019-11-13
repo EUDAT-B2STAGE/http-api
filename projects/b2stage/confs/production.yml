@@ -38,7 +38,6 @@ services:
       - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/production_nofrontend.conf:/etc/nginx/sites-enabled/production
       # 502 Bad Gateway
       # Workaroud to make this works in extended mode
-      # - ${PROJECT_DIR}/builds/proxy/badgateway.html:/usr/share/nginx/html/custom_502.html
       - ${VANILLA_DIR}/projects/b2stage/builds/proxy/badgateway.html:/usr/share/nginx/html/custom_502.html
     ports:
       - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
