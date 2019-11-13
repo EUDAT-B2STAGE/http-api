@@ -38,6 +38,8 @@ from restapi.flask_ext.flask_irods.client import IrodsException
 from utilities import path
 from utilities.logs import get_logger
 
+from irods.exception import NetworkException
+
 #################
 # INIT VARIABLES
 log = get_logger(__name__)
@@ -575,6 +577,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
+                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )
+        except NetworkException as e:
+            log.error(e)
+            return self.send_errors(
+                "Could not connect to B2SAFE host",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
