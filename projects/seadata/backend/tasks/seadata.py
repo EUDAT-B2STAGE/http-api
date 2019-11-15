@@ -11,6 +11,9 @@ from plumbum.commands.processes import ProcessExecutionError
 from glom import glom
 
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
+from b2stage.apis.commons.basher import BashCommands
+from b2stage.apis.common import path
+
 from seadata.apis.commons.queue import prepare_message
 from seadata.apis.commons.seadatacloud import Metadata as md, ImportManagerAPI
 from seadata.apis.commons.seadatacloud import ErrorCodes
@@ -21,8 +24,6 @@ from restapi.flask_ext.flask_irods.client import IrodsException
 from restapi.services.detect import detector
 from restapi.flask_ext.flask_celery import send_errors_by_email
 
-from utilities.basher import BashCommands
-from utilities import path
 from utilities.logs import get_logger, logging
 
 # Size in bytes

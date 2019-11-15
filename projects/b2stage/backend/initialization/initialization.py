@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from utilities.uuid import getUUID
+from restapi.utilities.uuid import getUUID
 from utilities.logs import get_logger
 
 log = get_logger(__name__)
