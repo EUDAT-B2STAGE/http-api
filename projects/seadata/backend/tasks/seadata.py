@@ -12,7 +12,7 @@ from glom import glom
 
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
 from b2stage.apis.commons.basher import BashCommands
-from b2stage.apis.common import path
+from b2stage.apis.commons import path
 
 from seadata.apis.commons.queue import prepare_message
 from seadata.apis.commons.seadatacloud import Metadata as md, ImportManagerAPI
