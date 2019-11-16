@@ -3,7 +3,7 @@
 """ To be defined from designing this endoint """
 
 from tests import RestTestsAuthenticatedBase
-from utilities.logs import get_logger
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 

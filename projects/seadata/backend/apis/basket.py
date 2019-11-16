@@ -33,10 +33,10 @@ from restapi import decorators as decorate
 from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_celery import CeleryExt
 from seadata.apis.commons.queue import log_into_queue, prepare_message
-from utilities import htmlcodes as hcodes
+from restapi.utilities.htmlcodes import hcodes
 from restapi.flask_ext.flask_irods.client import IrodsException
-from utilities import path
-from utilities.logs import get_logger
+from b2stage.apis.commons import path
+from restapi.utilities.logs import get_logger
 
 from irods.exception import NetworkException
 

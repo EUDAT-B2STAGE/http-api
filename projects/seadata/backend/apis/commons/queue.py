@@ -7,10 +7,8 @@ close the rabbit connection when the HTTP API finish
     - check connection errors
 """
 
-import json
-import pika
 from restapi.services.detect import detector
-from utilities.logs import get_logger
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 

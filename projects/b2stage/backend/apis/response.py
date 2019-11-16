@@ -10,7 +10,7 @@ WARNING: TO BE REDEFINED.
 # from ..base import ExtendedApiResource
 # from restapi.rest.definition import EndpointResource
 # from restapi import decorators as decorate
-from utilities import get_logger
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 

@@ -24,7 +24,7 @@ from restapi.flask_ext.flask_irods.client import IrodsException
 from restapi.services.detect import detector
 from restapi.flask_ext.flask_celery import send_errors_by_email
 
-from utilities.logs import get_logger, logging
+from restapi.utilities.logs import get_logger, logging
 
 # Size in bytes
 # TODO: move me into the configuration

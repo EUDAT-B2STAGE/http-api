@@ -16,12 +16,10 @@ from restapi.flask_ext.flask_celery import CeleryExt
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from seadata.apis.commons.queue import log_into_queue, prepare_message
-from utilities import htmlcodes as hcodes
-from utilities import path
+from restapi.utilities.htmlcodes import hcodes
+from b2stage.apis.commons import path
+from restapi.utilities.logs import get_logger
 from irods.exception import NetworkException
-
-# from restapi.flask_ext.flask_irods.client import IrodsException
-from utilities.logs import get_logger
 
 log = get_logger(__name__)
 ingestion_user = 'RM'

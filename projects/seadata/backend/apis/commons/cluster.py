@@ -4,8 +4,8 @@ from datetime import datetime
 from seadata.apis.commons.seadatacloud import seadata_vars
 from restapi.rest.definition import EndpointResource
 from restapi.services.detect import detector
-from utilities import path
-from utilities.logs import get_logger
+from b2stage.apis.commons import path
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 
@@ -146,7 +146,6 @@ class ClusterContainerEndpoint(EndpointResource):
         paths = [mypath]
         if suffix is not None:
             paths.append(suffix)
-        from utilities import path
 
         suffix_path = str(path.build(paths))
         return irods_client.get_current_zone(suffix=suffix_path)

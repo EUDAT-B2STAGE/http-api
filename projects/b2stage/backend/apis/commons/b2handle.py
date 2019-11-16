@@ -13,9 +13,9 @@ try:
     from b2handle import handleexceptions
 except BaseException:
     b2handle, credentials, handleexceptions = [None] * 3
-from utilities import htmlcodes as hcodes
-from utilities import path
-from utilities.logs import get_logger
+from restapi.utilities.htmlcodes import hcodes
+from b2stage.apis.commons import path
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 
@@ -126,7 +126,6 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
                 found = False
                 file = os.environ.get('HANDLE_CREDENTIALS', None)
                 if file is not None:
-                    from utilities import path
 
                     credentials_path = path.build(file)
                     found = path.file_exists_and_nonzero(credentials_path)

@@ -12,7 +12,7 @@ https://github.com/rancher/validation-tests/tree/master/tests/v2_validation/catt
 
 import time
 from seadata.apis.commons.cluster import CONTAINERS_VARS
-from utilities.logs import get_logger
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 
