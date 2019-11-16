@@ -6,11 +6,12 @@ Publish a digital object as a public resource for anyone
 NOTE: this package will be loaded only if IRODS_ANONYMOUS is set
 """
 
-from utilities import htmlcodes as hcodes
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators as decorate
 from restapi.protocols.bearer import authentication
-from utilities.logs import get_logger
+from b2stage.apis.commons import path
+from restapi.utilities.htmlcodes import hcodes
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 
@@ -111,8 +112,6 @@ class Publish(EudatEndpoint):
         # NOTE: It looks dangerous to me
 
     def publish_helper(self, icom, ipath, check_only=True, unpublish=False):
-
-        from utilities import path
 
         current_zone = icom.get_current_zone()
         ipath_steps = path.parts(ipath)

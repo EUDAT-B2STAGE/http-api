@@ -5,8 +5,8 @@ from b2stage.apis.commons.b2access import B2accessUtilities
 from restapi.exceptions import RestApiException
 from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_irods.client import get_and_verify_irods_session
-from utilities import htmlcodes as hcodes
-from utilities.logs import get_logger
+from restapi.utilities.htmlcodes import hcodes
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 

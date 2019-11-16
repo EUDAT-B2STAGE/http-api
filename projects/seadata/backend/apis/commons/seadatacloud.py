@@ -2,9 +2,9 @@
 
 from datetime import datetime
 from restapi.services.detect import detector
-from utilities import htmlcodes as hcodes
-from utilities import path
-from utilities.logs import get_logger
+from restapi.utilities.htmlcodes import hcodes
+from b2stage.apis.commons import path
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 seadata_vars = detector.load_group(label='seadata')
@@ -139,8 +139,6 @@ class ImportManagerAPI(object):
         # print("TEST", self._uri)
         r = requests.post(self._uri, json=payload)
         log.info("POST external IM API, status=%s, uri=%s", r.status_code, self._uri)
-
-        from utilities import htmlcodes as hcodes
 
         if r.status_code != hcodes.HTTP_OK_BASIC:
             log.error(

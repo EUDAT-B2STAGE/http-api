@@ -9,8 +9,8 @@ import io
 import json
 from tests import RestTestsAuthenticatedBase
 from restapi.services.detect import detector
-from utilities import path
-from utilities.logs import get_logger
+from b2stage.apis.commons import path
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 

@@ -10,7 +10,7 @@ Test  dataobjects endpoints
 import unittest
 import logging
 from restapi.server import create_app
-from utilities.logs import get_logger
+from restapi.utilities.logs import get_logger
 
 __author__ = "Paolo D'Onorio De Meo (GitHub@pdonorio)"
 

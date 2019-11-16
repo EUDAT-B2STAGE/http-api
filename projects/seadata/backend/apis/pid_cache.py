@@ -7,9 +7,9 @@ from b2stage.apis.commons.b2access import B2accessUtilities
 from restapi import decorators as decorate
 from restapi.protocols.bearer import authentication
 from restapi.exceptions import RestApiException
-from utilities import htmlcodes as hcodes
-from utilities.logs import get_logger
 from restapi.flask_ext.flask_celery import CeleryExt
+from restapi.utilities.htmlcodes import hcodes
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 

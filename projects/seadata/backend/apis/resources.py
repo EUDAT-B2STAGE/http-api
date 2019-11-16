@@ -12,12 +12,12 @@ from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
 from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from utilities import htmlcodes as hcodes
-from utilities import path
 from restapi import decorators as decorate
 from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_irods.client import IrodsException
-from utilities.logs import get_logger
+from restapi.utilities.htmlcodes import hcodes
+from b2stage.apis.commons import path
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 

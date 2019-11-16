@@ -9,8 +9,8 @@ from restapi.rest.response import WerkzeugResponse
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons.statics import HEADER, FOOTER
 from restapi import decorators as decorate
-from utilities import htmlcodes as hcodes
-from utilities.logs import get_logger
+from restapi.utilities.htmlcodes import hcodes
+from restapi.utilities.logs import get_logger
 
 log = get_logger(__name__)
 
