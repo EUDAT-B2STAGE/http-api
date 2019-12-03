@@ -75,6 +75,11 @@ services:
       - jwt_tokens:${JWT_APP_SECRETS}
 
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
+
+      - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
+
+      # Temporary fix, remove me:
+      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
     networks:
       db_net:
       worker_net:
