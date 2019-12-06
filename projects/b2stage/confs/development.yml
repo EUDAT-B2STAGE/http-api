@@ -19,7 +19,8 @@ services:
       ACTIVATE: 1
     volumes:
       # no SSL
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/development.conf:/etc/nginx/sites-enabled/development
+      # - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/development.conf:/etc/nginx/sites-enabled/development
+      - ${PROJECT_DIR}/confs/nginx/development.conf:/etc/nginx/sites-enabled/development.conf
     ports:
       - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}
 
