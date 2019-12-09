@@ -60,7 +60,7 @@ services:
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q ingestion -n worker-%h
-    user: developer
+    # user: developer
     working_dir: /code
     volumes:
       # configuration files
