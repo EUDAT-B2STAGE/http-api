@@ -21,14 +21,12 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
     depends_on = ['SEADATA_PROJECT']
     GET = {
         '/pidcache': {
-            'custom': {'publish': False},
             'summary': 'Retrieve values from the PID cache',
             'responses': {'200': {'description': 'Async job started'}},
         }
     }
     POST = {
         '/pidcache/<batch_id>': {
-            'custom': {'publish': False},
             'summary': 'Fill the PID cache',
             'responses': {'200': {'description': 'Async job started'}},
         }
