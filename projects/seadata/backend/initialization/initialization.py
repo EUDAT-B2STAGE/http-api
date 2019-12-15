@@ -36,10 +36,10 @@ class Initializer(object):
                     for username in users:
 
                         if username == "":
-                            log.warning("Invalid username: [%s]", username)
+                            log.warning("Invalid username: [{}]", username)
                             continue
                         try:
-                            log.info("Creating user %s", username)
+                            log.info("Creating user {}", username)
                             userdata = {
                                 "uuid": getUUID(),
                                 "email": username,
@@ -53,6 +53,6 @@ class Initializer(object):
                                     sql.Role.query.filter_by(name=r).first())
                             sql.session.add(user)
                             sql.session.commit()
-                            log.info("User %s created with roles: %s", username, roles)
+                            log.info("User {} created with roles: {}", username, roles)
                         except BaseException as e:
-                            log.error("Errors creating user %s: %s", username, str(e))
+                            log.error("Errors creating user {}: {}", username, str(e))

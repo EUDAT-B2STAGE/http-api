@@ -13,9 +13,6 @@ from restapi.utilities.logs import log
 
 __author__ = "Paolo D'Onorio De Meo (GitHub@pdonorio)"
 
-# API_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, API_URL)
-# AUTH_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, AUTH_URL)
-
 
 class TestDataObjects(unittest.TestCase):
 

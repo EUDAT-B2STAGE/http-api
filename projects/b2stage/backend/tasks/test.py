@@ -12,13 +12,13 @@ def test_task(self, num):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s", self.request.id)
+        log.info("I'm {}", self.request.id)
 
-        log.debug("Starting task to calculate %s squares!", num)
+        log.debug("Starting task to calculate {} squares!", num)
         for count in range(1, int(num)):
             x = count * count
             x = x * x
             self.update_state(state='PROGRESS',
                               meta={'current': count, 'total': num})
-        log.info("Task completed, calculated up to %s squares", num)
+        log.info("Task completed, calculated up to {} squares", num)
         return "WOW, i calculated {} squares!!".format(num)

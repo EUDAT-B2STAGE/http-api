@@ -106,29 +106,29 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             imain = self.get_main_irods_connection()
             batch_path = self.get_irods_batch_path(imain, batch_id)
             local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
-            log.info("Batch irods path: %s", batch_path)
-            log.info("Batch local path: %s", local_path)
+            log.info("Batch irods path: {}", batch_path)
+            log.info("Batch local path: {}", local_path)
             batch_status, batch_files = self.get_batch_status(imain, batch_path, local_path)
 
             if batch_status == MISSING_BATCH:
                 return self.send_errors(
-                    "Batch '%s' not found (or no permissions)" % batch_id,
+                    "Batch '{}' not found (or no permissions)".format(batch_id),
                     code=hcodes.HTTP_BAD_NOTFOUND,
                 )
 
             if batch_status == NOT_FILLED_BATCH:
                 return self.send_errors(
-                    "Batch '%s' not yet filled" % batch_id, code=hcodes.HTTP_BAD_RESOURCE
+                    "Batch '{}' not yet filled".format(batch_id), code=hcodes.HTTP_BAD_RESOURCE
                 )
 
             if batch_status == BATCH_MISCONFIGURATION:
                 log.error(
-                    'Misconfiguration: %s files in %s (expected 1)',
+                    'Misconfiguration: {} files in {} (expected 1)',
                     len(batch_files),
                     batch_path,
                 )
                 return self.send_errors(
-                    "Misconfiguration for batch_id %s" % batch_id,
+                    "Misconfiguration for batch_id {}".format(batch_id),
                     code=hcodes.HTTP_BAD_RESOURCE,
                 )
         except requests.exceptions.ReadTimeout:
@@ -148,7 +148,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             im_prefix = 'eudat'
         else:
             im_prefix = 'maris'
-        log.debug("Image prefix: %s", im_prefix)
+        log.debug("Image prefix: {}", im_prefix)
 
         # input parameters to be passed to container
         pkey = "parameters"
@@ -167,7 +167,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             value = input_json.get(key, None)
             if value is None:
                 return self.send_errors(
-                    'Missing JSON key: %s' % key, code=hcodes.HTTP_BAD_REQUEST
+                    'Missing JSON key: {}'.format(key), code=hcodes.HTTP_BAD_REQUEST
                 )
 
         response = {
@@ -192,7 +192,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # Duplicated quality checks on the same batch are not allowed
         container_obj = rancher.get_container_object(container_name)
         if container_obj is not None:
-            log.error("Docker container %s already exists!", container_name)
+            log.error("Docker container {} already exists!", container_name)
             response['status'] = 'existing'
             code = hcodes.HTTP_BAD_CONFLICT
             return self.force_response(response, errors=[response['status']], code=code)
@@ -232,16 +232,16 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         json_path_backend = os.path.join(MOUNTPOINT, INGESTION_DIR, JSON_DIR)
 
         if not os.path.exists(json_path_backend):
-            log.info("Creating folder %s", json_path_backend)
+            log.info("Creating folder {}", json_path_backend)
             os.mkdir(json_path_backend)
 
         json_path_backend = os.path.join(json_path_backend, batch_id)
 
         if not os.path.exists(json_path_backend):
-            log.info("Creating folder %s", json_path_backend)
+            log.info("Creating folder {}", json_path_backend)
             os.mkdir(json_path_backend)
 
-        json_input_file = "input.%s.json" % int(time.time())
+        json_input_file = "input.{}.json".format(int(time.time()))
         json_input_path = os.path.join(json_path_backend, json_input_file)
         with open(json_input_path, "w+") as f:
             f.write(json.dumps(input_json))
@@ -252,8 +252,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         extra_params = {
             'dataVolumes': [
-                "%s:%s" % (host_ingestion_path, container_ingestion_path),
-                "%s:%s" % (json_path_qc, QC_MOUNTPOINT),
+                "{}:{}".format(host_ingestion_path, container_ingestion_path),
+                "{}:{}".format(json_path_qc, QC_MOUNTPOINT),
             ],
             'environment': envs,
         }
@@ -299,20 +299,20 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container_name = self.get_container_name(batch_id, qc_name, rancher._qclabel)
         rancher.remove_container_by_name(container_name)
         # wait up to 10 seconds to verify the deletion
-        log.info("Removing: %s...", container_name)
+        log.info("Removing: {}...", container_name)
         removed = False
         for _ in range(0, 20):
             time.sleep(0.5)
             container_obj = rancher.get_container_object(container_name)
             if container_obj is None:
-                log.info("%s removed", container_name)
+                log.info("{} removed", container_name)
                 removed = True
                 break
             else:
-                log.verbose("%s still exists", container_name)
+                log.verbose("{} still exists", container_name)
 
         if not removed:
-            log.warning("%s still in removal status", container_name)
+            log.warning("{} still in removal status", container_name)
             response = {
                 'batch_id': batch_id,
                 'qc_name': qc_name,

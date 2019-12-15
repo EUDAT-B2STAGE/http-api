@@ -106,7 +106,7 @@ def log_into_queue(instance, dictionary_message):
     # temporary disabled
     return False
 
-    log.verbose('LOG MESSAGE to be passed to log-queue: %s', dictionary_message)
+    log.verbose('LOG MESSAGE to be passed to log-queue: {}', dictionary_message)
 
     current_exchange = QUEUE_VARS.get('exchange')
     routing_key = QUEUE_VARS.get('queue')
@@ -116,7 +116,7 @@ def log_into_queue(instance, dictionary_message):
         app_name = routing_key
 
     log.debug(
-        'Log-queue service: exchange "%s", routing key "%s", app name "%s"',
+        'Log-queue service: exchange "{}", routing key "{}", app name "{}"',
         current_exchange, routing_key, app_name
     )
 
@@ -127,16 +127,16 @@ def log_into_queue(instance, dictionary_message):
         # --> Has to be handled in rapydo/http-api, where connection is defined!
 
         msg_queue = instance.get_service_instance(QUEUE_SERVICE)
-        log.verbose('Retrieved instance of log-queue service "%s"', QUEUE_SERVICE)
+        log.verbose('Retrieved instance of log-queue service "{}"', QUEUE_SERVICE)
         msg_queue.log_json_to_queue(
             dictionary_message, app_name, current_exchange, routing_key
         )
 
     except BaseException as e:
-        log.error("Failed to log:\n%s(%s)", e.__class__.__name__, e)
+        log.error("Failed to log:\n{}({})", e.__class__.__name__, e)
     else:
         log.verbose('Log message passed to log-queue service.')
-        # log.verbose("%s: sent msg '%s'", routing_key, dictionary_message)
+        # log.verbose("{}: sent msg '{}'", routing_key, dictionary_message)
 
         # NOTE: bad! all connections would result in closed
         # # close resource
@@ -156,14 +156,13 @@ def log_into_queue(instance, dictionary_message):
 
 #     # # connect
 #     # msg_queue = self.get_service_instance(self._queue_service)
-#     # log.debug("Connected to %s", self._queue_service)
+#     # log.debug("Connected to {}", self._queue_service)
 
 #     # # send a message
 #     # channel = msg_queue.channel()
 #     # channel.queue_declare(queue=current_queue)
 
 #     # def callback(ch, method, properties, body):
-#     #     print("\n\nReceived: %r" % body)
 #     #     import json
 #     #     print(json.loads(body))
 

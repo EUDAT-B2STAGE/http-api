@@ -35,7 +35,7 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
     def get(self):
 
         task = CeleryExt.inspect_pids_cache.apply_async()
-        log.info("Async job: %s", task.id)
+        log.info("Async job: {}", task.id)
         return self.return_async_id(task.id)
 
     @decorate.catch_error()
@@ -50,11 +50,11 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
             collection = os.path.join(ipath, batch_id)
             if not imain.exists(collection):
                 raise RestApiException(
-                    "Invalid batch id %s" % batch_id, status_code=hcodes.HTTP_BAD_NOTFOUND
+                    "Invalid batch id {}".format(batch_id), status_code=hcodes.HTTP_BAD_NOTFOUND
                 )
 
             task = CeleryExt.cache_batch_pids.apply_async(args=[collection])
-            log.info("Async job: %s", task.id)
+            log.info("Async job: {}", task.id)
 
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:

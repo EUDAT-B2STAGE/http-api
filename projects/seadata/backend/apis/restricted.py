@@ -7,6 +7,7 @@ from restapi.services.uploader import Uploader
 from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_celery import CeleryExt
 from restapi.utilities.logs import log
+from restapi.utilities.htmlcodes import hcodes
 
 
 class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
@@ -39,7 +40,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             task = CeleryExt.download_restricted_order.apply_async(
                 args=[order_id, order_path, json_input]
             )
-            log.info("Async job: %s", task.id)
+            log.info("Async job: {}", task.id)
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(

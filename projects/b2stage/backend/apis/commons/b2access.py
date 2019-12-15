@@ -47,7 +47,7 @@ class B2accessUtilities(EndpointResource):
         try:
             resp = b2access.authorized_response()
         except json.decoder.JSONDecodeError as e:
-            log.critical("B2ACCESS empty:\n%s\nCheck your app credentials", e)
+            log.critical("B2ACCESS empty:\n{}\nCheck your app credentials", e)
             return (
                 b2a_token,
                 b2a_refresh_token,
@@ -55,8 +55,8 @@ class B2accessUtilities(EndpointResource):
             )
         except Exception as e:
             # raise e  # DEBUG
-            log.critical("Failed to get authorized in B2ACCESS: %s", e)
-            return (b2a_token, b2a_refresh_token, 'B2ACCESS OAUTH2 denied: %s' % e)
+            log.critical("Failed to get authorized in B2ACCESS: {}", e)
+            return (b2a_token, b2a_refresh_token, 'B2ACCESS OAUTH2 denied: {}'.format(e))
         if resp is None:
             return (b2a_token, b2a_refresh_token, 'B2ACCESS denied: unknown error')
 
@@ -64,10 +64,10 @@ class B2accessUtilities(EndpointResource):
         if b2a_token is None:
             log.critical("No token received")
             return (b2a_token, 'B2ACCESS: empty token')
-        log.info("Received token: '%s'", b2a_token)
+        log.info("Received token: '{}'", b2a_token)
 
         b2a_refresh_token = resp.get('refresh_token')
-        log.info("Received refresh token: '%s'", b2a_refresh_token)
+        log.info("Received refresh token: '{}'", b2a_refresh_token)
         return (b2a_token, b2a_refresh_token, tuple())
 
     def get_b2access_user_info(
@@ -88,15 +88,15 @@ class B2accessUtilities(EndpointResource):
         elif not isinstance(b2access_user, OAuthResponse):
             errstring = "Invalid response from B2ACCESS"
         elif b2access_user.status > hcodes.HTTP_TRESHOLD:
-            log.error("Bad status: %s", str(b2access_user._resp))
+            log.error("Bad status: {}", str(b2access_user._resp))
             if b2access_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:
                 errstring = (
-                    "B2ACCESS token obtained failed with %s" % b2access_user.status
+                    "B2ACCESS token obtained failed with {}".format(b2access_user.status)
                 )
         elif isinstance(b2access_user._resp, HTTPError):
-            errstring = "Error from B2ACCESS: %s" % b2access_user._resp
+            errstring = "Error from B2ACCESS: {}".format(b2access_user._resp)
         elif not hasattr(b2access_user, 'data'):
             errstring = "Authorized response is invalid (missing data)"
         elif b2access_user.data.get('email') is None:
@@ -156,10 +156,10 @@ class B2accessUtilities(EndpointResource):
             "refresh_token": refresh_token,
             "scope": 'USER_PROFILE',
         }
-        auth_hash = b64encode(str.encode("%s:%s" % (client_id, client_secret))).decode(
+        auth_hash = b64encode(str.encode("{}:{}".format(client_id, client_secret))).decode(
             "ascii"
         )
-        headers = {'Authorization': 'Basic %s' % auth_hash}
+        headers = {'Authorization': 'Basic {}'.format(auth_hash})
 
         resp = requests.post(
             b2access.access_token_url, data=refresh_data, headers=headers
@@ -177,7 +177,7 @@ class B2accessUtilities(EndpointResource):
             log.error("Failed to store new access token")
             return None
 
-        log.info("New access token = %s", access_token)
+        log.info("New access token = {}", access_token)
 
         return access_token
 
@@ -194,7 +194,7 @@ class B2accessUtilities(EndpointResource):
         try:
             rule_output = json.loads(rule_output)
         except BaseException:
-            log.error("Unable to convert rule output as json: %s", rule_output)
+            log.error("Unable to convert rule output as json: {}", rule_output)
             return None
 
         for user in rule_output:

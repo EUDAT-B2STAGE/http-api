@@ -33,7 +33,7 @@ class Rancher(object):
         self._url = url
         self._project = project
         # why? explained in http://bit.ly/2BBDJRj
-        self._project_uri = "%s/projects/%s/schemas" % (url, project)
+        self._project_uri = "{}/projects/{}/schemas".format(url, project)
         self._hub_uri = hub
         self._hub_credentials = (hubuser, hubpass)
         self._localpath = localpath  # default /nfs/share
@@ -83,7 +83,7 @@ class Rancher(object):
         for data in self._client.list_host():
             host = data.get('hostname')
             if not data.get('state') == 'active':
-                log.warning("Host %s not active", host)
+                log.warning("Host {} not active", host)
                 continue
             hosts[data.get('physicalHostId').replace('p', '')] = {
                 'name': host,
@@ -109,9 +109,9 @@ class Rancher(object):
         while not is_all:
             marker = len(containers)
             onepage = self._client.list_container(
-                limit=PERPAGE_LIMIT, marker='m%s' % marker
+                limit=PERPAGE_LIMIT, marker='m{}'.format(marker)
             )
-            log.verbose('Containers list marker: %s', marker)
+            log.verbose('Containers list marker: {}', marker)
             pagination = onepage.get('pagination', {})
             # print(pagination)
             is_all = not pagination.get('partial')
@@ -147,7 +147,7 @@ class Rancher(object):
                 labels = info.get('labels', {})
                 cid = labels.get('io.rancher.container.uuid', None)
             if cid is None:
-                log.warning("Container %s launching", name)
+                log.warning("Container {} launching", name)
                 log.pp(info)
                 break
                 cid = name
@@ -206,7 +206,7 @@ class Rancher(object):
 
     def catalog_images(self):
         """ check if container image is there """
-        catalog_url = "https://%s/v2/_catalog" % self._hub_uri
+        catalog_url = "https://{}/v2/_catalog".format(self._hub_uri)
         # print(catalog_url)
         try:
             import requests
@@ -214,7 +214,7 @@ class Rancher(object):
             r = requests.get(catalog_url, auth=self._hub_credentials)
             catalog = r.json()
             # print("TEST", catalog)
-        except BaseException as e:
+        except BaseException:
             return None
         else:
             return catalog.get('repositories', {})
@@ -227,7 +227,7 @@ class Rancher(object):
         label_key = 'host_type'
         label_value = self._qclabel
 
-        obj = {self._hostlabel: "%s=%s" % (label_key, label_value)}
+        obj = {self._hostlabel: "{}={}".format(label_key, label_value)}
 
         if pull:
             # force to repull the image every time
@@ -261,7 +261,7 @@ class Rancher(object):
                 return {'error': error}
 
             # Add the prefix for private hub if it's there
-            image_name = "%s/%s" % (self._hub_uri, image_name)
+            image_name = "{}/{}".format(self._hub_uri, image_name)
 
         ############
         params = {
@@ -278,7 +278,6 @@ class Rancher(object):
             for key, value in extras.items():
                 if key not in params:
                     # NOTE: this may print passwords, watch out!
-                    # log.debug("Adding extra: %s = %s", key, value)
                     params[key] = value
 
         ############
@@ -303,15 +302,15 @@ class Rancher(object):
 
             if wait_stopped or wait_running:
                 log.info(
-                    'Launched container "%s" (external id: %s)!'
-                    % (container_name, container.externalId)
+                    'Launched container {}" (external id: {})!',
+                    container_name, container.externalId
                 )
 
                 # Wait for container to stop...
                 while True:
                     co = self.get_container_object(container_name)
                     log.debug(
-                        'Container "%s": %s (%s, %s: %s)',
+                        'Container {}": {} ({}, {}: {})',
                         container_name,
                         co.state,
                         co.transitioning,
@@ -330,7 +329,7 @@ class Rancher(object):
                             and 'no basic auth credentials' in co.transitioningMessage
                         ):
                             log.error(
-                                'Message from Rancher: "%s". Possibly you first need to add the registry on the Rancher installation!',
+                                'Message from Rancher: "{}". Possibly you first need to add the registry on the Rancher installation!',
                                 co.transitioningMessage,
                             )
 
@@ -338,17 +337,17 @@ class Rancher(object):
                     if co.state == 'error' or co.state == 'erroring':
                         log.error('Error in container!')
                         error = {'container': co.transitioningMessage}
-                        log.info('Detailed container info %s', co)
+                        log.info('Detailed container info {}', co)
                         break
                     elif co.state == 'stopped' and wait_stopped:
                         # even this does not guarantee success of operation inside container, of course!
                         log.info('Container has stopped!')
-                        log.info('Detailed container info %s', co)
+                        log.info('Detailed container info {}', co)
                         break
                     elif co.state == 'running' and wait_running:
                         log.info('Container is running!')
                         if not not wait_stopped:
-                            log.info('Detailed container info %s', co)
+                            log.info('Detailed container info {}', co)
                             break
 
                     else:
@@ -357,8 +356,8 @@ class Rancher(object):
             # We will not wait for container to be created/running/stopped:
             else:
                 log.info(
-                    "Launched: %s (external id: %s)!"
-                    % (container_name, container.externalId)
+                    "Launched: {} (external id: {})!",
+                    container_name, container.externalId
                 )
             return None
 
@@ -394,7 +393,7 @@ class Rancher(object):
             #     expected = self.internal_labels(pull=False).get(self._hostlabel)
             #     if host_label != expected:
             #         log.warning(
-            #             "Found %s but deployed on %s (instead of %s). Skipping it",
+            #             "Found {} but deployed on {} (instead of {}). Skipping it",
             #             container_name, host_label, expected
             #         )
             #         continue
@@ -409,7 +408,7 @@ class Rancher(object):
             self._client.delete(obj)
             return True
         else:
-            log.warning("Did not found container: %s", container_name)
+            log.warning("Did not found container: {}", container_name)
         return False
 
     def test(self):

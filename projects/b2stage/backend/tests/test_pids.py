@@ -42,7 +42,7 @@ class TestPids(RestTestsAuthenticatedBase):
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         # data = json.loads(r.get_data(as_text=True))
         data = self.get_content(r)
-        self.assertEqual(data.get('URL'), 'irods://%s' % pid_uri_path)
+        self.assertEqual(data.get('URL'), 'irods://{}'.format(pid_uri_path))
 
         # GET URL from non existing PID
         endpoint = self._api_uri + self._main_endpoint + wrong_pid

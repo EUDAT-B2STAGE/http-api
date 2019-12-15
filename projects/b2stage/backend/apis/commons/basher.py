@@ -18,7 +18,7 @@ from restapi.utilities.logs import log
 try:
     from plumbum.commands.processes import ProcessExecutionError
 except ImportError as e:
-    log.exit("\nThis module requires an extra package:\n%s", e)
+    log.exit("\nThis module requires an extra package:\n{}", e)
 
 MAX_ERROR_LEN = 2048
 
@@ -88,7 +88,7 @@ class BashCommands(object):
             # Specify different environment variables
             if env is not None:
                 command = command.with_env(**env)
-            log.verbose("Executing command %s %s", command, parameters)
+            log.verbose("Executing command {} {}", command, parameters)
             return command(parameters)
 
         except ProcessExecutionError as e:
@@ -104,13 +104,13 @@ class BashCommands(object):
                     error_len = len(error)
 
                     # limit the output
-                    # log.warning("ERROR LEN: %s/%s", error_len, error_max_len)
+                    # log.warning("ERROR LEN: {}/{}", error_len, error_max_len)
                     if error_max_len > 0 and error_len > error_max_len:
                         # log.warning("LIMIT")
                         error = '\n...\n\n' + error[error_len - error_max_len:]
 
                     log.exit(
-                        'Catched:\n%s(%s)',
+                        'Catched:\n{}({})',
                         e.__class__.__name__,
                         error,
                         error_code=e.retcode,
@@ -138,7 +138,7 @@ class BashCommands(object):
             # e.g. ICOM["list"][irods_dir].run(retcode = (0,4))
             # FIXME: does not work if parameters is bigger than one element
             comout = self._shell[command][parameters].run(retcode=retcodes)
-            log.verbose("Executed command %s %s", command, parameters)
+            log.verbose("Executed command {} {}", command, parameters)
             # # NOTE: comout is equal to (status, stdin, stdout)
             return comout
 
@@ -167,7 +167,7 @@ class BashCommands(object):
         args.append(path)
         # Debug
         self.execute_command(com, args)
-        log.debug("Created %s", path)
+        log.debug("Created {}", path)
 
     def remove(self, path, recursive=False, force=False):
 
@@ -182,7 +182,7 @@ class BashCommands(object):
         # Execute
         self.execute_command(com, args)
         # Debug
-        log.debug("Removed %s", path)
+        log.debug("Removed {}", path)
 
     ###################
     # DIRECTORIES
@@ -193,7 +193,7 @@ class BashCommands(object):
         self.remove(directory, recursive=True, force=ignore)
 
     def replace_in_file(self, target, destination, file):
-        params = ["-i", "--", "s/%s/%s/g" % (target, destination), file]
+        params = ["-i", "--", "s/{}/{}/g".format(target, destination), file]
         self.execute_command("sed", params)
 
     def copy(self, target, destination):

@@ -22,7 +22,7 @@ class TestPublic(RestTestsAuthenticatedBase):
         assert True
 
         # endpoint = (self._api_uri + self._main_endpoint)
-        # log.info('*** Testing GET call on %s', endpoint)
+        # log.info('*** Testing GET call on {}', endpoint)
 
         # r = self.app.get(endpoint)
         # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)

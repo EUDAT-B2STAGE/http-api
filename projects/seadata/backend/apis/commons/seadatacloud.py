@@ -136,18 +136,18 @@ class ImportManagerAPI(object):
 
         # print("TEST", self._uri)
         r = requests.post(self._uri, json=payload)
-        log.info("POST external IM API, status=%s, uri=%s", r.status_code, self._uri)
+        log.info("POST external IM API, status={}, uri={}", r.status_code, self._uri)
 
         if r.status_code != hcodes.HTTP_OK_BASIC:
             log.error(
-                "CDI: failed to call external APIs (status: %s, uri: %s)",
+                "CDI: failed to call external APIs (status: {}, uri: {})",
                 r.status_code,
                 self._uri,
             )
             return False
         else:
             log.info(
-                "CDI: called POST on external APIs (status: %s, uri: %s)",
+                "CDI: called POST on external APIs (status: {}, uri: {})",
                 r.status_code,
                 self._uri,
             )
@@ -170,7 +170,7 @@ def seadata_pid(self, pid):
         log.error(error)
         return self.send_warnings(response, errors=error, code=hcodes.HTTP_BAD_REQUEST)
     else:
-        log.verbose("PID %s verified", pid)
+        log.verbose("PID {} verified", pid)
         response['verified'] = True
         # log.pp(b2handle_output)
 

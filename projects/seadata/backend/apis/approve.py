@@ -69,15 +69,15 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             for key in md.keys:  # + [md.tid]:
                 value = data.get(key)
                 if value is None:
-                    error = 'Missing parameter: %s' % key
+                    error = 'Missing parameter: {}'.format(key)
                     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
                 error = None
                 value_len = len(value)
                 if value_len > md.max_size:
-                    error = "Param '%s': exceeds size %s" % (key, md.max_size)
+                    error = "Param '{}': exceeds size {}".format(key, md.max_size)
                 elif value_len < 1:
-                    error = "Param '%s': empty" % key
+                    error = "Param '{}': empty".format(key)
                 if error is not None:
                     return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
@@ -89,18 +89,18 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         try:
             imain = self.get_main_irods_connection()
             self.batch_path = self.get_irods_batch_path(imain, batch_id)
-            log.debug("Batch path: %s", self.batch_path)
+            log.debug("Batch path: {}", self.batch_path)
 
             if not imain.is_collection(self.batch_path):
                 return self.send_errors(
-                    "Batch '%s' not enabled (or no permissions)" % batch_id,
+                    "Batch '{}' not enabled (or no permissions)".format(batch_id),
                     code=hcodes.HTTP_BAD_NOTFOUND,
                 )
 
             ################
             # 2. make batch_id directory in production if not existing
             self.prod_path = self.get_irods_production_path(imain, batch_id)
-            log.debug("Production path: %s", self.prod_path)
+            log.debug("Production path: {}", self.prod_path)
             obj = self.init_endpoint()
             imain.create_collection_inheritable(self.prod_path, obj.username)
 
@@ -114,7 +114,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 queue='ingestion',
                 routing_key='ingestion',
             )
-            log.info("Async job: %s", task.id)
+            log.info("Async job: {}", task.id)
 
             return self.return_async_id(task.id)
 

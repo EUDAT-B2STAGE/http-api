@@ -8,6 +8,7 @@ from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_celery import CeleryExt
 from restapi.utilities.logs import log
+from restapi.utilities.htmlcodes import hcodes
 
 
 class ListResources(EudatEndpoint, ClusterContainerEndpoint):
@@ -37,7 +38,7 @@ class ListResources(EudatEndpoint, ClusterContainerEndpoint):
                     json_input,
                 ]
             )
-            log.info("Async job: %s", task.id)
+            log.info("Async job: {}", task.id)
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
