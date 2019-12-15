@@ -59,7 +59,7 @@ class OauthLogin(EudatEndpoint):
                 ':443', ''
             )
 
-        log.info("Ask redirection to: %s" % authorized_uri)
+        log.info("Ask redirection to: %s", authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
         return self.force_response(response)

@@ -179,7 +179,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 except (FileNotFoundError, PermissionError) as e:
                     err_msg = 'Could not create directory "%s" (%s)' % (local_path, e)
                     log.critical(err_msg)
-                    log.info('Removing collection from irods (%s)' % batch_path)
+                    log.info('Removing collection from irods (%s)', batch_path)
                     imain.remove(batch_path, recursive=True, force=True)
                     return self.send_errors(err_msg, code=hcodes.HTTP_SERVER_ERROR)
 

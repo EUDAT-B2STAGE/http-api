@@ -92,7 +92,7 @@ class BashCommands(object):
             # Specify different environment variables
             if env is not None:
                 command = command.with_env(**env)
-            log.verbose("Executing command %s %s" % (command, parameters))
+            log.verbose("Executing command %s %s", command, parameters)
             return command(parameters)
 
         except ProcessExecutionError as e:
@@ -142,7 +142,7 @@ class BashCommands(object):
             # e.g. ICOM["list"][irods_dir].run(retcode = (0,4))
             # FIXME: does not work if parameters is bigger than one element
             comout = self._shell[command][parameters].run(retcode=retcodes)
-            log.verbose("Executed command %s %s" % (command, parameters))
+            log.verbose("Executed command %s %s", command, parameters)
             # # NOTE: comout is equal to (status, stdin, stdout)
             return comout
 

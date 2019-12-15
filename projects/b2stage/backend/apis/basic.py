@@ -327,7 +327,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             if isinstance(content, dict) and key_file in content:
                 original_filename = content[key_file]
                 abs_file = self.absolute_upload_file(original_filename, r.username)
-                log.info("File is '%s'" % abs_file)
+                log.info("File is '%s'", abs_file)
 
                 ############################
                 # Move file inside irods
@@ -517,7 +517,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                         home + self._path_separator + obj['name'],
                         recursive=obj['object_type'] == 'collection',
                     )
-                    log.debug("Removed %s" % obj['name'])
+                    log.debug("Removed %s", obj['name'])
                 return "Cleaned"
 
         # TODO: only if it has a PID?

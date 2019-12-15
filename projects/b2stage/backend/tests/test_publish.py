@@ -46,7 +46,7 @@ else:
             credentials = json.dumps({'username': self._anonymous_user})
             endpoint = self._auth_uri + self._auth_endpoint
 
-            log.debug('*** Testing anonymous authentication on %s' % endpoint)
+            log.debug('*** Testing anonymous authentication on %s', endpoint)
             r = self.app.post(endpoint, data=credentials)
             self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
             content = self.get_content(r)
@@ -63,7 +63,7 @@ else:
                 path.root(), self.irods_vars.get('zone'),
                 home_dirname, 'nonexisting'
             ))
-            log.debug('*** Upload a test file: %s' % self._ipath)
+            log.debug('*** Upload a test file: %s', self._ipath)
 
             # Upload entity in test folder
             endpoint = self._api_uri + self._register_endpoint + self._ipath
@@ -76,7 +76,7 @@ else:
         def test_01_GET_check_if_published(self):
 
             endpoint = self._api_uri + self._main_endpoint
-            log.info('*** Testing GET call on %s' % endpoint)
+            log.info('*** Testing GET call on %s', endpoint)
 
             # Current file is not published
             r = self.app.get(
@@ -106,7 +106,7 @@ else:
         def test_02_PUT_publish_dataobject(self):
 
             endpoint = self._api_uri + self._main_endpoint
-            log.info('*** Testing PUT call on %s' % endpoint)
+            log.info('*** Testing PUT call on %s', endpoint)
 
             # Publish the file which was already uploaded
             r = self.app.put(
@@ -148,7 +148,7 @@ else:
         def test_03_POST_not_working(self):
 
             endpoint = self._api_uri + self._main_endpoint
-            log.info('*** Testing POST call on %s' % endpoint)
+            log.info('*** Testing POST call on %s', endpoint)
 
             # Post method should not exist and/or not working
             r = self.app.post(
@@ -164,7 +164,7 @@ else:
         def test_04_DELETE_unpublish_dataobject(self):
 
             endpoint = self._api_uri + self._main_endpoint
-            log.info('*** Testing DELETE call on %s' % endpoint)
+            log.info('*** Testing DELETE call on %s', endpoint)
 
             # Publish the file which was already uploaded
             r = self.app.put(

@@ -48,7 +48,7 @@ class EudatEndpoint(B2accessUtilities):
         # internal_user = user internal to the API
         # external_user = user from oauth (B2ACCESS)
         internal_user = self.get_current_user()
-        log.debug("Token user: %s" % internal_user)
+        log.debug("Token user: %s", internal_user)
 
         #################################
         # decide which type of auth we are dealing with
@@ -86,12 +86,6 @@ class EudatEndpoint(B2accessUtilities):
         sql = self.get_service_instance('sqlalchemy')
         # update user variable to account email, which should be always unique
         user = internal_user.email
-
-        #####################################
-        log.very_verbose(
-            "Base objects for current requets [i{%s}, s{%s}, u {%s}]"
-            % (icom, sql, user)
-        )
 
         return InitObj(
             username=user,
@@ -146,7 +140,7 @@ class EudatEndpoint(B2accessUtilities):
     def irodsuser_from_b2safe(self, user):
 
         if user.session is not None and len(user.session) > 0:
-            log.debug("Validated B2SAFE user: %s" % user.uuid)
+            log.debug("Validated B2SAFE user: %s", user.uuid)
         else:
             msg = "Current credentials not registered inside B2SAFE"
             raise RestApiException(msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)

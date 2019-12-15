@@ -41,7 +41,7 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
     def test_01_b2safe_login(self):
 
         endpoint = (self._auth_uri + self._main_endpoint)
-        log.info('*** Testing auth b2safe on %s' % endpoint)
+        log.info('*** Testing auth b2safe on %s', endpoint)
         r = self.app.post(
             endpoint,
             data=dict(
