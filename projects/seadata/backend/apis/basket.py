@@ -321,7 +321,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         filename = "order_%s_unrestricted" % order_id
         key = 'file_name'
         if key in params and not params[key] == filename:
-            log.warn(
+            log.warning(
                 'Client provided wrong filename (%s), will use: %s',
                 params[key],
                 filename,
