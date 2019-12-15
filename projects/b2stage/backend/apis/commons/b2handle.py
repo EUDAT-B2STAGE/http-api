@@ -15,9 +15,7 @@ except BaseException:
     b2handle, credentials, handleexceptions = [None] * 3
 from restapi.utilities.htmlcodes import hcodes
 from b2stage.apis.commons import path
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 
 class PIDgenerator(object):

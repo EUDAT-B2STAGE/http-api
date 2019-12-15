@@ -13,9 +13,7 @@ TODO: also consider switching to this other one https://amoffat.github.io/sh/
 
 import os
 import pwd
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 try:
     from plumbum.commands.processes import ProcessExecutionError
@@ -113,7 +111,7 @@ class BashCommands(object):
                     # log.warning("ERROR LEN: %s/%s", error_len, error_max_len)
                     if error_max_len > 0 and error_len > error_max_len:
                         # log.warning("LIMIT")
-                        error = '\n...\n\n' + error[error_len - error_max_len :]
+                        error = '\n...\n\n' + error[error_len - error_max_len:]
 
                     log.exit(
                         'Catched:\n%s(%s)',

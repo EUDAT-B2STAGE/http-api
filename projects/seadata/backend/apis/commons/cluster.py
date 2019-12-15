@@ -5,9 +5,7 @@ from seadata.apis.commons.seadatacloud import seadata_vars
 from restapi.rest.definition import EndpointResource
 from restapi.services.detect import detector
 from b2stage.apis.commons import path
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+# from restapi.utilities.logs import log
 
 DEFAULT_IMAGE_PREFIX = 'docker'
 

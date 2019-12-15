@@ -10,9 +10,7 @@ from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons.statics import HEADER, FOOTER
 from restapi import decorators as decorate
 from restapi.utilities.htmlcodes import hcodes
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 
 class Public(B2HandleEndpoint):

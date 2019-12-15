@@ -16,9 +16,7 @@ from restapi.rest.definition import EndpointResource
 from restapi.services.oauth2clients import decorate_http_request
 
 from restapi.utilities.htmlcodes import hcodes
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 # 12 h
 IRODS_CONNECTION_TTL = 43200

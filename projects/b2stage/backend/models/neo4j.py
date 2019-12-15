@@ -11,9 +11,6 @@ from neomodel import StringProperty, BooleanProperty, JSONProperty, \
 
 from restapi.models.neo4j import User as UserBase
 
-# from common.logs import get_logger
-# logger = logging.get_logger(__name__)
-
 
 class User(UserBase):
     """

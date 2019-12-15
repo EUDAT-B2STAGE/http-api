@@ -21,9 +21,7 @@ from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons import PUBLIC_ENDPOINT
 
 from restapi.utilities.htmlcodes import hcodes
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+# from restapi.utilities.logs import log
 
 
 class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):

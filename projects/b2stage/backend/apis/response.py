@@ -10,9 +10,7 @@ WARNING: TO BE REDEFINED.
 # from ..base import ExtendedApiResource
 # from restapi.rest.definition import EndpointResource
 # from restapi import decorators as decorate
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 log.warning("Custom response: TO BE DEVELOPED AGAIN!")
 

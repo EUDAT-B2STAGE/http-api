@@ -11,10 +11,7 @@
 # )
 
 from tests import RestTestsAuthenticatedBase
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
-# log.setLevel(logging.DEBUG)
+# from restapi.utilities.logs import log
 
 # my_vcr = vcr.VCR(
 #     # serializer='json',

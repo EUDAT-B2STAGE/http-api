@@ -18,10 +18,9 @@ from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from seadata.apis.commons.queue import log_into_queue, prepare_message
 from restapi.utilities.htmlcodes import hcodes
 from b2stage.apis.commons import path
-from restapi.utilities.logs import get_logger
+from restapi.utilities.logs import log
 from irods.exception import NetworkException
 
-log = get_logger(__name__)
 ingestion_user = 'RM'
 BACKDOOR_SECRET = 'howdeepistherabbithole'
 

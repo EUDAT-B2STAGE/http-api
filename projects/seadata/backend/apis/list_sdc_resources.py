@@ -7,9 +7,7 @@ from seadata.apis.commons.cluster import ClusterContainerEndpoint
 
 from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_celery import CeleryExt
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 
 class ListResources(EudatEndpoint, ClusterContainerEndpoint):

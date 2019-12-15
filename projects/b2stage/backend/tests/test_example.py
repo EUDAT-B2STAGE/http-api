@@ -8,24 +8,20 @@ Test  dataobjects endpoints
 # import os
 # import json
 import unittest
-import logging
 from restapi.server import create_app
-from restapi.utilities.logs import get_logger
+from restapi.utilities.logs import log
 
 __author__ = "Paolo D'Onorio De Meo (GitHub@pdonorio)"
 
 # API_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, API_URL)
 # AUTH_URI = 'http://%s:%s%s' % (TEST_HOST, SERVER_PORT, AUTH_URL)
 
-logger = get_logger(__name__)
-logger.setLevel(logging.DEBUG)
-
 
 class TestDataObjects(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        logger.info('### Setting up flask server ###')
+        log.info('### Setting up flask server ###')
         app = create_app(testing=True)
         cls.app = app.test_client()
 
@@ -39,10 +35,10 @@ class TestDataObjects(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        logger.info('### Tearing down the flask server ###')
+        log.info('### Tearing down the flask server ###')
 
     # def test_01_get_someendpoint(self):
 
-    #     logger.debug("Testing a random endpoint")
+    #     log.debug("Testing a random endpoint")
     #     r = self.app.get(AUTH_URI + '/profile', headers=self.auth_header)
     #     self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)
