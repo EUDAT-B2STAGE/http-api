@@ -8,9 +8,7 @@ close the rabbit connection when the HTTP API finish
 """
 
 from restapi.services.detect import detector
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 QUEUE_SERVICE = 'rabbit'
 QUEUE_VARS = detector.load_group(label=QUEUE_SERVICE)

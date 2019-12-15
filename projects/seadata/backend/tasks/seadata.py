@@ -5,6 +5,7 @@ import hashlib
 import zipfile
 import re
 import requests
+import logging
 from shutil import rmtree
 from socket import gethostname
 from plumbum.commands.processes import ProcessExecutionError
@@ -24,14 +25,13 @@ from restapi.flask_ext.flask_irods.client import IrodsException
 from restapi.services.detect import detector
 from restapi.flask_ext.flask_celery import send_errors_by_email
 
-from restapi.utilities.logs import get_logger, logging
+from restapi.utilities.logs import log
 
 # Size in bytes
 # TODO: move me into the configuration
 MAX_ZIP_SIZE = 2147483648  # 2 gb
 ####################
 
-log = get_logger(__name__)
 '''
 These are the paths of the locations on the
 local filesystem inside the celery worker

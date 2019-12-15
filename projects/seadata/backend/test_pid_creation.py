@@ -3,9 +3,7 @@
 from b2stage.apis.commons.b2handle import PIDgenerator
 from restapi.flask_ext import get_debug_instance
 from restapi.flask_ext.flask_irods import IrodsPythonExt
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 imain = get_debug_instance(IrodsPythonExt)
 

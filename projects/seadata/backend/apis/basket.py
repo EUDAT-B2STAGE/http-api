@@ -36,13 +36,10 @@ from seadata.apis.commons.queue import log_into_queue, prepare_message
 from restapi.utilities.htmlcodes import hcodes
 from restapi.flask_ext.flask_irods.client import IrodsException
 from b2stage.apis.commons import path
-from restapi.utilities.logs import get_logger
+from restapi.utilities.logs import log
 
 from irods.exception import NetworkException
 
-#################
-# INIT VARIABLES
-log = get_logger(__name__)
 TMPDIR = '/tmp'
 
 

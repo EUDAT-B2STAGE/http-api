@@ -6,9 +6,7 @@ Common functions for EUDAT endpoints
 from attr import s as AttributedModel, ib as attribute
 from restapi.services.detect import detector
 from restapi.confs import PRODUCTION, API_URL
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+# from restapi.utilities.logs import log
 
 try:
     IRODS_VARS = detector.services_classes.get('irods').variables

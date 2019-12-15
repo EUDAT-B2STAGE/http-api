@@ -10,14 +10,12 @@ nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
 import io
 import json
 from tests import RestTestsAuthenticatedBase
-from restapi.utilities.logs import get_logger
+from restapi.utilities.logs import log
 
 __authors__ = [
     'Roberto Mucci (m.dantonio@cineca.it)',
     "Paolo D'Onorio De Meo <m.dantonio@cineca.it>",
 ]
-
-log = get_logger(__name__)
 
 
 class TestDigitalObjects(RestTestsAuthenticatedBase):

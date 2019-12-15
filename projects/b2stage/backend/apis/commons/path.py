@@ -8,9 +8,8 @@ src: http://j.mp/2nwz908
 import os
 from contextlib import contextmanager
 from pathlib import Path, PurePath
-from restapi.utilities.logs import get_logger
+from restapi.utilities.logs import log
 
-log = get_logger(__name__)
 COMPRESSION_FORMAT = 'zip'
 
 

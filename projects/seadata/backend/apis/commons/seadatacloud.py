@@ -4,9 +4,7 @@ from datetime import datetime
 from restapi.services.detect import detector
 from restapi.utilities.htmlcodes import hcodes
 from b2stage.apis.commons import path
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 seadata_vars = detector.load_group(label='seadata')
 
 # SEADATA_ENABLED = seadata_vars.get('project')

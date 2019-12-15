@@ -12,9 +12,7 @@ from restapi import decorators as decorate
 from restapi.protocols.bearer import authentication
 from restapi.flask_ext.flask_irods.client import IrodsException
 from restapi.utilities.htmlcodes import hcodes
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 
 #################

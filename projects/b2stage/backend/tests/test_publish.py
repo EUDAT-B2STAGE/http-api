@@ -10,9 +10,7 @@ import json
 from tests import RestTestsAuthenticatedBase
 from restapi.services.detect import detector
 from b2stage.apis.commons import path
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 maketests = \
     os.environ.get('ENABLE_PUBLIC_ENDPOINT') == '1' and \

@@ -22,9 +22,7 @@ from b2stage.apis.commons import (
 
 # from restapi.confs import API_URL
 from restapi.utilities.htmlcodes import hcodes
-from restapi.utilities.logs import get_logger
-
-log = get_logger(__name__)
+from restapi.utilities.logs import log
 
 MISSING_BATCH = 0
 NOT_FILLED_BATCH = 1
