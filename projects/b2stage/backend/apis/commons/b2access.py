@@ -64,10 +64,10 @@ class B2accessUtilities(EndpointResource):
         if b2a_token is None:
             log.critical("No token received")
             return (b2a_token, 'B2ACCESS: empty token')
-        log.info("Received token: '%s'" % b2a_token)
+        log.info("Received token: '%s'", b2a_token)
 
         b2a_refresh_token = resp.get('refresh_token')
-        log.info("Received refresh token: '%s'" % b2a_refresh_token)
+        log.info("Received refresh token: '%s'", b2a_refresh_token)
         return (b2a_token, b2a_refresh_token, tuple())
 
     def get_b2access_user_info(
@@ -88,7 +88,7 @@ class B2accessUtilities(EndpointResource):
         elif not isinstance(b2access_user, OAuthResponse):
             errstring = "Invalid response from B2ACCESS"
         elif b2access_user.status > hcodes.HTTP_TRESHOLD:
-            log.error("Bad status: %s" % str(b2access_user._resp))
+            log.error("Bad status: %s", str(b2access_user._resp))
             if b2access_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:

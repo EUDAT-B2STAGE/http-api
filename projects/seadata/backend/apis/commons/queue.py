@@ -106,7 +106,7 @@ def log_into_queue(instance, dictionary_message):
     # temporary disabled
     return False
 
-    log.verbose('LOG MESSAGE to be passed to log-queue: %s ' % dictionary_message)
+    log.verbose('LOG MESSAGE to be passed to log-queue: %s', dictionary_message)
 
     current_exchange = QUEUE_VARS.get('exchange')
     routing_key = QUEUE_VARS.get('queue')
@@ -116,8 +116,8 @@ def log_into_queue(instance, dictionary_message):
         app_name = routing_key
 
     log.debug(
-        'Log-queue service: exchange "%s", routing key "%s", app name "%s"'
-        % (current_exchange, routing_key, app_name)
+        'Log-queue service: exchange "%s", routing key "%s", app name "%s"',
+        current_exchange, routing_key, app_name
     )
 
     try:

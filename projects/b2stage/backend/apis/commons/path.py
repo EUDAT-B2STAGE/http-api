@@ -62,7 +62,7 @@ def home(relative_path=None):
         return Path.home()
     else:
         if relative_path.startswith(os.sep):
-            log.exit("Requested abspath '%s' in relative context" % relative_path)
+            log.exit("Requested abspath '%s' in relative context", relative_path)
         return build('~' + os.sep + relative_path).expanduser()
 
 
@@ -79,7 +79,7 @@ def create(pathobj, directory=False, force=False, parents=False):
             if force:
                 pass
             else:
-                log.exit("Cannot overwrite existing: %s" % pathobj)
+                log.exit("Cannot overwrite existing: %s", pathobj)
     else:
         raise NotImplementedError("Yet to do!")
 

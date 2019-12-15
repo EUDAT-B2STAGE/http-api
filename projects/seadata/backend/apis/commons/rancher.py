@@ -135,7 +135,6 @@ class Rancher(object):
             try:
                 labels = self.obj_to_dict(info.get('labels', {}))
                 if labels.get(system_label) is not None:
-                    # log.verbose("Skipping sycontainer: %s" % system_label)
                     continue
             except BaseException:
                 pass

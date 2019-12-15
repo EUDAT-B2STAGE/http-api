@@ -119,7 +119,7 @@ def notify_error(error, payload, backdoor, task,
 def download_batch(self, batch_path, local_path, myjson):
 
     with celery_app.app.app_context():
-        log.info("I'm %s (download_batch)" % self.request.id)
+        log.info("I'm %s (download_batch)", self.request.id)
         log.info("Batch irods path: %s", batch_path)
         log.info("Batch local path: %s", local_path)
 
@@ -377,7 +377,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             state="STARTING", meta={'total': None, 'step': 0, 'errors': 0})
 
         ###############
-        log.info("I'm %s (move_to_production_task)!" % self.request.id)
+        log.info("I'm %s (move_to_production_task)!", self.request.id)
         local_path = path.join(mybatchpath, batch_id, return_str=True)
 
         try:
@@ -439,7 +439,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                         self.update_state(state="PROGRESS", meta={
                             'total': total, 'step': counter, 'errors': len(errors)})
                         continue
-                    log.info("File copied on irods: %s" % ifile)
+                    log.info("File copied on irods: %s", ifile)
 
                     ###############
                     # 2. request pid (irule)
@@ -524,7 +524,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s (unrestricted_order)" % self.request.id)
+        log.info("I'm %s (unrestricted_order)", self.request.id)
 
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)

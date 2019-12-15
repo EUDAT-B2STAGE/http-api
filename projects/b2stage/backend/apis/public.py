@@ -114,7 +114,7 @@ class Public(B2HandleEndpoint):
             info = None
         except BaseException as e:
             info = None
-            log.error("Unknown error: %s(%s)" % (e.__class__.__name__, e))
+            log.error("Unknown error: %s(%s)", e.__class__.__name__, e)
         else:
             # log.pp(info)
             for key, value in info.get('metadata', {}).items():
