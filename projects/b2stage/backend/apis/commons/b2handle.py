@@ -25,7 +25,7 @@ class PIDgenerator(object):
     def pid_name_fix(self, irule_output):
         pieces = irule_output.split(self.pid_separator)
         pid = self.pid_separator.join([pieces[0], pieces[1].lower()])
-        log.debug("Parsed PID: %s", pid)
+        log.debug("Parsed PID: {}", pid)
         return pid
 
     def pid_request(self, icom, ipath):
@@ -33,7 +33,7 @@ class PIDgenerator(object):
 
         outvar = 'newPID'
         inputs = {
-            '*path': '"%s"' % ipath,
+            '*path': '"{}"'.format(ipath),
             '*fixed': '"true"',
             # empty variables
             '*parent_pid': '""',
@@ -41,9 +41,9 @@ class PIDgenerator(object):
             '*fio': '""',
         }
         body = """
-            EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *%s);
-            writeLine("stdout", *%s);
-        """ % (
+            EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *{});
+            writeLine("stdout", *{});
+        """.format(
             outvar,
             outvar,
         )
@@ -75,11 +75,11 @@ class PIDgenerator(object):
                 path_pieces[4] = "/"
 
         except BaseException:
-            log.error("Error parsing URL, not enough tokens? %s", path_pieces)
+            log.error("Error parsing URL, not enough tokens? {}", path_pieces)
 
         # print("pieces", path_pieces)
         ipath = str(path.build(path_pieces))
-        log.verbose("Data object: %s", ipath)
+        log.verbose("Data object: {}", ipath)
 
         return ipath
 
@@ -128,7 +128,7 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
                     credentials_path = path.build(file)
                     found = path.file_exists_and_nonzero(credentials_path)
                     if not found:
-                        log.warning("B2HANDLE credentials file not found %s", file)
+                        log.warning("B2HANDLE credentials file not found {}", file)
 
                 if found:
                     self._handle_client = b2handle.instantiate_with_credentials(
@@ -156,7 +156,7 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
         try:
             for field in self.eudat_pid_fields:
                 value = client.get_value_from_handle(pid, field)
-                log.info("B2HANDLE: %s=%s", field, value)
+                log.info("B2HANDLE: {}={}", field, value)
                 data[field] = value
         except handleexceptions.HandleSyntaxError as e:
             return data, e, hcodes.HTTP_BAD_REQUEST
@@ -170,7 +170,7 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
             log.warning("No connection available...")
             return data, e, hcodes.HTTP_SERVER_ERROR
         except BaseException as e:
-            log.error("Generic:\n%s(%s)", e.__class__.__name__, e)
+            log.error("Generic:\n{}({})", e.__class__.__name__, e)
             return data, e, hcodes.HTTP_SERVER_ERROR
 
         return data, None, hcodes.HTTP_FOUND
@@ -187,17 +187,17 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
         # If credentials were found but they gave error
         # TODO: this should be tested at server startup!
         if error is not None and authenticated:
-            log.error("B2HANDLE credentials problem: %s", error)
+            log.error("B2HANDLE credentials problem: {}", error)
             client, _ = self.connect_client(force_no_credentials=True)
             data, error, code = self.handle_pid_fields(client, pid)
 
         # Still getting error? Raise any B2HANDLE library problem
         if error is not None:
-            log.error("B2HANDLE problem: %s", error)
+            log.error("B2HANDLE problem: {}", error)
             return (
                 data,
                 self.send_errors(
-                    message='B2HANDLE: %s' % error, code=code, head_method=head_method
+                    message='B2HANDLE: {}'.format(error), code=code, head_method=head_method
                 ),
             )
         else:

@@ -87,8 +87,8 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
             return metadata
         # download is requested, trigger file download
 
-        rroute = '%s%s/' % (CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT)
-        proute = '%s%s/' % (CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT)
+        rroute = '{}{}/'.format(CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT)
+        proute = '{}{}/'.format(CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT)
         # route = route.replace('http://', '')
 
         url = url.replace('https://', '')
@@ -105,7 +105,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
                 {'URL': url},
                 errors=[
                     "Data-object can't be downloaded by current "
-                    + "HTTP-API server '%s'" % CURRENT_HTTPAPI_SERVER
+                    + "HTTP-API server '{}'".format(CURRENT_HTTPAPI_SERVER)
                 ],
                 head_method=head,
             )

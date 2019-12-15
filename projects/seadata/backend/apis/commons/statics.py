@@ -19,27 +19,27 @@ HEADER = """<!DOCTYPE html>
     <meta name="viewport"
         content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet"
-        href="https://%s/css/bootstrap.min.css"
-        integrity="sha384-%s" crossorigin="anonymous">
+        href="https://{}/css/bootstrap.min.css"
+        integrity="sha384-{}" crossorigin="anonymous">
     <link rel="stylesheet"
-        href="https://%s/narrow-jumbotron/narrow-jumbotron.css">
-    <link rel="shortcut icon" href="%s"/>
-    <title>%s</title>
+        href="https://{}/narrow-jumbotron/narrow-jumbotron.css">
+    <link rel="shortcut icon" href="{}"/>
+    <title>{}</title>
 </head>
 <body>
  <div class="container">
       <div class="float-right">
         <table>
             <tr>
-                <td> <img src='%s' width=75 </td>
-                <td> <img src='%s' width=75 </td>
+                <td> <img src='{}' width=75 </td>
+                <td> <img src='{}' width=75 </td>
             </tr>
         </table>
       </div>
       <div class="header clearfix">
-        <h2 class="text-muted">%s service</h2>
+        <h2 class="text-muted">{} service</h2>
       </div>
-""" % (
+""".format(
     FRAMEWORK,
     ICODE,
     FAVICO,

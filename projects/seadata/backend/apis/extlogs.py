@@ -46,14 +46,14 @@ class Extlogs(EndpointResource):
         from seadata.apis.commons.queue import QUEUE_VARS as qvars
 
         # Add size=100 as param?
-        url = '%s://%s:%s/app_%s-%s/_search?q=*:*' % (
+        url = '{}://{}:{}/app_{}-{}/_search?q=*:*'.format(
             'http',
             qvars.get('host'),
             9200,
             qvars.get('queue'),
             calendar,
         )
-        log.debug("Index URL: %s", url)
+        log.debug("Index URL: {}", url)
 
         ################################
         # FIXME: use flask_elastic instance
@@ -61,7 +61,7 @@ class Extlogs(EndpointResource):
 
         r = requests.get(url)
         out = r.json().get('hits', {})
-        log.info("Found %s results", out.get('total'))
+        log.info("Found {} results", out.get('total'))
 
         ################################
         # logs = {}

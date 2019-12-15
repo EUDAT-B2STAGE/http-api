@@ -90,7 +90,7 @@ class Public(B2HandleEndpoint):
             filename = os.path.basename(path)
             headers = {
                 'Content-Type': 'application/octet-stream',
-                'Content-Disposition': 'attachment; filename="%s"' % filename,
+                'Content-Disposition': 'attachment; filename="{}"'.format(filename),
             }
             return icom.read_in_streaming(path, headers=headers)
         else:
@@ -114,7 +114,7 @@ class Public(B2HandleEndpoint):
             info = None
         except BaseException as e:
             info = None
-            log.error("Unknown error: %s(%s)", e.__class__.__name__, e)
+            log.error("Unknown error: {}({})", e.__class__.__name__, e)
         else:
             # log.pp(info)
             for key, value in info.get('metadata', {}).items():
@@ -122,16 +122,16 @@ class Public(B2HandleEndpoint):
                     continue
                 metadata += '<tr>'
                 metadata += "<th> <i>metadata</i> </th>"
-                metadata += "<th> %s </th>" % key.capitalize()
-                metadata += "<td> %s </td>" % value
+                metadata += "<th> {} </th>".format(key.capitalize())
+                metadata += "<td> {} </td>".format(value)
                 metadata += '</tr>\n'
             for key, value in md.items():
                 if value is None:
                     continue
                 metadata += '<tr>'
                 metadata += "<th> <i>metadata</i> </th>"
-                metadata += "<th> %s </th>" % key.capitalize()
-                metadata += "<td> %s </td>" % value
+                metadata += "<th> {} </th>".format(key.capitalize())
+                metadata += "<td> {} </td>".format(value)
                 metadata += '</tr>\n'
 
         if info is None:
@@ -148,21 +148,21 @@ Found a data object <b>publicly</b> available:
 </br> </br>
 
 <table border=1 cellpadding=5 cellspacing=5>
-    %s
+    {}
     <tr>
         <th> <i>info</i> </th>
         <th> Collection </th>
-        <td> %s </td>
+        <td> {} </td>
     </tr>
     <tr>
         <th> <i>access</i> </th>
         <th> Download </th>
-        <td> <a href='%s?download=true' target='_blank'>link</a> </td>
+        <td> <a href='{}?download=true' target='_blank'>link</a> </td>
     </tr>
 </table>
 </br> </br>
 
-""" % (
+""".format(
                 # info.get('dataobject'),
                 metadata,
                 info.get('path'),

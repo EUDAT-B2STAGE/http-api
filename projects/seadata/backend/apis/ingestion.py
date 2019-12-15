@@ -67,7 +67,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     @authentication.required()
     def get(self, batch_id):
 
-        log.info("Batch request: %s", batch_id)
+        log.info("Batch request: {}", batch_id)
         # json = {'batch_id': batch_id}
         # msg = prepare_message(
         #     self, json=json, user=ingestion_user, log_string='start')
@@ -82,8 +82,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
             batch_path = self.get_irods_batch_path(imain, batch_id)
             local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
-            log.info("Batch irods path: %s", batch_path)
-            log.info("Batch local path: %s", local_path)
+            log.info("Batch irods path: {}", batch_path)
+            log.info("Batch local path: {}", local_path)
 
             batch_status, batch_files = self.get_batch_status(imain, batch_path, local_path)
 
@@ -91,18 +91,18 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             # if not imain.is_collection(batch_path):
             if batch_status == MISSING_BATCH:
                 return self.send_errors(
-                    "Batch '%s' not enabled or you have no permissions" % batch_id,
+                    "Batch '{}' not enabled or you have no permissions".format(batch_id),
                     code=hcodes.HTTP_BAD_NOTFOUND,
                 )
 
             if batch_status == BATCH_MISCONFIGURATION:
                 log.error(
-                    'Misconfiguration: %s files in %s (expected 1)',
+                    'Misconfiguration: {} files in {} (expected 1)',
                     len(batch_files),
                     batch_path,
                 )
                 return self.send_errors(
-                    "Misconfiguration for batch_id %s" % batch_id,
+                    "Misconfiguration for batch_id {}".format(batch_id),
                     code=hcodes.HTTP_BAD_RESOURCE,
                 )
 
@@ -129,7 +129,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
-
     @authentication.required()
     def post(self, batch_id):
         json_input = self.get_input()
@@ -139,9 +138,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             imain = self.get_main_irods_connection()
 
             batch_path = self.get_irods_batch_path(imain, batch_id)
-            log.info("Batch irods path: %s", batch_path)
+            log.info("Batch irods path: {}", batch_path)
             local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
-            log.info("Batch local path: %s", local_path)
+            log.info("Batch local path: {}", local_path)
 
             """
             Create the batch folder if not exists
@@ -172,14 +171,15 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
                     superdir = os.path.join(MOUNTPOINT, INGESTION_DIR)
                     if not os.path.exists(superdir):
-                        log.debug('Creating %s...', superdir)
+                        log.debug('Creating {}...', superdir)
                         os.mkdir(superdir)
-                        log.info('Created %s...', superdir)
+                        log.info('Created {}...', superdir)
                     path.create(local_path, directory=True, force=True)
                 except (FileNotFoundError, PermissionError) as e:
-                    err_msg = 'Could not create directory "%s" (%s)' % (local_path, e)
+                    err_msg = 'Could not create directory "{}" ({})'.format(
+                        local_path, e)
                     log.critical(err_msg)
-                    log.info('Removing collection from irods (%s)', batch_path)
+                    log.info('Removing collection from irods ({})', batch_path)
                     imain.remove(batch_path, recursive=True, force=True)
                     return self.send_errors(err_msg, code=hcodes.HTTP_SERVER_ERROR)
 
@@ -201,7 +201,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 queue='ingestion',
                 routing_key='ingestion',
             )
-            log.info("Async job: %s", task.id)
+            log.info("Async job: {}", task.id)
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
@@ -219,15 +219,15 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             imain = self.get_main_irods_connection()
             batch_path = self.get_irods_batch_path(imain)
             local_batch_path = str(path.join(MOUNTPOINT, INGESTION_DIR))
-            log.debug("Batch collection: %s", batch_path)
-            log.debug("Batch path: %s", local_batch_path)
+            log.debug("Batch collection: {}", batch_path)
+            log.debug("Batch path: {}", local_batch_path)
 
             task = CeleryExt.delete_batches.apply_async(
                 args=[batch_path, local_batch_path, json_input],
                 queue='ingestion',
                 routing_key='ingestion',
             )
-            log.info("Async job: %s", task.id)
+            log.info("Async job: {}", task.id)
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(

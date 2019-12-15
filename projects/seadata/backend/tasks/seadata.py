@@ -82,7 +82,7 @@ b2handle_client = b2handle.instantiate_for_read_access()
 def notify_error(error, payload, backdoor, task,
                  extra=None, subject=None, edmo_code=None):
 
-    error_message = "Error %s: %s" % (error[0], error[1])
+    error_message = "Error {}: {}".format(error[0], error[1])
     log.error(error_message)
     if extra:
         log.error(str(extra))
@@ -119,9 +119,9 @@ def notify_error(error, payload, backdoor, task,
 def download_batch(self, batch_path, local_path, myjson):
 
     with celery_app.app.app_context():
-        log.info("I'm %s (download_batch)", self.request.id)
-        log.info("Batch irods path: %s", batch_path)
-        log.info("Batch local path: %s", local_path)
+        log.info("I'm {} (download_batch)", self.request.id)
+        log.info("Batch irods path: {}", batch_path)
+        log.info("Batch local path: {}", local_path)
 
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
@@ -210,8 +210,15 @@ def download_batch(self, batch_path, local_path, myjson):
 
                 # 1 - download the file
                 download_url = os.path.join(download_path, file_name)
-                headers = {'User-Agent': 'SDC CDI HTTP-APIs', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
-                log.info("Downloading file from %s", download_url)
+                headers = {
+                    'User-Agent': 'SDC CDI HTTP-APIs',
+                    "Upgrade-Insecure-Requests": "1",
+                    "DNT": "1",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.5",
+                    "Accept-Encoding": "gzip, deflate"
+                }
+                log.info("Downloading file from {}", download_url)
                 try:
                     r = requests.get(download_url, stream=True, verify=False, headers=headers)
                 except requests.exceptions.ConnectionError:
@@ -239,7 +246,7 @@ def download_batch(self, batch_path, local_path, myjson):
                         edmo_code=request_edmo_code
                     )
 
-                log.info("Request status = %s", r.status_code)
+                log.info("Request status = {}", r.status_code)
                 batch_file = path.join(local_path, file_name)
 
                 # from python 3.6
@@ -251,7 +258,7 @@ def download_batch(self, batch_path, local_path, myjson):
                             f.write(chunk)
 
                 # 2 - verify checksum
-                log.info("Computing checksum for %s...", batch_file)
+                log.info("Computing checksum for {}...", batch_file)
                 local_file_checksum = hashlib.md5(
                     open(str(batch_file), 'rb').read()
                 ).hexdigest()
@@ -263,13 +270,13 @@ def download_batch(self, batch_path, local_path, myjson):
                         subject=file_name,
                         edmo_code=request_edmo_code
                     )
-                log.info("File checksum verified for %s", batch_file)
+                log.info("File checksum verified for {}", batch_file)
 
                 # 3 - verify size
                 local_file_size = os.path.getsize(str(batch_file))
                 if local_file_size != int(file_size):
                     log.error(
-                        "File size %s for %s, expected %s",
+                        "File size {} for {}, expected {}",
                         local_file_size, batch_file, file_size
                     )
                     return notify_error(
@@ -279,20 +286,20 @@ def download_batch(self, batch_path, local_path, myjson):
                         edmo_code=request_edmo_code
                     )
 
-                log.info("File size verified for %s", batch_file)
+                log.info("File size verified for {}", batch_file)
 
                 # 4 - decompress
                 d = os.path.splitext(os.path.basename(str(batch_file)))[0]
                 local_unzipdir = path.join(local_path, d)
 
                 if os.path.isdir(str(local_unzipdir)):
-                    log.warning("%s already exist, removing it", local_unzipdir)
+                    log.warning("{} already exist, removing it", local_unzipdir)
                     rmtree(str(local_unzipdir), ignore_errors=True)
 
                 path.create(local_unzipdir, directory=True, force=True)
-                log.info("Local unzip dir = %s", local_unzipdir)
+                log.info("Local unzip dir = {}", local_unzipdir)
 
-                log.info("Unzipping %s", batch_file)
+                log.info("Unzipping {}", batch_file)
                 zip_ref = None
                 try:
                     zip_ref = zipfile.ZipFile(str(batch_file), 'r')
@@ -320,10 +327,10 @@ def download_batch(self, batch_path, local_path, myjson):
                 local_file_count = 0
                 for f in os.listdir(str(local_unzipdir)):
                     local_file_count += 1
-                log.info("Unzipped %d files from %s", local_file_count, batch_file)
+                log.info("Unzipped {} files from {}", local_file_count, batch_file)
 
                 if local_file_count != int(file_count):
-                    log.error("Expected %s files for %s", file_count, batch_file)
+                    log.error("Expected {} files for {}", file_count, batch_file)
                     return notify_error(
                         ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
                         myjson, backdoor, self,
@@ -331,7 +338,7 @@ def download_batch(self, batch_path, local_path, myjson):
                         edmo_code=request_edmo_code
                     )
 
-                log.info("File count verified for %s", batch_file)
+                log.info("File count verified for {}", batch_file)
 
                 rmtree(str(local_unzipdir), ignore_errors=True)
 
@@ -346,16 +353,16 @@ def download_batch(self, batch_path, local_path, myjson):
                 '''
 
                 irods_batch_file = os.path.join(batch_path, file_name)
-                log.debug("Copying %s into %s...", batch_file, irods_batch_file)
+                log.debug("Copying {} into {}...", batch_file, irods_batch_file)
 
                 imain.put(str(batch_file), str(irods_batch_file))
 
                 # NOTE: permissions are inherited thanks to the ACL already SET
                 # Not needed to set ownership to username
-                log.info("Copied: %s", irods_batch_file)
+                log.info("Copied: {}", irods_batch_file)
 
                 ret = ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
-                log.info('CDI IM CALL = %s', ret)
+                log.info('CDI IM CALL = {}', ret)
                 return "COMPLETED"
 
         except BaseException as e:
@@ -377,7 +384,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
             state="STARTING", meta={'total': None, 'step': 0, 'errors': 0})
 
         ###############
-        log.info("I'm %s (move_to_production_task)!", self.request.id)
+        log.info("I'm {} (move_to_production_task)!", self.request.id)
         local_path = path.join(mybatchpath, batch_id, return_str=True)
 
         try:
@@ -407,12 +414,12 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     current_file_name = path.last_part(temp_id)
                     local_element = path.join(local_path, temp_id, return_str=False)
 
-                    # log.info('Element: %s', element)
+                    # log.info('Element: {}', element)
                     # if local_element in files:
                     if path.file_exists_and_nonzero(local_element):
-                        log.info('Found: %s', local_element)
+                        log.info('Found: {}', local_element)
                     else:
-                        log.error('NOT found: %s', local_element)
+                        log.error('NOT found: {}', local_element)
                         errors.append({
                             "error": ErrorCodes.INGESTION_FILE_NOT_FOUND[0],
                             "description": ErrorCodes.INGESTION_FILE_NOT_FOUND[1],
@@ -439,7 +446,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                         self.update_state(state="PROGRESS", meta={
                             'total': total, 'step': counter, 'errors': len(errors)})
                         continue
-                    log.info("File copied on irods: %s", ifile)
+                    log.info("File copied on irods: {}", ifile)
 
                     ###############
                     # 2. request pid (irule)
@@ -456,7 +463,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                         self.update_state(state="PROGRESS", meta={
                             'total': total, 'step': counter, 'errors': len(errors)})
                         continue
-                    log.info('PID: %s', PID)
+                    log.info('PID: {}', PID)
                     # # save inside the cache
                     r.set(PID, ifile)
                     r.set(ifile, PID)
@@ -472,7 +479,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                             args = {'path': ifile, key: value}
                             imain.set_metadata(**args)
 
-                    log.debug('Metadata set for %s', current_file_name)
+                    log.debug('Metadata set for {}', current_file_name)
 
                     ###############
                     # 4. remove the batch file?
@@ -499,7 +506,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                 if len(errors) > 0:
                     myjson['errors'] = errors
                 ret = ext_api.post(myjson, backdoor=backdoor)
-                log.info('CDI IM CALL = %s', ret)
+                log.info('CDI IM CALL = {}', ret)
 
                 out = {
                     'total': total, 'step': counter,
@@ -524,7 +531,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
     with celery_app.app.app_context():
 
-        log.info("I'm %s (unrestricted_order)", self.request.id)
+        log.info("I'm {} (unrestricted_order)", self.request.id)
 
         params = myjson.get('parameters', {})
         backdoor = params.pop('backdoor', False)
@@ -545,7 +552,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         try:
             with celery_app.get_service(service='irods') as imain:
 
-                log.info("Retrieving paths for %s PIDs", len(pids))
+                log.info("Retrieving paths for {} PIDs", len(pids))
                 ##################
                 # Verify pids
                 files = {}
@@ -597,10 +604,10 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         self.update_state(state="PROGRESS", meta={
                             'total': total, 'step': counter, 'errors': len(errors)})
 
-                        log.warning("PID not found: %s", pid)
+                        log.warning("PID not found: {}", pid)
                     else:
                         ipath = pmaker.parse_pid_dataobject_path(b2handle_output)
-                        log.verbose("PID verified: %s\n(%s)", pid, ipath)
+                        log.verbose("PID verified: {}\n({})", pid, ipath)
                         files[pid] = ipath
                         r.set(pid, ipath)
                         r.set(ipath, pid)
@@ -610,7 +617,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             'total': total, 'step': counter, 'verified': verified,
                             'errors': len(errors)}
                         )
-                log.info("Retrieved paths for %s PIDs", len(files))
+                log.info("Retrieved paths for {} PIDs", len(files))
 
                 # Recover files
                 for pid, ipath in files.items():
@@ -652,7 +659,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                                 'errors': len(errors)})
                             continue
 
-                        # log.debug("Copy to local: %s", local_file)
+                        # log.debug("Copy to local: {}", local_file)
                     #########################
                     #########################
 
@@ -663,7 +670,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             'verified': verified,
                             'errors': len(errors)}
                         )
-                        log.info("%s pids already processed", counter)
+                        log.info("{} pids already processed", counter)
                     # # Set current file to the metadata collection
                     # if pid not in metadata:
                     #     md = {pid: ipath}
@@ -675,19 +682,19 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     ##################
                     # Zip the dir
                     zip_local_file = path.join(local_dir, zip_file_name)
-                    log.debug("Zip local path: %s", zip_local_file)
+                    log.debug("Zip local path: {}", zip_local_file)
                     if not path.file_exists_and_nonzero(zip_local_file):
                         path.compress(str(local_zip_dir), str(zip_local_file))
-                        log.info("Compressed in: %s", zip_local_file)
+                        log.info("Compressed in: {}", zip_local_file)
 
                     ##################
                     # Copy the zip into irods
                     zip_ipath = path.join(order_path, zip_file_name, return_str=True)
                     imain.put(str(zip_local_file), str(zip_ipath))  # NOTE: always overwrite
-                    log.info("Copied zip to irods: %s", zip_ipath)
+                    log.info("Copied zip to irods: {}", zip_ipath)
 
                     if os.path.getsize(str(zip_local_file)) > MAX_ZIP_SIZE:
-                        log.warning("Zip too large, splitting %s", zip_local_file)
+                        log.warning("Zip too large, splitting {}", zip_local_file)
 
                         # Create a sub folder for split files. If already exists,
                         # remove it before to start from a clean environment
@@ -735,7 +742,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         for subzip_file in zip_files:
                             m = re.search(regexp, subzip_file)
                             if not m:
-                                log.error("Cannot extract index from zip name: %s", subzip_file)
+                                log.error("Cannot extract index from zip name: {}", subzip_file)
                                 return notify_error(
                                     ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
                                     myjson, backdoor, self, extra=str(zip_local_file)
@@ -744,11 +751,11 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             subzip_path = path.join(split_path, subzip_file)
 
                             subzip_ifile = path.append_compress_extension(
-                                "%s%s" % (base_filename, index)
+                                "{}{}".format(base_filename, index)
                             )
                             subzip_ipath = path.join(order_path, subzip_ifile)
 
-                            log.info("Uploading %s -> %s", subzip_path, subzip_ipath)
+                            log.info("Uploading {} -> {}", subzip_path, subzip_ipath)
                             imain.put(str(subzip_path), str(subzip_ipath))
 
                 #########################
@@ -781,7 +788,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 myjson[reqkey] = self.request.id
                 # log.pp(myjson)
                 ret = ext_api.post(myjson, backdoor=backdoor)
-                log.info('CDI IM CALL = %s', ret)
+                log.info('CDI IM CALL = {}', ret)
 
                 ##################
                 out = {
@@ -863,16 +870,16 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
                 base_filename = filename
                 if filename.endswith('.zip'):
-                    log.warning('%s already contains extention .zip', filename)
+                    log.warning('{} already contains extention .zip', filename)
                     # TO DO: save base_filename as filename - .zip
                 else:
                     filename = path.append_compress_extension(filename)
 
                 final_zip = order_path + '/' + filename.rstrip('/')
 
-                log.info("order_id = %s", order_id)
-                log.info("order_path = %s", order_path)
-                log.info("final_zip = %s", final_zip)
+                log.info("order_id = {}", order_id)
+                log.info("order_path = {}", order_path)
+                log.info("final_zip = {}", final_zip)
 
                 # ############################################
 
@@ -939,7 +946,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 # 1 - download in local-dir
                 download_url = os.path.join(download_path, file_name)
                 headers = {'User-Agent': 'SDC CDI HTTP-APIs', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
-                log.info("Downloading file from %s", download_url)
+                log.info("Downloading file from {}", download_url)
                 try:
                     r = requests.get(download_url, stream=True, verify=False, headers=headers)
                 except requests.exceptions.ConnectionError:
@@ -967,14 +974,14 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         edmo_code=request_edmo_code
                     )
 
-                log.info("Request status = %s", r.status_code)
+                log.info("Request status = {}", r.status_code)
 
                 local_dir = path.join(myorderspath, order_id)
                 path.create(local_dir, directory=True, force=True)
-                log.info("Local dir = %s", local_dir)
+                log.info("Local dir = {}", local_dir)
 
                 local_zip_path = path.join(local_dir, file_name)
-                log.info("partial_zip = %s", local_zip_path)
+                log.info("partial_zip = {}", local_zip_path)
 
                 # from python 3.6
                 # with open(local_zip_path, 'wb') as f:
@@ -985,7 +992,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                             f.write(chunk)
 
                 # 2 - verify checksum
-                log.info("Computing checksum for %s...", local_zip_path)
+                log.info("Computing checksum for {}...", local_zip_path)
                 local_file_checksum = hashlib.md5(
                     open(str(local_zip_path), 'rb').read()
                 ).hexdigest()
@@ -997,13 +1004,13 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         subject=file_name,
                         edmo_code=request_edmo_code
                     )
-                log.info("File checksum verified for %s", local_zip_path)
+                log.info("File checksum verified for {}", local_zip_path)
 
                 # 3 - verify size
                 local_file_size = os.path.getsize(str(local_zip_path))
                 if local_file_size != int(file_size):
                     log.error(
-                        "File size %s for %s, expected %s",
+                        "File size {} for {}, expected {}",
                         local_file_size, local_zip_path, file_size
                     )
                     return notify_error(
@@ -1013,20 +1020,20 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         edmo_code=request_edmo_code
                     )
 
-                log.info("File size verified for %s", local_zip_path)
+                log.info("File size verified for {}", local_zip_path)
 
                 # 4 - decompress
                 d = os.path.splitext(os.path.basename(str(local_zip_path)))[0]
                 local_unzipdir = path.join(local_dir, d)
 
                 if os.path.isdir(str(local_unzipdir)):
-                    log.warning("%s already exist, removing it", local_unzipdir)
+                    log.warning("{} already exist, removing it", local_unzipdir)
                     rmtree(str(local_unzipdir), ignore_errors=True)
 
                 path.create(local_dir, directory=True, force=True)
-                log.info("Local unzip dir = %s", local_unzipdir)
+                log.info("Local unzip dir = {}", local_unzipdir)
 
-                log.info("Unzipping %s", local_zip_path)
+                log.info("Unzipping {}", local_zip_path)
                 zip_ref = None
                 try:
                     zip_ref = zipfile.ZipFile(str(local_zip_path), 'r')
@@ -1054,10 +1061,10 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 local_file_count = 0
                 for f in os.listdir(str(local_unzipdir)):
                     local_file_count += 1
-                log.info("Unzipped %d files from %s", local_file_count, local_zip_path)
+                log.info("Unzipped {} files from {}", local_file_count, local_zip_path)
 
                 if local_file_count != int(file_count):
-                    log.error("Expected %s files for %s", file_count, local_zip_path)
+                    log.error("Expected {} files for {}", file_count, local_zip_path)
                     return notify_error(
                         ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
                         myjson, backdoor, self,
@@ -1065,9 +1072,9 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         edmo_code=request_edmo_code
                     )
 
-                log.info("File count verified for %s", local_zip_path)
+                log.info("File count verified for {}", local_zip_path)
 
-                log.info("Verifying final zip: %s", final_zip)
+                log.info("Verifying final zip: {}", final_zip)
                 # 6 - check if final_zip exists
                 if not imain.exists(final_zip):
                     # 7 - if not, simply copy partial_zip -> final_zip
@@ -1097,7 +1104,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     try:
                         zip_ref = zipfile.ZipFile(str(local_finalzip_path), 'a')
                     except FileNotFoundError:
-                        log.error("Local file not found: %s", local_finalzip_path)
+                        log.error("Local file not found: {}", local_finalzip_path)
                         return notify_error(
                             ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
                             myjson, backdoor, self,
@@ -1106,7 +1113,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         )
 
                     except zipfile.BadZipFile:
-                        log.error("Invalid local file: %s", local_finalzip_path)
+                        log.error("Invalid local file: {}", local_finalzip_path)
                         return notify_error(
                             ErrorCodes.UNZIP_ERROR_INVALID_FILE,
                             myjson, backdoor, self,
@@ -1118,7 +1125,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     if zip_ref is not None:
                         try:
                             for f in os.listdir(str(local_unzipdir)):
-                                # log.debug("Adding %s", f)
+                                # log.debug("Adding {}", f)
                                 zip_ref.write(
                                     os.path.join(str(local_unzipdir), f), f)
                             zip_ref.close()
@@ -1134,7 +1141,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     log.info("Creating a backup copy of final zip")
                     backup_zip = final_zip + ".bak"
                     if imain.is_dataobject(backup_zip):
-                        log.info("%s already exists, removing previous backup", backup_zip)
+                        log.info("{} already exists, removing previous backup", backup_zip)
                         imain.remove(backup_zip)
                     imain.move(final_zip, backup_zip)
 
@@ -1149,7 +1156,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 if local_finalzip_path is None:
                     log.warning("local_finalzip_path is None, unable to check size of file zip")
                 elif os.path.getsize(str(local_finalzip_path)) > MAX_ZIP_SIZE:
-                    log.warning("Zip too large, splitting %s", local_finalzip_path)
+                    log.warning("Zip too large, splitting {}", local_finalzip_path)
 
                     # Create a sub folder for split files. If already exists,
                     # remove it before to start from a clean environment
@@ -1198,7 +1205,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     for subzip_file in zip_files:
                         m = re.search(regexp, subzip_file)
                         if not m:
-                            log.error("Cannot extract index from zip name: %s", subzip_file)
+                            log.error("Cannot extract index from zip name: {}", subzip_file)
                             return notify_error(
                                 ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
                                 myjson, backdoor, self, extra=str(local_finalzip_path)
@@ -1207,18 +1214,18 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         subzip_path = path.join(split_path, subzip_file)
 
                         subzip_ifile = path.append_compress_extension(
-                            "%s%s" % (base_filename, index)
+                            "{}{}".format(base_filename, index)
                         )
                         subzip_ipath = path.join(order_path, subzip_ifile)
 
-                        log.info("Uploading %s -> %s", subzip_path, subzip_ipath)
+                        log.info("Uploading {} -> {}", subzip_path, subzip_ipath)
                         imain.put(str(subzip_path), str(subzip_ipath))
 
                 if len(errors) > 0:
                     myjson['errors'] = errors
 
                 ret = ext_api.post(myjson, backdoor=backdoor, edmo_code=request_edmo_code)
-                log.info('CDI IM CALL = %s', ret)
+                log.info('CDI IM CALL = {}', ret)
                 return "COMPLETED"
         except BaseException as e:
             log.error(e)
@@ -1286,8 +1293,8 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
 
                     order_path = path.join(orders_path, order)
                     local_order_path = path.join(local_orders_path, order)
-                    log.info("Delete request for order collection: %s", order_path)
-                    log.info("Delete request for order path: %s", local_order_path)
+                    log.info("Delete request for order collection: {}", order_path)
+                    log.info("Delete request for order path: {}", local_order_path)
 
                     if not imain.is_collection(order_path):
                         errors.append({
@@ -1314,7 +1321,7 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
                 if len(errors) > 0:
                     myjson['errors'] = errors
                 ret = ext_api.post(myjson, backdoor=backdoor)
-                log.info('CDI IM CALL = %s', ret)
+                log.info('CDI IM CALL = {}', ret)
                 return "COMPLETED"
         except BaseException as e:
             log.error(e)
@@ -1374,8 +1381,8 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
 
                     batch_path = path.join(batches_path, batch)
                     local_batch_path = path.join(local_batches_path, batch)
-                    log.info("Delete request for batch collection %s", batch_path)
-                    log.info("Delete request for batch path %s", local_batch_path)
+                    log.info("Delete request for batch collection {}", batch_path)
+                    log.info("Delete request for batch path {}", local_batch_path)
 
                     if not imain.is_collection(batch_path):
                         errors.append({
@@ -1395,7 +1402,7 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
                 if len(errors) > 0:
                     myjson['errors'] = errors
                 ret = ext_api.post(myjson, backdoor=backdoor)
-                log.info('CDI IM CALL = %s', ret)
+                log.info('CDI IM CALL = {}', ret)
                 return "COMPLETED"
         except BaseException as e:
             log.error(e)
@@ -1425,7 +1432,7 @@ def cache_batch_pids(self, irods_path):
 
     with celery_app.app.app_context():
 
-        log.info("Task cache_batch_pids working on: %s", irods_path)
+        log.info("Task cache_batch_pids working on: {}", irods_path)
 
         try:
             with celery_app.get_service(service='irods') as imain:
@@ -1438,7 +1445,7 @@ def cache_batch_pids(self, irods_path):
                 }
 
                 data = recursive_list_files(imain, irods_path)
-                log.info("Found %s files", len(data))
+                log.info("Found {} files", len(data))
 
                 # for current in imain.list(irods_path):
                 #     ifile = path.join(irods_path, current, return_str=True)
@@ -1451,7 +1458,7 @@ def cache_batch_pids(self, irods_path):
                     if pid is not None:
                         stats['skipped'] += 1
                         log.debug(
-                            '%d: file %s already cached with PID: %s',
+                            '{}: file {} already cached with PID: {}',
                             stats['total'], ifile, pid
                         )
                         self.update_state(state="PROGRESS", meta=stats)
@@ -1462,7 +1469,7 @@ def cache_batch_pids(self, irods_path):
                     if pid is None:
                         stats['errors'] += 1
                         log.warning(
-                            '%d: file %s has not a PID assigned',
+                            '{}: file {} has not a PID assigned',
                             stats['total'], ifile, pid
                         )
                         self.update_state(state="PROGRESS", meta=stats)
@@ -1471,7 +1478,7 @@ def cache_batch_pids(self, irods_path):
                     r.set(pid, ifile)
                     r.set(ifile, pid)
                     log.verbose(
-                        '%d: file %s cached with PID %s',
+                        '{}: file {} cached with PID {}',
                         stats['total'], ifile, pid
                     )
                     stats['cached'] += 1
@@ -1494,7 +1501,6 @@ def inspect_pids_cache(self):
         log.info("Inspecting cache...")
         counter = 0
         cache = {}
-        # for key in r.scan_iter("%s*" % pid_prefix):
         for key in r.scan_iter("*"):
             folder = os.path.dirname(r.get(key))
 
@@ -1509,15 +1515,15 @@ def inspect_pids_cache(self):
 
             counter += 1
             if counter % 10000 == 0:
-                log.info("%d pids inspected...", counter)
+                log.info("{} pids inspected...", counter)
 
         for prefix in cache:
             for pid_path in cache[prefix]:
                 log.info(
-                    "%d pids with prefix %s from path: %s",
+                    "{} pids with prefix {} from path: {}",
                     cache[prefix][pid_path], prefix, pid_path
                 )
-        log.info("Total PIDs found: %s", counter)
+        log.info("Total PIDs found: {}", counter)
 
 
 @celery_app.task(bind=True)
@@ -1554,7 +1560,7 @@ def list_resources(self, batch_path, order_path, myjson):
                     myjson[param_key]['orders'].append(n)
 
                 ret = ext_api.post(myjson, backdoor=backdoor)
-                log.info('CDI IM CALL = %s', ret)
+                log.info('CDI IM CALL = {}', ret)
 
                 return "COMPLETED"
         except BaseException as e:

@@ -74,7 +74,9 @@ class Publish(EudatEndpoint):
         if not r.icommands.exists(path):
             return (
                 self.send_errors(
-                    errors=[{'path': "'%s': not existing or no permissions" % path}],
+                    errors=[
+                        {'path': "'{}': not existing or no permissions".format(path)}
+                    ],
                     code=hcodes.HTTP_BAD_NOTFOUND,
                 ),
                 None,
@@ -149,7 +151,7 @@ class Publish(EudatEndpoint):
         from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER
         from b2stage.apis.commons import PUBLIC_ENDPOINT
 
-        return '%s%s%s' % (CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT, path)
+        return '{}{}{}'.format(CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT, path)
 
     @decorate.catch_error()
     @authentication.required()
@@ -161,7 +163,7 @@ class Publish(EudatEndpoint):
 
         icom = handler.icommands
         user = icom.get_current_user()
-        log.info("user '%s' requested to check '%s'", user, path)
+        log.info("user '{}' requested to check '{}'", user, path)
 
         if icom.is_collection(path):
             return self.send_errors(
@@ -185,7 +187,7 @@ class Publish(EudatEndpoint):
 
         icom = handler.icommands
         user = icom.get_current_user()
-        log.info("user '%s' requested to publish '%s'", user, path)
+        log.info("user '{}' requested to publish '{}'", user, path)
 
         if icom.is_collection(path):
             return self.send_errors(
@@ -211,7 +213,7 @@ class Publish(EudatEndpoint):
 
         icom = handler.icommands
         user = icom.get_current_user()
-        log.info("user '%s' requested to UNpublish '%s'", user, path)
+        log.info("user '{}' requested to UNpublish '{}'", user, path)
 
         if icom.is_collection(path):
             return self.send_errors(

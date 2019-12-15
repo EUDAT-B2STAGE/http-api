@@ -234,9 +234,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             if force:
                 ipath = path
             else:
-                raise IrodsException("Failed to create %s" % path)
+                raise IrodsException("Failed to create {}".format(path))
         else:
-            log.info("Created irods collection: %s", ipath)
+            log.info("Created irods collection: {}", ipath)
 
         # NOTE: question: should this status be No response?
         status = hcodes.HTTP_OK_BASIC
@@ -327,7 +327,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             if isinstance(content, dict) and key_file in content:
                 original_filename = content[key_file]
                 abs_file = self.absolute_upload_file(original_filename, r.username)
-                log.info("File is '%s'", abs_file)
+                log.info("File is '{}'", abs_file)
 
                 ############################
                 # Move file inside irods
@@ -344,11 +344,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 try:
                     # Handling (iRODS) path
                     ipath = self.complete_path(path, filename)
-                    log.verbose("Save into: %s", ipath)
+                    log.verbose("Save into: {}", ipath)
                     iout = icom.save(
                         abs_file, destination=ipath, force=force, resource=resource
                     )
-                    log.info("irods call %s", iout)
+                    log.info("irods call {}", iout)
                 finally:
                     # Transaction rollback: remove local cache in any case
                     log.debug("Removing cache object")
@@ -365,7 +365,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 iout = icom.write_in_streaming(
                     destination=ipath, force=force, resource=resource
                 )
-                log.info("irods call %s", iout)
+                log.info("irods call {}", iout)
                 response = self.force_response(
                     {'filename': ipath}, code=hcodes.HTTP_OK_BASIC
                 )
@@ -517,7 +517,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                         home + self._path_separator + obj['name'],
                         recursive=obj['object_type'] == 'collection',
                     )
-                    log.debug("Removed %s", obj['name'])
+                    log.debug("Removed {}", obj['name'])
                 return "Cleaned"
 
         # TODO: only if it has a PID?
@@ -541,7 +541,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         #         # nb: recursive option is necessary to remove a collection
         #         is_recursive = True
         #     else:
-        #         log.info("list:  %i", len(icom.list(path=location)))
+        #         log.info("list: {}", len(icom.list(path=location)))
         #         return self.send_errors(
         #             'Directory is not empty',
         #             code=hcodes.HTTP_BAD_REQUEST)
@@ -556,5 +556,5 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         #             code=hcodes.HTTP_BAD_NOTFOUND)
 
         # icom.remove(location, recursive=is_recursive, resource=resource)
-        # log.info("Removed %s", location)
+        # log.info("Removed {}", location)
         # return {'removed': location}

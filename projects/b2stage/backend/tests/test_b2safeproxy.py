@@ -41,7 +41,7 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
     def test_01_b2safe_login(self):
 
         endpoint = (self._auth_uri + self._main_endpoint)
-        log.info('*** Testing auth b2safe on %s', endpoint)
+        log.info('*** Testing auth b2safe on {}', endpoint)
         r = self.app.post(
             endpoint,
             data=dict(
@@ -57,7 +57,7 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
 
         # verify that token is valid
         r = self.app.get(
-            endpoint, headers={'Authorization': 'Bearer %s' % token})
+            endpoint, headers={'Authorization': 'Bearer {}'.format(token)})
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         self.assertEqual('validated', self.get_content(r))
 
@@ -80,7 +80,7 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
         # verify random token
         wrong_token = token.lower().replace('e', 'Z').replace('j', 'i')
         r = self.app.get(
-            endpoint, headers={'Authorization': 'Bearer %s' % wrong_token})
+            endpoint, headers={'Authorization': 'Bearer {}'.format(wrong_token)})
         self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_UNAUTHORIZED)
 
         # verify that normal token from normal login is invalid

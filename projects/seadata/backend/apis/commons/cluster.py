@@ -128,8 +128,8 @@ class ClusterContainerEndpoint(EndpointResource):
         if filename is None:
             filename = 'input'
         else:
-            filename = filename.replace('%s%s' % (sep, extension), '')
-        return "%s%s%s" % (filename, sep, extension)
+            filename = filename.replace('{}{}'.format(sep, extension), '')
+        return "{}{}{}".format(filename, sep, extension)
 
     def get_irods_path(self, irods_client, mypath, suffix=None):
         '''
@@ -202,12 +202,12 @@ class ClusterContainerEndpoint(EndpointResource):
         )
 
         if qc_label is None:
-            return '%s_%s' % (batch_id, qc_name)
+            return '{}_{}'.format(batch_id, qc_name)
 
-        return '%s_%s_%s' % (batch_id, qc_label, qc_name)
+        return '{}_{}_{}'.format(batch_id, qc_label, qc_name)
 
     @staticmethod
     def get_container_image(qc_name, prefix=None):
         if prefix is None:
             prefix = DEFAULT_IMAGE_PREFIX
-        return '%s/%s' % (prefix, qc_name)
+        return '{}/{}'.format(prefix, qc_name)

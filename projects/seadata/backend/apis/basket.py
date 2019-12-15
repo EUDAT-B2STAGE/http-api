@@ -47,7 +47,7 @@ def get_order_zip_file_name(order_id, restricted=False, index=None):
 
     index = '' if index is None else index
     label = "restricted" if restricted else "unrestricted"
-    zip_file_name = 'order_%s_%s%s.zip' % (order_id, label, index)
+    zip_file_name = 'order_{}_{}{}.zip'.format(order_id, label, index)
 
     return zip_file_name
 
@@ -79,12 +79,12 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         elif ftype[0] == "1":
             restricted = True
         else:
-            log.warning("Unexpected flag in ftype %s", ftype)
+            log.warning("Unexpected flag in ftype {}", ftype)
             return None
         try:
             index = int(ftype[1:])
         except ValueError:
-            log.warning("Unable to extract numeric index from ftype %s", ftype)
+            log.warning("Unable to extract numeric index from ftype {}", ftype)
 
         if index == 0:
             index = None
@@ -94,50 +94,50 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
     def get(self, order_id, ftype, code):
         """ downloading (not authenticated) """
-        log.info("Order request: %s (code '%s')", order_id, code)
+        log.info("Order request: {} (code '{}')", order_id, code)
         json = {'order_id': order_id, 'code': code}
         msg = prepare_message(self, json=json, user='anonymous', log_string='start')
         log_into_queue(self, msg)
 
-        log.info("DOWNLOAD DEBUG 1: %s (code '%s')", order_id, code)
+        log.info("DOWNLOAD DEBUG 1: {} (code '{}')", order_id, code)
 
         ##################
         # imain = self.get_service_instance(service_name='irods')
         try:
             imain = self.get_main_irods_connection()
-            log.info("DOWNLOAD DEBUG 2: %s (code '%s')", order_id, code)
+            log.info("DOWNLOAD DEBUG 2: {} (code '{}')", order_id, code)
             order_path = self.get_irods_order_path(imain, order_id)
-            log.info("DOWNLOAD DEBUG 3: %s (code '%s') - %s", order_id, code, order_path)
+            log.info("DOWNLOAD DEBUG 3: {} (code '{}') - {}", order_id, code, order_path)
 
             zip_file_name = self.get_filename_from_type(order_id, ftype)
 
             if zip_file_name is None:
-                return self.send_errors("Invalid file type %s" % ftype)
+                return self.send_errors("Invalid file type {}".format(ftype))
 
             zip_ipath = path.join(order_path, zip_file_name, return_str=True)
 
-            error = "Order '%s' not found (or no permissions)" % order_id
+            error = "Order '{}' not found (or no permissions)".format(order_id)
 
-            log.debug("Checking zip irods path: %s", zip_ipath)
-            log.info("DOWNLOAD DEBUG 4: %s (code '%s') - %s", order_id, code, zip_ipath)
+            log.debug("Checking zip irods path: {}", zip_ipath)
+            log.info("DOWNLOAD DEBUG 4: {} (code '{}') - {}", order_id, code, zip_ipath)
             if not imain.is_dataobject(zip_ipath):
-                log.error("File not found %s", zip_ipath)
+                log.error("File not found {}", zip_ipath)
                 return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
 
-            log.info("DOWNLOAD DEBUG 5: %s (code '%s')", order_id, code)
+            log.info("DOWNLOAD DEBUG 5: {} (code '{}')", order_id, code)
 
             # TOFIX: we should use a database or cache to save this,
             # not irods metadata (known for low performances)
             metadata, _ = imain.get_metadata(zip_ipath)
-            log.info("DOWNLOAD DEBUG 6: %s (code '%s')", order_id, code)
+            log.info("DOWNLOAD DEBUG 6: {} (code '{}')", order_id, code)
             iticket_code = metadata.get('iticket_code')
-            log.info("DOWNLOAD DEBUG 7: %s (code '%s')", order_id, code)
+            log.info("DOWNLOAD DEBUG 7: {} (code '{}')", order_id, code)
 
             encoded_code = urllib.parse.quote_plus(code)
-            log.info("DOWNLOAD DEBUG 8: %s (code '%s')", order_id, code)
+            log.info("DOWNLOAD DEBUG 8: {} (code '{}')", order_id, code)
 
             if iticket_code != encoded_code:
-                log.error("iticket code does not match %s", zip_ipath)
+                log.error("iticket code does not match {}", zip_ipath)
                 return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
 
             # NOTE: very important!
@@ -149,14 +149,14 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 password='null',
                 authscheme='credentials',
             )
-            log.info("DOWNLOAD DEBUG 9: %s (code '%s')", order_id, code)
+            log.info("DOWNLOAD DEBUG 9: {} (code '{}')", order_id, code)
             # obj = self.init_endpoint()
             # icom = obj.icommands
             icom.ticket_supply(code)
 
-            log.info("DOWNLOAD DEBUG 10: %s (code '%s')", order_id, code)
+            log.info("DOWNLOAD DEBUG 10: {} (code '{}')", order_id, code)
             if not icom.test_ticket(zip_ipath):
-                log.error("Invalid iticket code %s", zip_ipath)
+                log.error("Invalid iticket code {}", zip_ipath)
                 return self.send_errors(
                     {order_id: "Invalid code"}, code=hcodes.HTTP_BAD_NOTFOUND
                 )
@@ -174,11 +174,11 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # return self.force_response(response)
             headers = {
                 'Content-Transfer-Encoding': 'binary',
-                'Content-Disposition': "attachment; filename=%s" % zip_file_name,
+                'Content-Disposition': "attachment; filename={}".format(zip_file_name),
             }
             msg = prepare_message(self, json=json, log_string='end', status='sent')
             log_into_queue(self, msg)
-            log.info("DOWNLOAD DEBUG 11: %s (code '%s')", order_id, code)
+            log.info("DOWNLOAD DEBUG 11: {} (code '{}')", order_id, code)
             return icom.stream_ticket(zip_ipath, headers=headers)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
@@ -248,9 +248,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         try:
             imain = self.get_main_irods_connection()
             order_path = self.get_irods_order_path(imain, order_id)
-            log.debug("Order path: %s", order_path)
+            log.debug("Order path: {}", order_path)
             if not imain.is_collection(order_path):
-                error = "Order '%s': not existing" % order_id
+                error = "Order '{}': not existing".format(order_id)
                 return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
             ##################
@@ -303,14 +303,14 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         main_key = 'parameters'
         params = json_input.get(main_key, {})
         if len(params) < 1:
-            error = "'%s' missing" % main_key
+            error = "'{}' missing".format(main_key)
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
 
         ##################
         key = 'order_number'
         order_id = params.get(key)
         if order_id is None:
-            error = "Order ID '%s': missing" % key
+            error = "Order ID '{}': missing".format(key)
             return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
         else:
             order_id = str(order_id)
@@ -318,11 +318,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # ##################
         # Get filename from json input. But it has to follow a
         # specific pattern, so we ignore client input if it does not...
-        filename = "order_%s_unrestricted" % order_id
+        filename = "order_{}_unrestricted".format(order_id)
         key = 'file_name'
         if key in params and not params[key] == filename:
             log.warning(
-                'Client provided wrong filename (%s), will use: %s',
+                'Client provided wrong filename ({}), will use: {}',
                 params[key],
                 filename,
             )
@@ -335,12 +335,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # Create the path
-        log.info("Order request: %s", order_id)
+        log.info("Order request: {}", order_id)
         # imain = self.get_service_instance(service_name='irods')
         try:
             imain = self.get_main_irods_connection()
             order_path = self.get_irods_order_path(imain, order_id)
-            log.debug("Order path: %s", order_path)
+            log.debug("Order path: {}", order_path)
             if not imain.is_collection(order_path):
                 obj = self.init_endpoint()
                 # Create the path and set permissions
@@ -365,7 +365,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 task = CeleryExt.unrestricted_order.apply_async(
                     args=[order_id, order_path, zip_file_name, json_input]
                 )
-                log.info("Async job: %s", task.id)
+                log.info("Async job: {}", task.id)
                 return self.return_async_id(task.id)
 
             # ################
@@ -409,7 +409,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             obj = imain.ticket(path)
             ticket = obj.ticket
         encoded = urllib.parse.quote_plus(ticket)
-        log.warning("Ticket: %s -> %s", ticket, encoded)
+        log.warning("Ticket: {} -> {}", ticket, encoded)
         return encoded
 
     def get_download(
@@ -422,7 +422,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return None
 
         zip_ipath = path.join(order_path, zip_file_name, return_str=True)
-        log.debug("Zip irods path: %s", zip_ipath)
+        log.debug("Zip irods path: {}", zip_ipath)
 
         code = self.no_slash_ticket(imain, zip_ipath)
         ftype = ""
@@ -435,7 +435,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         else:
             ftype += str(index)
 
-        route = '%s%s/%s/%s/download/%s/c/%s' % (
+        route = '{}{}/{}/{}/download/{}/c/{}'.format(
             CURRENT_HTTPAPI_SERVER,
             API_URL,
             ORDERS_ENDPOINT,
@@ -475,7 +475,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # return "Hello"
 
         ##################
-        log.info("Order request: %s", order_id)
+        log.info("Order request: {}", order_id)
         msg = prepare_message(self, json={'order_id': order_id}, log_string='start')
         log_into_queue(self, msg)
 
@@ -484,8 +484,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             imain = self.get_main_irods_connection()
             try:
                 order_path = self.get_irods_order_path(imain, order_id)
-                log.debug("Order path: %s", order_path)
-            except:
+                log.debug("Order path: {}", order_path)
+            except BaseException:
                 return self.send_errors(
                     "Order not found",
                     code=hcodes.HTTP_BAD_NOTFOUND
@@ -564,7 +564,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                         response.append(info)
 
             if len(response) == 0:
-                error = "Order '%s' not found (or no permissions)" % order_id
+                error = "Order '{}' not found (or no permissions)".format(order_id)
                 return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
 
             msg = prepare_message(self, log_string='end', status='enabled')
@@ -593,13 +593,13 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             imain = self.get_main_irods_connection()
             order_path = self.get_irods_order_path(imain)
             local_order_path = str(path.join(MOUNTPOINT, ORDERS_DIR))
-            log.debug("Order collection: %s", order_path)
-            log.debug("Order path: %s", local_order_path)
+            log.debug("Order collection: {}", order_path)
+            log.debug("Order path: {}", local_order_path)
 
             task = CeleryExt.delete_orders.apply_async(
                 args=[order_path, local_order_path, json_input]
             )
-            log.info("Async job: %s", task.id)
+            log.info("Async job: {}", task.id)
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(

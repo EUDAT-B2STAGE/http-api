@@ -62,7 +62,7 @@ def home(relative_path=None):
         return Path.home()
     else:
         if relative_path.startswith(os.sep):
-            log.exit("Requested abspath '%s' in relative context", relative_path)
+            log.exit("Requested abspath '{}' in relative context", relative_path)
         return build('~' + os.sep + relative_path).expanduser()
 
 
@@ -79,7 +79,7 @@ def create(pathobj, directory=False, force=False, parents=False):
             if force:
                 pass
             else:
-                log.exit("Cannot overwrite existing: %s", pathobj)
+                log.exit("Cannot overwrite existing: {}", pathobj)
     else:
         raise NotImplementedError("Yet to do!")
 
@@ -110,7 +110,7 @@ def dir_name(my_path):
 
 
 def append_compress_extension(base_name):
-    return '%s.%s' % (base_name, COMPRESSION_FORMAT)
+    return '{}.{}'.format(base_name, COMPRESSION_FORMAT)
 
 
 def compress(dir_path, zip_file_path):

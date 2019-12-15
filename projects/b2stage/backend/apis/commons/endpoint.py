@@ -48,7 +48,7 @@ class EudatEndpoint(B2accessUtilities):
         # internal_user = user internal to the API
         # external_user = user from oauth (B2ACCESS)
         internal_user = self.get_current_user()
-        log.debug("Token user: %s", internal_user)
+        log.debug("Token user: {}", internal_user)
 
         #################################
         # decide which type of auth we are dealing with
@@ -75,9 +75,9 @@ class EudatEndpoint(B2accessUtilities):
 
             home = icom.get_user_home()
             if icom.is_collection(home):
-                log.debug("%s verified", home)
+                log.debug("{} verified", home)
             else:
-                log.warning("User home not found %s", home)
+                log.warning("User home not found {}", home)
 
         else:
             log.error("Unknown credentials provided")
@@ -133,14 +133,14 @@ class EudatEndpoint(B2accessUtilities):
                 raise RestApiException('Failed to refresh b2access token')
 
         except BaseException as e:
-            raise RestApiException("Unexpected error: %s (%s)" % (type(e), str(e)))
+            raise RestApiException("Unexpected error: {} ({})".format(type(e), str(e)))
 
         return icom, external_user, refreshed
 
     def irodsuser_from_b2safe(self, user):
 
         if user.session is not None and len(user.session) > 0:
-            log.debug("Validated B2SAFE user: %s", user.uuid)
+            log.debug("Validated B2SAFE user: {}", user.uuid)
         else:
             msg = "Current credentials not registered inside B2SAFE"
             raise RestApiException(msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
@@ -187,11 +187,11 @@ class EudatEndpoint(B2accessUtilities):
         if api_path is None:
             api_path = ''
         else:
-            api_path = "/%s" % api_path.lstrip('/')
+            api_path = "/{}".format(api_path.lstrip('/'))
 
         # print("TEST", CURRENT_HTTPAPI_SERVER)
 
-        return '%s://%s%s/%s' % (
+        return '{}://{}{}/{}'.format(
             HTTP_PROTOCOL,
             CURRENT_HTTPAPI_SERVER,
             api_path,
@@ -199,7 +199,7 @@ class EudatEndpoint(B2accessUtilities):
         )
 
     def b2safe_location(self, ipath):
-        return '%s://%s/%s' % (
+        return '{}://{}/{}'.format(
             IRODS_PROTOCOL,
             CURRENT_B2SAFE_SERVER,
             ipath.strip(self._path_separator),
@@ -300,7 +300,7 @@ class EudatEndpoint(B2accessUtilities):
 
         ############################
         log.verbose(
-            "Parsed: file(%s), path(%s), res(%s), force(%s)",
+            "Parsed: file({}), path({}), res({}), force({})",
             filename,
             path,
             resource,
@@ -395,7 +395,7 @@ class EudatEndpoint(B2accessUtilities):
             # if a path that does not exist
             if len(data) < 1:
                 return self.send_errors(
-                    "Path does not exists or you don't have privileges: %s" % path,
+                    "Path does not exists or you don't have privileges: {}".format(path),
                     code=hcodes.HTTP_BAD_NOTFOUND,
                 )
 

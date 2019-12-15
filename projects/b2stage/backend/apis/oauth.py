@@ -59,7 +59,7 @@ class OauthLogin(EudatEndpoint):
                 ':443', ''
             )
 
-        log.info("Ask redirection to: %s", authorized_uri)
+        log.info("Ask redirection to: {}", authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
         return self.force_response(response)
@@ -112,17 +112,15 @@ class Authorize(EudatEndpoint):
             )
 
         b2access_email = b2access_user.data.get('email')
-        log.info("B2ACCESS email = %s", b2access_email)
+        log.info("B2ACCESS email = {}", b2access_email)
 
         imain = self.get_main_irods_connection()
 
         irods_user = self.get_irods_user_from_b2access(imain, b2access_email)
 
         if irods_user is None:
-            err = (
-                "B2ACCESS credentials (%s) do not match any user in B2SAFE"
-                % b2access_email
-            )
+            err = "B2ACCESS credentials ({}) do not match any user in B2SAFE".format(
+                b2access_email)
             log.error(err)
             return self.send_errors(err)
 
