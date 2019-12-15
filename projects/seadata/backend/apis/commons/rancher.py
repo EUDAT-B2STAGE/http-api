@@ -111,7 +111,7 @@ class Rancher(object):
             onepage = self._client.list_container(
                 limit=PERPAGE_LIMIT, marker='m%s' % marker
             )
-            log.very_verbose('Containers list marker: %s', marker)
+            log.verbose('Containers list marker: %s', marker)
             pagination = onepage.get('pagination', {})
             # print(pagination)
             is_all = not pagination.get('partial')
