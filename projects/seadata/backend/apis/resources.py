@@ -309,7 +309,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 removed = True
                 break
             else:
-                log.very_verbose("%s still exists", container_name)
+                log.verbose("%s still exists", container_name)
 
         if not removed:
             log.warning("%s still in removal status", container_name)

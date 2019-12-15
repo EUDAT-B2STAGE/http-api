@@ -1470,7 +1470,7 @@ def cache_batch_pids(self, irods_path):
 
                     r.set(pid, ifile)
                     r.set(ifile, pid)
-                    log.very_verbose(
+                    log.verbose(
                         '%d: file %s cached with PID %s',
                         stats['total'], ifile, pid
                     )
