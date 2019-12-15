@@ -159,7 +159,7 @@ class B2accessUtilities(EndpointResource):
         auth_hash = b64encode(str.encode("{}:{}".format(client_id, client_secret))).decode(
             "ascii"
         )
-        headers = {'Authorization': 'Basic {}'.format(auth_hash})
+        headers = {'Authorization': 'Basic {}'.format(auth_hash)}
 
         resp = requests.post(
             b2access.access_token_url, data=refresh_data, headers=headers
