@@ -124,8 +124,7 @@ services:
 
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
 
-      # Temporary fix, remove me:
-      - ${SUBMODULE_DIR}/utils/utilities:${PYTHON_PATH}/utilities
+      - ${VANILLA_DIR}/data/logs:/logs
 
 
     networks:
@@ -139,6 +138,7 @@ services:
       VANILLA_PACKAGE: ${COMPOSE_PROJECT_NAME}
       EXTENDED_PACKAGE: ${EXTENDED_PROJECT}
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
+      CURRENT_GID: ${CURRENT_GID}
 
       CELERY_ENABLE: 1
 
