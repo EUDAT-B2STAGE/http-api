@@ -77,7 +77,6 @@ def prepare_message(instance, user=None, isjson=False, **params):
         user = 'import_manager'  # TODO: True? Not sure!
     logmsg['user'] = user
 
-    # log.pp(logmsg)
     return logmsg
 
 
@@ -151,7 +150,6 @@ def log_into_queue(instance, dictionary_message):
 #     # log.info("Request: read a message")
 
 #     # self.get_input()
-#     # # log.pp(self._args, prefix_line='Parsed args')
 #     # current_queue = self._args.get('queue')
 
 #     # # connect

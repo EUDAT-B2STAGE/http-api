@@ -88,7 +88,6 @@ def file_exists_and_nonzero(pathobj, accept_link=False):
 
     if pathobj.exists():
         iostats = pathobj.stat()
-        # log.pp(iostats)
         return not iostats.st_size == 0
     else:
         if accept_link:
