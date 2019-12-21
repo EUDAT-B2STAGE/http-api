@@ -174,7 +174,6 @@ def seadata_pid(self, pid):
     else:
         log.verbose("PID %s verified", pid)
         response['verified'] = True
-        # log.pp(b2handle_output)
 
     #################
     ipath = self.parse_pid_dataobject_path(b2handle_output)

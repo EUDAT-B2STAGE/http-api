@@ -46,7 +46,6 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         ################
         # 0. check parameters
         json_input = self.get_input()
-        # log.pp(self._args, prefix_line='Parsed args')
 
         params = json_input.get('parameters', {})
         if len(params) < 1:

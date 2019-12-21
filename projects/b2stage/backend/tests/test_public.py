@@ -29,7 +29,6 @@ class TestPublic(RestTestsAuthenticatedBase):
         # r = self.app.get(endpoint)
         # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         # output = self.get_content(r)
-        # # log.pp(output)
         # self.assertEqual(output, 'Hello world!')
 
     # def tearDown(self):

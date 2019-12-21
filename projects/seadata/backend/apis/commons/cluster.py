@@ -82,7 +82,6 @@ class ClusterContainerEndpoint(EndpointResource):
             from seadata.apis.commons.rancher import Rancher
 
             params = self.load_credentials()
-            # log.pp(params)
             self._handle = Rancher(**params)
         return self._handle
 

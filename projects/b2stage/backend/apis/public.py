@@ -41,7 +41,6 @@ class Public(B2HandleEndpoint):
 
         ####################
         # self.get_input()
-        # log.pp(self._args, prefix_line='Parsed args')
 
         ####################
         if location is None:
@@ -104,7 +103,6 @@ class Public(B2HandleEndpoint):
         # metadata, bad_response = self.get_pid_metadata(pid)
         ####################
         # tmp = icom.list(location)
-        # log.pp(tmp)
 
         # list content
         jout = self.list_objects(icom, path, is_collection, location, public=True)
@@ -118,7 +116,6 @@ class Public(B2HandleEndpoint):
             info = None
             log.error("Unknown error: %s(%s)" % (e.__class__.__name__, e))
         else:
-            # log.pp(info)
             for key, value in info.get('metadata', {}).items():
                 if value is None:
                     continue
