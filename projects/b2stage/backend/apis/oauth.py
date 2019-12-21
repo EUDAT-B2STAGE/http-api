@@ -176,7 +176,6 @@ class B2accesProxyEndpoint(EudatEndpoint):
         ##########################
         # get the response
         r = self.init_endpoint()  # only_check_proxy=True)
-        log.pp(r)
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
 

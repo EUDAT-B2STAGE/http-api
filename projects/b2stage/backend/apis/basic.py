@@ -426,7 +426,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 ),
             }
 
-        # log.pp(content)
         if pid_found:
             return self.force_response(content, errors=errors, code=status)
         else:
@@ -501,7 +500,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # get the base objects
         r = self.init_endpoint()
-        # log.pp(r)
         if r.errors is not None:
             return self.send_errors(errors=r.errors)
         icom = r.icommands

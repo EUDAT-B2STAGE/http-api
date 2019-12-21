@@ -151,8 +151,6 @@ class Rancher(object):
                 cid = labels.get('io.rancher.container.uuid', None)
             if cid is None:
                 log.warning("Container %s launching", name)
-                log.pp(info)
-                break
                 cid = name
 
             containers[cid] = {
@@ -274,7 +272,6 @@ class Rancher(object):
             # entryPoint=['/bin/sh'],
             # command=['sleep', '1234567890'],
         }
-        # log.pp(params)
 
         ############
         if extras is not None and isinstance(extras, dict):
@@ -290,8 +287,7 @@ class Rancher(object):
         try:
             container = self._client.create_container(**params)
         except ApiError as e:
-            log.error("Rancher fail:")
-            log.pp(e.__dict__)
+            log.error("Rancher fail: {}", e.__dict__)
             return e.__dict__
         else:
 
@@ -371,7 +367,6 @@ class Rancher(object):
 
         # ####################################
         # # should I clean a little bit?
-        # log.pp(containers)
         # pagination = containers.get('pagination', {})
         # # print(pagination)
         # is_all = not pagination.get('partial')
