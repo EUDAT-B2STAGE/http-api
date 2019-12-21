@@ -91,7 +91,6 @@ else:
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
             errors = self.get_content(r, return_errors=True)
-            # log.pp(errors)
             assert 'not existing' in errors.pop().get('path')
 
             # Some other user directory: does not work
@@ -100,7 +99,6 @@ else:
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
             errors = self.get_content(r, return_errors=True)
-            # log.pp(errors)
             assert 'no permissions' in errors.pop().get('path')
 
         def test_02_PUT_publish_dataobject(self):
@@ -196,7 +194,6 @@ else:
                 headers=self.__class__.auth_header_anonymous)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
             errors = self.get_content(r, return_errors=True)
-            # log.pp(errors)
             assert "you don't have privileges" in errors.pop()
 
             # Random file: cannot unpublish

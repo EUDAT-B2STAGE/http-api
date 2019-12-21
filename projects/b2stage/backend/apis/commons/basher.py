@@ -116,7 +116,6 @@ class BashCommands(object):
                         error_code=e.retcode,
                     )
                 else:
-                    # log.pp(e)
                     raise e
 
             else:

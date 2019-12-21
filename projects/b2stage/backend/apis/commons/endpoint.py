@@ -377,7 +377,7 @@ class EudatEndpoint(B2accessUtilities):
         # FILE (or not existing)
         else:
             collection = icom.get_collection_from_path(path)
-            current_filename = path[len(collection) + 1 :]
+            current_filename = path[len(collection) + 1:]
 
             from contextlib import suppress
 
@@ -387,7 +387,6 @@ class EudatEndpoint(B2accessUtilities):
                 for filename, metadata in filelist.items():
                     if filename == current_filename:
                         data[filename] = metadata
-                # log.pp(data)
 
             # # Print file details/sys metadata if it's a specific file
             # data = icom.meta_sys_list(path)

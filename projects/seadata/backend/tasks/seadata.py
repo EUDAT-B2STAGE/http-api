@@ -786,7 +786,6 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 if len(errors) > 0:
                     myjson['errors'] = errors
                 myjson[reqkey] = self.request.id
-                # log.pp(myjson)
                 ret = ext_api.post(myjson, backdoor=backdoor)
                 log.info('CDI IM CALL = {}', ret)
 
