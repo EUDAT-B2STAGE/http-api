@@ -8,10 +8,10 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_RABBIT}
     ports:
-      - ${CELERY_BROKER_PORT}:${CELERY_BROKER_PORT}
+      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
 
   mongodb:
     environment:
       ACTIVATE: ${ACTIVATE_MONGODB}
     ports:
-      - ${CELERY_BACKEND_PORT}:${CELERY_BACKEND_PORT}
+      - ${MONGO_PORT}:${MONGO_PORT}

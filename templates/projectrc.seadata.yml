@@ -71,9 +71,9 @@ project_configuration:
       RABBIT_QUEUE: rabbitmq_queue
 
       # Based on where you deployed the --mode workers stack
-      CELERY_BROKER_HOST: your_rabbitmq_host
-      CELERY_BACKEND_HOST: your_mongodb_host
-      CELERY_BACKEND_PORT: your_mongodb_port__default_is_27017
+      RABBITMQ_HOST: your_rabbitmq_host
+      MONGO_HOST: your_mongodb_host
+      MONGO_PORT: your_mongodb_port__default_is_27017
 
       # Based on where you deployed the Redis PID cache
       REDIS_HOST: your_pid_queue_host

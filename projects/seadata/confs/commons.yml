@@ -61,4 +61,4 @@ services:
 
   mongodb:
     ports:
-      - ${CELERY_BACKEND_PORT}:${CELERY_BACKEND_PORT}
+      - ${MONGO_PORT}:${MONGO_PORT}
