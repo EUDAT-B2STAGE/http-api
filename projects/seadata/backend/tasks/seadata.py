@@ -83,6 +83,8 @@ def notify_error(error, payload, backdoor, task,
                  extra=None, subject=None, edmo_code=None):
 
     error_message = "Error {}: {}".format(error[0], error[1])
+    if subject is not None:
+        error_message = "{}. [{}]".format(error_message, subject)
     log.error(error_message)
     if extra:
         log.error(str(extra))
