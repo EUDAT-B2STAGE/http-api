@@ -11,8 +11,8 @@ services:
     volumes:
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
 
-  postgres:
-    restart: always
+  # postgres:
+  #   restart: always
 
   mongodb:
     environment:
