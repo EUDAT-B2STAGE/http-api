@@ -6,7 +6,7 @@ volumes:
 
 services:
 
-  # backend:
+  backend:
   #   environment:
   #     ##################
   #     # Base info
