@@ -19,7 +19,7 @@ class Public(B2HandleEndpoint):
     labels = ['eudat', 'pids', 'public']
     depends_on = ['IRODS_ANONYMOUS', 'ENABLE_PUBLIC_ENDPOINT']
     GET = {
-        '/public/<path:location>': {
+        '/public/<location>': {
             'summary': 'Let non-authenticated users get data about a public data-object',
             'custom': {},
             'parameters': [
