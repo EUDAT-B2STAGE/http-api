@@ -2,6 +2,10 @@ version: '3'
 
 services:
 
+  proxy:
+    environment:
+      ACTIVATE: 0
+
   backend:
     environment:
       ACTIVATE: 0
