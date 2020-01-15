@@ -38,7 +38,9 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 imain.create_collection_inheritable(order_path, obj.username)
 
             task = CeleryExt.download_restricted_order.apply_async(
-                args=[order_id, order_path, json_input]
+                args=[order_id, order_path, json_input],
+                queue='restricted',
+                routing_key='restricted',
             )
             log.info("Async job: {}", task.id)
             return self.return_async_id(task.id)
