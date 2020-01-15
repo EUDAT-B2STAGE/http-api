@@ -63,7 +63,7 @@ services:
       IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
 
   ingestion_celery:
-    restart: on-failure:5
+    restart: on-failure:15
     build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
@@ -88,6 +88,7 @@ services:
 
       - ${VANILLA_DIR}/data/logs:/logs
 
+
     networks:
       db_net:
       worker_net:
@@ -109,6 +110,7 @@ services:
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
 
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
@@ -122,7 +124,7 @@ services:
       ACTIVATE: 1
       MAIN_LOGIN_ENABLE: 0
       DEBUG_ENDPOINTS: 1
-      APP_MODE: production
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       DOMAIN: ${PROJECT_DOMAIN}
       SEADATA_PROJECT: ${SEADATA_PROJECT}
@@ -178,6 +180,7 @@ services:
 
       - ${VANILLA_DIR}/data/logs:/logs
 
+
     networks:
       db_net:
       worker_net:
@@ -199,6 +202,7 @@ services:
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+      RABBITMQ_SSL_ENABLED: ${RABBITMQ_SSL_ENABLED}
 
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
@@ -212,7 +216,7 @@ services:
       ACTIVATE: 1
       MAIN_LOGIN_ENABLE: 0
       DEBUG_ENDPOINTS: 1
-      APP_MODE: production
+      APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       DOMAIN: ${PROJECT_DOMAIN}
       SEADATA_PROJECT: ${SEADATA_PROJECT}
