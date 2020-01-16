@@ -159,7 +159,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
                 imain.create_collection_inheritable(batch_path, obj.username)
             else:
-                log.warning("Irods batch collection already exists")
+                log.warning("Irods batch collection {} already exists", batch_path)
 
             # Create the folder on filesystem
             if not path.file_exists_and_nonzero(local_path):
