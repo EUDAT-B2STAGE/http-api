@@ -409,7 +409,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             obj = imain.ticket(path)
             ticket = obj.ticket
         encoded = urllib.parse.quote_plus(ticket)
-        log.warning("Ticket: {} -> {}", ticket, encoded)
+        log.info("Ticket: {} -> {}", ticket, encoded)
         return encoded
 
     def get_download(
