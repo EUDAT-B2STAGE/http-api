@@ -5,7 +5,7 @@
 To clone the working code:
 
 ```bash
-$ VERSION=1.1.1 \
+$ VERSION=1.1.2 \
     && git clone https://github.com/EUDAT-B2STAGE/http-api.git \
     && cd http-api \
     && git checkout $VERSION
