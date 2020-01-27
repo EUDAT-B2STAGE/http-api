@@ -38,15 +38,8 @@ services:
       - etcconf:/etc
       - irodshome:/home/${IRODS_USER}
       - irodsvar:/var/lib/${IRODS_USER}
-      # CERTIFICATES
-      - sharedcerts:/opt/certificates
       # adds GSI users in our irods instance
       - ${SUBMODULE_DIR}/build-templates/icat/extra_gsi_users.sh:/docker-entrypoint.d/gsi.sh
-      # B2ACCESS certificates
-      - ${SUBMODULE_DIR}/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
-      # EXTRA EUDAT scripts
-      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
-      # - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2safe.sh:/docker-entrypoint.d/b2safe.sh
 
     # # Open irods port to Outside world
     # ## CAREFULL: don't uncomment the two lines below if you don't know why

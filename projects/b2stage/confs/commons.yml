@@ -18,6 +18,12 @@ services:
     volumes:
       # Workaroud to make this works in extended mode
       - ${VANILLA_DIR}/projects/b2stage/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
+      # CERTIFICATES
+      - sharedcerts:/opt/certificates
+      # B2ACCESS certificates
+      - ${VANILLA_DIR}/projects/b2stage/builds/b2access_certificates:${B2ACCESS_CAS}
+      # EXTRA EUDAT scripts
+      - ${VANILLA_DIR}/projects/b2stage/builds/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
 
   postgres:
     environment:
