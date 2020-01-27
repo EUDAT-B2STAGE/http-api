@@ -53,20 +53,6 @@ services:
     # ports:
     #     - 1247:1247
 
-  restclient:
-    environment:
-      ACTIVATE: 0
-      APP_HOST: ${FLASK_HOST}
-      APP_PORT: :${FLASK_DEFAULT_PORT}
-      IRODS_GUEST_USER: ${IRODS_GUEST_USER}
-      # Fix for mac development
-      LINES: 28
-      COLUMNS: 160
-    networks:
-      app_net:
-    depends_on:
-      - backend
-
   swaggerui:
     environment:
       API_URL: http://localhost:8080/api/specs

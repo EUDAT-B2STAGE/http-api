@@ -24,11 +24,10 @@ iadmin mkuser $USER#$ZONE2 rodsuser
 and in another shell
 
 ```bash
-rapydo shell restclient
 
 USER=paolobeta
 PASS=thisisalongerpassword
-SERVER="$APP_HOST$APP_PORT"
+SERVER="localhost:8080"
 
 # http POST $SERVER/auth/b2safeproxy username=$USER password=$PASS
 
