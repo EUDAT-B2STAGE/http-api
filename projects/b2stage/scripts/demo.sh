@@ -1,6 +1,4 @@
 
-## COMMANDS FOR A CLI DEMO OF API (from the restclient) ##
-
 # check the status
 curl $APP_HOST$APP_PORT/api/status
 # or

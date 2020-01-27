@@ -27,24 +27,6 @@ $ rapydo start --mode development
 # drawback: when the server fails at reloading, it crashes
 ```
 
-
-And now you may access a client for the API, from another shell and test the server:
-
-```bash
-$ rapydo shell restclient
-```
-
-The client shell will give you further instructions on how to test the server. In case you want to log with the only existing admin user:
-
-- username: user@nomail.org
-- password: test
-
-NOTE: on the client image you have multiple tools installed for testing:
-- curl
-- httpie
-- http-prompt
-
-
 ## production mode
 
 Some important points before going further:

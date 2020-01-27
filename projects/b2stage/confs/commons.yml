@@ -81,10 +81,6 @@ services:
 
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
 
-  restclient:
-    environment:
-      IRODS_ZONE: ${IRODS_ZONE}
-
   proxy:
     environment:
       SMTP_ADMIN: ${SMTP_ADMIN}

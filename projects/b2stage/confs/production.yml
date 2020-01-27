@@ -43,26 +43,6 @@ services:
     #   - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
     #   - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
 
-  # if using self signed certificates
-  # and trying to test locally:
-  restclient:
-    environment:
-
-      # ACTIVATE: 1
-      ACTIVATE: 0 # change for debugging
-
-      APP_HOST: --verify /tmp/certs/real/fullchain1.pem https://${PROJECT_DOMAIN}
-      APP_PORT:
-      DOMAIN: ${PROJECT_DOMAIN}
-      PROXY_HOST: ${PROXY_HOST}
-      IRODS_GUEST_USER: ${IRODS_USER}
-    networks:
-      proxy_net:
-    depends_on:
-      - proxy
-    volumes:
-      - letsencrypt_certs:/tmp/certs
-
   ################
   icat:
     command: /docker-entrypoint.d/b2access.sh
