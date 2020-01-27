@@ -47,11 +47,6 @@ services:
   icat:
     command: /docker-entrypoint.d/b2access.sh
     # command: echo enabled b2access certificates
-    volumes:
-      # B2ACCESS certificates
-      - sharedcerts:/opt/certificates
-      - ${SUBMODULE_DIR}/build-templates/b2safe/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
-      - ${SUBMODULE_DIR}/build-templates/b2safe/b2access_certificates:${B2ACCESS_CAS}
     environment:
       ## Activate this container only if B2ACCESS will be used
       ## In python if B2ACCESS_SECRET is empty string -> False
