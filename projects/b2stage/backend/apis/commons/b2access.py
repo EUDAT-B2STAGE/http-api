@@ -36,6 +36,15 @@ class B2accessUtilities(EndpointResource):
 
         log.critical(self.auth)
 
+    def associate_object_to_attr(self, obj, key, value):
+        try:
+            setattr(obj, key, value)
+            self.auth.db.session.commit()
+        except BaseException as e:
+            log.error("DB error ({}), rolling back", e)
+            self.auth.db.session.rollback()
+        return
+
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
         return self.get_service_instance(
@@ -144,7 +153,7 @@ class B2accessUtilities(EndpointResource):
 
         # Convert into datetime object and save it inside db
         tok_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
-        auth.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
+        self.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
 
         return b2access_user, intuser, extuser
 
