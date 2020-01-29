@@ -26,18 +26,18 @@ class B2accessUtilities(EndpointResource):
 
     ext_auth = None
 
-    # def __init__(self):
+    def __init__(self):
 
-    #     if self.ext_auth is None:
-    #         from restapi.services.oauth2clients import ExternalLogins
-    #         from flask import current_app
-    #         self.ext_auth = ExternalLogins(current_app)
-    #         # custom_auth._oauth2 = ext_auth._available_services
-    #         log.critical("was none")
-    #     else:
-    #         log.critical("OK!")
+        # if self.ext_auth is None:
+        #     from restapi.services.oauth2clients import ExternalLogins
+        #     from flask import current_app
+        #     self.ext_auth = ExternalLogins(current_app)
+        #     # custom_auth._oauth2 = ext_auth._available_services
+        #     log.critical("was none")
+        # else:
+        #     log.critical("OK!")
 
-    #     super(EndpointResource, self).__init__()
+        super(EndpointResource, self).__init__()
 
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
