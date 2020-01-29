@@ -13,7 +13,7 @@ from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
 
 from restapi.rest.definition import EndpointResource
-from restapi.services.oauth2clients import decorate_http_request
+from b2stage.apis.commons.oauth2clients import ExternalLogins, decorate_http_request
 
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
@@ -30,12 +30,9 @@ class B2accessUtilities(EndpointResource):
 
         super(B2accessUtilities, self).__init__()
         if B2accessUtilities.ext_auth is None:
-            from restapi.services.oauth2clients import ExternalLogins
             from flask import current_app
             B2accessUtilities.ext_auth = ExternalLogins(current_app)
-            log.critical("was none")
-        else:
-            log.critical("OK!")
+            log.info("OAuth2 initialized")
 
         log.critical(self.auth)
 
