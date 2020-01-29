@@ -23,6 +23,23 @@ IRODS_CONNECTION_TTL = 43200
 
 
 class B2accessUtilities(EndpointResource):
+
+    ext_auth = None
+
+    def __init__(self):
+
+        if self.ext_auth is None:
+            self.ext_auth = True
+            log.critical("was none")
+        else:
+            log.critical("OK!")
+        # from restapi.services.oauth2clients import ExternalLogins
+
+        # ext_auth = ExternalLogins(self.app)
+        # custom_auth._oauth2 = ext_auth._available_services
+
+        super(EndpointResource, self).__init__()
+
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
         return self.get_service_instance(
