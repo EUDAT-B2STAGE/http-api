@@ -37,7 +37,7 @@ class B2accessUtilities(EndpointResource):
         # else:
         #     log.critical("OK!")
 
-        super(EndpointResource, self).__init__()
+        super(B2accessUtilities, self).__init__()
 
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
