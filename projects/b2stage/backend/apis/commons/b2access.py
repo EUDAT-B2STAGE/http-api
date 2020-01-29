@@ -28,10 +28,10 @@ class B2accessUtilities(EndpointResource):
 
     def __init__(self):
 
-        if self.ext_auth is None:
+        if B2accessUtilities.ext_auth is None:
             from restapi.services.oauth2clients import ExternalLogins
             from flask import current_app
-            self.ext_auth = ExternalLogins(current_app)
+            B2accessUtilities.ext_auth = ExternalLogins(current_app)
             # custom_auth._oauth2 = ext_auth._available_services
             log.critical("was none")
         else:
