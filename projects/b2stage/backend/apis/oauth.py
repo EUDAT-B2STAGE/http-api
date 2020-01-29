@@ -125,7 +125,7 @@ class Authorize(EudatEndpoint):
             return self.send_errors(err)
 
         # Update db to save the irods user related to this user account
-        auth.associate_object_to_attr(extuser, 'irodsuser', irods_user)
+        self.associate_object_to_attr(extuser, 'irodsuser', irods_user)
 
         user_home = imain.get_user_home(irods_user)
 
