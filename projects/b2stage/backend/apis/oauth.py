@@ -50,18 +50,18 @@ class OauthLogin(EudatEndpoint):
         auth = self.auth
         b2access = self.create_b2access_client(auth)
 
-        redirect_uri = url_for('authorize', _external=True)
+        authorized_uri = url_for('authorize', _external=True)
         if PRODUCTION:
             # What needs a fix:
             # http://awesome.docker:443/auth/authorize
             # curl -i -k https://awesome.docker/auth/askauth
-            redirect_uri = redirect_uri.replace('http:', 'https:').replace(
+            authorized_uri = authorized_uri.replace('http:', 'https:').replace(
                 ':443', ''
             )
 
-        log.info("Ask redirection to: {}", redirect_uri)
+        log.info("Ask redirection to: {}", authorized_uri)
 
-        response = b2access.authorize_redirect(redirect_uri)
+        response = b2access.authorize(callback=authorized_uri)
         return self.force_response(response)
 
 

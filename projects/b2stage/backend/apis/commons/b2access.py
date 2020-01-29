@@ -9,7 +9,7 @@ import requests
 from flask import session
 from base64 import b64encode
 from datetime import datetime as dt
-# from flask_oauthlib.client import OAuthResponse
+from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
 
 from restapi.rest.definition import EndpointResource
@@ -46,8 +46,6 @@ class B2accessUtilities(EndpointResource):
 
         try:
             resp = b2access.authorized_response()
-            # new:
-            # token = oauth.twitter.authorize_access_token()
         except json.decoder.JSONDecodeError as e:
             log.critical("B2ACCESS empty:\n{}\nCheck your app credentials", e)
             return (
@@ -84,12 +82,11 @@ class B2accessUtilities(EndpointResource):
         # Calling with the oauth2 client
         b2access_user = b2access.get('userinfo')
 
-        log.critical(type(b2access_user))
         error = True
         if b2access_user is None:
             errstring = "Empty response from B2ACCESS"
-        # elif not isinstance(b2access_user, OAuthResponse):
-        #     errstring = "Invalid response from B2ACCESS"
+        elif not isinstance(b2access_user, OAuthResponse):
+            errstring = "Invalid response from B2ACCESS"
         elif b2access_user.status > hcodes.HTTP_TRESHOLD:
             log.error("Bad status: {}", str(b2access_user._resp))
             if b2access_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
