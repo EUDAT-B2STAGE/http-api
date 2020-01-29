@@ -46,6 +46,8 @@ class B2accessUtilities(EndpointResource):
 
         try:
             resp = b2access.authorized_response()
+            # new:
+            # token = oauth.twitter.authorize_access_token()
         except json.decoder.JSONDecodeError as e:
             log.critical("B2ACCESS empty:\n{}\nCheck your app credentials", e)
             return (
