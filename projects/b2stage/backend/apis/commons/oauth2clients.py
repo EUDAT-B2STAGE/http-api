@@ -116,7 +116,7 @@ class ExternalLogins(object):
         secret = b2access_vars.get('appkey', 'yourapppw')
 
         if secret is None or secret.strip() == '':
-            log.warning("B2ACCESS credentials not set")
+            log.info("B2ACCESS credentials not set")
             return None
 
         base_url = B2ACCESS_URLS.get(selected_b2access)
