@@ -133,19 +133,12 @@ class Authorize(EudatEndpoint):
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
 
-        # FIXME: Create a method to reply with standard Bearer oauth response
-        # return self.send_credentials(local_token, extra, metas)
         return self.force_response(
             defined_content={
                 'token': local_token,
                 'b2safe_user': irods_user,
                 'b2safe_home': user_home,
-            },
-            # meta={
-            #     'examples': {
-            #         'get': get_example
-            #     }
-            # }
+            }
         )
 
 
