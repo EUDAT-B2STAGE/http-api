@@ -101,7 +101,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
             url = url.replace(proute, '/')
         else:
             # Otherwise, perform a request to an external service?
-            return self.send_warnings(
+            return self.force_response(
                 {'URL': url},
                 errors=[
                     "Data-object can't be downloaded by current "
