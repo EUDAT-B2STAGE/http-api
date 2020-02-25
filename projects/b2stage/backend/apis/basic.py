@@ -427,7 +427,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if pid_found:
             return self.force_response(content, errors=errors, code=status)
         else:
-            return self.send_warnings(
+            return self.force_response(
                 content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED
             )
 
