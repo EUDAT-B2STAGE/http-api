@@ -336,3 +336,32 @@ class B2accessUtilities(EndpointResource):
             if email in rule_output[user]:
                 return user
         return None
+
+    def send_errors(
+        self, message=None, errors=None, code=None, headers=None,
+        head_method=False, print_error=True
+    ):
+        """ Setup an error message """
+
+        if errors is None:
+            errors = []
+        if isinstance(errors, str):
+            errors = [errors]
+
+        # See if we have the main message
+        if message is not None:
+            errors.append(message)
+
+        if code is None or code < hcodes.HTTP_BAD_REQUEST:
+            # default error
+            code = hcodes.HTTP_SERVER_ERROR
+
+        if print_error and errors:
+            log.error(errors)
+
+        if head_method:
+            errors = None
+
+        return self.force_response(
+            errors=errors, code=code, headers=headers, head_method=head_method
+        )
