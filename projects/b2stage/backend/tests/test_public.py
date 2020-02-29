@@ -2,8 +2,7 @@
 
 """ To be defined from designing this endoint """
 
-from tests import RestTestsAuthenticatedBase
-# from restapi.utilities.logs import log
+from tests.custom import RestTestsAuthenticatedBase
 
 
 class TestPublic(RestTestsAuthenticatedBase):

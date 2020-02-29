@@ -1,15 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""
-Test dataobjects endpoints
-
-Run single test:
-nose2 test.custom.test_dataobjects.TestDataObjects.test_07_delete_dataobjects
-"""
-
 import io
 import json
-from tests import RestTestsAuthenticatedBase
+from tests.custom import RestTestsAuthenticatedBase
 from restapi.utilities.logs import log
 
 __authors__ = [

@@ -1,24 +1,5 @@
 
-# import vcr
-# import requests
-# import json
-
-# from restapi.tests.utilities import TestUtilities
-# from restapi.tests.utilities import (
-#     AUTH_URI,
-#     # OK, NO_CONTENT, PARTIAL, BAD_REQUEST, FORBIDDEN, NOTFOUND, CONFLICT
-#     FOUND
-# )
-
-from tests import RestTestsAuthenticatedBase
-# from restapi.utilities.logs import log
-
-# my_vcr = vcr.VCR(
-#     # serializer='json',
-#     cassette_library_dir='test/cassettes',
-#     record_mode='once',
-#     # match_on=['uri', 'method'],
-# )
+from tests.custom import RestTestsAuthenticatedBase
 
 
 # class TestB2Access(TestUtilities):

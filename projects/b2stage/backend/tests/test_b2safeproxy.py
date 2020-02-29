@@ -4,7 +4,7 @@
 Run unittests inside the RAPyDo framework
 """
 
-from tests import RestTestsAuthenticatedBase
+from tests.custom import RestTestsAuthenticatedBase
 from restapi.utilities.logs import log
 
 
