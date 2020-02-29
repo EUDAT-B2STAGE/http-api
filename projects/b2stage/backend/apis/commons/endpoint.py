@@ -321,7 +321,7 @@ class EudatEndpoint(B2accessUtilities):
         if head:
             if icom.readable(path):
                 return self.force_response(
-                    defined_content='', code=hcodes.HTTP_OK_BASIC, head_method=head
+                    '', code=hcodes.HTTP_OK_BASIC, head_method=head
                 )
             else:
                 return self.send_errors(code=hcodes.HTTP_BAD_NOTFOUND, head_method=head)

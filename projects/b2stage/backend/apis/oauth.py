@@ -133,13 +133,11 @@ class Authorize(EudatEndpoint):
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
 
-        return self.force_response(
-            defined_content={
-                'token': local_token,
-                'b2safe_user': irods_user,
-                'b2safe_home': user_home,
-            }
-        )
+        return self.force_response({
+            'token': local_token,
+            'b2safe_user': irods_user,
+            'b2safe_home': user_home,
+        })
 
 
 class B2accesProxyEndpoint(EudatEndpoint):
