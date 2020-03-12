@@ -411,6 +411,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     )
 
                 MAX_RETRIES = 3
+                SLEEP_TIME = 10
 
                 for element in elements:
 
@@ -443,7 +444,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                             imain.put(str(local_element), str(ifile))
                         except BaseException as e:
                             log.error(e)
-                            time.sleep(1)
+                            time.sleep(SLEEP_TIME)
                             continue
                         else:
                             log.info("File copied on irods: {}", ifile)
@@ -467,7 +468,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                             PID = pmaker.pid_request(imain, ifile)
                         except BaseException as e:
                             log.error(e)
-                            time.sleep(1)
+                            time.sleep(SLEEP_TIME)
                             continue
                         else:
                             log.info('PID: {}', PID)
@@ -501,7 +502,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                                     imain.set_metadata(**args)
                         except BaseException as e:
                             log.error(e)
-                            time.sleep(1)
+                            time.sleep(SLEEP_TIME)
                             continue
                         else:
                             log.debug('Metadata set for {}', current_file_name)
