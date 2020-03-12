@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import time
 import hashlib
 import zipfile
 import re
@@ -409,6 +410,8 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                         myjson, backdoor, self
                     )
 
+                MAX_RETRIES = 3
+
                 for element in elements:
 
                     temp_id = element.get('temp_id')  # do not pop
@@ -435,10 +438,18 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     ###############
                     # 1. copy file (irods)
                     ifile = path.join(irods_path, current_file_name, return_str=True)
-                    try:
-                        imain.put(str(local_element), str(ifile))
-                    except BaseException as e:
-                        log.error(e)
+                    for i in range(MAX_RETRIES):
+                        try:
+                            imain.put(str(local_element), str(ifile))
+                        except BaseException as e:
+                            log.error(e)
+                            time.sleep(1)
+                            continue
+                        else:
+                            log.info("File copied on irods: {}", ifile)
+                            break
+                    else:
+                        # failed upload for the file
                         errors.append({
                             "error": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[0],
                             "description": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[1],
@@ -448,14 +459,25 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                         self.update_state(state="PROGRESS", meta={
                             'total': total, 'step': counter, 'errors': len(errors)})
                         continue
-                    log.info("File copied on irods: {}", ifile)
 
                     ###############
                     # 2. request pid (irule)
-                    try:
-                        PID = pmaker.pid_request(imain, ifile)
-                    except BaseException as e:
-                        log.error(e)
+                    for i in range(MAX_RETRIES):
+                        try:
+                            PID = pmaker.pid_request(imain, ifile)
+                        except BaseException as e:
+                            log.error(e)
+                            time.sleep(1)
+                            continue
+                        else:
+                            log.info('PID: {}', PID)
+                            # # save inside the cache
+                            r.set(PID, ifile)
+                            r.set(ifile, PID)
+                            log.debug('PID cache updated')
+                            break
+                    else:
+                        # failed PID assignment
                         errors.append({
                             "error": ErrorCodes.UNABLE_TO_ASSIGN_PID[0],
                             "description": ErrorCodes.UNABLE_TO_ASSIGN_PID[1],
@@ -465,23 +487,36 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                         self.update_state(state="PROGRESS", meta={
                             'total': total, 'step': counter, 'errors': len(errors)})
                         continue
-                    log.info('PID: {}', PID)
-                    # # save inside the cache
-                    r.set(PID, ifile)
-                    r.set(ifile, PID)
-                    log.debug('PID cache updated')
 
                     ###############
                     # 3. set metadata (icat)
-                    metadata, _ = imain.get_metadata(ifile)
+                    for i in range(MAX_RETRIES):
+                        try:
+                            metadata, _ = imain.get_metadata(ifile)
 
-                    for key in md.keys:
-                        if key not in metadata:
-                            value = element.get(key, '***MISSING***')
-                            args = {'path': ifile, key: value}
-                            imain.set_metadata(**args)
+                            for key in md.keys:
+                                if key not in metadata:
+                                    value = element.get(key, '***MISSING***')
+                                    args = {'path': ifile, key: value}
+                                    imain.set_metadata(**args)
+                        except BaseException as e:
+                            log.error(e)
+                            time.sleep(1)
+                            continue
+                        else:
+                            log.debug('Metadata set for {}', current_file_name)
+                            break
+                    else:
+                        # failed metadata setting
+                        errors.append({
+                            "error": ErrorCodes.UNABLE_TO_SET_METADATA[0],
+                            "description": ErrorCodes.UNABLE_TO_SET_METADATA[1],
+                            "subject": record_id,
+                        })
 
-                    log.debug('Metadata set for {}', current_file_name)
+                        self.update_state(state="PROGRESS", meta={
+                            'total': total, 'step': counter, 'errors': len(errors)})
+                        continue
 
                     ###############
                     # 4. remove the batch file?

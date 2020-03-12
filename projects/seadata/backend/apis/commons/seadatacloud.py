@@ -74,6 +74,7 @@ class ErrorCodes(object):
     EMPTY_DOWNLOAD_PATH_PARAM = ("4044", "Parameter download_path is empty")
     UNEXPECTED_ERROR = ("4045", "An unexpected error occurred")
     MISSING_REQUEST_ID = ("4046", "Request ID is missing")
+    UNABLE_TO_SET_METADATA = ("4047", "Unable to set metadata to the file")
 
 
 class Metadata(object):
