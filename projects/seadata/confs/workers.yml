@@ -74,7 +74,7 @@ services:
       CELERYUI_USER: ${CELERYUI_USER}
       CELERYUI_PASSWORD: ${CELERYUI_PASSWORD}
       #############################
-      ACTIVATE: 1
+      ACTIVATE: ${ACTIVATE_CELERYUI}
       MAIN_LOGIN_ENABLE: 0
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
       DEBUG_ENDPOINTS: 1
