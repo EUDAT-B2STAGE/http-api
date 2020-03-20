@@ -100,7 +100,6 @@ class EudatEndpoint(B2accessUtilities):
         external_user = self.oauth_from_local(internal_user)
 
         try:
-            log.info("t={}", external_user.token)
             icom = self.get_service_instance(
                 service_name='irods',
                 user=external_user.irodsuser,
