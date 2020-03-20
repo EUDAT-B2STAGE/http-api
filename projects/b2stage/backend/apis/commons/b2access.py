@@ -216,7 +216,7 @@ class B2accessUtilities(EndpointResource):
                 "authmethod": account_type
             }
             try:
-                internal_user = self.create_user(userdata, [self.default_role])
+                internal_user = self.auth.create_user(userdata, [self.auth.default_role])
                 self.auth.db.session.commit()
                 log.info("Created internal user {}", internal_user)
             except BaseException as e:
