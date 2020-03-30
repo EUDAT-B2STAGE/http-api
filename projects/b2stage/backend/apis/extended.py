@@ -69,9 +69,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     def eudat_pid(self, pid, head=False):
 
         # recover metadata from pid
-        metadata, bad_response = self.get_pid_metadata(pid, head_method=head)
-        if bad_response is not None:
-            return bad_response
+        metadata = self.get_pid_metadata(pid, head_method=head)
         url = metadata.get('URL')
         if url is None:
             return self.send_errors(
