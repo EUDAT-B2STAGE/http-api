@@ -317,7 +317,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             )
 
             # Check if upload response is success
-            content, errors, status = self.explode_response(response, get_all=True)
+            content, errors, status = self.explode_response(response)
 
             ###################
             # If files uploaded
@@ -374,7 +374,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     code=hcodes.HTTP_SERVER_ERROR,
                 )
 
-            content, errors, status = self.explode_response(response, get_all=True)
+            content, errors, status = self.explode_response(response)
 
         ###################
         # Reply to user
@@ -426,7 +426,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if pid_found:
             return self.response(content, errors=errors, code=status)
         else:
-            return self.send_warnings(
+            return self.force_response(
                 content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED
             )
 

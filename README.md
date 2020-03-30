@@ -60,6 +60,12 @@ To exchange data and metadata within the B2SAFE service (built on iRODS system a
 
 NOTE: *the B2STAGE HTTP-API is an interface towards other EUDAT services which are subject to modifications and new developments, therefore the functionalities and the implementation will have to be changed accordingly*.
 
+## Acknowledgement
+
+This work is co-funded by the [EOSC-hub project](http://eosc-hub.eu/) (Horizon 2020) under Grant number 777536.
+<img src="https://wiki.eosc-hub.eu/download/attachments/1867786/eu%20logo.jpeg?version=1&modificationDate=1459256840098&api=v2" height="24">
+<img src="https://wiki.eosc-hub.eu/download/attachments/18973612/eosc-hub-web.png?version=1&modificationDate=1516099993132&api=v2" height="24">
+
 ## Copyright ##
 
-Copyright 2011-2019 EUDAT CDI - www.eudat.eu
+Copyright 2011-2020 EUDAT CDI - www.eudat.eu

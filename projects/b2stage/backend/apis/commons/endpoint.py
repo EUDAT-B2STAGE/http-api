@@ -97,7 +97,7 @@ class EudatEndpoint(B2accessUtilities):
         )
 
     def irodsuser_from_b2access(self, internal_user, refreshed=False):
-        external_user = self.auth.oauth_from_local(internal_user)
+        external_user = self.oauth_from_local(internal_user)
 
         try:
             icom = self.get_service_instance(
@@ -320,9 +320,7 @@ class EudatEndpoint(B2accessUtilities):
 
         if head:
             if icom.readable(path):
-                return self.response(
-                    defined_content='', code=hcodes.HTTP_OK_BASIC, head_method=head
-                )
+                return self.response('', code=hcodes.HTTP_OK_BASIC, head_method=head)
             else:
                 return self.send_errors(code=hcodes.HTTP_BAD_NOTFOUND, head_method=head)
 
@@ -478,3 +476,11 @@ class EudatEndpoint(B2accessUtilities):
             return NOT_FILLED_BATCH, files
 
         return PARTIALLY_ENABLED_BATCH, files
+
+    def explode_response(self, api_output):
+
+        from restapi.rest.response import get_content_from_response
+
+        content, err, meta, code = get_content_from_response(api_output)
+
+        return content, err, code

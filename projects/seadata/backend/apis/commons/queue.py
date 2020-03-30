@@ -126,9 +126,16 @@ def log_into_queue(instance, dictionary_message):
         # --> Has to be handled in rapydo/http-api, where connection is defined!
 
         msg_queue = instance.get_service_instance(QUEUE_SERVICE)
+        headers = {
+            'app_name': app_name,
+            'filter_code': 'de.dkrz.seadata.filter_code.json'
+        }
         log.verbose('Retrieved instance of log-queue service "{}"', QUEUE_SERVICE)
-        msg_queue.log_json_to_queue(
-            dictionary_message, app_name, current_exchange, routing_key
+        msg_queue.write_to_queue(
+            dictionary_message,
+            routing_key,
+            exchange=current_exchange,
+            headers=headers
         )
 
     except BaseException as e:

@@ -124,7 +124,7 @@ class Authorize(EudatEndpoint):
             return self.send_errors(err)
 
         # Update db to save the irods user related to this user account
-        auth.associate_object_to_attr(extuser, 'irodsuser', irods_user)
+        self.associate_object_to_attr(extuser, 'irodsuser', irods_user)
 
         user_home = imain.get_user_home(irods_user)
 
@@ -132,20 +132,11 @@ class Authorize(EudatEndpoint):
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
 
-        # FIXME: Create a method to reply with standard Bearer oauth response
-        # return self.send_credentials(local_token, extra, metas)
-        return self.response(
-            defined_content={
-                'token': local_token,
-                'b2safe_user': irods_user,
-                'b2safe_home': user_home,
-            },
-            # meta={
-            #     'examples': {
-            #         'get': get_example
-            #     }
-            # }
-        )
+        return self.response({
+            'token': local_token,
+            'b2safe_user': irods_user,
+            'b2safe_home': user_home,
+        })
 
 
 class B2accesProxyEndpoint(EudatEndpoint):
