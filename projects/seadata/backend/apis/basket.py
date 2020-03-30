@@ -90,7 +90,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return get_order_zip_file_name(order_id, restricted=restricted, index=index)
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     def get(self, order_id, ftype, code):
         """ downloading (not authenticated) """
         log.info("Order request: {} (code '{}')", order_id, code)
@@ -233,7 +233,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required()
     def get(self, order_id):
         """ listing, not downloading """
@@ -288,7 +288,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required()
     def post(self):
 
@@ -463,7 +463,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             'size': info.get('content_length', 0),
         }
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required()
     def put(self, order_id):
 

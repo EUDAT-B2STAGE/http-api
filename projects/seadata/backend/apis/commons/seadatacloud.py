@@ -167,9 +167,9 @@ def seadata_pid(self, pid):
     # b2handle to verify PID
     b2handle_output = self.check_pid_content(pid)
     if b2handle_output is None:
-        error = {'B2HANDLE': 'not found'}
+        error = "PID {} not found".format(pid)
         log.error(error)
-        return self.response(response, errors=error, code=hcodes.HTTP_BAD_REQUEST)
+        return self.response(errors=error, code=hcodes.HTTP_BAD_REQUEST)
     else:
         log.verbose("PID {} verified", pid)
         response['verified'] = True

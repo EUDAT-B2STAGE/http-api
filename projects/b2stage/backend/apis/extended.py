@@ -112,7 +112,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
         return self.download_object(r, url, head=head)
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
     def get(self, pid):
         """ Get metadata or file from pid """
@@ -124,7 +124,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         except ImportError:
             return self.eudat_pid(pid, head=False)
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
     def head(self, pid):
         """ Get metadata or file from pid """

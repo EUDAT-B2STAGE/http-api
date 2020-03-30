@@ -39,7 +39,7 @@ class MetadataEndpoint(EudatEndpoint):
         }
     }
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
     def patch(self, location=None):
         """
