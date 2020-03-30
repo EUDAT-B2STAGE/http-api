@@ -95,13 +95,6 @@ class Public(B2HandleEndpoint):
         else:
             md, _ = icom.get_metadata(path)
 
-        ####################
-        # # look for pid metadata
-        # pid = '11100/33ac01fc-6850-11e5-b66e-e41f13eb32b2'
-        # metadata, bad_response = self.get_pid_metadata(pid)
-        ####################
-        # tmp = icom.list(location)
-
         # list content
         jout = self.list_objects(icom, path, is_collection, location, public=True)
 
