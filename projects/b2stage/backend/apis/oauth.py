@@ -9,9 +9,8 @@ from flask import url_for
 from b2stage.apis.commons import PRODUCTION
 from b2stage.apis.commons.endpoint import EudatEndpoint
 
-from restapi.flask_ext.flask_irods.client import IrodsException
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
+from restapi.connectors.irods.client import IrodsException
+from restapi import decorators
 
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
@@ -34,7 +33,7 @@ class OauthLogin(EudatEndpoint):
         }
     }
 
-    @decorate.catch_error(
+    @decorators.catch_errors(
         exception=RuntimeError, exception_label='Server side B2ACCESS misconfiguration'
     )
     def get(self):
@@ -62,7 +61,7 @@ class OauthLogin(EudatEndpoint):
         log.info("Ask redirection to: {}", authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
-        return self.force_response(response)
+        return self.response(response)
 
 
 class Authorize(EudatEndpoint):
@@ -84,7 +83,7 @@ class Authorize(EudatEndpoint):
         }
     }
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
     def get(self):
         """
         Get the data for upcoming operations.
@@ -135,7 +134,7 @@ class Authorize(EudatEndpoint):
 
         # FIXME: Create a method to reply with standard Bearer oauth response
         # return self.send_credentials(local_token, extra, metas)
-        return self.force_response(
+        return self.response(
             defined_content={
                 'token': local_token,
                 'b2safe_user': irods_user,
@@ -166,7 +165,7 @@ class B2accesProxyEndpoint(EudatEndpoint):
         }
     }
 
-    @authentication.required()
+    @decorators.auth.required()
     def post(self):
 
         ##########################

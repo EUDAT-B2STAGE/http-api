@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from restapi import decorators as decorate
+from restapi import decorators
 from b2stage.apis.commons.b2access import B2accessUtilities
 from restapi.exceptions import RestApiException
-from restapi.protocols.bearer import authentication
-from restapi.flask_ext.flask_irods.client import get_and_verify_irods_session
+from restapi.connectors.irods.client import get_and_verify_irods_session
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
@@ -43,8 +42,8 @@ class B2safeProxy(B2accessUtilities):
         }
     }
 
-    @decorate.catch_error()
-    @authentication.required()
+    @decorators.catch_errors()
+    @decorators.auth.required()
     def get(self):
 
         user = self.get_current_user()
@@ -60,7 +59,7 @@ class B2safeProxy(B2accessUtilities):
         icom.list()
         return 'validated'
 
-    @decorate.catch_error()
+    @decorators.catch_errors()
     def post(self):
 
         #############
@@ -137,4 +136,4 @@ class B2safeProxy(B2accessUtilities):
 
         response['b2safe_user'] = irods_user
 
-        return self.force_response(defined_content=response)
+        return self.response(defined_content=response)

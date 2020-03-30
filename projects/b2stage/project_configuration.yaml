@@ -6,7 +6,7 @@ project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing data in EUDAT domains
   version: 1.1.2
-  rapydo: 0.7.2
+  rapydo: 0.7.3
 
 tags:
   eudat: all endpoints associated to EUDAT services
@@ -27,6 +27,8 @@ variables:
   #     if: true
 
   env:
+
+    WRAP_RESPONSE: 1
 
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
     BACKEND_BUILD_MODE: backendirods
@@ -163,7 +165,7 @@ releases:
     status: released
   '1.1.2':
     type: development
-    rapydo: 0.7.2
+    rapydo: 0.7.3
     status: development
 
 controller:

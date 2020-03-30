@@ -138,7 +138,7 @@ class ClusterContainerEndpoint(EndpointResource):
         Note: Helper, only used inside this file.
         Note: The irods_client is of class
         IrodsPythonClient, defined in module
-        rapydo/http-api/restapi/flask_ext/flask_irods/client
+        rapydo/http-api/restapi/connectors/irods/client
         '''
         paths = [mypath]
         if suffix is not None:

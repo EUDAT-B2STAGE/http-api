@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from restapi.flask_ext.flask_celery import CeleryExt
+from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
 
 # celery_app = current_app.extensions.get('celery').celery_app

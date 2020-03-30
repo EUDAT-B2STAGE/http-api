@@ -7,8 +7,7 @@ NOTE: this package will be loaded only if IRODS_ANONYMOUS is set
 """
 
 from b2stage.apis.commons.endpoint import EudatEndpoint
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
+from restapi import decorators
 from b2stage.apis.commons import path
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
@@ -153,8 +152,8 @@ class Publish(EudatEndpoint):
 
         return '{}{}{}'.format(CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT, path)
 
-    @decorate.catch_error()
-    @authentication.required()
+    @decorators.catch_errors()
+    @decorators.auth.required()
     def get(self, location):
 
         error, handler, path = self.base(location)
@@ -177,8 +176,8 @@ class Publish(EudatEndpoint):
                 response['public_url'] = self.public_path(path)
             return response
 
-    @decorate.catch_error()
-    @authentication.required()
+    @decorators.catch_errors()
+    @decorators.auth.required()
     def put(self, location=None):
 
         error, handler, path = self.base(location)
@@ -203,8 +202,8 @@ class Publish(EudatEndpoint):
 
         return {'published': True, 'public_url': self.public_path(path)}
 
-    @decorate.catch_error()
-    @authentication.required()
+    @decorators.catch_errors()
+    @decorators.auth.required()
     def delete(self, location):
 
         error, handler, path = self.base(location)

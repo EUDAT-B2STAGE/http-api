@@ -19,10 +19,9 @@ from flask import request, current_app
 
 from b2stage.apis.commons import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
+from restapi import decorators
 from restapi.services.uploader import Uploader
-from restapi.flask_ext.flask_irods.client import IrodsException
+from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
@@ -139,8 +138,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         },
     }
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required(roles=['normal_user'])
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.auth.required(roles=['normal_user'])
     def get(self, location=None):
         """ Download file from filename """
 
@@ -183,8 +182,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.list_objects(icom, path, is_collection, location)
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required(roles=['normal_user'])
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.auth.required(roles=['normal_user'])
     def post(self, location=None):
         """
         Handle [directory creation](docs/user/registered.md#post).
@@ -246,10 +245,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             'link': self.httpapi_location(path, api_path=CURRENT_MAIN_ENDPOINT),
         }
 
-        return self.force_response(content, code=status)
+        return self.response(content, code=status)
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required(roles=['normal_user'])
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.auth.required(roles=['normal_user'])
     def put(self, location=None):
         """
         Handle file upload. Test on docker client shell with:
@@ -366,11 +365,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     destination=ipath, force=force, resource=resource
                 )
                 log.info("irods call {}", iout)
-                response = self.force_response(
+                response = self.response(
                     {'filename': ipath}, code=hcodes.HTTP_OK_BASIC
                 )
             except BaseException as e:
-                response = self.force_response(
+                response = self.response(
                     errors={"Uploading failed": "{0}".format(e)},
                     code=hcodes.HTTP_SERVER_ERROR,
                 )
@@ -425,14 +424,14 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             }
 
         if pid_found:
-            return self.force_response(content, errors=errors, code=status)
+            return self.response(content, errors=errors, code=status)
         else:
             return self.send_warnings(
                 content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED
             )
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required(roles=['normal_user'])
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.auth.required(roles=['normal_user'])
     def patch(self, location=None):
         """
         PATCH a record. E.g. change only the filename to a resource.
@@ -483,8 +482,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ),
         }
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required(roles=['normal_user'])
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.auth.required(roles=['normal_user'])
     def delete(self, location=None):
         """
         Remove an object or an empty directory on iRODS

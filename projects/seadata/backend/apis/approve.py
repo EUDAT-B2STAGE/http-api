@@ -8,9 +8,8 @@ import requests
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.seadatacloud import Metadata as md
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
-from restapi.flask_ext.flask_irods.client import IrodsException
+from restapi import decorators
+from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
@@ -37,8 +36,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required()
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.auth.required()
     def post(self, batch_id):
 
         ################
@@ -106,7 +105,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             ################
             # ASYNC
             log.info("Submit async celery task")
-            from restapi.flask_ext.flask_celery import CeleryExt
+            from restapi.connectors.celery import CeleryExt
 
             task = CeleryExt.move_to_production_task.apply_async(
                 args=[batch_id, self.prod_path, json_input],

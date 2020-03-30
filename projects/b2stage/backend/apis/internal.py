@@ -9,9 +9,8 @@ FIXME: TO BE DEPRECATED
 
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
-from restapi.flask_ext.flask_irods.client import IrodsException
+from restapi import decorators
+from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.htmlcodes import hcodes
 # from restapi.utilities.logs import log
 
@@ -40,8 +39,8 @@ class MetadataEndpoint(EudatEndpoint):
         }
     }
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required(roles=['normal_user'])
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.auth.required(roles=['normal_user'])
     def patch(self, location=None):
         """
         Add metadata to an object.
