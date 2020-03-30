@@ -81,16 +81,7 @@ class RestTestsBase(unittest.TestCase):
         return ExtClass().get_instance()
 
     def get_content(self, response, return_errors=False):
-        content, err = get_content_from_response(response)
-
-        # Since unittests use class object and not instances
-        # This is the only workaround to set a persistent variable:
-        # abuse of the __class__ property
-
-        if return_errors:
-            return err
-        else:
-            return content
+        return get_content_from_response(response, return_errors)
 
 
 #####################
