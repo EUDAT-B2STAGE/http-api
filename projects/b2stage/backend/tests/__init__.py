@@ -10,7 +10,7 @@ import json
 # import logging
 # from restapi import __package__ as current_package
 from restapi.server import create_app
-from restapi.rest.response import get_content_from_response
+from restapi.tests import get_content_from_response
 from restapi.services.authentication import BaseAuthentication as ba
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log

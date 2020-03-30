@@ -13,6 +13,8 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 import os
 import time
+import json
+from glom import glom
 from flask import request, current_app
 
 # from werkzeug import secure_filename
@@ -21,6 +23,7 @@ from b2stage.apis.commons import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators
 from restapi.services.uploader import Uploader
+from restapi.exceptions import RestApiException
 from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
@@ -312,12 +315,19 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             request.get_data()
 
             # Normal upload: inside the host tmp folder
-            response = super(BasicEndpoint, self).upload(
-                subfolder=r.username, force=force
-            )
+            try:
+                response = self.upload(subfolder=r.username, force=force)
+                content = json.loads(response.get_data().decode())
+                # This is required for wrapped response, remove me in a near future
+                content = glom(content, "Response.data", default=content)
+                errors = None
+                status = hcodes.HTTP_OK_BASIC
 
-            # Check if upload response is success
-            content, errors, status = self.explode_response(response)
+            except RestApiException as e:
+
+                content = None
+                errors = str(e)
+                status = e.status_code
 
             ###################
             # If files uploaded
@@ -365,16 +375,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     destination=ipath, force=force, resource=resource
                 )
                 log.info("irods call {}", iout)
-                response = self.response(
-                    {'filename': ipath}, code=hcodes.HTTP_OK_BASIC
-                )
+                content = {'filename': ipath}
+                errors = None
+                status = hcodes.HTTP_OK_BASIC
             except BaseException as e:
-                response = self.response(
-                    errors={"Uploading failed": "{0}".format(e)},
-                    code=hcodes.HTTP_SERVER_ERROR,
-                )
-
-            content, errors, status = self.explode_response(response)
+                content = ""
+                errors = {"Uploading failed": "{}".format(e)}
+                status = hcodes.HTTP_SERVER_ERROR
 
         ###################
         # Reply to user

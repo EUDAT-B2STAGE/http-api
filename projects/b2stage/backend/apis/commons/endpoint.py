@@ -476,11 +476,3 @@ class EudatEndpoint(B2accessUtilities):
             return NOT_FILLED_BATCH, files
 
         return PARTIALLY_ENABLED_BATCH, files
-
-    def explode_response(self, api_output):
-
-        from restapi.rest.response import get_content_from_response
-
-        content, err, meta, code = get_content_from_response(api_output)
-
-        return content, err, code
