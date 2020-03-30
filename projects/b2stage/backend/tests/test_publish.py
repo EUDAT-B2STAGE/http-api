@@ -140,8 +140,8 @@ else:
                 endpoint + self._ipath + 'wrong',
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
-            errors = self.get_content(r, return_errors=True)
-            assert 'not existing' in errors.pop().get('path')
+            error = self.get_content(r, return_errors=True)
+            assert 'not existing or no permissions' in error
 
         def test_03_POST_not_working(self):
 
@@ -194,6 +194,7 @@ else:
                 headers=self.__class__.auth_header_anonymous)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
             errors = self.get_content(r, return_errors=True)
+            # errors is array because still returned from send_errors
             assert "you don't have privileges" in errors.pop()
 
             # Random file: cannot unpublish
@@ -201,8 +202,8 @@ else:
                 endpoint + self._ipath + 'wrong',
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
-            errors = self.get_content(r, return_errors=True)
-            assert 'not existing' in errors.pop().get('path')
+            error = self.get_content(r, return_errors=True)
+            assert 'not existing or no permissions' in error
 
         def tearDown(self):
 
