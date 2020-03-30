@@ -362,6 +362,6 @@ class B2accessUtilities(EndpointResource):
         if head_method:
             errors = None
 
-        return self.force_response(
+        return self.response(
             errors=errors, code=code, headers=headers, head_method=head_method
         )
