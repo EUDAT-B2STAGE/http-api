@@ -61,7 +61,7 @@ class Publish(EudatEndpoint):
         # Does this path exist?
         if not r.icommands.exists(path):
             raise RestApiException(
-                "path {}not existing or no permissions".format(path),
+                "path {} not existing or no permissions".format(path),
                 status_code=hcodes.HTTP_BAD_NOTFOUND,
             )
 
