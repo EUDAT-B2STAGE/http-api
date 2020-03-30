@@ -8,7 +8,7 @@ Getting informations for public data.
 from restapi.rest.response import WerkzeugResponse
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons.statics import HEADER, FOOTER
-from restapi import decorators as decorate
+from restapi import decorators
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
@@ -34,7 +34,7 @@ class Public(B2HandleEndpoint):
         }
     }
 
-    @decorate.catch_error()
+    @decorators.catch_errors()
     def get(self, location):
 
         ####################

@@ -4,10 +4,9 @@ import os
 import requests
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2access import B2accessUtilities
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
+from restapi import decorators
 from restapi.exceptions import RestApiException
-from restapi.flask_ext.flask_celery import CeleryExt
+from restapi.connectors.celery import CeleryExt
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
@@ -30,16 +29,16 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
         }
     }
 
-    @decorate.catch_error()
-    @authentication.required(roles=['admin_root', 'staff_user'], required_roles='any')
+    @decorators.catch_errors()
+    @decorators.auth.required(roles=['admin_root', 'staff_user'], required_roles='any')
     def get(self):
 
         task = CeleryExt.inspect_pids_cache.apply_async()
         log.info("Async job: {}", task.id)
         return self.return_async_id(task.id)
 
-    @decorate.catch_error()
-    @authentication.required(roles=['admin_root', 'staff_user'], required_roles='any')
+    @decorators.catch_errors()
+    @decorators.auth.required(roles=['admin_root', 'staff_user'], required_roles='any')
     def post(self, batch_id):
 
         # imain = self.get_service_instance(service_name='irods')

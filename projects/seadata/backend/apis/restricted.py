@@ -4,8 +4,8 @@ import requests
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from restapi.services.uploader import Uploader
-from restapi.protocols.bearer import authentication
-from restapi.flask_ext.flask_celery import CeleryExt
+from restapi import decorators
+from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
 from restapi.utilities.htmlcodes import hcodes
 
@@ -24,7 +24,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     }
 
     # Request for a file download into a restricted order
-    @authentication.required(roles=['admin_root', 'staff_user'], required_roles='any')
+    @decorators.auth.required(roles=['admin_root', 'staff_user'], required_roles='any')
     def post(self, order_id):
 
         json_input = self.get_input()

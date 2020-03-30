@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from restapi.rest.definition import EndpointResource
-from restapi.protocols.bearer import authentication
+from restapi import decorators
 from restapi.utilities.logs import log
 
 
@@ -22,7 +22,7 @@ class Extlogs(EndpointResource):
         }
     }
 
-    @authentication.required()
+    @decorators.auth.required()
     def get(self):
 
         from restapi.confs import PRODUCTION

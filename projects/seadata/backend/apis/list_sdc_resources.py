@@ -4,9 +4,8 @@ import requests
 
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
-
-from restapi.protocols.bearer import authentication
-from restapi.flask_ext.flask_celery import CeleryExt
+from restapi import decorators
+from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
 from restapi.utilities.htmlcodes import hcodes
 
@@ -24,7 +23,7 @@ class ListResources(EudatEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @authentication.required()
+    @decorators.auth.required()
     def post(self):
 
         # imain = self.get_service_instance(service_name='irods')

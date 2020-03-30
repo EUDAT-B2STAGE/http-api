@@ -320,7 +320,7 @@ class EudatEndpoint(B2accessUtilities):
 
         if head:
             if icom.readable(path):
-                return self.force_response(
+                return self.response(
                     defined_content='', code=hcodes.HTTP_OK_BASIC, head_method=head
                 )
             else:
@@ -360,7 +360,7 @@ class EudatEndpoint(B2accessUtilities):
         """ DATA LISTING """
 
         from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT, PUBLIC_ENDPOINT
-        from restapi.flask_ext.flask_irods.client import IrodsException
+        from restapi.connectors.irods.client import IrodsException
 
         data = {}
         EMPTY_RESPONSE = {}
