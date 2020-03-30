@@ -5,7 +5,7 @@ B2SAFE HTTP REST API endpoints.
 Getting informations for public data.
 """
 
-from restapi.rest.response import WerkzeugResponse
+from werkzeug.wrappers import Response as WerkzeugResponse
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons.statics import HEADER, FOOTER
 from restapi import decorators

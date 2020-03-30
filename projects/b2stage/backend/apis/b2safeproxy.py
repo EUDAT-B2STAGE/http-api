@@ -136,4 +136,4 @@ class B2safeProxy(B2accessUtilities):
 
         response['b2safe_user'] = irods_user
 
-        return self.response(defined_content=response)
+        return self.response(response)

@@ -9,11 +9,11 @@ import requests
 from flask import session
 from base64 import b64encode
 from datetime import datetime as dt
-# from flask_oauthlib.client import OAuthResponse
+from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
 
 from restapi.rest.definition import EndpointResource
-from restapi.services.oauth2clients import decorate_http_request
+from b2stage.apis.commons.oauth2clients import ExternalLogins, decorate_http_request
 
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
@@ -23,6 +23,26 @@ IRODS_CONNECTION_TTL = 43200
 
 
 class B2accessUtilities(EndpointResource):
+
+    ext_auth = None
+
+    def __init__(self):
+
+        super(B2accessUtilities, self).__init__()
+        if B2accessUtilities.ext_auth is None:
+            from flask import current_app
+            B2accessUtilities.ext_auth = ExternalLogins(current_app)
+            log.info("OAuth2 initialized")
+
+    def associate_object_to_attr(self, obj, key, value):
+        try:
+            setattr(obj, key, value)
+            self.auth.db.session.commit()
+        except BaseException as e:
+            log.error("DB error ({}), rolling back", e)
+            self.auth.db.session.rollback()
+        return
+
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
         return self.get_service_instance(
@@ -32,7 +52,7 @@ class B2accessUtilities(EndpointResource):
     def create_b2access_client(self, auth, decorate=False):
         """ Create the b2access Flask oauth2 object """
 
-        b2access = auth._oauth2.get('b2access')
+        b2access = B2accessUtilities.ext_auth._available_services.get('b2access')
         # B2ACCESS requires some fixes to make authorization work...
         if decorate:
             decorate_http_request(b2access)
@@ -82,12 +102,11 @@ class B2accessUtilities(EndpointResource):
         # Calling with the oauth2 client
         b2access_user = b2access.get('userinfo')
 
-        log.critical(type(b2access_user))
         error = True
         if b2access_user is None:
             errstring = "Empty response from B2ACCESS"
-        # elif not isinstance(b2access_user, OAuthResponse):
-        #     errstring = "Invalid response from B2ACCESS"
+        elif not isinstance(b2access_user, OAuthResponse):
+            errstring = "Invalid response from B2ACCESS"
         elif b2access_user.status > hcodes.HTTP_TRESHOLD:
             log.error("Bad status: {}", str(b2access_user._resp))
             if b2access_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
@@ -111,7 +130,7 @@ class B2accessUtilities(EndpointResource):
         # Attributes you find: http://j.mp/b2access_profile_attributes
 
         # Store b2access information inside the db
-        intuser, extuser = auth.store_oauth2_user(
+        intuser, extuser = self.store_oauth2_user(
             "b2access", b2access_user, b2access_token, b2access_refresh_token
         )
         # In case of error this account already existed...
@@ -132,9 +151,124 @@ class B2accessUtilities(EndpointResource):
 
         # Convert into datetime object and save it inside db
         tok_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
-        auth.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
+        self.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
 
         return b2access_user, intuser, extuser
+
+    def store_oauth2_user(self, account_type, current_user, token, refresh_token):
+        """
+        Allow external accounts (oauth2 credentials)
+        to be connected to internal local user
+        """
+
+        cn = None
+        dn = None
+        if isinstance(current_user, str):
+            email = current_user
+        else:
+            try:
+                values = current_user.data
+            except BaseException:
+                return None, "Authorized response is invalid"
+
+            # print("TEST", values, type(values))
+            if not isinstance(values, dict) or len(values) < 1:
+                return None, "Authorized response is empty"
+
+            email = values.get('email')
+            cn = values.get('cn')
+            ui = values.get('unity:persistent')
+
+            # distinguishedName is only defined in prod, not in dev and staging
+            # dn = values.get('distinguishedName')
+            # DN very strange: the current key is something like 'urn:oid:2.5.4.49'
+            # is it going to change?
+            for key, _ in values.items():
+                if 'urn:oid' in key:
+                    dn = values.get(key)
+            if dn is None:
+                return None, "Missing DN from authorized response..."
+
+        # Check if a user already exists with this email
+        internal_users = self.auth.db.User.query.filter(
+            self.auth.db.User.email == email
+        ).all()
+
+        # Should never happen, please
+        if len(internal_users) > 1:
+            log.critical("Multiple users?")
+            return None, "Server misconfiguration"
+
+        internal_user = None
+        # If something found
+        if len(internal_users) > 0:
+
+            internal_user = internal_users.pop()
+            log.debug("Existing internal user: {}", internal_user)
+            # A user already locally exists with another authmethod. Not good.
+            if internal_user.authmethod != account_type:
+                return None, "User already exists, cannot store oauth2 data"
+        # If missing, add it locally
+        else:
+            userdata = {
+                # "uuid": getUUID(),
+                "email": email,
+                "authmethod": account_type
+            }
+            try:
+                internal_user = self.auth.create_user(userdata, [self.auth.default_role])
+                self.auth.db.session.commit()
+                log.info("Created internal user {}", internal_user)
+            except BaseException as e:
+                log.error("Could not create internal user ({}), rolling back", e)
+                self.auth.db.session.rollback()
+                return None, "Server error"
+
+        # Get ExternalAccount for the oauth2 data if exists
+        external_user = self.auth.db.ExternalAccounts.query.filter_by(
+            username=email
+        ).first()
+        # or create it otherwise
+        if external_user is None:
+            external_user = self.auth.db.ExternalAccounts(username=email, unity=ui)
+
+            # Connect the external account to the current user
+            external_user.main_user = internal_user
+            # Note: for pre-production release
+            # we allow only one external account per local user
+            log.info("Created external user {}", external_user)
+
+        # Update external user data to latest info received
+        external_user.email = email
+        external_user.account_type = account_type
+        external_user.token = token
+        external_user.refresh_token = refresh_token
+        if cn is not None:
+            external_user.certificate_cn = cn
+        if dn is not None:
+            external_user.certificate_dn = dn
+
+        try:
+            self.auth.db.session.add(external_user)
+            self.auth.db.session.commit()
+            log.debug("Updated external user {}", external_user)
+        except BaseException as e:
+            log.error("Could not update external user ({}), rolling back", e)
+            self.auth.db.session.rollback()
+            return None, "Server error"
+
+        return internal_user, external_user
+
+    # def oauth_from_token(self, token):
+    #     extus = self.auth.db.ExternalAccounts.query.filter_by(token=token).first()
+    #     intus = extus.main_user
+    #     return intus, extus
+
+    def oauth_from_local(self, internal_user):
+        accounts = self.auth.db.ExternalAccounts
+        return accounts.query.filter(
+            accounts.main_user.has(id=internal_user.id)
+        ).first()
 
     def refresh_b2access_token(self, auth, b2access_user, b2access, refresh_token):
         """
@@ -170,7 +304,7 @@ class B2accessUtilities(EndpointResource):
         access_token = resp['access_token']
 
         # Store b2access information inside the db
-        intuser, extuser = auth.store_oauth2_user(
+        intuser, extuser = self.store_oauth2_user(
             "b2access", b2access_user, access_token, refresh_token
         )
         # In case of error this account already existed...
@@ -202,3 +336,32 @@ class B2accessUtilities(EndpointResource):
             if email in rule_output[user]:
                 return user
         return None
+
+    def send_errors(
+        self, message=None, errors=None, code=None, headers=None,
+        head_method=False, print_error=True
+    ):
+        """ Setup an error message """
+
+        if errors is None:
+            errors = []
+        if isinstance(errors, str):
+            errors = [errors]
+
+        # See if we have the main message
+        if message is not None:
+            errors.append(message)
+
+        if code is None or code < hcodes.HTTP_BAD_REQUEST:
+            # default error
+            code = hcodes.HTTP_SERVER_ERROR
+
+        if print_error and errors:
+            log.error(errors)
+
+        if head_method:
+            errors = None
+
+        return self.force_response(
+            errors=errors, code=code, headers=headers, head_method=head_method
+        )

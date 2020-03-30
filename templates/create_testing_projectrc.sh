@@ -3,7 +3,6 @@
 touch .projectrc
 cat <<EOF > .projectrc
 project: ${PROJECT}
-development: True
 project_configuration:
   variables:
     env:

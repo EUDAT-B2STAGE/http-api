@@ -74,6 +74,7 @@ class ErrorCodes(object):
     EMPTY_DOWNLOAD_PATH_PARAM = ("4044", "Parameter download_path is empty")
     UNEXPECTED_ERROR = ("4045", "An unexpected error occurred")
     MISSING_REQUEST_ID = ("4046", "Request ID is missing")
+    UNABLE_TO_SET_METADATA = ("4047", "Unable to set metadata to the file")
 
 
 class Metadata(object):
@@ -168,7 +169,7 @@ def seadata_pid(self, pid):
     if b2handle_output is None:
         error = {'B2HANDLE': 'not found'}
         log.error(error)
-        return self.send_warnings(response, errors=error, code=hcodes.HTTP_BAD_REQUEST)
+        return self.force_response(response, errors=error, code=hcodes.HTTP_BAD_REQUEST)
     else:
         log.verbose("PID {} verified", pid)
         response['verified'] = True
