@@ -4,7 +4,7 @@
 OAUTH2 authentication with EUDAT services
 """
 
-from flask import url_for
+from flask import url_for, request
 
 from b2stage.apis.commons import PRODUCTION
 from b2stage.apis.commons.endpoint import EudatEndpoint
@@ -36,9 +36,7 @@ class OauthLogin(EudatEndpoint):
     @decorators.catch_errors(exception=RuntimeError)
     def get(self):
 
-        from restapi.rest.response import request_from_browser
-
-        if not request_from_browser():
+        if request.user_agent.browser is None:
             return self.send_errors(
                 "B2ACCESS authorization must be requested from a browser",
                 code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
