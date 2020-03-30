@@ -199,6 +199,4 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
         log.error("B2HANDLE problem: {}", error)
         raise RestApiException(
             'B2HANDLE: {}'.format(error),
-            status_code=code,
-            head_method=head_method
-        )
+            status_code=code
