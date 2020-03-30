@@ -90,16 +90,16 @@ else:
                 endpoint + self._ipath + 'wrong',
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
-            errors = self.get_content(r, return_errors=True)
-            assert 'not existing' in errors.pop().get('path')
+            error = self.get_content(r, return_errors=True)
+            assert 'not existing or no permissions' in error
 
             # Some other user directory: does not work
             r = self.app.get(
                 endpoint + self._no_permission_path,
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
-            errors = self.get_content(r, return_errors=True)
-            assert 'no permissions' in errors.pop().get('path')
+            error = self.get_content(r, return_errors=True)
+            assert 'not existing or no permissions' in error
 
         def test_02_PUT_publish_dataobject(self):
 
