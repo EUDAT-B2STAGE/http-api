@@ -33,9 +33,7 @@ class OauthLogin(EudatEndpoint):
         }
     }
 
-    @decorators.catch_errors(
-        exception=RuntimeError, exception_label='Server side B2ACCESS misconfiguration'
-    )
+    @decorators.catch_errors(exception=RuntimeError)
     def get(self):
 
         from restapi.rest.response import request_from_browser
@@ -83,7 +81,7 @@ class Authorize(EudatEndpoint):
         }
     }
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     def get(self):
         """
         Get the data for upcoming operations.

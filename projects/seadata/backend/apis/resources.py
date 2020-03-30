@@ -46,7 +46,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required()
     def get(self, batch_id, qc_name):
         """ Check my quality check container """
@@ -93,7 +93,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return response
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required()
     def put(self, batch_id, qc_name):
         """ Launch a quality check inside a container """
@@ -286,7 +286,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return response
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required()
     def delete(self, batch_id, qc_name):
         """

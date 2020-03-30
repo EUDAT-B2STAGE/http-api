@@ -141,7 +141,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         },
     }
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
     def get(self, location=None):
         """ Download file from filename """
@@ -185,7 +185,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.list_objects(icom, path, is_collection, location)
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
     def post(self, location=None):
         """
@@ -250,7 +250,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.response(content, code=status)
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
     def put(self, location=None):
         """
@@ -427,7 +427,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.response(content, code=status)
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
     def patch(self, location=None):
         """
@@ -479,7 +479,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ),
         }
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
     def delete(self, location=None):
         """
