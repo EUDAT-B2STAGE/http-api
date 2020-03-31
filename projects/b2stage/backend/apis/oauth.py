@@ -9,6 +9,7 @@ from flask import url_for, request
 from b2stage.apis.commons import PRODUCTION
 from b2stage.apis.commons.endpoint import EudatEndpoint
 
+from restapi.exceptions import RestApiException
 from restapi.connectors.irods.client import IrodsException
 from restapi import decorators
 
@@ -33,17 +34,24 @@ class OauthLogin(EudatEndpoint):
         }
     }
 
+    @decorators.catch_errors()
     @decorators.catch_errors(exception=RuntimeError)
     def get(self):
 
         if request.user_agent.browser is None:
-            return self.send_errors(
+            raise RestApiException(
                 "B2ACCESS authorization must be requested from a browser",
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+                status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
             )
 
         auth = self.auth
         b2access = self.create_b2access_client(auth)
+
+        if b2access is None:
+            raise RestApiException(
+                "B2ACCESS integration is not enabled",
+                status_code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )
 
         authorized_uri = url_for('authorize', _external=True)
         if PRODUCTION:
