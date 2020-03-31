@@ -317,8 +317,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 )
                 log.info("irods call {}", iout)
             except BaseException as e:
-                errors = {"Uploading failed": "{}".format(e)}
-                return self.response(errors=errors, code=hcodes.HTTP_SERVER_ERROR)
+                raise RestApiException(
+                    "Upload failed {}".format(e),
+                    status_code=hcodes.HTTP_SERVER_ERROR
+                )
 
         #################
         # CASE 2 - FORM UPLOAD
@@ -327,14 +329,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             request.get_data()
 
             # Normal upload: inside the host tmp folder
-            try:
-                response = self.upload(subfolder=r.username, force=force)
-                data = json.loads(response.get_data().decode())
-                # This is required for wrapped response, remove me in a near future
-                data = glom(data, "Response.data", default=data)
-
-            except RestApiException as e:
-                return self.response(errors=str(e), code=e.status_code)
+            response = self.upload(subfolder=r.username, force=force)
+            data = json.loads(response.get_data().decode())
+            # This is required for wrapped response, remove me in a near future
+            data = glom(data, "Response.data", default=data)
 
             ###################
             # If files uploaded
@@ -434,22 +432,19 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
-    def patch(self, location=None):
+    def patch(self, location):
         """
         PATCH a record. E.g. change only the filename to a resource.
         """
 
-        if location is None:
-            return self.send_errors(
-                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
-            )
         location = self.fix_location(location)
 
         ###################
         # BASIC INIT
         r = self.init_endpoint()
         if r.errors is not None:
-            return self.send_errors(errors=r.errors)
+            raise RestApiException(r.errors)
+
         icom = r.icommands
         # Note: ignore resource, get new filename as 'newname'
         path, _, newfile, force = self.get_file_parameters(
@@ -457,15 +452,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         )
 
         if force:
-            return self.send_errors(
+            raise RestApiException(
                 "This operation cannot be forced in B2SAFE iRODS data objects",
-                code=hcodes.HTTP_BAD_REQUEST,
+                status_code=hcodes.HTTP_BAD_REQUEST,
             )
 
         if newfile is None or newfile.strip() == '':
-            return self.send_errors(
+            raise RestApiException(
                 "New filename missing; use the 'newname' JSON parameter",
-                code=hcodes.HTTP_BAD_REQUEST,
+                status_code=hcodes.HTTP_BAD_REQUEST,
             )
 
         # Get the base directory
@@ -500,7 +495,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # get the base objects
         r = self.init_endpoint()
         if r.errors is not None:
-            return self.send_errors(errors=r.errors)
+            raise RestApiException(r.errors)
+
         icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
@@ -517,11 +513,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                         recursive=obj['object_type'] == 'collection',
                     )
                     log.debug("Removed {}", obj['name'])
-                return "Cleaned"
+                return self.response("Cleaned")
 
         # TODO: only if it has a PID?
-        return self.send_errors(
-            "Data objects/collections removal "
-            + "is NOT allowed inside the 'registered' domain",
-            code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+        raise RestApiException(
+            "Data removal is NOT allowed inside the 'registered' domain",
+            status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
         )
