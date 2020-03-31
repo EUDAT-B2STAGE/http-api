@@ -310,7 +310,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             try:
                 # Handling (iRODS) path
-                ipath = self.complete_path(path)
+                ipath = self.complete_path(path, filename)
                 iout = icom.write_in_streaming(
                     destination=ipath, force=force, resource=resource
                 )
