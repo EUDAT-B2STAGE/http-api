@@ -35,7 +35,7 @@ else:
             super().setUp()
 
             # Remove existing files
-            endpoint = self._api_uri + self._register_endpoint  # + self._ipath
+            endpoint = self._api_uri + self._register_endpoint + "/all"
             r = self.app.delete(
                 endpoint,
                 data=dict(debugclean='True'),
