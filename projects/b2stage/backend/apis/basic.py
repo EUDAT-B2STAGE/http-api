@@ -366,7 +366,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             try:
                 # Handling (iRODS) path
-                ipath = self.complete_path(path)
+                ipath = self.complete_path(path, filename)
                 iout = icom.write_in_streaming(
                     destination=ipath, force=force, resource=resource
                 )
@@ -405,11 +405,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # Get iRODS checksum
 
-        log.critical("Preparing response")
         obj = icom.get_dataobject(ipath)
-        log.critical("obj ok")
         checksum = obj.checksum
-        log.critical("checksum = {}", checksum)
 
         content = {
             'location': self.b2safe_location(ipath),
@@ -421,12 +418,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 ipath, api_path=CURRENT_MAIN_ENDPOINT, remove_suffix=path
             ),
         }
-        log.critical("content = {}", content)
         if error_message:
             content['error'] = error_message
-            log.critical("error_message = {}", error_message)
 
-        log.critical("status = {}", status)
         return self.response(content, code=status)
 
     @decorators.catch_errors(exception=IrodsException)
