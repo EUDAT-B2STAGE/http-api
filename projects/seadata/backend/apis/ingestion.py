@@ -116,7 +116,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 data['status'] = 'partially_enabled'
 
             data['files'] = batch_files
-            return data
+            return self.response(data)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",

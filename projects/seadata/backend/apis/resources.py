@@ -91,7 +91,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         "transitioningMessage": "Image
         """
 
-        return response
+        return self.response(response)
 
     @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required()
@@ -284,7 +284,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 code = hcodes.HTTP_SERVER_ERROR
             return self.response(response, code=code)
 
-        return response
+        return self.response(response)
 
     @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required()
@@ -318,4 +318,4 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             }
         else:
             response = {'batch_id': batch_id, 'qc_name': qc_name, 'status': 'removed'}
-        return response
+        return self.response(response)

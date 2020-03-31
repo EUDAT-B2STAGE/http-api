@@ -192,7 +192,7 @@ class ClusterContainerEndpoint(EndpointResource):
     def return_async_id(self, request_id):
         # dt = "20170712T15:33:11"
         dt = datetime.strftime(datetime.now(), '%Y%m%dT%H:%M:%S')
-        return {'request_id': request_id, 'datetime': dt}
+        return self.response({'request_id': request_id, 'datetime': dt})
 
     @staticmethod
     def get_container_name(batch_id, qc_name, qc_label=None):
