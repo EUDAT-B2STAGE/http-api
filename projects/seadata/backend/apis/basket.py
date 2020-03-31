@@ -281,7 +281,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
             msg = prepare_message(self, log_string='end', status='completed')
             log_into_queue(self, msg)
-            return response
+            return self.response(response)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
@@ -355,7 +355,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 # return {order_id: 'already exists'}
                 # json_input['status'] = 'exists'
                 json_input['parameters'] = {'status': 'exists'}
-                return json_input
+                return self.response(json_input)
 
             ################
             # ASYNC
@@ -367,29 +367,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 log.info("Async job: {}", task.id)
                 return self.return_async_id(task.id)
 
-            # ################
-            # msg = prepare_message(self, log_string='end')
-            # # msg = prepare_message(self, log_string='end', status='created')
-            # msg['parameters'] = {
-            #     "request_id": msg['request_id'],
-            #     "zipfile_name": params['file_name'],
-            #     "zipfile_count": 1,
-            # }
-            # log_into_queue(self, msg)
-
-            # ################
-            # # return {order_id: 'created'}
-            # # json_input['status'] = 'created'
-            # json_input['request_id'] = msg['request_id']
-            # json_input['parameters'] = msg['parameters']
-            # if len(errors) > 0:
-            #     json_input['errors'] = errors
-
-            # # call Import manager to notify
-            # api = API()
-            # api.post(json_input)
-
-            return {'status': 'enabled'}
+            return self.response({'status': 'enabled'})
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
@@ -467,13 +445,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     @decorators.auth.required()
     def put(self, order_id):
 
-        ##################
-        # TODO: push pdonorio/prc
-        # tickets = imain.list_tickets()
-        # print(tickets)
-        # return "Hello"
-
-        ##################
         log.info("Order request: {}", order_id)
         msg = prepare_message(self, json={'order_id': order_id}, log_string='start')
         log_into_queue(self, msg)
