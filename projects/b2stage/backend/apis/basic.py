@@ -113,6 +113,19 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         }
     }
     DELETE = {
+        '/registered': {
+            'custom': {},
+            'summary': 'Delete an entity',
+            'parameters': [
+                {
+                    'name': 'debugclean',
+                    'in': 'query',
+                    'type': 'boolean',
+                    'description': 'Only for debug mode',
+                }
+            ],
+            'responses': {'200': {'description': 'Entities deleted'}},
+        },
         '/registered/<path:location>': {
             'custom': {},
             'summary': 'Delete an entity',
@@ -461,7 +474,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
-    def delete(self, location):
+    def delete(self, location=None):
         """
         Remove an object or an empty directory on iRODS
 
