@@ -141,11 +141,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         },
     }
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
     @decorators.auth.required(roles=['normal_user'])
-    def get(self, location):
+    def get(self, location=None):
         """ Download file from filename """
 
+        if location is None:
+            return self.send_errors(
+                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
+            )
         location = self.fix_location(location)
 
         ###################
@@ -181,7 +185,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.list_objects(icom, path, is_collection, location)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
     @decorators.auth.required(roles=['normal_user'])
     def post(self, location=None):
         """
@@ -246,7 +250,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.response(content, code=status)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
     @decorators.auth.required(roles=['normal_user'])
     def put(self, location=None):
         """
@@ -302,47 +306,42 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # Manage both form and streaming upload
         ipath = None
-        status = hcodes.HTTP_OK_BASIC
 
         #################
-        # CASE 1 - STREAMING UPLOAD
-        if request.mimetype == 'application/octet-stream':
+        # CASE 1- FORM UPLOAD
+        if request.mimetype != 'application/octet-stream':
 
-            try:
-                # Handling (iRODS) path
-                ipath = self.complete_path(path, filename)
-                iout = icom.write_in_streaming(
-                    destination=ipath, force=force, resource=resource
-                )
-                log.info("irods call {}", iout)
-            except BaseException as e:
-                raise RestApiException(
-                    "Upload failed: {}".format(e),
-                    status_code=hcodes.HTTP_SERVER_ERROR
-                )
-
-        #################
-        # CASE 2 - FORM UPLOAD
-        else:
             # Read the request
             request.get_data()
 
             # Normal upload: inside the host tmp folder
-            response = self.upload(subfolder=r.username, force=force)
-            data = json.loads(response.get_data().decode())
-            # This is required for wrapped response, remove me in a near future
-            data = glom(data, "Response.data", default=data)
+            try:
+                response = self.upload(subfolder=r.username, force=force)
+                content = json.loads(response.get_data().decode())
+                # This is required for wrapped response, remove me in a near future
+                content = glom(content, "Response.data", default=content)
+                errors = None
+                status = hcodes.HTTP_OK_BASIC
+
+            except RestApiException as e:
+
+                content = None
+                errors = str(e)
+                status = e.status_code
 
             ###################
             # If files uploaded
-            if isinstance(data, dict) and 'filename' in data:
-                original_filename = data['filename']
+            key_file = 'filename'
+
+            if isinstance(content, dict) and key_file in content:
+                original_filename = content[key_file]
                 abs_file = self.absolute_upload_file(original_filename, r.username)
                 log.info("File is '{}'", abs_file)
 
                 ############################
                 # Move file inside irods
 
+                filename = None
                 # Verify if the current path proposed from the user
                 # is indeed an existing collection in iRODS
                 if icom.is_collection(path):
@@ -364,6 +363,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     log.debug("Removing cache object")
                     os.remove(abs_file)
 
+        #################
+        # CASE 2 - STREAMING UPLOAD
+        else:
+            filename = None
+
             try:
                 # Handling (iRODS) path
                 ipath = self.complete_path(path, filename)
@@ -371,73 +375,86 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     destination=ipath, force=force, resource=resource
                 )
                 log.info("irods call {}", iout)
+                content = {'filename': ipath}
+                errors = None
+                status = hcodes.HTTP_OK_BASIC
             except BaseException as e:
-                raise RestApiException(
-                    "Upload failed: {}".format(e),
-                    status_code=hcodes.HTTP_SERVER_ERROR
-                )
+                content = ""
+                errors = {"Uploading failed": "{}".format(e)}
+                status = hcodes.HTTP_SERVER_ERROR
 
         ###################
         # Reply to user
         if filename is None:
             filename = self.filename_from_path(path)
 
-        error_message = None
-        PID = ''
-        pid_parameter = self._args.get('pid_await')
-        if pid_parameter and 'true' in pid_parameter.lower():
-            # Shall we get the timeout from user?
-            timeout = time.time() + 10  # seconds from now
-            while True:
-                out, _ = icom.get_metadata(ipath)
-                PID = out.get('PID')
-                if PID is not None or time.time() > timeout:
-                    break
-                time.sleep(2)
-            if not PID:
-                error_message = (
-                    "Timeout waiting for PID from B2SAFE:"
-                    " the object registration may be still in progress."
-                    " File correctly uploaded."
-                )
-                log.warning(error_message)
-                status = hcodes.HTTP_OK_ACCEPTED
+        pid_found = True
+        if not errors:
+            out = {}
+            pid_parameter = self._args.get('pid_await')
+            if pid_parameter and 'true' in pid_parameter.lower():
+                # Shall we get the timeout from user?
+                pid_found = False
+                timeout = time.time() + 10  # seconds from now
+                pid = ''
+                while True:
+                    out, _ = icom.get_metadata(ipath)
+                    pid = out.get('PID')
+                    if pid is not None or time.time() > timeout:
+                        break
+                    time.sleep(2)
+                if not pid:
+                    error_message = (
+                        "Timeout waiting for PID from B2SAFE:"
+                        " the object registration may be still in progress."
+                        " File correctly uploaded."
+                    )
+                    log.warning(error_message)
+                    status = hcodes.HTTP_OK_ACCEPTED
+                    errors = [error_message]
+                else:
+                    pid_found = True
 
-        # Get iRODS checksum
+            # Get iRODS checksum
+            obj = icom.get_dataobject(ipath)
+            checksum = obj.checksum
 
-        obj = icom.get_dataobject(ipath)
-        checksum = obj.checksum
+            content = {
+                'location': self.b2safe_location(ipath),
+                'PID': out.get('PID'),
+                'checksum': checksum,
+                'filename': filename,
+                'path': path,
+                'link': self.httpapi_location(
+                    ipath, api_path=CURRENT_MAIN_ENDPOINT, remove_suffix=path
+                ),
+            }
 
-        content = {
-            'location': self.b2safe_location(ipath),
-            'PID': PID,
-            'checksum': checksum,
-            'filename': filename,
-            'path': path,
-            'link': self.httpapi_location(
-                ipath, api_path=CURRENT_MAIN_ENDPOINT, remove_suffix=path
-            ),
-        }
-        if error_message:
-            content['error'] = error_message
+        if pid_found:
+            return self.response(content, errors=errors, code=status)
+        else:
+            return self.response(
+                content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED
+            )
 
-        return self.response(content, code=status)
-
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
     @decorators.auth.required(roles=['normal_user'])
-    def patch(self, location):
+    def patch(self, location=None):
         """
         PATCH a record. E.g. change only the filename to a resource.
         """
 
+        if location is None:
+            return self.send_errors(
+                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
+            )
         location = self.fix_location(location)
 
         ###################
         # BASIC INIT
         r = self.init_endpoint()
         if r.errors is not None:
-            raise RestApiException(r.errors)
-
+            return self.send_errors(errors=r.errors)
         icom = r.icommands
         # Note: ignore resource, get new filename as 'newname'
         path, _, newfile, force = self.get_file_parameters(
@@ -445,15 +462,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         )
 
         if force:
-            raise RestApiException(
+            return self.send_errors(
                 "This operation cannot be forced in B2SAFE iRODS data objects",
-                status_code=hcodes.HTTP_BAD_REQUEST,
+                code=hcodes.HTTP_BAD_REQUEST,
             )
 
         if newfile is None or newfile.strip() == '':
-            raise RestApiException(
+            return self.send_errors(
                 "New filename missing; use the 'newname' JSON parameter",
-                status_code=hcodes.HTTP_BAD_REQUEST,
+                code=hcodes.HTTP_BAD_REQUEST,
             )
 
         # Get the base directory
@@ -472,7 +489,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ),
         }
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
     @decorators.auth.required(roles=['normal_user'])
     def delete(self, location=None):
         """
@@ -488,8 +505,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # get the base objects
         r = self.init_endpoint()
         if r.errors is not None:
-            raise RestApiException(r.errors)
-
+            return self.send_errors(errors=r.errors)
         icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
@@ -506,10 +522,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                         recursive=obj['object_type'] == 'collection',
                     )
                     log.debug("Removed {}", obj['name'])
-                return self.response("Cleaned")
+                return "Cleaned"
 
         # TODO: only if it has a PID?
-        raise RestApiException(
-            "Data removal is NOT allowed inside the 'registered' domain",
-            status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+        return self.send_errors(
+            "Data objects/collections removal "
+            + "is NOT allowed inside the 'registered' domain",
+            code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
         )
