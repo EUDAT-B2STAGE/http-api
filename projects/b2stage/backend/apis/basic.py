@@ -375,8 +375,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 )
                 log.info("irods call {}", iout)
             except BaseException as e:
-                errors = {"Uploading failed": "{}".format(e)}
-                return self.response(errors=errors, code=hcodes.HTTP_SERVER_ERROR)
+                raise RestApiException(
+                    "Upload failed {}".format(e),
+                    status_code=hcodes.HTTP_SERVER_ERROR
+                )
 
         ###################
         # Reply to user
