@@ -34,7 +34,6 @@ class OauthLogin(EudatEndpoint):
         }
     }
 
-    @decorators.catch_errors()
     @decorators.catch_errors(exception=RuntimeError)
     def get(self):
 
@@ -65,7 +64,7 @@ class OauthLogin(EudatEndpoint):
         log.info("Ask redirection to: {}", authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
-        return self.response(response)
+        return response
 
 
 class Authorize(EudatEndpoint):
