@@ -21,7 +21,7 @@ class ExternalAccounts(db.Model):
     certificate_dn = db.Column(db.Text())
     proxyfile = db.Column(db.Text())
     description = db.Column(db.String(255))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     # Let iRODS exist and be linked
     irodsuser = db.Column(db.String(50))
