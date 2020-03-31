@@ -2,9 +2,9 @@
 
 There are two main modes to work with the HTTP-API server developed with `rapydo`.
 
-The main one - called `debug` - is for developers: you are expected to test, debug and develop new code. The other options is mode `production`, suited for deploying your server in a real use case scenario on top of your already running `B2SAFE` instance.
+The main one - called `development` - is for developers: you are expected to test, debug and develop new code. The other options is `production`, suited for deploying your server in a real use case scenario on top of your already running `B2SAFE` instance.
 
-## debug mode ##
+## development mode ##
 
 NOTE: follow this paragraph only if you plan to develop new features on the HTTP API.
 
@@ -20,13 +20,6 @@ $ rapydo shell backend
 [container shell]$ restapi launch
 ```
 
-NOTE: the block of commands above can be used at once with:
-
-```bash
-$ rapydo start --mode development
-# drawback: when the server fails at reloading, it crashes
-```
-
 ## production mode
 
 Some important points before going further:
@@ -39,17 +32,17 @@ Primary step is to set up your configuration
 
 ```bash
 # copy the example configuration file
-$ cp projects/b2stage/example_configs/production.yaml configuration.yaml
+$ cp templates/projectrc.yml .projectrc.yml
 $ vim configuration.yaml  # edit the file as suggested inside the content
 ```
 
 Make sure your IRODS parameters are correctly inserted before proceding further. Deploying right after is quite simple:
 
 ```bash
-# define your domain
-$ DOMAIN='b2stage-test.cineca.it'
-# launch production mode
-$ rapydo --hostname $DOMAIN --mode production start
+# options are in .projectrc.yml
+$ rapydo start
+# this is equivalent to 
+$ rapydo --project b2stage --production --hostname b2stage.yourdomain.io start
 ```
 
 Now may access your IP or your domain and the HTTP API endpoints are online, protected by a proxy server. You can test this with:
@@ -61,15 +54,12 @@ open $DOMAIN/api/status
 Up to now the current SSL certificate is self signed and is 'not secure' for all applications. Your browser is probably complaining for this. This is why we need to produce one with the free `letsencrypt` service.
 
 ```bash
-$ rapydo --hostname $DOMAIN --mode production ssl-certificate
-#NOTE: this will work only if you have a real domain associated to your IP
+# NOTE: this will work only if you have a real domain associated to your IP
+$ rapydo ssl
 ```
 
 If you check again the server should now be correctly certificated. At this point the service should be completely functional.
 
-### using the same mode for every command
-
-To keep the production mode in every command request you can leverage the [`.projectrc`](.projectrc) file by setting the value `mode: production` inside of it.
 
 ### debugging production
 
@@ -77,9 +67,9 @@ In production it might be difficult to get informations if something goes wrong.
 
 ```bash
 # check any service on any mode
-$ rapydo --mode YOURMODE --service YOURSERVICE log
+$ rapydo --services YOURSERVICE logs
 # e.g. check all the logs from production, following new updates
-# $ rapydo --mode production log --follow
+# $ rapydo logs --follow
 
 ## if this is not enough:
 
@@ -95,7 +85,7 @@ ps aux --forest
 
 $ rapydo shell backend
 # launch by hand a server instance
-$ DEBUG_LEVEL=VERY_VERBOSE restapi launch
+$ LOGURU_LEVEL=VERBOSE restapi launch
 # check if you get any error in your output
 
 ```

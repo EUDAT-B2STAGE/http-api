@@ -1,15 +1,5 @@
-#log-level: VERY_VERBOSE
-#log-level: VERBOSE
-#log-level: DEBUG
-log-level: INFO
-
-mode: debug
-#mode: production
-
-development: True
-
 project: b2stage
-
+#production: True
 #hostname: b2stage.yourdomain.io
 
 project_configuration:
