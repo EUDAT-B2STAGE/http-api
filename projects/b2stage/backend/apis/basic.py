@@ -318,7 +318,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 log.info("irods call {}", iout)
             except BaseException as e:
                 raise RestApiException(
-                    "Upload failed {}".format(e),
+                    "Upload failed: {}".format(e),
                     status_code=hcodes.HTTP_SERVER_ERROR
                 )
 
@@ -374,7 +374,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 log.info("irods call {}", iout)
             except BaseException as e:
                 raise RestApiException(
-                    "Upload failed {}".format(e),
+                    "Upload failed: {}".format(e),
                     status_code=hcodes.HTTP_SERVER_ERROR
                 )
 
