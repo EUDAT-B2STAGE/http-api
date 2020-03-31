@@ -50,7 +50,7 @@ else:
             r = self.app.post(endpoint, data=credentials)
             self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
             content = self.get_content(r)
-            self.save_token(content, suffix=self._anonymous_user)
+            self.save_token(content.get('token'), suffix=self._anonymous_user)
 
             self.irods_vars = detector.services_classes.get('irods').variables
             self._filename = 'some_file.txt'
