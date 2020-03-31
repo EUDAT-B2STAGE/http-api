@@ -70,7 +70,8 @@ else:
             r = self.app.put(
                 endpoint,
                 data=dict(file=(io.BytesIO(b"just a test"), self._filename)),
-                headers=self.__class__.auth_header)
+                headers=self.__class__.auth_header
+            )
             self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         def test_01_GET_check_if_published(self):
