@@ -302,7 +302,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # Manage both form and streaming upload
         ipath = None
-        filename = None
         status = hcodes.HTTP_OK_BASIC
 
         #################
