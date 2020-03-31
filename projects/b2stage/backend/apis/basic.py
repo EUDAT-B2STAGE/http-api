@@ -143,13 +143,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
-    def get(self, location=None):
+    def get(self, location):
         """ Download file from filename """
 
-        if location is None:
-            return self.send_errors(
-                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
-            )
         location = self.fix_location(location)
 
         ###################
@@ -409,8 +405,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 status = hcodes.HTTP_OK_ACCEPTED
 
         # Get iRODS checksum
+
+        log.critical("Preparing response")
         obj = icom.get_dataobject(ipath)
+        log.critical("obj ok")
         checksum = obj.checksum
+        log.critical("checksum = {}", checksum)
 
         content = {
             'location': self.b2safe_location(ipath),
@@ -422,9 +422,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 ipath, api_path=CURRENT_MAIN_ENDPOINT, remove_suffix=path
             ),
         }
+        log.critical("content = {}", content)
         if error_message:
             content['error'] = error_message
+            log.critical("error_message = {}", error_message)
 
+        log.critical("status = {}", status)
         return self.response(content, code=status)
 
     @decorators.catch_errors(exception=IrodsException)
