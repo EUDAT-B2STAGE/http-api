@@ -69,7 +69,10 @@ else:
             endpoint = self._api_uri + self._register_endpoint + self._ipath
             r = self.app.put(
                 endpoint,
-                data=dict(file=(io.BytesIO(b"just a test"), self._filename)),
+                data={
+                    "file": (io.BytesIO(b"just a test"), self._filename),
+                    "force": True
+                },
                 headers=self.__class__.auth_header
             )
             self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
