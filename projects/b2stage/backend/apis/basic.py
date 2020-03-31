@@ -139,7 +139,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # Init EUDAT endpoint resources
         r = self.init_endpoint()
         if r.errors is not None:
-            return self.send_errors(errors=r.errors)
+            raise RestApiException(r.errors)
 
         # get parameters with defaults
         icom = r.icommands
@@ -159,7 +159,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if hasattr(self._args, 'download'):
             if self._args.download and 'true' in self._args.download.lower():
                 if is_collection:
-                    return self.send_errors(
+                    raise RestApiException(
                         'Collection: recursive download is not allowed'
                     )
                 else:
@@ -181,26 +181,27 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # Disable upload for POST method
         if 'file' in request.files:
-            return self.send_errors(
-                'File upload forbidden for this method; '
-                + 'Please use the PUT method for this operation',
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+            raise RestApiException(
+                'File upload forbidden for this method; ' +
+                'Please use the PUT method for this operation',
+                status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
             )
 
         ###################
         # BASIC INIT
         r = self.init_endpoint()
         if r.errors is not None:
-            return self.send_errors(errors=r.errors)
+            raise RestApiException(r.errors)
+
         icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
 
         # if path variable empty something is wrong
         if path is None:
-            return self.send_errors(
+            raise RestApiException(
                 'Path to remote resource: only absolute paths are allowed',
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+                status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
             )
 
         ###################
@@ -270,7 +271,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # Basic init
         r = self.init_endpoint()
         if r.errors is not None:
-            return self.send_errors(errors=r.errors)
+            raise RestApiException(r.errors)
+
         icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom, path=location)
@@ -421,7 +423,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # BASIC INIT
         r = self.init_endpoint()
         if r.errors is not None:
-            return self.send_errors(errors=r.errors)
+            raise RestApiException(r.errors)
+
         icom = r.icommands
         # Note: ignore resource, get new filename as 'newname'
         path, _, newfile, force = self.get_file_parameters(
@@ -429,15 +432,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         )
 
         if force:
-            return self.send_errors(
+            raise RestApiException(
                 "This operation cannot be forced in B2SAFE iRODS data objects",
-                code=hcodes.HTTP_BAD_REQUEST,
+                status_code=hcodes.HTTP_BAD_REQUEST
             )
 
         if newfile is None or newfile.strip() == '':
-            return self.send_errors(
+            raise RestApiException(
                 "New filename missing; use the 'newname' JSON parameter",
-                code=hcodes.HTTP_BAD_REQUEST,
+                status_code=hcodes.HTTP_BAD_REQUEST,
             )
 
         # Get the base directory
@@ -472,7 +475,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # get the base objects
         r = self.init_endpoint()
         if r.errors is not None:
-            return self.send_errors(errors=r.errors)
+            raise RestApiException(r.errors)
+
         icom = r.icommands
         # get parameters with defaults
         path, resource, filename, force = self.get_file_parameters(icom)
@@ -492,8 +496,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 return "Cleaned"
 
         # TODO: only if it has a PID?
-        return self.send_errors(
-            "Data objects/collections removal "
-            + "is NOT allowed inside the 'registered' domain",
-            code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+        raise RestApiException(
+            "Data removal NOT allowed inside the 'registered' domain",
+            status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
         )
