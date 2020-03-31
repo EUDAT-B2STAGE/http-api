@@ -113,19 +113,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         }
     }
     DELETE = {
-        '/registered': {
-            'custom': {},
-            'summary': 'Delete an entity',
-            'parameters': [
-                {
-                    'name': 'debugclean',
-                    'in': 'query',
-                    'type': 'boolean',
-                    'description': 'Only for debug mode',
-                }
-            ],
-            'responses': {'200': {'description': 'File name updated'}},
-        },
         '/registered/<path:location>': {
             'custom': {},
             'summary': 'Delete an entity',
@@ -137,19 +124,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     'description': 'Only for debug mode',
                 }
             ],
-            'responses': {'200': {'description': 'File name updated'}},
+            'responses': {'200': {'description': 'Entity deleted'}},
         },
     }
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
-    def get(self, location=None):
+    def get(self, location):
         """ Download file from filename """
 
-        if location is None:
-            return self.send_errors(
-                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
-            )
         location = self.fix_location(location)
 
         ###################
@@ -185,9 +168,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.list_objects(icom, path, is_collection, location)
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
-    def post(self, location=None):
+    def post(self):
         """
         Handle [directory creation](docs/user/registered.md#post).
         Test on internal client shell with:
@@ -195,14 +178,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             $SERVER/api/resources?path=/tempZone/home/guest/test \
             force=True "$AUTH"
         """
-
-        # Post does not accept the <ID> inside the URI
-        if location is not None:
-            return self.send_errors(
-                'Forbidden path inside URI; '
-                + "Please pass the location string as body parameter 'path'",
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
-            )
 
         # Disable upload for POST method
         if 'file' in request.files:
@@ -250,9 +225,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.response(content, code=status)
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
-    def put(self, location=None):
+    def put(self, location):
         """
         Handle file upload. Test on docker client shell with:
         http --form PUT $SERVER/api/resources/tempZone/home/guest/test \
@@ -286,10 +261,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 '/tempZone/home/guest/prova', data=f, headers=headers)
         """
 
-        if location is None:
-            return self.send_errors(
-                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
-            )
         location = self.fix_location(location)
         # NOTE: location will act strange due to Flask internals
         # in case upload is served with streaming options,
@@ -437,17 +408,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED
             )
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
-    def patch(self, location=None):
+    def patch(self, location):
         """
         PATCH a record. E.g. change only the filename to a resource.
         """
 
-        if location is None:
-            return self.send_errors(
-                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
-            )
         location = self.fix_location(location)
 
         ###################
@@ -489,9 +456,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ),
         }
 
-    @decorators.catch_errors(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=['normal_user'])
-    def delete(self, location=None):
+    def delete(self, location):
         """
         Remove an object or an empty directory on iRODS
 
