@@ -21,10 +21,10 @@ from seadata.apis.commons.seadatacloud import Metadata as md, ImportManagerAPI
 from seadata.apis.commons.seadatacloud import ErrorCodes
 from seadata.apis.commons.seadatacloud import seadata_vars
 
-from restapi.flask_ext.flask_celery import CeleryExt
-from restapi.flask_ext.flask_irods.client import IrodsException
+from restapi.connectors.celery import CeleryExt
+from restapi.connectors.irods.client import IrodsException
 from restapi.services.detect import detector
-from restapi.flask_ext.flask_celery import send_errors_by_email
+from restapi.connectors.celery import send_errors_by_email
 
 from restapi.utilities.logs import log
 

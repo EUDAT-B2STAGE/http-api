@@ -2,9 +2,6 @@
 
 # This section overrides rapydo default parameters (automatically appended to every rapydo command)
 
-# Equivalent to rapydo --log-level INFO any_command
-log-level: INFO
-
 # If enabled submodules/utils and submodules/http-api will be mounted on backend container. This will allow you to update these package into the container without rebuilding the docker image
 # Equivalent to rapydo --development any_command
 # development: True
@@ -12,8 +9,8 @@ log-level: INFO
 # Equivalent to rapydo --project seadata any_command
 project: seadata
 
-# Equivalent to rapydo --mode production any_command
-mode: production
+# Equivalent to rapydo --production any_command
+production: True
 
 # Will be used to create ssl certificates with Let's Encrypt
 # Equivalent to rapydo --hostname your.host.name any_command

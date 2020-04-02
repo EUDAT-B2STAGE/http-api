@@ -81,12 +81,15 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         content = b"a test"
         # Upload entity in test folder
         endpoint = self._api_uri + self._main_endpoint + self._irods_path
-        r = self.app.put(endpoint, data=dict(
-                         file=(io.BytesIO(content), self._test_filename)),
-                         headers=self.__class__.auth_header)
+        endpoint += '/' + self._test_filename
+        r = self.app.put(
+            endpoint,
+            data=dict(
+                force=True,
+                file=(io.BytesIO(content), self._test_filename)
+            ), headers=self.__class__.auth_header)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
         # Then verify content!
-        endpoint += '/' + self._test_filename
         r = self.app.get(
             endpoint, data=dict(download='True'),
             headers=self.__class__.auth_header)

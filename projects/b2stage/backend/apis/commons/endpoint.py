@@ -320,9 +320,7 @@ class EudatEndpoint(B2accessUtilities):
 
         if head:
             if icom.readable(path):
-                return self.force_response(
-                    '', code=hcodes.HTTP_OK_BASIC, head_method=head
-                )
+                return self.response('', code=hcodes.HTTP_OK_BASIC, head_method=head)
             else:
                 return self.send_errors(code=hcodes.HTTP_BAD_NOTFOUND, head_method=head)
 
@@ -360,7 +358,7 @@ class EudatEndpoint(B2accessUtilities):
         """ DATA LISTING """
 
         from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT, PUBLIC_ENDPOINT
-        from restapi.flask_ext.flask_irods.client import IrodsException
+        from restapi.connectors.irods.client import IrodsException
 
         data = {}
         EMPTY_RESPONSE = {}
@@ -478,11 +476,3 @@ class EudatEndpoint(B2accessUtilities):
             return NOT_FILLED_BATCH, files
 
         return PARTIALLY_ENABLED_BATCH, files
-
-    def explode_response(self, api_output):
-
-        from restapi.rest.response import get_content_from_response
-
-        content, err, meta, code = get_content_from_response(api_output)
-
-        return content, err, code

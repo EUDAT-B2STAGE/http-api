@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from restapi.confs import PRODUCTION
+from restapi.exceptions import RestApiException
 from restapi.rest.definition import EndpointResource
-from restapi.protocols.bearer import authentication
+from restapi import decorators
 from restapi.utilities.logs import log
 
 
@@ -22,15 +24,14 @@ class Extlogs(EndpointResource):
         }
     }
 
-    @authentication.required()
+    @decorators.catch_errors()
+    @decorators.auth.required()
     def get(self):
 
-        from restapi.confs import PRODUCTION
-
         if not PRODUCTION:
-            return 'Not working in DEBUG mode'
-        else:
-            log.info("Request logs content")
+            raise RestApiException('Not working in DEBUG mode')
+
+        log.info("Request logs content")
 
         # check index?
         # $SERVER/_cat/indices
@@ -78,4 +79,4 @@ class Extlogs(EndpointResource):
             # key = value.pop('datetime')
             # logs[key] = value
             logs.append(value)
-        return logs
+        return self.response(logs)

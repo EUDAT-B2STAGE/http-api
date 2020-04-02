@@ -32,7 +32,7 @@ services:
     restart: on-failure:15
     build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
-    command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q celery -n worker-%h
+    command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q celery -n worker-%h
     volumes:
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
     environment:
@@ -105,7 +105,7 @@ services:
     build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q ingestion -n worker-%h
+    command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q ingestion -n worker-%h
     # user: developer
     working_dir: /code
     volumes:
@@ -197,7 +197,7 @@ services:
     build: ${PROJECT_DIR}/builds/celery
     image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: celery worker --concurrency=1 -Ofair -A restapi.flask_ext.flask_celery.worker.celery_app -Q restricted -n worker-%h
+    command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q restricted -n worker-%h
     # user: developer
     working_dir: /code
     volumes:

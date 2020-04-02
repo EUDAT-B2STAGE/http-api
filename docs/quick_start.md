@@ -24,7 +24,7 @@ cd latest
 ################
 # install the corrensponding rapydo framework version
 sudo pip3 install rapydo-controller
-rapydo --project b2stage install 0.7.2
+rapydo --project b2stage install 0.7.3
 
 # build and run
 rapydo --project b2stage init
@@ -72,7 +72,7 @@ To ensure the option is always activated you can save it in a `.projectrc` file:
 
 # setup a rc file to save your preferred rapydo options
 echo "project: b2stage" > .projectrc
-echo "mode: production" >> .projectrc
+echo "production: True" >> .projectrc
 echo "hostname: yourdomain.com" >> .projectrc  # set a domain if you have one
 ```
 
@@ -80,7 +80,7 @@ You can override any of the project configuration variables, e.g. to set an exte
 
 ```bash
 project: b2stage
-mode: production
+production: True
 hostname: yourdomain.com
 project_configuration:
   variables:

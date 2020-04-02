@@ -29,12 +29,11 @@ from seadata.apis.commons.cluster import ORDERS_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
 from seadata.apis.commons.seadatacloud import ORDERS_ENDPOINT
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
-from restapi.flask_ext.flask_celery import CeleryExt
+from restapi import decorators
+from restapi.connectors.celery import CeleryExt
 from seadata.apis.commons.queue import log_into_queue, prepare_message
 from restapi.utilities.htmlcodes import hcodes
-from restapi.flask_ext.flask_irods.client import IrodsException
+from restapi.connectors.irods.client import IrodsException
 from b2stage.apis.commons import path
 from restapi.utilities.logs import log
 
@@ -91,7 +90,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return get_order_zip_file_name(order_id, restricted=restricted, index=index)
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     def get(self, order_id, ftype, code):
         """ downloading (not authenticated) """
         log.info("Order request: {} (code '{}')", order_id, code)
@@ -171,7 +170,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
             # ##################
             # response = {order_id: 'valid'}
-            # return self.force_response(response)
+            # return self.response(response)
             headers = {
                 'Content-Transfer-Encoding': 'binary',
                 'Content-Disposition': "attachment; filename={}".format(zip_file_name),
@@ -234,8 +233,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required()
+    @decorators.catch_errors(exception=IrodsException)
+    @decorators.auth.required()
     def get(self, order_id):
         """ listing, not downloading """
 
@@ -282,15 +281,15 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
             msg = prepare_message(self, log_string='end', status='completed')
             log_into_queue(self, msg)
-            return response
+            return self.response(response)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required()
+    @decorators.catch_errors(exception=IrodsException)
+    @decorators.auth.required()
     def post(self):
 
         ##################
@@ -356,7 +355,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 # return {order_id: 'already exists'}
                 # json_input['status'] = 'exists'
                 json_input['parameters'] = {'status': 'exists'}
-                return json_input
+                return self.response(json_input)
 
             ################
             # ASYNC
@@ -368,29 +367,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 log.info("Async job: {}", task.id)
                 return self.return_async_id(task.id)
 
-            # ################
-            # msg = prepare_message(self, log_string='end')
-            # # msg = prepare_message(self, log_string='end', status='created')
-            # msg['parameters'] = {
-            #     "request_id": msg['request_id'],
-            #     "zipfile_name": params['file_name'],
-            #     "zipfile_count": 1,
-            # }
-            # log_into_queue(self, msg)
-
-            # ################
-            # # return {order_id: 'created'}
-            # # json_input['status'] = 'created'
-            # json_input['request_id'] = msg['request_id']
-            # json_input['parameters'] = msg['parameters']
-            # if len(errors) > 0:
-            #     json_input['errors'] = errors
-
-            # # call Import manager to notify
-            # api = API()
-            # api.post(json_input)
-
-            return {'status': 'enabled'}
+            return self.response({'status': 'enabled'})
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
@@ -464,17 +441,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             'size': info.get('content_length', 0),
         }
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required()
+    @decorators.catch_errors(exception=IrodsException)
+    @decorators.auth.required()
     def put(self, order_id):
 
-        ##################
-        # TODO: push pdonorio/prc
-        # tickets = imain.list_tickets()
-        # print(tickets)
-        # return "Hello"
-
-        ##################
         log.info("Order request: {}", order_id)
         msg = prepare_message(self, json={'order_id': order_id}, log_string='start')
         log_into_queue(self, msg)
@@ -570,7 +540,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             msg = prepare_message(self, log_string='end', status='enabled')
             log_into_queue(self, msg)
 
-            return self.force_response(response)
+            return self.response(response)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
@@ -583,7 +553,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
-    @authentication.required()
+    @decorators.auth.required()
     def delete(self):
 
         json_input = self.get_input()
