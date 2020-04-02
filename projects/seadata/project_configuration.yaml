@@ -6,7 +6,7 @@ project:
   title: SeaDataCloud HTTP-API
   description: Processing data in SeaDataCloud project
   version: 1.1.2
-  rapydo: 0.7.2
+  rapydo: 0.7.3
   extends: b2stage
   extends-from: projects
 
@@ -18,6 +18,8 @@ tags:
 variables:
   env:
     SEADATA_API_VERSION: 1.1.2.0001
+
+    WRAP_RESPONSE: 1
 
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc 
 

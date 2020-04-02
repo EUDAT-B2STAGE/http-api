@@ -12,9 +12,8 @@ from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
 from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
 from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
-from restapi.flask_ext.flask_irods.client import IrodsException
+from restapi import decorators
+from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.htmlcodes import hcodes
 from b2stage.apis.commons import path
 from restapi.utilities.logs import log
@@ -47,8 +46,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required()
+    @decorators.catch_errors(exception=IrodsException)
+    @decorators.auth.required()
     def get(self, batch_id, qc_name):
         """ Check my quality check container """
 
@@ -92,10 +91,10 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         "transitioningMessage": "Image
         """
 
-        return response
+        return self.response(response)
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required()
+    @decorators.catch_errors(exception=IrodsException)
+    @decorators.auth.required()
     def put(self, batch_id, qc_name):
         """ Launch a quality check inside a container """
 
@@ -194,8 +193,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         if container_obj is not None:
             log.error("Docker container {} already exists!", container_name)
             response['status'] = 'existing'
-            code = hcodes.HTTP_BAD_CONFLICT
-            return self.force_response(response, errors=[response['status']], code=code)
+            return self.response(response, code=hcodes.HTTP_BAD_CONFLICT)
 
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
@@ -284,12 +282,12 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             else:
                 response['status'] = 'failure'
                 code = hcodes.HTTP_SERVER_ERROR
-            return self.force_response(response, errors=[response['status']], code=code)
+            return self.response(response, code=code)
 
-        return response
+        return self.response(response)
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required()
+    @decorators.catch_errors(exception=IrodsException)
+    @decorators.auth.required()
     def delete(self, batch_id, qc_name):
         """
         Remove a quality check executed
@@ -320,4 +318,4 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             }
         else:
             response = {'batch_id': batch_id, 'qc_name': qc_name, 'status': 'removed'}
-        return response
+        return self.response(response)

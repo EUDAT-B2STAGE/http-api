@@ -7,8 +7,8 @@ NOTE: this package will be loaded only if IRODS_ANONYMOUS is set
 """
 
 from b2stage.apis.commons.endpoint import EudatEndpoint
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
+from restapi import decorators
+from restapi.exceptions import RestApiException
 from b2stage.apis.commons import path
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
@@ -41,49 +41,31 @@ class Publish(EudatEndpoint):
         }
     }
 
-    def base(self, location):
+    def base(self, r, location):
 
         if location is None:
-            return (
-                self.send_errors(
-                    'Location: missing filepath inside URI',
-                    code=hcodes.HTTP_BAD_REQUEST,
-                ),
-                None,
-                None,
+            raise RestApiException(
+                'Location: missing filepath inside URI',
+                status_code=hcodes.HTTP_BAD_REQUEST,
             )
-        else:
-            location = self.fix_location(location)
 
-        r = self.init_endpoint()
+        location = self.fix_location(location)
+
         if r.errors is not None:
-            return self.send_errors(errors=r.errors), None, None
+            raise RestApiException(r.errors)
 
         path, resource, filename, _ = self.get_file_parameters(
             r.icommands, path=location
         )
 
-        # if r.icommands.is_collection(path):
-        #     return self.send_errors(
-        #         'Provided path is a collection. ' +
-        #         'Publishing is not allowed as recursive.',
-        #         code=hcodes.HTTP_NOT_IMPLEMENTED
-        #     ), None, None
-
         # Does this path exist?
         if not r.icommands.exists(path):
-            return (
-                self.send_errors(
-                    errors=[
-                        {'path': "'{}': not existing or no permissions".format(path)}
-                    ],
-                    code=hcodes.HTTP_BAD_NOTFOUND,
-                ),
-                None,
-                None,
+            raise RestApiException(
+                "path {} not existing or no permissions".format(path),
+                status_code=hcodes.HTTP_BAD_NOTFOUND,
             )
 
-        return None, r, path
+        return path
 
     def single_path_check(self, icom, zone, abs_path, check=True):
 
@@ -153,13 +135,12 @@ class Publish(EudatEndpoint):
 
         return '{}{}{}'.format(CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT, path)
 
-    @decorate.catch_error()
-    @authentication.required()
+    @decorators.catch_errors()
+    @decorators.auth.required()
     def get(self, location):
 
-        error, handler, path = self.base(location)
-        if error is not None:
-            return error
+        handler = self.init_endpoint()
+        path = self.base(handler, location)
 
         icom = handler.icommands
         user = icom.get_current_user()
@@ -177,13 +158,12 @@ class Publish(EudatEndpoint):
                 response['public_url'] = self.public_path(path)
             return response
 
-    @decorate.catch_error()
-    @authentication.required()
+    @decorators.catch_errors()
+    @decorators.auth.required()
     def put(self, location=None):
 
-        error, handler, path = self.base(location)
-        if error is not None:
-            return error
+        handler = self.init_endpoint()
+        path = self.base(handler, location)
 
         icom = handler.icommands
         user = icom.get_current_user()
@@ -203,13 +183,12 @@ class Publish(EudatEndpoint):
 
         return {'published': True, 'public_url': self.public_path(path)}
 
-    @decorate.catch_error()
-    @authentication.required()
+    @decorators.catch_errors()
+    @decorators.auth.required()
     def delete(self, location):
 
-        error, handler, path = self.base(location)
-        if error is not None:
-            return error
+        handler = self.init_endpoint()
+        path = self.base(handler, location)
 
         icom = handler.icommands
         user = icom.get_current_user()

@@ -5,10 +5,10 @@ B2SAFE HTTP REST API endpoints.
 Getting informations for public data.
 """
 
-from restapi.rest.response import WerkzeugResponse
+from werkzeug.wrappers import Response as WerkzeugResponse
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons.statics import HEADER, FOOTER
-from restapi import decorators as decorate
+from restapi import decorators
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
@@ -34,7 +34,7 @@ class Public(B2HandleEndpoint):
         }
     }
 
-    @decorate.catch_error()
+    @decorators.catch_errors()
     def get(self, location):
 
         ####################
@@ -94,13 +94,6 @@ class Public(B2HandleEndpoint):
             return icom.read_in_streaming(path, headers=headers)
         else:
             md, _ = icom.get_metadata(path)
-
-        ####################
-        # # look for pid metadata
-        # pid = '11100/33ac01fc-6850-11e5-b66e-e41f13eb32b2'
-        # metadata, bad_response = self.get_pid_metadata(pid)
-        ####################
-        # tmp = icom.list(location)
 
         # list content
         jout = self.list_objects(icom, path, is_collection, location, public=True)

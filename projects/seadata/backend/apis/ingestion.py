@@ -10,9 +10,9 @@ from b2stage.apis.commons.endpoint import EudatEndpoint
 from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
 from b2stage.apis.commons.endpoint import PARTIALLY_ENABLED_BATCH, ENABLED_BATCH
 from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
-from restapi.protocols.bearer import authentication
+from restapi import decorators
 from restapi.services.uploader import Uploader
-from restapi.flask_ext.flask_celery import CeleryExt
+from restapi.connectors.celery import CeleryExt
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from seadata.apis.commons.queue import log_into_queue, prepare_message
@@ -64,7 +64,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @authentication.required()
+    @decorators.auth.required()
     def get(self, batch_id):
 
         log.info("Batch request: {}", batch_id)
@@ -116,7 +116,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 data['status'] = 'partially_enabled'
 
             data['files'] = batch_files
-            return data
+            return self.response(data)
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
@@ -129,7 +129,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
-    @authentication.required()
+    @decorators.auth.required()
     def post(self, batch_id):
         json_input = self.get_input()
 
@@ -209,7 +209,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 code=hcodes.HTTP_SERVICE_UNAVAILABLE
             )
 
-    @authentication.required()
+    @decorators.auth.required()
     def delete(self):
 
         json_input = self.get_input()

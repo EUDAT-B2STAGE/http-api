@@ -69,8 +69,12 @@ else:
             endpoint = self._api_uri + self._register_endpoint + self._ipath
             r = self.app.put(
                 endpoint,
-                data=dict(file=(io.BytesIO(b"just a test"), self._filename)),
-                headers=self.__class__.auth_header)
+                data={
+                    "file": (io.BytesIO(b"just a test"), self._filename),
+                    "force": True
+                },
+                headers=self.__class__.auth_header
+            )
             self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         def test_01_GET_check_if_published(self):
@@ -90,16 +94,16 @@ else:
                 endpoint + self._ipath + 'wrong',
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
-            errors = self.get_content(r, return_errors=True)
-            assert 'not existing' in errors.pop().get('path')
+            error = self.get_content(r, return_errors=True)
+            assert 'not existing or no permissions' in error
 
             # Some other user directory: does not work
             r = self.app.get(
                 endpoint + self._no_permission_path,
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
-            errors = self.get_content(r, return_errors=True)
-            assert 'no permissions' in errors.pop().get('path')
+            error = self.get_content(r, return_errors=True)
+            assert 'not existing or no permissions' in error
 
         def test_02_PUT_publish_dataobject(self):
 
@@ -140,8 +144,8 @@ else:
                 endpoint + self._ipath + 'wrong',
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
-            errors = self.get_content(r, return_errors=True)
-            assert 'not existing' in errors.pop().get('path')
+            error = self.get_content(r, return_errors=True)
+            assert 'not existing or no permissions' in error
 
         def test_03_POST_not_working(self):
 
@@ -194,6 +198,7 @@ else:
                 headers=self.__class__.auth_header_anonymous)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
             errors = self.get_content(r, return_errors=True)
+            # errors is array because still returned from send_errors
             assert "you don't have privileges" in errors.pop()
 
             # Random file: cannot unpublish
@@ -201,8 +206,8 @@ else:
                 endpoint + self._ipath + 'wrong',
                 headers=self.__class__.auth_header)
             self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
-            errors = self.get_content(r, return_errors=True)
-            assert 'not existing' in errors.pop().get('path')
+            error = self.get_content(r, return_errors=True)
+            assert 'not existing or no permissions' in error
 
         def tearDown(self):
 

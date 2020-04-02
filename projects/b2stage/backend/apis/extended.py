@@ -10,9 +10,8 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/master/docs/user/endpoints.md
 
 """
 
-from restapi.flask_ext.flask_irods.client import IrodsException
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
+from restapi.connectors.irods.client import IrodsException
+from restapi import decorators
 from restapi.services.uploader import Uploader
 from restapi.services.download import Downloader
 
@@ -70,9 +69,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     def eudat_pid(self, pid, head=False):
 
         # recover metadata from pid
-        metadata, bad_response = self.get_pid_metadata(pid, head_method=head)
-        if bad_response is not None:
-            return bad_response
+        metadata = self.get_pid_metadata(pid, head_method=head)
         url = metadata.get('URL')
         if url is None:
             return self.send_errors(
@@ -83,7 +80,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
         if not self.download_parameter():
             if head:
-                return self.force_response("", code=hcodes.HTTP_OK_BASIC)
+                return self.response("", code=hcodes.HTTP_OK_BASIC)
             return metadata
         # download is requested, trigger file download
 
@@ -101,7 +98,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
             url = url.replace(proute, '/')
         else:
             # Otherwise, perform a request to an external service?
-            return self.force_response(
+            return self.response(
                 {'URL': url},
                 errors=[
                     "Data-object can't be downloaded by current "
@@ -115,8 +112,8 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
         return self.download_object(r, url, head=head)
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required(roles=['normal_user'])
+    @decorators.catch_errors(exception=IrodsException)
+    @decorators.auth.required(roles=['normal_user'])
     def get(self, pid):
         """ Get metadata or file from pid """
 
@@ -127,8 +124,8 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         except ImportError:
             return self.eudat_pid(pid, head=False)
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
-    @authentication.required(roles=['normal_user'])
+    @decorators.catch_errors(exception=IrodsException)
+    @decorators.auth.required(roles=['normal_user'])
     def head(self, pid):
         """ Get metadata or file from pid """
 

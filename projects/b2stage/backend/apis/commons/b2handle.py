@@ -13,8 +13,9 @@ try:
     from b2handle import handleexceptions
 except BaseException:
     b2handle, credentials, handleexceptions = [None] * 3
-from restapi.utilities.htmlcodes import hcodes
 from b2stage.apis.commons import path
+from restapi.exceptions import RestApiException
+from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 
@@ -192,13 +193,11 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
             data, error, code = self.handle_pid_fields(client, pid)
 
         # Still getting error? Raise any B2HANDLE library problem
-        if error is not None:
-            log.error("B2HANDLE problem: {}", error)
-            return (
-                data,
-                self.send_errors(
-                    message='B2HANDLE: {}'.format(error), code=code, head_method=head_method
-                ),
-            )
-        else:
-            return data, None
+        if error is None:
+            return data
+
+        log.error("B2HANDLE problem: {}", error)
+        raise RestApiException(
+            'B2HANDLE: {}'.format(error),
+            status_code=code
+        )

@@ -10,7 +10,7 @@ import json
 # import logging
 # from restapi import __package__ as current_package
 from restapi.server import create_app
-from restapi.rest.response import get_content_from_response
+from restapi.tests import get_content_from_response
 from restapi.services.authentication import BaseAuthentication as ba
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
@@ -27,7 +27,6 @@ class RestTestsBase(unittest.TestCase):
     _api_uri = API_URI
     _auth_uri = AUTH_URI
     _hcodes = hcodes
-    latest_response = None
 
     """
     HOW TO
@@ -82,22 +81,7 @@ class RestTestsBase(unittest.TestCase):
         return ExtClass().get_instance()
 
     def get_content(self, response, return_errors=False):
-        content, err, meta, code = get_content_from_response(response)
-
-        # Since unittests use class object and not instances
-        # This is the only workaround to set a persistent variable:
-        # abuse of the __class__ property
-
-        self.__class__.latest_response = {
-            "metadata": meta,
-            "content": content,
-            "errors": err,
-            "status": code,
-        }
-        if return_errors:
-            return err
-        else:
-            return content
+        return get_content_from_response(response, return_errors)
 
 
 #####################

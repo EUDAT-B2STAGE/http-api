@@ -106,7 +106,7 @@ class ExternalLogins(object):
 
         from restapi.services.detect import Detector as detect
 
-        b2access_vars = detect.load_variables({'prefix': 'b2access'})
+        b2access_vars = detect.load_variables(prefix='b2access_')
         selected_b2access = b2access_vars.get('env')
         if selected_b2access is None:
             return {}

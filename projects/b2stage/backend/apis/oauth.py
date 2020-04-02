@@ -4,14 +4,14 @@
 OAUTH2 authentication with EUDAT services
 """
 
-from flask import url_for
+from flask import url_for, request
 
 from b2stage.apis.commons import PRODUCTION
 from b2stage.apis.commons.endpoint import EudatEndpoint
 
-from restapi.flask_ext.flask_irods.client import IrodsException
-from restapi import decorators as decorate
-from restapi.protocols.bearer import authentication
+from restapi.exceptions import RestApiException
+from restapi.connectors.irods.client import IrodsException
+from restapi import decorators
 
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
@@ -34,21 +34,23 @@ class OauthLogin(EudatEndpoint):
         }
     }
 
-    @decorate.catch_error(
-        exception=RuntimeError, exception_label='Server side B2ACCESS misconfiguration'
-    )
+    @decorators.catch_errors(exception=RuntimeError)
     def get(self):
 
-        from restapi.rest.response import request_from_browser
-
-        if not request_from_browser():
-            return self.send_errors(
+        if request.user_agent.browser is None:
+            raise RestApiException(
                 "B2ACCESS authorization must be requested from a browser",
-                code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+                status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
             )
 
         auth = self.auth
         b2access = self.create_b2access_client(auth)
+
+        if b2access is None:
+            raise RestApiException(
+                "B2ACCESS integration is not enabled",
+                status_code=hcodes.HTTP_SERVICE_UNAVAILABLE
+            )
 
         authorized_uri = url_for('authorize', _external=True)
         if PRODUCTION:
@@ -62,7 +64,7 @@ class OauthLogin(EudatEndpoint):
         log.info("Ask redirection to: {}", authorized_uri)
 
         response = b2access.authorize(callback=authorized_uri)
-        return self.force_response(response)
+        return response
 
 
 class Authorize(EudatEndpoint):
@@ -84,7 +86,7 @@ class Authorize(EudatEndpoint):
         }
     }
 
-    @decorate.catch_error(exception=IrodsException, exception_label='B2SAFE')
+    @decorators.catch_errors(exception=IrodsException)
     def get(self):
         """
         Get the data for upcoming operations.
@@ -133,7 +135,7 @@ class Authorize(EudatEndpoint):
         local_token, jti = auth.create_token(auth.fill_payload(intuser))
         auth.save_token(auth._user, local_token, jti)
 
-        return self.force_response({
+        return self.response({
             'token': local_token,
             'b2safe_user': irods_user,
             'b2safe_home': user_home,
@@ -157,7 +159,7 @@ class B2accesProxyEndpoint(EudatEndpoint):
         }
     }
 
-    @authentication.required()
+    @decorators.auth.required()
     def post(self):
 
         ##########################
