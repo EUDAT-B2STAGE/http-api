@@ -1,6 +1,6 @@
-language: python
-sudo: required
+os: linux
 dist: bionic
+language: python
 python:
 - 3.8
 services:
