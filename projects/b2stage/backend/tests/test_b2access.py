@@ -2,7 +2,6 @@
 from tests.custom import RestTestsAuthenticatedBase
 
 
-# class TestB2Access(TestUtilities):
 class TestB2Access(RestTestsAuthenticatedBase):
 
     # @my_vcr.use_cassette('mytest.yaml')
