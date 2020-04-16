@@ -9,8 +9,6 @@ volumes:
     driver: local
   irodsvar:
     driver: local
-  tmpuploads:
-    driver: local
 
 services:
 
@@ -34,7 +32,7 @@ services:
   backend:
     volumes:
       # Uploads dir
-      - tmpuploads:${UPLOAD_PATH}
+      - ${VANILLA_DIR}/data/uploads:${UPLOAD_PATH}
       # SHARED
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
