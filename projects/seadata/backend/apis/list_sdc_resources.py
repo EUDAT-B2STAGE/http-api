@@ -12,9 +12,7 @@ from restapi.utilities.htmlcodes import hcodes
 
 class ListResources(EudatEndpoint, ClusterContainerEndpoint):
 
-    # schema_expose = True
     labels = ['helper']
-    depends_on = ['SEADATA_PROJECT']
     POST = {
         '/resourceslist': {
             'custom': {},

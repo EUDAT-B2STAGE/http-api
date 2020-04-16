@@ -16,7 +16,6 @@ from restapi.utilities.logs import log
 
 class Publish(EudatEndpoint):
 
-    # schema_expose = True
     labels = ['eudat', 'publish']
     depends_on = ['IRODS_ANONYMOUS', 'ENABLE_PUBLIC_ENDPOINT']
     GET = {

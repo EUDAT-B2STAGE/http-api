@@ -21,9 +21,8 @@ from restapi.utilities.logs import log
 
 class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    # schema_expose = True
-    labels = ['seadatacloud', 'ingestion']
-    depends_on = ['RESOURCES_PROJECT', 'SEADATA_PROJECT']
+    labels = ['ingestion']
+    depends_on = ['RESOURCES_PROJECT']
     GET = {
         '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
             'custom': {},

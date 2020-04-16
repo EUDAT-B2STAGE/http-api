@@ -9,9 +9,7 @@ from restapi.utilities.logs import log
 
 class Extlogs(EndpointResource):
 
-    # schema_expose = True
-    labels = ['seadatacloud', 'logs']
-    depends_on = ['SEADATA_PROJECT']
+    labels = ['logs']
     GET = {
         '/logs': {
             'custom': {},

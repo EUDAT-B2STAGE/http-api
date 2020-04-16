@@ -49,7 +49,6 @@ services:
       PROFILE_DISABLED: 1   # disable /auth/profile operations
       ADMINER_DISABLED: 1   # disable /admin/users operations
 
-      UPLOAD_PATH: ${UPLOAD_PATH}
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       PUBLIC_ENDPOINT: ${API_PUBLIC_ENDPOINT}
       ENABLE_PUBLIC_ENDPOINT: ${ENABLE_PUBLIC_ENDPOINT}

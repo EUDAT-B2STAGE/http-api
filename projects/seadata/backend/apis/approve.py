@@ -18,9 +18,7 @@ from restapi.utilities.logs import log
 # REST CLASS
 class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    # schema_expose = True
-    labels = ['seadatacloud', 'ingestion']
-    depends_on = ['SEADATA_PROJECT']
+    labels = ['ingestion']
     POST = {
         '/ingestion/<string:batch_id>/approve': {
             'custom': {},

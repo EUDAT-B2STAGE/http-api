@@ -55,9 +55,7 @@ def get_order_zip_file_name(order_id, restricted=False, index=None):
 # REST CLASSES
 class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    # schema_expose = True
-    labels = ['seadatacloud', 'order']
-    depends_on = ['SEADATA_PROJECT']
+    labels = ['order']
     GET = {
         '/orders/<string:order_id>/download/<string:ftype>/c/<string:code>': {
             'custom': {},
@@ -188,9 +186,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
 class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    # schema_expose = True
-    labels = ['seadatacloud', 'order']
-    depends_on = ['SEADATA_PROJECT']
+    labels = ['order']
     GET = {
         '/orders/<string:order_id>': {
             'custom': {},
