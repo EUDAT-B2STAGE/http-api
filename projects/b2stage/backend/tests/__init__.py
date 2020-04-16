@@ -111,8 +111,10 @@ class RestTestsAuthenticatedBase(RestTestsBase):
         )
         r = self.app.post(endpoint, data=credentials)
         self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        content = self.get_content(r)
-        self.save_token(content.get('token'))
+        # content = self.get_content(r)
+        # self.save_token(content.get('token'))
+        token = self.get_content(r)
+        self.save_token(token)
 
     def tearDown(self):
 
