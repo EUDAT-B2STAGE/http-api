@@ -58,7 +58,7 @@ class ExternalLogins(object):
         # Check if credentials are enabled inside docker env
         if 'B2ACCESS_APPNAME' not in os.environ or 'B2ACCESS_APPKEY' not in os.environ:
             log.verbose("Skipping B2ACCESS Oauth2 service")
-            continue
+            return services
 
         # Call the service and save it
         try:
