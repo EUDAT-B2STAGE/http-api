@@ -55,52 +55,27 @@ class ExternalLogins(object):
 
         services = {}
 
-        # For each defined internal service
-        for key, func in meta.get_methods_inside_instance(self).items():
+        # Check if credentials are enabled inside docker env
+        if 'B2ACCESS_APPNAME' not in os.environ or 'B2ACCESS_APPKEY' not in os.environ:
+            log.verbose("Skipping B2ACCESS Oauth2 service")
+            continue
 
-            # Check if credentials are enabled inside docker env
-            var1 = key.upper() + '_APPNAME'
-            var2 = key.upper() + '_APPKEY'
+        # Call the service and save it
+        try:
+            obj = self.b2access()
 
-            if var1 not in os.environ or var2 not in os.environ:
-                log.verbose("Skipping Oauth2 service {}", key)
-                continue
+            # Cycle all the Oauth2 group services
+            for name, oauth2 in obj.items():
+                if oauth2 is None:
+                    log.debug("Skipping failing credentials: B2ACCESS")
+                else:
+                    services[name] = oauth2
+                    log.debug("Created Oauth2 service {}", name)
 
-            # Call the service and save it
-            try:
-                obj = func()
-
-                # Make sure it's always a dictionary of objects
-                if not isinstance(obj, dict):
-                    obj = {key: obj}
-
-                # Cycle all the Oauth2 group services
-                for name, oauth2 in obj.items():
-                    if oauth2 is None:
-                        log.debug("Skipping failing credentials: {}", key)
-                    else:
-                        services[name] = oauth2
-                        log.debug("Created Oauth2 service {}", name)
-
-            except Exception as e:
-                log.critical("Unable to request oauth2 service {}\n{}", key, e)
+        except Exception as e:
+            log.critical("Unable to request oauth2 service B2ACCESS: {}", e)
 
         return services
-
-    def github(self):
-        """ This APIs are very useful for testing purpose """
-
-        return self.oauth.remote_app(
-            'github',
-            consumer_key=os.environ.get('GITHUB_APPNAME', 'yourappusername'),
-            consumer_secret=os.environ.get('GITHUB_APPKEY', 'yourapppw'),
-            base_url='https://github.com/login/oauth',
-            request_token_params={'scope': 'user'},
-            request_token_url=None,
-            access_token_method='POST',
-            access_token_url='https://github.com/login/oauth/access_token',
-            authorize_url='https://github.com/login/oauth/authorize',
-        )
 
     def b2access(self):
 
