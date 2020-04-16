@@ -15,7 +15,6 @@ from restapi.utilities.logs import log
 
 class Public(B2HandleEndpoint):
 
-    # schema_expose = True
     labels = ['eudat', 'pids', 'public']
     depends_on = ['IRODS_ANONYMOUS', 'ENABLE_PUBLIC_ENDPOINT']
     GET = {

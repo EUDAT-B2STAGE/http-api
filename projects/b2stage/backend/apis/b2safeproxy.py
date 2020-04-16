@@ -14,7 +14,6 @@ class B2safeProxy(B2accessUtilities):
     _anonymous_user = 'anonymous'
 
     baseuri = '/auth'
-    # schema_expose = True
     labels = ['eudat', 'b2safe', 'authentication']
     GET = {
         '/b2safeproxy': {

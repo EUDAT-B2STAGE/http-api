@@ -28,9 +28,7 @@ BACKDOOR_SECRET = 'howdeepistherabbithole'
 class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     """ Create batch folder and upload zip files inside it """
 
-    # schema_expose = True
-    labels = ['seadatacloud', 'ingestion']
-    depends_on = ['SEADATA_PROJECT']
+    labels = ['ingestion']
     GET = {
         '/ingestion/<string:batch_id>': {
             'custom': {},

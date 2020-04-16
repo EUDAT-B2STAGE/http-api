@@ -84,8 +84,6 @@ variables:
     # B2ACCESS_ENV: staging
     # B2ACCESS_ENV: production
     B2ACCESS_CAS: /tmp/certificates/b2access
-    ##: OTHERs / FIXED
-    UPLOAD_PATH: /uploads
     FULL_JWT: false
 
     # Email to be notified for proxy certificates expiration (letsencrypt)
@@ -95,11 +93,6 @@ variables:
     # TO BE DEPRECATED
     HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
     HANDLE_BASE: "https://url.to.epic/handles/"
-
-    ###############################
-    ## Seadata project variable
-    # Note: not used anymore
-    SEADATA_PROJECT: 0
 
 # Keep track of releases and dependencies
 releases:

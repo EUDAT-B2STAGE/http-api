@@ -13,9 +13,7 @@ from restapi.utilities.logs import log
 
 class PidCache(ClusterContainerEndpoint, B2accessUtilities):
 
-    # schema_expose = True
     labels = ['helper']
-    depends_on = ['SEADATA_PROJECT']
     GET = {
         '/pidcache': {
             'summary': 'Retrieve values from the PID cache',

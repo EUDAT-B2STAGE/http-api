@@ -12,9 +12,7 @@ from restapi.utilities.htmlcodes import hcodes
 
 class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
-    # schema_expose = True
-    labels = ['seadatacloud', 'restricted']
-    depends_on = ['SEADATA_PROJECT']
+    labels = ['restricted']
     POST = {
         '/restricted/<string:order_id>': {
             'custom': {},
