@@ -28,8 +28,6 @@ variables:
 
   env:
 
-    WRAP_RESPONSE: 1
-
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
     BACKEND_BUILD_MODE: backendirods
     # PYTHON_PATH: /usr/local/lib/python3.6/dist-packages
