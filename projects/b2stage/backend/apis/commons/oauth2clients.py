@@ -92,7 +92,7 @@ class ExternalLogins(object):
 
         if secret is None or secret.strip() == '':
             log.info("B2ACCESS credentials not set")
-            return None
+            return {}
 
         base_url = B2ACCESS_URLS.get(selected_b2access)
         b2access_url = "https://{}:{}".format(base_url, B2ACCESS_MAIN_PORT)
