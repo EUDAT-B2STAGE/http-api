@@ -1,32 +1,14 @@
 # # -*- coding: utf-8 -*-
-
-
-"""
-THIS STUFF IS BASED ON NOSE2 -> TO BE REMOVED!!!
-"""
-
 import unittest
 import json
-# import logging
-# from restapi import __package__ as current_package
 from restapi.server import create_app
-from restapi.tests import get_content_from_response
 from restapi.services.authentication import BaseAuthentication as ba
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
-#  , set_global_log_level
 from restapi.tests import API_URI, AUTH_URI
 
-# To change UNITTEST debugging level
-# TEST_DEBUGGING_LEVEL = logging.DEBUG
-# set_global_log_level(current_package, TEST_DEBUGGING_LEVEL)
 
-
-class RestTestsBase(unittest.TestCase):
-
-    _api_uri = API_URI
-    _auth_uri = AUTH_URI
-    _hcodes = hcodes
+class RestTestsAuthenticatedBase(unittest.TestCase):
 
     """
     HOW TO
@@ -54,13 +36,12 @@ class RestTestsBase(unittest.TestCase):
         pass
     """
 
-    def setUp(self):
-        """
-        Note: in this base tests,
-        I also want to check if i can run multiple Flask applications.
+    _api_uri = API_URI
+    _auth_uri = AUTH_URI
+    _hcodes = hcodes
 
-        Thi is why i prefer setUp on setUpClass
-        """
+    def setUp(self):
+
         log.debug('### Setting up the Flask server ###')
         app = create_app(testing_mode=True)
         self.app = app.test_client()
@@ -70,22 +51,38 @@ class RestTestsBase(unittest.TestCase):
         self._username = ba.default_user
         self._password = ba.default_password
 
+        log.info("### Creating a test token ###")
+        endpoint = self._auth_uri + '/login'
+        credentials = json.dumps(
+            {'username': self._username, 'password': self._password}
+        )
+        r = self.app.post(endpoint, data=credentials)
+        assert r.status_code == self._hcodes.HTTP_OK_BASIC
+        # content = self.get_content(r)
+        # self.save_token(content.get('token'))
+        token = self.get_content(r)
+        self.save_token(token)
+
     def tearDown(self):
+
+        # Token clean up
+        log.debug('### Cleaning token ###')
+        ep = self._auth_uri + '/tokens'
+        # Recover current token id
+        r = self.app.get(ep, headers=self.__class__.auth_header)
+        assert r.status_code == self._hcodes.HTTP_OK_BASIC
+        content = self.get_content(r)
+        for element in content:
+            if element.get('token') == self.__class__.bearer_token:
+                # delete only current token
+                ep += '/' + element.get('id')
+                rdel = self.app.delete(ep, headers=self.__class__.auth_header)
+                assert rdel.status_code == self._hcodes.HTTP_OK_NORESPONSE
+
+        # The end
         log.debug('### Tearing down the Flask server ###')
         del self.app
 
-    def get_service_handler(self, service_name):
-        from restapi.services.detect import detector
-
-        ExtClass = detector.services_classes.get(service_name)
-        return ExtClass().get_instance()
-
-    def get_content(self, response, return_errors=False):
-        return get_content_from_response(response, return_errors)
-
-
-#####################
-class RestTestsAuthenticatedBase(RestTestsBase):
     def save_token(self, token, suffix=None):
 
         if suffix is None:
@@ -99,39 +96,36 @@ class RestTestsAuthenticatedBase(RestTestsBase):
         key = 'auth_header' + suffix
         setattr(self.__class__, key, {'Authorization': 'Bearer {}'.format(token)})
 
-    def setUp(self):
+    def get_service_handler(self, service_name):
+        from restapi.services.detect import detector
 
-        # Call father's method
-        super().setUp()
+        ExtClass = detector.services_classes.get(service_name)
+        return ExtClass().get_instance()
 
-        log.info("### Creating a test token ###")
-        endpoint = self._auth_uri + '/login'
-        credentials = json.dumps(
-            {'username': self._username, 'password': self._password}
-        )
-        r = self.app.post(endpoint, data=credentials)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        # content = self.get_content(r)
-        # self.save_token(content.get('token'))
-        token = self.get_content(r)
-        self.save_token(token)
+    def get_content(self, http_out, return_errors=False):
 
-    def tearDown(self):
+        response = None
 
-        # Token clean up
-        log.debug('### Cleaning token ###')
-        ep = self._auth_uri + '/tokens'
-        # Recover current token id
-        r = self.app.get(ep, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        content = self.get_content(r)
-        for element in content:
-            if element.get('token') == self.__class__.bearer_token:
-                # delete only current token
-                ep += '/' + element.get('id')
-                rdel = self.app.delete(ep, headers=self.__class__.auth_header)
-                self.assertEqual(rdel.status_code, self._hcodes.HTTP_OK_NORESPONSE)
+        try:
+            response = json.loads(http_out.get_data().decode())
+        except Exception as e:
+            log.error("Failed to load response:\n{}", e)
+            raise ValueError(
+                "Malformed response: {}".format(http_out)
+            )
 
-        # The end
-        super().tearDown()
-        log.info("Completed one method to test\n\n")
+        # Check what we have so far
+        # Should be {Response: DATA, Meta: RESPONSE_METADATA}
+        if not isinstance(response, dict) or len(response) != 2:
+            if return_errors:
+                log.warning("Obsolete use of return_errors flag")
+            return response
+
+        Response = response.get("Response")
+
+        if Response is None:
+            return response
+
+        if return_errors:
+            return Response.get('errors')
+        return Response.get('data')
