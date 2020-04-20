@@ -33,6 +33,7 @@ variables:
     # PYTHON_PATH: /usr/local/lib/python3.6/dist-packages
 
     ALLOW_ACCESS_TOKEN_PARAMETER: True
+    RUN_SCHEMATHESIS: 0
 
     ###############################
     ## B2ACCESS
