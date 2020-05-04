@@ -81,22 +81,17 @@ class B2accessUtilities(EndpointResource):
                 },
             }
 
-            log.critical(content)
-            log.critical(errors)
-            log.critical(resp)
-
-            # if content is not None:
-            #     content = resp
-            # elif errors is not None:
-            #     errors = resp
+            if content is not None:
+                content = resp
+            elif errors is not None:
+                errors = resp
 
         return super(B2accessUtilities, self).response(
             content=content,
             errors=errors,
             code=code,
             headers=headers,
-            head_method=head_method,
-            wrap_response=True
+            head_method=head_method
         )
 
     def associate_object_to_attr(self, obj, key, value):
