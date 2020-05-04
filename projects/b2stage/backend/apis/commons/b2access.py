@@ -167,7 +167,7 @@ class B2accessUtilities(EndpointResource):
             errstring = "Empty response from B2ACCESS"
         elif not isinstance(b2access_user, OAuthResponse):
             errstring = "Invalid response from B2ACCESS"
-        elif b2access_user.status > hcodes.HTTP_TRESHOLD:
+        elif b2access_user.status >= 300:
             log.error("Bad status: {}", str(b2access_user._resp))
             if b2access_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
                 errstring = "B2ACCESS token obtained is unauthorized..."
