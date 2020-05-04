@@ -39,8 +39,6 @@ services:
       - ${VANILLA_DIR}/data/certs:/usr/local/share/ca-certificates
       # # mount irods code to develop patches
       # - ${SUBMODULE_DIR}/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
-    networks:
-      i_net:
 
     environment:
       MAIN_LOGIN_ENABLE: 0  # this could disable the basic /auth/login method
