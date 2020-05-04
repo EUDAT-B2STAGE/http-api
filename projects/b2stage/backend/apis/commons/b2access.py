@@ -95,7 +95,8 @@ class B2accessUtilities(EndpointResource):
             errors=errors,
             code=code,
             headers=headers,
-            head_method=head_method
+            head_method=head_method,
+            wrap_response=True
         )
 
     def associate_object_to_attr(self, obj, key, value):
