@@ -192,7 +192,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         if container_obj is not None:
             log.error("Docker container {} already exists!", container_name)
             response['status'] = 'existing'
-            return self.response(response, code=hcodes.HTTP_BAD_CONFLICT)
+            return self.response(errors=response, code=hcodes.HTTP_BAD_CONFLICT)
 
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
