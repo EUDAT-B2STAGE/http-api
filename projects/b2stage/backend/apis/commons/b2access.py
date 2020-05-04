@@ -3,7 +3,7 @@
 """
 B2ACCESS utilities
 """
-
+import os
 import json
 import requests
 from flask import session
@@ -39,10 +39,56 @@ class B2accessUtilities(EndpointResource):
                  meta=None, wrap_response=False):
 
         from restapi.confs import WRAP_RESPONSE
+        SEADATA_PROJECT = os.environ.get("SEADATA_PROJECT", "0")
         # the project is converted to new response... re-apply locally the wrapper!!
-        if not WRAP_RESPONSE:
+        if not WRAP_RESPONSE and SEADATA_PROJECT == "1":
+
+            if content is None:
+                elements = 0
+            elif isinstance(content, str):
+                elements = 1
+            else:
+                elements = len(content)
+
+            if errors is None:
+                total_errors = 0
+            else:
+                total_errors = len(errors)
+
+            if code is None:
+                code = 200
+
+            if errors is None and content is None:
+                if not head_method or code is None:
+                    code = 204
+            elif errors is None:
+                if code >= 300:
+                    code = 200
+            elif content is None:
+                if code < 400:
+                    code = 500
+
+            resp = {
+                "Response": {
+                    'data': content,
+                    'errors': errors
+                },
+                "Meta": {
+                    'data_type': str(type(content)),
+                    'elements': elements,
+                    'errors': total_errors,
+                    'status': int(code),
+                },
+            }
+
             log.critical(content)
             log.critical(errors)
+            log.critical(resp)
+
+            # if content is not None:
+            #     content = resp
+            # elif errors is not None:
+            #     errors = resp
 
         return super(B2accessUtilities, self).response(
             content=content,
