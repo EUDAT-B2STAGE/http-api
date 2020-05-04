@@ -38,16 +38,19 @@ class B2accessUtilities(EndpointResource):
                  code=None, headers=None, head_method=False,
                  meta=None, wrap_response=False):
 
-        r = super(B2accessUtilities, self).response(
+        from restapi.confs import WRAP_RESPONSE
+        # the project is converted to new response... re-apply locally the wrapper!!
+        if not WRAP_RESPONSE:
+            log.critical(content)
+            log.critical(errors)
+
+        return super(B2accessUtilities, self).response(
             content=content,
             errors=errors,
             code=code,
             headers=headers,
             head_method=head_method
         )
-        log.critical(r)
-
-        return r
 
     def associate_object_to_attr(self, obj, key, value):
         try:
