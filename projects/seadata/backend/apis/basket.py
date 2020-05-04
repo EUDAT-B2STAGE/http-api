@@ -158,7 +158,6 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                     {order_id: "Invalid code"}, code=hcodes.HTTP_BAD_NOTFOUND
                 )
 
-            # # TODO: push pdonorio/prc
             # tickets = imain.list_tickets()
             # print(tickets)
 
@@ -166,9 +165,6 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # iticket mod "$TICKET" uses 1
             # iticket mod "$TICKET" expire "2018-03-23.06:50:00"
 
-            # ##################
-            # response = {order_id: 'valid'}
-            # return self.response(response)
             headers = {
                 'Content-Transfer-Encoding': 'binary',
                 'Content-Disposition': "attachment; filename={}".format(zip_file_name),

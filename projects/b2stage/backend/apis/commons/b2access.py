@@ -34,6 +34,21 @@ class B2accessUtilities(EndpointResource):
             B2accessUtilities.ext_auth = ExternalLogins(current_app)
             log.info("OAuth2 initialized")
 
+    def response(self, content=None, errors=None,
+                 code=None, headers=None, head_method=False,
+                 meta=None, wrap_response=False):
+
+        r = super(B2accessUtilities, self).response(
+            content=content,
+            errors=errors,
+            code=code,
+            headers=headers,
+            head_method=head_method
+        )
+        log.critical(r)
+
+        return r
+
     def associate_object_to_attr(self, obj, key, value):
         try:
             setattr(obj, key, value)
