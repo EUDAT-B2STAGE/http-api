@@ -19,8 +19,6 @@ variables:
   env:
     SEADATA_API_VERSION: 1.1.2.0001
 
-    WRAP_RESPONSE: 1
-
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc 
 
     ###############################
