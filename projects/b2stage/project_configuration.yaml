@@ -77,7 +77,6 @@ variables:
     # irods fixed
     IRODS_DB: ICAT
     IRODS_CHUNKSIZE: 1048576
-    ALCHEMY_POOLSIZE: 30 # or 20 # (default is 5)
 
     B2ACCESS_ENV: development
     # B2ACCESS_ENV: staging
@@ -85,9 +84,7 @@ variables:
     B2ACCESS_CAS: /tmp/certificates/b2access
     FULL_JWT: false
 
-    # Email to be notified for proxy certificates expiration (letsencrypt)
-    SMTP_ADMIN:
-
+    ACTIVATE_TESTING_MODE: 0
     ############################
     # TO BE DEPRECATED
     HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
