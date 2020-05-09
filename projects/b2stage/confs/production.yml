@@ -7,20 +7,6 @@ volumes:
 services:
 
   backend:
-  #   environment:
-  #     ##################
-  #     # Base info
-  #     # ACTIVATE: 1
-  #     APP_MODE: production
-  #     # FLASK_DEBUG: 0
-  #     NGINX_ACTIVE: "True"
-
-    # depends_on:
-    #   # - icat
-    #   - postgres
-    # talk only to proxy
-    # expose:
-    #   - 8080
     volumes:
       # B2HANDLE credentials to solve PID metadata in write mode
       - ${VANILLA_DIR}/data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
@@ -30,20 +16,6 @@ services:
     volumes:
       - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
 
-  proxy:
-    # environment:
-    #   ACTIVATE: 1
-    volumes:
-      # SSL / HTTPS
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/nginx/production_nofrontend.conf:/etc/nginx/sites-enabled/production
-      # 502 Bad Gateway
-      # Workaroud to make this works in extended mode
-      - ${VANILLA_DIR}/projects/b2stage/builds/proxy/badgateway.html:/usr/share/nginx/html/custom_502.html
-    # ports:
-    #   - ${PROXY_DEV_PORT}:${PROXY_DEV_PORT}   # 80 redirect
-    #   - ${PROXY_PROD_PORT}:${PROXY_PROD_PORT} # 443 SSL
-
-  ################
   icat:
     command: /docker-entrypoint.d/b2access.sh
     # command: echo enabled b2access certificates

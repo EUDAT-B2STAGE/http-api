@@ -23,12 +23,6 @@ services:
       # EXTRA EUDAT scripts
       - ${VANILLA_DIR}/projects/b2stage/builds/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
 
-  postgres:
-    environment:
-      POSTGRES_USER: "${ALCHEMY_USER}"
-      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
-      POSTGRES_DBS: ${ALCHEMY_DBS}
-
   backend:
     volumes:
       # Uploads dir
@@ -55,36 +49,12 @@ services:
 
       # db access
       ALCHEMY_ENABLE: 1
-      ALCHEMY_HOST: ${ALCHEMY_HOST}
-      ALCHEMY_PORT: ${ALCHEMY_PORT}
-      ALCHEMY_USER: ${ALCHEMY_USER}
-      ALCHEMY_PASSWORD: ${ALCHEMY_PASSWORD}
-      ALCHEMY_DB: ${ALCHEMY_DB}
-      ALCHEMY_POOLSIZE: ${ALCHEMY_POOLSIZE}
 
       # irods configuration
       IRODS_ENABLE: 1
-      IRODS_HOST: ${IRODS_HOST}
-      IRODS_PORT: ${IRODS_PORT}
-      IRODS_USER: ${IRODS_USER}
-      IRODS_ZONE: ${IRODS_ZONE}
-      IRODS_HOME: ${IRODS_HOME}
-      IRODS_DN: ${IRODS_DN}
-      IRODS_PASSWORD: ${IRODS_PASSWORD}
-      IRODS_AUTHSCHEME: ${IRODS_AUTHSCHEME}
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
 
-      # mongodb connection
-      MONGO_ENABLE: ${ACTIVATE_MONGODB}
-      MONGO_HOST: ${MONGO_HOST}
-      MONGO_DATABASE: ${MONGO_DATABASE}
-      MONGO_PORT: ${MONGO_PORT}
-
       AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
-
-  proxy:
-    environment:
-      SMTP_ADMIN: ${SMTP_ADMIN}
 
   sqlalchemyui:
     ports:
