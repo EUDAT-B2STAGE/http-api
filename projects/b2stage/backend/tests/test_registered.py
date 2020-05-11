@@ -14,7 +14,7 @@ __authors__ = [
 class TestDigitalObjects(RestTestsAuthenticatedBase):
 
     _main_endpoint = '/registered'
-    _metadata_endpoint = '/metadata'
+    # _metadata_endpoint = '/metadata'
     _irods_test_name = 'test'
     _irods_home = '/tempZone/home/guest'
     _irods_path = '/tempZone/home/guest/test'
@@ -216,12 +216,12 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         self.assertEqual(response_pid, None)
 
         # Add EUDAT metadata
-        params = json.dumps(dict({'PID': pid}))
-        endpoint = self._api_uri + self._metadata_endpoint + \
-            self._irods_path + '/' + self._test_filename
-        r = self.app.patch(endpoint, data=params,
-                           headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        # params = json.dumps(dict({'PID': pid}))
+        # endpoint = self._api_uri + self._metadata_endpoint + \
+        #     self._irods_path + '/' + self._test_filename
+        # r = self.app.patch(endpoint, data=params,
+        #                    headers=self.__class__.auth_header)
+        # self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
 
         # Obtain EUDAT entity metadata
         endpoint = self._api_uri + self._main_endpoint + \

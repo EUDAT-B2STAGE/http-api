@@ -494,8 +494,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         path, resource, filename, force = self.get_file_parameters(icom)
 
         ###################
-        # Debug/Testing option to remove the whole content of current home
-        if not PRODUCTION or TESTING:
+        # Testing option to remove the whole content of current home
+        if TESTING:
             if self._args.get('debugclean'):
                 home = icom.get_user_home()
                 files = icom.list(home)
