@@ -15,10 +15,9 @@ import os
 import time
 import json
 from glom import glom
-from flask import request, current_app
+from flask import request
 
-# from werkzeug import secure_filename
-
+from restapi.confs import TESTING
 from b2stage.apis.commons import PRODUCTION, CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators
@@ -195,7 +194,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # Disable upload for POST method
         if 'file' in request.files:
             raise RestApiException(
-                'File upload forbidden for this method; ' +
+                'File upload forbidden for this method; '
                 'Please use the PUT method for this operation',
                 status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
             )
@@ -496,7 +495,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ###################
         # Debug/Testing option to remove the whole content of current home
-        if not PRODUCTION or current_app.config['TESTING']:
+        if not PRODUCTION or TESTING:
             if self._args.get('debugclean'):
                 home = icom.get_user_home()
                 files = icom.list(home)
