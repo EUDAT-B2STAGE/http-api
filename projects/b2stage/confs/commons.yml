@@ -54,8 +54,6 @@ services:
       IRODS_ENABLE: 1
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
 
-      AUTH_FULL_JWT_PAYLOAD: ${FULL_JWT}
-
   sqlalchemyui:
     ports:
       - 8080:8080

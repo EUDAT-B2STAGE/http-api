@@ -4,11 +4,9 @@ services:
 
   backend:
     environment:
-      TESTING: ${ACTIVATE_TESTING_MODE}
 
       IRODS_GUEST_USER: ${IRODS_GUEST_USER}
       IRODS_DEFAULT_ADMIN_USER: ${IRODS_DEFAULT_ADMIN_USER}
-      #################
 
       # trick for unittests
       DEBUG_ENDPOINTS: 1

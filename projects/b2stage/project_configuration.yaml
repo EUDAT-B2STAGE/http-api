@@ -82,10 +82,8 @@ variables:
     # B2ACCESS_ENV: staging
     # B2ACCESS_ENV: production
     B2ACCESS_CAS: /tmp/certificates/b2access
-    FULL_JWT: false
+    # FULL_JWT: false
 
-    ACTIVATE_TESTING_MODE: 0
-    ############################
     # TO BE DEPRECATED
     HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
     HANDLE_BASE: "https://url.to.epic/handles/"
