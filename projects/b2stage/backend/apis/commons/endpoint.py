@@ -339,7 +339,7 @@ class EudatEndpoint(B2accessUtilities):
         # Execute icommand (transfer data to cache)
         icom.open(path, abs_file)
         # Download the file from local fs
-        filecontent = self.download(filename, subfolder=username, get=True)
+        filecontent = self.download(filename, subfolder=username)
         # Remove local file
         os.remove(abs_file)
         # Stream file content
