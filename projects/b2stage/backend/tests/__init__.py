@@ -100,7 +100,7 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
     def get_service_handler(self, service_name):
 
         connector = detector.connectors_instances.get(service_name)
-        connector.get_instance()
+        return connector.get_instance()
 
     def get_content(self, http_out):
 
