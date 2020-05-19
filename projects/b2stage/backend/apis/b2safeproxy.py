@@ -121,7 +121,7 @@ class B2safeProxy(B2accessUtilities):
         else:
             encoded_session = irods.prc.serialize()
 
-        token, irods_user = self.auth.irods_user(username, encoded_session)
+        token, irods_user = self.irods_user(username, encoded_session)
 
         #############
         response = {'token': token}
