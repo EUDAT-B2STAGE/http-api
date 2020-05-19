@@ -11,7 +11,6 @@ from restapi.utilities.logs import log
 class TestB2safeProxy(RestTestsAuthenticatedBase):
 
     _main_endpoint = '/b2safeproxy'
-    _irods_service = 'irods'
     _irods_user = 'icatbetatester'
     _irods_password = 'IAMABETATESTER'
 
@@ -23,7 +22,7 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
         super().setUp()
         log.debug('### Creating custom data ###\n')
         # how to get a service before having any app request
-        i = self.get_service_handler(self._irods_service)
+        i = self.get_service_handler('irods')
         # create a dedicated irods user and set the password
         if i.create_user(self._irods_user):
             i.modify_user_password(self._irods_user, self._irods_password)
@@ -34,7 +33,7 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
         """
 
         log.debug('### Cleaning custom data ###\n')
-        i = self.get_service_handler(self._irods_service)
+        i = self.get_service_handler('irods')
         i.remove_user(self._irods_user)
         super().tearDown()
 

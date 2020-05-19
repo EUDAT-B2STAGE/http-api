@@ -2,6 +2,7 @@
 import unittest
 import json
 from restapi.server import create_app
+from restapi.services.detect import detector
 from restapi.services.authentication import BaseAuthentication as ba
 from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
@@ -97,10 +98,9 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         setattr(self.__class__, key, {'Authorization': 'Bearer {}'.format(token)})
 
     def get_service_handler(self, service_name):
-        from restapi.services.detect import detector
 
-        ExtClass = detector.services_classes.get(service_name)
-        return ExtClass().get_instance()
+        connector = detector.connectors_instances.get(service_name)
+        connector.get_instance()
 
     def get_content(self, http_out, return_errors=False):
 
