@@ -123,7 +123,7 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
                 log.debug("HANDLE client connected [w/out credentials]")
             else:
                 found = False
-                file = os.environ.get('HANDLE_CREDENTIALS', None)
+                file = os.getenv('HANDLE_CREDENTIALS', None)
                 if file is not None:
 
                     credentials_path = path.build(file)

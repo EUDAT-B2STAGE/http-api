@@ -20,7 +20,7 @@ class Initializer(object):
             return
 
         with app.app_context():
-            users = os.environ.get('SEADATA_PRIVILEGED_USERS')
+            users = os.getenv('SEADATA_PRIVILEGED_USERS')
 
             if users is None or users == "":
                 users = []

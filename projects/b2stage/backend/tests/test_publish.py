@@ -13,8 +13,8 @@ from b2stage.apis.commons import path
 from restapi.utilities.logs import log
 
 maketests = \
-    os.environ.get('ENABLE_PUBLIC_ENDPOINT') == '1' and \
-    os.environ.get('IRODS_ANONYMOUS') == '1'
+    os.getenv('ENABLE_PUBLIC_ENDPOINT') == '1' and \
+    os.getenv('IRODS_ANONYMOUS') == '1'
 
 
 if not maketests:
