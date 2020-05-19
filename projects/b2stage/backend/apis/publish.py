@@ -24,7 +24,7 @@ class Publish(EudatEndpoint):
             'responses': {'200': {'description': "return a boolean 'published'"}},
         }
     }
-    PUT = {
+    _PUT = {
         '/publish/<path:location>': {
             'summary': 'set the path to be readable for the anonymous user',
             'responses': {'200': {'description': "return a boolean 'published'"}},

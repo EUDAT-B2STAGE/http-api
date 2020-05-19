@@ -67,7 +67,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ],
         }
     }
-    PUT = {
+    _PUT = {
         '/registered/<path:location>': {
             'summary': 'Upload a new file',
             'responses': {'200': {'description': 'File created'}},
