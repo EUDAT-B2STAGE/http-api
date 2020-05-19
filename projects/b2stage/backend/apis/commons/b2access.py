@@ -397,8 +397,8 @@ class B2accessUtilities(EndpointResource):
         return None
 
     def send_errors(
-        self, message=None, errors=None, code=None, headers=None,
-        head_method=False, print_error=True
+        self, errors=None, code=None,
+        head_method=False
     ):
         """ Setup an error message """
 
@@ -407,20 +407,15 @@ class B2accessUtilities(EndpointResource):
         if isinstance(errors, str):
             errors = [errors]
 
-        # See if we have the main message
-        if message is not None:
-            errors.append(message)
-
         if code is None or code < hcodes.HTTP_BAD_REQUEST:
             # default error
             code = hcodes.HTTP_SERVER_ERROR
 
-        if print_error and errors:
-            log.error(errors)
+        log.error(errors)
 
         if head_method:
             errors = None
 
         return self.response(
-            errors=errors, code=code, headers=headers, head_method=head_method
+            content=errors, code=code, head_method=head_method
         )
