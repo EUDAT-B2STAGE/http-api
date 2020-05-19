@@ -100,15 +100,16 @@ class Authorize(EudatEndpoint):
             b2access
         )
         if b2access_token is None:
-            return self.send_errors(message=b2access_error)
+            return self.send_errors(errors=b2access_error)
 
         # B2access user info
         b2access_user, intuser, extuser = self.get_b2access_user_info(
             auth, b2access, b2access_token, b2access_refresh_token
         )
         if b2access_user is None and intuser is None:
+            log.error(extuser)
             return self.send_errors(
-                message='Unable to retrieve user info from b2access', errors=extuser
+                errors='Unable to retrieve user info from b2access',
             )
 
         b2access_email = b2access_user.data.get('email')

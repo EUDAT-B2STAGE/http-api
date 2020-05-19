@@ -71,7 +71,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         url = metadata.get('URL')
         if url is None:
             return self.send_errors(
-                message='B2HANDLE: empty URL_value returned',
+                errors='B2HANDLE: empty URL_value returned',
                 code=hcodes.HTTP_BAD_NOTFOUND,
                 head_method=head,
             )
