@@ -89,7 +89,7 @@ class B2accessUtilities(EndpointResource):
                  code=None, headers=None, head_method=False,
                  meta=None, wrap_response=False):
 
-        SEADATA_PROJECT = os.environ.get("SEADATA_PROJECT", "0")
+        SEADATA_PROJECT = os.getenv("SEADATA_PROJECT", "0")
         # Locally apply the response wrapper, no longer available in the core
         if SEADATA_PROJECT == "1":
 
