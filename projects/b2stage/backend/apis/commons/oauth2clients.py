@@ -10,11 +10,8 @@ import os
 from flask_oauthlib.client import OAuth
 from base64 import b64encode
 from restapi.utilities.globals import mem
-from restapi.utilities.meta import Meta
 
 from restapi.utilities.logs import log
-
-meta = Meta()
 
 B2ACCESS_MAIN_PORT = 8443
 B2ACCESS_CA_PORT = 8445
