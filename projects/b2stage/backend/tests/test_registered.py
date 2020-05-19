@@ -129,8 +129,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         # Upload entity w/o passing a file
         r = self.app.put(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(
-            r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
+        assert r.status_code == 400
 
         # Upload entity in a non existing path
         endpoint = self._api_uri + \
