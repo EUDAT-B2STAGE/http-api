@@ -6,9 +6,10 @@ B2ACCESS utilities
 import os
 import json
 import requests
+import pytz
+from datetime import datetime
 from flask import session
 from base64 import b64encode
-from datetime import datetime as dt
 from flask_oauthlib.client import OAuthResponse
 from urllib3.exceptions import HTTPError
 
@@ -33,6 +34,56 @@ class B2accessUtilities(EndpointResource):
             from flask import current_app
             B2accessUtilities.ext_auth = ExternalLogins(current_app)
             log.info("OAuth2 initialized")
+
+    def irods_user(self, username, session):
+
+        user = self.auth.get_user_object(username)
+
+        if user is not None:
+            log.debug("iRODS user already cached: {}", username)
+            user.session = session
+        else:
+
+            userdata = {
+                "email": username,
+                "name": username,
+                "surname": 'iCAT',
+                "authmethod": 'irods',
+                "session": session,
+            }
+            user = self.auth.create_user(userdata, [self.auth.default_role])
+            try:
+                self.auth.db.session.commit()
+                log.info('Cached iRODS user: {}', username)
+            except BaseException as e:
+                self.auth.db.session.rollback()
+                log.error("Errors saving iRODS user: {}", username)
+                log.error(str(e))
+                log.error(type(e))
+
+                user = self.auth.get_user_object(username)
+                # Unable to do something...
+                if user is None:
+                    raise e
+                user.session = session
+
+        # token
+        payload, full_payload = self.auth.fill_payload(user)
+        token = self.auth.create_token(payload)
+        now = datetime.now(pytz.utc)
+        if user.first_login is None:
+            user.first_login = now
+        user.last_login = now
+        try:
+            self.auth.db.session.add(user)
+            self.auth.db.session.commit()
+        except BaseException as e:
+            log.error("DB error ({}), rolling back", e)
+            self.auth.db.session.rollback()
+
+        self.auth.save_token(user, token, full_payload)
+
+        return token, username
 
     def response(self, content=None, errors=None,
                  code=None, headers=None, head_method=False,
@@ -172,7 +223,9 @@ class B2accessUtilities(EndpointResource):
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:
                 errstring = (
-                    "B2ACCESS token obtained failed with {}".format(b2access_user.status)
+                    "B2ACCESS token obtained failed with {}".format(
+                        b2access_user.status
+                    )
                 )
         elif isinstance(b2access_user._resp, HTTPError):
             errstring = "Error from B2ACCESS: {}".format(b2access_user._resp)
@@ -209,7 +262,7 @@ class B2accessUtilities(EndpointResource):
         # timestamp_resolution = 1e3
 
         # Convert into datetime object and save it inside db
-        tok_exp = dt.fromtimestamp(int(timestamp) / timestamp_resolution)
+        tok_exp = datetime.fromtimestamp(int(timestamp) / timestamp_resolution)
         self.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
 
         return b2access_user, intuser, extuser
@@ -275,7 +328,9 @@ class B2accessUtilities(EndpointResource):
                 "authmethod": account_type
             }
             try:
-                internal_user = self.auth.create_user(userdata, [self.auth.default_role])
+                internal_user = self.auth.create_user(
+                    userdata, [self.auth.default_role]
+                )
                 self.auth.db.session.commit()
                 log.info("Created internal user {}", internal_user)
             except BaseException as e:
@@ -350,9 +405,9 @@ class B2accessUtilities(EndpointResource):
             "refresh_token": refresh_token,
             "scope": 'USER_PROFILE',
         }
-        auth_hash = b64encode(str.encode("{}:{}".format(client_id, client_secret))).decode(
-            "ascii"
-        )
+        auth_hash = b64encode(
+            str.encode("{}:{}".format(client_id, client_secret))
+        ).decode("ascii")
         headers = {'Authorization': 'Basic {}'.format(auth_hash)}
 
         resp = requests.post(
