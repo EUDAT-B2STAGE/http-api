@@ -10,7 +10,7 @@ from restapi.utilities.logs import log
 class Extlogs(EndpointResource):
 
     labels = ['logs']
-    GET = {
+    _GET = {
         '/logs': {
             'custom': {},
             'summary': 'get logs from elastic',

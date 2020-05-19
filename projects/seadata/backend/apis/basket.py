@@ -56,7 +56,7 @@ def get_order_zip_file_name(order_id, restricted=False, index=None):
 class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ['order']
-    GET = {
+    _GET = {
         '/orders/<string:order_id>/download/<string:ftype>/c/<string:code>': {
             'custom': {},
             'summary': 'Download an order',
@@ -183,14 +183,14 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ['order']
-    GET = {
+    _GET = {
         '/orders/<string:order_id>': {
             'custom': {},
             'summary': 'List orders',
             'responses': {'200': {'description': 'The list of zip files available'}},
         }
     }
-    POST = {
+    _POST = {
         '/orders': {
             'custom': {},
             'summary': 'Request one order preparation',
@@ -215,7 +215,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             },
         }
     }
-    DELETE = {
+    _DELETE = {
         '/orders': {
             'custom': {},
             'summary': 'Remove one or more orders',

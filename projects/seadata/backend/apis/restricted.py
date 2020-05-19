@@ -13,7 +13,7 @@ from restapi.utilities.htmlcodes import hcodes
 class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     labels = ['restricted']
-    POST = {
+    _POST = {
         '/restricted/<string:order_id>': {
             'custom': {},
             'summary': 'Request to import a zip file into a restricted order',

@@ -14,13 +14,13 @@ from restapi.utilities.logs import log
 class PidCache(ClusterContainerEndpoint, B2accessUtilities):
 
     labels = ['helper']
-    GET = {
+    _GET = {
         '/pidcache': {
             'summary': 'Retrieve values from the PID cache',
             'responses': {'200': {'description': 'Async job started'}},
         }
     }
-    POST = {
+    _POST = {
         '/pidcache/<batch_id>': {
             'summary': 'Fill the PID cache',
             'responses': {'200': {'description': 'Async job started'}},

@@ -27,7 +27,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     """ Handling PID on endpoint requests """
 
     labels = ['eudat', 'pids']
-    GET = {
+    _GET = {
         '/pids/<path:pid>': {
             'summary': 'Resolve the input PID and retrieve a digital object information or download it or list a collection',
             'custom': {},
