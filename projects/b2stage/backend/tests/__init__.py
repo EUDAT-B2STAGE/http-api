@@ -102,7 +102,7 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         connector = detector.connectors_instances.get(service_name)
         connector.get_instance()
 
-    def get_content(self, http_out, return_errors=False):
+    def get_content(self, http_out):
 
         response = None
 
@@ -114,18 +114,4 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
                 "Malformed response: {}".format(http_out)
             )
 
-        # Check what we have so far
-        # Should be {Response: DATA, Meta: RESPONSE_METADATA}
-        if not isinstance(response, dict) or len(response) != 2:
-            if return_errors:
-                log.warning("Obsolete use of return_errors flag")
-            return response
-
-        Response = response.get("Response")
-
-        if Response is None:
-            return response
-
-        if return_errors:
-            return Response.get('errors')
-        return Response.get('data')
+        return response
