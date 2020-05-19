@@ -58,7 +58,6 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     labels = ['order']
     _GET = {
         '/orders/<string:order_id>/download/<string:ftype>/c/<string:code>': {
-            'custom': {},
             'summary': 'Download an order',
             'responses': {
                 '200': {'description': 'The order with all files compressed'},
@@ -185,14 +184,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     labels = ['order']
     _GET = {
         '/orders/<string:order_id>': {
-            'custom': {},
             'summary': 'List orders',
             'responses': {'200': {'description': 'The list of zip files available'}},
         }
     }
     _POST = {
         '/orders': {
-            'custom': {},
             'summary': 'Request one order preparation',
             'parameters': [
                 {
@@ -204,9 +201,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             'responses': {'200': {'description': 'Asynchronous request launched'}},
         }
     }
-    PUT = {
+    _PUT = {
         '/orders/<string:order_id>': {
-            'custom': {},
             'summary': 'Request a link to download an order (if already prepared)',
             'responses': {
                 '200': {
@@ -217,7 +213,6 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     }
     _DELETE = {
         '/orders': {
-            'custom': {},
             'summary': 'Remove one or more orders',
             'responses': {
                 '200': {'description': 'Async job submitted for orders removal'}

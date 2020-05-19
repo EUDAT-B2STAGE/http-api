@@ -20,21 +20,18 @@ class Publish(EudatEndpoint):
     depends_on = ['IRODS_ANONYMOUS', 'ENABLE_PUBLIC_ENDPOINT']
     _GET = {
         '/publish/<path:location>': {
-            'custom': {},
             'summary': 'Check if the path is currently readable for the anonymous user',
             'responses': {'200': {'description': "return a boolean 'published'"}},
         }
     }
     PUT = {
         '/publish/<path:location>': {
-            'custom': {},
             'summary': 'set the path to be readable for the anonymous user',
             'responses': {'200': {'description': "return a boolean 'published'"}},
         }
     }
     _DELETE = {
         '/publish/<path:location>': {
-            'custom': {},
             'summary': 'Ensure that the path is not accessible for the anonymous user',
             'responses': {'200': {'description': "return a boolean 'published'"}},
         }

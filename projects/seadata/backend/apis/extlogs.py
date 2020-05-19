@@ -12,7 +12,6 @@ class Extlogs(EndpointResource):
     labels = ['logs']
     _GET = {
         '/logs': {
-            'custom': {},
             'summary': 'get logs from elastic',
             'responses': {
                 '200': {

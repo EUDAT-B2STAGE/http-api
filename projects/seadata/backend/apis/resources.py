@@ -25,21 +25,18 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
     depends_on = ['RESOURCES_PROJECT']
     _GET = {
         '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
-            'custom': {},
             'summary': 'Resources management',
             'responses': {'200': {'description': 'unknown'}},
         }
     }
-    PUT = {
+    _PUT = {
         '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
-            'custom': {},
             'summary': 'Launch a quality check as a docker container',
             'responses': {'200': {'description': 'unknown'}},
         }
     }
     _DELETE = {
         '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
-            'custom': {},
             'summary': 'Remove a quality check if existing',
             'responses': {'200': {'description': 'unknown'}},
         }

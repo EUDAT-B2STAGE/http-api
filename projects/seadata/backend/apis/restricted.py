@@ -15,7 +15,6 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     labels = ['restricted']
     _POST = {
         '/restricted/<string:order_id>': {
-            'custom': {},
             'summary': 'Request to import a zip file into a restricted order',
             'responses': {'200': {'description': 'Request unqueued for download'}},
         }

@@ -30,7 +30,6 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     _GET = {
         '/pids/<path:pid>': {
             'summary': 'Resolve the input PID and retrieve a digital object information or download it or list a collection',
-            'custom': {},
             'parameters': [
                 {
                     'name': 'download',
@@ -49,7 +48,6 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     HEAD = {
         '/pids/<path:pid>': {
             'summary': 'Resolve the input PID and verify permission of the digital object',
-            'custom': {},
             'parameters': [
                 {
                     'name': 'download',
