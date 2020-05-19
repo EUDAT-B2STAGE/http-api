@@ -45,7 +45,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
             },
         }
     }
-    HEAD = {
+    _HEAD = {
         '/pids/<path:pid>': {
             'summary': 'Resolve the input PID and verify permission of the digital object',
             'parameters': [
