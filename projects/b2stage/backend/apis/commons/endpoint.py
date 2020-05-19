@@ -47,7 +47,7 @@ class EudatEndpoint(B2accessUtilities):
         # NOTE: user legenda
         # internal_user = user internal to the API
         # external_user = user from oauth (B2ACCESS)
-        internal_user = self.get_current_user()
+        internal_user = self.auth.get_user()
         log.debug("Token user: {}", internal_user)
 
         #################################
