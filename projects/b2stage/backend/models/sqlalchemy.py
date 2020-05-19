@@ -2,7 +2,7 @@
 
 """ CUSTOM Models for the relational database """
 
-from restapi.models.sqlalchemy import db, User
+from restapi.connectors.sqlalchemy.models import db, User
 
 # Add (inject) attributes to User
 # setattr(User, 'name', db.Column(db.String(255)))
