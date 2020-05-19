@@ -23,7 +23,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ['ingestion']
     depends_on = ['RESOURCES_PROJECT']
-    GET = {
+    _GET = {
         '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
             'custom': {},
             'summary': 'Resources management',
@@ -37,7 +37,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             'responses': {'200': {'description': 'unknown'}},
         }
     }
-    DELETE = {
+    _DELETE = {
         '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
             'custom': {},
             'summary': 'Remove a quality check if existing',

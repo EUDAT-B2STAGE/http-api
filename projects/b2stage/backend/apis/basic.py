@@ -35,7 +35,7 @@ from restapi.utilities.logs import log
 class BasicEndpoint(Uploader, EudatEndpoint):
 
     labels = ['eudat', 'registered']
-    GET = {
+    _GET = {
         '/registered/<path:location>': {
             'custom': {},
             'summary': 'Retrieve a single digital entity/object information or download it',
@@ -54,7 +54,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             },
         }
     }
-    POST = {
+    _POST = {
         '/registered': {
             'summary': 'Create a new collection',
             'custom': {},
@@ -97,7 +97,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ],
         }
     }
-    PATCH = {
+    _PATCH = {
         '/registered/<path:location>': {
             'summary': 'Update an entity name',
             'custom': {},
@@ -111,7 +111,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             'responses': {'200': {'description': 'File name updated'}},
         }
     }
-    DELETE = {
+    _DELETE = {
         '/registered': {
             'custom': {},
             'summary': 'Delete an entity',

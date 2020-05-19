@@ -22,7 +22,7 @@ if TESTING:
     class MetadataEndpoint(EudatEndpoint):
 
         labels = ['helpers', 'eudat']
-        PATCH = {
+        _PATCH = {
             '/metadata/<path:location>': {
                 'summary': 'Add metadata to object',
                 'custom': {},

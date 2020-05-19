@@ -13,7 +13,7 @@ from restapi.utilities.htmlcodes import hcodes
 class ListResources(EudatEndpoint, ClusterContainerEndpoint):
 
     labels = ['helper']
-    POST = {
+    _POST = {
         '/resourceslist': {
             'custom': {},
             'summary': 'Request a list of existing batches and orders',

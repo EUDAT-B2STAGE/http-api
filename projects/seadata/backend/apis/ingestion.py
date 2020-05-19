@@ -29,7 +29,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     """ Create batch folder and upload zip files inside it """
 
     labels = ['ingestion']
-    GET = {
+    _GET = {
         '/ingestion/<string:batch_id>': {
             'custom': {},
             'summary': 'Check if the ingestion batch is enabled',
@@ -40,7 +40,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             },
         }
     }
-    POST = {
+    _POST = {
         '/ingestion/<string:batch_id>': {
             'custom': {},
             'summary': 'Request to import a zip file to the ingestion cloud',
@@ -50,7 +50,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             },
         }
     }
-    DELETE = {
+    _DELETE = {
         '/ingestion': {
             'custom': {},
             'summary': 'Delete one or more ingestion batches',

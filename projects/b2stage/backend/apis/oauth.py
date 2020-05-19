@@ -26,7 +26,7 @@ class OauthLogin(EudatEndpoint):
     baseuri = '/auth'
     labels = ['eudat', 'b2access', 'authentication']
     depends_on = ['B2ACCESS_APPKEY']
-    GET = {
+    _GET = {
         '/askauth': {
             'custom': {},
             'summary': 'Redirection to B2ACCESS oauth2 login',
@@ -76,7 +76,7 @@ class Authorize(EudatEndpoint):
     baseuri = '/auth'
     labels = ['eudat', 'b2access', 'authentication']
     depends_on = ['B2ACCESS_APPKEY']
-    GET = {
+    _GET = {
         '/authorize': {
             'custom': {},
             'summary': 'Produce internal token if B2ACCESS authorization is granted',
@@ -151,7 +151,7 @@ class B2accesProxyEndpoint(EudatEndpoint):
     baseuri = '/auth'
     labels = ['eudat', 'b2access']
     depends_on = ['B2ACCESS_APPKEY']
-    POST = {
+    _POST = {
         '/proxy': {
             'custom': {},
             'summary': 'Check and/or refresh current B2ACCESS proxy credentials',

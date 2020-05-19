@@ -15,13 +15,13 @@ class B2safeProxy(B2accessUtilities):
 
     baseuri = '/auth'
     labels = ['eudat', 'b2safe', 'authentication']
-    GET = {
+    _GET = {
         '/b2safeproxy': {
             'summary': 'Test a token obtained as a B2SAFE user',
             'responses': {'200': {'description': 'token is valid'}},
         }
     }
-    POST = {
+    _POST = {
         '/b2safeproxy': {
             'summary': 'Authenticate inside HTTP API with B2SAFE user',
             'description': 'Normal credentials (username and password) login endpoint',
