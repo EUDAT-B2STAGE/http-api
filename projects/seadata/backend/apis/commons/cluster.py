@@ -53,14 +53,10 @@ class ClusterContainerEndpoint(EndpointResource):
     Base to use rancher in many endpoints
     """
 
-    def custom_init(self):
-        """ It gets called every time a new request is executed """
-        self._handle = None
-        self._credentials = {}
-        # self.load_credentials()
-        # self.get_or_create_handle()
-
     def load_credentials(self):
+
+        if not hasattr(self, '_credentials'):
+            self._credentials = {}
 
         if len(self._credentials) < 1:
             from restapi.services.detect import detector
@@ -75,6 +71,9 @@ class ClusterContainerEndpoint(EndpointResource):
         including the localpath, which is
         set to "/nfs/share".
         '''
+
+        if not hasattr(self, '_handle'):
+            self._handle = None
 
         if self._handle is None:
             from seadata.apis.commons.rancher import Rancher
