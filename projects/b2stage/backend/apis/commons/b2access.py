@@ -38,10 +38,9 @@ class B2accessUtilities(EndpointResource):
                  code=None, headers=None, head_method=False,
                  meta=None, wrap_response=False):
 
-        from restapi.confs import WRAP_RESPONSE
         SEADATA_PROJECT = os.environ.get("SEADATA_PROJECT", "0")
-        # the project is converted to new response... re-apply locally the wrapper!!
-        if not WRAP_RESPONSE and SEADATA_PROJECT == "1":
+        # Locally apply the response wrapper, no longer available in the core
+        if SEADATA_PROJECT == "1":
 
             if content is None:
                 elements = 0
