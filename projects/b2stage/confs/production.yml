@@ -11,11 +11,6 @@ services:
       # B2HANDLE credentials to solve PID metadata in write mode
       - ${VANILLA_DIR}/data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
 
-  postgres:
-    # Activate a production ready configuration
-    volumes:
-      - ${SUBMODULE_DIR}/rapydo-confs/confs/postgresql/pgs_prod.sh:/docker-entrypoint-initdb.d/init-production.conf.sh:ro
-
   icat:
     command: /docker-entrypoint.d/b2access.sh
     # command: echo enabled b2access certificates
