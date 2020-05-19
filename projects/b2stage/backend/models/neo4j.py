@@ -9,7 +9,7 @@ from __future__ import absolute_import
 from neomodel import StringProperty, BooleanProperty, JSONProperty, \
     StructuredNode, StructuredRel, RelationshipTo, RelationshipFrom
 
-from restapi.models.neo4j import User as UserBase
+from restapi.connectors.neo4j.models import User as UserBase
 
 
 class User(UserBase):
