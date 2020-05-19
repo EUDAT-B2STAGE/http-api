@@ -20,7 +20,6 @@ class Public(B2HandleEndpoint):
     _GET = {
         '/public/<location>': {
             'summary': 'Let non-authenticated users get data about a public data-object',
-            'custom': {},
             'parameters': [
                 {
                     'name': 'download',

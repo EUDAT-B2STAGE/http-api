@@ -37,7 +37,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     labels = ['eudat', 'registered']
     _GET = {
         '/registered/<path:location>': {
-            'custom': {},
             'summary': 'Retrieve a single digital entity/object information or download it',
             'parameters': [
                 {
@@ -57,7 +56,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     _POST = {
         '/registered': {
             'summary': 'Create a new collection',
-            'custom': {},
             'responses': {'200': {'description': 'Collection created'}},
             'parameters': [
                 {
@@ -72,7 +70,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     PUT = {
         '/registered/<path:location>': {
             'summary': 'Upload a new file',
-            'custom': {},
             'responses': {'200': {'description': 'File created'}},
             'parameters': [
                 {
@@ -100,7 +97,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     _PATCH = {
         '/registered/<path:location>': {
             'summary': 'Update an entity name',
-            'custom': {},
             'parameters': [
                 {
                     'name': 'new file name',
@@ -113,7 +109,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     }
     _DELETE = {
         '/registered': {
-            'custom': {},
             'summary': 'Delete an entity',
             'parameters': [
                 {
@@ -126,7 +121,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             'responses': {'200': {'description': 'Entities deleted'}},
         },
         '/registered/<path:location>': {
-            'custom': {},
             'summary': 'Delete an entity',
             'parameters': [
                 {

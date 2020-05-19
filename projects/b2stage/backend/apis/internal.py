@@ -25,7 +25,6 @@ if TESTING:
         _PATCH = {
             '/metadata/<path:location>': {
                 'summary': 'Add metadata to object',
-                'custom': {},
                 'parameters': [
                     {
                         'name': 'metadata',

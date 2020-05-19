@@ -31,7 +31,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     labels = ['ingestion']
     _GET = {
         '/ingestion/<string:batch_id>': {
-            'custom': {},
             'summary': 'Check if the ingestion batch is enabled',
             'responses': {
                 '404': {'description': 'Batch not enabled or lack of permissions'},
@@ -42,7 +41,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     }
     _POST = {
         '/ingestion/<string:batch_id>': {
-            'custom': {},
             'summary': 'Request to import a zip file to the ingestion cloud',
             'responses': {
                 '200': {'description': 'Request unqueued for download'},
@@ -52,7 +50,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     }
     _DELETE = {
         '/ingestion': {
-            'custom': {},
             'summary': 'Delete one or more ingestion batches',
             'responses': {
                 '200': {

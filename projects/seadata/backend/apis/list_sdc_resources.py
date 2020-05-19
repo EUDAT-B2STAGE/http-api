@@ -15,7 +15,6 @@ class ListResources(EudatEndpoint, ClusterContainerEndpoint):
     labels = ['helper']
     _POST = {
         '/resourceslist': {
-            'custom': {},
             'summary': 'Request a list of existing batches and orders',
             'responses': {'200': {'description': 'returning id of async request'}},
         }
