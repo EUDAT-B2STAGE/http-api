@@ -60,7 +60,7 @@ else:
             home_dirname = 'home'
             self._ipath = str(path.join(
                 path.root(), self.irods_vars.get('zone'),
-                home_dirname, self.irods_vars.get('guest_user'), self._filename
+                home_dirname, self._irods_user, self._filename
             ))
             self._no_permission_path = str(path.join(
                 path.root(), self.irods_vars.get('zone'),
