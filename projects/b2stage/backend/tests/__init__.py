@@ -2,7 +2,7 @@
 import unittest
 import json
 from restapi.server import create_app
-from restapi.services.authentication import BaseAuthentication as ba
+# from restapi.services.authentication import BaseAuthentication as ba
 from restapi.utilities.logs import log
 from restapi.tests import API_URI, AUTH_URI
 
@@ -45,19 +45,18 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         self.app = app.test_client()
 
         # Auth init from base/custom config
-        ba.load_default_user()
+        # ba.load_default_user()
 
-        log.info("### Creating a test token ###")
-        endpoint = self._auth_uri + '/login'
-        credentials = {
-            'username': ba.default_user,
-            'password': ba.default_password
-        }
-        r = self.app.post(endpoint, data=credentials)
-        assert r.status_code == 200
-
-        token = self.get_content(r)
-        self.save_token(token)
+        # log.info("### Creating a test token ###")
+        # endpoint = self._auth_uri + '/login'
+        # credentials = {
+        #     'username': ba.default_user,
+        #     'password': ba.default_password
+        # }
+        # r = self.app.post(endpoint, data=credentials)
+        # assert r.status_code == 200
+        # token = self.get_content(r)
+        # self.save_token(token)
 
     def tearDown(self):
 
