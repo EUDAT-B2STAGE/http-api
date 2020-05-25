@@ -16,9 +16,9 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     _main_endpoint = '/registered'
     _metadata_endpoint = '/metadata'
     _irods_test_name = 'test'
-    _irods_home = '/tempZone/home/guest'
-    _irods_path = '/tempZone/home/guest/test'
-    _invalid_irods_path = '/tempZone/home/x/guest/test'
+    _irods_home = '/tempZone/home/icatbetatester'
+    _irods_path = '/tempZone/home/icatbetatester/test'
+    _invalid_irods_path = '/tempZone/home/x/icatbetatester/test'
     _test_pdf_filename = 'test.pdf'
     _test_filename = 'test.txt'
 
