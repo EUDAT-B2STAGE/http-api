@@ -114,45 +114,56 @@ class B2accessUtilities(EndpointResource):
 
         SEADATA_PROJECT = os.getenv("SEADATA_PROJECT", "0")
         # Locally apply the response wrapper, no longer available in the core
-        if SEADATA_PROJECT == "1":
+        log.error(SEADATA_PROJECT)
+        if SEADATA_PROJECT == "0":
 
-            if content is None:
-                elements = 0
-            elif isinstance(content, str):
-                elements = 1
-            else:
-                elements = len(content)
+            return super(B2accessUtilities, self).response(
+                content=content,
+                errors=errors,
+                code=code,
+                headers=headers,
+                head_method=head_method
+            )
 
-            if errors is None:
-                total_errors = 0
-            else:
-                total_errors = len(errors)
+        if content is None:
+            elements = 0
+        elif isinstance(content, str):
+            elements = 1
+        else:
+            elements = len(content)
 
-            if code is None:
+        if errors is None:
+            total_errors = 0
+        else:
+            total_errors = len(errors)
+
+        if code is None:
+            code = 200
+
+        if errors is None and content is None:
+            if not head_method or code is None:
+                code = 204
+        elif errors is None:
+            if code >= 300:
                 code = 200
+        elif content is None:
+            if code < 400:
+                code = 500
 
-            if errors is None and content is None:
-                if not head_method or code is None:
-                    code = 204
-            elif errors is None:
-                if code >= 300:
-                    code = 200
-            elif content is None:
-                if code < 400:
-                    code = 500
+        resp = {
+            "Response": {
+                'data': content,
+                'errors': errors
+            },
+            "Meta": {
+                'data_type': str(type(content)),
+                'elements': elements,
+                'errors': total_errors,
+                'status': int(code),
+            },
+        }
 
-            resp = {
-                "Response": {
-                    'data': content,
-                    'errors': errors
-                },
-                "Meta": {
-                    'data_type': str(type(content)),
-                    'elements': elements,
-                    'errors': total_errors,
-                    'status': int(code),
-                },
-            }
+        log.info(resp)
 
         return super(B2accessUtilities, self).response(
             content=resp,
