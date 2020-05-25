@@ -18,7 +18,7 @@ script:
 - pip list --format columns | grep docker && pip search rapydo-
 
 # - /bin/bash templates/create_testing_projectrc.sh 
-- rapydo init
+- rapydo --project {$PROJECT} init
 - rapydo pull
 - rapydo start
 - rapydo shell backend --command 'restapi tests --wait'
