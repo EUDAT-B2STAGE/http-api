@@ -57,6 +57,20 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         # assert r.status_code == 200
         # token = self.get_content(r)
         # self.save_token(token)
+        r = self.app.post(
+            self._auth_uri + '/b2safeproxy',
+            data={
+                'username': self._irods_user,
+                'password': self._irods_password,
+            }
+        )
+
+        assert r.status_code == 200
+        data = self.get_content(r)
+        assert 'token' in data
+        token = data.get('token')
+        self.save_token(token)
+
 
     def tearDown(self):
 
