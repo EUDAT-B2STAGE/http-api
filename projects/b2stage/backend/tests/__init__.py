@@ -55,8 +55,7 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         }
         r = self.app.post(endpoint, data=credentials)
         assert r.status_code == 200
-        # content = self.get_content(r)
-        # self.save_token(content.get('token'))
+
         token = self.get_content(r)
         self.save_token(token)
 
