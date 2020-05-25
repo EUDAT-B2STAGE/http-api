@@ -15,11 +15,8 @@ install:
 - chmod -R o+Xw projects # fix permissions for coverage to be computed
 
 script:
-- docker --version && docker-compose --version
-- pip list --format columns | grep docker && pip search rapydo-
-
 # - /bin/bash templates/create_testing_projectrc.sh 
-- rapydo --project ${PROJECT} init
+- TESTING=1 rapydo --project ${PROJECT} init
 - rapydo pull
 - rapydo start
 - rapydo shell backend --command 'restapi tests --wait'
