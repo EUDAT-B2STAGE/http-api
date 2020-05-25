@@ -53,6 +53,7 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
         data = self.get_content(r)
         assert 'token' in data
         token = data.get('token')
+        self.save_token(token)
 
         # verify that token is valid
         r = self.app.get(
