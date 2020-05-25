@@ -95,8 +95,10 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
                 rdel = self.app.delete(ep, headers=self.__class__.auth_header)
                 assert rdel.status_code == 204
 
-        i = detector.get_service_instance("irods")
-        i.remove_user(self._irods_user)
+        # i = detector.get_service_instance("irods")
+        # irods.exception.CAT_COLLECTION_NOT_EMPTY:
+        #          collection '/tempZone/trash/home/icatbetatester' is not empty
+        # i.remove_user(self._irods_user)
 
         # The end
         log.debug('### Tearing down the Flask server ###')
