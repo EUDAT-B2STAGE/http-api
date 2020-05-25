@@ -41,7 +41,7 @@ def get_and_verify_irods_session(function, parameters):
 
 
 class Credentials(Schema):
-    username = fields.Email(required=True)
+    username = fields.Str(required=True)
     password = fields.Str(
         required=True,
         password=True,
