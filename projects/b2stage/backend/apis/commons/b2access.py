@@ -114,7 +114,7 @@ class B2accessUtilities(EndpointResource):
 
         SEADATA_PROJECT = os.getenv("SEADATA_PROJECT", "0")
         # Locally apply the response wrapper, no longer available in the core
-        log.error(SEADATA_PROJECT)
+
         if SEADATA_PROJECT == "0":
 
             return super(B2accessUtilities, self).response(
@@ -162,8 +162,6 @@ class B2accessUtilities(EndpointResource):
                 'status': int(code),
             },
         }
-
-        log.info(resp)
 
         return super(B2accessUtilities, self).response(
             content=resp,
