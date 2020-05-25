@@ -15,7 +15,6 @@ except BaseException:
     b2handle, credentials, handleexceptions = [None] * 3
 from b2stage.apis.commons import path
 from restapi.exceptions import RestApiException
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 
@@ -160,21 +159,22 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
                 log.info("B2HANDLE: {}={}", field, value)
                 data[field] = value
         except handleexceptions.HandleSyntaxError as e:
-            return data, e, hcodes.HTTP_BAD_REQUEST
+            return data, e, 400
         except handleexceptions.HandleNotFoundException as e:
-            return data, e, hcodes.HTTP_BAD_NOTFOUND
+            return data, e, 404
         except handleexceptions.GenericHandleError as e:
-            return data, e, hcodes.HTTP_SERVER_ERROR
+            return data, e, 500
         except handleexceptions.HandleAuthenticationError as e:
-            return data, e, hcodes.HTTP_BAD_UNAUTHORIZED
+            return data, e, 401
         except requests.exceptions.ConnectionError as e:
             log.warning("No connection available...")
-            return data, e, hcodes.HTTP_SERVER_ERROR
+            return data, e, 500
         except BaseException as e:
             log.error("Generic:\n{}({})", e.__class__.__name__, e)
-            return data, e, hcodes.HTTP_SERVER_ERROR
+            return data, e, 500
 
-        return data, None, hcodes.HTTP_FOUND
+        # 302 = HTTP_FOUND
+        return data, None, 302
 
     def get_pid_metadata(self, pid, head_method=False):
 

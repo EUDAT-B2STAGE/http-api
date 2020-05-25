@@ -16,7 +16,6 @@ from restapi.connectors.celery import CeleryExt
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from seadata.apis.commons.queue import log_into_queue, prepare_message
-from restapi.utilities.htmlcodes import hcodes
 from b2stage.apis.commons import path
 from restapi.utilities.logs import log
 from irods.exception import NetworkException
@@ -87,7 +86,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             if batch_status == MISSING_BATCH:
                 return self.send_errors(
                     "Batch '{}' not enabled or you have no permissions".format(batch_id),
-                    code=hcodes.HTTP_BAD_NOTFOUND,
+                    code=404,
                 )
 
             if batch_status == BATCH_MISCONFIGURATION:
@@ -98,7 +97,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 )
                 return self.send_errors(
                     "Misconfiguration for batch_id {}".format(batch_id),
-                    code=hcodes.HTTP_BAD_RESOURCE,
+                    # Bad Resource
+                    code=410,
                 )
 
             data = {}
@@ -115,13 +115,13 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
         except NetworkException as e:
             log.error(e)
             return self.send_errors(
                 "Could not connect to B2SAFE host",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
 
     @decorators.auth.required()
@@ -176,7 +176,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                     log.critical(err_msg)
                     log.info('Removing collection from irods ({})', batch_path)
                     imain.remove(batch_path, recursive=True, force=True)
-                    return self.send_errors(err_msg, code=hcodes.HTTP_SERVER_ERROR)
+                    return self.send_errors(err_msg, code=500)
 
             else:
                 log.debug("Batch path already exists on filesytem")
@@ -201,7 +201,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
 
     @decorators.auth.required()
@@ -227,5 +227,5 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )

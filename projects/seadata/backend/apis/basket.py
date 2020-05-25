@@ -32,7 +32,6 @@ from seadata.apis.commons.seadatacloud import ORDERS_ENDPOINT
 from restapi import decorators
 from restapi.connectors.celery import CeleryExt
 from seadata.apis.commons.queue import log_into_queue, prepare_message
-from restapi.utilities.htmlcodes import hcodes
 from restapi.connectors.irods.client import IrodsException
 from b2stage.apis.commons import path
 from restapi.utilities.logs import log
@@ -118,7 +117,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.info("DOWNLOAD DEBUG 4: {} (code '{}') - {}", order_id, code, zip_ipath)
             if not imain.is_dataobject(zip_ipath):
                 log.error("File not found {}", zip_ipath)
-                return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
+                return self.send_errors({order_id: error}, code=404)
 
             log.info("DOWNLOAD DEBUG 5: {} (code '{}')", order_id, code)
 
@@ -134,7 +133,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
             if iticket_code != encoded_code:
                 log.error("iticket code does not match {}", zip_ipath)
-                return self.send_errors({order_id: error}, code=hcodes.HTTP_BAD_NOTFOUND)
+                return self.send_errors({order_id: error}, code=404)
 
             # NOTE: very important!
             # use anonymous to get the session here
@@ -154,7 +153,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             if not icom.test_ticket(zip_ipath):
                 log.error("Invalid iticket code {}", zip_ipath)
                 return self.send_errors(
-                    {order_id: "Invalid code"}, code=hcodes.HTTP_BAD_NOTFOUND
+                    {order_id: "Invalid code"}, code=404
                 )
 
             # tickets = imain.list_tickets()
@@ -175,7 +174,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
 
 
@@ -237,7 +236,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.debug("Order path: {}", order_path)
             if not imain.is_collection(order_path):
                 error = "Order '{}': not existing".format(order_id)
-                return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
+                return self.send_errors(error, code=404)
 
             ##################
             ils = imain.list(order_path, detailed=True)
@@ -272,7 +271,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
 
     @decorators.catch_errors(exception=IrodsException)
@@ -290,14 +289,14 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         params = json_input.get(main_key, {})
         if len(params) < 1:
             error = "'{}' missing".format(main_key)
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(error, code=400)
 
         ##################
         key = 'order_number'
         order_id = params.get(key)
         if order_id is None:
             error = "Order ID '{}': missing".format(key)
-            return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors(error, code=400)
         else:
             order_id = str(order_id)
 
@@ -358,7 +357,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
 
     def no_slash_ticket(self, imain, path):
@@ -445,7 +444,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             except BaseException:
                 return self.send_errors(
                     "Order not found",
-                    code=hcodes.HTTP_BAD_NOTFOUND
+                    code=404
                 )
 
             response = []
@@ -522,7 +521,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
             if len(response) == 0:
                 error = "Order '{}' not found (or no permissions)".format(order_id)
-                return self.send_errors(error, code=hcodes.HTTP_BAD_NOTFOUND)
+                return self.send_errors(error, code=404)
 
             msg = prepare_message(self, log_string='end', status='enabled')
             log_into_queue(self, msg)
@@ -531,13 +530,13 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
         except NetworkException as e:
             log.error(e)
             return self.send_errors(
                 "Could not connect to B2SAFE host",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
 
     @decorators.auth.required()
@@ -561,5 +560,5 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )

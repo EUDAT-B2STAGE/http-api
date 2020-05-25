@@ -49,17 +49,16 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
             )
         )
 
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        assert r.status_code == 200
         data = self.get_content(r)
-        key = 'token'
-        self.assertIn(key, data)
-        token = data.get(key)
+        assert 'token' in data
+        token = data.get('token')
 
         # verify that token is valid
         r = self.app.get(
             endpoint, headers={'Authorization': 'Bearer {}'.format(token)})
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
-        self.assertEqual('validated', self.get_content(r))
+        assert r.status_code == 200
+        assert 'validated' == self.get_content(r)
 
         # verify wrong username or password
         r = self.app.post(
@@ -68,21 +67,21 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
                 password=self._irods_password
             )
         )
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_UNAUTHORIZED)
+        assert r.status_code == 401
         r = self.app.post(
             endpoint, data=dict(
                 username=self._irods_user,
                 password=self._irods_password + 'b'
             )
         )
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_UNAUTHORIZED)
+        assert r.status_code == 401
 
         # verify random token
         wrong_token = token.lower().replace('e', 'Z').replace('j', 'i')
         r = self.app.get(
             endpoint, headers={'Authorization': 'Bearer {}'.format(wrong_token)})
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_UNAUTHORIZED)
+        assert r.status_code == 401
 
         # verify that normal token from normal login is invalid
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_UNAUTHORIZED)
+        assert r.status_code == 401

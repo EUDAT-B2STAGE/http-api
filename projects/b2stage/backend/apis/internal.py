@@ -9,7 +9,6 @@ FIXME: TO BE DEPRECATED
 
 from restapi import decorators
 from restapi.connectors.irods.client import IrodsException
-from restapi.utilities.htmlcodes import hcodes
 from restapi.confs import TESTING
 # from restapi.utilities.logs import log
 
@@ -46,7 +45,7 @@ if TESTING:
 
             if location is None:
                 return self.send_errors(
-                    'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
+                    'Location: missing filepath inside URI', code=400
                 )
             location = self.fix_location(location)
 

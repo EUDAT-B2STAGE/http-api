@@ -18,13 +18,12 @@ from glom import glom
 from flask import request
 
 from restapi.confs import TESTING
-from b2stage.apis.commons import PRODUCTION, CURRENT_MAIN_ENDPOINT
+from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators
 from restapi.services.uploader import Uploader
 from restapi.exceptions import RestApiException
 from restapi.connectors.irods.client import IrodsException
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 
@@ -190,7 +189,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             raise RestApiException(
                 'File upload forbidden for this method; '
                 'Please use the PUT method for this operation',
-                status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+                status_code=405,
             )
 
         ###################
@@ -207,7 +206,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if path is None:
             raise RestApiException(
                 'Path to remote resource: only absolute paths are allowed',
-                status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+                status_code=405,
             )
 
         ###################
@@ -223,7 +222,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             log.info("Created irods collection: {}", ipath)
 
         # NOTE: question: should this status be No response?
-        status = hcodes.HTTP_OK_BASIC
+        status = 200
         content = {
             'location': self.b2safe_location(path),
             'path': path,
@@ -300,7 +299,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 # This is required for wrapped response, remove me in a near future
                 content = glom(content, "Response.data", default=content)
                 errors = None
-                status = hcodes.HTTP_OK_BASIC
+                status = 200
 
             except RestApiException as e:
 
@@ -356,11 +355,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 log.info("irods call {}", iout)
                 content = {'filename': ipath}
                 errors = None
-                status = hcodes.HTTP_OK_BASIC
+                status = 200
             except BaseException as e:
                 content = ""
                 errors = {"Uploading failed": "{}".format(e)}
-                status = hcodes.HTTP_SERVER_ERROR
+                status = 500
 
         ###################
         # Reply to user
@@ -389,7 +388,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                         " File correctly uploaded."
                     )
                     log.warning(error_message)
-                    status = hcodes.HTTP_OK_ACCEPTED
+                    status = 202
                     errors = [error_message]
                 else:
                     pid_found = True
@@ -413,7 +412,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             return self.response(content, errors=errors, code=status)
         else:
             return self.response(
-                content, errors=errors, code=hcodes.HTTP_OK_ACCEPTED
+                content, errors=errors, code=202
             )
 
     @decorators.catch_errors(exception=IrodsException)
@@ -440,13 +439,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if force:
             raise RestApiException(
                 "This operation cannot be forced in B2SAFE iRODS data objects",
-                status_code=hcodes.HTTP_BAD_REQUEST
+                status_code=400
             )
 
         if newfile is None or newfile.strip() == '':
             raise RestApiException(
                 "New filename missing; use the 'newname' JSON parameter",
-                status_code=hcodes.HTTP_BAD_REQUEST,
+                status_code=400,
             )
 
         # Get the base directory
@@ -504,5 +503,5 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # TODO: only if it has a PID?
         raise RestApiException(
             "Data removal NOT allowed inside the 'registered' domain",
-            status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+            status_code=405,
         )

@@ -9,7 +9,6 @@ from werkzeug.wrappers import Response as WerkzeugResponse
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons.statics import HEADER, FOOTER
 from restapi import decorators
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 
@@ -41,7 +40,7 @@ class Public(B2HandleEndpoint):
         ####################
         if location is None:
             return self.send_errors(
-                'Location: missing filepath inside URI', code=hcodes.HTTP_BAD_REQUEST
+                'Location: missing filepath inside URI', code=400
             )
         location = self.fix_location(location)
 
@@ -66,7 +65,7 @@ class Public(B2HandleEndpoint):
 
             headers = {'Content-Type': 'text/html; charset=utf-8'}
             return WerkzeugResponse(
-                output, status=hcodes.HTTP_BAD_REQUEST, headers=headers
+                output, status=400, headers=headers
             )
 
         ####################
@@ -78,7 +77,7 @@ class Public(B2HandleEndpoint):
             # print("NOT HTML")
             return self.send_errors(
                 "This endpoint is currently accessible only via Browser.",
-                code=hcodes.HTTP_BAD_FORBIDDEN,
+                code=403,
             )
 
         if self.download_parameter():

@@ -3,7 +3,6 @@ import unittest
 import json
 from restapi.server import create_app
 from restapi.services.authentication import BaseAuthentication as ba
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 from restapi.tests import API_URI, AUTH_URI
 
@@ -38,7 +37,6 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
 
     _api_uri = API_URI
     _auth_uri = AUTH_URI
-    _hcodes = hcodes
 
     def setUp(self):
 
@@ -56,7 +54,7 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
             'password': ba.default_password
         }
         r = self.app.post(endpoint, data=credentials)
-        assert r.status_code == self._hcodes.HTTP_OK_BASIC
+        assert r.status_code == 200
         # content = self.get_content(r)
         # self.save_token(content.get('token'))
         token = self.get_content(r)
@@ -69,14 +67,14 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         ep = self._auth_uri + '/tokens'
         # Recover current token id
         r = self.app.get(ep, headers=self.__class__.auth_header)
-        assert r.status_code == self._hcodes.HTTP_OK_BASIC
+        assert r.status_code == 200
         content = self.get_content(r)
         for element in content:
             if element.get('token') == self.__class__.bearer_token:
                 # delete only current token
                 ep += '/' + element.get('id')
                 rdel = self.app.delete(ep, headers=self.__class__.auth_header)
-                assert rdel.status_code == self._hcodes.HTTP_OK_NORESPONSE
+                assert rdel.status_code == 204
 
         # The end
         log.debug('### Tearing down the Flask server ###')

@@ -21,7 +21,6 @@ from b2stage.apis.commons import (
 )
 
 # from restapi.confs import API_URL
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 MISSING_BATCH = 0
@@ -147,13 +146,13 @@ class EudatEndpoint(B2accessUtilities):
             log.debug("Validated B2SAFE user: {}", user.uuid)
         else:
             msg = "Current credentials not registered inside B2SAFE"
-            raise RestApiException(msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+            raise RestApiException(msg, status_code=401)
 
         try:
             return self.get_service_instance(service_name='irods', user_session=user)
         except iexceptions.PAM_AUTH_PASSWORD_FAILED:
             msg = "PAM Authentication failed, invalid password or token"
-            raise RestApiException(msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+            raise RestApiException(msg, status_code=401)
 
         return None
 
@@ -324,9 +323,9 @@ class EudatEndpoint(B2accessUtilities):
 
         if head:
             if icom.readable(path):
-                return self.response('', code=hcodes.HTTP_OK_BASIC, head_method=head)
+                return self.response('', code=200, head_method=head)
             else:
-                return self.send_errors(code=hcodes.HTTP_BAD_NOTFOUND, head_method=head)
+                return self.send_errors(code=404, head_method=head)
 
         if filename is None:
             filename = self.filename_from_path(path)
@@ -397,7 +396,7 @@ class EudatEndpoint(B2accessUtilities):
             if len(data) < 1:
                 return self.send_errors(
                     "Path does not exists or you don't have privileges: {}".format(path),
-                    code=hcodes.HTTP_BAD_NOTFOUND,
+                    code=404,
                 )
 
         # Set the right context to each element

@@ -30,14 +30,14 @@ class TestPids(RestTestsAuthenticatedBase):
         # GET URL from PID
         endpoint = self._api_uri + self._main_endpoint + pid
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+        assert r.status_code == 200
         # data = json.loads(r.get_data(as_text=True))
         data = self.get_content(r)
-        self.assertEqual(data.get('URL'), 'irods://{}'.format(pid_uri_path))
+        assert data.get('URL') == 'irods://{}'.format(pid_uri_path)
 
         # GET URL from non existing PID
         endpoint = self._api_uri + self._main_endpoint + wrong_pid
         r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+        assert r.status_code == 404
 
         # TODO: we may test right credentials using Travis secret variables

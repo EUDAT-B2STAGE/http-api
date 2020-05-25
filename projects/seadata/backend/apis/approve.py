@@ -10,7 +10,6 @@ from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.seadatacloud import Metadata as md
 from restapi import decorators
 from restapi.connectors.irods.client import IrodsException
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 
@@ -43,12 +42,12 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         params = json_input.get('parameters', {})
         if len(params) < 1:
-            return self.send_errors("parameters is empty", code=hcodes.HTTP_BAD_REQUEST)
+            return self.send_errors("parameters is empty", code=400)
 
         files = params.get('pids', {})
         if len(files) < 1:
             return self.send_errors(
-                "pids' parameter is empty list", code=hcodes.HTTP_BAD_REQUEST
+                "pids' parameter is empty list", code=400
             )
 
         filenames = []
@@ -57,7 +56,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             if not isinstance(data, dict):
                 return self.send_errors(
                     "File list contains at least one wrong entry",
-                    code=hcodes.HTTP_BAD_REQUEST,
+                    code=400,
                 )
 
             # print("TEST", data)
@@ -65,7 +64,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 value = data.get(key)
                 if value is None:
                     error = 'Missing parameter: {}'.format(key)
-                    return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+                    return self.send_errors(error, code=400)
 
                 error = None
                 value_len = len(value)
@@ -74,7 +73,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 elif value_len < 1:
                     error = "Param '{}': empty".format(key)
                 if error is not None:
-                    return self.send_errors(error, code=hcodes.HTTP_BAD_REQUEST)
+                    return self.send_errors(error, code=400)
 
             filenames.append(data.get(md.tid))
 
@@ -89,7 +88,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             if not imain.is_collection(self.batch_path):
                 return self.send_errors(
                     "Batch '{}' not enabled (or no permissions)".format(batch_id),
-                    code=hcodes.HTTP_BAD_NOTFOUND,
+                    code=404,
                 )
 
             ################
@@ -116,5 +115,5 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
