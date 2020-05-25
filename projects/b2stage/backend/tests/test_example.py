@@ -22,20 +22,6 @@ class TestDataObjects(unittest.TestCase):
         app = create_app(testing=True)
         cls.app = app.test_client()
 
-        # r = cls.app.post(
-        #     AUTH_URI + '/login',
-        #     data=json.dumps({'username': USER, 'password': PWD}))
-        # content = json.loads(r.data.decode('utf-8'))
-        # token = content['Response']['data']['token']
-        # cls.auth_header = {
-        #     'Authorization': 'Bearer ' + token}
-
     @classmethod
     def tearDownClass(cls):
         log.info('### Tearing down the flask server ###')
-
-    # def test_01_get_someendpoint(self):
-
-    #     log.debug("Testing a random endpoint")
-    #     r = self.app.get(AUTH_URI + '/profile', headers=self.auth_header)
-    #     self.assertEqual(r.status_code, hcodes.HTTP_OK_BASIC)

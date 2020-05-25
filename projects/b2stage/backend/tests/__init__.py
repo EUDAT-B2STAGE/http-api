@@ -48,15 +48,14 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         self.app = app.test_client()
 
         # Auth init from base/custom config
-        ba.myinit()
-        self._username = ba.default_user
-        self._password = ba.default_password
+        ba.load_default_user()
 
         log.info("### Creating a test token ###")
         endpoint = self._auth_uri + '/login'
-        credentials = json.dumps(
-            {'username': self._username, 'password': self._password}
-        )
+        credentials = {
+            'username': ba.default_user,
+            'password': ba.default_password
+        }
         r = self.app.post(endpoint, data=credentials)
         assert r.status_code == self._hcodes.HTTP_OK_BASIC
         # content = self.get_content(r)
