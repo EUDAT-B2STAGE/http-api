@@ -55,7 +55,7 @@ else:
             content = self.get_content(r)
             self.save_token(content.get('token'), suffix=self._anonymous_user)
 
-            self.irods_vars = detector.services_classes.get('irods').variables
+            self.irods_vars = detector.load_variables(prefix='irods')
             self._filename = 'some_file.txt'
             home_dirname = 'home'
             self._ipath = str(path.join(
