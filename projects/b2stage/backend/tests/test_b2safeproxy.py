@@ -82,7 +82,3 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
         r = self.app.get(
             endpoint, headers={'Authorization': 'Bearer {}'.format(wrong_token)})
         assert r.status_code == 401
-
-        # verify that normal token from normal login is invalid
-        r = self.app.get(endpoint, headers=self.__class__.auth_header)
-        assert r.status_code == 401
