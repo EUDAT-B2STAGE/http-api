@@ -48,7 +48,11 @@ class EudatEndpoint(B2accessUtilities):
         # internal_user = user internal to the API
         # external_user = user from oauth (B2ACCESS)
         internal_user = self.auth.get_user()
-        log.debug("Token user: {}", internal_user)
+        log.debug(
+            "Token user: {} with auth method {}",
+            internal_user,
+            internal_user.authmethod
+        )
 
         #################################
         # decide which type of auth we are dealing with
