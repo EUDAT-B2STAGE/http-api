@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from restapi import decorators
+from flask_apispec import MethodResource
+from flask_apispec import use_kwargs
+from marshmallow import fields
+
 from b2stage.apis.commons.b2access import B2accessUtilities
+
+from restapi import decorators
+from restapi.models import Schema
 from restapi.exceptions import RestApiException
 from restapi.connectors.irods.client import IrodsException, iexceptions
 from restapi.utilities.htmlcodes import hcodes
@@ -34,7 +40,16 @@ def get_and_verify_irods_session(function, parameters):
     return obj
 
 
-class B2safeProxy(B2accessUtilities):
+class Credentials(Schema):
+    username = fields.Email(required=True)
+    password = fields.Str(
+        required=True,
+        password=True,
+    )
+    authscheme = fields.Str(default='credentials')
+
+
+class B2safeProxy(MethodResource, B2accessUtilities):
     """ Login to B2SAFE: directly. """
 
     _anonymous_user = 'anonymous'
@@ -51,13 +66,6 @@ class B2safeProxy(B2accessUtilities):
         '/b2safeproxy': {
             'summary': 'Authenticate inside HTTP API with B2SAFE user',
             'description': 'Normal credentials (username and password) login endpoint',
-            'parameters': [
-                {
-                    'name': 'b2safe_credentials',
-                    'in': 'body',
-                    'schema': {'$ref': '#/definitions/Credentials'},
-                }
-            ],
             'responses': {
                 '401': {
                     'description': 'Invalid username or password for the current B2SAFE instance'
@@ -85,29 +93,12 @@ class B2safeProxy(B2accessUtilities):
         return 'validated'
 
     @decorators.catch_errors()
-    def post(self):
+    @use_kwargs(Credentials)
+    def post(self, username, password, authscheme='credentials'):
 
-        #############
-        from flask import request
-
-        auth = request.authorization
-
-        jargs = self.get_input()
-        if auth is not None:
-            username = auth.username
-            password = auth.password
-        else:
-            username = jargs.pop('username', None)
-            password = jargs.pop('password', None)
-        authscheme = jargs.pop('authscheme', 'credentials')
-
-        # token is an alias for password parmeter
-        if password is None:
-            password = jargs.pop('token', None)
-
-        if len(jargs) > 0:
-            for j in jargs:
-                log.warning("Unknown input parameter: {}", j)
+        # # token is an alias for password parmeter
+        # if password is None:
+        #     password = jargs.pop('token', None)
 
         if authscheme.upper() == 'PAM':
             authscheme = 'PAM'
@@ -115,14 +106,11 @@ class B2safeProxy(B2accessUtilities):
         if username == self._anonymous_user:
             password = 'WHATEVERYOUWANT:)'
 
-        if (
-            username is None
-            or password is None
-            or username.strip() == ''
-            or password.strip() == ''
-        ):
-            msg = "Missing username or password"
-            raise RestApiException(msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+        if not username or not password:
+            raise RestApiException(
+                "Missing username or password",
+                status_code=hcodes.HTTP_BAD_UNAUTHORIZED
+            )
 
         if authscheme.upper() == 'OPENID':
             authscheme = 'PAM'
