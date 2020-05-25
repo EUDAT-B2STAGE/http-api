@@ -10,7 +10,8 @@ env:
 # - PROJECT=seadata
 
 install:
-- data/scripts/prerequisites.sh
+# - data/scripts/prerequisites.sh
+- pip install -r projects/${PROJECT}/requirements.txt
 - chmod -R o+Xw projects # fix permissions for coverage to be computed
 
 script:

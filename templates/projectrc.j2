@@ -9,8 +9,7 @@ project_configuration:
       ENABLE_PUBLIC_ENDPOINT: 1
       AUTH_DEFAULT_PASSWORD: Test+Aa1!
       APP_MODE: test
-      {% endif -%}
+      {% else %}
       IRODS_HOST: your_irods_host
       # your own other local variables
-      {% else %}
-
+      {% endif -%}
