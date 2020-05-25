@@ -11,8 +11,6 @@ from restapi.utilities.logs import log
 class TestB2safeProxy(RestTestsAuthenticatedBase):
 
     _main_endpoint = '/b2safeproxy'
-    _irods_user = 'icatbetatester'
-    _irods_password = 'IAMABETATESTER'
 
     def test_01_b2safe_login(self):
 

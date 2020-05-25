@@ -38,6 +38,8 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
 
     _api_uri = API_URI
     _auth_uri = AUTH_URI
+    _irods_user = 'icatbetatester'
+    _irods_password = 'IAMABETATESTER'
 
     def setUp(self):
 
