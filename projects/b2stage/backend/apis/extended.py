@@ -19,7 +19,6 @@ from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons import PUBLIC_ENDPOINT
 
-from restapi.utilities.htmlcodes import hcodes
 # from restapi.utilities.logs import log
 
 
@@ -72,13 +71,13 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         if url is None:
             return self.send_errors(
                 errors='B2HANDLE: empty URL_value returned',
-                code=hcodes.HTTP_BAD_NOTFOUND,
+                code=404,
                 head_method=head,
             )
 
         if not self.download_parameter():
             if head:
-                return self.response("", code=hcodes.HTTP_OK_BASIC)
+                return self.response("", code=200)
             return metadata
         # download is requested, trigger file download
 

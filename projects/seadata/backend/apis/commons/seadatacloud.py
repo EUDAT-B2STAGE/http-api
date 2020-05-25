@@ -2,7 +2,6 @@
 
 from datetime import datetime
 from restapi.services.detect import detector
-from restapi.utilities.htmlcodes import hcodes
 from b2stage.apis.commons import path
 from restapi.utilities.logs import log
 seadata_vars = detector.load_group(label='seadata')
@@ -139,7 +138,7 @@ class ImportManagerAPI(object):
         r = requests.post(self._uri, json=payload)
         log.info("POST external IM API, status={}, uri={}", r.status_code, self._uri)
 
-        if r.status_code != hcodes.HTTP_OK_BASIC:
+        if r.status_code != 200:
             log.error(
                 "CDI: failed to call external APIs (status: {}, uri: {})",
                 r.status_code,
@@ -169,7 +168,7 @@ def seadata_pid(self, pid):
     if b2handle_output is None:
         error = "PID {} not found".format(pid)
         log.error(error)
-        return self.response(errors=error, code=hcodes.HTTP_BAD_REQUEST)
+        return self.response(errors=error, code=400)
     else:
         log.verbose("PID {} verified", pid)
         response['verified'] = True

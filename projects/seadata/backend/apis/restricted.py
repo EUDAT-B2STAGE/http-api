@@ -7,7 +7,6 @@ from restapi.services.uploader import Uploader
 from restapi import decorators
 from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
-from restapi.utilities.htmlcodes import hcodes
 
 
 class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
@@ -44,5 +43,5 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )

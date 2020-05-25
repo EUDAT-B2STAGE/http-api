@@ -7,7 +7,6 @@ from b2stage.apis.commons.b2access import B2accessUtilities
 from restapi import decorators
 from restapi.exceptions import RestApiException
 from restapi.connectors.celery import CeleryExt
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 
@@ -47,7 +46,7 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
             collection = os.path.join(ipath, batch_id)
             if not imain.exists(collection):
                 raise RestApiException(
-                    "Invalid batch id {}".format(batch_id), status_code=hcodes.HTTP_BAD_NOTFOUND
+                    "Invalid batch id {}".format(batch_id), status_code=404
                 )
 
             task = CeleryExt.cache_batch_pids.apply_async(args=[collection])
@@ -57,5 +56,5 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )

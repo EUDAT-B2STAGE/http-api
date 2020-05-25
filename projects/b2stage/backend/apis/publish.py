@@ -10,7 +10,6 @@ from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators
 from restapi.exceptions import RestApiException
 from b2stage.apis.commons import path
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 
@@ -42,7 +41,7 @@ class Publish(EudatEndpoint):
         if location is None:
             raise RestApiException(
                 'Location: missing filepath inside URI',
-                status_code=hcodes.HTTP_BAD_REQUEST,
+                status_code=400,
             )
 
         location = self.fix_location(location)
@@ -58,7 +57,7 @@ class Publish(EudatEndpoint):
         if not r.icommands.exists(path):
             raise RestApiException(
                 "path {} not existing or no permissions".format(path),
-                status_code=hcodes.HTTP_BAD_NOTFOUND,
+                status_code=404,
             )
 
         return path
@@ -145,7 +144,7 @@ class Publish(EudatEndpoint):
         if icom.is_collection(path):
             return self.send_errors(
                 'Collections are not allowed to be published',
-                code=hcodes.HTTP_BAD_REQUEST,
+                code=400,
             )
         else:
             published = self.publish_helper(icom, path)
@@ -168,7 +167,7 @@ class Publish(EudatEndpoint):
         if icom.is_collection(path):
             return self.send_errors(
                 'Collections are not allowed to be published',
-                code=hcodes.HTTP_BAD_REQUEST,
+                code=400,
             )
 
         # if already set as the same don't do anything
@@ -193,7 +192,7 @@ class Publish(EudatEndpoint):
         if icom.is_collection(path):
             return self.send_errors(
                 'Collections are not allowed to be published',
-                code=hcodes.HTTP_BAD_REQUEST,
+                code=400,
             )
 
         # if not already set as the same don't do anything

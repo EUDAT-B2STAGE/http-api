@@ -16,7 +16,6 @@ from urllib3.exceptions import HTTPError
 from restapi.rest.definition import EndpointResource
 from b2stage.apis.commons.oauth2clients import ExternalLogins, decorate_http_request
 
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 # 12 h
@@ -219,7 +218,7 @@ class B2accessUtilities(EndpointResource):
             errstring = "Invalid response from B2ACCESS"
         elif b2access_user.status >= 300:
             log.error("Bad status: {}", str(b2access_user._resp))
-            if b2access_user.status == hcodes.HTTP_BAD_UNAUTHORIZED:
+            if b2access_user.status == 401:
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:
                 errstring = (
@@ -462,9 +461,9 @@ class B2accessUtilities(EndpointResource):
         if isinstance(errors, str):
             errors = [errors]
 
-        if code is None or code < hcodes.HTTP_BAD_REQUEST:
+        if code is None or code < 400:
             # default error
-            code = hcodes.HTTP_SERVER_ERROR
+            code = 500
 
         log.error(errors)
 

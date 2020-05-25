@@ -40,7 +40,7 @@ else:
                 endpoint,
                 data=dict(debugclean='True'),
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
 
             log.info("\n### Creating a test token (ANONYMOUS IRODS user) ###")
             credentials = json.dumps({'username': self._anonymous_user})
@@ -48,7 +48,7 @@ else:
 
             log.debug('*** Testing anonymous authentication on {}', endpoint)
             r = self.app.post(endpoint, data=credentials)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
             content = self.get_content(r)
             self.save_token(content.get('token'), suffix=self._anonymous_user)
 
@@ -75,7 +75,7 @@ else:
                 },
                 headers=self.__class__.auth_header
             )
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
 
         def test_01_GET_check_if_published(self):
 
@@ -85,7 +85,7 @@ else:
             # Current file is not published
             r = self.app.get(
                 endpoint + self._ipath, headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is False
 
@@ -93,7 +93,7 @@ else:
             r = self.app.get(
                 endpoint + self._ipath + 'wrong',
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+            assert r.status_code == 404
             error = self.get_content(r)
             assert 'not existing or no permissions' in error
 
@@ -101,7 +101,7 @@ else:
             r = self.app.get(
                 endpoint + self._no_permission_path,
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+            assert r.status_code == 404
             error = self.get_content(r)
             assert 'not existing or no permissions' in error
 
@@ -114,14 +114,14 @@ else:
             r = self.app.put(
                 endpoint + self._ipath,
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is True
 
             # Current file is now published
             r = self.app.get(
                 endpoint + self._ipath, headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is True
 
@@ -130,20 +130,20 @@ else:
             r = self.app.get(
                 anonymous_endpoint + self._ipath,
                 headers=self.__class__.auth_header_anonymous)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
             data = self.get_content(r)
             data_object = data.pop().get(self._filename, {})
             key = 'metadata'
-            self.assertIn(key, data_object)
+            assert key in data_object
             metadata = data_object.get(key)
-            self.assertEqual(metadata.get('name'), self._filename)
-            self.assertEqual(metadata.get('object_type'), 'dataobject')
+            assert metadata.get('name') == self._filename
+            assert metadata.get('object_type') == 'dataobject'
 
             # Random file: cannot unpublish
             r = self.app.put(
                 endpoint + self._ipath + 'wrong',
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+            assert r.status_code == 404
             error = self.get_content(r)
             assert 'not existing or no permissions' in error
 
@@ -156,12 +156,11 @@ else:
             r = self.app.post(
                 endpoint, data=dict(path=self._ipath),
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+            assert r.status_code == 404
             r = self.app.post(
                 endpoint + '/some', data=dict(path=self._ipath),
                 headers=self.__class__.auth_header)
-            self.assertEqual(
-                r.status_code, self._hcodes.HTTP_BAD_METHOD_NOT_ALLOWED)
+            assert r.status_code == 405
 
         def test_04_DELETE_unpublish_dataobject(self):
 
@@ -172,7 +171,7 @@ else:
             r = self.app.put(
                 endpoint + self._ipath,
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is True
 
@@ -180,14 +179,14 @@ else:
             r = self.app.delete(
                 endpoint + self._ipath,
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is False
 
             # Current file is now unpublished
             r = self.app.get(
                 endpoint + self._ipath, headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is False
 
@@ -196,7 +195,7 @@ else:
             r = self.app.get(
                 anonymous_endpoint + self._ipath,
                 headers=self.__class__.auth_header_anonymous)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+            assert r.status_code == 404
             errors = self.get_content(r)
             # errors is array because still returned from send_errors
             assert "you don't have privileges" in errors.pop()
@@ -205,7 +204,7 @@ else:
             r = self.app.delete(
                 endpoint + self._ipath + 'wrong',
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_BAD_NOTFOUND)
+            assert r.status_code == 404
             error = self.get_content(r)
             assert 'not existing or no permissions' in error
 
@@ -219,12 +218,12 @@ else:
                 endpoint,
                 data=dict(debugclean='True'),
                 headers=self.__class__.auth_header)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
 
             # Recover current token id
             ep = self._auth_uri + '/tokens'
             r = self.app.get(ep, headers=self.__class__.auth_header_anonymous)
-            self.assertEqual(r.status_code, self._hcodes.HTTP_OK_BASIC)
+            assert r.status_code == 200
             content = self.get_content(r)
             for element in content:
                 mytoken = self.__class__.bearer_token_anonymous
@@ -233,8 +232,7 @@ else:
                     ep += '/' + element.get('id')
                     rdel = self.app.delete(
                         ep, headers=self.__class__.auth_header_anonymous)
-                    self.assertEqual(
-                        rdel.status_code, self._hcodes.HTTP_OK_NORESPONSE)
+                    assert rdel.status_code == 204
 
             # The end
             super().tearDown()

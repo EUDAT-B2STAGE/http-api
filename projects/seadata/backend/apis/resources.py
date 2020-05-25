@@ -14,7 +14,6 @@ from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from restapi import decorators
 from restapi.connectors.irods.client import IrodsException
-from restapi.utilities.htmlcodes import hcodes
 from b2stage.apis.commons import path
 from restapi.utilities.logs import log
 
@@ -54,7 +53,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container = rancher.get_container_object(container_name)
         if container is None:
             return self.send_errors(
-                'Quality check does not exist', code=hcodes.HTTP_BAD_NOTFOUND
+                'Quality check does not exist', code=404
             )
 
         logs = rancher.recover_logs(container_name)
@@ -103,17 +102,19 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             local_path = path.join(MOUNTPOINT, INGESTION_DIR, batch_id)
             log.info("Batch irods path: {}", batch_path)
             log.info("Batch local path: {}", local_path)
-            batch_status, batch_files = self.get_batch_status(imain, batch_path, local_path)
+            batch_status, batch_files = self.get_batch_status(
+                imain, batch_path, local_path)
 
             if batch_status == MISSING_BATCH:
                 return self.send_errors(
                     "Batch '{}' not found (or no permissions)".format(batch_id),
-                    code=hcodes.HTTP_BAD_NOTFOUND,
+                    code=404,
                 )
 
             if batch_status == NOT_FILLED_BATCH:
                 return self.send_errors(
-                    "Batch '{}' not yet filled".format(batch_id), code=hcodes.HTTP_BAD_RESOURCE
+                    # Bad Resource
+                    "Batch '{}' not yet filled".format(batch_id), code=410
                 )
 
             if batch_status == BATCH_MISCONFIGURATION:
@@ -124,12 +125,13 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 )
                 return self.send_errors(
                     "Misconfiguration for batch_id {}".format(batch_id),
-                    code=hcodes.HTTP_BAD_RESOURCE,
+                    # Bad Resource
+                    code=410,
                 )
         except requests.exceptions.ReadTimeout:
             return self.send_errors(
                 "B2SAFE is temporarily unavailable",
-                code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                code=503
             )
 
         ###################
@@ -162,7 +164,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             value = input_json.get(key, None)
             if value is None:
                 return self.send_errors(
-                    'Missing JSON key: {}'.format(key), code=hcodes.HTTP_BAD_REQUEST
+                    'Missing JSON key: {}'.format(key), code=400
                 )
 
         response = {
@@ -179,7 +181,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             log.critical(str(e))
             return self.send_errors(
                 'Cannot establish a connection with Rancher',
-                code=hcodes.HTTP_SERVER_ERROR,
+                code=500,
             )
 
         container_name = self.get_container_name(batch_id, qc_name, rancher._qclabel)
@@ -189,7 +191,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         if container_obj is not None:
             log.error("Docker container {} already exists!", container_name)
             response['status'] = 'existing'
-            return self.response(errors=response, code=hcodes.HTTP_BAD_CONFLICT)
+            return self.response(errors=response, code=409)
 
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
@@ -270,14 +272,14 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 # This case should never happens, since already verified before
                 if edict.get('code') == 'NotUnique':
                     response['status'] = 'existing'
-                    code = hcodes.HTTP_BAD_CONFLICT
+                    code = 409
                 else:
                     response['status'] = 'could NOT be started'
                     response['description'] = edict
-                    code = hcodes.HTTP_SERVER_ERROR
+                    code = 500
             else:
                 response['status'] = 'failure'
-                code = hcodes.HTTP_SERVER_ERROR
+                code = 500
             return self.response(response, code=code)
 
         return self.response(response)

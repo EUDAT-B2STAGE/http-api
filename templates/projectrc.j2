@@ -1,0 +1,16 @@
+project: {{ project }}
+
+project_configuration:
+  variables:
+    env:
+
+      {% if testing -%}
+      IRODS_ANONYMOUS: 1
+      ENABLE_PUBLIC_ENDPOINT: 1
+      AUTH_DEFAULT_PASSWORD: Test+Aa1!
+      APP_MODE: test
+      {% endif -%}
+      IRODS_HOST: your_irods_host
+      # your own other local variables
+      {% else %}
+

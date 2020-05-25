@@ -13,7 +13,6 @@ from restapi.exceptions import RestApiException
 from restapi.connectors.irods.client import IrodsException
 from restapi import decorators
 
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 
@@ -39,7 +38,7 @@ class OauthLogin(EudatEndpoint):
         if request.user_agent.browser is None:
             raise RestApiException(
                 "B2ACCESS authorization must be requested from a browser",
-                status_code=hcodes.HTTP_BAD_METHOD_NOT_ALLOWED,
+                status_code=405,
             )
 
         auth = self.auth
@@ -48,7 +47,7 @@ class OauthLogin(EudatEndpoint):
         if b2access is None:
             raise RestApiException(
                 "B2ACCESS integration is not enabled",
-                status_code=hcodes.HTTP_SERVICE_UNAVAILABLE
+                status_code=503
             )
 
         authorized_uri = url_for('authorize', _external=True)

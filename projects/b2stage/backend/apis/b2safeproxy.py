@@ -10,7 +10,6 @@ from restapi import decorators
 from restapi.models import Schema
 from restapi.exceptions import RestApiException
 from restapi.connectors.irods.client import IrodsException, iexceptions
-from restapi.utilities.htmlcodes import hcodes
 from restapi.utilities.logs import log
 
 
@@ -86,7 +85,7 @@ class B2safeProxy(MethodResource, B2accessUtilities):
             log.info("Valid B2SAFE user: {}", user.uuid)
         else:
             msg = "This user is not registered inside B2SAFE"
-            raise RestApiException(msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+            raise RestApiException(msg, status_code=401)
 
         icom = self.get_service_instance(service_name='irods', user_session=user)
         icom.list()
@@ -109,7 +108,7 @@ class B2safeProxy(MethodResource, B2accessUtilities):
         if not username or not password:
             raise RestApiException(
                 "Missing username or password",
-                status_code=hcodes.HTTP_BAD_UNAUTHORIZED
+                status_code=401
             )
 
         if authscheme.upper() == 'OPENID':
@@ -131,7 +130,7 @@ class B2safeProxy(MethodResource, B2accessUtilities):
         irods = get_and_verify_irods_session(func, params)
         if irods is None:
             msg = "Failed to authenticate on B2SAFE"
-            raise RestApiException(msg, status_code=hcodes.HTTP_BAD_UNAUTHORIZED)
+            raise RestApiException(msg, status_code=401)
         else:
             encoded_session = irods.prc.serialize()
 
