@@ -2,6 +2,7 @@
 import unittest
 import json
 from restapi.server import create_app
+from restapi.services.detect import detector
 # from restapi.services.authentication import BaseAuthentication as ba
 from restapi.utilities.logs import log
 from restapi.tests import API_URI, AUTH_URI
@@ -44,6 +45,11 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         app = create_app(testing_mode=True)
         self.app = app.test_client()
 
+        i = detector.get_service_instance("irods")
+        # create a dedicated irods user and set the password
+        if i.create_user(self._irods_user):
+            i.modify_user_password(self._irods_user, self._irods_password)
+
         # Auth init from base/custom config
         # ba.load_default_user()
 
@@ -71,7 +77,6 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         token = data.get('token')
         self.save_token(token)
 
-
     def tearDown(self):
 
         # Token clean up
@@ -87,6 +92,9 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
                 ep += '/' + element.get('id')
                 rdel = self.app.delete(ep, headers=self.__class__.auth_header)
                 assert rdel.status_code == 204
+
+        i = detector.get_service_instance("irods")
+        i.remove_user(self._irods_user)
 
         # The end
         log.debug('### Tearing down the Flask server ###')

@@ -5,7 +5,6 @@ Run unittests inside the RAPyDo framework
 """
 
 from tests.custom import RestTestsAuthenticatedBase
-from restapi.services.detect import detector
 from restapi.utilities.logs import log
 
 
@@ -14,29 +13,6 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
     _main_endpoint = '/b2safeproxy'
     _irods_user = 'icatbetatester'
     _irods_password = 'IAMABETATESTER'
-
-    def setUp(self):
-        """
-        add a user for irods to be tested with direct credentials
-        """
-
-        super().setUp()
-        log.debug('### Creating custom data ###\n')
-        # how to get a service before having any app request
-        i = detector.get_service_instance("irods")
-        # create a dedicated irods user and set the password
-        if i.create_user(self._irods_user):
-            i.modify_user_password(self._irods_user, self._irods_password)
-
-    def tearDown(self):
-        """
-        remove irods user created only for testing
-        """
-
-        log.debug('### Cleaning custom data ###\n')
-        i = detector.get_service_instance("irods")
-        i.remove_user(self._irods_user)
-        super().tearDown()
 
     def test_01_b2safe_login(self):
 
