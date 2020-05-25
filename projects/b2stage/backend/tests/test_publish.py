@@ -43,12 +43,10 @@ else:
             assert r.status_code == 200
 
             log.info("\n### Creating a test token (ANONYMOUS IRODS user) ###")
-            credentials = json.dumps(
-                {
-                    'username': self._anonymous_user,
-                    'password': 'notrequired',
-                }
-            )
+            credentials = {
+                'username': self._anonymous_user,
+                'password': 'notrequired',
+            }
             endpoint = self._auth_uri + self._auth_endpoint
 
             log.debug('*** Testing anonymous authentication on {}', endpoint)
