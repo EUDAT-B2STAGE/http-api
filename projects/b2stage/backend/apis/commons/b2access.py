@@ -84,6 +84,30 @@ class B2accessUtilities(EndpointResource):
 
         return token, username
 
+    def send_errors(
+        self, errors=None, code=None,
+        head_method=False
+    ):
+        """ Setup an error message """
+
+        if errors is None:
+            errors = []
+        if isinstance(errors, str):
+            errors = [errors]
+
+        if code is None or code < 400:
+            # default error
+            code = 500
+
+        log.error(errors)
+
+        if head_method:
+            errors = None
+
+        return self.response(
+            content=errors, code=code, head_method=head_method
+        )
+
     def response(self, content=None, errors=None,
                  code=None, headers=None, head_method=False,
                  meta=None, wrap_response=False):
@@ -130,14 +154,8 @@ class B2accessUtilities(EndpointResource):
                 },
             }
 
-            if content is not None:
-                content = resp
-            elif errors is not None:
-                errors = resp
-
         return super(B2accessUtilities, self).response(
-            content=content,
-            errors=errors,
+            content=resp,
             code=code,
             headers=headers,
             head_method=head_method
@@ -449,27 +467,3 @@ class B2accessUtilities(EndpointResource):
             if email in rule_output[user]:
                 return user
         return None
-
-    def send_errors(
-        self, errors=None, code=None,
-        head_method=False
-    ):
-        """ Setup an error message """
-
-        if errors is None:
-            errors = []
-        if isinstance(errors, str):
-            errors = [errors]
-
-        if code is None or code < 400:
-            # default error
-            code = 500
-
-        log.error(errors)
-
-        if head_method:
-            errors = None
-
-        return self.response(
-            content=errors, code=code, head_method=head_method
-        )
