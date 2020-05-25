@@ -9,7 +9,7 @@ from restapi.confs import PRODUCTION, API_URL
 # from restapi.utilities.logs import log
 
 try:
-    IRODS_VARS = detector.services_classes.get('irods').variables
+    IRODS_VARS = detector.load_variables(prefix='irods')
 except AttributeError:
     IRODS_VARS = {}
 IRODS_EXTERNAL = IRODS_VARS.get('external', False)
