@@ -212,6 +212,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                             content['PID'] = PID
 
                             metadata_file = ifile + ".meta"
+                            imain.create_empty(metadata_file, ignore_existing=True)
                             imain.write_file_content(metadata_file, content)
                         except BaseException as e:
                             log.error(e)
