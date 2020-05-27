@@ -12,10 +12,13 @@ from seadata.apis.commons.queue import prepare_message
 from b2stage.apis.commons import path
 from b2stage.apis.commons.b2handle import PIDgenerator
 
+from restapi.utilities.processes import start_timeout, stop_timeout
 from restapi.connectors.celery import send_errors_by_email
 from restapi.utilities.logs import log
 
 pmaker = PIDgenerator()
+
+TIMEOUT = 60
 
 
 @celery_app.task(bind=True)
@@ -96,8 +99,10 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     # ifile = path.join(cloud_path, current_file_name, return_str=True)
                     # for i in range(MAX_RETRIES):
                     #     try:
+                    #         start_timeout(TIMEOUT)
                     #         imain.put(str(local_element), str(ifile))
                     #         log.info("File copied on irods: {}", ifile)
+                    #         stop_timeout()
                     #         break
                     #     except BaseException as e:
                     #         log.error(e)
@@ -119,8 +124,10 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     ifile = path.join(cloud_path, current_file_name, return_str=True)
                     for i in range(MAX_RETRIES):
                         try:
+                            start_timeout(TIMEOUT)
                             imain.icopy(batch_file, str(ifile))
                             log.info("File copied on irods: {}", ifile)
+                            stop_timeout()
                             break
                         except BaseException as e:
                             log.error(e)
@@ -141,6 +148,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     # 2. request pid (irule)
                     for i in range(MAX_RETRIES):
                         try:
+                            start_timeout(TIMEOUT)
                             if backdoor:
                                 log.warning("Backdoor enabled: skipping PID request")
                                 PID = "NO_PID_WITH_BACKDOOR"
@@ -151,6 +159,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                             r.set(PID, ifile)
                             r.set(ifile, PID)
                             log.debug('PID cache updated')
+                            stop_timeout()
                             break
                         except BaseException as e:
                             log.error(e)
@@ -174,6 +183,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     # Remove me in a near future
                     for i in range(MAX_RETRIES):
                         try:
+                            start_timeout(TIMEOUT)
                             metadata, _ = imain.get_metadata(ifile)
 
                             for key in md.keys:
@@ -182,6 +192,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                                     args = {'path': ifile, key: value}
                                     imain.set_metadata(**args)
                             log.debug('Metadata set for {}', current_file_name)
+                            stop_timeout()
                             break
                         except BaseException as e:
                             log.error(e)
@@ -203,6 +214,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     # 3-bis. set metadata (dataobject)
                     for i in range(MAX_RETRIES):
                         try:
+                            start_timeout(TIMEOUT)
                             content = {}
                             for key in md.keys:
                                 value = element.get(key, '***MISSING***')
@@ -216,6 +228,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                                 json.dumps(content)
                             )
                             log.debug('Metadata dumped in {}', metadata_file)
+                            stop_timeout()
                             break
                         except BaseException as e:
                             log.error(e)
