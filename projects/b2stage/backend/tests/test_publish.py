@@ -6,7 +6,6 @@ Run unittests inside the RAPyDo framework
 
 import os
 import io
-import json
 from tests.custom import RestTestsAuthenticatedBase
 from restapi.services.detect import detector
 from b2stage.apis.commons import path

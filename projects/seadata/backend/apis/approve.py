@@ -82,10 +82,10 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # imain = self.get_service_instance(service_name='irods')
         try:
             imain = self.get_main_irods_connection()
-            self.batch_path = self.get_irods_batch_path(imain, batch_id)
-            log.debug("Batch path: {}", self.batch_path)
+            batch_path = self.get_irods_batch_path(imain, batch_id)
+            log.debug("Batch path: {}", batch_path)
 
-            if not imain.is_collection(self.batch_path):
+            if not imain.is_collection(batch_path):
                 return self.send_errors(
                     "Batch '{}' not enabled (or no permissions)".format(batch_id),
                     code=404,
@@ -93,10 +93,10 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
             ################
             # 2. make batch_id directory in production if not existing
-            self.prod_path = self.get_irods_production_path(imain, batch_id)
-            log.debug("Production path: {}", self.prod_path)
+            prod_path = self.get_irods_production_path(imain, batch_id)
+            log.debug("Production path: {}", prod_path)
             obj = self.init_endpoint()
-            imain.create_collection_inheritable(self.prod_path, obj.username)
+            imain.create_collection_inheritable(prod_path, obj.username)
 
             ################
             # ASYNC
@@ -104,7 +104,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             from restapi.connectors.celery import CeleryExt
 
             task = CeleryExt.move_to_production_task.apply_async(
-                args=[batch_id, self.prod_path, json_input],
+                args=[batch_id, batch_path, prod_path, json_input],
                 queue='ingestion',
                 routing_key='ingestion',
             )

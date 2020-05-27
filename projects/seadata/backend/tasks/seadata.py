@@ -379,7 +379,7 @@ def download_batch(self, batch_path, local_path, myjson):
 
 @celery_app.task(bind=True)
 @send_errors_by_email
-def move_to_production_task(self, batch_id, irods_path, myjson):
+def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
 
     with celery_app.app.app_context():
 
@@ -419,13 +419,27 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                     record_id = element.get('format_n_code')
                     current_file_name = path.last_part(temp_id)
                     local_element = path.join(local_path, temp_id, return_str=False)
+                    batch_file = os.path.join(batch_path, current_file_name)
 
-                    # log.info('Element: {}', element)
-                    # if local_element in files:
-                    if path.file_exists_and_nonzero(local_element):
-                        log.info('Found: {}', local_element)
+                    # [fs -> irods]
+                    # if path.file_exists_and_nonzero(local_element):
+                    #     log.info('Found: {}', local_element)
+                    # else:
+                    #     log.error('NOT found: {}', local_element)
+                    #     errors.append({
+                    #         "error": ErrorCodes.INGESTION_FILE_NOT_FOUND[0],
+                    #         "description": ErrorCodes.INGESTION_FILE_NOT_FOUND[1],
+                    #         "subject": record_id,
+                    #     })
+
+                    #     self.update_state(state="PROGRESS", meta={
+                    #         'total': total, 'step': counter, 'errors': len(errors)})
+                    #     continue
+
+                    if imain.is_dataobject(batch_file):
+                        log.info('Found: {}', batch_file)
                     else:
-                        log.error('NOT found: {}', local_element)
+                        log.error('NOT found: {}', batch_file)
                         errors.append({
                             "error": ErrorCodes.INGESTION_FILE_NOT_FOUND[0],
                             "description": ErrorCodes.INGESTION_FILE_NOT_FOUND[1],
@@ -437,11 +451,35 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                         continue
 
                     ###############
-                    # 1. copy file (irods)
-                    ifile = path.join(irods_path, current_file_name, return_str=True)
+                    # 1. copy file (irods) [fs -> irods]
+                    # ifile = path.join(cloud_path, current_file_name, return_str=True)
+                    # for i in range(MAX_RETRIES):
+                    #     try:
+                    #         imain.put(str(local_element), str(ifile))
+                    #     except BaseException as e:
+                    #         log.error(e)
+                    #         time.sleep(SLEEP_TIME)
+                    #         continue
+                    #     else:
+                    #         log.info("File copied on irods: {}", ifile)
+                    #         break
+                    # else:
+                    #     # failed upload for the file
+                    #     errors.append({
+                    #         "error": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[0],
+                    #         "description": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[1],
+                    #         "subject": record_id,
+                    #     })
+
+                    #     self.update_state(state="PROGRESS", meta={
+                    #         'total': total, 'step': counter, 'errors': len(errors)})
+                    #     continue
+
+                    # 1. copy file (irods) [irods -> irods]
+                    ifile = path.join(cloud_path, current_file_name, return_str=True)
                     for i in range(MAX_RETRIES):
                         try:
-                            imain.put(str(local_element), str(ifile))
+                            imain.icopy(batch_file, str(ifile))
                         except BaseException as e:
                             log.error(e)
                             time.sleep(SLEEP_TIME)
@@ -460,7 +498,6 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                         self.update_state(state="PROGRESS", meta={
                             'total': total, 'step': counter, 'errors': len(errors)})
                         continue
-
                     ###############
                     # 2. request pid (irule)
                     for i in range(MAX_RETRIES):
@@ -491,6 +528,7 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
 
                     ###############
                     # 3. set metadata (icat)
+                    # Remove me in a near future
                     for i in range(MAX_RETRIES):
                         try:
                             metadata, _ = imain.get_metadata(ifile)
@@ -519,6 +557,33 @@ def move_to_production_task(self, batch_id, irods_path, myjson):
                             'total': total, 'step': counter, 'errors': len(errors)})
                         continue
 
+                    ###############
+                    # 3-bis. set metadata (dataobject)
+                    for i in range(MAX_RETRIES):
+                        try:
+                            content = {}
+                            for key in md.keys:
+                                value = element.get(key, '***MISSING***')
+                                content[key] = value
+                            content['PID'] = PID
+
+                            metadata_file = ifile + ".meta"
+                            imain.write_file_content(metadata_file, content)
+                        except BaseException as e:
+                            log.error(e)
+                            time.sleep(SLEEP_TIME)
+                            continue
+                    else:
+                        # failed metadata setting
+                        errors.append({
+                            "error": ErrorCodes.UNABLE_TO_SET_METADATA[0],
+                            "description": ErrorCodes.UNABLE_TO_SET_METADATA[1],
+                            "subject": record_id,
+                        })
+
+                        self.update_state(state="PROGRESS", meta={
+                            'total': total, 'step': counter, 'errors': len(errors)})
+                        continue
                     ###############
                     # 4. remove the batch file?
                     # or move it into a "completed/" folder
