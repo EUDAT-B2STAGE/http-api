@@ -18,7 +18,7 @@ from restapi.utilities.logs import log
 
 pmaker = PIDgenerator()
 
-TIMEOUT = 60
+TIMEOUT = 180
 
 
 @celery_app.task(bind=True)
