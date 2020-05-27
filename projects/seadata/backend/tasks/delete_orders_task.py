@@ -82,7 +82,6 @@ def delete_orders(self, orders_path, local_orders_path, myjson):
 
                     ##################
                     # TODO: remove the iticket?
-                    pass
 
                     # TODO: I should also revoke the task?
 
