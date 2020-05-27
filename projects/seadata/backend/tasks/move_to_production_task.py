@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import time
+import json
 
 from seadata.tasks.seadata import ext_api, celery_app, r
 from seadata.tasks.seadata import notify_error
@@ -96,13 +97,12 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     # for i in range(MAX_RETRIES):
                     #     try:
                     #         imain.put(str(local_element), str(ifile))
+                    #         log.info("File copied on irods: {}", ifile)
+                    #         break
                     #     except BaseException as e:
                     #         log.error(e)
                     #         time.sleep(SLEEP_TIME)
                     #         continue
-                    #     else:
-                    #         log.info("File copied on irods: {}", ifile)
-                    #         break
                     # else:
                     #     # failed upload for the file
                     #     errors.append({
@@ -120,13 +120,12 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     for i in range(MAX_RETRIES):
                         try:
                             imain.icopy(batch_file, str(ifile))
+                            log.info("File copied on irods: {}", ifile)
+                            break
                         except BaseException as e:
                             log.error(e)
                             time.sleep(SLEEP_TIME)
                             continue
-                        else:
-                            log.info("File copied on irods: {}", ifile)
-                            break
                     else:
                         # failed upload for the file
                         errors.append({
@@ -147,17 +146,17 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                                 PID = "NO_PID_WITH_BACKDOOR"
                             else:
                                 PID = pmaker.pid_request(imain, ifile)
-                        except BaseException as e:
-                            log.error(e)
-                            time.sleep(SLEEP_TIME)
-                            continue
-                        else:
                             log.info('PID: {}', PID)
                             # # save inside the cache
                             r.set(PID, ifile)
                             r.set(ifile, PID)
                             log.debug('PID cache updated')
                             break
+                        except BaseException as e:
+                            log.error(e)
+                            time.sleep(SLEEP_TIME)
+                            continue
+
                     else:
                         # failed PID assignment
                         errors.append({
@@ -182,13 +181,12 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                                     value = element.get(key, '***MISSING***')
                                     args = {'path': ifile, key: value}
                                     imain.set_metadata(**args)
+                            log.debug('Metadata set for {}', current_file_name)
+                            break
                         except BaseException as e:
                             log.error(e)
                             time.sleep(SLEEP_TIME)
                             continue
-                        else:
-                            log.debug('Metadata set for {}', current_file_name)
-                            break
                     else:
                         # failed metadata setting
                         errors.append({
@@ -213,7 +211,12 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
 
                             metadata_file = ifile + ".meta"
                             imain.create_empty(metadata_file, ignore_existing=True)
-                            imain.write_file_content(metadata_file, content)
+                            imain.write_file_content(
+                                metadata_file,
+                                json.dumps(content)
+                            )
+                            log.debug('Metadata dumped in {}', metadata_file)
+                            break
                         except BaseException as e:
                             log.error(e)
                             time.sleep(SLEEP_TIME)
@@ -233,7 +236,6 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     # 4. remove the batch file?
                     # or move it into a "completed/" folder
                     # where we can check if it was already done?
-                    pass
 
                     ###############
                     # 5. add to logs
