@@ -142,7 +142,11 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     # 2. request pid (irule)
                     for i in range(MAX_RETRIES):
                         try:
-                            PID = pmaker.pid_request(imain, ifile)
+                            if backdoor:
+                                log.warning("Backdoor enabled: skipping PID request")
+                                PID = "NO_PID_WITH_BACKDOOR"
+                            else:
+                                PID = pmaker.pid_request(imain, ifile)
                         except BaseException as e:
                             log.error(e)
                             time.sleep(SLEEP_TIME)
