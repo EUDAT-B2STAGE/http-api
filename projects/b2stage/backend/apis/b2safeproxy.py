@@ -7,7 +7,7 @@ from marshmallow import fields
 from b2stage.apis.commons.b2access import B2accessUtilities
 
 from restapi import decorators
-from restapi.models import Schema
+from restapi.models import InputSchema
 from restapi.exceptions import RestApiException
 from restapi.connectors.irods.client import IrodsException, iexceptions
 from restapi.utilities.logs import log
@@ -39,7 +39,7 @@ def get_and_verify_irods_session(function, parameters):
     return obj
 
 
-class Credentials(Schema):
+class Credentials(InputSchema):
     username = fields.Str(required=True)
     password = fields.Str(
         required=True,
