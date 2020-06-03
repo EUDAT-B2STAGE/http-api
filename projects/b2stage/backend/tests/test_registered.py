@@ -48,7 +48,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Overwrite a directory w/o force flag
         r = self.app.post(endpoint, data=dict(path=self._irods_path),
                           headers=self.__class__.auth_header)
-        assert r.status_code == 400
+        assert r.status_code == 409
 
         # Overwrite a directory
         params = json.dumps(dict(force=True, path=self._irods_path))
