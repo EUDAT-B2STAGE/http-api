@@ -1,41 +1,40 @@
-# -*- coding: utf-8 -*-
-
 import os
+
 import requests
-from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from b2stage.apis.commons.b2access import B2accessUtilities
 from restapi import decorators
 from restapi.exceptions import RestApiException
-from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
 
 
 class PidCache(ClusterContainerEndpoint, B2accessUtilities):
 
-    labels = ['helper']
+    labels = ["helper"]
     _GET = {
-        '/pidcache': {
-            'summary': 'Retrieve values from the PID cache',
-            'responses': {'200': {'description': 'Async job started'}},
+        "/pidcache": {
+            "summary": "Retrieve values from the PID cache",
+            "responses": {"200": {"description": "Async job started"}},
         }
     }
     _POST = {
-        '/pidcache/<batch_id>': {
-            'summary': 'Fill the PID cache',
-            'responses': {'200': {'description': 'Async job started'}},
+        "/pidcache/<batch_id>": {
+            "summary": "Fill the PID cache",
+            "responses": {"200": {"description": "Async job started"}},
         }
     }
 
     @decorators.catch_errors()
-    @decorators.auth.required(roles=['admin_root', 'staff_user'], required_roles='any')
+    @decorators.auth.required(roles=["admin_root", "staff_user"], required_roles="any")
     def get(self):
 
-        task = CeleryExt.inspect_pids_cache.apply_async()
+        celery = self.get_service_instance("celery")
+        task = celery.inspect_pids_cache.apply_async()
         log.info("Async job: {}", task.id)
         return self.return_async_id(task.id)
 
     @decorators.catch_errors()
-    @decorators.auth.required(roles=['admin_root', 'staff_user'], required_roles='any')
+    @decorators.auth.required(roles=["admin_root", "staff_user"], required_roles="any")
     def post(self, batch_id):
 
         # imain = self.get_service_instance(service_name='irods')
@@ -45,16 +44,12 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
 
             collection = os.path.join(ipath, batch_id)
             if not imain.exists(collection):
-                raise RestApiException(
-                    "Invalid batch id {}".format(batch_id), status_code=404
-                )
+                raise RestApiException(f"Invalid batch id {batch_id}", status_code=404)
 
-            task = CeleryExt.cache_batch_pids.apply_async(args=[collection])
+            celery = self.get_service_instance("celery")
+            task = celery.cache_batch_pids.apply_async(args=[collection])
             log.info("Async job: {}", task.id)
 
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
-            return self.send_errors(
-                "B2SAFE is temporarily unavailable",
-                code=503
-            )
+            return self.send_errors("B2SAFE is temporarily unavailable", code=503)

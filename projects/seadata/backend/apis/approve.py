@@ -1,34 +1,31 @@
-# -*- coding: utf-8 -*-
-
 """
 Move data from ingestion to production
 """
 import requests
-
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from seadata.apis.commons.cluster import ClusterContainerEndpoint
-from seadata.apis.commons.seadatacloud import Metadata as md
 from restapi import decorators
 from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.logs import log
+from seadata.apis.commons.cluster import ClusterContainerEndpoint
+from seadata.apis.commons.seadatacloud import Metadata as md
 
 
 #################
 # REST CLASS
 class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    labels = ['ingestion']
+    labels = ["ingestion"]
     _POST = {
-        '/ingestion/<string:batch_id>/approve': {
-            'summary': 'Approve files in a batch that are passing all QCs',
-            'parameters': [
+        "/ingestion/<string:batch_id>/approve": {
+            "summary": "Approve files in a batch that are passing all QCs",
+            "parameters": [
                 {
-                    'name': 'parameters',
-                    'in': 'body',
-                    'schema': {'$ref': '#/definitions/SeadataPost'},
+                    "name": "parameters",
+                    "in": "body",
+                    "schema": {"$ref": "#/definitions/SeadataPost"},
                 }
             ],
-            'responses': {'200': {'description': 'Registration executed'}},
+            "responses": {"200": {"description": "Registration executed"}},
         }
     }
 
@@ -40,38 +37,35 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # 0. check parameters
         json_input = self.get_input()
 
-        params = json_input.get('parameters', {})
+        params = json_input.get("parameters", {})
         if len(params) < 1:
             return self.send_errors("parameters is empty", code=400)
 
-        files = params.get('pids', {})
+        files = params.get("pids", {})
         if len(files) < 1:
-            return self.send_errors(
-                "pids' parameter is empty list", code=400
-            )
+            return self.send_errors("pids' parameter is empty list", code=400)
 
         filenames = []
         for data in files:
 
             if not isinstance(data, dict):
                 return self.send_errors(
-                    "File list contains at least one wrong entry",
-                    code=400,
+                    "File list contains at least one wrong entry", code=400,
                 )
 
             # print("TEST", data)
             for key in md.keys:  # + [md.tid]:
                 value = data.get(key)
                 if value is None:
-                    error = 'Missing parameter: {}'.format(key)
+                    error = f"Missing parameter: {key}"
                     return self.send_errors(error, code=400)
 
                 error = None
                 value_len = len(value)
                 if value_len > md.max_size:
-                    error = "Param '{}': exceeds size {}".format(key, md.max_size)
+                    error = f"Param '{key}': exceeds size {md.max_size}"
                 elif value_len < 1:
-                    error = "Param '{}': empty".format(key)
+                    error = f"Param '{key}': empty"
                 if error is not None:
                     return self.send_errors(error, code=400)
 
@@ -87,8 +81,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
             if not imain.is_collection(batch_path):
                 return self.send_errors(
-                    "Batch '{}' not enabled (or no permissions)".format(batch_id),
-                    code=404,
+                    f"Batch '{batch_id}' not enabled (or no permissions)", code=404,
                 )
 
             ################
@@ -101,19 +94,16 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             ################
             # ASYNC
             log.info("Submit async celery task")
-            from restapi.connectors.celery import CeleryExt
 
-            task = CeleryExt.move_to_production_task.apply_async(
+            celery = self.get_service_instance("celery")
+            task = celery.move_to_production_task.apply_async(
                 args=[batch_id, batch_path, prod_path, json_input],
-                queue='ingestion',
-                routing_key='ingestion',
+                queue="ingestion",
+                routing_key="ingestion",
             )
             log.info("Async job: {}", task.id)
 
             return self.return_async_id(task.id)
 
         except requests.exceptions.ReadTimeout:
-            return self.send_errors(
-                "B2SAFE is temporarily unavailable",
-                code=503
-            )
+            return self.send_errors("B2SAFE is temporarily unavailable", code=503)
