@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Orders from production data to be temporary downloadable with a zip file
 
@@ -21,31 +19,30 @@ DELETE /api/order/<OID>
 #################
 # IMPORTS
 import urllib.parse
+
 import requests
-
-# from restapi.rest.definition import EndpointResource
-from seadata.apis.commons.cluster import ClusterContainerEndpoint
-from seadata.apis.commons.cluster import ORDERS_DIR, MOUNTPOINT
+from b2stage.apis.commons import API_URL, CURRENT_HTTPAPI_SERVER, path
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, API_URL
-from seadata.apis.commons.seadatacloud import ORDERS_ENDPOINT
-from restapi import decorators
-from restapi.connectors.celery import CeleryExt
-from seadata.apis.commons.queue import log_into_queue, prepare_message
-from restapi.connectors.irods.client import IrodsException
-from b2stage.apis.commons import path
-from restapi.utilities.logs import log
-
 from irods.exception import NetworkException
+from restapi import decorators
+from restapi.connectors.irods.client import IrodsException
+from restapi.utilities.logs import log
+from seadata.apis.commons.cluster import (
+    MOUNTPOINT,
+    ORDERS_DIR,
+    ClusterContainerEndpoint,
+)
+from seadata.apis.commons.queue import log_into_queue, prepare_message
+from seadata.apis.commons.seadatacloud import ORDERS_ENDPOINT
 
-TMPDIR = '/tmp'
+TMPDIR = "/tmp"
 
 
 def get_order_zip_file_name(order_id, restricted=False, index=None):
 
-    index = '' if index is None else index
+    index = "" if index is None else index
     label = "restricted" if restricted else "unrestricted"
-    zip_file_name = 'order_{}_{}{}.zip'.format(order_id, label, index)
+    zip_file_name = f"order_{order_id}_{label}{index}.zip"
 
     return zip_file_name
 
@@ -54,13 +51,13 @@ def get_order_zip_file_name(order_id, restricted=False, index=None):
 # REST CLASSES
 class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    labels = ['order']
+    labels = ["order"]
     _GET = {
-        '/orders/<string:order_id>/download/<string:ftype>/c/<string:code>': {
-            'summary': 'Download an order',
-            'responses': {
-                '200': {'description': 'The order with all files compressed'},
-                '404': {'description': 'Order does not exist'},
+        "/orders/<string:order_id>/download/<string:ftype>/c/<string:code>": {
+            "summary": "Download an order",
+            "responses": {
+                "200": {"description": "The order with all files compressed"},
+                "404": {"description": "Order does not exist"},
             },
         }
     }
@@ -90,8 +87,8 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     def get(self, order_id, ftype, code):
         """ downloading (not authenticated) """
         log.info("Order request: {} (code '{}')", order_id, code)
-        json = {'order_id': order_id, 'code': code}
-        msg = prepare_message(self, json=json, user='anonymous', log_string='start')
+        json = {"order_id": order_id, "code": code}
+        msg = prepare_message(self, json=json, user="anonymous", log_string="start")
         log_into_queue(self, msg)
 
         log.info("DOWNLOAD DEBUG 1: {} (code '{}')", order_id, code)
@@ -102,16 +99,18 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             imain = self.get_main_irods_connection()
             log.info("DOWNLOAD DEBUG 2: {} (code '{}')", order_id, code)
             order_path = self.get_irods_order_path(imain, order_id)
-            log.info("DOWNLOAD DEBUG 3: {} (code '{}') - {}", order_id, code, order_path)
+            log.info(
+                "DOWNLOAD DEBUG 3: {} (code '{}') - {}", order_id, code, order_path
+            )
 
             zip_file_name = self.get_filename_from_type(order_id, ftype)
 
             if zip_file_name is None:
-                return self.send_errors("Invalid file type {}".format(ftype))
+                return self.send_errors(f"Invalid file type {ftype}")
 
             zip_ipath = path.join(order_path, zip_file_name, return_str=True)
 
-            error = "Order '{}' not found (or no permissions)".format(order_id)
+            error = f"Order '{order_id}' not found (or no permissions)"
 
             log.debug("Checking zip irods path: {}", zip_ipath)
             log.info("DOWNLOAD DEBUG 4: {} (code '{}') - {}", order_id, code, zip_ipath)
@@ -125,7 +124,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # not irods metadata (known for low performances)
             metadata, _ = imain.get_metadata(zip_ipath)
             log.info("DOWNLOAD DEBUG 6: {} (code '{}')", order_id, code)
-            iticket_code = metadata.get('iticket_code')
+            iticket_code = metadata.get("iticket_code")
             log.info("DOWNLOAD DEBUG 7: {} (code '{}')", order_id, code)
 
             encoded_code = urllib.parse.quote_plus(code)
@@ -139,10 +138,10 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # use anonymous to get the session here
             # because the ticket supply breaks the iuser session permissions
             icom = self.get_service_instance(
-                service_name='irods',
-                user='anonymous',
-                password='null',
-                authscheme='credentials',
+                service_name="irods",
+                user="anonymous",
+                password="null",
+                authscheme="credentials",
             )
             log.info("DOWNLOAD DEBUG 9: {} (code '{}')", order_id, code)
             # obj = self.init_endpoint()
@@ -152,9 +151,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.info("DOWNLOAD DEBUG 10: {} (code '{}')", order_id, code)
             if not icom.test_ticket(zip_ipath):
                 log.error("Invalid iticket code {}", zip_ipath)
-                return self.send_errors(
-                    {order_id: "Invalid code"}, code=404
-                )
+                return self.send_errors({order_id: "Invalid code"}, code=404)
 
             # tickets = imain.list_tickets()
             # print(tickets)
@@ -164,57 +161,54 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # iticket mod "$TICKET" expire "2018-03-23.06:50:00"
 
             headers = {
-                'Content-Transfer-Encoding': 'binary',
-                'Content-Disposition': "attachment; filename={}".format(zip_file_name),
+                "Content-Transfer-Encoding": "binary",
+                "Content-Disposition": f"attachment; filename={zip_file_name}",
             }
-            msg = prepare_message(self, json=json, log_string='end', status='sent')
+            msg = prepare_message(self, json=json, log_string="end", status="sent")
             log_into_queue(self, msg)
             log.info("DOWNLOAD DEBUG 11: {} (code '{}')", order_id, code)
             return icom.stream_ticket(zip_ipath, headers=headers)
         except requests.exceptions.ReadTimeout:
-            return self.send_errors(
-                "B2SAFE is temporarily unavailable",
-                code=503
-            )
+            return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
 
 class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    labels = ['order']
+    labels = ["order"]
     _GET = {
-        '/orders/<string:order_id>': {
-            'summary': 'List orders',
-            'responses': {'200': {'description': 'The list of zip files available'}},
+        "/orders/<string:order_id>": {
+            "summary": "List orders",
+            "responses": {"200": {"description": "The list of zip files available"}},
         }
     }
     _POST = {
-        '/orders': {
-            'summary': 'Request one order preparation',
-            'parameters': [
+        "/orders": {
+            "summary": "Request one order preparation",
+            "parameters": [
                 {
-                    'name': 'parameters',
-                    'in': 'body',
-                    'schema': {'$ref': '#/definitions/SeadataPost'},
+                    "name": "parameters",
+                    "in": "body",
+                    "schema": {"$ref": "#/definitions/SeadataPost"},
                 }
             ],
-            'responses': {'200': {'description': 'Asynchronous request launched'}},
+            "responses": {"200": {"description": "Asynchronous request launched"}},
         }
     }
     _PUT = {
-        '/orders/<string:order_id>': {
-            'summary': 'Request a link to download an order (if already prepared)',
-            'responses': {
-                '200': {
-                    'description': 'The link to download the order (expires in 2 days)'
+        "/orders/<string:order_id>": {
+            "summary": "Request a link to download an order (if already prepared)",
+            "responses": {
+                "200": {
+                    "description": "The link to download the order (expires in 2 days)"
                 }
             },
         }
     }
     _DELETE = {
-        '/orders': {
-            'summary': 'Remove one or more orders',
-            'responses': {
-                '200': {'description': 'Async job submitted for orders removal'}
+        "/orders": {
+            "summary": "Remove one or more orders",
+            "responses": {
+                "200": {"description": "Async job submitted for orders removal"}
             },
         }
     }
@@ -224,8 +218,8 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     def get(self, order_id):
         """ listing, not downloading """
 
-        log.debug('GET request on orders')
-        msg = prepare_message(self, json=None, log_string='start')
+        log.debug("GET request on orders")
+        msg = prepare_message(self, json=None, log_string="start")
         log_into_queue(self, msg)
 
         ##################
@@ -235,7 +229,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             order_path = self.get_irods_order_path(imain, order_id)
             log.debug("Order path: {}", order_path)
             if not imain.is_collection(order_path):
-                error = "Order '{}': not existing".format(order_id)
+                error = f"Order '{order_id}': not existing"
                 return self.send_errors(error, code=404)
 
             ##################
@@ -256,46 +250,43 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             response = []
 
             for _, data in ils.items():
-                name = data.get('name')
-                if name.endswith('_restricted.zip.bak'):
+                name = data.get("name")
+                if name.endswith("_restricted.zip.bak"):
                     continue
 
-                ipath = self.join_paths([data.get('path'), name])
+                ipath = self.join_paths([data.get("path"), name])
                 metadata, _ = imain.get_metadata(ipath)
-                data['URL'] = metadata.get('download')
+                data["URL"] = metadata.get("download")
                 response.append(data)
 
-            msg = prepare_message(self, log_string='end', status='completed')
+            msg = prepare_message(self, log_string="end", status="completed")
             log_into_queue(self, msg)
             return self.response(response)
         except requests.exceptions.ReadTimeout:
-            return self.send_errors(
-                "B2SAFE is temporarily unavailable",
-                code=503
-            )
+            return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
     @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required()
     def post(self):
 
         ##################
-        log.debug('POST request on orders')
+        log.debug("POST request on orders")
         json_input = self.get_input()
-        msg = prepare_message(self, json=json_input, log_string='start')
+        msg = prepare_message(self, json=json_input, log_string="start")
         log_into_queue(self, msg)
 
         ##################
-        main_key = 'parameters'
+        main_key = "parameters"
         params = json_input.get(main_key, {})
         if len(params) < 1:
-            error = "'{}' missing".format(main_key)
+            error = f"'{main_key}' missing"
             return self.send_errors(error, code=400)
 
         ##################
-        key = 'order_number'
+        key = "order_number"
         order_id = params.get(key)
         if order_id is None:
-            error = "Order ID '{}': missing".format(key)
+            error = f"Order ID '{key}': missing"
             return self.send_errors(error, code=400)
         else:
             order_id = str(order_id)
@@ -303,11 +294,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # ##################
         # Get filename from json input. But it has to follow a
         # specific pattern, so we ignore client input if it does not...
-        filename = "order_{}_unrestricted".format(order_id)
-        key = 'file_name'
+        filename = f"order_{order_id}_unrestricted"
+        key = "file_name"
         if key in params and not params[key] == filename:
             log.warning(
-                'Client provided wrong filename ({}), will use: {}',
+                "Client provided wrong filename ({}), will use: {}",
                 params[key],
                 filename,
             )
@@ -315,7 +306,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ##################
         # PIDS: can be empty if restricted
-        key = 'pids'
+        key = "pids"
         pids = params.get(key, [])
 
         ##################
@@ -340,25 +331,23 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 # give error here
                 # return {order_id: 'already exists'}
                 # json_input['status'] = 'exists'
-                json_input['parameters'] = {'status': 'exists'}
+                json_input["parameters"] = {"status": "exists"}
                 return self.response(json_input)
 
             ################
             # ASYNC
             if len(pids) > 0:
                 log.info("Submit async celery task")
-                task = CeleryExt.unrestricted_order.apply_async(
+                celery = self.get_service_instance("celery")
+                task = celery.unrestricted_order.apply_async(
                     args=[order_id, order_path, zip_file_name, json_input]
                 )
                 log.info("Async job: {}", task.id)
                 return self.return_async_id(task.id)
 
-            return self.response({'status': 'enabled'})
+            return self.response({"status": "enabled"})
         except requests.exceptions.ReadTimeout:
-            return self.send_errors(
-                "B2SAFE is temporarily unavailable",
-                code=503
-            )
+            return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
     def no_slash_ticket(self, imain, path):
         """ irods ticket for HTTP """
@@ -366,7 +355,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # TODO: investigate iticket expiration
         # iticket mod Ticket_string-or-id uses/expire string-or-none
 
-        unwanted = '/'
+        unwanted = "/"
         ticket = unwanted
         while unwanted in ticket:
             obj = imain.ticket(path)
@@ -398,19 +387,14 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         else:
             ftype += str(index)
 
-        route = '{}{}/{}/{}/download/{}/c/{}'.format(
-            CURRENT_HTTPAPI_SERVER,
-            API_URL,
-            ORDERS_ENDPOINT,
-            order_id,
-            ftype,
-            code,
+        route = "{}{}/{}/{}/download/{}/c/{}".format(
+            CURRENT_HTTPAPI_SERVER, API_URL, ORDERS_ENDPOINT, order_id, ftype, code,
         )
 
         # If metadata already exists, remove them:
         # FIXME: verify if iticket_code is set and then invalidate it
-        imain.remove_metadata(zip_ipath, 'iticket_code')
-        imain.remove_metadata(zip_ipath, 'download')
+        imain.remove_metadata(zip_ipath, "iticket_code")
+        imain.remove_metadata(zip_ipath, "download")
         ##################
         # Set the url as Metadata in the irods file
         imain.set_metadata(zip_ipath, download=route)
@@ -422,9 +406,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         info = files[zip_file_name]
 
         return {
-            'name': zip_file_name,
-            'url': route,
-            'size': info.get('content_length', 0),
+            "name": zip_file_name,
+            "url": route,
+            "size": info.get("content_length", 0),
         }
 
     @decorators.catch_errors(exception=IrodsException)
@@ -432,7 +416,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     def put(self, order_id):
 
         log.info("Order request: {}", order_id)
-        msg = prepare_message(self, json={'order_id': order_id}, log_string='start')
+        msg = prepare_message(self, json={"order_id": order_id}, log_string="start")
         log_into_queue(self, msg)
 
         # imain = self.get_service_instance(service_name='irods')
@@ -442,10 +426,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                 order_path = self.get_irods_order_path(imain, order_id)
                 log.debug("Order path: {}", order_path)
             except BaseException:
-                return self.send_errors(
-                    "Order not found",
-                    code=404
-                )
+                return self.send_errors("Order not found", code=404)
 
             response = []
 
@@ -500,7 +481,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # No split zip found, looking for the single restricted zip
             if info is None:
                 info = self.get_download(
-                    imain, order_id, order_path, files_in_irods, restricted=True, index=None
+                    imain,
+                    order_id,
+                    order_path,
+                    files_in_irods,
+                    restricted=True,
+                    index=None,
                 )
                 if info is not None:
                     response.append(info)
@@ -520,24 +506,18 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
                         response.append(info)
 
             if len(response) == 0:
-                error = "Order '{}' not found (or no permissions)".format(order_id)
+                error = f"Order '{order_id}' not found (or no permissions)"
                 return self.send_errors(error, code=404)
 
-            msg = prepare_message(self, log_string='end', status='enabled')
+            msg = prepare_message(self, log_string="end", status="enabled")
             log_into_queue(self, msg)
 
             return self.response(response)
         except requests.exceptions.ReadTimeout:
-            return self.send_errors(
-                "B2SAFE is temporarily unavailable",
-                code=503
-            )
+            return self.send_errors("B2SAFE is temporarily unavailable", code=503)
         except NetworkException as e:
             log.error(e)
-            return self.send_errors(
-                "Could not connect to B2SAFE host",
-                code=503
-            )
+            return self.send_errors("Could not connect to B2SAFE host", code=503)
 
     @decorators.auth.required()
     def delete(self):
@@ -552,13 +532,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.debug("Order collection: {}", order_path)
             log.debug("Order path: {}", local_order_path)
 
-            task = CeleryExt.delete_orders.apply_async(
+            celery = self.get_service_instance("celery")
+            task = celery.delete_orders.apply_async(
                 args=[order_path, local_order_path, json_input]
             )
             log.info("Async job: {}", task.id)
             return self.return_async_id(task.id)
         except requests.exceptions.ReadTimeout:
-            return self.send_errors(
-                "B2SAFE is temporarily unavailable",
-                code=503
-            )
+            return self.send_errors("B2SAFE is temporarily unavailable", code=503)
