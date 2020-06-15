@@ -1,24 +1,18 @@
-# -*- coding: utf-8 -*-
-
 import os
 from socket import gethostname
 
 from b2stage.apis.commons.b2handle import PIDgenerator
-
-from seadata.apis.commons.seadatacloud import ImportManagerAPI
-from seadata.apis.commons.seadatacloud import seadata_vars
-
 from restapi.connectors.celery import CeleryExt
-from restapi.services.detect import detector
-
+from restapi.env import Env
 from restapi.utilities.logs import log
+from seadata.apis.commons.seadatacloud import ImportManagerAPI, seadata_vars
 
 # Size in bytes
 # TODO: move me into the configuration
 MAX_ZIP_SIZE = 2147483648  # 2 gb
 ####################
 
-'''
+"""
 These are the paths of the locations on the
 local filesystem inside the celery worker
 containers where the data is copied to / expected
@@ -27,12 +21,12 @@ to reside.
 Note: The bind-mount from the host is defined
 in workers.yml, so if you change the /usr/local
 here, you need to change it there too.
-'''
-mount_point = seadata_vars.get('resources_mountpoint')  # '/usr/share'
+"""
+mount_point = seadata_vars.get("resources_mountpoint")  # '/usr/share'
 if mount_point is None:
     log.exit("Unable to obtain variable: SEADATA_RESOURCES_MOUNTPOINT")
-middle_path_ingestion = seadata_vars.get('workspace_ingestion')  # 'ingestion'
-middle_path_orders = seadata_vars.get('workspace_orders')  # 'orders'
+middle_path_ingestion = seadata_vars.get("workspace_ingestion")  # 'ingestion'
+middle_path_orders = seadata_vars.get("workspace_orders")  # 'orders'
 mybatchpath = os.path.join(mount_point, middle_path_ingestion)
 myorderspath = os.path.join(mount_point, middle_path_orders)
 
@@ -41,7 +35,7 @@ celery_app = CeleryExt.celery_app
 
 #####################
 # https://stackoverflow.com/q/16040039
-log.debug('celery: disable prefetching')
+log.debug("celery: disable prefetching")
 # disable prefetching
 celery_app.conf.update(
     # CELERYD_PREFETCH_MULTIPLIER=1,
@@ -53,12 +47,13 @@ celery_app.conf.update(
 
 # worker connection to redis
 def get_redis():
-    if gethostname() == 'rapydo_server':
+    if gethostname() == "rapydo_server":
         return None
-    redis_vars = detector.load_group(label='redis')
+    redis_vars = Env.load_group(label="redis")
     from redis import StrictRedis
+
     # pid_prefix = redis_vars.get('prefix')
-    return StrictRedis(redis_vars.get('host'))
+    return StrictRedis(redis_vars.get("host"))
 
 
 r = get_redis()
@@ -67,25 +62,26 @@ r = get_redis()
 pmaker = PIDgenerator()
 
 
-def notify_error(error, payload, backdoor, task,
-                 extra=None, subject=None, edmo_code=None):
+def notify_error(
+    error, payload, backdoor, task, extra=None, subject=None, edmo_code=None
+):
 
     error_message = "Error {}: {}".format(error[0], error[1])
     if subject is not None:
-        error_message = "{}. [{}]".format(error_message, subject)
+        error_message = f"{error_message}. [{subject}]"
     log.error(error_message)
     if extra:
         log.error(str(extra))
 
-    payload['errors'] = []
+    payload["errors"] = []
     e = {
         "error": error[0],
         "description": error[1],
     }
     if subject is not None:
-        e['subject'] = subject
+        e["subject"] = subject
 
-    payload['errors'].append(e)
+    payload["errors"].append(e)
 
     if backdoor:
         log.warning(
@@ -98,7 +94,5 @@ def notify_error(error, payload, backdoor, task,
     task_errors = [error_message]
     if extra:
         task_errors.append(str(extra))
-    task.update_state(state="FAILED", meta={
-        'errors': task_errors
-    })
-    return 'Failed'
+    task.update_state(state="FAILED", meta={"errors": task_errors})
+    return "Failed"
