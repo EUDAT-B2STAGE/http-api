@@ -1,19 +1,19 @@
-# -*- coding: utf-8 -*-
-
 from datetime import datetime
-from restapi.services.detect import detector
+
 from b2stage.apis.commons import path
+from restapi.env import Env
 from restapi.utilities.logs import log
-seadata_vars = detector.load_group(label='seadata')
+
+seadata_vars = Env.load_group(label="seadata")
 
 # SEADATA_ENABLED = seadata_vars.get('project')
-SEADATA_ENABLED = seadata_vars.get('project') == '1'
-ORDERS_ENDPOINT = 'orders'
-EDMO_CODE = seadata_vars.get('edmo_code')
-API_VERSION = seadata_vars.get('api_version')
+SEADATA_ENABLED = seadata_vars.get("project") == "1"
+ORDERS_ENDPOINT = "orders"
+EDMO_CODE = seadata_vars.get("edmo_code")
+API_VERSION = seadata_vars.get("api_version")
 
 
-class ErrorCodes(object):
+class ErrorCodes:
     PID_NOT_FOUND = ("41", "PID not found")
     INGESTION_FILE_NOT_FOUND = ("50", "File requested not found")
 
@@ -76,7 +76,7 @@ class ErrorCodes(object):
     UNABLE_TO_SET_METADATA = ("4047", "Unable to set metadata to the file")
 
 
-class Metadata(object):
+class Metadata:
 
     """ {
     "cdi_n_code": "1522222",
@@ -85,7 +85,7 @@ class Metadata(object):
     "version": "1"
     } """
 
-    tid = 'temp_id'
+    tid = "temp_id"
     keys = [
         "cdi_n_code",
         "format_n_code",
@@ -97,9 +97,9 @@ class Metadata(object):
     max_size = 10
 
 
-class ImportManagerAPI(object):
+class ImportManagerAPI:
 
-    _uri = seadata_vars.get('api_im_url')
+    _uri = seadata_vars.get("api_im_url")
 
     def post(self, payload, backdoor=False, edmo_code=None):
 
@@ -107,12 +107,12 @@ class ImportManagerAPI(object):
             edmo_code = EDMO_CODE
 
         # timestamp '20180320T08:15:44' = YYMMDDTHH:MM:SS
-        payload['edmo_code'] = edmo_code
-        payload['datetime'] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
-        if 'api_function' not in payload:
-            payload['api_function'] = 'unknown_function'
-        payload['api_function'] += '_ready'
-        payload['version'] = API_VERSION
+        payload["edmo_code"] = edmo_code
+        payload["datetime"] = datetime.today().strftime("%Y%m%dT%H:%M:%S")
+        if "api_function" not in payload:
+            payload["api_function"] = "unknown_function"
+        payload["api_function"] += "_ready"
+        payload["version"] = API_VERSION
 
         if backdoor:
             log.warning(
@@ -160,23 +160,23 @@ class ImportManagerAPI(object):
 # NOTE this function is outside the previous class, and self is passed as parameter
 def seadata_pid(self, pid):
 
-    response = {'PID': pid, 'verified': False, 'metadata': {}}
+    response = {"PID": pid, "verified": False, "metadata": {}}
 
     #################
     # b2handle to verify PID
     b2handle_output = self.check_pid_content(pid)
     if b2handle_output is None:
-        error = "PID {} not found".format(pid)
+        error = f"PID {pid} not found"
         log.error(error)
         return self.response(errors=error, code=400)
     else:
         log.verbose("PID {} verified", pid)
-        response['verified'] = True
+        response["verified"] = True
 
     #################
     ipath = self.parse_pid_dataobject_path(b2handle_output)
-    response['temp_id'] = path.last_part(ipath)
-    response['batch_id'] = path.last_part(path.dir_name(ipath))
+    response["temp_id"] = path.last_part(ipath)
+    response["batch_id"] = path.last_part(path.dir_name(ipath))
 
     #################
     # get the metadata
@@ -188,6 +188,6 @@ def seadata_pid(self, pid):
 
     for key, value in metadata.items():
         if key in Metadata.keys:
-            response['metadata'][key] = value
+            response["metadata"][key] = value
 
     return response

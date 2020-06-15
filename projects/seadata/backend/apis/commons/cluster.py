@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
-
 from datetime import datetime
-from seadata.apis.commons.seadatacloud import seadata_vars
-from restapi.rest.definition import EndpointResource
-from restapi.services.detect import detector
+
 from b2stage.apis.commons import path
+from restapi.env import Env
+from restapi.rest.definition import EndpointResource
+from seadata.apis.commons.seadatacloud import seadata_vars
+
 # from restapi.utilities.logs import log
 
-DEFAULT_IMAGE_PREFIX = 'docker'
+DEFAULT_IMAGE_PREFIX = "docker"
 
-'''
+"""
 These are the names of the directories in the irods
 zone for ingestion (i.e. pre-production) batches,
 for production batches, and for orders being prepared.
@@ -17,35 +17,35 @@ for production batches, and for orders being prepared.
 They are being defined in b2stage/confs/commons.yml,
 which references config values defined in
 b2stage/project_configuration.yml
-'''
-INGESTION_COLL = seadata_vars.get('ingestion_coll')  # "batches"
-ORDERS_COLL = seadata_vars.get('orders_coll')  # "orders"
-PRODUCTION_COLL = seadata_vars.get('production_coll')  # "cloud"
-MOUNTPOINT = seadata_vars.get('resources_mountpoint')  # "/usr/share"
+"""
+INGESTION_COLL = seadata_vars.get("ingestion_coll")  # "batches"
+ORDERS_COLL = seadata_vars.get("orders_coll")  # "orders"
+PRODUCTION_COLL = seadata_vars.get("production_coll")  # "cloud"
+MOUNTPOINT = seadata_vars.get("resources_mountpoint")  # "/usr/share"
 
-'''
+"""
 These are the paths to the data on the hosts
 that runs containers (both backend, celery and QC containers)
-'''
-INGESTION_DIR = seadata_vars.get('workspace_ingestion')  # "batches"
-ORDERS_DIR = seadata_vars.get('workspace_orders')  # "orders"
+"""
+INGESTION_DIR = seadata_vars.get("workspace_ingestion")  # "batches"
+ORDERS_DIR = seadata_vars.get("workspace_orders")  # "orders"
 
-'''
+"""
 These are how the paths to the data on the host
 are mounted into the containers.
 
 Prepended before this is the RESOURCES_LOCALPATH,
 defaulting to /usr/share.
-'''
+"""
 
 # THIS CANNOT CHANGE, otherwise QC containers will not work anymore!
-FS_PATH_IN_CONTAINER = '/usr/share/batch'
+FS_PATH_IN_CONTAINER = "/usr/share/batch"
 # At least, the 'batch' part has to be like this, I am quite sure.
 # About the '/usr/share', I am not sure, it might be read form some
 # environmental variable passed to the container. But it is safe
 # to leave it hard-coded like this.
 
-CONTAINERS_VARS = detector.load_group(label='containers')
+CONTAINERS_VARS = Env.load_group(label="containers")
 
 
 class ClusterContainerEndpoint(EndpointResource):
@@ -55,24 +55,20 @@ class ClusterContainerEndpoint(EndpointResource):
 
     def load_credentials(self):
 
-        if not hasattr(self, '_credentials'):
-            self._credentials = {}
+        if not hasattr(self, "_credentials") or not self._credentials:
+            self._credentials = Env.load_group(label="resources")
 
-        if len(self._credentials) < 1:
-            from restapi.services.detect import detector
-
-            self._credentials = detector.load_group(label='resources')
         return self._credentials
 
     def get_or_create_handle(self):
-        '''
+        """
         Create a Rancher object and feed it with
         config that starts with "RESOURCES_",
         including the localpath, which is
         set to "/nfs/share".
-        '''
+        """
 
-        if not hasattr(self, '_handle'):
+        if not hasattr(self, "_handle"):
             self._handle = None
 
         if self._handle is None:
@@ -86,7 +82,7 @@ class ClusterContainerEndpoint(EndpointResource):
         return str(path.build(paths))
 
     def get_ingestion_path_on_host(self, batch_id):
-        '''
+        """
         Return the path where the data is located
         on the Rancher host.
 
@@ -95,14 +91,14 @@ class ClusterContainerEndpoint(EndpointResource):
         see: SEADATA_WORKSPACE_INGESTION=ingestion
 
         Example: /usr/share/ingestion/<batch_id>
-        '''
+        """
         paths = [self._handle._localpath]  # "/usr/share" (default)
         paths.append(INGESTION_DIR)  # "batches"  (default)
         paths.append(batch_id)
         return str(path.build(paths))
 
     def get_ingestion_path_in_container(self):
-        '''
+        """
         Return the path where the data is located
         mounted inside the Rancher containers.
 
@@ -118,19 +114,19 @@ class ClusterContainerEndpoint(EndpointResource):
         that directory.
 
         Example: /usr/share/batch/
-        '''
+        """
         paths = [FS_PATH_IN_CONTAINER]  # "/usr/share/batch" (hard-coded)
         return str(path.build(paths))
 
-    def get_input_zip_filename(self, filename=None, extension='zip', sep='.'):
+    def get_input_zip_filename(self, filename=None, extension="zip", sep="."):
         if filename is None:
-            filename = 'input'
+            filename = "input"
         else:
-            filename = filename.replace('{}{}'.format(sep, extension), '')
-        return "{}{}{}".format(filename, sep, extension)
+            filename = filename.replace(f"{sep}{extension}", "")
+        return f"{filename}{sep}{extension}"
 
     def get_irods_path(self, irods_client, mypath, suffix=None):
-        '''
+        """
         Helper to construct a path of a data object
         inside irods.
 
@@ -138,7 +134,7 @@ class ClusterContainerEndpoint(EndpointResource):
         Note: The irods_client is of class
         IrodsPythonClient, defined in module
         rapydo/http-api/restapi/connectors/irods/client
-        '''
+        """
         paths = [mypath]
         if suffix is not None:
             paths.append(suffix)
@@ -148,7 +144,7 @@ class ClusterContainerEndpoint(EndpointResource):
         # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_irods_production_path(self, irods_client, batch_id=None):
-        '''
+        """
         Return path of the batch inside irods, once the
         batch is in production.
 
@@ -157,12 +153,12 @@ class ClusterContainerEndpoint(EndpointResource):
         directory (from config) and the batch_id if given.
 
         Example: /myIrodsZone/cloud/<batch_id>
-        '''
+        """
         return self.get_irods_path(irods_client, PRODUCTION_COLL, batch_id)
         # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_irods_batch_path(self, irods_client, batch_id=None):
-        '''
+        """
         Return path of the batch inside irods, before
         the batch goes to production.
 
@@ -171,12 +167,12 @@ class ClusterContainerEndpoint(EndpointResource):
         directory (from config) and the batch_id if given.
 
         Example: /myIrodsZone/batches/<batch_id>
-        '''
+        """
         return self.get_irods_path(irods_client, INGESTION_COLL, batch_id)
         # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_irods_order_path(self, irods_client, order_id=None):
-        '''
+        """
         Return path of the order inside irods.
 
         It consists of the irods zone (retrieved from
@@ -184,28 +180,28 @@ class ClusterContainerEndpoint(EndpointResource):
         (from config) and the order_id if given.
 
         Example: /myIrodsZone/orders/<order_id>
-        '''
+        """
         return self.get_irods_path(irods_client, ORDERS_COLL, order_id)
         # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def return_async_id(self, request_id):
         # dt = "20170712T15:33:11"
-        dt = datetime.strftime(datetime.now(), '%Y%m%dT%H:%M:%S')
-        return self.response({'request_id': request_id, 'datetime': dt})
+        dt = datetime.strftime(datetime.now(), "%Y%m%dT%H:%M:%S")
+        return self.response({"request_id": request_id, "datetime": dt})
 
     @staticmethod
     def get_container_name(batch_id, qc_name, qc_label=None):
         qc_name = (
-            qc_name.replace('_', '').replace('-', '').replace(':', '').replace('.', '')
+            qc_name.replace("_", "").replace("-", "").replace(":", "").replace(".", "")
         )
 
         if qc_label is None:
-            return '{}_{}'.format(batch_id, qc_name)
+            return f"{batch_id}_{qc_name}"
 
-        return '{}_{}_{}'.format(batch_id, qc_label, qc_name)
+        return f"{batch_id}_{qc_label}_{qc_name}"
 
     @staticmethod
     def get_container_image(qc_name, prefix=None):
         if prefix is None:
             prefix = DEFAULT_IMAGE_PREFIX
-        return '{}/{}'.format(prefix, qc_name)
+        return f"{prefix}/{qc_name}"
