@@ -53,7 +53,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["order"]
     _GET = {
-        "/orders/<string:order_id>/download/<string:ftype>/c/<string:code>": {
+        "/orders/<order_id>/download/<ftype>/c/<code>": {
             "summary": "Download an order",
             "responses": {
                 "200": {"description": "The order with all files compressed"},
@@ -176,7 +176,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["order"]
     _GET = {
-        "/orders/<string:order_id>": {
+        "/orders/<order_id>": {
             "summary": "List orders",
             "responses": {"200": {"description": "The list of zip files available"}},
         }
@@ -195,7 +195,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
     _PUT = {
-        "/orders/<string:order_id>": {
+        "/orders/<order_id>": {
             "summary": "Request a link to download an order (if already prepared)",
             "responses": {
                 "200": {

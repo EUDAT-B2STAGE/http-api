@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 B2SAFE HTTP REST API endpoints.
 
@@ -11,21 +9,20 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 """
 
+import json
 import os
 import time
-import json
-from glom import glom
-from flask import request
 
-from restapi.confs import TESTING
 from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
+from flask import request
+from glom import glom
 from restapi import decorators
-from restapi.services.uploader import Uploader
-from restapi.exceptions import RestApiException
+from restapi.confs import TESTING
 from restapi.connectors.irods.client import IrodsException
+from restapi.exceptions import RestApiException
+from restapi.services.uploader import Uploader
 from restapi.utilities.logs import log
-
 
 ###############################
 # Classes
@@ -33,108 +30,108 @@ from restapi.utilities.logs import log
 
 class BasicEndpoint(Uploader, EudatEndpoint):
 
-    labels = ['eudat', 'registered']
+    labels = ["eudat", "registered"]
     _GET = {
-        '/registered/<path:location>': {
-            'summary': 'Retrieve a single digital entity/object information or download it',
-            'parameters': [
+        "/registered/<location>": {
+            "summary": "Retrieve a single digital entity/object information or download it",
+            "parameters": [
                 {
-                    'name': 'download',
-                    'description': 'activate file downloading (if path is a single file)',
-                    'in': 'query',
-                    'type': 'boolean',
+                    "name": "download",
+                    "description": "activate file downloading (if path is a single file)",
+                    "in": "query",
+                    "type": "boolean",
                 }
             ],
-            'responses': {
-                '200': {
-                    'description': 'Returns the digital object information or file content if download is activated or the list of objects related to the requested path (PID is returned if available)'
+            "responses": {
+                "200": {
+                    "description": "Returns the digital object information or file content if download is activated or the list of objects related to the requested path (PID is returned if available)"
                 }
             },
         }
     }
     _POST = {
-        '/registered': {
-            'summary': 'Create a new collection',
-            'responses': {'200': {'description': 'Collection created'}},
-            'parameters': [
+        "/registered": {
+            "summary": "Create a new collection",
+            "responses": {"200": {"description": "Collection created"}},
+            "parameters": [
                 {
-                    'name': 'path',
-                    'in': 'query',
-                    'type': 'string',
-                    'description': 'the filesystem path to created collection',
+                    "name": "path",
+                    "in": "query",
+                    "type": "string",
+                    "description": "the filesystem path to created collection",
                 }
             ],
         }
     }
     _PUT = {
-        '/registered/<path:location>': {
-            'summary': 'Upload a new file',
-            'responses': {'200': {'description': 'File created'}},
-            'parameters': [
+        "/registered/<location>": {
+            "summary": "Upload a new file",
+            "responses": {"200": {"description": "File created"}},
+            "parameters": [
                 {
-                    'name': 'file',
-                    'in': 'formData',
-                    'description': 'file data to be uploaded',
-                    'required': True,
-                    'type': 'file',
+                    "name": "file",
+                    "in": "formData",
+                    "description": "file data to be uploaded",
+                    "required": True,
+                    "type": "file",
                 },
                 {
-                    'name': 'force',
-                    'in': 'query',
-                    'type': 'boolean',
-                    'description': 'force action even if getting warnings',
+                    "name": "force",
+                    "in": "query",
+                    "type": "boolean",
+                    "description": "force action even if getting warnings",
                 },
                 {
-                    'name': 'pid_await',
-                    'in': 'query',
-                    'type': 'boolean',
-                    'description': 'Returns PID in the JSON response',
+                    "name": "pid_await",
+                    "in": "query",
+                    "type": "boolean",
+                    "description": "Returns PID in the JSON response",
                 },
             ],
         }
     }
     _PATCH = {
-        '/registered/<path:location>': {
-            'summary': 'Update an entity name',
-            'parameters': [
+        "/registered/<location>": {
+            "summary": "Update an entity name",
+            "parameters": [
                 {
-                    'name': 'new file name',
-                    'in': 'body',
-                    'schema': {'$ref': '#/definitions/FileUpdate'},
+                    "name": "new file name",
+                    "in": "body",
+                    "schema": {"$ref": "#/definitions/FileUpdate"},
                 }
             ],
-            'responses': {'200': {'description': 'File name updated'}},
+            "responses": {"200": {"description": "File name updated"}},
         }
     }
     _DELETE = {
-        '/registered': {
-            'summary': 'Delete an entity',
-            'parameters': [
+        "/registered": {
+            "summary": "Delete an entity",
+            "parameters": [
                 {
-                    'name': 'debugclean',
-                    'in': 'query',
-                    'type': 'boolean',
-                    'description': 'Only for debug mode',
+                    "name": "debugclean",
+                    "in": "query",
+                    "type": "boolean",
+                    "description": "Only for debug mode",
                 }
             ],
-            'responses': {'200': {'description': 'Entities deleted'}},
+            "responses": {"200": {"description": "Entities deleted"}},
         },
-        '/registered/<path:location>': {
-            'summary': 'Delete an entity',
-            'parameters': [
+        "/registered/<location>": {
+            "summary": "Delete an entity",
+            "parameters": [
                 {
-                    'name': 'debugclean',
-                    'in': 'query',
-                    'type': 'boolean',
-                    'description': 'Only for debug mode',
+                    "name": "debugclean",
+                    "in": "query",
+                    "type": "boolean",
+                    "description": "Only for debug mode",
                 }
             ],
-            'responses': {'200': {'description': 'Entity deleted'}},
+            "responses": {"200": {"description": "Entity deleted"}},
         },
     }
 
     @decorators.catch_errors(exception=IrodsException)
-    @decorators.auth.required(roles=['normal_user'])
+    @decorators.auth.required(roles=["normal_user"])
     def get(self, location):
         """ Download file from filename """
 
@@ -161,11 +158,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         ###################
 
         # If download is True, trigger file download
-        if hasattr(self._args, 'download'):
-            if self._args.download and 'true' in self._args.download.lower():
+        if hasattr(self._args, "download"):
+            if self._args.download and "true" in self._args.download.lower():
                 if is_collection:
                     raise RestApiException(
-                        'Collection: recursive download is not allowed'
+                        "Collection: recursive download is not allowed"
                     )
                 else:
                     # NOTE: we always send in chunks when downloading
@@ -174,7 +171,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         return self.list_objects(icom, path, is_collection, location)
 
     @decorators.catch_errors(exception=IrodsException)
-    @decorators.auth.required(roles=['normal_user'])
+    @decorators.auth.required(roles=["normal_user"])
     def post(self):
         """
         Handle [directory creation](docs/user/registered.md#post).
@@ -185,10 +182,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         """
 
         # Disable upload for POST method
-        if 'file' in request.files:
+        if "file" in request.files:
             raise RestApiException(
-                'File upload forbidden for this method; '
-                'Please use the PUT method for this operation',
+                "File upload forbidden for this method; "
+                "Please use the PUT method for this operation",
                 status_code=405,
             )
 
@@ -205,7 +202,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         # if path variable empty something is wrong
         if path is None:
             raise RestApiException(
-                'Path to remote resource: only absolute paths are allowed',
+                "Path to remote resource: only absolute paths are allowed",
                 status_code=405,
             )
 
@@ -217,22 +214,22 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             if force:
                 ipath = path
             else:
-                raise IrodsException("Failed to create {}".format(path))
+                raise IrodsException(f"Failed to create {path}")
         else:
             log.info("Created irods collection: {}", ipath)
 
         # NOTE: question: should this status be No response?
         status = 200
         content = {
-            'location': self.b2safe_location(path),
-            'path': path,
-            'link': self.httpapi_location(path, api_path=CURRENT_MAIN_ENDPOINT),
+            "location": self.b2safe_location(path),
+            "path": path,
+            "link": self.httpapi_location(path, api_path=CURRENT_MAIN_ENDPOINT),
         }
 
         return self.response(content, code=status)
 
     @decorators.catch_errors(exception=IrodsException)
-    @decorators.auth.required(roles=['normal_user'])
+    @decorators.auth.required(roles=["normal_user"])
     def put(self, location):
         """
         Handle file upload. Test on docker client shell with:
@@ -287,7 +284,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         #################
         # CASE 1- FORM UPLOAD
-        if request.mimetype != 'application/octet-stream':
+        if request.mimetype != "application/octet-stream":
 
             # Read the request
             request.get_data()
@@ -309,7 +306,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             ###################
             # If files uploaded
-            key_file = 'filename'
+            key_file = "filename"
 
             if isinstance(content, dict) and key_file in content:
                 original_filename = content[key_file]
@@ -353,12 +350,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     destination=ipath, force=force, resource=resource
                 )
                 log.info("irods call {}", iout)
-                content = {'filename': ipath}
+                content = {"filename": ipath}
                 errors = None
                 status = 200
             except BaseException as e:
                 content = ""
-                errors = {"Uploading failed": "{}".format(e)}
+                errors = {"Uploading failed": f"{e}"}
                 status = 500
 
         ###################
@@ -369,15 +366,15 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         pid_found = True
         if not errors:
             out = {}
-            pid_parameter = self._args.get('pid_await')
-            if pid_parameter and 'true' in pid_parameter.lower():
+            pid_parameter = self._args.get("pid_await")
+            if pid_parameter and "true" in pid_parameter.lower():
                 # Shall we get the timeout from user?
                 pid_found = False
                 timeout = time.time() + 10  # seconds from now
-                pid = ''
+                pid = ""
                 while True:
                     out, _ = icom.get_metadata(ipath)
-                    pid = out.get('PID')
+                    pid = out.get("PID")
                     if pid is not None or time.time() > timeout:
                         break
                     time.sleep(2)
@@ -398,12 +395,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             checksum = obj.checksum
 
             content = {
-                'location': self.b2safe_location(ipath),
-                'PID': out.get('PID'),
-                'checksum': checksum,
-                'filename': filename,
-                'path': path,
-                'link': self.httpapi_location(
+                "location": self.b2safe_location(ipath),
+                "PID": out.get("PID"),
+                "checksum": checksum,
+                "filename": filename,
+                "path": path,
+                "link": self.httpapi_location(
                     ipath, api_path=CURRENT_MAIN_ENDPOINT, remove_suffix=path
                 ),
             }
@@ -411,12 +408,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if pid_found:
             return self.response(content, errors=errors, code=status)
         else:
-            return self.response(
-                content, errors=errors, code=202
-            )
+            return self.response(content, errors=errors, code=202)
 
     @decorators.catch_errors(exception=IrodsException)
-    @decorators.auth.required(roles=['normal_user'])
+    @decorators.auth.required(roles=["normal_user"])
     def patch(self, location):
         """
         PATCH a record. E.g. change only the filename to a resource.
@@ -439,10 +434,10 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if force:
             raise RestApiException(
                 "This operation cannot be forced in B2SAFE iRODS data objects",
-                status_code=400
+                status_code=400,
             )
 
-        if newfile is None or newfile.strip() == '':
+        if newfile is None or newfile.strip() == "":
             raise RestApiException(
                 "New filename missing; use the 'newname' JSON parameter",
                 status_code=400,
@@ -456,16 +451,16 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         icom.move(location, newpath)
 
         return {
-            'location': self.b2safe_location(newpath),
-            'filename': newfile,
-            'path': collection,
-            'link': self.httpapi_location(
+            "location": self.b2safe_location(newpath),
+            "filename": newfile,
+            "path": collection,
+            "link": self.httpapi_location(
                 newpath, api_path=CURRENT_MAIN_ENDPOINT, remove_suffix=location
             ),
         }
 
     @decorators.catch_errors(exception=IrodsException)
-    @decorators.auth.required(roles=['normal_user'])
+    @decorators.auth.required(roles=["normal_user"])
     def delete(self, location=None):
         """
         Remove an object or an empty directory on iRODS
@@ -489,19 +484,18 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         ###################
         # Testing option to remove the whole content of current home
         if TESTING:
-            if self._args.get('debugclean'):
+            if self._args.get("debugclean"):
                 home = icom.get_user_home()
                 files = icom.list(home)
                 for key, obj in files.items():
                     icom.remove(
-                        home + self._path_separator + obj['name'],
-                        recursive=obj['object_type'] == 'collection',
+                        home + self._path_separator + obj["name"],
+                        recursive=obj["object_type"] == "collection",
                     )
-                    log.debug("Removed {}", obj['name'])
+                    log.debug("Removed {}", obj["name"])
                 return "Cleaned"
 
         # TODO: only if it has a PID?
         raise RestApiException(
-            "Data removal NOT allowed inside the 'registered' domain",
-            status_code=405,
+            "Data removal NOT allowed inside the 'registered' domain", status_code=405,
         )

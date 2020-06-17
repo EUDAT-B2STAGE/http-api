@@ -1,38 +1,36 @@
-# -*- coding: utf-8 -*-
-
 """
 Publish a digital object as a public resource for anyone
 
 NOTE: this package will be loaded only if IRODS_ANONYMOUS is set
 """
 
+from b2stage.apis.commons import path
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators
 from restapi.exceptions import RestApiException
-from b2stage.apis.commons import path
 from restapi.utilities.logs import log
 
 
 class Publish(EudatEndpoint):
 
-    labels = ['eudat', 'publish']
-    depends_on = ['IRODS_ANONYMOUS', 'ENABLE_PUBLIC_ENDPOINT']
+    labels = ["eudat", "publish"]
+    depends_on = ["IRODS_ANONYMOUS", "ENABLE_PUBLIC_ENDPOINT"]
     _GET = {
-        '/publish/<path:location>': {
-            'summary': 'Check if the path is currently readable for the anonymous user',
-            'responses': {'200': {'description': "return a boolean 'published'"}},
+        "/publish/<location>": {
+            "summary": "Check if the path is currently readable for the anonymous user",
+            "responses": {"200": {"description": "return a boolean 'published'"}},
         }
     }
     _PUT = {
-        '/publish/<path:location>': {
-            'summary': 'set the path to be readable for the anonymous user',
-            'responses': {'200': {'description': "return a boolean 'published'"}},
+        "/publish/<location>": {
+            "summary": "set the path to be readable for the anonymous user",
+            "responses": {"200": {"description": "return a boolean 'published'"}},
         }
     }
     _DELETE = {
-        '/publish/<path:location>': {
-            'summary': 'Ensure that the path is not accessible for the anonymous user',
-            'responses': {'200': {'description': "return a boolean 'published'"}},
+        "/publish/<location>": {
+            "summary": "Ensure that the path is not accessible for the anonymous user",
+            "responses": {"200": {"description": "return a boolean 'published'"}},
         }
     }
 
@@ -40,8 +38,7 @@ class Publish(EudatEndpoint):
 
         if location is None:
             raise RestApiException(
-                'Location: missing filepath inside URI',
-                status_code=400,
+                "Location: missing filepath inside URI", status_code=400,
             )
 
         location = self.fix_location(location)
@@ -56,8 +53,7 @@ class Publish(EudatEndpoint):
         # Does this path exist?
         if not r.icommands.exists(path):
             raise RestApiException(
-                "path {} not existing or no permissions".format(path),
-                status_code=404,
+                f"path {path} not existing or no permissions", status_code=404,
             )
 
         return path
@@ -65,13 +61,13 @@ class Publish(EudatEndpoint):
     def single_path_check(self, icom, zone, abs_path, check=True):
 
         permissions = icom.get_permissions(abs_path)
-        acls = permissions.get('ACL', [])
+        acls = permissions.get("ACL", [])
 
         published = False
         for acl_user, acl_zone, acl_mode in acls:
             if acl_zone == zone and acl_user == icom.anonymous_user:
                 if check:
-                    if 'read' in acl_mode:
+                    if "read" in acl_mode:
                         published = True
                         break
 
@@ -92,7 +88,7 @@ class Publish(EudatEndpoint):
 
         current_zone = icom.get_current_zone()
         ipath_steps = path.parts(ipath)
-        current = ''
+        current = ""
 
         for ipath_step in ipath_steps:
 
@@ -103,7 +99,7 @@ class Publish(EudatEndpoint):
             if (
                 len(ipath_step) == 1
                 or ipath_step == current_zone
-                or ipath_step == 'home'
+                or ipath_step == "home"
             ):
                 continue
 
@@ -117,7 +113,7 @@ class Publish(EudatEndpoint):
                 if unpublish:
                     self.single_permission(icom, current, permission=None)
                 else:
-                    self.single_permission(icom, current, permission='read')
+                    self.single_permission(icom, current, permission="read")
 
         return True
 
@@ -128,7 +124,7 @@ class Publish(EudatEndpoint):
         from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER
         from b2stage.apis.commons import PUBLIC_ENDPOINT
 
-        return '{}{}{}'.format(CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT, path)
+        return f"{CURRENT_HTTPAPI_SERVER}{PUBLIC_ENDPOINT}{path}"
 
     @decorators.catch_errors()
     @decorators.auth.required()
@@ -143,14 +139,13 @@ class Publish(EudatEndpoint):
 
         if icom.is_collection(path):
             return self.send_errors(
-                'Collections are not allowed to be published',
-                code=400,
+                "Collections are not allowed to be published", code=400,
             )
         else:
             published = self.publish_helper(icom, path)
-            response = {'published': published}
+            response = {"published": published}
             if published:
-                response['public_url'] = self.public_path(path)
+                response["public_url"] = self.public_path(path)
             return response
 
     @decorators.catch_errors()
@@ -166,8 +161,7 @@ class Publish(EudatEndpoint):
 
         if icom.is_collection(path):
             return self.send_errors(
-                'Collections are not allowed to be published',
-                code=400,
+                "Collections are not allowed to be published", code=400,
             )
 
         # if already set as the same don't do anything
@@ -176,7 +170,7 @@ class Publish(EudatEndpoint):
         # # If you'd like to check again:
         # return {'published': self.publish_helper(icom, path)}
 
-        return {'published': True, 'public_url': self.public_path(path)}
+        return {"published": True, "public_url": self.public_path(path)}
 
     @decorators.catch_errors()
     @decorators.auth.required()
@@ -191,8 +185,7 @@ class Publish(EudatEndpoint):
 
         if icom.is_collection(path):
             return self.send_errors(
-                'Collections are not allowed to be published',
-                code=400,
+                "Collections are not allowed to be published", code=400,
             )
 
         # if not already set as the same don't do anything
@@ -201,4 +194,4 @@ class Publish(EudatEndpoint):
 
         # # If you'd like to check again:
         # return {'published': self.publish_helper(icom, path)}
-        return {'published': False}
+        return {"published": False}
