@@ -1,43 +1,48 @@
-# -*- coding: utf-8 -*-
-
 """
 Launch containers for quality checks in Seadata
 """
-import os
 import json
+import os
 import time
+
 import requests
-from seadata.apis.commons.cluster import ClusterContainerEndpoint
-from b2stage.apis.commons.endpoint import MISSING_BATCH, NOT_FILLED_BATCH
-from b2stage.apis.commons.endpoint import BATCH_MISCONFIGURATION
-from seadata.apis.commons.cluster import INGESTION_DIR, MOUNTPOINT
+from b2stage.apis.commons import path
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from b2stage.apis.commons.endpoint import (
+    BATCH_MISCONFIGURATION,
+    MISSING_BATCH,
+    NOT_FILLED_BATCH,
+)
 from restapi import decorators
 from restapi.connectors.irods.client import IrodsException
-from b2stage.apis.commons import path
 from restapi.utilities.logs import log
+from seadata.apis.commons.cluster import (
+    INGESTION_DIR,
+    MOUNTPOINT,
+    ClusterContainerEndpoint,
+)
 
 
 class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
-    labels = ['ingestion']
-    depends_on = ['RESOURCES_PROJECT']
+    labels = ["ingestion"]
+    depends_on = ["RESOURCES_PROJECT"]
     _GET = {
-        '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
-            'summary': 'Resources management',
-            'responses': {'200': {'description': 'unknown'}},
+        "/ingestion/<batch_id>/qc/<qc_name>": {
+            "summary": "Resources management",
+            "responses": {"200": {"description": "unknown"}},
         }
     }
     _PUT = {
-        '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
-            'summary': 'Launch a quality check as a docker container',
-            'responses': {'200': {'description': 'unknown'}},
+        "/ingestion/<batch_id>/qc/<qc_name>": {
+            "summary": "Launch a quality check as a docker container",
+            "responses": {"200": {"description": "unknown"}},
         }
     }
     _DELETE = {
-        '/ingestion/<string:batch_id>/qc/<string:qc_name>': {
-            'summary': 'Remove a quality check if existing',
-            'responses': {'200': {'description': 'unknown'}},
+        "/ingestion/<batch_id>/qc/<qc_name>": {
+            "summary": "Remove a quality check if existing",
+            "responses": {"200": {"description": "unknown"}},
         }
     }
 
@@ -52,16 +57,14 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         # resources = rancher.list()
         container = rancher.get_container_object(container_name)
         if container is None:
-            return self.send_errors(
-                'Quality check does not exist', code=404
-            )
+            return self.send_errors("Quality check does not exist", code=404)
 
         logs = rancher.recover_logs(container_name)
         # print("TEST", container_name, tmp)
-        errors_keys = ['failure', 'failed', 'error']
+        errors_keys = ["failure", "failed", "error"]
         errors = []
-        for line in logs.lower().split('\n'):
-            if line.strip() == '':
+        for line in logs.lower().split("\n"):
+            if line.strip() == "":
                 continue
             for key in errors_keys:
                 if key in line:
@@ -69,14 +72,14 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                     break
 
         response = {
-            'batch_id': batch_id,
-            'qc_name': qc_name,
-            'state': container.get('state'),
-            'errors': errors,
+            "batch_id": batch_id,
+            "qc_name": qc_name,
+            "state": container.get("state"),
+            "errors": errors,
         }
 
-        if container.get('transitioning') == 'error':
-            response['errors'].append(container.get('transitioningMessage'))
+        if container.get("transitioning") == "error":
+            response["errors"].append(container.get("transitioningMessage"))
 
         """
         "state": "stopped", / error
@@ -103,36 +106,34 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             log.info("Batch irods path: {}", batch_path)
             log.info("Batch local path: {}", local_path)
             batch_status, batch_files = self.get_batch_status(
-                imain, batch_path, local_path)
+                imain, batch_path, local_path
+            )
 
             if batch_status == MISSING_BATCH:
                 return self.send_errors(
-                    "Batch '{}' not found (or no permissions)".format(batch_id),
-                    code=404,
+                    f"Batch '{batch_id}' not found (or no permissions)", code=404,
                 )
 
             if batch_status == NOT_FILLED_BATCH:
                 return self.send_errors(
                     # Bad Resource
-                    "Batch '{}' not yet filled".format(batch_id), code=410
+                    f"Batch '{batch_id}' not yet filled",
+                    code=410,
                 )
 
             if batch_status == BATCH_MISCONFIGURATION:
                 log.error(
-                    'Misconfiguration: {} files in {} (expected 1)',
+                    "Misconfiguration: {} files in {} (expected 1)",
                     len(batch_files),
                     batch_path,
                 )
                 return self.send_errors(
-                    "Misconfiguration for batch_id {}".format(batch_id),
+                    f"Misconfiguration for batch_id {batch_id}",
                     # Bad Resource
                     code=410,
                 )
         except requests.exceptions.ReadTimeout:
-            return self.send_errors(
-                "B2SAFE is temporarily unavailable",
-                code=503
-            )
+            return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
         ###################
         # Parameters (and checks)
@@ -140,11 +141,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         input_json = self.get_input()
 
         # TODO: backdoor check - remove me
-        bd = input_json.pop('eudat_backdoor', False)
+        bd = input_json.pop("eudat_backdoor", False)
         if bd:
-            im_prefix = 'eudat'
+            im_prefix = "eudat"
         else:
-            im_prefix = 'maris'
+            im_prefix = "maris"
         log.debug("Image prefix: {}", im_prefix)
 
         # input parameters to be passed to container
@@ -163,15 +164,13 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 continue
             value = input_json.get(key, None)
             if value is None:
-                return self.send_errors(
-                    'Missing JSON key: {}'.format(key), code=400
-                )
+                return self.send_errors(f"Missing JSON key: {key}", code=400)
 
         response = {
-            'batch_id': batch_id,
-            'qc_name': qc_name,
-            'status': 'executed',
-            'input': input_json,
+            "batch_id": batch_id,
+            "qc_name": qc_name,
+            "status": "executed",
+            "input": input_json,
         }
 
         ###################
@@ -180,8 +179,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         except BaseException as e:
             log.critical(str(e))
             return self.send_errors(
-                'Cannot establish a connection with Rancher',
-                code=500,
+                "Cannot establish a connection with Rancher", code=500,
             )
 
         container_name = self.get_container_name(batch_id, qc_name, rancher._qclabel)
@@ -190,7 +188,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container_obj = rancher.get_container_object(container_name)
         if container_obj is not None:
             log.error("Docker container {} already exists!", container_name)
-            response['status'] = 'existing'
+            response["status"] = "existing"
             return self.response(errors=response, code=409)
 
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
@@ -201,18 +199,18 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         host_ingestion_path = self.get_ingestion_path_on_host(batch_id)
         container_ingestion_path = self.get_ingestion_path_in_container()
 
-        envs['BATCH_DIR_PATH'] = container_ingestion_path
+        envs["BATCH_DIR_PATH"] = container_ingestion_path
         from seadata.apis.commons.queue import QUEUE_VARS
         from seadata.apis.commons.cluster import CONTAINERS_VARS
 
         for key, value in QUEUE_VARS.items():
-            if key in ['enable']:
+            if key in ["enable"]:
                 continue
-            elif key == 'user':
-                value = CONTAINERS_VARS.get('rabbituser')
-            elif key == 'password':
-                value = CONTAINERS_VARS.get('rabbitpass')
-            envs['LOGS_' + key.upper()] = value
+            elif key == "user":
+                value = CONTAINERS_VARS.get("rabbituser")
+            elif key == "password":
+                value = CONTAINERS_VARS.get("rabbitpass")
+            envs["LOGS_" + key.upper()] = value
         # envs['DB_USERNAME'] = CONTAINERS_VARS.get('dbuser')
         # envs['DB_PASSWORD'] = CONTAINERS_VARS.get('dbpass')
         # envs['DB_USERNAME_EDIT'] = CONTAINERS_VARS.get('dbextrauser')
@@ -220,10 +218,10 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         # FOLDER inside /batches to store temporary json inputs
         # TODO: to be put into the configuration
-        JSON_DIR = 'json_inputs'
+        JSON_DIR = "json_inputs"
 
         # Mount point of the json dir into the QC container
-        QC_MOUNTPOINT = '/json'
+        QC_MOUNTPOINT = "/json"
 
         json_path_backend = os.path.join(MOUNTPOINT, INGESTION_DIR, JSON_DIR)
 
@@ -244,17 +242,17 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         json_path_qc = self.get_ingestion_path_on_host(JSON_DIR)
         json_path_qc = os.path.join(json_path_qc, batch_id)
-        envs['JSON_FILE'] = os.path.join(QC_MOUNTPOINT, json_input_file)
+        envs["JSON_FILE"] = os.path.join(QC_MOUNTPOINT, json_input_file)
 
         extra_params = {
-            'dataVolumes': [
-                "{}:{}".format(host_ingestion_path, container_ingestion_path),
-                "{}:{}".format(json_path_qc, QC_MOUNTPOINT),
+            "dataVolumes": [
+                f"{host_ingestion_path}:{container_ingestion_path}",
+                f"{json_path_qc}:{QC_MOUNTPOINT}",
             ],
-            'environment': envs,
+            "environment": envs,
         }
         if bd:
-            extra_params['command'] = ['/bin/sleep', '999999']
+            extra_params["command"] = ["/bin/sleep", "999999"]
 
         # log.info(extra_params)
         ###########################
@@ -267,18 +265,18 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         if errors is not None:
             if isinstance(errors, dict):
-                edict = errors.get('error', {})
+                edict = errors.get("error", {})
 
                 # This case should never happens, since already verified before
-                if edict.get('code') == 'NotUnique':
-                    response['status'] = 'existing'
+                if edict.get("code") == "NotUnique":
+                    response["status"] = "existing"
                     code = 409
                 else:
-                    response['status'] = 'could NOT be started'
-                    response['description'] = edict
+                    response["status"] = "could NOT be started"
+                    response["description"] = edict
                     code = 500
             else:
-                response['status'] = 'failure'
+                response["status"] = "failure"
                 code = 500
             return self.response(response, code=code)
 
@@ -310,10 +308,10 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         if not removed:
             log.warning("{} still in removal status", container_name)
             response = {
-                'batch_id': batch_id,
-                'qc_name': qc_name,
-                'status': 'not_yet_removed',
+                "batch_id": batch_id,
+                "qc_name": qc_name,
+                "status": "not_yet_removed",
             }
         else:
-            response = {'batch_id': batch_id, 'qc_name': qc_name, 'status': 'removed'}
+            response = {"batch_id": batch_id, "qc_name": qc_name, "status": "removed"}
         return self.response(response)

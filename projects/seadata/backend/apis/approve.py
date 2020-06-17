@@ -16,7 +16,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["ingestion"]
     _POST = {
-        "/ingestion/<string:batch_id>/approve": {
+        "/ingestion/<batch_id>/approve": {
             "summary": "Approve files in a batch that are passing all QCs",
             "parameters": [
                 {

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 
 Centralized use of plumbum package:
@@ -13,6 +11,8 @@ TODO: also consider switching to this other one https://amoffat.github.io/sh/
 
 import os
 import pwd
+import sys
+
 from restapi.utilities.logs import log
 
 try:
@@ -54,7 +54,7 @@ def current_os_user():
     return os_user
 
 
-class BashCommands(object):
+class BashCommands:
     """ Wrapper for execution of commands in a bash shell """
 
     _shell = None
@@ -67,7 +67,7 @@ class BashCommands(object):
 
         self._shell = myshell
 
-        super(BashCommands, self).__init__()
+        super().__init__()
 
     def execute_command(
         self,
@@ -107,14 +107,10 @@ class BashCommands(object):
                     # log.warning("ERROR LEN: {}/{}", error_len, error_max_len)
                     if error_max_len > 0 and error_len > error_max_len:
                         # log.warning("LIMIT")
-                        error = '\n...\n\n' + error[error_len - error_max_len:]
+                        error = "\n...\n\n" + error[error_len - error_max_len :]
 
-                    log.exit(
-                        'Catched:\n{}({})',
-                        e.__class__.__name__,
-                        error,
-                        error_code=e.retcode,
-                    )
+                    log.critical("Catched:\n{}({})", e.__class__.__name__, error)
+                    sys.exit(e.retcode)
                 else:
                     raise e
 
@@ -174,9 +170,9 @@ class BashCommands(object):
         com = "rm"
         args = []
         if force:
-            args.append('-f')
+            args.append("-f")
         if recursive:
-            args.append('-r')
+            args.append("-r")
         args.append(path)
         # Execute
         self.execute_command(com, args)
@@ -192,7 +188,7 @@ class BashCommands(object):
         self.remove(directory, recursive=True, force=ignore)
 
     def replace_in_file(self, target, destination, file):
-        params = ["-i", "--", "s/{}/{}/g".format(target, destination), file]
+        params = ["-i", "--", f"s/{target}/{destination}/g", file]
         self.execute_command("sed", params)
 
     def copy(self, target, destination):
