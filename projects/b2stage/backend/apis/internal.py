@@ -20,7 +20,7 @@ if TESTING:
 
         labels = ["helpers", "eudat"]
         _PATCH = {
-            "/metadata/<location>": {
+            "/metadata/<path:location>": {
                 "summary": "Add metadata to object",
                 "parameters": [
                     {

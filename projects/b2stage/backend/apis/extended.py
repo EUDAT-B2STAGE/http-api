@@ -27,7 +27,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
     labels = ["eudat", "pids"]
     _GET = {
-        "/pids/<prefix>/<pid>": {
+        "/pids/<path:pid>": {
             "summary": "Resolve the input PID and retrieve a digital object information or download it or list a collection",
             "parameters": [
                 {
@@ -45,7 +45,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         }
     }
     _HEAD = {
-        "/pids/<prefix>/<pid>": {
+        "/pids/<path:pid>": {
             "summary": "Resolve the input PID and verify permission of the digital object",
             "parameters": [
                 {
@@ -109,10 +109,9 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
     @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=["normal_user"])
-    def get(self, prefix, pid):
+    def get(self, pid):
         """ Get metadata or file from pid """
 
-        pid = f"{prefix}/{pid}"
         try:
             from seadata.apis.commons.seadatacloud import seadata_pid
 
@@ -122,8 +121,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
     @decorators.catch_errors(exception=IrodsException)
     @decorators.auth.required(roles=["normal_user"])
-    def head(self, prefix, pid):
+    def head(self, pid):
         """ Get metadata or file from pid """
 
-        pid = f"{prefix}/{pid}"
         return self.eudat_pid(pid, head=True)
