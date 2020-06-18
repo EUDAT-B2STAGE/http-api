@@ -32,7 +32,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     labels = ["eudat", "registered"]
     _GET = {
-        "/registered/<location>": {
+        "/registered/<path:location>": {
             "summary": "Retrieve a single digital entity/object information or download it",
             "parameters": [
                 {
@@ -64,7 +64,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         }
     }
     _PUT = {
-        "/registered/<location>": {
+        "/registered/<path:location>": {
             "summary": "Upload a new file",
             "responses": {"200": {"description": "File created"}},
             "parameters": [
@@ -91,7 +91,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         }
     }
     _PATCH = {
-        "/registered/<location>": {
+        "/registered/<path:location>": {
             "summary": "Update an entity name",
             "parameters": [
                 {
@@ -116,7 +116,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ],
             "responses": {"200": {"description": "Entities deleted"}},
         },
-        "/registered/<location>": {
+        "/registered/<path:location>": {
             "summary": "Delete an entity",
             "parameters": [
                 {

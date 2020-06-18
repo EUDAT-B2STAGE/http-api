@@ -1,33 +1,31 @@
-# -*- coding: utf-8 -*-
-
 """
 B2SAFE HTTP REST API endpoints.
 Getting informations for public data.
 """
 
-from werkzeug.wrappers import Response as WerkzeugResponse
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from b2stage.apis.commons.statics import HEADER, FOOTER
+from b2stage.apis.commons.statics import FOOTER, HEADER
 from restapi import decorators
 from restapi.utilities.logs import log
+from werkzeug.wrappers import Response as WerkzeugResponse
 
 
 class Public(B2HandleEndpoint):
 
-    labels = ['eudat', 'pids', 'public']
-    depends_on = ['IRODS_ANONYMOUS', 'ENABLE_PUBLIC_ENDPOINT']
+    labels = ["eudat", "pids", "public"]
+    depends_on = ["IRODS_ANONYMOUS", "ENABLE_PUBLIC_ENDPOINT"]
     _GET = {
-        '/public/<location>': {
-            'summary': 'Let non-authenticated users get data about a public data-object',
-            'parameters': [
+        "/public/<path:location>": {
+            "summary": "Let non-authenticated users get data about a public data-object",
+            "parameters": [
                 {
-                    'name': 'download',
-                    'description': 'Activate file downloading (if PID points to a single file)',
-                    'in': 'query',
-                    'type': 'boolean',
+                    "name": "download",
+                    "description": "Activate file downloading (if PID points to a single file)",
+                    "in": "query",
+                    "type": "boolean",
                 }
             ],
-            'responses': {'200': {'description': 'Informations about the data-object'}},
+            "responses": {"200": {"description": "Informations about the data-object"}},
         }
     }
 
@@ -39,18 +37,16 @@ class Public(B2HandleEndpoint):
 
         ####################
         if location is None:
-            return self.send_errors(
-                'Location: missing filepath inside URI', code=400
-            )
+            return self.send_errors("Location: missing filepath inside URI", code=400)
         location = self.fix_location(location)
 
         ####################
         # check if public, with anonymous access in irods
         icom = self.get_service_instance(
-            service_name='irods',
-            user='anonymous',
-            password='null',
-            authscheme='credentials',
+            service_name="irods",
+            user="anonymous",
+            password="null",
+            authscheme="credentials",
         )
 
         path, resource, _, force = self.get_file_parameters(icom, path=location)
@@ -63,10 +59,8 @@ class Public(B2HandleEndpoint):
             )
             output = HEADER + body + FOOTER
 
-            headers = {'Content-Type': 'text/html; charset=utf-8'}
-            return WerkzeugResponse(
-                output, status=400, headers=headers
-            )
+            headers = {"Content-Type": "text/html; charset=utf-8"}
+            return WerkzeugResponse(output, status=400, headers=headers)
 
         ####################
         # check if browser
@@ -76,8 +70,7 @@ class Public(B2HandleEndpoint):
         if MIMETYPE_HTML not in accepted_formats:
             # print("NOT HTML")
             return self.send_errors(
-                "This endpoint is currently accessible only via Browser.",
-                code=403,
+                "This endpoint is currently accessible only via Browser.", code=403,
             )
 
         if self.download_parameter():
@@ -85,8 +78,8 @@ class Public(B2HandleEndpoint):
 
             filename = os.path.basename(path)
             headers = {
-                'Content-Type': 'application/octet-stream',
-                'Content-Disposition': 'attachment; filename="{}"'.format(filename),
+                "Content-Type": "application/octet-stream",
+                "Content-Disposition": f'attachment; filename="{filename}"',
             }
             return icom.read_in_streaming(path, headers=headers)
         else:
@@ -104,22 +97,22 @@ class Public(B2HandleEndpoint):
             info = None
             log.error("Unknown error: {}({})", e.__class__.__name__, e)
         else:
-            for key, value in info.get('metadata', {}).items():
+            for key, value in info.get("metadata", {}).items():
                 if value is None:
                     continue
-                metadata += '<tr>'
+                metadata += "<tr>"
                 metadata += "<th> <i>metadata</i> </th>"
-                metadata += "<th> {} </th>".format(key.capitalize())
-                metadata += "<td> {} </td>".format(value)
-                metadata += '</tr>\n'
+                metadata += f"<th> {key.capitalize()} </th>"
+                metadata += f"<td> {value} </td>"
+                metadata += "</tr>\n"
             for key, value in md.items():
                 if value is None:
                     continue
-                metadata += '<tr>'
+                metadata += "<tr>"
                 metadata += "<th> <i>metadata</i> </th>"
-                metadata += "<th> {} </th>".format(key.capitalize())
-                metadata += "<td> {} </td>".format(value)
-                metadata += '</tr>\n'
+                metadata += f"<th> {key.capitalize()} </th>"
+                metadata += f"<td> {value} </td>"
+                metadata += "</tr>\n"
 
         if info is None:
             body = (
@@ -152,13 +145,13 @@ Found a data object <b>publicly</b> available:
 """.format(
                 # info.get('dataobject'),
                 metadata,
-                info.get('path'),
-                info.get('link'),
+                info.get("path"),
+                info.get("link"),
             )
 
         ####################
         # print("HTML")
         output = HEADER + body + FOOTER
 
-        headers = {'Content-Type': 'text/html; charset=utf-8'}
+        headers = {"Content-Type": "text/html; charset=utf-8"}
         return WerkzeugResponse(output, headers=headers)
