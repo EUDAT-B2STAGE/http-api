@@ -1,33 +1,67 @@
-# -*- coding: utf-8 -*-
+import hashlib
 import os
 import re
-import requests
-import hashlib
 import zipfile
 from shutil import rmtree
-from plumbum.commands.processes import ProcessExecutionError
 
-from seadata.tasks.seadata import ext_api, celery_app
-from seadata.tasks.seadata import MAX_ZIP_SIZE, myorderspath
-from seadata.tasks.seadata import notify_error
-from seadata.apis.commons.seadatacloud import ErrorCodes
-
+import requests
 from b2stage.apis.commons import path
 from b2stage.apis.commons.basher import BashCommands
-
+from plumbum.commands.processes import ProcessExecutionError
 from restapi.connectors.celery import send_errors_by_email
 from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.logs import log
+from restapi.utilities.processes import start_timeout, stop_timeout
+from seadata.apis.commons.seadatacloud import ErrorCodes
+from seadata.tasks.seadata import (
+    MAX_ZIP_SIZE,
+    celery_app,
+    ext_api,
+    myorderspath,
+    notify_error,
+)
 
+TIMEOUT = 180
 
 DOWNLOAD_HEADERS = {
-    'User-Agent': 'SDC CDI HTTP-APIs',
+    "User-Agent": "SDC CDI HTTP-APIs",
     "Upgrade-Insecure-Requests": "1",
     "DNT": "1",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.5",
-    "Accept-Encoding": "gzip, deflate"
+    "Accept-Encoding": "gzip, deflate",
 }
+
+
+def check_params(params):
+    params_to_check = [
+        "order_number",
+        "download_path",
+        "zipfile_name",
+        "file_name",
+        "file_size",
+        "data_file_count",
+        "file_checksum",
+    ]
+    errors = [
+        ErrorCodes.MISSING_ORDER_NUMBER_PARAM,
+        ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
+        ErrorCodes.MISSING_ZIPFILENAME_PARAM,
+        ErrorCodes.MISSING_FILENAME_PARAM,
+        ErrorCodes.MISSING_FILESIZE_PARAM,
+        ErrorCodes.MISSING_FILECOUNT_PARAM,
+        ErrorCodes.MISSING_CHECKSUM_PARAM,
+    ]
+
+    for p in params_to_check:
+        param_value = params.get(p)
+        if param_value is None:
+            list_index = params_to_check.index(p)
+            return errors[list_index]
+        if p == "download_path" and param_value == "":
+            return ErrorCodes.EMPTY_DOWNLOAD_PATH_PARAM
+
+    return None
 
 
 @celery_app.task(bind=True)
@@ -36,67 +70,54 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
     with celery_app.app.app_context():
 
-        myjson['parameters']['request_id'] = myjson['request_id']
-        myjson['request_id'] = self.request.id
+        myjson["parameters"]["request_id"] = myjson["request_id"]
+        myjson["request_id"] = self.request.id
 
-        params = myjson.get('parameters', {})
+        params = myjson.get("parameters", {})
 
-        backdoor = params.pop('backdoor', False)
-        request_edmo_code = myjson.get('edmo_code', None)
+        backdoor = params.pop("backdoor", False)
+        request_edmo_code = myjson.get("edmo_code", None)
 
         # Make sure you have a path with no trailing slash
-        order_path = order_path.rstrip('/')
+        order_path = order_path.rstrip("/")
 
         try:
-            with celery_app.get_service(service='irods') as imain:
+            with celery_app.get_service(service="irods") as imain:
                 if not imain.is_collection(order_path):
                     return notify_error(
                         ErrorCodes.ORDER_NOT_FOUND,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
+                        myjson,
+                        backdoor,
+                        self,
+                        edmo_code=request_edmo_code,
                     )
 
-                order_number = params.get("order_number")
-                if order_number is None:
+                params_error = check_params(params)
+                if params_error:
                     return notify_error(
-                        ErrorCodes.MISSING_ORDER_NUMBER_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
+                        params_error,
+                        myjson,
+                        backdoor,
+                        self,
+                        edmo_code=request_edmo_code,
                     )
+
+                # order_number = params.get("order_number")
 
                 # check if order_numer == order_id ?
 
                 download_path = params.get("download_path")
-                if download_path is None:
-                    return notify_error(
-                        ErrorCodes.MISSING_DOWNLOAD_PATH_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
-                    )
-                if download_path == '':
-                    return notify_error(
-                        ErrorCodes.EMPTY_DOWNLOAD_PATH_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
-                    )
-
                 # NAME OF FINAL ZIP
-                filename = params.get('zipfile_name')
-                if filename is None:
-                    return notify_error(
-                        ErrorCodes.MISSING_ZIPFILENAME_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
-                    )
+                filename = params.get("zipfile_name")
 
                 base_filename = filename
-                if filename.endswith('.zip'):
-                    log.warning('{} already contains extention .zip', filename)
+                if filename.endswith(".zip"):
+                    log.warning("{} already contains extention .zip", filename)
                     # TO DO: save base_filename as filename - .zip
                 else:
                     filename = path.append_compress_extension(filename)
 
-                final_zip = order_path + '/' + filename.rstrip('/')
+                final_zip = order_path + "/" + filename.rstrip("/")
 
                 log.info("order_id = {}", order_id)
                 log.info("order_path = {}", order_path)
@@ -107,53 +128,35 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 # INPUT PARAMETERS CHECKS
 
                 # zip file uploaded from partner
-                file_name = params.get('file_name')
-                if file_name is None:
-                    return notify_error(
-                        ErrorCodes.MISSING_FILENAME_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
-                    )
+                file_name = params.get("file_name")
 
                 file_size = params.get("file_size")
-                if file_size is None:
-                    return notify_error(
-                        ErrorCodes.MISSING_FILESIZE_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
-                    )
+
                 try:
                     int(file_size)
                 except BaseException:
                     return notify_error(
                         ErrorCodes.INVALID_FILESIZE_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
+                        myjson,
+                        backdoor,
+                        self,
+                        edmo_code=request_edmo_code,
                     )
 
                 file_count = params.get("data_file_count")
-                if file_count is None:
-                    return notify_error(
-                        ErrorCodes.MISSING_FILECOUNT_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
-                    )
+
                 try:
                     int(file_count)
                 except BaseException:
                     return notify_error(
                         ErrorCodes.INVALID_FILECOUNT_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
+                        myjson,
+                        backdoor,
+                        self,
+                        edmo_code=request_edmo_code,
                     )
 
                 file_checksum = params.get("file_checksum")
-                if file_checksum is None:
-                    return notify_error(
-                        ErrorCodes.MISSING_CHECKSUM_PARAM,
-                        myjson, backdoor, self,
-                        edmo_code=request_edmo_code
-                    )
 
                 self.update_state(state="PROGRESS")
 
@@ -161,7 +164,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 local_finalzip_path = None
                 log.info("Merging zip file", file_name)
 
-                if not file_name.endswith('.zip'):
+                if not file_name.endswith(".zip"):
                     file_name = path.append_compress_extension(file_name)
 
                 # 1 - download in local-dir
@@ -172,31 +175,37 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         download_url,
                         stream=True,
                         verify=False,
-                        headers=DOWNLOAD_HEADERS
+                        headers=DOWNLOAD_HEADERS,
                     )
                 except requests.exceptions.ConnectionError:
                     return notify_error(
                         ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
-                        myjson, backdoor, self,
+                        myjson,
+                        backdoor,
+                        self,
                         subject=download_url,
-                        edmo_code=request_edmo_code
+                        edmo_code=request_edmo_code,
                     )
                 except requests.exceptions.MissingSchema as e:
                     log.error(str(e))
                     return notify_error(
                         ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
-                        myjson, backdoor, self,
+                        myjson,
+                        backdoor,
+                        self,
                         subject=download_url,
-                        edmo_code=request_edmo_code
+                        edmo_code=request_edmo_code,
                     )
 
                 if r.status_code != 200:
 
                     return notify_error(
                         ErrorCodes.UNREACHABLE_DOWNLOAD_PATH,
-                        myjson, backdoor, self,
+                        myjson,
+                        backdoor,
+                        self,
                         subject=download_url,
-                        edmo_code=request_edmo_code
+                        edmo_code=request_edmo_code,
                     )
 
                 log.info("Request status = {}", r.status_code)
@@ -211,7 +220,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 # from python 3.6
                 # with open(local_zip_path, 'wb') as f:
                 # up to python 3.5
-                with open(str(local_zip_path), 'wb') as f:
+                with open(str(local_zip_path), "wb") as f:
                     for chunk in r.iter_content(chunk_size=1024):
                         if chunk:  # filter out keep-alive new chunks
                             f.write(chunk)
@@ -219,15 +228,17 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 # 2 - verify checksum
                 log.info("Computing checksum for {}...", local_zip_path)
                 local_file_checksum = hashlib.md5(
-                    open(str(local_zip_path), 'rb').read()
+                    open(str(local_zip_path), "rb").read()
                 ).hexdigest()
 
                 if local_file_checksum.lower() != file_checksum.lower():
                     return notify_error(
                         ErrorCodes.CHECKSUM_DOESNT_MATCH,
-                        myjson, backdoor, self,
+                        myjson,
+                        backdoor,
+                        self,
                         subject=file_name,
-                        edmo_code=request_edmo_code
+                        edmo_code=request_edmo_code,
                     )
                 log.info("File checksum verified for {}", local_zip_path)
 
@@ -236,13 +247,17 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 if local_file_size != int(file_size):
                     log.error(
                         "File size {} for {}, expected {}",
-                        local_file_size, local_zip_path, file_size
+                        local_file_size,
+                        local_zip_path,
+                        file_size,
                     )
                     return notify_error(
                         ErrorCodes.FILESIZE_DOESNT_MATCH,
-                        myjson, backdoor, self,
+                        myjson,
+                        backdoor,
+                        self,
                         subject=file_name,
-                        edmo_code=request_edmo_code
+                        edmo_code=request_edmo_code,
                     )
 
                 log.info("File size verified for {}", local_zip_path)
@@ -261,21 +276,25 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 log.info("Unzipping {}", local_zip_path)
                 zip_ref = None
                 try:
-                    zip_ref = zipfile.ZipFile(str(local_zip_path), 'r')
+                    zip_ref = zipfile.ZipFile(str(local_zip_path), "r")
                 except FileNotFoundError:
                     return notify_error(
                         ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
-                        myjson, backdoor, self,
+                        myjson,
+                        backdoor,
+                        self,
                         subject=file_name,
-                        edmo_code=request_edmo_code
+                        edmo_code=request_edmo_code,
                     )
 
                 except zipfile.BadZipFile:
                     return notify_error(
                         ErrorCodes.UNZIP_ERROR_INVALID_FILE,
-                        myjson, backdoor, self,
+                        myjson,
+                        backdoor,
+                        self,
                         subject=file_name,
-                        edmo_code=request_edmo_code
+                        edmo_code=request_edmo_code,
                     )
 
                 if zip_ref is not None:
@@ -292,9 +311,11 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     log.error("Expected {} files for {}", file_count, local_zip_path)
                     return notify_error(
                         ErrorCodes.UNZIP_ERROR_WRONG_FILECOUNT,
-                        myjson, backdoor, self,
+                        myjson,
+                        backdoor,
+                        self,
                         subject=file_name,
-                        edmo_code=request_edmo_code
+                        edmo_code=request_edmo_code,
                     )
 
                 log.info("File count verified for {}", local_zip_path)
@@ -305,14 +326,28 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     # 7 - if not, simply copy partial_zip -> final_zip
                     log.info("Final zip does not exist, copying partial zip")
                     try:
+                        start_timeout(TIMEOUT)
                         imain.put(str(local_zip_path), str(final_zip))
+                        stop_timeout()
                     except IrodsException as e:
                         log.error(str(e))
                         return notify_error(
                             ErrorCodes.B2SAFE_UPLOAD_ERROR,
-                            myjson, backdoor, self,
+                            myjson,
+                            backdoor,
+                            self,
                             subject=file_name,
-                            edmo_code=request_edmo_code
+                            edmo_code=request_edmo_code,
+                        )
+                    except BaseException as e:
+                        log.error(e)
+                        return notify_error(
+                            ErrorCodes.UNEXPECTED_ERROR,
+                            myjson,
+                            backdoor,
+                            self,
+                            subject=file_name,
+                            edmo_code=request_edmo_code,
                         )
                     local_finalzip_path = local_zip_path
                 else:
@@ -321,29 +356,47 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
                     log.info("Copying zipfile locally")
                     local_finalzip_path = path.join(
-                        local_dir, os.path.basename(str(final_zip)))
-                    imain.open(str(final_zip), str(local_finalzip_path))
+                        local_dir, os.path.basename(str(final_zip))
+                    )
+                    try:
+                        start_timeout(TIMEOUT)
+                        imain.open(str(final_zip), str(local_finalzip_path))
+                        stop_timeout()
+                    except BaseException as e:
+                        log.error(e)
+                        return notify_error(
+                            ErrorCodes.UNEXPECTED_ERROR,
+                            myjson,
+                            backdoor,
+                            self,
+                            subject=final_zip,
+                            edmo_code=request_edmo_code,
+                        )
 
                     log.info("Reading local zipfile")
                     zip_ref = None
                     try:
-                        zip_ref = zipfile.ZipFile(str(local_finalzip_path), 'a')
+                        zip_ref = zipfile.ZipFile(str(local_finalzip_path), "a")
                     except FileNotFoundError:
                         log.error("Local file not found: {}", local_finalzip_path)
                         return notify_error(
                             ErrorCodes.UNZIP_ERROR_FILE_NOT_FOUND,
-                            myjson, backdoor, self,
+                            myjson,
+                            backdoor,
+                            self,
                             subject=final_zip,
-                            edmo_code=request_edmo_code
+                            edmo_code=request_edmo_code,
                         )
 
                     except zipfile.BadZipFile:
                         log.error("Invalid local file: {}", local_finalzip_path)
                         return notify_error(
                             ErrorCodes.UNZIP_ERROR_INVALID_FILE,
-                            myjson, backdoor, self,
+                            myjson,
+                            backdoor,
+                            self,
                             subject=final_zip,
-                            edmo_code=request_edmo_code
+                            edmo_code=request_edmo_code,
                         )
 
                     log.info("Adding files to local zipfile")
@@ -351,30 +404,44 @@ def download_restricted_order(self, order_id, order_path, myjson):
                         try:
                             for f in os.listdir(str(local_unzipdir)):
                                 # log.debug("Adding {}", f)
-                                zip_ref.write(
-                                    os.path.join(str(local_unzipdir), f), f)
+                                zip_ref.write(os.path.join(str(local_unzipdir), f), f)
                             zip_ref.close()
                         except BaseException as e:
                             log.error(e)
                             return notify_error(
                                 ErrorCodes.UNABLE_TO_CREATE_ZIP_FILE,
-                                myjson, backdoor, self,
+                                myjson,
+                                backdoor,
+                                self,
                                 subject=final_zip,
-                                edmo_code=request_edmo_code
+                                edmo_code=request_edmo_code,
                             )
 
                     log.info("Creating a backup copy of final zip")
-                    backup_zip = final_zip + ".bak"
-                    if imain.is_dataobject(backup_zip):
-                        log.info(
-                            "{} already exists, removing previous backup",
-                            backup_zip
-                        )
-                        imain.remove(backup_zip)
-                    imain.move(final_zip, backup_zip)
+                    try:
+                        start_timeout(TIMEOUT)
+                        backup_zip = final_zip + ".bak"
+                        if imain.is_dataobject(backup_zip):
+                            log.info(
+                                "{} already exists, removing previous backup",
+                                backup_zip,
+                            )
+                            imain.remove(backup_zip)
+                        imain.move(final_zip, backup_zip)
 
-                    log.info("Uploading final updated zip")
-                    imain.put(str(local_finalzip_path), str(final_zip))
+                        log.info("Uploading final updated zip")
+                        imain.put(str(local_finalzip_path), str(final_zip))
+                        stop_timeout()
+                    except BaseException as e:
+                        log.error(e)
+                        return notify_error(
+                            ErrorCodes.UNEXPECTED_ERROR,
+                            myjson,
+                            backdoor,
+                            self,
+                            subject=final_zip,
+                            edmo_code=request_edmo_code,
+                        )
 
                     # imain.remove(local_zip_path)
                 rmtree(str(local_unzipdir), ignore_errors=True)
@@ -401,72 +468,90 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     # Execute the split of the whole zip
                     bash = BashCommands()
                     split_params = [
-                        '-n', MAX_ZIP_SIZE,
-                        '-b', split_path,
-                        local_finalzip_path
+                        "-n",
+                        MAX_ZIP_SIZE,
+                        "-b",
+                        split_path,
+                        local_finalzip_path,
                     ]
                     try:
-                        bash.execute_command('/usr/bin/zipsplit', split_params)
+                        bash.execute_command("/usr/bin/zipsplit", split_params)
                     except ProcessExecutionError as e:
 
-                        if 'Entry is larger than max split size' in e.stdout:
-                            reg = 'Entry too big to split, read, or write \((.*)\)'
+                        if "Entry is larger than max split size" in e.stdout:
+                            reg = r"Entry too big to split, read, or write \((.*)\)"
                             extra = None
                             m = re.search(reg, e.stdout)
                             if m:
                                 extra = m.group(1)
                             return notify_error(
                                 ErrorCodes.ZIP_SPLIT_ENTRY_TOO_LARGE,
-                                myjson, backdoor, self, extra=extra,
-                                edmo_code=request_edmo_code
+                                myjson,
+                                backdoor,
+                                self,
+                                extra=extra,
+                                edmo_code=request_edmo_code,
                             )
                         else:
                             log.error(e.stdout)
 
                         return notify_error(
                             ErrorCodes.ZIP_SPLIT_ERROR,
-                            myjson, backdoor, self, extra=str(local_finalzip_path),
-                            edmo_code=request_edmo_code
+                            myjson,
+                            backdoor,
+                            self,
+                            extra=str(local_finalzip_path),
+                            edmo_code=request_edmo_code,
                         )
 
-                    regexp = '^.*[^0-9]([0-9]+).zip$'
+                    regexp = "^.*[^0-9]([0-9]+).zip$"
                     zip_files = os.listdir(split_path)
                     for subzip_file in zip_files:
                         m = re.search(regexp, subzip_file)
                         if not m:
                             log.error(
-                                "Cannot extract index from zip name: {}",
-                                subzip_file
+                                "Cannot extract index from zip name: {}", subzip_file
                             )
                             return notify_error(
                                 ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
-                                myjson, backdoor, self, extra=str(local_finalzip_path)
+                                myjson,
+                                backdoor,
+                                self,
+                                extra=str(local_finalzip_path),
                             )
-                        index = m.group(1).lstrip('0')
+                        index = m.group(1).lstrip("0")
                         subzip_path = path.join(split_path, subzip_file)
 
                         subzip_ifile = path.append_compress_extension(
-                            "{}{}".format(base_filename, index)
+                            f"{base_filename}{index}"
                         )
                         subzip_ipath = path.join(order_path, subzip_ifile)
 
                         log.info("Uploading {} -> {}", subzip_path, subzip_ipath)
-                        imain.put(str(subzip_path), str(subzip_ipath))
+                        try:
+                            start_timeout(TIMEOUT)
+                            imain.put(str(subzip_path), str(subzip_ipath))
+                            stop_timeout()
+                        except BaseException as e:
+                            log.error(e)
+                            return notify_error(
+                                ErrorCodes.UNEXPECTED_ERROR,
+                                myjson,
+                                backdoor,
+                                self,
+                                subject=subzip_path,
+                                edmo_code=request_edmo_code,
+                            )
 
                 if len(errors) > 0:
-                    myjson['errors'] = errors
+                    myjson["errors"] = errors
 
                 ret = ext_api.post(
-                    myjson,
-                    backdoor=backdoor,
-                    edmo_code=request_edmo_code
+                    myjson, backdoor=backdoor, edmo_code=request_edmo_code
                 )
-                log.info('CDI IM CALL = {}', ret)
+                log.info("CDI IM CALL = {}", ret)
                 return "COMPLETED"
         except BaseException as e:
             log.error(e)
             log.error(type(e))
-            return notify_error(
-                ErrorCodes.UNEXPECTED_ERROR,
-                myjson, backdoor, self
-            )
+            return notify_error(ErrorCodes.UNEXPECTED_ERROR, myjson, backdoor, self)
