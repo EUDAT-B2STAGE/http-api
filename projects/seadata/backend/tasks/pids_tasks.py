@@ -1,11 +1,12 @@
-# -*- coding: utf-8 -*-
 import os
 
-from seadata.tasks.seadata import celery_app, r
 from b2stage.apis.commons import path
-
 from restapi.connectors.celery import send_errors_by_email
 from restapi.utilities.logs import log
+from restapi.utilities.processes import start_timeout, stop_timeout
+from seadata.tasks.seadata import celery_app, r
+
+TIMEOUT = 180
 
 
 def recursive_list_files(imain, irods_path):
@@ -30,42 +31,57 @@ def cache_batch_pids(self, irods_path):
         log.info("Task cache_batch_pids working on: {}", irods_path)
 
         try:
-            with celery_app.get_service(service='irods') as imain:
+            with celery_app.get_service(service="irods") as imain:
 
                 stats = {
-                    'total': 0,
-                    'skipped': 0,
-                    'cached': 0,
-                    'errors': 0,
+                    "total": 0,
+                    "skipped": 0,
+                    "cached": 0,
+                    "errors": 0,
                 }
 
-                data = recursive_list_files(imain, irods_path)
-                log.info("Found {} files", len(data))
+                try:
+                    start_timeout(TIMEOUT)
+                    data = recursive_list_files(imain, irods_path)
+                    log.info("Found {} files", len(data))
+                    stop_timeout()
+                except BaseException as e:
+                    log.error(e)
 
                 # for current in imain.list(irods_path):
                 #     ifile = path.join(irods_path, current, return_str=True)
 
                 for ifile in data:
 
-                    stats['total'] += 1
+                    stats["total"] += 1
 
                     pid = r.get(ifile)
                     if pid is not None:
-                        stats['skipped'] += 1
+                        stats["skipped"] += 1
                         log.debug(
-                            '{}: file {} already cached with PID: {}',
-                            stats['total'], ifile, pid
+                            "{}: file {} already cached with PID: {}",
+                            stats["total"],
+                            ifile,
+                            pid,
                         )
                         self.update_state(state="PROGRESS", meta=stats)
                         continue
 
-                    metadata, _ = imain.get_metadata(ifile)
-                    pid = metadata.get('PID')
+                    try:
+                        start_timeout(TIMEOUT)
+                        metadata, _ = imain.get_metadata(ifile)
+                        pid = metadata.get("PID")
+                        stop_timeout()
+                    except BaseException as e:
+                        log.error(e)
+
                     if pid is None:
-                        stats['errors'] += 1
+                        stats["errors"] += 1
                         log.warning(
-                            '{}: file {} has not a PID assigned',
-                            stats['total'], ifile, pid
+                            "{}: file {} has not a PID assigned",
+                            stats["total"],
+                            ifile,
+                            pid,
                         )
                         self.update_state(state="PROGRESS", meta=stats)
                         continue
@@ -73,10 +89,9 @@ def cache_batch_pids(self, irods_path):
                     r.set(pid, ifile)
                     r.set(ifile, pid)
                     log.verbose(
-                        '{}: file {} cached with PID {}',
-                        stats['total'], ifile, pid
+                        "{}: file {} cached with PID {}", stats["total"], ifile, pid
                     )
-                    stats['cached'] += 1
+                    stats["cached"] += 1
                     self.update_state(state="PROGRESS", meta=stats)
 
                 self.update_state(state="COMPLETED", meta=stats)
@@ -116,6 +131,8 @@ def inspect_pids_cache(self):
             for pid_path in cache[prefix]:
                 log.info(
                     "{} pids with prefix {} from path: {}",
-                    cache[prefix][pid_path], prefix, pid_path
+                    cache[prefix][pid_path],
+                    prefix,
+                    pid_path,
                 )
         log.info("Total PIDs found: {}", counter)

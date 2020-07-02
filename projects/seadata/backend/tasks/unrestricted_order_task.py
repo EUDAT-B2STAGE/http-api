@@ -1,25 +1,29 @@
-# -*- coding: utf-8 -*-
+import logging
 import os
 import re
-import logging
 from shutil import rmtree
-from plumbum.commands.processes import ProcessExecutionError
-
-from seadata.tasks.seadata import ext_api, celery_app, r
-from seadata.tasks.seadata import MAX_ZIP_SIZE, myorderspath
-from seadata.tasks.seadata import notify_error
-from seadata.apis.commons.seadatacloud import ErrorCodes
-from seadata.apis.commons.queue import prepare_message
 
 from b2stage.apis.commons import path
-from b2stage.apis.commons.basher import BashCommands
 from b2stage.apis.commons.b2handle import PIDgenerator, b2handle
-
+from b2stage.apis.commons.basher import BashCommands
+from plumbum.commands.processes import ProcessExecutionError
 from restapi.connectors.celery import send_errors_by_email
 from restapi.utilities.logs import log
+from restapi.utilities.processes import start_timeout, stop_timeout
+from seadata.apis.commons.queue import prepare_message
+from seadata.apis.commons.seadatacloud import ErrorCodes
+from seadata.tasks.seadata import (
+    MAX_ZIP_SIZE,
+    celery_app,
+    ext_api,
+    myorderspath,
+    notify_error,
+    r,
+)
 
+TIMEOUT = 180
 
-logging.getLogger('b2handle').setLevel(logging.WARNING)
+logging.getLogger("b2handle").setLevel(logging.WARNING)
 b2handle_client = b2handle.instantiate_for_read_access()
 pmaker = PIDgenerator()
 
@@ -32,24 +36,25 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
         log.info("I'm {} (unrestricted_order)", self.request.id)
 
-        params = myjson.get('parameters', {})
-        backdoor = params.pop('backdoor', False)
-        pids = params.get('pids', [])
+        params = myjson.get("parameters", {})
+        backdoor = params.pop("backdoor", False)
+        pids = params.get("pids", [])
         total = len(pids)
         self.update_state(
             state="STARTING",
-            meta={'total': total, 'step': 0, 'errors': 0, 'verified': 0})
+            meta={"total": total, "step": 0, "errors": 0, "verified": 0},
+        )
 
         ##################
         # SETUP
         # local_dir = path.build([TMPDIR, order_id])
         local_dir = path.join(myorderspath, order_id)
         path.create(local_dir, directory=True, force=True)
-        local_zip_dir = path.join(local_dir, 'tobezipped')
+        local_zip_dir = path.join(local_dir, "tobezipped")
         path.create(local_zip_dir, directory=True, force=True)
 
         try:
-            with celery_app.get_service(service='irods') as imain:
+            with celery_app.get_service(service="irods") as imain:
 
                 log.info("Retrieving paths for {} PIDs", len(pids))
                 ##################
@@ -62,7 +67,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
                     ################
                     # avoid empty pids?
-                    if '/' not in pid or len(pid) < 10:
+                    if "/" not in pid or len(pid) < 10:
                         continue
 
                     ################
@@ -71,9 +76,14 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     if ifile is not None:
                         files[pid] = ifile.decode()
                         verified += 1
-                        self.update_state(state="PROGRESS", meta={
-                            'total': total, 'step': counter, 'verified': verified,
-                            'errors': len(errors)}
+                        self.update_state(
+                            state="PROGRESS",
+                            meta={
+                                "total": total,
+                                "step": counter,
+                                "verified": verified,
+                                "errors": len(errors),
+                            },
                         )
                         continue
 
@@ -81,27 +91,38 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     try:
                         b2handle_output = b2handle_client.retrieve_handle_record(pid)
                     except BaseException:
-                        self.update_state(state="FAILED", meta={
-                            'total': total, 'step': counter,
-                            'verified': verified,
-                            'errors': len(errors)}
+                        self.update_state(
+                            state="FAILED",
+                            meta={
+                                "total": total,
+                                "step": counter,
+                                "verified": verified,
+                                "errors": len(errors),
+                            },
                         )
                         return notify_error(
-                            ErrorCodes.B2HANDLE_ERROR,
-                            myjson, backdoor, self
+                            ErrorCodes.B2HANDLE_ERROR, myjson, backdoor, self
                         )
-                    log.verbose('Handle called')
+                    log.verbose("Handle called")
                     # TODO: you should cache the obtained PID?
 
                     ################
                     if b2handle_output is None:
-                        errors.append({
-                            "error": ErrorCodes.PID_NOT_FOUND[0],
-                            "description": ErrorCodes.PID_NOT_FOUND[1],
-                            "subject": pid
-                        })
-                        self.update_state(state="PROGRESS", meta={
-                            'total': total, 'step': counter, 'errors': len(errors)})
+                        errors.append(
+                            {
+                                "error": ErrorCodes.PID_NOT_FOUND[0],
+                                "description": ErrorCodes.PID_NOT_FOUND[1],
+                                "subject": pid,
+                            }
+                        )
+                        self.update_state(
+                            state="PROGRESS",
+                            meta={
+                                "total": total,
+                                "step": counter,
+                                "errors": len(errors),
+                            },
+                        )
 
                         log.warning("PID not found: {}", pid)
                     else:
@@ -112,9 +133,14 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         r.set(ipath, pid)
 
                         verified += 1
-                        self.update_state(state="PROGRESS", meta={
-                            'total': total, 'step': counter, 'verified': verified,
-                            'errors': len(errors)}
+                        self.update_state(
+                            state="PROGRESS",
+                            meta={
+                                "total": total,
+                                "step": counter,
+                                "verified": verified,
+                                "errors": len(errors),
+                            },
                         )
                 log.info("Retrieved paths for {} PIDs", len(files))
 
@@ -131,12 +157,12 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     #########################
                     if not path.file_exists_and_nonzero(local_file):
                         try:
-
-                            with imain.get_dataobject(ipath).open('r') as source:
+                            start_timeout(TIMEOUT)
+                            with imain.get_dataobject(ipath).open("r") as source:
                                 # from python 3.6
                                 # with open(local_file, 'wb') as target:
                                 # up to python 3.5
-                                with open(str(local_file), 'wb') as target:
+                                with open(str(local_file), "wb") as target:
                                     # for line in source:
                                     #     target.write(line)
 
@@ -146,16 +172,27 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                                         if not data:
                                             break
                                         target.write(data)
-                        except BaseException:
-                            errors.append({
-                                "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
-                                "description": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[1],
-                                "subject_alt": filename,
-                                "subject": pid
-                            })
-                            self.update_state(state="PROGRESS", meta={
-                                'total': total, 'step': counter,
-                                'errors': len(errors)})
+                            stop_timeout()
+                        except BaseException as e:
+                            log.error(e)
+                            errors.append(
+                                {
+                                    "error": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[0],
+                                    "description": ErrorCodes.UNABLE_TO_DOWNLOAD_FILE[
+                                        1
+                                    ],
+                                    "subject_alt": filename,
+                                    "subject": pid,
+                                }
+                            )
+                            self.update_state(
+                                state="PROGRESS",
+                                meta={
+                                    "total": total,
+                                    "step": counter,
+                                    "errors": len(errors),
+                                },
+                            )
                             continue
 
                         # log.debug("Copy to local: {}", local_file)
@@ -164,10 +201,14 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
                     counter += 1
                     if counter % 1000 == 0:
-                        self.update_state(state="PROGRESS", meta={
-                            'total': total, 'step': counter,
-                            'verified': verified,
-                            'errors': len(errors)}
+                        self.update_state(
+                            state="PROGRESS",
+                            meta={
+                                "total": total,
+                                "step": counter,
+                                "verified": verified,
+                                "errors": len(errors),
+                            },
                         )
                         log.info("{} pids already processed", counter)
                     # # Set current file to the metadata collection
@@ -190,8 +231,16 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     # Copy the zip into irods
                     zip_ipath = path.join(order_path, zip_file_name, return_str=True)
                     # NOTE: always overwrite
-                    imain.put(str(zip_local_file), str(zip_ipath))
-                    log.info("Copied zip to irods: {}", zip_ipath)
+                    try:
+                        start_timeout(TIMEOUT)
+                        imain.put(str(zip_local_file), str(zip_ipath))
+                        log.info("Copied zip to irods: {}", zip_ipath)
+                        stop_timeout()
+                    except BaseException as e:
+                        log.error(e)
+                        return notify_error(
+                            ErrorCodes.UNEXPECTED_ERROR, myjson, backdoor, self
+                        )
 
                     if os.path.getsize(str(zip_local_file)) > MAX_ZIP_SIZE:
                         log.warning("Zip too large, splitting {}", zip_local_file)
@@ -209,34 +258,43 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         # Execute the split of the whole zip
                         bash = BashCommands()
                         split_params = [
-                            '-n', MAX_ZIP_SIZE,
-                            '-b', split_path,
-                            zip_local_file
+                            "-n",
+                            MAX_ZIP_SIZE,
+                            "-b",
+                            split_path,
+                            zip_local_file,
                         ]
                         try:
                             out = bash.execute_command(
-                                '/usr/bin/zipsplit', split_params)
+                                "/usr/bin/zipsplit", split_params
+                            )
                         except ProcessExecutionError as e:
 
-                            if 'Entry is larger than max split size' in e.stdout:
-                                reg = 'Entry too big to split, read, or write \((.*)\)'
+                            if "Entry is larger than max split size" in e.stdout:
+                                reg = r"Entry too big to split, read, or write \((.*)\)"
                                 extra = None
                                 m = re.search(reg, e.stdout)
                                 if m:
                                     extra = m.group(1)
                                 return notify_error(
                                     ErrorCodes.ZIP_SPLIT_ENTRY_TOO_LARGE,
-                                    myjson, backdoor, self, extra=extra
+                                    myjson,
+                                    backdoor,
+                                    self,
+                                    extra=extra,
                                 )
                             else:
                                 log.error(e.stdout)
 
                             return notify_error(
                                 ErrorCodes.ZIP_SPLIT_ERROR,
-                                myjson, backdoor, self, extra=str(zip_local_file)
+                                myjson,
+                                backdoor,
+                                self,
+                                extra=str(zip_local_file),
                             )
 
-                        regexp = '^.*[^0-9]([0-9]+).zip$'
+                        regexp = "^.*[^0-9]([0-9]+).zip$"
                         zip_files = os.listdir(split_path)
                         base_filename, _ = os.path.splitext(zip_file_name)
                         for subzip_file in zip_files:
@@ -244,22 +302,38 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                             if not m:
                                 log.error(
                                     "Cannot extract index from zip name: {}",
-                                    subzip_file
+                                    subzip_file,
                                 )
                                 return notify_error(
                                     ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
-                                    myjson, backdoor, self, extra=str(zip_local_file)
+                                    myjson,
+                                    backdoor,
+                                    self,
+                                    extra=str(zip_local_file),
                                 )
-                            index = m.group(1).lstrip('0')
+                            index = m.group(1).lstrip("0")
                             subzip_path = path.join(split_path, subzip_file)
 
                             subzip_ifile = path.append_compress_extension(
-                                "{}{}".format(base_filename, index)
+                                f"{base_filename}{index}"
                             )
                             subzip_ipath = path.join(order_path, subzip_ifile)
 
                             log.info("Uploading {} -> {}", subzip_path, subzip_ipath)
-                            imain.put(str(subzip_path), str(subzip_ipath))
+                            try:
+                                start_timeout(TIMEOUT)
+                                imain.put(str(subzip_path), str(subzip_ipath))
+                                stop_timeout()
+                            except BaseException as e:
+                                log.error(e)
+                                return notify_error(
+                                    ErrorCodes.UNEXPECTED_ERROR,
+                                    myjson,
+                                    backdoor,
+                                    self,
+                                    extra=str(subzip_path),
+                                )
+                                continue
 
                 #########################
                 # NOTE: should I close the iRODS session ?
@@ -268,17 +342,17 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
 
                 ##################
                 # CDI notification
-                reqkey = 'request_id'
+                reqkey = "request_id"
                 msg = prepare_message(self, isjson=True)
                 zipcount = 0
                 if counter > 0:
                     # FIXME: what about when restricted is there?
                     zipcount += 1
-                myjson['parameters'] = {
+                myjson["parameters"] = {
                     # "request_id": msg['request_id'],
                     reqkey: myjson[reqkey],
                     "order_number": order_id,
-                    "zipfile_name": params['file_name'],
+                    "zipfile_name": params["file_name"],
                     "file_count": counter,
                     "zipfile_count": zipcount,
                 }
@@ -287,25 +361,24 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         continue
                     myjson[key] = value
                 if len(errors) > 0:
-                    myjson['errors'] = errors
+                    myjson["errors"] = errors
                 myjson[reqkey] = self.request.id
                 ret = ext_api.post(myjson, backdoor=backdoor)
-                log.info('CDI IM CALL = {}', ret)
+                log.info("CDI IM CALL = {}", ret)
 
                 ##################
                 out = {
-                    'total': total, 'step': counter,
-                    'verified': verified, 'errors': len(errors),
-                    'zip': zip_ipath,
+                    "total": total,
+                    "step": counter,
+                    "verified": verified,
+                    "errors": len(errors),
+                    "zip": zip_ipath,
                 }
                 self.update_state(state="COMPLETED", meta=out)
                 return out
         except BaseException as e:
             log.error(e)
             log.error(type(e))
-            return notify_error(
-                ErrorCodes.UNEXPECTED_ERROR,
-                myjson, backdoor, self
-            )
+            return notify_error(ErrorCodes.UNEXPECTED_ERROR, myjson, backdoor, self)
 
     return myjson
