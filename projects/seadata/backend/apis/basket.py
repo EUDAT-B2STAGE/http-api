@@ -25,7 +25,6 @@ from b2stage.apis.commons import API_URL, CURRENT_HTTPAPI_SERVER, path
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from irods.exception import NetworkException
 from restapi import decorators
-from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.logs import log
 from seadata.apis.commons.cluster import (
     MOUNTPOINT,
@@ -83,7 +82,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return get_order_zip_file_name(order_id, restricted=restricted, index=index)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     def get(self, order_id, ftype, code):
         """ downloading (not authenticated) """
         log.info("Order request: {} (code '{}')", order_id, code)
@@ -213,7 +212,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required()
     def get(self, order_id):
         """ listing, not downloading """
@@ -265,7 +264,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required()
     def post(self):
 
@@ -411,7 +410,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             "size": info.get("content_length", 0),
         }
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required()
     def put(self, order_id):
 

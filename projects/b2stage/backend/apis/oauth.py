@@ -6,7 +6,6 @@ from b2stage.apis.commons import PRODUCTION
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from flask import request, url_for
 from restapi import decorators
-from restapi.connectors.irods.client import IrodsException
 from restapi.exceptions import RestApiException
 from restapi.utilities.logs import log
 
@@ -77,7 +76,7 @@ class Authorize(EudatEndpoint):
         }
     }
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     def get(self):
         """
         Get the data for upcoming operations.

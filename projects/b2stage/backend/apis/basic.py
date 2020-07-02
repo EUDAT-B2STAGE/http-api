@@ -130,7 +130,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         },
     }
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required(roles=["normal_user"])
     def get(self, location):
         """ Download file from filename """
@@ -170,7 +170,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.list_objects(icom, path, is_collection, location)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required(roles=["normal_user"])
     def post(self):
         """
@@ -228,7 +228,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.response(content, code=status)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required(roles=["normal_user"])
     def put(self, location):
         """
@@ -410,7 +410,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             return self.response(content, errors=errors, code=202)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required(roles=["normal_user"])
     def patch(self, location):
         """
@@ -459,7 +459,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ),
         }
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required(roles=["normal_user"])
     def delete(self, location=None):
         """

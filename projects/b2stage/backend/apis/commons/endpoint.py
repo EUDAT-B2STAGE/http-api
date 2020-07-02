@@ -1,26 +1,21 @@
-# -*- coding: utf-8 -*-
-
 """
 Common functions for EUDAT endpoints
 """
 
 import os
-from irods import exception as iexceptions
 
-# from restapi.rest.definition import EndpointResource
-from restapi.exceptions import RestApiException
-from b2stage.apis.commons.b2access import B2accessUtilities
 from b2stage.apis.commons import (
-    CURRENT_HTTPAPI_SERVER,
     CURRENT_B2SAFE_SERVER,
-    IRODS_PROTOCOL,
+    CURRENT_HTTPAPI_SERVER,
     HTTP_PROTOCOL,
-    PRODUCTION,
+    IRODS_PROTOCOL,
     IRODS_VARS,
+    PRODUCTION,
     InitObj,
 )
-
-# from restapi.confs import API_URL
+from b2stage.apis.commons.b2access import B2accessUtilities
+from irods import exception as iexceptions
+from restapi.exceptions import RestApiException
 from restapi.utilities.logs import log
 
 MISSING_BATCH = 0
@@ -37,8 +32,8 @@ class EudatEndpoint(B2accessUtilities):
     """
 
     _r = None  # main resources handler
-    _path_separator = '/'
-    _post_delimiter = '?'
+    _path_separator = "/"
+    _post_delimiter = "?"
 
     def init_endpoint(self):
 
@@ -46,11 +41,11 @@ class EudatEndpoint(B2accessUtilities):
         # NOTE: user legenda
         # internal_user = user internal to the API
         # external_user = user from oauth (B2ACCESS)
-        internal_user = self.auth.get_user()
+        internal_user = self.get_user()
         log.debug(
             "Token user: {} with auth method {}",
             internal_user,
-            internal_user.authmethod
+            internal_user.authmethod,
         )
 
         #################################
@@ -63,15 +58,15 @@ class EudatEndpoint(B2accessUtilities):
         if internal_user is None:
             raise AttributeError("Missing user association to token")
 
-        if internal_user.authmethod == 'credentials':
+        if internal_user.authmethod == "credentials":
 
             icom = self.irodsuser_from_b2stage(internal_user)
 
-        elif internal_user.authmethod == 'irods':
+        elif internal_user.authmethod == "irods":
 
             icom = self.irodsuser_from_b2safe(internal_user)
 
-        elif internal_user.authmethod == 'b2access':
+        elif internal_user.authmethod == "b2access":
             icom, external_user, refreshed = self.irodsuser_from_b2access(internal_user)
             # icd and ipwd do not give error with wrong credentials...
             # so the minimum command is checking the existence of home dir
@@ -86,7 +81,7 @@ class EudatEndpoint(B2accessUtilities):
             log.error("Unknown credentials provided")
 
         #################################
-        sql = self.get_service_instance('sqlalchemy')
+        sql = self.get_service_instance("sqlalchemy")
         # update user variable to account email, which should be always unique
         user = internal_user.email
 
@@ -104,10 +99,10 @@ class EudatEndpoint(B2accessUtilities):
 
         try:
             icom = self.get_service_instance(
-                service_name='irods',
+                service_name="irods",
                 user=external_user.irodsuser,
                 password=external_user.token,
-                authscheme='PAM',
+                authscheme="PAM",
             )
 
             log.debug("Current b2access token is valid")
@@ -115,12 +110,12 @@ class EudatEndpoint(B2accessUtilities):
 
             if external_user.refresh_token is None:
                 log.warning("Missing refresh token cannot request for a new token")
-                raise RestApiException('Invalid PAM credentials')
+                raise RestApiException("Invalid PAM credentials")
             else:
 
                 if refreshed:
                     log.info("B2access token already refreshed, cannot request new one")
-                    raise RestApiException('Invalid PAM credentials')
+                    raise RestApiException("Invalid PAM credentials")
                 log.info("B2access token is no longer valid, requesting new token")
 
                 b2access = self.create_b2access_client(self.auth, decorate=True)
@@ -133,7 +128,7 @@ class EudatEndpoint(B2accessUtilities):
 
                 if access_token is not None:
                     return self.irodsuser_from_b2access(internal_user, refreshed=True)
-                raise RestApiException('Failed to refresh b2access token')
+                raise RestApiException("Failed to refresh b2access token")
 
         except BaseException as e:
             raise RestApiException("Unexpected error: {} ({})".format(type(e), str(e)))
@@ -149,7 +144,7 @@ class EudatEndpoint(B2accessUtilities):
             raise RestApiException(msg, status_code=401)
 
         try:
-            return self.get_service_instance(service_name='irods', user_session=user)
+            return self.get_service_instance(service_name="irods", user_session=user)
         except iexceptions.PAM_AUTH_PASSWORD_FAILED:
             msg = "PAM Authentication failed, invalid password or token"
             raise RestApiException(msg, status_code=401)
@@ -170,9 +165,9 @@ class EudatEndpoint(B2accessUtilities):
             raise ValueError("Invalid authentication")
 
         icom = self.get_service_instance(
-            service_name='irods',
+            service_name="irods",
             only_check_proxy=True,
-            user=IRODS_VARS.get('guest_user'),
+            user=IRODS_VARS.get("guest_user"),
             password=None,
             gss=True,
         )
@@ -188,13 +183,13 @@ class EudatEndpoint(B2accessUtilities):
         #     uri_path = uri_path.replace(remove_suffix, '')
 
         if api_path is None:
-            api_path = ''
+            api_path = ""
         else:
-            api_path = "/{}".format(api_path.lstrip('/'))
+            api_path = "/{}".format(api_path.lstrip("/"))
 
         # print("TEST", CURRENT_HTTPAPI_SERVER)
 
-        return '{}://{}{}/{}'.format(
+        return "{}://{}{}/{}".format(
             HTTP_PROTOCOL,
             CURRENT_HTTPAPI_SERVER,
             api_path,
@@ -202,10 +197,8 @@ class EudatEndpoint(B2accessUtilities):
         )
 
     def b2safe_location(self, ipath):
-        return '{}://{}/{}'.format(
-            IRODS_PROTOCOL,
-            CURRENT_B2SAFE_SERVER,
-            ipath.strip(self._path_separator),
+        return "{}://{}/{}".format(
+            IRODS_PROTOCOL, CURRENT_B2SAFE_SERVER, ipath.strip(self._path_separator),
         )
 
     def fix_location(self, location):
@@ -240,9 +233,9 @@ class EudatEndpoint(B2accessUtilities):
 
     def complete_path(self, path, filename=None):
         """ Make sure you have a path with no trailing slash """
-        path = path.rstrip('/')
+        path = path.rstrip("/")
         if filename is not None:
-            path += '/' + filename.rstrip('/')
+            path += "/" + filename.rstrip("/")
         return path
 
     def get_file_parameters(self, icom, path=None, filename=None, newfile=False):
@@ -261,7 +254,7 @@ class EudatEndpoint(B2accessUtilities):
         # If empty the first time, we received path from the URI
         if path is None:
             # path = icom.get_user_home(iuser)
-            path = myargs.get('path')
+            path = myargs.get("path")
 
         # If path is empty again or we have a relative path, send empty
         # so that we can give an error
@@ -278,13 +271,13 @@ class EudatEndpoint(B2accessUtilities):
         # if os.path.isfile(path):
         #     filename = self.filename_from_path(path)
         if newfile:
-            filename = myargs.get('newname')
+            filename = myargs.get("newname")
 
-        resource = myargs.get('resource')
+        resource = myargs.get("resource")
         # if resource is None:
         #     resource = icom.get_default_resource()
 
-        force = myargs.get('force')
+        force = myargs.get("force")
         """ Works with:
            http POST $SERVER/api/namespace path=/path/to/dir force:=1 "$AUTH"
            http POST $SERVER/api/namespace path=/path/to/dir force=True "$AUTH"
@@ -294,7 +287,7 @@ class EudatEndpoint(B2accessUtilities):
             force = False
         else:
             if isinstance(force, str):
-                if force.lower() == 'true':
+                if force.lower() == "true":
                     force = True
                 else:
                     force = False
@@ -318,12 +311,12 @@ class EudatEndpoint(B2accessUtilities):
         is_collection = icom.is_collection(path)
         if is_collection:
             return self.send_errors(
-                'Collection: recursive download is not allowed', head_method=head
+                "Collection: recursive download is not allowed", head_method=head
             )
 
         if head:
             if icom.readable(path):
-                return self.response('', code=200, head_method=head)
+                return self.response("", code=200, head_method=head)
             else:
                 return self.send_errors(code=404, head_method=head)
 
@@ -352,8 +345,8 @@ class EudatEndpoint(B2accessUtilities):
         # parse query parameters
         self.get_input()
         download = False
-        if hasattr(self._args, 'download'):
-            if self._args.download and 'true' in self._args.download.lower():
+        if hasattr(self._args, "download"):
+            if self._args.download and "true" in self._args.download.lower():
                 download = True
         return download
 
@@ -378,7 +371,7 @@ class EudatEndpoint(B2accessUtilities):
         # FILE (or not existing)
         else:
             collection = icom.get_collection_from_path(path)
-            current_filename = path[len(collection) + 1:]
+            current_filename = path[len(collection) + 1 :]
 
             from contextlib import suppress
 
@@ -395,7 +388,7 @@ class EudatEndpoint(B2accessUtilities):
             # if a path that does not exist
             if len(data) < 1:
                 return self.send_errors(
-                    "Path does not exists or you don't have privileges: {}".format(path),
+                    f"Path does not exists or you don't have privileges: {path}",
                     code=404,
                 )
 
@@ -418,27 +411,27 @@ class EudatEndpoint(B2accessUtilities):
             except IrodsException:
                 pass
 
-            metadata['checksum'] = checksum
-            metadata['PID'] = out.get("PID")
+            metadata["checksum"] = checksum
+            metadata["PID"] = out.get("PID")
 
             # Shell we add B2SAFE metadata only if present?
-            metadata['EUDAT/FIXED_CONTENT'] = out.get("EUDAT/FIXED_CONTENT")
-            metadata['EUDAT/REPLICA'] = out.get("EUDAT/REPLICA")
-            metadata['EUDAT/FIO'] = out.get("EUDAT/FIO")
-            metadata['EUDAT/ROR'] = out.get("EUDAT/ROR")
-            metadata['EUDAT/PARENT'] = out.get("EUDAT/PARENT")
+            metadata["EUDAT/FIXED_CONTENT"] = out.get("EUDAT/FIXED_CONTENT")
+            metadata["EUDAT/REPLICA"] = out.get("EUDAT/REPLICA")
+            metadata["EUDAT/FIO"] = out.get("EUDAT/FIO")
+            metadata["EUDAT/ROR"] = out.get("EUDAT/ROR")
+            metadata["EUDAT/PARENT"] = out.get("EUDAT/PARENT")
 
-            metadata.pop('path')
+            metadata.pop("path")
             if public:
                 api_path = PUBLIC_ENDPOINT
             else:
                 api_path = CURRENT_MAIN_ENDPOINT
             content = {
-                'metadata': metadata,
-                metadata['object_type']: filename,
-                'path': collection,
-                'location': self.b2safe_location(collection),
-                'link': self.httpapi_location(
+                "metadata": metadata,
+                metadata["object_type"]: filename,
+                "path": collection,
+                "location": self.b2safe_location(collection),
+                "link": self.httpapi_location(
                     icom.get_absolute_path(filename, root=collection),
                     api_path=api_path,
                     remove_suffix=location,

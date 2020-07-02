@@ -69,7 +69,7 @@ class B2safeProxy(MethodResource, B2accessUtilities):
     @decorators.auth.required()
     def get(self):
 
-        user = self.auth.get_user()
+        user = self.get_user()
         log.debug("Token user: {}", user)
 
         if user.session is not None and len(user.session) > 0:

@@ -15,7 +15,6 @@ from b2stage.apis.commons import (
 )
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from restapi import decorators
-from restapi.connectors.irods.client import IrodsException
 from restapi.services.download import Downloader
 from restapi.services.uploader import Uploader
 
@@ -107,7 +106,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
         return self.download_object(r, url, head=head)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required(roles=["normal_user"])
     def get(self, pid):
         """ Get metadata or file from pid """
@@ -119,7 +118,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         except ImportError:
             return self.eudat_pid(pid, head=False)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required(roles=["normal_user"])
     def head(self, pid):
         """ Get metadata or file from pid """

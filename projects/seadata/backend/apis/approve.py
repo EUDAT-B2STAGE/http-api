@@ -4,7 +4,6 @@ Move data from ingestion to production
 import requests
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from restapi import decorators
-from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.logs import log
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.seadatacloud import Metadata as md
@@ -29,7 +28,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required()
     def post(self, batch_id):
 
