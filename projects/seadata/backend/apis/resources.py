@@ -14,7 +14,6 @@ from b2stage.apis.commons.endpoint import (
     NOT_FILLED_BATCH,
 )
 from restapi import decorators
-from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.logs import log
 from seadata.apis.commons.cluster import (
     INGESTION_DIR,
@@ -46,7 +45,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required()
     def get(self, batch_id, qc_name):
         """ Check my quality check container """
@@ -91,7 +90,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return self.response(response)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required()
     def put(self, batch_id, qc_name):
         """ Launch a quality check inside a container """
@@ -282,7 +281,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return self.response(response)
 
-    @decorators.catch_errors(exception=IrodsException)
+    @decorators.catch_errors()
     @decorators.auth.required()
     def delete(self, batch_id, qc_name):
         """

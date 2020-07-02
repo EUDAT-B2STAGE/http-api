@@ -9,7 +9,6 @@ from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators
 from restapi.confs import TESTING
-from restapi.connectors.irods.client import IrodsException
 
 # from restapi.utilities.logs import log
 
@@ -34,7 +33,7 @@ if TESTING:
             }
         }
 
-        @decorators.catch_errors(exception=IrodsException)
+        @decorators.catch_errors()
         @decorators.auth.required(roles=["normal_user"])
         def patch(self, location=None):
             """
