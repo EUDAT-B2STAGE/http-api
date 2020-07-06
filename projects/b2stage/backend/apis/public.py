@@ -6,6 +6,7 @@ Getting informations for public data.
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons.statics import FOOTER, HEADER
 from restapi import decorators
+from restapi.rest.response import MIMETYPE_HTML, ResponseMaker
 from restapi.utilities.logs import log
 from werkzeug.wrappers import Response as WerkzeugResponse
 
@@ -32,12 +33,6 @@ class Public(B2HandleEndpoint):
     @decorators.catch_errors()
     def get(self, location):
 
-        ####################
-        # self.get_input()
-
-        ####################
-        if location is None:
-            return self.send_errors("Location: missing filepath inside URI", code=400)
         location = self.fix_location(location)
 
         ####################
@@ -64,10 +59,8 @@ class Public(B2HandleEndpoint):
 
         ####################
         # check if browser
-        from restapi.rest.response import get_accepted_formats, MIMETYPE_HTML
 
-        accepted_formats = get_accepted_formats()
-        if MIMETYPE_HTML not in accepted_formats:
+        if "text/html" not in ResponseMaker.get_accepted_formats():
             # print("NOT HTML")
             return self.send_errors(
                 "This endpoint is currently accessible only via Browser.", code=403,
