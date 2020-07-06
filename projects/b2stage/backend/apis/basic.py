@@ -240,7 +240,8 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
                 errors = None
                 status = 200
                 response = self.upload(subfolder=r.username, force=force)
-                original_filename = response[0].get("filename")
+                content = response[0]
+                original_filename = content.get("filename")
                 abs_file = self.absolute_upload_file(original_filename, r.username)
                 log.info("File is '{}'", abs_file)
 
@@ -270,6 +271,7 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
 
             except RestApiException as e:
 
+                content = None
                 errors = str(e)
                 status = e.status_code
 
