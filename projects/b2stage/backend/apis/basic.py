@@ -111,8 +111,7 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
         return self.list_objects(icom, path, is_collection, location)
 
     @decorators.catch_errors()
-    @use_kwargs({"force": fields.Bool()}, locations=["query"])
-    @use_kwargs({"path": fields.Str(required=True)})
+    @use_kwargs({"force": fields.Bool(), "path": fields.Str(required=True)})
     @decorators.auth.required(roles=["normal_user"])
     def post(self, path, force=False):
         """
