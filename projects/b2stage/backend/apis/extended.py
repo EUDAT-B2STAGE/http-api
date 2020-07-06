@@ -14,6 +14,8 @@ from b2stage.apis.commons import (
     PUBLIC_ENDPOINT,
 )
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from flask_apispec import MethodResource, use_kwargs
+from marshmallow import fields
 from restapi import decorators
 from restapi.services.download import Downloader
 from restapi.services.uploader import Uploader
@@ -21,21 +23,13 @@ from restapi.services.uploader import Uploader
 # from restapi.utilities.logs import log
 
 
-class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
+class PIDEndpoint(MethodResource, Uploader, Downloader, B2HandleEndpoint):
     """ Handling PID on endpoint requests """
 
     labels = ["eudat", "pids"]
     _GET = {
         "/pids/<path:pid>": {
-            "summary": "Resolve the input PID and retrieve a digital object information or download it or list a collection",
-            "parameters": [
-                {
-                    "name": "download",
-                    "description": "Activate file downloading (if PID points to a single file)",
-                    "in": "query",
-                    "type": "boolean",
-                }
-            ],
+            "summary": "Resolve a PID and retrieve metadata or download it link object",
             "responses": {
                 "200": {
                     "description": "The information related to the file which the PID points to or the file content if download is activated or the list of objects if the PID points to a collection"
@@ -45,15 +39,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     }
     _HEAD = {
         "/pids/<path:pid>": {
-            "summary": "Resolve the input PID and verify permission of the digital object",
-            "parameters": [
-                {
-                    "name": "download",
-                    "description": "Verify if the user is allowed to download the digital object",
-                    "in": "query",
-                    "type": "boolean",
-                }
-            ],
+            "summary": "Resolve a PID and verify permission of the digital object",
             "responses": {
                 "200": {
                     "description": "The PID can be resolved and the digital object can be downloaded (if download parameter is provided)"
@@ -62,7 +48,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         }
     }
 
-    def eudat_pid(self, pid, head=False):
+    def eudat_pid(self, pid, download, head=False):
 
         # recover metadata from pid
         metadata = self.get_pid_metadata(pid, head_method=head)
@@ -72,9 +58,9 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
                 errors="B2HANDLE: empty URL_value returned", code=404, head_method=head,
             )
 
-        if not self.download_parameter():
-            if head:
-                return self.response("", code=200)
+        if not download and head:
+            return self.response("", code=200)
+        if not download:
             return metadata
         # download is requested, trigger file download
 
@@ -107,8 +93,10 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         return self.download_object(r, url, head=head)
 
     @decorators.catch_errors()
+    # "description": "Activate file downloading (if PID points to a single file)",
+    @use_kwargs({"force": fields.Bool()}, locations=["query"])
     @decorators.auth.required(roles=["normal_user"])
-    def get(self, pid):
+    def get(self, pid, download=False):
         """ Get metadata or file from pid """
 
         try:
@@ -116,11 +104,13 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
             return seadata_pid(self, pid)
         except ImportError:
-            return self.eudat_pid(pid, head=False)
+            return self.eudat_pid(pid, download, head=False)
 
     @decorators.catch_errors()
+    # "description": "Activate file downloading (if PID points to a single file)",
+    @use_kwargs({"force": fields.Bool()}, locations=["query"])
     @decorators.auth.required(roles=["normal_user"])
-    def head(self, pid):
+    def head(self, pid, download=False):
         """ Get metadata or file from pid """
 
-        return self.eudat_pid(pid, head=True)
+        return self.eudat_pid(pid, download, head=True)

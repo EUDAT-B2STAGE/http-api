@@ -341,15 +341,6 @@ class EudatEndpoint(B2accessUtilities):
         # Stream file content
         return filecontent
 
-    def download_parameter(self):
-        # parse query parameters
-        self.get_input()
-        download = False
-        if hasattr(self._args, "download"):
-            if self._args.download and "true" in self._args.download.lower():
-                download = True
-        return download
-
     def list_objects(self, icom, path, is_collection, location, public=False):
         """ DATA LISTING """
 

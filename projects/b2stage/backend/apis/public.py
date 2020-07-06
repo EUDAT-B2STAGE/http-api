@@ -3,35 +3,33 @@ B2SAFE HTTP REST API endpoints.
 Getting informations for public data.
 """
 
+import os
+
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons.statics import FOOTER, HEADER
+from flask_apispec import MethodResource, use_kwargs
+from marshmallow import fields
 from restapi import decorators
-from restapi.rest.response import MIMETYPE_HTML, ResponseMaker
+from restapi.rest.response import ResponseMaker
 from restapi.utilities.logs import log
 from werkzeug.wrappers import Response as WerkzeugResponse
 
 
-class Public(B2HandleEndpoint):
+class Public(MethodResource, B2HandleEndpoint):
 
     labels = ["eudat", "pids", "public"]
     depends_on = ["IRODS_ANONYMOUS", "ENABLE_PUBLIC_ENDPOINT"]
     _GET = {
         "/public/<path:location>": {
             "summary": "Let non-authenticated users get data about a public data-object",
-            "parameters": [
-                {
-                    "name": "download",
-                    "description": "Activate file downloading (if PID points to a single file)",
-                    "in": "query",
-                    "type": "boolean",
-                }
-            ],
             "responses": {"200": {"description": "Informations about the data-object"}},
         }
     }
 
     @decorators.catch_errors()
-    def get(self, location):
+    # "description": "Activate file downloading (if PID points to a single file)",
+    @use_kwargs({"force": fields.Bool()}, locations=["query"])
+    def get(self, location, download=False):
 
         location = self.fix_location(location)
 
@@ -66,8 +64,7 @@ class Public(B2HandleEndpoint):
                 "This endpoint is currently accessible only via Browser.", code=403,
             )
 
-        if self.download_parameter():
-            import os
+        if download:
 
             filename = os.path.basename(path)
             headers = {
@@ -75,8 +72,8 @@ class Public(B2HandleEndpoint):
                 "Content-Disposition": f'attachment; filename="{filename}"',
             }
             return icom.read_in_streaming(path, headers=headers)
-        else:
-            md, _ = icom.get_metadata(path)
+
+        md, _ = icom.get_metadata(path)
 
         # list content
         jout = self.list_objects(icom, path, is_collection, location, public=True)
