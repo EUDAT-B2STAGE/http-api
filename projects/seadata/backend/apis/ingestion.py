@@ -12,6 +12,7 @@ from b2stage.apis.commons.endpoint import (
     PARTIALLY_ENABLED_BATCH,
     EudatEndpoint,
 )
+from flask_apispec import MethodResource, use_kwargs
 from irods.exception import NetworkException
 from restapi import decorators
 from restapi.services.uploader import Uploader
@@ -22,12 +23,15 @@ from seadata.apis.commons.cluster import (
     ClusterContainerEndpoint,
 )
 from seadata.apis.commons.queue import log_into_queue, prepare_message
+from seadata.apis.commons.seadatacloud import EndpointsInputSchema
 
 ingestion_user = "RM"
 BACKDOOR_SECRET = "howdeepistherabbithole"
 
 
-class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
+class IngestionEndpoint(
+    MethodResource, Uploader, EudatEndpoint, ClusterContainerEndpoint
+):
     """ Create batch folder and upload zip files inside it """
 
     labels = ["ingestion"]
@@ -123,9 +127,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             log.error(e)
             return self.send_errors("Could not connect to B2SAFE host", code=503)
 
+    @use_kwargs(EndpointsInputSchema)
     @decorators.auth.required()
-    def post(self, batch_id):
-        json_input = self.get_input()
+    def post(self, batch_id, **json_input):
 
         obj = self.init_endpoint()
         try:
@@ -205,12 +209,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         except requests.exceptions.ReadTimeout:
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
+    @use_kwargs(EndpointsInputSchema)
     @decorators.auth.required()
-    def delete(self):
+    def delete(self, **json_input):
 
-        json_input = self.get_input()
-
-        # imain = self.get_service_instance(service_name='irods')
         try:
             imain = self.get_main_irods_connection()
             batch_path = self.get_irods_batch_path(imain)

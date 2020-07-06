@@ -23,6 +23,7 @@ import urllib.parse
 import requests
 from b2stage.apis.commons import API_URL, CURRENT_HTTPAPI_SERVER, path
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from flask_apispec import MethodResource, use_kwargs
 from irods.exception import NetworkException
 from restapi import decorators
 from restapi.utilities.logs import log
@@ -32,7 +33,7 @@ from seadata.apis.commons.cluster import (
     ClusterContainerEndpoint,
 )
 from seadata.apis.commons.queue import log_into_queue, prepare_message
-from seadata.apis.commons.seadatacloud import ORDERS_ENDPOINT
+from seadata.apis.commons.seadatacloud import ORDERS_ENDPOINT, EndpointsInputSchema
 
 TMPDIR = "/tmp"
 
@@ -48,7 +49,9 @@ def get_order_zip_file_name(order_id, restricted=False, index=None):
 
 #################
 # REST CLASSES
-class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
+class DownloadBasketEndpoint(
+    MethodResource, B2HandleEndpoint, ClusterContainerEndpoint
+):
 
     labels = ["order"]
     _GET = {
@@ -171,7 +174,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
 
-class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
+class BasketEndpoint(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["order"]
     _GET = {
@@ -265,20 +268,19 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
     @decorators.catch_errors()
+    @use_kwargs(EndpointsInputSchema)
     @decorators.auth.required()
-    def post(self):
+    def post(self, **json_input):
 
         ##################
         log.debug("POST request on orders")
-        json_input = self.get_input()
         msg = prepare_message(self, json=json_input, log_string="start")
         log_into_queue(self, msg)
 
         ##################
-        main_key = "parameters"
-        params = json_input.get(main_key, {})
+        params = json_input.get("parameters", {})
         if len(params) < 1:
-            error = f"'{main_key}' missing"
+            error = "missing parameters"
             return self.send_errors(error, code=400)
 
         ##################
@@ -518,12 +520,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.error(e)
             return self.send_errors("Could not connect to B2SAFE host", code=503)
 
+    @use_kwargs(EndpointsInputSchema)
     @decorators.auth.required()
-    def delete(self):
+    def delete(self, **json_input):
 
-        json_input = self.get_input()
-
-        # imain = self.get_service_instance(service_name='irods')
         try:
             imain = self.get_main_irods_connection()
             order_path = self.get_irods_order_path(imain)

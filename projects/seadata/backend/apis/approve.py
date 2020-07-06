@@ -3,15 +3,19 @@ Move data from ingestion to production
 """
 import requests
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from flask_apispec import MethodResource, use_kwargs
 from restapi import decorators
 from restapi.utilities.logs import log
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
+from seadata.apis.commons.seadatacloud import EndpointsInputSchema
 from seadata.apis.commons.seadatacloud import Metadata as md
 
 
 #################
 # REST CLASS
-class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
+class MoveToProductionEndpoint(
+    MethodResource, B2HandleEndpoint, ClusterContainerEndpoint
+):
 
     labels = ["ingestion"]
     _POST = {
@@ -29,12 +33,9 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     }
 
     @decorators.catch_errors()
+    @use_kwargs(EndpointsInputSchema)
     @decorators.auth.required()
-    def post(self, batch_id):
-
-        ################
-        # 0. check parameters
-        json_input = self.get_input()
+    def post(self, batch_id, **json_input):
 
         params = json_input.get("parameters", {})
         if len(params) < 1:

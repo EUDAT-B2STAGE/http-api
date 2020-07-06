@@ -343,7 +343,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                 ##################
                 # CDI notification
                 reqkey = "request_id"
-                msg = prepare_message(self, isjson=True)
+                msg = prepare_message(self, get_json=True)
                 zipcount = 0
                 if counter > 0:
                     # FIXME: what about when restricted is there?

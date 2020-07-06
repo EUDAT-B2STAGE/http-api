@@ -1,7 +1,9 @@
 from datetime import datetime
 
 from b2stage.apis.commons import path
+from marshmallow import fields
 from restapi.env import Env
+from restapi.models import InputSchema
 from restapi.utilities.logs import log
 
 seadata_vars = Env.load_group(label="seadata")
@@ -11,6 +13,21 @@ SEADATA_ENABLED = seadata_vars.get("project") == "1"
 ORDERS_ENDPOINT = "orders"
 EDMO_CODE = seadata_vars.get("edmo_code")
 API_VERSION = seadata_vars.get("api_version")
+
+
+# Validation should raise:
+# f"Missing JSON key: {key}
+class EndpointsInputSchema(InputSchema):
+    request_id = fields.Str(required=True)
+    edmo_code = fields.Str(required=True)
+    datetime = fields.Str(required=True)
+    api_function = fields.Str(required=True)
+    version = fields.Str(required=True)
+    test_mode = fields.Str(required=True)
+
+    eudat_backdoor = fields.Bool(required=False, missing=False)
+
+    parameters = fields.Dict(required=True)
 
 
 class ErrorCodes:

@@ -1,11 +1,13 @@
 import requests
 from b2stage.apis.commons.endpoint import EudatEndpoint
+from flask_apispec import MethodResource, use_kwargs
 from restapi import decorators
 from restapi.utilities.logs import log
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
+from seadata.apis.commons.seadatacloud import EndpointsInputSchema
 
 
-class ListResources(EudatEndpoint, ClusterContainerEndpoint):
+class ListResources(MethodResource, EudatEndpoint, ClusterContainerEndpoint):
 
     labels = ["helper"]
     _POST = {
@@ -15,13 +17,12 @@ class ListResources(EudatEndpoint, ClusterContainerEndpoint):
         }
     }
 
+    @use_kwargs(EndpointsInputSchema)
     @decorators.auth.required()
-    def post(self):
+    def post(self, **json_input):
 
-        # imain = self.get_service_instance(service_name='irods')
         try:
             imain = self.get_main_irods_connection()
-            json_input = self.get_input()
             celery = self.get_service_instance("celery")
             task = celery.list_resources.apply_async(
                 args=[

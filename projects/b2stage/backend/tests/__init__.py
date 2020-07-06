@@ -1,11 +1,10 @@
-# # -*- coding: utf-8 -*-
-import unittest
 import json
+import unittest
+
 from restapi.server import create_app
 from restapi.services.detect import detector
-# from restapi.services.authentication import BaseAuthentication as ba
+from restapi.tests import AUTH_URI
 from restapi.utilities.logs import log
-from restapi.tests import API_URI, AUTH_URI
 
 
 class RestTestsAuthenticatedBase(unittest.TestCase):
@@ -36,14 +35,12 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         pass
     """
 
-    _api_uri = API_URI
-    _auth_uri = AUTH_URI
-    _irods_user = 'icatbetatester'
-    _irods_password = 'IAMABETATESTER'
+    _irods_user = "icatbetatester"
+    _irods_password = "IAMABETATESTER"
 
     def setUp(self):
 
-        log.debug('### Setting up the Flask server ###')
+        log.debug("### Setting up the Flask server ###")
         app = create_app(testing_mode=True)
         self.app = app.test_client()
 
@@ -56,7 +53,7 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         # ba.load_default_user()
 
         # log.info("### Creating a test token ###")
-        # endpoint = self._auth_uri + '/login'
+        # endpoint = f'{AUTH_URI}/login'
         # credentials = {
         #     'username': ba.default_user,
         #     'password': ba.default_password
@@ -66,32 +63,29 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         # token = self.get_content(r)
         # self.save_token(token)
         r = self.app.post(
-            self._auth_uri + '/b2safeproxy',
-            data={
-                'username': self._irods_user,
-                'password': self._irods_password,
-            }
+            AUTH_URI + "/b2safeproxy",
+            data={"username": self._irods_user, "password": self._irods_password},
         )
 
         assert r.status_code == 200
         data = self.get_content(r)
-        assert 'token' in data
-        token = data.get('token')
+        assert "token" in data
+        token = data.get("token")
         self.save_token(token)
 
     def tearDown(self):
 
         # Token clean up
-        log.debug('### Cleaning token ###')
-        ep = self._auth_uri + '/tokens'
+        log.debug("### Cleaning token ###")
+        ep = f"{AUTH_URI}/tokens"
         # Recover current token id
         r = self.app.get(ep, headers=self.__class__.auth_header)
         assert r.status_code == 200
         content = self.get_content(r)
         for element in content:
-            if element.get('token') == self.__class__.bearer_token:
+            if element.get("token") == self.__class__.bearer_token:
                 # delete only current token
-                ep += '/' + element.get('id')
+                ep += "/" + element.get("id")
                 rdel = self.app.delete(ep, headers=self.__class__.auth_header)
                 assert rdel.status_code == 204
 
@@ -101,21 +95,21 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         # i.remove_user(self._irods_user)
 
         # The end
-        log.debug('### Tearing down the Flask server ###')
+        log.debug("### Tearing down the Flask server ###")
         del self.app
 
     def save_token(self, token, suffix=None):
 
         if suffix is None:
-            suffix = ''
+            suffix = ""
         else:
-            suffix = '_' + suffix
+            suffix = "_" + suffix
 
-        key = 'bearer_token' + suffix
+        key = "bearer_token" + suffix
         setattr(self.__class__, key, token)
 
-        key = 'auth_header' + suffix
-        setattr(self.__class__, key, {'Authorization': 'Bearer {}'.format(token)})
+        key = "auth_header" + suffix
+        setattr(self.__class__, key, {"Authorization": f"Bearer {token}"})
 
     def get_content(self, http_out):
 
@@ -125,8 +119,6 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
             response = json.loads(http_out.get_data().decode())
         except Exception as e:
             log.error("Failed to load response:\n{}", e)
-            raise ValueError(
-                "Malformed response: {}".format(http_out)
-            )
+            raise ValueError(f"Malformed response: {http_out}")
 
         return response

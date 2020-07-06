@@ -13,6 +13,7 @@ from b2stage.apis.commons.endpoint import (
     MISSING_BATCH,
     NOT_FILLED_BATCH,
 )
+from flask_apispec import MethodResource, use_kwargs
 from restapi import decorators
 from restapi.utilities.logs import log
 from seadata.apis.commons.cluster import (
@@ -20,9 +21,10 @@ from seadata.apis.commons.cluster import (
     MOUNTPOINT,
     ClusterContainerEndpoint,
 )
+from seadata.apis.commons.seadatacloud import EndpointsInputSchema
 
 
-class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
+class Resources(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["ingestion"]
     depends_on = ["RESOURCES_PROJECT"]
@@ -91,8 +93,9 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         return self.response(response)
 
     @decorators.catch_errors()
+    @use_kwargs(EndpointsInputSchema)
     @decorators.auth.required()
-    def put(self, batch_id, qc_name):
+    def put(self, batch_id, qc_name, **input_json):
         """ Launch a quality check inside a container """
 
         ###########################
@@ -137,7 +140,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         ###################
         # Parameters (and checks)
         envs = {}
-        input_json = self.get_input()
 
         # TODO: backdoor check - remove me
         bd = input_json.pop("eudat_backdoor", False)
@@ -146,24 +148,6 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         else:
             im_prefix = "maris"
         log.debug("Image prefix: {}", im_prefix)
-
-        # input parameters to be passed to container
-        pkey = "parameters"
-        param_keys = [
-            "request_id",
-            "edmo_code",
-            "datetime",
-            "api_function",
-            "version",
-            "test_mode",
-            pkey,
-        ]
-        for key in param_keys:
-            if key == pkey:
-                continue
-            value = input_json.get(key, None)
-            if value is None:
-                return self.send_errors(f"Missing JSON key: {key}", code=400)
 
         response = {
             "batch_id": batch_id,
