@@ -1,34 +1,35 @@
-# -*- coding: utf-8 -*-
-
 """
 Common functions for EUDAT endpoints
 """
-from attr import s as AttributedModel, ib as attribute
+from attr import ib as attribute
+from attr import s as AttributedModel
+from restapi.confs import API_URL, PRODUCTION
+from restapi.env import Env
 from restapi.services.detect import detector
-from restapi.confs import PRODUCTION, API_URL
+
 # from restapi.utilities.logs import log
 
 try:
-    IRODS_VARS = detector.load_variables(prefix='irods')
+    IRODS_VARS = detector.load_variables(prefix="irods")
 except AttributeError:
     IRODS_VARS = {}
-IRODS_EXTERNAL = IRODS_VARS.get('external', False)
+IRODS_EXTERNAL = IRODS_VARS.get("external", False)
 
-CURRENT_B2SAFE_SERVER = IRODS_VARS.get('host')
-CURRENT_HTTPAPI_SERVER = detector.get_global_var('DOMAIN')
-CURRENT_B2ACCESS_ENVIRONMENT = detector.get_global_var('B2ACCESS_ENV')
+CURRENT_B2SAFE_SERVER = IRODS_VARS.get("host")
+CURRENT_HTTPAPI_SERVER = Env.get("DOMAIN")
+CURRENT_B2ACCESS_ENVIRONMENT = Env.get("B2ACCESS_ENV")
 
-MAIN_ENDPOINT_NAME = detector.get_global_var('MAIN_ENDPOINT', default='')
-PUBLIC_ENDPOINT_NAME = detector.get_global_var('PUBLIC_ENDPOINT', default='')
+MAIN_ENDPOINT_NAME = Env.get("MAIN_ENDPOINT", default="")
+PUBLIC_ENDPOINT_NAME = Env.get("PUBLIC_ENDPOINT", default="")
 
-CURRENT_MAIN_ENDPOINT = "{}/{}".format(API_URL, MAIN_ENDPOINT_NAME)
-PUBLIC_ENDPOINT = "{}/{}".format(API_URL, PUBLIC_ENDPOINT_NAME)
+CURRENT_MAIN_ENDPOINT = f"{API_URL}/{MAIN_ENDPOINT_NAME}"
+PUBLIC_ENDPOINT = f"{API_URL}/{PUBLIC_ENDPOINT_NAME}"
 
-IRODS_PROTOCOL = 'irods'
+IRODS_PROTOCOL = "irods"
 
-HTTP_PROTOCOL = 'http'
+HTTP_PROTOCOL = "http"
 if PRODUCTION:
-    HTTP_PROTOCOL = 'https'
+    HTTP_PROTOCOL = "https"
 else:
     # FIXME: how to get the PORT?
     CURRENT_HTTPAPI_SERVER += ":8080"
@@ -38,7 +39,7 @@ else:
 #  A class with attributes
 ########################
 @AttributedModel
-class InitObj(object):
+class InitObj:
     """
     A pythonic way to handle a method response with different features.
     Here's the list of needed attributes:
