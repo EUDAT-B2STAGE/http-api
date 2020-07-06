@@ -170,9 +170,8 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
 
     @decorators.catch_errors()
     @use_kwargs(
-        {"force": fields.Bool(), "pid_await": fields.Bool()}, locations=["query"]
+        {"resource": fields.Str(), "force": fields.Bool(), "pid_await": fields.Bool()}
     )
-    @use_kwargs({"resource": fields.Str(required=False)})
     @decorators.auth.required(roles=["normal_user"])
     def put(self, location, resource=None, force=False, pid_await=False):
         """
