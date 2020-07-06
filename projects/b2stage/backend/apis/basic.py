@@ -237,37 +237,17 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
         # CASE 1- FORM UPLOAD
         if request.mimetype != "application/octet-stream":
 
-            # Read the request
-            request.get_data()
-
             # Normal upload: inside the host tmp folder
             try:
-                response = self.upload(subfolder=r.username, force=force)
-                content = json.loads(response.get_data().decode())
-                # This is required for wrapped response, remove me in a near future
-                content = glom(content, "Response.data", default=content)
                 errors = None
                 status = 200
-
-            except RestApiException as e:
-
-                content = None
-                errors = str(e)
-                status = e.status_code
-
-            ###################
-            # If files uploaded
-            key_file = "filename"
-
-            if isinstance(content, dict) and key_file in content:
-                original_filename = content[key_file]
+                response = self.upload(subfolder=r.username, force=force)
+                content = json.loads(response.get_data().decode())
+                original_filename = content.get("filename")
                 abs_file = self.absolute_upload_file(original_filename, r.username)
                 log.info("File is '{}'", abs_file)
 
-                ############################
-                # Move file inside irods
-
-                filename = None
+                # Move file in irods
                 # Verify if the current path proposed from the user
                 # is indeed an existing collection in iRODS
                 if icom.is_collection(path):
@@ -275,6 +255,8 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
                     # Only if the path specified is an
                     # existing irods collection
                     filename = original_filename
+                else:
+                    filename = None
 
                 try:
                     # Handling (iRODS) path
@@ -288,6 +270,12 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
                     # Transaction rollback: remove local cache in any case
                     log.debug("Removing cache object")
                     os.remove(abs_file)
+
+            except RestApiException as e:
+
+                content = None
+                errors = str(e)
+                status = e.status_code
 
         #################
         # CASE 2 - STREAMING UPLOAD
