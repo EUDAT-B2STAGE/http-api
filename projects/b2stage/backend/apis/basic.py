@@ -173,9 +173,9 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
     @use_kwargs(
         {"force": fields.Bool(), "pid_await": fields.Bool()}, locations=["query"]
     )
-    @use_kwargs({"resource": fields.Str(required=True)})
+    @use_kwargs({"resource": fields.Str(required=False)})
     @decorators.auth.required(roles=["normal_user"])
-    def put(self, location, resource, force=False, pid_await=False):
+    def put(self, location, resource=None, force=False, pid_await=False):
         """
         Handle file upload. Test on docker client shell with:
         http --form PUT $SERVER/api/resources/tempZone/home/guest/test \
