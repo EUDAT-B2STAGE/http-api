@@ -92,7 +92,9 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         assert r.status_code == 200
         # Then verify content!
         r = self.app.get(
-            endpoint, data={"download": True}, headers=self.__class__.auth_header
+            endpoint,
+            query_string={"download": True},
+            headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
         assert r.data == content
@@ -110,7 +112,9 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         assert r.status_code == 200
         # Then verify content!
         r = self.app.get(
-            endpoint, data={"download": True}, headers=self.__class__.auth_header
+            endpoint,
+            query_string={"download": True},
+            headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
         assert r.data == content
@@ -215,7 +219,9 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
             f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename
         )
         r = self.app.get(
-            endpoint, data={"download": True}, headers=self.__class__.auth_header
+            endpoint,
+            query_string={"download": True},
+            headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
         assert r.data == STRANGE_BSTRING
