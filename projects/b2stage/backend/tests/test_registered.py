@@ -64,7 +64,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         # Create a directory w/o passing a path
         r = self.app.post(endpoint, headers=self.__class__.auth_header)
-        assert r.status_code == 405
+        assert r.status_code == 400
 
     def test_02_PUT_upload_entity(self):
         """ Test file upload: PUT """
