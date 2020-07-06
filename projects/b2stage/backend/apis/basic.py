@@ -395,7 +395,7 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
         }
 
     @decorators.catch_errors()
-    @use_kwargs({"debugclean": fields.Bool()}, locations=["query"])
+    @use_kwargs({"debugclean": fields.Bool()})
     @decorators.auth.required(roles=["normal_user"])
     def delete(self, location=None, debugclean=False):
         """
