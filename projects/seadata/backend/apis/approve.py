@@ -21,13 +21,6 @@ class MoveToProductionEndpoint(
     _POST = {
         "/ingestion/<batch_id>/approve": {
             "summary": "Approve files in a batch that are passing all QCs",
-            "parameters": [
-                {
-                    "name": "parameters",
-                    "in": "body",
-                    "schema": {"$ref": "#/definitions/SeadataPost"},
-                }
-            ],
             "responses": {"200": {"description": "Registration executed"}},
         }
     }
