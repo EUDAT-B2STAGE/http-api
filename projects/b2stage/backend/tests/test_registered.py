@@ -1,5 +1,4 @@
 import io
-import json
 
 from restapi.tests import API_URI
 from restapi.utilities.logs import log
@@ -22,7 +21,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Clean all test data
         endpoint = f"{API_URI}/registered"
         r = self.app.delete(
-            endpoint, data=dict(debugclean="True"), headers=self.__class__.auth_header
+            endpoint, data={"debugclean": True}, headers=self.__class__.auth_header
         )
         assert r.status_code == 200
 
@@ -37,7 +36,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered"
         r = self.app.post(
             endpoint,
-            data=dict(path=self._irods_path),
+            data={"path": self._irods_path},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
@@ -45,20 +44,20 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Overwrite a directory w/o force flag
         r = self.app.post(
             endpoint,
-            data=dict(path=self._irods_path),
+            data={"path": self._irods_path},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 409
 
         # Overwrite a directory
-        params = json.dumps(dict(force=True, path=self._irods_path))
+        params = {"force": True, "path": self._irods_path}
         r = self.app.post(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Create a directory in a non existing path
         r = self.app.post(
             endpoint,
-            data=dict(path=self._invalid_irods_path),
+            data={"path": self._invalid_irods_path},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 404
@@ -75,7 +74,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered"
         r = self.app.post(
             endpoint,
-            data=dict(path=self._irods_path),
+            data={"path": self._irods_path},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
@@ -87,13 +86,13 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered{self._irods_path}/{self._test_filename}"
         r = self.app.put(
             endpoint,
-            data=dict(force=True, file=(io.BytesIO(content), self._test_filename)),
+            data={"force": True, "file": (io.BytesIO(content), self._test_filename)},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
         # Then verify content!
         r = self.app.get(
-            endpoint, data=dict(download="True"), headers=self.__class__.auth_header
+            endpoint, data={"download": True}, headers=self.__class__.auth_header
         )
         assert r.status_code == 200
         assert r.data == content
@@ -111,7 +110,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         assert r.status_code == 200
         # Then verify content!
         r = self.app.get(
-            endpoint, data=dict(download="True"), headers=self.__class__.auth_header
+            endpoint, data={"download": True}, headers=self.__class__.auth_header
         )
         assert r.status_code == 200
         assert r.data == content
@@ -119,9 +118,10 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Overwrite entity in test folder
         r = self.app.put(
             endpoint,
-            data=dict(
-                file=(io.BytesIO(b"this is a test"), self._test_filename), force="True"
-            ),
+            data={
+                "force": True,
+                "file": (io.BytesIO(b"this is a test"), self._test_filename),
+            },
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
@@ -129,7 +129,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Overwrite entity in test folder w/o force flag
         r = self.app.put(
             endpoint,
-            data=dict(file=(io.BytesIO(b"this is a test"), self._test_filename)),
+            data={"file": (io.BytesIO(b"this is a test"), self._test_filename)},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 400
@@ -142,7 +142,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered{self._invalid_irods_path}"
         r = self.app.put(
             endpoint,
-            data=dict(file=(io.BytesIO(b"this is a test"), self._test_filename)),
+            data={"file": (io.BytesIO(b"this is a test"), self._test_filename)},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 404
@@ -184,7 +184,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered"
         r = self.app.post(
             endpoint,
-            data=dict(path=self._irods_path),
+            data={"path": self._irods_path},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
@@ -193,7 +193,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered" + self._irods_path
         r = self.app.put(
             endpoint,
-            data=dict(file=(io.BytesIO(STRANGE_BSTRING), self._test_filename)),
+            data={"file": (io.BytesIO(STRANGE_BSTRING), self._test_filename)},
             headers=self.__class__.auth_header,
         )
         # ###################################################
@@ -215,7 +215,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
             f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename
         )
         r = self.app.get(
-            endpoint, data=dict(download="True"), headers=self.__class__.auth_header
+            endpoint, data={"download": True}, headers=self.__class__.auth_header
         )
         assert r.status_code == 200
         assert r.data == STRANGE_BSTRING
@@ -231,7 +231,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         assert response_pid is None
 
         # Add EUDAT metadata
-        params = json.dumps(dict({"PID": pid}))
+        params = {"PID": pid}
         endpoint = API_URI + "/metadata" + self._irods_path + "/" + self._test_filename
         r = self.app.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
@@ -260,7 +260,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered"
         r = self.app.post(
             endpoint,
-            data=dict(path=self._irods_path),
+            data={"path": self._irods_path},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
@@ -269,13 +269,13 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered" + self._irods_path
         r = self.app.put(
             endpoint,
-            data=dict(file=(io.BytesIO(b"this is a test"), self._test_filename)),
+            data={"file": (io.BytesIO(b"this is a test"), self._test_filename)},
             headers=self.__class__.auth_header,
         )
         ###################################################
 
         # Rename file
-        params = json.dumps(dict(newname=new_file_name))
+        params = {"newname": new_file_name}
         endpoint = (
             f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename
         )
@@ -283,31 +283,31 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         assert r.status_code == 200
 
         # Rename again with the original name
-        params = json.dumps(dict(newname=self._test_filename))
+        params = {"newname": self._test_filename}
         endpoint = f"{API_URI}/registered" + self._irods_path + "/" + new_file_name
         r = self.app.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Rename directory
-        params = json.dumps(dict(newname=new_directory_name))
+        params = {"newname": new_directory_name}
         endpoint = f"{API_URI}/registered" + self._irods_path
         r = self.app.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Rename again with the original name
-        params = json.dumps(dict(newname=self._irods_test_name))
+        params = {"newname": self._irods_test_name}
         endpoint = f"{API_URI}/registered" + self._irods_home + "/" + new_directory_name
         r = self.app.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Rename non existing file
-        params = json.dumps(dict(newname=self._test_filename))
+        params = {"newname": self._test_filename}
         endpoint = f"{API_URI}/registered" + self._irods_path + "/" + new_file_name
         r = self.app.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 404
 
         # Rename non existing directory
-        params = json.dumps(dict(newname=self._irods_path))
+        params = {"newname": self._irods_path}
         endpoint = f"{API_URI}/registered" + new_directory_name
         r = self.app.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 404
@@ -326,7 +326,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered"
         r = self.app.post(
             endpoint,
-            data=dict(path=self._irods_path),
+            data={"path": self._irods_path},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
@@ -335,7 +335,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         endpoint = f"{API_URI}/registered" + self._irods_path
         r = self.app.put(
             endpoint,
-            data=dict(file=(io.BytesIO(b"this is a test"), self._test_filename)),
+            data={"file": (io.BytesIO(b"this is a test"), self._test_filename)},
             headers=self.__class__.auth_header,
         )
         ###################################################

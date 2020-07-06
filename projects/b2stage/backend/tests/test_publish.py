@@ -22,8 +22,6 @@ else:
 
     class TestPublish(RestTestsAuthenticatedBase):
 
-        _auth_endpoint = "/b2safeproxy"
-        _register_endpoint = "/registered"
         _anonymous_user = "anonymous"
         _main_key = "published"
 
@@ -33,7 +31,7 @@ else:
             super().setUp()
 
             # Remove existing files
-            endpoint = API_URI + self._register_endpoint  # + self._ipath
+            endpoint = f"{API_URI}/registered"  # + self._ipath
             r = self.app.delete(
                 endpoint,
                 data=dict(debugclean="True"),
@@ -46,7 +44,7 @@ else:
                 "username": self._anonymous_user,
                 "password": "notrequired",
             }
-            endpoint = AUTH_URI + self._auth_endpoint
+            endpoint = f"{AUTH_URI}/b2safeproxy"
 
             log.debug("*** Testing anonymous authentication on {}", endpoint)
             r = self.app.post(endpoint, data=credentials)
@@ -77,7 +75,7 @@ else:
             log.debug("*** Upload a test file: {}", self._ipath)
 
             # Upload entity in test folder
-            endpoint = API_URI + self._register_endpoint + self._ipath
+            endpoint = f"{API_URI}/registered" + self._ipath
             r = self.app.put(
                 endpoint,
                 data={
@@ -133,7 +131,7 @@ else:
             assert data.get(self._main_key) is True
 
             # Current file can be accessed by anonymous with /api/registered
-            anonymous_endpoint = API_URI + self._register_endpoint
+            anonymous_endpoint = f"{API_URI}/registered"
             r = self.app.get(
                 anonymous_endpoint + self._ipath,
                 headers=self.__class__.auth_header_anonymous,
@@ -200,7 +198,7 @@ else:
             assert data.get(self._main_key) is False
 
             # Current file cannot be accessed by anonymous
-            anonymous_endpoint = API_URI + self._register_endpoint
+            anonymous_endpoint = f"{API_URI}/registered"
             r = self.app.get(
                 anonymous_endpoint + self._ipath,
                 headers=self.__class__.auth_header_anonymous,
@@ -223,7 +221,7 @@ else:
             log.debug("\n### Cleaning anonymous data ###")
 
             # Remove the test file
-            endpoint = API_URI + self._register_endpoint  # + self._ipath
+            endpoint = f"{API_URI}/registered"  # + self._ipath
             r = self.app.delete(
                 endpoint,
                 data=dict(debugclean="True"),
