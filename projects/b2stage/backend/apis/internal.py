@@ -7,6 +7,8 @@ FIXME: TO BE DEPRECATED
 
 from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
+from flask_apispec import MethodResource, use_kwargs
+from marshmallow import fields
 from restapi import decorators
 from restapi.confs import TESTING
 
@@ -15,27 +17,20 @@ from restapi.confs import TESTING
 
 if TESTING:
 
-    class MetadataEndpoint(EudatEndpoint):
+    class MetadataEndpoint(MethodResource, EudatEndpoint):
 
         labels = ["helpers", "eudat"]
         _PATCH = {
             "/metadata/<path:location>": {
                 "summary": "Add metadata to object",
-                "parameters": [
-                    {
-                        "name": "metadata",
-                        "in": "body",
-                        "required": True,
-                        "schema": {"type": "array", "items": {"type": "string"}},
-                    }
-                ],
                 "responses": {"200": {"description": "Metadata added"}},
             }
         }
 
         @decorators.catch_errors()
+        @use_kwargs({"PID": fields.Str(required=True)})
         @decorators.auth.required(roles=["normal_user"])
-        def patch(self, location=None):
+        def patch(self, PID, location=None):
             """
             Add metadata to an object.
             """
@@ -53,28 +48,13 @@ if TESTING:
                 return self.send_errors(errors=r.errors)
             icom = r.icommands
 
-            path, resource, filename, force = self.get_file_parameters(
-                icom, path=location
-            )
+            path = self.parse_path(location)
 
-            dct = {}
-            pid = self._args.get("PID")
-            if pid:
-                dct["PID"] = pid
-            else:
-                return self.send_errors("PID: missing parameter in JSON input")
-
-            checksum = self._args.get("EUDAT/CHECKSUM")
-            if checksum:
-                dct["EUDAT/CHECKSUM"] = checksum
-
-            out = None
-            if dct:
-                icom.set_metadata(location, **dct)
-                out, _ = icom.get_metadata(location)
+            icom.set_metadata(location, PID=PID)
+            out, _ = icom.get_metadata(location)
 
             return {
                 "metadata": out,
-                "location": filename,
+                "location": path,
                 "link": self.httpapi_location(location, api_path=CURRENT_MAIN_ENDPOINT),
             }

@@ -46,9 +46,7 @@ class Publish(EudatEndpoint):
         if r.errors is not None:
             raise RestApiException(r.errors)
 
-        path, resource, filename, _ = self.get_file_parameters(
-            r.icommands, path=location
-        )
+        path = self.parse_path(location)
 
         # Does this path exist?
         if not r.icommands.exists(path):

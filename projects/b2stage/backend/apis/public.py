@@ -28,7 +28,7 @@ class Public(MethodResource, B2HandleEndpoint):
 
     @decorators.catch_errors()
     # "description": "Activate file downloading (if PID points to a single file)",
-    @use_kwargs({"force": fields.Bool()}, locations=["query"])
+    @use_kwargs({"download": fields.Bool()}, locations=["query"])
     def get(self, location, download=False):
 
         location = self.fix_location(location)
@@ -42,7 +42,7 @@ class Public(MethodResource, B2HandleEndpoint):
             authscheme="credentials",
         )
 
-        path, resource, _, force = self.get_file_parameters(icom, path=location)
+        path = self.parse_path(location)
         is_collection = icom.is_collection(path)
         if is_collection:
             body = (

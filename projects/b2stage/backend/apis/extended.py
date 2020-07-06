@@ -94,7 +94,7 @@ class PIDEndpoint(MethodResource, Uploader, Downloader, B2HandleEndpoint):
 
     @decorators.catch_errors()
     # "description": "Activate file downloading (if PID points to a single file)",
-    @use_kwargs({"force": fields.Bool()}, locations=["query"])
+    @use_kwargs({"download": fields.Bool()}, locations=["query"])
     @decorators.auth.required(roles=["normal_user"])
     def get(self, pid, download=False):
         """ Get metadata or file from pid """
@@ -108,7 +108,7 @@ class PIDEndpoint(MethodResource, Uploader, Downloader, B2HandleEndpoint):
 
     @decorators.catch_errors()
     # "description": "Activate file downloading (if PID points to a single file)",
-    @use_kwargs({"force": fields.Bool()}, locations=["query"])
+    @use_kwargs({"download": fields.Bool()}, locations=["query"])
     @decorators.auth.required(roles=["normal_user"])
     def head(self, pid, download=False):
         """ Get metadata or file from pid """

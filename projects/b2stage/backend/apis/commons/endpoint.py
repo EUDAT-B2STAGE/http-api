@@ -238,76 +238,22 @@ class EudatEndpoint(B2accessUtilities):
             path += "/" + filename.rstrip("/")
         return path
 
-    def get_file_parameters(self, icom, path=None, filename=None, newfile=False):
-        """
-        NOTE: resource is a complicated parameter:
-        resources are meant for (iRODS) replicas;
-        adding or removing replicas require explicit irods commands.
-        """
+    def parse_path(self, path):
 
-        # Handle flask differences on GET/DELETE and PUT/POST
-        myargs = self.get_input()
-
-        ############################
-        # main parameters
-
-        # If empty the first time, we received path from the URI
-        if path is None:
-            # path = icom.get_user_home(iuser)
-            path = myargs.get("path")
-
-        # If path is empty again or we have a relative path, send empty
+        # If path is empty or we have a relative path return None
         # so that we can give an error
         if path is None or not os.path.isabs(path):
-            return [None] * 4
+            return None
 
         if isinstance(path, str):
-            path = path.rstrip(self._path_separator)
+            return path.rstrip(self._path_separator)
 
-        ############################
-
-        filename = None
-        # # Should this check be done to uploaded file?
-        # if os.path.isfile(path):
-        #     filename = self.filename_from_path(path)
-        if newfile:
-            filename = myargs.get("newname")
-
-        resource = myargs.get("resource")
-        # if resource is None:
-        #     resource = icom.get_default_resource()
-
-        force = myargs.get("force")
-        """ Works with:
-           http POST $SERVER/api/namespace path=/path/to/dir force:=1 "$AUTH"
-           http POST $SERVER/api/namespace path=/path/to/dir force=True "$AUTH"
-           http POST $SERVER/api/namespace path=/path/to/dir force=true "$AUTH"
-        """
-        if force is None:
-            force = False
-        else:
-            if isinstance(force, str):
-                if force.lower() == "true":
-                    force = True
-                else:
-                    force = False
-            elif isinstance(force, int):
-                force = force == 1
-
-        ############################
-        log.verbose(
-            "Parsed: file({}), path({}), res({}), force({})",
-            filename,
-            path,
-            resource,
-            force,
-        )
-        return path, resource, filename, force
+        return None
 
     def download_object(self, r, path, head=False):
         icom = r.icommands
         username = r.username
-        path, resource, filename, force = self.get_file_parameters(icom, path=path)
+        path = self.parse_path(path)
         is_collection = icom.is_collection(path)
         if is_collection:
             return self.send_errors(
@@ -320,8 +266,7 @@ class EudatEndpoint(B2accessUtilities):
             else:
                 return self.send_errors(code=404, head_method=head)
 
-        if filename is None:
-            filename = self.filename_from_path(path)
+        filename = self.filename_from_path(path)
         abs_file = self.absolute_upload_file(filename, username)
 
         # TODO: decide if we want to use a cache when streaming
