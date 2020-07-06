@@ -16,7 +16,9 @@ import time
 from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from flask import request
+from flask_apispec import MethodResource, use_kwargs
 from glom import glom
+from marshmallow import fields
 from restapi import decorators
 from restapi.confs import TESTING
 from restapi.connectors.irods.client import IrodsException
@@ -28,20 +30,12 @@ from restapi.utilities.logs import log
 # Classes
 
 
-class BasicEndpoint(Uploader, EudatEndpoint):
+class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
 
     labels = ["eudat", "registered"]
     _GET = {
         "/registered/<path:location>": {
-            "summary": "Retrieve a single digital entity/object information or download it",
-            "parameters": [
-                {
-                    "name": "download",
-                    "description": "activate file downloading (if path is a single file)",
-                    "in": "query",
-                    "type": "boolean",
-                }
-            ],
+            "summary": "Retrieve digital object information or download it",
             "responses": {
                 "200": {
                     "description": "Returns the digital object information or file content if download is activated or the list of objects related to the requested path (PID is returned if available)"
@@ -53,86 +47,36 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         "/registered": {
             "summary": "Create a new collection",
             "responses": {"200": {"description": "Collection created"}},
-            "parameters": [
-                {
-                    "name": "path",
-                    "in": "query",
-                    "type": "string",
-                    "description": "the filesystem path to created collection",
-                }
-            ],
         }
     }
     _PUT = {
         "/registered/<path:location>": {
             "summary": "Upload a new file",
             "responses": {"200": {"description": "File created"}},
-            "parameters": [
-                {
-                    "name": "file",
-                    "in": "formData",
-                    "description": "file data to be uploaded",
-                    "required": True,
-                    "type": "file",
-                },
-                {
-                    "name": "force",
-                    "in": "query",
-                    "type": "boolean",
-                    "description": "force action even if getting warnings",
-                },
-                {
-                    "name": "pid_await",
-                    "in": "query",
-                    "type": "boolean",
-                    "description": "Returns PID in the JSON response",
-                },
-            ],
         }
     }
     _PATCH = {
         "/registered/<path:location>": {
             "summary": "Update an entity name",
-            "parameters": [
-                {
-                    "name": "new file name",
-                    "in": "body",
-                    "schema": {"$ref": "#/definitions/FileUpdate"},
-                }
-            ],
             "responses": {"200": {"description": "File name updated"}},
         }
     }
     _DELETE = {
         "/registered": {
             "summary": "Delete an entity",
-            "parameters": [
-                {
-                    "name": "debugclean",
-                    "in": "query",
-                    "type": "boolean",
-                    "description": "Only for debug mode",
-                }
-            ],
             "responses": {"200": {"description": "Entities deleted"}},
         },
         "/registered/<path:location>": {
             "summary": "Delete an entity",
-            "parameters": [
-                {
-                    "name": "debugclean",
-                    "in": "query",
-                    "type": "boolean",
-                    "description": "Only for debug mode",
-                }
-            ],
             "responses": {"200": {"description": "Entity deleted"}},
         },
     }
 
     @decorators.catch_errors()
+    # "description": "activate file downloading (if path is a single file)",
+    @use_kwargs({"download": fields.Bool()}, locations=["query"])
     @decorators.auth.required(roles=["normal_user"])
-    def get(self, location):
+    def get(self, location, download=False):
         """ Download file from filename """
 
         location = self.fix_location(location)
@@ -145,7 +89,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # get parameters with defaults
         icom = r.icommands
-        path, resource, filename, force = self.get_file_parameters(icom, path=location)
+        path = self.parse_path(location)
 
         is_collection = icom.is_collection(path)
         # Check if it's not a collection because the object does not exist
@@ -158,21 +102,19 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         ###################
 
         # If download is True, trigger file download
-        if hasattr(self._args, "download"):
-            if self._args.download and "true" in self._args.download.lower():
-                if is_collection:
-                    raise RestApiException(
-                        "Collection: recursive download is not allowed"
-                    )
-                else:
-                    # NOTE: we always send in chunks when downloading
-                    return icom.read_in_streaming(path)
+        if download:
+            if is_collection:
+                raise RestApiException("Collection: recursive download is not allowed")
+            # NOTE: we always send in chunks when downloading
+            return icom.read_in_streaming(path)
 
         return self.list_objects(icom, path, is_collection, location)
 
     @decorators.catch_errors()
+    @use_kwargs({"force": fields.Bool()}, locations=["query"])
+    @use_kwargs({"path": fields.Str(required=True)})
     @decorators.auth.required(roles=["normal_user"])
-    def post(self):
+    def post(self, path, force=False):
         """
         Handle [directory creation](docs/user/registered.md#post).
         Test on internal client shell with:
@@ -197,7 +139,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         icom = r.icommands
         # get parameters with defaults
-        path, resource, filename, force = self.get_file_parameters(icom)
+        path = self.parse_path(path)
 
         # if path variable empty something is wrong
         if path is None:
@@ -211,10 +153,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         ipath = icom.create_directory(path, ignore_existing=force)
         if ipath is None:
-            if force:
-                ipath = path
-            else:
+            if not force:
                 raise IrodsException(f"Failed to create {path}")
+            ipath = path
         else:
             log.info("Created irods collection: {}", ipath)
 
@@ -229,8 +170,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         return self.response(content, code=status)
 
     @decorators.catch_errors()
+    @use_kwargs(
+        {"force": fields.Bool(), "pid_await": fields.Bool()}, locations=["query"]
+    )
+    @use_kwargs({"resource": fields.Str(required=True)})
     @decorators.auth.required(roles=["normal_user"])
-    def put(self, location):
+    def put(self, location, resource, force=False, pid_await=False):
         """
         Handle file upload. Test on docker client shell with:
         http --form PUT $SERVER/api/resources/tempZone/home/guest/test \
@@ -277,7 +222,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         icom = r.icommands
         # get parameters with defaults
-        path, resource, filename, force = self.get_file_parameters(icom, path=location)
+        """
+        NOTE: resource is a complicated parameter:
+        resources are meant for (iRODS) replicas;
+        adding or removing replicas require explicit irods commands.
+        """
+
+        path = self.parse_path(location)
 
         # Manage both form and streaming upload
         ipath = None
@@ -366,8 +317,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         pid_found = True
         if not errors:
             out = {}
-            pid_parameter = self._args.get("pid_await")
-            if pid_parameter and "true" in pid_parameter.lower():
+            if pid_await:
                 # Shall we get the timeout from user?
                 pid_found = False
                 timeout = time.time() + 10  # seconds from now
@@ -411,8 +361,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             return self.response(content, errors=errors, code=202)
 
     @decorators.catch_errors()
+    @use_kwargs({"newname": fields.Str(required=True)})
     @decorators.auth.required(roles=["normal_user"])
-    def patch(self, location):
+    def patch(self, location, newname):
         """
         PATCH a record. E.g. change only the filename to a resource.
         """
@@ -426,33 +377,17 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             raise RestApiException(r.errors)
 
         icom = r.icommands
-        # Note: ignore resource, get new filename as 'newname'
-        path, _, newfile, force = self.get_file_parameters(
-            icom, path=location, newfile=True
-        )
-
-        if force:
-            raise RestApiException(
-                "This operation cannot be forced in B2SAFE iRODS data objects",
-                status_code=400,
-            )
-
-        if newfile is None or newfile.strip() == "":
-            raise RestApiException(
-                "New filename missing; use the 'newname' JSON parameter",
-                status_code=400,
-            )
 
         # Get the base directory
         collection = icom.get_collection_from_path(location)
         # Set the new absolute path
-        newpath = icom.get_absolute_path(newfile, root=collection)
+        newpath = icom.get_absolute_path(newname, root=collection)
         # Move in irods
         icom.move(location, newpath)
 
         return {
             "location": self.b2safe_location(newpath),
-            "filename": newfile,
+            "filename": newname,
             "path": collection,
             "link": self.httpapi_location(
                 newpath, api_path=CURRENT_MAIN_ENDPOINT, remove_suffix=location
@@ -460,8 +395,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         }
 
     @decorators.catch_errors()
+    @use_kwargs({"debugclean": fields.Bool()}, locations=["query"])
     @decorators.auth.required(roles=["normal_user"])
-    def delete(self, location=None):
+    def delete(self, location=None, debugclean=False):
         """
         Remove an object or an empty directory on iRODS
 
@@ -478,22 +414,19 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             raise RestApiException(r.errors)
 
         icom = r.icommands
-        # get parameters with defaults
-        path, resource, filename, force = self.get_file_parameters(icom)
 
         ###################
         # Testing option to remove the whole content of current home
-        if TESTING:
-            if self._args.get("debugclean"):
-                home = icom.get_user_home()
-                files = icom.list(home)
-                for key, obj in files.items():
-                    icom.remove(
-                        home + self._path_separator + obj["name"],
-                        recursive=obj["object_type"] == "collection",
-                    )
-                    log.debug("Removed {}", obj["name"])
-                return "Cleaned"
+        if TESTING and debugclean:
+            home = icom.get_user_home()
+            files = icom.list(home)
+            for key, obj in files.items():
+                icom.remove(
+                    home + self._path_separator + obj["name"],
+                    recursive=obj["object_type"] == "collection",
+                )
+                log.debug("Removed {}", obj["name"])
+            return "Cleaned"
 
         # TODO: only if it has a PID?
         raise RestApiException(

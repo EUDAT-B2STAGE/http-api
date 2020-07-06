@@ -1,16 +1,6 @@
 
 definitions:
 
-  FileUpdate:
-    required:
-      - newname
-    properties:
-      resource:
-        type: string
-      newname:
-        type: string
-        description: B2SAFE resource
-
   FileDelete:
     properties:
       resource:
