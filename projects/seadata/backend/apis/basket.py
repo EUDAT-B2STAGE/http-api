@@ -186,13 +186,6 @@ class BasketEndpoint(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint)
     _POST = {
         "/orders": {
             "summary": "Request one order preparation",
-            "parameters": [
-                {
-                    "name": "parameters",
-                    "in": "body",
-                    "schema": {"$ref": "#/definitions/SeadataPost"},
-                }
-            ],
             "responses": {"200": {"description": "Asynchronous request launched"}},
         }
     }
