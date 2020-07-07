@@ -23,15 +23,9 @@ from seadata.apis.commons.cluster import (
 )
 from seadata.apis.commons.queue import log_into_queue, prepare_message
 from seadata.apis.commons.seadatacloud import EndpointsInputSchema
-from webargs.flaskparser import parser
 
 ingestion_user = "RM"
 BACKDOOR_SECRET = "howdeepistherabbithole"
-
-
-@parser.location_loader("data")
-def load_data(request, schema):
-    return request.data
 
 
 class IngestionEndpoint(
@@ -132,7 +126,7 @@ class IngestionEndpoint(
             log.error(e)
             return self.send_errors("Could not connect to B2SAFE host", code=503)
 
-    @use_kwargs(EndpointsInputSchema, locations=["data"])
+    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     @decorators.auth.required()
     def post(self, batch_id, **json_input):
 
