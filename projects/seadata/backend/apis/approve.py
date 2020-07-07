@@ -26,7 +26,7 @@ class MoveToProductionEndpoint(
     }
 
     @decorators.catch_errors()
-    @use_kwargs(EndpointsInputSchema)
+    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     @decorators.auth.required()
     def post(self, batch_id, **json_input):
 

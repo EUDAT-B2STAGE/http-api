@@ -93,7 +93,7 @@ class Resources(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint):
         return self.response(response)
 
     @decorators.catch_errors()
-    @use_kwargs(EndpointsInputSchema)
+    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     @decorators.auth.required()
     def put(self, batch_id, qc_name, **input_json):
         """ Launch a quality check inside a container """

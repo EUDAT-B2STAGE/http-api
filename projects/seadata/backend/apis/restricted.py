@@ -19,7 +19,7 @@ class Restricted(MethodResource, Uploader, EudatEndpoint, ClusterContainerEndpoi
     }
 
     # Request for a file download into a restricted order
-    @use_kwargs(EndpointsInputSchema)
+    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     @decorators.auth.required(roles=["admin_root", "staff_user"], required_roles="any")
     def post(self, order_id, **json_input):
 

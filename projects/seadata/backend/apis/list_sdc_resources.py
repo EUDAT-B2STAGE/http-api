@@ -17,7 +17,7 @@ class ListResources(MethodResource, EudatEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @use_kwargs(EndpointsInputSchema)
+    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     @decorators.auth.required()
     def post(self, **json_input):
 

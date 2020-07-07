@@ -19,7 +19,7 @@ API_VERSION = seadata_vars.get("api_version")
 # f"Missing JSON key: {key}
 class EndpointsInputSchema(InputSchema):
     request_id = fields.Str(required=True)
-    edmo_code = fields.Str(required=True)
+    edmo_code = fields.Int(required=True)
     datetime = fields.Str(required=True)
     api_function = fields.Str(required=True)
     version = fields.Str(required=True)
