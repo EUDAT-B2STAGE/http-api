@@ -261,7 +261,7 @@ class BasketEndpoint(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint)
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
     @decorators.catch_errors()
-    @use_kwargs(EndpointsInputSchema)
+    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     @decorators.auth.required()
     def post(self, **json_input):
 
@@ -513,7 +513,7 @@ class BasketEndpoint(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint)
             log.error(e)
             return self.send_errors("Could not connect to B2SAFE host", code=503)
 
-    @use_kwargs(EndpointsInputSchema)
+    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     @decorators.auth.required()
     def delete(self, **json_input):
 
