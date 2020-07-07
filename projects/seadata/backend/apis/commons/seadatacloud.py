@@ -27,7 +27,7 @@ class EndpointsInputSchema(InputSchema):
 
     eudat_backdoor = fields.Bool(required=False, missing=False)
 
-    parameters = fields.Dict(required=True)
+    parameters = fields.Raw(required=True)
 
 
 class ErrorCodes:
