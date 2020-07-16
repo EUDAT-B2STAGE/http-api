@@ -10,11 +10,10 @@ env:
 # - PROJECT=seadata
 
 script:
-# - data/scripts/prerequisites.sh
-- pip install -r projects/${PROJECT}/requirements.txt
+- pip install git+https://github.com/rapydo/do.git@0.7.5
 # - chmod -R o+Xw projects # fix permissions for coverage to be computed
 # - /bin/bash templates/create_testing_projectrc.sh 
-- TESTING=1 rapydo --project ${PROJECT} init
+- rapydo --testing --project ${PROJECT} init
 - rapydo pull
 - rapydo start
 - rapydo shell backend --command 'restapi tests --wait'
