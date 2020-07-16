@@ -23,7 +23,6 @@ import urllib.parse
 import requests
 from b2stage.apis.commons import API_URL, CURRENT_HTTPAPI_SERVER, path
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from flask_apispec import MethodResource, use_kwargs
 from irods.exception import NetworkException
 from restapi import decorators
 from restapi.utilities.logs import log
@@ -49,9 +48,7 @@ def get_order_zip_file_name(order_id, restricted=False, index=None):
 
 #################
 # REST CLASSES
-class DownloadBasketEndpoint(
-    MethodResource, B2HandleEndpoint, ClusterContainerEndpoint
-):
+class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["order"]
     _GET = {
@@ -85,7 +82,6 @@ class DownloadBasketEndpoint(
 
         return get_order_zip_file_name(order_id, restricted=restricted, index=index)
 
-    @decorators.catch_errors()
     def get(self, order_id, ftype, code):
         """ downloading (not authenticated) """
         log.info("Order request: {} (code '{}')", order_id, code)
@@ -174,7 +170,7 @@ class DownloadBasketEndpoint(
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
 
-class BasketEndpoint(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint):
+class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["order"]
     _GET = {
@@ -208,8 +204,7 @@ class BasketEndpoint(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint)
         }
     }
 
-    @decorators.catch_errors()
-    @decorators.auth.required()
+    @decorators.auth.require()
     def get(self, order_id):
         """ listing, not downloading """
 
@@ -260,9 +255,8 @@ class BasketEndpoint(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint)
         except requests.exceptions.ReadTimeout:
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
-    @decorators.catch_errors()
-    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
-    @decorators.auth.required()
+    @decorators.auth.require()
+    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     def post(self, **json_input):
 
         ##################
@@ -405,8 +399,7 @@ class BasketEndpoint(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint)
             "size": info.get("content_length", 0),
         }
 
-    @decorators.catch_errors()
-    @decorators.auth.required()
+    @decorators.auth.require()
     def put(self, order_id):
 
         log.info("Order request: {}", order_id)
@@ -513,8 +506,8 @@ class BasketEndpoint(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint)
             log.error(e)
             return self.send_errors("Could not connect to B2SAFE host", code=503)
 
-    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
-    @decorators.auth.required()
+    @decorators.auth.require()
+    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     def delete(self, **json_input):
 
         try:

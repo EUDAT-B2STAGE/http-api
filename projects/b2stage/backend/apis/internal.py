@@ -7,17 +7,16 @@ FIXME: TO BE DEPRECATED
 
 from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
-from flask_apispec import MethodResource, use_kwargs
-from marshmallow import fields
 from restapi import decorators
 from restapi.confs import TESTING
+from restapi.models import fields
 
 # from restapi.utilities.logs import log
 
 
 if TESTING:
 
-    class MetadataEndpoint(MethodResource, EudatEndpoint):
+    class MetadataEndpoint(EudatEndpoint):
 
         labels = ["helpers", "eudat"]
         _PATCH = {
@@ -27,9 +26,8 @@ if TESTING:
             }
         }
 
-        @decorators.catch_errors()
-        @use_kwargs({"PID": fields.Str(required=True)})
-        @decorators.auth.required(roles=["normal_user"])
+        @decorators.auth.require_all("normal_user")
+        @decorators.use_kwargs({"PID": fields.Str(required=True)})
         def patch(self, PID, location=None):
             """
             Add metadata to an object.

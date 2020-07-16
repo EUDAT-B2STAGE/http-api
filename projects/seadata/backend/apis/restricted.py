@@ -1,6 +1,5 @@
 import requests
 from b2stage.apis.commons.endpoint import EudatEndpoint
-from flask_apispec import MethodResource, use_kwargs
 from restapi import decorators
 from restapi.services.uploader import Uploader
 from restapi.utilities.logs import log
@@ -8,7 +7,7 @@ from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.seadatacloud import EndpointsInputSchema
 
 
-class Restricted(MethodResource, Uploader, EudatEndpoint, ClusterContainerEndpoint):
+class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     labels = ["restricted"]
     _POST = {
@@ -19,8 +18,8 @@ class Restricted(MethodResource, Uploader, EudatEndpoint, ClusterContainerEndpoi
     }
 
     # Request for a file download into a restricted order
-    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
-    @decorators.auth.required(roles=["admin_root", "staff_user"], required_roles="any")
+    @decorators.auth.require_any("admin_root", "staff_user")
+    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     def post(self, order_id, **json_input):
 
         try:

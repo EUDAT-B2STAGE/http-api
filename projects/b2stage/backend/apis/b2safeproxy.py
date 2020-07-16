@@ -1,10 +1,8 @@
 from b2stage.apis.commons.b2access import B2accessUtilities
-from flask_apispec import MethodResource, use_kwargs
-from marshmallow import fields
 from restapi import decorators
 from restapi.connectors.irods.client import IrodsException, iexceptions
 from restapi.exceptions import RestApiException
-from restapi.models import InputSchema
+from restapi.models import InputSchema, fields
 from restapi.utilities.logs import log
 
 
@@ -14,7 +12,7 @@ class Credentials(InputSchema):
     authscheme = fields.Str(default="credentials")
 
 
-class B2safeProxy(MethodResource, B2accessUtilities):
+class B2safeProxy(B2accessUtilities):
     """ Login to B2SAFE: directly. """
 
     _anonymous_user = "anonymous"
@@ -65,8 +63,7 @@ class B2safeProxy(MethodResource, B2accessUtilities):
 
         return obj
 
-    @decorators.catch_errors()
-    @decorators.auth.required()
+    @decorators.auth.require()
     def get(self):
 
         user = self.get_user()
@@ -82,8 +79,7 @@ class B2safeProxy(MethodResource, B2accessUtilities):
         icom.list()
         return "validated"
 
-    @decorators.catch_errors()
-    @use_kwargs(Credentials)
+    @decorators.use_kwargs(Credentials)
     def post(self, username, password, authscheme="credentials"):
 
         # # token is an alias for password parmeter

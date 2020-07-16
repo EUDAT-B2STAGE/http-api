@@ -11,7 +11,6 @@ from b2stage.apis.commons.endpoint import (
     PARTIALLY_ENABLED_BATCH,
     EudatEndpoint,
 )
-from flask_apispec import MethodResource, use_kwargs
 from irods.exception import NetworkException
 from restapi import decorators
 from restapi.services.uploader import Uploader
@@ -28,9 +27,7 @@ ingestion_user = "RM"
 BACKDOOR_SECRET = "howdeepistherabbithole"
 
 
-class IngestionEndpoint(
-    MethodResource, Uploader, EudatEndpoint, ClusterContainerEndpoint
-):
+class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     """ Create batch folder and upload zip files inside it """
 
     labels = ["ingestion"]
@@ -64,7 +61,7 @@ class IngestionEndpoint(
         }
     }
 
-    @decorators.auth.required()
+    @decorators.auth.require()
     def get(self, batch_id):
 
         log.info("Batch request: {}", batch_id)
@@ -126,8 +123,8 @@ class IngestionEndpoint(
             log.error(e)
             return self.send_errors("Could not connect to B2SAFE host", code=503)
 
-    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
-    @decorators.auth.required()
+    @decorators.auth.require()
+    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     def post(self, batch_id, **json_input):
 
         obj = self.init_endpoint()
@@ -208,8 +205,8 @@ class IngestionEndpoint(
         except requests.exceptions.ReadTimeout:
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
-    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
-    @decorators.auth.required()
+    @decorators.auth.require()
+    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     def delete(self, **json_input):
 
         try:

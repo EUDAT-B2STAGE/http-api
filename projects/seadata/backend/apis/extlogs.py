@@ -1,32 +1,29 @@
-# -*- coding: utf-8 -*-
-
+from restapi import decorators
 from restapi.confs import PRODUCTION
 from restapi.exceptions import RestApiException
 from restapi.rest.definition import EndpointResource
-from restapi import decorators
 from restapi.utilities.logs import log
 
 
 class Extlogs(EndpointResource):
 
-    labels = ['logs']
+    labels = ["logs"]
     _GET = {
-        '/logs': {
-            'summary': 'get logs from elastic',
-            'responses': {
-                '200': {
-                    'description': 'a dictionary of all filtered logs; timestamp is the key'
+        "/logs": {
+            "summary": "get logs from elastic",
+            "responses": {
+                "200": {
+                    "description": "a dictionary of all filtered logs; timestamp is the key"
                 }
             },
         }
     }
 
-    @decorators.catch_errors()
-    @decorators.auth.required()
+    @decorators.auth.require()
     def get(self):
 
         if not PRODUCTION:
-            raise RestApiException('Not working in DEBUG mode')
+            raise RestApiException("Not working in DEBUG mode")
 
         log.info("Request logs content")
 
@@ -44,12 +41,8 @@ class Extlogs(EndpointResource):
         from seadata.apis.commons.queue import QUEUE_VARS as qvars
 
         # Add size=100 as param?
-        url = '{}://{}:{}/app_{}-{}/_search?q=*:*'.format(
-            'http',
-            qvars.get('host'),
-            9200,
-            qvars.get('queue'),
-            calendar,
+        url = "{}://{}:{}/app_{}-{}/_search?q=*:*".format(
+            "http", qvars.get("host"), 9200, qvars.get("queue"), calendar,
         )
         log.debug("Index URL: {}", url)
 
@@ -58,15 +51,15 @@ class Extlogs(EndpointResource):
         import requests
 
         r = requests.get(url)
-        out = r.json().get('hits', {})
-        log.info("Found {} results", out.get('total'))
+        out = r.json().get("hits", {})
+        log.info("Found {} results", out.get("total"))
 
         ################################
         # logs = {}
         logs = []
-        for result in out.get('hits', []):
-            source = result.get('_source', {})
-            value = source.get('parsed_json')
+        for result in out.get("hits", []):
+            source = result.get("_source", {})
+            value = source.get("parsed_json")
             if value is None:
                 # tmp = source.get('message')
                 # import json

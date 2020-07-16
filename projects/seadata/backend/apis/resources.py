@@ -13,7 +13,6 @@ from b2stage.apis.commons.endpoint import (
     MISSING_BATCH,
     NOT_FILLED_BATCH,
 )
-from flask_apispec import MethodResource, use_kwargs
 from restapi import decorators
 from restapi.utilities.logs import log
 from seadata.apis.commons.cluster import (
@@ -24,7 +23,7 @@ from seadata.apis.commons.cluster import (
 from seadata.apis.commons.seadatacloud import EndpointsInputSchema
 
 
-class Resources(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint):
+class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["ingestion"]
     depends_on = ["RESOURCES_PROJECT"]
@@ -47,8 +46,7 @@ class Resources(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @decorators.catch_errors()
-    @decorators.auth.required()
+    @decorators.auth.require()
     def get(self, batch_id, qc_name):
         """ Check my quality check container """
 
@@ -92,9 +90,8 @@ class Resources(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint):
 
         return self.response(response)
 
-    @decorators.catch_errors()
-    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
-    @decorators.auth.required()
+    @decorators.auth.require()
+    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     def put(self, batch_id, qc_name, **input_json):
         """ Launch a quality check inside a container """
 
@@ -265,8 +262,7 @@ class Resources(MethodResource, B2HandleEndpoint, ClusterContainerEndpoint):
 
         return self.response(response)
 
-    @decorators.catch_errors()
-    @decorators.auth.required()
+    @decorators.auth.require()
     def delete(self, batch_id, qc_name):
         """
         Remove a quality check executed

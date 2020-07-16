@@ -14,16 +14,15 @@ from b2stage.apis.commons import (
     PUBLIC_ENDPOINT,
 )
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from flask_apispec import MethodResource, use_kwargs
-from marshmallow import fields
 from restapi import decorators
+from restapi.models import fields
 from restapi.services.download import Downloader
 from restapi.services.uploader import Uploader
 
 # from restapi.utilities.logs import log
 
 
-class PIDEndpoint(MethodResource, Uploader, Downloader, B2HandleEndpoint):
+class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     """ Handling PID on endpoint requests """
 
     labels = ["eudat", "pids"]
@@ -92,10 +91,9 @@ class PIDEndpoint(MethodResource, Uploader, Downloader, B2HandleEndpoint):
 
         return self.download_object(r, url, head=head)
 
-    @decorators.catch_errors()
     # "description": "Activate file downloading (if PID points to a single file)",
-    @use_kwargs({"download": fields.Bool()}, locations=["query"])
-    @decorators.auth.required(roles=["normal_user"])
+    @decorators.auth.require_all("normal_user")
+    @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
     def get(self, pid, download=False):
         """ Get metadata or file from pid """
 
@@ -106,10 +104,9 @@ class PIDEndpoint(MethodResource, Uploader, Downloader, B2HandleEndpoint):
         except ImportError:
             return self.eudat_pid(pid, download, head=False)
 
-    @decorators.catch_errors()
     # "description": "Activate file downloading (if PID points to a single file)",
-    @use_kwargs({"download": fields.Bool()}, locations=["query"])
-    @decorators.auth.required(roles=["normal_user"])
+    @decorators.auth.require_all("normal_user")
+    @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
     def head(self, pid, download=False):
         """ Get metadata or file from pid """
 
