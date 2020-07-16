@@ -24,15 +24,15 @@ cd latest
 ################
 # install the corrensponding rapydo framework version
 sudo pip3 install rapydo-controller
-rapydo --project b2stage install 0.7.4
+rapydo --project b2stage install auto
 
 # build and run
 rapydo --project b2stage init
-rapydo --project b2stage start
+rapydo start
 
 ################
 # only required in debug mode
-rapydo --project b2stage shell backend --command 'restapi launch'
+rapydo shell backend --command 'restapi launch'
 ```
 
 If everything worked so far you may now try a test against your own server:

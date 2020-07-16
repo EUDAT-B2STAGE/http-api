@@ -1,42 +1,27 @@
-
 ########################
 ##  Your custom data  ##
 ########################
-.projectrc
 
-# data
-uploads
-tmp_files
-# virtualenv
-b2stage/*
-projects/b2stage/*.dev.*
-data/certs/nginx-selfsigned*
-data/certs/*cineca*
-data/secrets/secret_*
-data/b2handle/*.pem
-data/files/*
-data/*/*.json
+/data
+
+########################
+##  Host configuration  ##
+########################
+.projectrc*
 
 #################
 ##  Submodules ##
 #################
 
-submodules/.backup
-submodules/build-templates
-submodules/utils
-submodules/http-api
-submodules/frontend
-submodules/prc
-submodules/rapydo-confs
-submodules/do
+/submodules
 
 ############################################
 ##  Dynamically created file and folders  ##
 ############################################
 
-#.projectrc
-frontend/b2stage/libs/bower_components
 .env
+.rapydo
+
 
 ###################################
 ##  Temporary and miscellaneous  ##
