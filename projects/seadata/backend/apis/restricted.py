@@ -1,6 +1,7 @@
 import requests
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators
+from restapi.services.authentication import Role
 from restapi.services.uploader import Uploader
 from restapi.utilities.logs import log
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
@@ -18,7 +19,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     }
 
     # Request for a file download into a restricted order
-    @decorators.auth.require_any("admin_root", "staff_user")
+    @decorators.auth.require_any(Role.ADMIN, Role.STAFF)
     @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     def post(self, order_id, **json_input):
 

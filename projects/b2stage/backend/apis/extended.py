@@ -16,6 +16,7 @@ from b2stage.apis.commons import (
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from restapi import decorators
 from restapi.models import fields
+from restapi.services.authentication import Role
 from restapi.services.download import Downloader
 from restapi.services.uploader import Uploader
 
@@ -92,7 +93,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         return self.download_object(r, url, head=head)
 
     # "description": "Activate file downloading (if PID points to a single file)",
-    @decorators.auth.require_all("normal_user")
+    @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
     def get(self, pid, download=False):
         """ Get metadata or file from pid """
@@ -105,7 +106,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
             return self.eudat_pid(pid, download, head=False)
 
     # "description": "Activate file downloading (if PID points to a single file)",
-    @decorators.auth.require_all("normal_user")
+    @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
     def head(self, pid, download=False):
         """ Get metadata or file from pid """
