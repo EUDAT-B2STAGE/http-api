@@ -10,9 +10,7 @@ from b2stage.apis.commons.endpoint import EudatEndpoint
 from restapi import decorators
 from restapi.confs import TESTING
 from restapi.models import fields
-
-# from restapi.utilities.logs import log
-
+from restapi.services.authentication import Role
 
 if TESTING:
 
@@ -26,7 +24,7 @@ if TESTING:
             }
         }
 
-        @decorators.auth.require_all("normal_user")
+        @decorators.auth.require_all(Role.USER)
         @decorators.use_kwargs({"PID": fields.Str(required=True)})
         def patch(self, PID, location=None):
             """

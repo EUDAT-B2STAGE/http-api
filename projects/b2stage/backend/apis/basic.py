@@ -20,6 +20,7 @@ from restapi.confs import TESTING
 from restapi.connectors.irods.client import IrodsException
 from restapi.exceptions import RestApiException
 from restapi.models import fields
+from restapi.services.authentication import Role
 from restapi.services.uploader import Uploader
 from restapi.utilities.logs import log
 
@@ -70,7 +71,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     }
 
     # "description": "activate file downloading (if path is a single file)",
-    @decorators.auth.require_all("normal_user")
+    @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
     def get(self, location, download=False):
         """ Download file from filename """
@@ -106,7 +107,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.list_objects(icom, path, is_collection, location)
 
-    @decorators.auth.require_all("normal_user")
+    @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"force": fields.Bool(), "path": fields.Str(required=True)})
     def post(self, path, force=False):
         """
@@ -163,7 +164,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         return self.response(content, code=status)
 
-    @decorators.auth.require_all("normal_user")
+    @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs(
         {"resource": fields.Str(), "force": fields.Bool(), "pid_await": fields.Bool()}
     )
@@ -340,7 +341,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         else:
             return self.response(content, errors=errors, code=202)
 
-    @decorators.auth.require_all("normal_user")
+    @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"newname": fields.Str(required=True)})
     def patch(self, location, newname):
         """
@@ -373,7 +374,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
             ),
         }
 
-    @decorators.auth.require_all("normal_user")
+    @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"debugclean": fields.Bool()})
     def delete(self, location=None, debugclean=False):
         """

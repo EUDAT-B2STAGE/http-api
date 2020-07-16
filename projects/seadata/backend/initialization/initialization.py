@@ -1,5 +1,6 @@
 import os
 
+from restapi.services.authentication import Role
 from restapi.utilities.logs import log
 from restapi.utilities.uuid import getUUID
 
@@ -24,8 +25,7 @@ class Initializer:
                 users = []
             else:
                 users = users.replace(" ", "").split(",")
-            # users = ['stresstest', 'svanderhorst']
-            roles = ["normal_user", "staff_user"]
+            roles = [Role.USER, Role.STAFF]
             if len(users) == 0:
                 log.info("No privileged user found")
             else:
