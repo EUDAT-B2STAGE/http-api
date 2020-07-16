@@ -6,7 +6,7 @@ from b2stage.apis.commons import PRODUCTION
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from flask import request, url_for
 from restapi import decorators
-from restapi.exceptions import RestApiException
+from restapi.exceptions import RestApiException, ServiceUnavailable
 from restapi.utilities.logs import log
 
 
@@ -26,7 +26,6 @@ class OauthLogin(EudatEndpoint):
         }
     }
 
-    @decorators.catch_errors(exception=RuntimeError)
     def get(self):
 
         if request.user_agent.browser is None:
@@ -35,27 +34,27 @@ class OauthLogin(EudatEndpoint):
                 status_code=405,
             )
 
-        auth = self.auth
-        b2access = self.create_b2access_client(auth)
+        try:
 
-        if b2access is None:
-            raise RestApiException(
-                "B2ACCESS integration is not enabled", status_code=503
-            )
+            if not (b2access := self.create_b2access_client(self.auth)):
+                raise RestApiException(
+                    "B2ACCESS integration is not enabled", status_code=503
+                )
 
-        authorized_uri = url_for("authorize", _external=True)
-        if PRODUCTION:
-            # What needs a fix:
-            # http://awesome.docker:443/auth/authorize
-            # curl -i -k https://awesome.docker/auth/askauth
-            authorized_uri = authorized_uri.replace("http:", "https:").replace(
-                ":443", ""
-            )
+            authorized_uri = url_for("authorize", _external=True)
+            if PRODUCTION:
+                # What needs a fix:
+                # http://awesome.docker:443/auth/authorize
+                # curl -i -k https://awesome.docker/auth/askauth
+                authorized_uri = authorized_uri.replace("http:", "https:").replace(
+                    ":443", ""
+                )
 
-        log.info("Ask redirection to: {}", authorized_uri)
+            log.info("Ask redirection to: {}", authorized_uri)
 
-        response = b2access.authorize(callback=authorized_uri)
-        return response
+            return b2access.authorize(callback=authorized_uri)
+        except RuntimeError as e:
+            raise ServiceUnavailable(e)
 
 
 class Authorize(EudatEndpoint):
@@ -76,7 +75,6 @@ class Authorize(EudatEndpoint):
         }
     }
 
-    @decorators.catch_errors()
     def get(self):
         """
         Get the data for upcoming operations.
@@ -151,7 +149,7 @@ class B2accesProxyEndpoint(EudatEndpoint):
         }
     }
 
-    @decorators.auth.required()
+    @decorators.auth.require()
     def post(self):
 
         ##########################

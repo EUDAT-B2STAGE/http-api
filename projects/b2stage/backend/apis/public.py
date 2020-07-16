@@ -7,15 +7,14 @@ import os
 
 from b2stage.apis.commons.b2handle import B2HandleEndpoint
 from b2stage.apis.commons.statics import FOOTER, HEADER
-from flask_apispec import MethodResource, use_kwargs
-from marshmallow import fields
 from restapi import decorators
+from restapi.models import fields
 from restapi.rest.response import ResponseMaker
 from restapi.utilities.logs import log
 from werkzeug.wrappers import Response as WerkzeugResponse
 
 
-class Public(MethodResource, B2HandleEndpoint):
+class Public(B2HandleEndpoint):
 
     labels = ["eudat", "pids", "public"]
     depends_on = ["IRODS_ANONYMOUS", "ENABLE_PUBLIC_ENDPOINT"]
@@ -26,9 +25,8 @@ class Public(MethodResource, B2HandleEndpoint):
         }
     }
 
-    @decorators.catch_errors()
     # "description": "Activate file downloading (if PID points to a single file)",
-    @use_kwargs({"download": fields.Bool()}, locations=["query"])
+    @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
     def get(self, location, download=False):
 
         location = self.fix_location(location)

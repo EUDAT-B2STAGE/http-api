@@ -124,8 +124,7 @@ class Publish(EudatEndpoint):
 
         return f"{CURRENT_HTTPAPI_SERVER}{PUBLIC_ENDPOINT}{path}"
 
-    @decorators.catch_errors()
-    @decorators.auth.required()
+    @decorators.auth.require()
     def get(self, location):
 
         handler = self.init_endpoint()
@@ -146,8 +145,7 @@ class Publish(EudatEndpoint):
                 response["public_url"] = self.public_path(path)
             return response
 
-    @decorators.catch_errors()
-    @decorators.auth.required()
+    @decorators.auth.require()
     def put(self, location=None):
 
         handler = self.init_endpoint()
@@ -170,8 +168,7 @@ class Publish(EudatEndpoint):
 
         return {"published": True, "public_url": self.public_path(path)}
 
-    @decorators.catch_errors()
-    @decorators.auth.required()
+    @decorators.auth.require()
     def delete(self, location):
 
         handler = self.init_endpoint()

@@ -1,13 +1,12 @@
 import requests
 from b2stage.apis.commons.endpoint import EudatEndpoint
-from flask_apispec import MethodResource, use_kwargs
 from restapi import decorators
 from restapi.utilities.logs import log
 from seadata.apis.commons.cluster import ClusterContainerEndpoint
 from seadata.apis.commons.seadatacloud import EndpointsInputSchema
 
 
-class ListResources(MethodResource, EudatEndpoint, ClusterContainerEndpoint):
+class ListResources(EudatEndpoint, ClusterContainerEndpoint):
 
     labels = ["helper"]
     _POST = {
@@ -17,8 +16,8 @@ class ListResources(MethodResource, EudatEndpoint, ClusterContainerEndpoint):
         }
     }
 
-    @use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
-    @decorators.auth.required()
+    @decorators.auth.require()
+    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
     def post(self, **json_input):
 
         try:

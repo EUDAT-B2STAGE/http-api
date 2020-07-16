@@ -24,8 +24,7 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
         }
     }
 
-    @decorators.catch_errors()
-    @decorators.auth.required(roles=["admin_root", "staff_user"], required_roles="any")
+    @decorators.auth.require_any("admin_root", "staff_user")
     def get(self):
 
         celery = self.get_service_instance("celery")
@@ -33,8 +32,7 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
         log.info("Async job: {}", task.id)
         return self.return_async_id(task.id)
 
-    @decorators.catch_errors()
-    @decorators.auth.required(roles=["admin_root", "staff_user"], required_roles="any")
+    @decorators.auth.require_any("admin_root", "staff_user")
     def post(self, batch_id):
 
         # imain = self.get_service_instance(service_name='irods')

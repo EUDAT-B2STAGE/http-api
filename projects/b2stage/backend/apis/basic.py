@@ -9,20 +9,17 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 """
 
-import json
 import os
 import time
 
 from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
 from flask import request
-from flask_apispec import MethodResource, use_kwargs
-from glom import glom
-from marshmallow import fields
 from restapi import decorators
 from restapi.confs import TESTING
 from restapi.connectors.irods.client import IrodsException
 from restapi.exceptions import RestApiException
+from restapi.models import fields
 from restapi.services.uploader import Uploader
 from restapi.utilities.logs import log
 
@@ -30,7 +27,7 @@ from restapi.utilities.logs import log
 # Classes
 
 
-class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
+class BasicEndpoint(Uploader, EudatEndpoint):
 
     labels = ["eudat", "registered"]
     _GET = {
@@ -72,10 +69,9 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
         },
     }
 
-    @decorators.catch_errors()
     # "description": "activate file downloading (if path is a single file)",
-    @use_kwargs({"download": fields.Bool()}, locations=["query"])
-    @decorators.auth.required(roles=["normal_user"])
+    @decorators.auth.require_all("normal_user")
+    @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
     def get(self, location, download=False):
         """ Download file from filename """
 
@@ -110,9 +106,8 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
 
         return self.list_objects(icom, path, is_collection, location)
 
-    @decorators.catch_errors()
-    @use_kwargs({"force": fields.Bool(), "path": fields.Str(required=True)})
-    @decorators.auth.required(roles=["normal_user"])
+    @decorators.auth.require_all("normal_user")
+    @decorators.use_kwargs({"force": fields.Bool(), "path": fields.Str(required=True)})
     def post(self, path, force=False):
         """
         Handle [directory creation](docs/user/registered.md#post).
@@ -168,11 +163,10 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
 
         return self.response(content, code=status)
 
-    @decorators.catch_errors()
-    @use_kwargs(
+    @decorators.auth.require_all("normal_user")
+    @decorators.use_kwargs(
         {"resource": fields.Str(), "force": fields.Bool(), "pid_await": fields.Bool()}
     )
-    @decorators.auth.required(roles=["normal_user"])
     def put(self, location, resource=None, force=False, pid_await=False):
         """
         Handle file upload. Test on docker client shell with:
@@ -346,9 +340,8 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
         else:
             return self.response(content, errors=errors, code=202)
 
-    @decorators.catch_errors()
-    @use_kwargs({"newname": fields.Str(required=True)})
-    @decorators.auth.required(roles=["normal_user"])
+    @decorators.auth.require_all("normal_user")
+    @decorators.use_kwargs({"newname": fields.Str(required=True)})
     def patch(self, location, newname):
         """
         PATCH a record. E.g. change only the filename to a resource.
@@ -380,9 +373,8 @@ class BasicEndpoint(MethodResource, Uploader, EudatEndpoint):
             ),
         }
 
-    @decorators.catch_errors()
-    @use_kwargs({"debugclean": fields.Bool()})
-    @decorators.auth.required(roles=["normal_user"])
+    @decorators.auth.require_all("normal_user")
+    @decorators.use_kwargs({"debugclean": fields.Bool()})
     def delete(self, location=None, debugclean=False):
         """
         Remove an object or an empty directory on iRODS
