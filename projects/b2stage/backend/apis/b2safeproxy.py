@@ -1,6 +1,6 @@
 from b2stage.apis.commons.b2access import B2accessUtilities
+from b2stage.connectors.irods.client import IrodsException, iexceptions
 from restapi import decorators
-from restapi.connectors.irods.client import IrodsException, iexceptions
 from restapi.exceptions import RestApiException
 from restapi.models import InputSchema, fields
 from restapi.utilities.logs import log

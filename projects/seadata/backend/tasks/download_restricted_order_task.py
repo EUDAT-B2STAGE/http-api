@@ -7,9 +7,9 @@ from shutil import rmtree
 import requests
 from b2stage.apis.commons import path
 from b2stage.apis.commons.basher import BashCommands
+from b2stage.connectors.irods.client import IrodsException
 from plumbum.commands.processes import ProcessExecutionError
 from restapi.connectors.celery import send_errors_by_email
-from restapi.connectors.irods.client import IrodsException
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
 from seadata.apis.commons.seadatacloud import ErrorCodes

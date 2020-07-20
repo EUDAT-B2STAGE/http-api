@@ -290,7 +290,7 @@ class EudatEndpoint(B2accessUtilities):
         """ DATA LISTING """
 
         from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT, PUBLIC_ENDPOINT
-        from restapi.connectors.irods.client import IrodsException
+        from b2stage.connectors.irods.client import IrodsException
 
         data = {}
         EMPTY_RESPONSE = {}

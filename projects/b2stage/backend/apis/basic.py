@@ -14,10 +14,10 @@ import time
 
 from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
 from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.connectors.irods.client import IrodsException
 from flask import request
 from restapi import decorators
 from restapi.confs import TESTING
-from restapi.connectors.irods.client import IrodsException
 from restapi.exceptions import RestApiException
 from restapi.models import fields
 from restapi.services.authentication import Role
