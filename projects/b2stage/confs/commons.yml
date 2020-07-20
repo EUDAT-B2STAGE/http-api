@@ -23,7 +23,7 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
-    image: rapydo/icat:${RAPYDO_VERSION}
+    image: ${COMPOSE_PROJECT_NAME}/icat:${RAPYDO_VERSION}
     hostname: ${IRODS_HOST}
     # command: sleep infinity
     environment:
