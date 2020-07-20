@@ -11,7 +11,36 @@ volumes:
     driver: local
 
 services:
+  ###################################
+  ###      iRODS iCAT server      ###
+  ###################################
   icat:
+    # restart: no
+    # B2safe instance on irods
+    build:
+      context: ${PROJECT_DIR}/builds/icat
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
+    image: rapydo/icat:${RAPYDO_VERSION}
+    hostname: ${IRODS_HOST}
+    # command: sleep infinity
+    environment:
+      ACTIVATE: ${ACTIVATE_ICAT}
+      CURRENT_UID: ${CURRENT_UID}
+      CURRENT_GID: ${CURRENT_GID}
+      POSTGRES_USER: ${ALCHEMY_USER}
+      POSTGRES_PASSWORD: ${ALCHEMY_PASSWORD}
+      POSTGRES_HOST: ${ALCHEMY_HOST}
+      IRODS_HOST: "${IRODS_HOST}"
+      IRODS_PORT: ${IRODS_PORT}
+      IRODS_ZONE: ${IRODS_ZONE}
+      IRODS_USER: ${IRODS_USER}
+      IRODS_PASSWORD: ${IRODS_PASSWORD}
+      IRODS_DB: "${IRODS_DB}"
+
+      IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
     volumes:
       # Workaroud to make this works in extended mode
       - ${VANILLA_DIR}/projects/b2stage/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
@@ -21,6 +50,14 @@ services:
       - ${VANILLA_DIR}/projects/b2stage/builds/b2access_certificates:${B2ACCESS_CAS}
       # EXTRA EUDAT scripts
       - ${VANILLA_DIR}/projects/b2stage/builds/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+
+    networks:
+      app_net:
+        aliases:
+          - ${IRODS_HOST}
+      db_net:
+    depends_on:
+      - postgres
 
   backend:
     build: ${PROJECT_DIR}/builds/backend
