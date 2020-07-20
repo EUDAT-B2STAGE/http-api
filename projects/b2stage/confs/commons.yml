@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 volumes:
   sharedcerts:
@@ -11,7 +11,6 @@ volumes:
     driver: local
 
 services:
-
   icat:
     volumes:
       # Workaroud to make this works in extended mode
@@ -24,6 +23,8 @@ services:
       - ${VANILLA_DIR}/projects/b2stage/builds/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
 
   backend:
+    build: ${PROJECT_DIR}/builds/backend
+    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     volumes:
       # Uploads dir
       - ${VANILLA_DIR}/data/uploads:${UPLOAD_PATH}
@@ -35,9 +36,9 @@ services:
       # - ${SUBMODULE_DIR}/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
     environment:
-      MAIN_LOGIN_ENABLE: 0  # this could disable the basic /auth/login method
-      PROFILE_DISABLED: 1   # disable /auth/profile operations
-      ADMINER_DISABLED: 1   # disable /admin/users operations
+      MAIN_LOGIN_ENABLE: 0 # this could disable the basic /auth/login method
+      PROFILE_DISABLED: 1 # disable /auth/profile operations
+      ADMINER_DISABLED: 1 # disable /admin/users operations
 
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       PUBLIC_ENDPOINT: ${API_PUBLIC_ENDPOINT}
