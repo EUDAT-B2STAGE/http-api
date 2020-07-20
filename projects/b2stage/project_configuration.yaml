@@ -48,10 +48,16 @@ variables:
     IRODS_HOME: home
     IRODS_GUEST_USER: guest # intended to work only with GSI
     IRODS_DEFAULT_ADMIN_USER: rodsminer # intended to work only with GSI
+    # DN of your iRODS host with GSI plugin installed
     IRODS_DN: # automatically computed within the docker network
     IRODS_AUTHSCHEME: # to be auto-detected
     # IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
+
+    IRODS_ENABLE_CONNECTOR: True
+    IRODS_HOST: rodserver.dockerized.io
+    IRODS_PORT: 1247
+    IRODS_DB: ICAT
 
     ###############################
     ## Dockerized DB
@@ -73,7 +79,6 @@ variables:
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
     # irods fixed
-    IRODS_DB: ICAT
     IRODS_CHUNKSIZE: 1048576
 
     B2ACCESS_ENV: development
