@@ -29,8 +29,8 @@ services:
 
   celery:
     restart: on-failure:15
-    build: ${PROJECT_DIR}/builds/celery
-    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
+    build: ${EXTENDED_PROJECT_PATH}/builds/backend
+    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q celery -n worker-%h
     volumes:
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
@@ -65,8 +65,8 @@ services:
 
   celeryui:
     restart: on-failure:5
-    build: ${PROJECT_DIR}/builds/celery
-    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
+    build: ${EXTENDED_PROJECT_PATH}/builds/backend
+    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     hostname: flower
     environment:
       AUTH_ENABLE: 0
@@ -103,8 +103,8 @@ services:
 
   ingestion_celery:
     restart: on-failure:15
-    build: ${PROJECT_DIR}/builds/celery
-    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
+    build: ${EXTENDED_PROJECT_PATH}/builds/backend
+    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q ingestion -n worker-%h
     # user: developer
@@ -192,8 +192,8 @@ services:
 
   restricted_celery:
     restart: on-failure:5
-    build: ${PROJECT_DIR}/builds/celery
-    image: ${COMPOSE_PROJECT_NAME}/celery:${RAPYDO_VERSION}
+    build: ${EXTENDED_PROJECT_PATH}/builds/backend
+    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q restricted -n worker-%h
     # user: developer

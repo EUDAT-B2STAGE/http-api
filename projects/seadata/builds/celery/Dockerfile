@@ -1,3 +1,5 @@
+# This build is deprecated, use b2stage/backend instead
+
 FROM rapydo/backendirods:0.7.5
 MAINTAINER "Mattia D'Antonio <m.dantonio@cineca.it>"
 
