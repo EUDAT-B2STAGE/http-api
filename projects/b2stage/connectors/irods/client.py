@@ -18,7 +18,7 @@ class IrodsException(RestApiException):
 
 # Mostly excluded from coverage because it is only used by a very specific service
 # No further tests will be included in the core
-class IrodsPythonClient:  # pragma: no cover
+class IrodsPythonClient:
 
     anonymous_user = "anonymous"
 

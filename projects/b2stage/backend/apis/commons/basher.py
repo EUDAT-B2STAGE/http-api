@@ -124,7 +124,7 @@ class BashCommands:
 
     def execute_command_advanced(
         self, command, parameters=None, customException=None, retcodes=()
-    ):  # pylint:disable=too-many-arguments
+    ):
         try:
             if parameters is None:
                 parameters = []

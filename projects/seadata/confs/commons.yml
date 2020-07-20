@@ -2,6 +2,8 @@ version: "3"
 
 services:
   icat:
+    build: ${EXTENDED_PROJECT_PATH}/builds/icat
+    image: ${COMPOSE_PROJECT_NAME}/icat:${RAPYDO_VERSION}
     environment:
       SEADATA_PROJECT: ${SEADATA_PROJECT}
       # The names of the directories in the irods zone
