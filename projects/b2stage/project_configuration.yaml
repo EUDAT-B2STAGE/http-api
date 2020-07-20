@@ -18,7 +18,6 @@ tags:
   public: landing page
 
 variables:
-
   # submodules:
   #   irods-client:
   #     branch: master
@@ -27,9 +26,8 @@ variables:
   #     if: true
 
   env:
-
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
-    BACKEND_BUILD_MODE: backendirods
+    # BACKEND_BUILD_MODE: backendirods
     # PYTHON_PATH: /usr/local/lib/python3.6/dist-packages
 
     ALLOW_ACCESS_TOKEN_PARAMETER: True
@@ -48,10 +46,10 @@ variables:
     IRODS_PASSWORD: chooseapasswordwisely # NOTE: must match ALCHEMY_PASSWORD
     IRODS_ZONE: tempZone
     IRODS_HOME: home
-    IRODS_GUEST_USER: guest              # intended to work only with GSI
-    IRODS_DEFAULT_ADMIN_USER: rodsminer  # intended to work only with GSI
-    IRODS_DN:           # automatically computed within the docker network
-    IRODS_AUTHSCHEME:   # to be auto-detected
+    IRODS_GUEST_USER: guest # intended to work only with GSI
+    IRODS_DEFAULT_ADMIN_USER: rodsminer # intended to work only with GSI
+    IRODS_DN: # automatically computed within the docker network
+    IRODS_AUTHSCHEME: # to be auto-detected
     # IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
 
@@ -61,13 +59,13 @@ variables:
     ALCHEMY_USER: rods
     ALCHEMY_PASSWORD: chooseapasswordwisely
     ALCHEMY_ENGINE: postgresql
-    ALCHEMY_DBS: 'ICAT SQL_API'
+    ALCHEMY_DBS: "ICAT SQL_API"
     ALCHEMY_DB: SQL_API
 
     ###############################
     ## Experimental features
-    IRODS_ANONYMOUS: 0  # enable only if you know what it means
-    ENABLE_PUBLIC_ENDPOINT: 0  # experimental endpoint, depending on anonymous
+    IRODS_ANONYMOUS: 0 # enable only if you know what it means
+    ENABLE_PUBLIC_ENDPOINT: 0 # experimental endpoint, depending on anonymous
 
     AUTH_SERVICE: sqlalchemy
     API_MAIN_ENDPOINT: registered
@@ -90,67 +88,67 @@ variables:
 
 # Keep track of releases and dependencies
 releases:
-  '0.5.1':
+  "0.5.1":
     type: beta
     rapydo: null
     status: released
-  '0.5.2':
+  "0.5.2":
     type: beta
     rapydo: null
     status: discontinued
-  '0.6.0':
+  "0.6.0":
     type: RC1
     rapydo: 0.5.3
     status: discontinued
-  '0.6.1':
+  "0.6.1":
     type: RC2
     rapydo: 0.5.4
     status: discontinued
-  '1.0.0':
+  "1.0.0":
     type: stable
     rapydo: 0.6.0
     status: discontinued
-  '1.0.1':
+  "1.0.1":
     type: patch
     rapydo: 0.6.1
     status: discontinued
-  '1.0.2':
+  "1.0.2":
     type: patch
     rapydo: 0.6.1
     status: discontinued
-  '1.0.3':
+  "1.0.3":
     type: stable
     rapydo: 0.6.2
     status: discontinued
-  '1.0.4':
+  "1.0.4":
     type: stable
     rapydo: 0.6.3
     status: discontinued
-  '1.0.5':
+  "1.0.5":
     type: stable
     rapydo: 0.6.4
     status: released
-  '1.0.6':
+  "1.0.6":
     type: stable
     rapydo: 0.6.5
     status: released
-  '1.0.7':
+  "1.0.7":
     type: stable
     rapydo: 0.6.6
     status: released
-  '1.0.8':
+  "1.0.8":
     type: stable
     rapydo: 0.6.7
     status: released
-  '1.1.0':
+  "1.1.0":
     type: stable
     rapydo: 0.7.0
     status: released
-  '1.1.1':
+  "1.1.1":
     type: stable
     rapydo: 0.7.1
     status: released
-  '1.1.2':
+  "1.1.2":
     type: development
     rapydo: 0.7.5
     status: development
