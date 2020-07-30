@@ -65,7 +65,7 @@ class ExternalLogins:
                     log.warning("Skipping failing credentials: B2ACCESS")
                 else:
                     services[name] = oauth2
-                    log.info("Created Oauth2 service {}", name)
+                    log.debug("Created Oauth2 service {}", name)
 
         except Exception as e:
             log.error("Unable to request oauth2 service B2ACCESS: {}", e)
