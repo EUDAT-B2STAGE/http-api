@@ -51,15 +51,6 @@ def get_order_zip_file_name(order_id, restricted=False, index=None):
 class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["order"]
-    _GET = {
-        "/orders/<order_id>/download/<ftype>/c/<code>": {
-            "summary": "Download an order",
-            "responses": {
-                "200": {"description": "The order with all files compressed"},
-                "404": {"description": "Order does not exist"},
-            },
-        }
-    }
 
     def get_filename_from_type(self, order_id, ftype):
         if len(ftype) < 2:
@@ -82,6 +73,14 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         return get_order_zip_file_name(order_id, restricted=restricted, index=index)
 
+    @decorators.endpoint(
+        path="/orders/<order_id>/download/<ftype>/c/<code>",
+        summary="Download an order",
+        responses={
+            200: "The order with all files compressed",
+            404: "Order does not exist",
+        },
+    )
     def get(self, order_id, ftype, code):
         """ downloading (not authenticated) """
         log.info("Order request: {} (code '{}')", order_id, code)
@@ -173,38 +172,13 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["order"]
-    _GET = {
-        "/orders/<order_id>": {
-            "summary": "List orders",
-            "responses": {"200": {"description": "The list of zip files available"}},
-        }
-    }
-    _POST = {
-        "/orders": {
-            "summary": "Request one order preparation",
-            "responses": {"200": {"description": "Asynchronous request launched"}},
-        }
-    }
-    _PUT = {
-        "/orders/<order_id>": {
-            "summary": "Request a link to download an order (if already prepared)",
-            "responses": {
-                "200": {
-                    "description": "The link to download the order (expires in 2 days)"
-                }
-            },
-        }
-    }
-    _DELETE = {
-        "/orders": {
-            "summary": "Remove one or more orders",
-            "responses": {
-                "200": {"description": "Async job submitted for orders removal"}
-            },
-        }
-    }
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/orders/<order_id>",
+        summary="List orders",
+        responses={200: "The list of zip files available"},
+    )
     def get(self, order_id):
         """ listing, not downloading """
 
@@ -257,6 +231,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     @decorators.auth.require()
     @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.endpoint(
+        path="/orders",
+        summary="Request one order preparation",
+        responses={200: "Asynchronous request launched"},
+    )
     def post(self, **json_input):
 
         ##################
@@ -400,6 +379,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         }
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/orders/<order_id>",
+        summary="Request a link to download an order (if already prepared)",
+        responses={200: "The link to download the order (expires in 2 days)"},
+    )
     def put(self, order_id):
 
         log.info("Order request: {}", order_id)
@@ -508,6 +492,11 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     @decorators.auth.require()
     @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.endpoint(
+        path="/orders",
+        summary="Remove one or more orders",
+        responses={200: "Async job submitted for orders removal"},
+    )
     def delete(self, **json_input):
 
         try:

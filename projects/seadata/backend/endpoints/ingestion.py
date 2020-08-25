@@ -31,37 +31,17 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     """ Create batch folder and upload zip files inside it """
 
     labels = ["ingestion"]
-    _GET = {
-        "/ingestion/<batch_id>": {
-            "summary": "Check if the ingestion batch is enabled",
-            "responses": {
-                "404": {"description": "Batch not enabled or lack of permissions"},
-                "400": {"description": "Batch misconfiguration"},
-                "200": {"description": "Batch enabled"},
-            },
-        }
-    }
-    _POST = {
-        "/ingestion/<batch_id>": {
-            "summary": "Request to import a zip file to the ingestion cloud",
-            "responses": {
-                "200": {"description": "Request unqueued for download"},
-                "404": {"description": "Batch not enabled or lack of permissions"},
-            },
-        }
-    }
-    _DELETE = {
-        "/ingestion": {
-            "summary": "Delete one or more ingestion batches",
-            "responses": {
-                "200": {
-                    "description": "Async job submitted for ingestion batches removal"
-                }
-            },
-        }
-    }
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/ingestion/<batch_id>",
+        summary="Check if the ingestion batch is enabled",
+        responses={
+            200: "Batch enabled",
+            400: "Batch misconfiguration",
+            404: "Batch not enabled or lack of permissions",
+        },
+    )
     def get(self, batch_id):
 
         log.info("Batch request: {}", batch_id)
@@ -125,6 +105,14 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     @decorators.auth.require()
     @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.endpoint(
+        path="/ingestion/<batch_id>",
+        summary="Request to import a zip file to the ingestion cloud",
+        responses={
+            200: "Request unqueued for download",
+            404: "Batch not enabled or lack of permissions",
+        },
+    )
     def post(self, batch_id, **json_input):
 
         obj = self.init_endpoint()
@@ -207,6 +195,11 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     @decorators.auth.require()
     @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.endpoint(
+        path="/ingestion",
+        summary="Delete one or more ingestion batches",
+        responses={200: "Async job submitted for ingestion batches removal"},
+    )
     def delete(self, **json_input):
 
         try:

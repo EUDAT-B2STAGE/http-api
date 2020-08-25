@@ -11,16 +11,15 @@ from seadata.apis.commons.seadatacloud import EndpointsInputSchema
 class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     labels = ["restricted"]
-    _POST = {
-        "/restricted/<order_id>": {
-            "summary": "Request to import a zip file into a restricted order",
-            "responses": {"200": {"description": "Request unqueued for download"}},
-        }
-    }
 
     # Request for a file download into a restricted order
     @decorators.auth.require_any(Role.ADMIN, Role.STAFF)
     @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.endpoint(
+        path="/restricted/<order_id>",
+        summary="Request to import a zip file into a restricted order",
+        responses={200: "Request unqueued for download"},
+    )
     def post(self, order_id, **json_input):
 
         try:
