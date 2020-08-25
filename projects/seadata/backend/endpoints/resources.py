@@ -180,8 +180,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container_ingestion_path = self.get_ingestion_path_in_container()
 
         envs["BATCH_DIR_PATH"] = container_ingestion_path
-        from seadata.apis.commons.queue import QUEUE_VARS
         from seadata.apis.commons.cluster import CONTAINERS_VARS
+        from seadata.apis.commons.queue import QUEUE_VARS
 
         for key, value in QUEUE_VARS.items():
             if key in ["enable"]:

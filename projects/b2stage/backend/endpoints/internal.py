@@ -17,15 +17,14 @@ if TESTING:
     class MetadataEndpoint(EudatEndpoint):
 
         labels = ["helpers", "eudat"]
-        _PATCH = {
-            "/metadata/<path:location>": {
-                "summary": "Add metadata to object",
-                "responses": {"200": {"description": "Metadata added"}},
-            }
-        }
 
         @decorators.auth.require_all(Role.USER)
         @decorators.use_kwargs({"PID": fields.Str(required=True)})
+        @decorators.endpoint(
+            path="/metadata/<path:location>",
+            summary="Add metadata to object",
+            responses={200: "Metadata added"},
+        )
         def patch(self, PID, location=None):
             """
             Add metadata to an object.

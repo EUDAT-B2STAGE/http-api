@@ -20,33 +20,11 @@ from restapi.services.authentication import Role
 from restapi.services.download import Downloader
 from restapi.services.uploader import Uploader
 
-# from restapi.utilities.logs import log
-
 
 class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     """ Handling PID on endpoint requests """
 
     labels = ["eudat", "pids"]
-    _GET = {
-        "/pids/<path:pid>": {
-            "summary": "Resolve a PID and retrieve metadata or download it link object",
-            "responses": {
-                "200": {
-                    "description": "The information related to the file which the PID points to or the file content if download is activated or the list of objects if the PID points to a collection"
-                }
-            },
-        }
-    }
-    _HEAD = {
-        "/pids/<path:pid>": {
-            "summary": "Resolve a PID and verify permission of the digital object",
-            "responses": {
-                "200": {
-                    "description": "The PID can be resolved and the digital object can be downloaded (if download parameter is provided)"
-                }
-            },
-        }
-    }
 
     def eudat_pid(self, pid, download, head=False):
 
@@ -92,9 +70,16 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
         return self.download_object(r, url, head=head)
 
-    # "description": "Activate file downloading (if PID points to a single file)",
     @decorators.auth.require_all(Role.USER)
+    # "description": "Activate file downloading (if PID points to a single file)",
     @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
+    @decorators.endpoint(
+        path="/pids/<path:pid>",
+        summary="Resolve a pid and retrieve metadata or download it link object",
+        responses={
+            200: "The information related to the file which the pid points to or the file content if download is activated or the list of objects if the pid points to a collection"
+        },
+    )
     def get(self, pid, download=False):
         """ Get metadata or file from pid """
 
@@ -108,6 +93,13 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
     # "description": "Activate file downloading (if PID points to a single file)",
     @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
+    @decorators.endpoint(
+        path="/pids/<path:pid>",
+        summary="Resolve a pid and verify permission of the digital object",
+        responses={
+            200: "The pid can be resolved and the digital object can be downloaded (if download parameter is provided)"
+        },
+    )
     def head(self, pid, download=False):
         """ Get metadata or file from pid """
 

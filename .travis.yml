@@ -2,19 +2,18 @@ os: linux
 dist: bionic
 language: python
 python:
-- 3.8
+  - 3.8
 services:
-- docker
+  - docker
 env:
-- PROJECT=b2stage
+  - PROJECT=b2stage
 # - PROJECT=seadata
 
 script:
-- pip install git+https://github.com/rapydo/do.git@0.7.5
-# - chmod -R o+Xw projects # fix permissions for coverage to be computed
-# - /bin/bash templates/create_testing_projectrc.sh 
-- rapydo --testing --project ${PROJECT} init
-- rapydo pull
-- rapydo start
-- rapydo shell backend --command 'restapi tests --wait'
-
+  - pip install git+https://github.com/rapydo/do.git@0.7.6
+  # - chmod -R o+Xw projects # fix permissions for coverage to be computed
+  # - /bin/bash templates/create_testing_projectrc.sh
+  - rapydo --testing --project ${PROJECT} init
+  - rapydo pull
+  - rapydo start
+  - rapydo shell backend --command 'restapi tests --wait'

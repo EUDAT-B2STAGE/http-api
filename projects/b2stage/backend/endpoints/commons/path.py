@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 TODO: apply the / magic of pathlib
 src: http://j.mp/2nwz908
@@ -8,9 +6,10 @@ src: http://j.mp/2nwz908
 import os
 from contextlib import contextmanager
 from pathlib import Path, PurePath
+
 from restapi.utilities.logs import log
 
-COMPRESSION_FORMAT = 'zip'
+COMPRESSION_FORMAT = "zip"
 
 
 def root():
@@ -63,7 +62,7 @@ def home(relative_path=None):
     else:
         if relative_path.startswith(os.sep):
             log.exit("Requested abspath '{}' in relative context", relative_path)
-        return build('~' + os.sep + relative_path).expanduser()
+        return build("~" + os.sep + relative_path).expanduser()
 
 
 def current():
@@ -109,7 +108,7 @@ def dir_name(my_path):
 
 
 def append_compress_extension(base_name):
-    return '{}.{}'.format(base_name, COMPRESSION_FORMAT)
+    return f"{base_name}.{COMPRESSION_FORMAT}"
 
 
 def compress(dir_path, zip_file_path):
@@ -117,7 +116,7 @@ def compress(dir_path, zip_file_path):
     dir_path = str(dir_path)
     import shutil
 
-    base_name = str(zip_file_path).replace('.' + COMPRESSION_FORMAT, '')
+    base_name = str(zip_file_path).replace("." + COMPRESSION_FORMAT, "")
     shutil.make_archive(
         base_name=base_name, format=COMPRESSION_FORMAT, root_dir=dir_path
     )

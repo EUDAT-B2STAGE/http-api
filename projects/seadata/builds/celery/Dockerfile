@@ -1,6 +1,6 @@
 # This build is deprecated, use b2stage/backend instead
 
-FROM rapydo/backendirods:0.7.5
+FROM rapydo/backendirods:0.7.6
 MAINTAINER "Mattia D'Antonio <m.dantonio@cineca.it>"
 
 RUN apt-get update \

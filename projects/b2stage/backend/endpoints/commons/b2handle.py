@@ -1,16 +1,15 @@
-# -*- coding: utf-8 -*-
-
 """
 B2HANDLE utilities
 """
 
 import os
+
 from b2stage.apis.commons.endpoint import EudatEndpoint
 
 try:
-    from b2handle.handleclient import EUDATHandleClient as b2handle
-    from b2handle.clientcredentials import PIDClientCredentials as credentials
     from b2handle import handleexceptions
+    from b2handle.clientcredentials import PIDClientCredentials as credentials
+    from b2handle.handleclient import EUDATHandleClient as b2handle
 except BaseException:
     b2handle, credentials, handleexceptions = [None] * 3
 from b2stage.apis.commons import path
@@ -18,9 +17,9 @@ from restapi.exceptions import RestApiException
 from restapi.utilities.logs import log
 
 
-class PIDgenerator(object):
+class PIDgenerator:
 
-    pid_separator = '/'
+    pid_separator = "/"
 
     def pid_name_fix(self, irule_output):
         pieces = irule_output.split(self.pid_separator)
@@ -31,27 +30,26 @@ class PIDgenerator(object):
     def pid_request(self, icom, ipath):
         """ EUDAT RULE for PID """
 
-        outvar = 'newPID'
+        outvar = "newPID"
         inputs = {
-            '*path': '"{}"'.format(ipath),
-            '*fixed': '"true"',
+            "*path": f'"{ipath}"',
+            "*fixed": '"true"',
             # empty variables
-            '*parent_pid': '""',
-            '*ror': '""',
-            '*fio': '""',
+            "*parent_pid": '""',
+            "*ror": '""',
+            "*fio": '""',
         }
         body = """
             EUDATCreatePID(*parent_pid, *path, *ror, *fio, *fixed, *{});
             writeLine("stdout", *{});
         """.format(
-            outvar,
-            outvar,
+            outvar, outvar,
         )
 
-        rule_output = icom.rule('get_pid', body, inputs, output=True)
+        rule_output = icom.rule("get_pid", body, inputs, output=True)
         return self.pid_name_fix(rule_output)
 
-    def parse_pid_dataobject_path(self, metadata, key='URL'):
+    def parse_pid_dataobject_path(self, metadata, key="URL"):
         """ Parse url / irods path """
 
         url = metadata.get(key)
@@ -59,7 +57,7 @@ class PIDgenerator(object):
             return url
 
         # NOTE: this would only work until the protocol is unchanged
-        url = url.replace('irods://', '')
+        url = url.replace("irods://", "")
 
         # path_pieces = url.split(path.os.sep)[1:]
         path_pieces = url.split(path.os.sep)
@@ -67,7 +65,7 @@ class PIDgenerator(object):
 
         # TEMPORARY FIX, waiting to decide final PID structure
         try:
-            if path_pieces[3] == 'api' and path_pieces[4] == 'registered':
+            if path_pieces[3] == "api" and path_pieces[4] == "registered":
                 path_pieces[0] = "/"
                 path_pieces[1] = "/"
                 path_pieces[2] = "/"
@@ -105,16 +103,16 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
         "EUDAT/UNPUBLISHED_REASON",
     ]
 
-    eudat_internal_fields = ["EUDAT/FIXED_CONTENT", 'PID']
+    eudat_internal_fields = ["EUDAT/FIXED_CONTENT", "PID"]
 
     def connect_client(self, force_no_credentials=False, disable_logs=False):
 
-        if getattr(self, '_handle_client', None) is None:
+        if getattr(self, "_handle_client", None) is None:
 
             if disable_logs:
                 import logging
 
-                logging.getLogger('b2handle').setLevel(logging.WARNING)
+                logging.getLogger("b2handle").setLevel(logging.WARNING)
 
             # With credentials
             if force_no_credentials:
@@ -122,7 +120,7 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
                 log.debug("HANDLE client connected [w/out credentials]")
             else:
                 found = False
-                file = os.getenv('HANDLE_CREDENTIALS', None)
+                file = os.getenv("HANDLE_CREDENTIALS", None)
                 if file is not None:
 
                     credentials_path = path.build(file)
@@ -197,7 +195,4 @@ class B2HandleEndpoint(EudatEndpoint, PIDgenerator):
             return data
 
         log.error("B2HANDLE problem: {}", error)
-        raise RestApiException(
-            'B2HANDLE: {}'.format(error),
-            status_code=code
-        )
+        raise RestApiException(f"B2HANDLE: {error}", status_code=code)

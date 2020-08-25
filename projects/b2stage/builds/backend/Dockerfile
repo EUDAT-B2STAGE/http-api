@@ -1,4 +1,4 @@
-FROM rapydo/backend:0.7.5
+FROM rapydo/backend:0.7.6
 MAINTAINER "Mattia D'Antonio <m.dantonio@cineca.it>"
 
 RUN apt-get update \

@@ -6,7 +6,7 @@ project:
   title: SeaDataCloud HTTP-API
   description: Processing data in SeaDataCloud project
   version: 1.1.2
-  rapydo: 0.7.5
+  rapydo: 0.7.6
   extends: b2stage
   extends-from: projects
 
@@ -17,9 +17,9 @@ tags:
 
 variables:
   env:
-    SEADATA_API_VERSION: 1.1.2.0003
+    SEADATA_API_VERSION: 1.1.2.0004
 
-    LOG_LEVEL: INFO # global, but can be configured separately in .projectrc 
+    LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
 
     ###############################
     IRODS_ANONYMOUS: 1
@@ -34,13 +34,13 @@ variables:
     # The names of the directories in the irods zone
     # for pre-production batches, for production batches,
     # and for orders being prepared.
-    SEADATA_INGESTION_COLL: batches  # on irods!
-    SEADATA_ORDERS_COLL: orders      # on irods!
-    SEADATA_PRODUCTION_COLL: cloud   # on irods!
-    SEADATA_PRIVILEGED_USERS:  # command separated list of privileges users
+    SEADATA_INGESTION_COLL: batches # on irods!
+    SEADATA_ORDERS_COLL: orders # on irods!
+    SEADATA_PRODUCTION_COLL: cloud # on irods!
+    SEADATA_PRIVILEGED_USERS: # command separated list of privileges users
 
-    SEADATA_WORKSPACE_INGESTION: batches  # on filesystem (to be mounted to celery workers and rancher containers)
-    SEADATA_WORKSPACE_ORDERS: orders       # on filesystem (to be mounted to celery workers and rancher containers)
+    SEADATA_WORKSPACE_INGESTION: batches # on filesystem (to be mounted to celery workers and rancher containers)
+    SEADATA_WORKSPACE_ORDERS: orders # on filesystem (to be mounted to celery workers and rancher containers)
     # SEADATA_BATCH_PROD_FILES_COLL: production
     ## IM APIs
     SEADATA_API_IM_URL: https://importmanager.seadatanet.org/api_v1
@@ -87,5 +87,5 @@ variables:
     # Note that this variable has only effect in backend and celery containers
     # while QC containers uses an hard-code mount point (/usr/share)
     SEADATA_RESOURCES_MOUNTPOINT: /usr/share
-   
+
     CELERY_BACKEND: MONGODB

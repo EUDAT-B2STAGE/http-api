@@ -8,18 +8,13 @@ from restapi.utilities.logs import log
 class Extlogs(EndpointResource):
 
     labels = ["logs"]
-    _GET = {
-        "/logs": {
-            "summary": "get logs from elastic",
-            "responses": {
-                "200": {
-                    "description": "a dictionary of all filtered logs; timestamp is the key"
-                }
-            },
-        }
-    }
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/logs",
+        summary="Get logs from elastic",
+        responses={200: "A dictionary of all filtered logs; timestamp is the key"},
+    )
     def get(self):
 
         if not PRODUCTION:

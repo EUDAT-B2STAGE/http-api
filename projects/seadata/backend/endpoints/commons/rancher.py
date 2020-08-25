@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Communicating with docker via rancher
 
@@ -11,8 +9,9 @@ https://github.com/rancher/validation-tests/tree/master/tests/v2_validation/catt
 """
 
 import time
-from seadata.apis.commons.cluster import CONTAINERS_VARS
+
 from restapi.utilities.logs import log
+from seadata.apis.commons.cluster import CONTAINERS_VARS
 
 # PERPAGE_LIMIT = 5
 # PERPAGE_LIMIT = 50
@@ -23,7 +22,7 @@ PERPAGE_LIMIT = 1000
 # This object initialized in get_or_create_handle() in
 # module "b2stage/backend/apis/commons/cluster.py".
 # It receives all config that starts with "RESOURCES".
-class Rancher(object):
+class Rancher:
     def __init__(
         self, key, secret, url, project, hub, hubuser, hubpass, localpath, qclabel
     ):
@@ -33,12 +32,12 @@ class Rancher(object):
         self._url = url
         self._project = project
         # why? explained in http://bit.ly/2BBDJRj
-        self._project_uri = "{}/projects/{}/schemas".format(url, project)
+        self._project_uri = f"{url}/projects/{project}/schemas"
         self._hub_uri = hub
         self._hub_credentials = (hubuser, hubpass)
         self._localpath = localpath  # default /nfs/share
         self._qclabel = qclabel
-        self._hostlabel = 'io.rancher.scheduler.affinity:host_label'
+        self._hostlabel = "io.rancher.scheduler.affinity:host_label"
 
         ####################
         self.connect(key, secret)
@@ -81,14 +80,14 @@ class Rancher(object):
         """
         hosts = {}
         for data in self._client.list_host():
-            host = data.get('hostname')
-            if not data.get('state') == 'active':
+            host = data.get("hostname")
+            if not data.get("state") == "active":
                 log.warning("Host {} not active", host)
                 continue
-            hosts[data.get('physicalHostId').replace('p', '')] = {
-                'name': host,
-                'ip': data.get('agentIpAddress'),
-                'provider': data.get('driver'),
+            hosts[data.get("physicalHostId").replace("p", "")] = {
+                "name": host,
+                "ip": data.get("agentIpAddress"),
+                "provider": data.get("driver"),
             }
         return hosts
 
@@ -109,12 +108,12 @@ class Rancher(object):
         while not is_all:
             marker = len(containers)
             onepage = self._client.list_container(
-                limit=PERPAGE_LIMIT, marker='m{}'.format(marker)
+                limit=PERPAGE_LIMIT, marker=f"m{marker}"
             )
-            log.verbose('Containers list marker: {}', marker)
-            pagination = onepage.get('pagination', {})
+            log.verbose("Containers list marker: {}", marker)
+            pagination = onepage.get("pagination", {})
             # print(pagination)
-            is_all = not pagination.get('partial')
+            is_all = not pagination.get("partial")
             for element in onepage:
                 containers.append(element)
 
@@ -126,14 +125,14 @@ class Rancher(object):
         'io.rancher.container.system': 'true'
         """
 
-        system_label = 'io.rancher.container.system'
+        system_label = "io.rancher.container.system"
 
         containers = {}
         for info in self.all_containers_available():
 
             # detect system containers
             try:
-                labels = self.obj_to_dict(info.get('labels', {}))
+                labels = self.obj_to_dict(info.get("labels", {}))
                 if labels.get(system_label) is not None:
                     continue
             except BaseException:
@@ -141,20 +140,20 @@ class Rancher(object):
 
             # labels = info.get('data', {}).get('fields', {}).get('labels', {})
             # info.get('externalId')
-            name = info.get('name')
-            cid = info.get('uuid')
+            name = info.get("name")
+            cid = info.get("uuid")
             if cid is None:
-                labels = info.get('labels', {})
-                cid = labels.get('io.rancher.container.uuid', None)
+                labels = info.get("labels", {})
+                cid = labels.get("io.rancher.container.uuid", None)
             if cid is None:
                 log.warning("Container {} launching", name)
                 cid = name
 
             containers[cid] = {
-                'name': name,
-                'image': info.get('imageUuid'),
-                'command': info.get('command'),
-                'host': info.get('hostId'),
+                "name": name,
+                "image": info.get("imageUuid"),
+                "command": info.get("command"),
+                "host": info.get("hostId"),
             }
 
         return containers
@@ -163,18 +162,18 @@ class Rancher(object):
 
         resources = {}
         containers = self.containers()
-        ckey = 'containers'
+        ckey = "containers"
 
         for host_id, host_data in self.hosts().items():
 
-            host_name = host_data.get('name')
+            host_name = host_data.get("name")
             if ckey not in host_data:
                 host_data[ckey] = {}
 
             for container_id, container_data in containers.items():
-                if container_data.get('host') == host_id:
-                    container_data.pop('host')
-                    host_data['containers'][container_id] = container_data
+                if container_data.get("host") == host_id:
+                    container_data.pop("host")
+                    host_data["containers"][container_id] = container_data
 
             resources[host_name] = host_data
 
@@ -185,9 +184,9 @@ class Rancher(object):
 
         container = self.get_container_object(container_name)
         logs = container.logs(follow=False, lines=100)
-        uri = logs.url + '?token=' + logs.token
+        uri = logs.url + "?token=" + logs.token
         sock = ws.create_connection(uri, timeout=15)
-        out = ''
+        out = ""
         useless = "/bin/stty: 'standard input': Inappropriate ioctl for device"
 
         while True:
@@ -198,13 +197,13 @@ class Rancher(object):
             except ws.WebSocketConnectionClosedException:
                 break
             else:
-                out += line + '\n'
+                out += line + "\n"
 
         return out
 
     def catalog_images(self):
         """ check if container image is there """
-        catalog_url = "https://{}/v2/_catalog".format(self._hub_uri)
+        catalog_url = f"https://{self._hub_uri}/v2/_catalog"
         # print(catalog_url)
         try:
             import requests
@@ -215,22 +214,22 @@ class Rancher(object):
         except BaseException:
             return None
         else:
-            return catalog.get('repositories', {})
+            return catalog.get("repositories", {})
 
     def internal_labels(self, pull=True):
         """
         Define Rancher docker labels
         """
         # to launch containers only on selected host(s)
-        label_key = 'host_type'
+        label_key = "host_type"
         label_value = self._qclabel
 
-        obj = {self._hostlabel: "{}={}".format(label_key, label_value)}
+        obj = {self._hostlabel: f"{label_key}={label_value}"}
 
         if pull:
             # force to repull the image every time
             pull_label = "io.rancher.container.pull_image"
-            obj[pull_label] = 'always'
+            obj[pull_label] = "always"
 
         return obj
 
@@ -247,25 +246,25 @@ class Rancher(object):
 
         ############
         if private:
-            image_name_no_tags = image_name.split(':')[0]
+            image_name_no_tags = image_name.split(":")[0]
             images_available = self.catalog_images()
 
             error = None
             if images_available is None:
-                error = {'catalog': "Not reachable"}
+                error = {"catalog": "Not reachable"}
             elif image_name_no_tags not in images_available:
-                error = {'image': "Not found in our private catalog"}
+                error = {"image": "Not found in our private catalog"}
             if error is not None:
-                return {'error': error}
+                return {"error": error}
 
             # Add the prefix for private hub if it's there
-            image_name = "{}/{}".format(self._hub_uri, image_name)
+            image_name = f"{self._hub_uri}/{image_name}"
 
         ############
         params = {
-            'name': container_name,
-            'imageUuid': 'docker:' + image_name,
-            'labels': self.internal_labels(pull),
+            "name": container_name,
+            "imageUuid": "docker:" + image_name,
+            "labels": self.internal_labels(pull),
             # entryPoint=['/bin/sh'],
             # command=['sleep', '1234567890'],
         }
@@ -289,17 +288,18 @@ class Rancher(object):
 
             # Should we wait for the container?
             if wait_stopped is None:
-                x = CONTAINERS_VARS.get('wait_stopped')
-                wait_stopped = not (x.lower() == 'false' or int(x) == 0)
+                x = CONTAINERS_VARS.get("wait_stopped")
+                wait_stopped = not (x.lower() == "false" or int(x) == 0)
 
             if wait_running is None:
-                x = CONTAINERS_VARS.get('wait_running')
-                wait_running = not (x.lower() == 'false' or int(x) == 0)
+                x = CONTAINERS_VARS.get("wait_running")
+                wait_running = not (x.lower() == "false" or int(x) == 0)
 
             if wait_stopped or wait_running:
                 log.info(
                     'Launched container {}" (external id: {})!',
-                    container_name, container.externalId
+                    container_name,
+                    container.externalId,
                 )
 
                 # Wait for container to stop...
@@ -316,13 +316,13 @@ class Rancher(object):
 
                     # Add errors returned by rancher to the errors object:
                     if isinstance(co.transitioningMessage, str):
-                        if 'error' in co.transitioningMessage.lower():
-                            error = {'container': co.transitioningMessage}
+                        if "error" in co.transitioningMessage.lower():
+                            error = {"container": co.transitioningMessage}
 
                         # Simplify life of first-time deployers:
                         if (
                             self._hub_uri in co.transitioningMessage
-                            and 'no basic auth credentials' in co.transitioningMessage
+                            and "no basic auth credentials" in co.transitioningMessage
                         ):
                             log.error(
                                 'Message from Rancher: "{}". Possibly you first need to add the registry on the Rancher installation!',
@@ -330,20 +330,20 @@ class Rancher(object):
                             )
 
                     # Stop loop based on container state:
-                    if co.state == 'error' or co.state == 'erroring':
-                        log.error('Error in container!')
-                        error = {'container': co.transitioningMessage}
-                        log.info('Detailed container info {}', co)
+                    if co.state == "error" or co.state == "erroring":
+                        log.error("Error in container!")
+                        error = {"container": co.transitioningMessage}
+                        log.info("Detailed container info {}", co)
                         break
-                    elif co.state == 'stopped' and wait_stopped:
+                    elif co.state == "stopped" and wait_stopped:
                         # even this does not guarantee success of operation inside container, of course!
-                        log.info('Container has stopped!')
-                        log.info('Detailed container info {}', co)
+                        log.info("Container has stopped!")
+                        log.info("Detailed container info {}", co)
                         break
-                    elif co.state == 'running' and wait_running:
-                        log.info('Container is running!')
+                    elif co.state == "running" and wait_running:
+                        log.info("Container is running!")
                         if not not wait_stopped:
-                            log.info('Detailed container info {}', co)
+                            log.info("Detailed container info {}", co)
                             break
 
                     else:
@@ -353,7 +353,8 @@ class Rancher(object):
             else:
                 log.info(
                     "Launched: {} (external id: {})!",
-                    container_name, container.externalId
+                    container_name,
+                    container.externalId,
                 )
             return None
 
