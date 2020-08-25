@@ -19,13 +19,12 @@ class OauthLogin(EudatEndpoint):
     baseuri = "/auth"
     labels = ["eudat", "b2access", "authentication"]
     depends_on = ["B2ACCESS_APPKEY"]
-    _GET = {
-        "/askauth": {
-            "summary": "Redirection to B2ACCESS oauth2 login",
-            "responses": {"200": {"description": "redirected"}},
-        }
-    }
 
+    @decorators.endpoint(
+        path="/askauth",
+        summary="Redirection to b2access oauth2 login",
+        responses={200: "Redirected"},
+    )
     def get(self):
 
         if request.user_agent.browser is None:
@@ -54,7 +53,7 @@ class OauthLogin(EudatEndpoint):
 
             return b2access.authorize(callback=authorized_uri)
         except RuntimeError as e:
-            raise ServiceUnavailable(e)
+            raise ServiceUnavailable(str(e))
 
 
 class Authorize(EudatEndpoint):
@@ -66,15 +65,12 @@ class Authorize(EudatEndpoint):
     baseuri = "/auth"
     labels = ["eudat", "b2access", "authentication"]
     depends_on = ["B2ACCESS_APPKEY"]
-    _GET = {
-        "/authorize": {
-            "summary": "Produce internal token if B2ACCESS authorization is granted",
-            "responses": {
-                "200": {"description": "REST API token from B2ACCESS authentication"}
-            },
-        }
-    }
 
+    @decorators.endpoint(
+        path="/authorize",
+        summary="Produce internal token if b2access authorization is granted",
+        responses={200: "Rest api token from b2access authentication"},
+    )
     def get(self):
         """
         Get the data for upcoming operations.
@@ -142,14 +138,13 @@ class B2accesProxyEndpoint(EudatEndpoint):
     baseuri = "/auth"
     labels = ["eudat", "b2access"]
     depends_on = ["B2ACCESS_APPKEY"]
-    _POST = {
-        "/proxy": {
-            "summary": "Check and/or refresh current B2ACCESS proxy credentials",
-            "responses": {"200": {"description": "refresh status"}},
-        }
-    }
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/proxy",
+        summary="Check and/or refresh current b2access proxy credentials",
+        responses={200: "Refresh status"},
+    )
     def post(self):
 
         ##########################

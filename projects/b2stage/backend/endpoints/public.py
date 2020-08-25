@@ -18,15 +18,14 @@ class Public(B2HandleEndpoint):
 
     labels = ["eudat", "pids", "public"]
     depends_on = ["IRODS_ANONYMOUS", "ENABLE_PUBLIC_ENDPOINT"]
-    _GET = {
-        "/public/<path:location>": {
-            "summary": "Let non-authenticated users get data about a public data-object",
-            "responses": {"200": {"description": "Informations about the data-object"}},
-        }
-    }
 
     # "description": "Activate file downloading (if PID points to a single file)",
     @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
+    @decorators.endpoint(
+        path="/public/<path:location>",
+        summary="Let non-authenticated users get data about a public data-object",
+        responses={200: "Informations about the data-object"},
+    )
     def get(self, location, download=False):
 
         location = self.fix_location(location)

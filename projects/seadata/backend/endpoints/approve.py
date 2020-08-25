@@ -15,15 +15,14 @@ from seadata.apis.commons.seadatacloud import Metadata as md
 class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["ingestion"]
-    _POST = {
-        "/ingestion/<batch_id>/approve": {
-            "summary": "Approve files in a batch that are passing all QCs",
-            "responses": {"200": {"description": "Registration executed"}},
-        }
-    }
 
     @decorators.auth.require()
     @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.endpoint(
+        path="/ingestion/<batch_id>/approve",
+        summary="Approve files in a batch that are passing all qcs",
+        responses={200: "Registration executed"},
+    )
     def post(self, batch_id, **json_input):
 
         params = json_input.get("parameters", {})

@@ -19,24 +19,6 @@ class B2safeProxy(B2accessUtilities):
 
     baseuri = "/auth"
     labels = ["eudat", "b2safe", "authentication"]
-    _GET = {
-        "/b2safeproxy": {
-            "summary": "Test a token obtained as a B2SAFE user",
-            "responses": {"200": {"description": "token is valid"}},
-        }
-    }
-    _POST = {
-        "/b2safeproxy": {
-            "summary": "Authenticate inside HTTP API with B2SAFE user",
-            "description": "Normal credentials (username and password) login endpoint",
-            "responses": {
-                "401": {
-                    "description": "Invalid username or password for the current B2SAFE instance"
-                },
-                "200": {"description": "B2SAFE credentials provided are valid"},
-            },
-        }
-    }
 
     def get_and_verify_irods_session(self, parameters):
 
@@ -64,6 +46,11 @@ class B2safeProxy(B2accessUtilities):
         return obj
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/b2safeproxy",
+        summary="Test a token obtained as a b2safe user",
+        responses={200: "Token is valid"},
+    )
     def get(self):
 
         user = self.get_user()
@@ -80,6 +67,15 @@ class B2safeProxy(B2accessUtilities):
         return "validated"
 
     @decorators.use_kwargs(Credentials)
+    @decorators.endpoint(
+        path="/b2safeproxy",
+        summary="Authenticate inside http api with b2safe user",
+        description="Normal credentials (username and password) login endpoint",
+        responses={
+            401: "Invalid username or password for the current b2safe instance",
+            200: "B2safe credentials provided are valid",
+        },
+    )
     def post(self, username, password, authscheme="credentials"):
 
         # # token is an alias for password parmeter

@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
-
 TITLE = "EUDAT: B2STAGE HTTP-API"
 
 FAVICO = "https://b2share.eudat.eu/favicon.ico"
-FRAMEWORK = 'maxcdn.bootstrapcdn.com/bootstrap/4.0.0'
-ICODE = 'Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm'
-EXTRA_CSS_BASE = 'v4-alpha.getbootstrap.com/examples'
+FRAMEWORK = "maxcdn.bootstrapcdn.com/bootstrap/4.0.0"
+ICODE = "Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+EXTRA_CSS_BASE = "v4-alpha.getbootstrap.com/examples"
 
 LOGOS = {
-    'eudat': "https://www.eudat.eu/sites/default/files/EUDAT-logo.png",
-    'b2stage': "https://www.eudat.eu/sites/default/files/logo-b2stage.png",
+    "eudat": "https://www.eudat.eu/sites/default/files/EUDAT-logo.png",
+    "b2stage": "https://www.eudat.eu/sites/default/files/logo-b2stage.png",
 }
 
 HEADER = """<!DOCTYPE html>
@@ -45,8 +43,8 @@ HEADER = """<!DOCTYPE html>
     FAVICO,
     EXTRA_CSS_BASE,
     TITLE,
-    LOGOS.get('eudat'),
-    LOGOS.get('b2stage'),
+    LOGOS.get("eudat"),
+    LOGOS.get("b2stage"),
     TITLE,
 )
 

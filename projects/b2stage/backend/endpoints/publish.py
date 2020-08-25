@@ -15,24 +15,6 @@ class Publish(EudatEndpoint):
 
     labels = ["eudat", "publish"]
     depends_on = ["IRODS_ANONYMOUS", "ENABLE_PUBLIC_ENDPOINT"]
-    _GET = {
-        "/publish/<path:location>": {
-            "summary": "Check if the path is currently readable for the anonymous user",
-            "responses": {"200": {"description": "return a boolean 'published'"}},
-        }
-    }
-    _PUT = {
-        "/publish/<path:location>": {
-            "summary": "set the path to be readable for the anonymous user",
-            "responses": {"200": {"description": "return a boolean 'published'"}},
-        }
-    }
-    _DELETE = {
-        "/publish/<path:location>": {
-            "summary": "Ensure that the path is not accessible for the anonymous user",
-            "responses": {"200": {"description": "return a boolean 'published'"}},
-        }
-    }
 
     def base(self, r, location):
 
@@ -119,12 +101,16 @@ class Publish(EudatEndpoint):
     def public_path(path):
 
         # prepare the url to access
-        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER
-        from b2stage.apis.commons import PUBLIC_ENDPOINT
+        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT
 
         return f"{CURRENT_HTTPAPI_SERVER}{PUBLIC_ENDPOINT}{path}"
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/publish/<path:location>",
+        summary="Check if the path is currently readable for the anonymous user",
+        responses={200: "Return publishing status"},
+    )
     def get(self, location):
 
         handler = self.init_endpoint()
@@ -146,6 +132,11 @@ class Publish(EudatEndpoint):
             return response
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/publish/<path:location>",
+        summary="Set the path to be readable for the anonymous user",
+        responses={200: "Return publishing status"},
+    )
     def put(self, location=None):
 
         handler = self.init_endpoint()
@@ -169,6 +160,11 @@ class Publish(EudatEndpoint):
         return {"published": True, "public_url": self.public_path(path)}
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/publish/<path:location>",
+        summary="Ensure that the path is not accessible for the anonymous user",
+        responses={200: "Return publishing status"},
+    )
     def delete(self, location):
 
         handler = self.init_endpoint()
@@ -187,6 +183,4 @@ class Publish(EudatEndpoint):
         if self.publish_helper(icom, path):
             self.publish_helper(icom, path, check_only=False, unpublish=True)
 
-        # # If you'd like to check again:
-        # return {'published': self.publish_helper(icom, path)}
         return {"published": False}

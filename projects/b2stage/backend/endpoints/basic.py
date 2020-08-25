@@ -31,48 +31,17 @@ from restapi.utilities.logs import log
 class BasicEndpoint(Uploader, EudatEndpoint):
 
     labels = ["eudat", "registered"]
-    _GET = {
-        "/registered/<path:location>": {
-            "summary": "Retrieve digital object information or download it",
-            "responses": {
-                "200": {
-                    "description": "Returns the digital object information or file content if download is activated or the list of objects related to the requested path (PID is returned if available)"
-                }
-            },
-        }
-    }
-    _POST = {
-        "/registered": {
-            "summary": "Create a new collection",
-            "responses": {"200": {"description": "Collection created"}},
-        }
-    }
-    _PUT = {
-        "/registered/<path:location>": {
-            "summary": "Upload a new file",
-            "responses": {"200": {"description": "File created"}},
-        }
-    }
-    _PATCH = {
-        "/registered/<path:location>": {
-            "summary": "Update an entity name",
-            "responses": {"200": {"description": "File name updated"}},
-        }
-    }
-    _DELETE = {
-        "/registered": {
-            "summary": "Delete an entity",
-            "responses": {"200": {"description": "Entities deleted"}},
-        },
-        "/registered/<path:location>": {
-            "summary": "Delete an entity",
-            "responses": {"200": {"description": "Entity deleted"}},
-        },
-    }
 
-    # "description": "activate file downloading (if path is a single file)",
     @decorators.auth.require_all(Role.USER)
+    # "description": "activate file downloading (if path is a single file)",
     @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
+    @decorators.endpoint(
+        path="/registered/<path:location>",
+        summary="Retrieve digital object information or download it",
+        responses={
+            200: "Returns the digital object information or file content if download is activated or the list of objects related to the requested path (pid is returned if available)"
+        },
+    )
     def get(self, location, download=False):
         """ Download file from filename """
 
@@ -109,6 +78,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"force": fields.Bool(), "path": fields.Str(required=True)})
+    @decorators.endpoint(
+        path="/registered",
+        summary="Create a new collection",
+        responses={200: "Collection created"},
+    )
     def post(self, path, force=False):
         """
         Handle [directory creation](docs/user/registered.md#post).
@@ -167,6 +141,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
     @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs(
         {"resource": fields.Str(), "force": fields.Bool(), "pid_await": fields.Bool()}
+    )
+    @decorators.endpoint(
+        path="/registered/<path:location>",
+        summary="Upload a new file",
+        responses={200: "File created"},
     )
     def put(self, location, resource=None, force=False, pid_await=False):
         """
@@ -343,6 +322,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"newname": fields.Str(required=True)})
+    @decorators.endpoint(
+        path="/registered/<path:location>",
+        summary="Update an entity name",
+        responses={200: "File name updated"},
+    )
     def patch(self, location, newname):
         """
         PATCH a record. E.g. change only the filename to a resource.
@@ -376,6 +360,16 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"debugclean": fields.Bool()})
+    @decorators.endpoint(
+        path="/registered",
+        summary="Delete an entity",
+        responses={200: "Entities deleted"},
+    )
+    @decorators.endpoint(
+        path="/registered/<path:location>",
+        summary="Delete an entity",
+        responses={200: "Entity deleted"},
+    )
     def delete(self, location=None, debugclean=False):
         """
         Remove an object or an empty directory on iRODS

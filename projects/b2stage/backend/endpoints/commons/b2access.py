@@ -1,22 +1,19 @@
-# -*- coding: utf-8 -*-
-
 """
 B2ACCESS utilities
 """
-import os
 import json
-import requests
-import pytz
-from datetime import datetime
-from flask import session
+import os
 from base64 import b64encode
-from flask_oauthlib.client import OAuthResponse
-from urllib3.exceptions import HTTPError
+from datetime import datetime
 
-from restapi.rest.definition import EndpointResource
+import pytz
+import requests
 from b2stage.apis.commons.oauth2clients import ExternalLogins, decorate_http_request
-
+from flask import session
+from flask_oauthlib.client import OAuthResponse
+from restapi.rest.definition import EndpointResource
 from restapi.utilities.logs import log
+from urllib3.exceptions import HTTPError
 
 # 12 h
 IRODS_CONNECTION_TTL = 43200
@@ -28,9 +25,10 @@ class B2accessUtilities(EndpointResource):
 
     def __init__(self):
 
-        super(B2accessUtilities, self).__init__()
+        super().__init__()
         if B2accessUtilities.ext_auth is None:
             from flask import current_app
+
             B2accessUtilities.ext_auth = ExternalLogins(current_app)
             log.info("OAuth2 initialized")
 
@@ -46,14 +44,14 @@ class B2accessUtilities(EndpointResource):
             userdata = {
                 "email": username,
                 "name": username,
-                "surname": 'iCAT',
-                "authmethod": 'irods',
+                "surname": "iCAT",
+                "authmethod": "irods",
                 "session": session,
             }
             user = self.auth.create_user(userdata, [self.auth.default_role])
             try:
                 self.auth.db.session.commit()
-                log.info('Cached iRODS user: {}', username)
+                log.info("Cached iRODS user: {}", username)
             except BaseException as e:
                 self.auth.db.session.rollback()
                 log.error("Errors saving iRODS user: {}", username)
@@ -84,10 +82,7 @@ class B2accessUtilities(EndpointResource):
 
         return token, username
 
-    def send_errors(
-        self, errors=None, code=None,
-        head_method=False
-    ):
+    def send_errors(self, errors=None, code=None, head_method=False):
         """ Setup an error message """
 
         if errors is None:
@@ -104,25 +99,30 @@ class B2accessUtilities(EndpointResource):
         if head_method:
             errors = None
 
-        return self.response(
-            content=errors, code=code, head_method=head_method
-        )
+        return self.response(content=errors, code=code, head_method=head_method)
 
-    def response(self, content=None, errors=None,
-                 code=None, headers=None, head_method=False,
-                 meta=None, wrap_response=False):
+    def response(
+        self,
+        content=None,
+        errors=None,
+        code=None,
+        headers=None,
+        head_method=False,
+        meta=None,
+        wrap_response=False,
+    ):
 
         SEADATA_PROJECT = os.getenv("SEADATA_PROJECT", "0")
         # Locally apply the response wrapper, no longer available in the core
 
         if SEADATA_PROJECT == "0":
 
-            return super(B2accessUtilities, self).response(
+            return super().response(
                 content=content,
                 errors=errors,
                 code=code,
                 headers=headers,
-                head_method=head_method
+                head_method=head_method,
             )
 
         if content is None:
@@ -151,23 +151,17 @@ class B2accessUtilities(EndpointResource):
                 code = 500
 
         resp = {
-            "Response": {
-                'data': content,
-                'errors': errors
-            },
+            "Response": {"data": content, "errors": errors},
             "Meta": {
-                'data_type': str(type(content)),
-                'elements': elements,
-                'errors': total_errors,
-                'status': int(code),
+                "data_type": str(type(content)),
+                "elements": elements,
+                "errors": total_errors,
+                "status": int(code),
             },
         }
 
-        return super(B2accessUtilities, self).response(
-            content=resp,
-            code=code,
-            headers=headers,
-            head_method=head_method
+        return super().response(
+            content=resp, code=code, headers=headers, head_method=head_method
         )
 
     def associate_object_to_attr(self, obj, key, value):
@@ -182,13 +176,13 @@ class B2accessUtilities(EndpointResource):
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
         return self.get_service_instance(
-            service_name='irods', cache_expiration=IRODS_CONNECTION_TTL
+            service_name="irods", cache_expiration=IRODS_CONNECTION_TTL
         )
 
     def create_b2access_client(self, auth, decorate=False):
         """ Create the b2access Flask oauth2 object """
 
-        b2access = B2accessUtilities.ext_auth._available_services.get('b2access')
+        b2access = B2accessUtilities.ext_auth._available_services.get("b2access")
         # B2ACCESS requires some fixes to make authorization work...
         if decorate:
             decorate_http_request(b2access)
@@ -207,22 +201,22 @@ class B2accessUtilities(EndpointResource):
             return (
                 b2a_token,
                 b2a_refresh_token,
-                'Server misconfiguration: oauth2 failed',
+                "Server misconfiguration: oauth2 failed",
             )
         except Exception as e:
             # raise e  # DEBUG
             log.critical("Failed to get authorized in B2ACCESS: {}", e)
-            return (b2a_token, b2a_refresh_token, 'B2ACCESS OAUTH2 denied: {}'.format(e))
+            return (b2a_token, b2a_refresh_token, f"B2ACCESS OAUTH2 denied: {e}")
         if resp is None:
-            return (b2a_token, b2a_refresh_token, 'B2ACCESS denied: unknown error')
+            return (b2a_token, b2a_refresh_token, "B2ACCESS denied: unknown error")
 
-        b2a_token = resp.get('access_token')
+        b2a_token = resp.get("access_token")
         if b2a_token is None:
             log.critical("No token received")
-            return (b2a_token, 'B2ACCESS: empty token')
+            return (b2a_token, "B2ACCESS: empty token")
         log.info("Received token: '{}'", b2a_token)
 
-        b2a_refresh_token = resp.get('refresh_token')
+        b2a_refresh_token = resp.get("refresh_token")
         log.info("Received refresh token: '{}'", b2a_refresh_token)
         return (b2a_token, b2a_refresh_token, tuple())
 
@@ -233,10 +227,10 @@ class B2accessUtilities(EndpointResource):
 
         # To use the b2access token with oauth2 client
         # We have to save it into session
-        session['b2access_token'] = (b2access_token, '')
+        session["b2access_token"] = (b2access_token, "")
 
         # Calling with the oauth2 client
-        b2access_user = b2access.get('userinfo')
+        b2access_user = b2access.get("userinfo")
 
         error = True
         if b2access_user is None:
@@ -248,16 +242,14 @@ class B2accessUtilities(EndpointResource):
             if b2access_user.status == 401:
                 errstring = "B2ACCESS token obtained is unauthorized..."
             else:
-                errstring = (
-                    "B2ACCESS token obtained failed with {}".format(
-                        b2access_user.status
-                    )
+                errstring = "B2ACCESS token obtained failed with {}".format(
+                    b2access_user.status
                 )
         elif isinstance(b2access_user._resp, HTTPError):
-            errstring = "Error from B2ACCESS: {}".format(b2access_user._resp)
-        elif not hasattr(b2access_user, 'data'):
+            errstring = f"Error from B2ACCESS: {b2access_user._resp}"
+        elif not hasattr(b2access_user, "data"):
             errstring = "Authorized response is invalid (missing data)"
-        elif b2access_user.data.get('email') is None:
+        elif b2access_user.data.get("email") is None:
             errstring = "Authorized response is invalid (missing email)"
         else:
             error = False
@@ -281,15 +273,15 @@ class B2accessUtilities(EndpointResource):
         log.info("Stored access info")
 
         # Get token expiration time
-        response = b2access.get('tokeninfo')
-        timestamp = response.data.get('exp')
+        response = b2access.get("tokeninfo")
+        timestamp = response.data.get("exp")
 
         timestamp_resolution = 1
         # timestamp_resolution = 1e3
 
         # Convert into datetime object and save it inside db
         tok_exp = datetime.fromtimestamp(int(timestamp) / timestamp_resolution)
-        self.associate_object_to_attr(extuser, 'token_expiration', tok_exp)
+        self.associate_object_to_attr(extuser, "token_expiration", tok_exp)
 
         return b2access_user, intuser, extuser
 
@@ -313,16 +305,16 @@ class B2accessUtilities(EndpointResource):
             if not isinstance(values, dict) or len(values) < 1:
                 return None, "Authorized response is empty"
 
-            email = values.get('email')
-            cn = values.get('cn')
-            ui = values.get('unity:persistent')
+            email = values.get("email")
+            cn = values.get("cn")
+            ui = values.get("unity:persistent")
 
             # distinguishedName is only defined in prod, not in dev and staging
             # dn = values.get('distinguishedName')
             # DN very strange: the current key is something like 'urn:oid:2.5.4.49'
             # is it going to change?
             for key, _ in values.items():
-                if 'urn:oid' in key:
+                if "urn:oid" in key:
                     dn = values.get(key)
             if dn is None:
                 return None, "Missing DN from authorized response..."
@@ -351,7 +343,7 @@ class B2accessUtilities(EndpointResource):
             userdata = {
                 # "uuid": getUUID(),
                 "email": email,
-                "authmethod": account_type
+                "authmethod": account_type,
             }
             try:
                 internal_user = self.auth.create_user(
@@ -429,19 +421,19 @@ class B2accessUtilities(EndpointResource):
         refresh_data = {
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
-            "scope": 'USER_PROFILE',
+            "scope": "USER_PROFILE",
         }
-        auth_hash = b64encode(
-            str.encode("{}:{}".format(client_id, client_secret))
-        ).decode("ascii")
-        headers = {'Authorization': 'Basic {}'.format(auth_hash)}
+        auth_hash = b64encode(str.encode(f"{client_id}:{client_secret}")).decode(
+            "ascii"
+        )
+        headers = {"Authorization": f"Basic {auth_hash}"}
 
         resp = requests.post(
             b2access.access_token_url, data=refresh_data, headers=headers
         )
         resp = resp.json()
 
-        access_token = resp['access_token']
+        access_token = resp["access_token"]
 
         # Store b2access information inside the db
         intuser, extuser = self.store_oauth2_user(
@@ -465,7 +457,7 @@ class B2accessUtilities(EndpointResource):
             writeLine("stdout", *json_map);
         """
 
-        rule_output = icom.rule('get_pid', body, inputs, output=True)
+        rule_output = icom.rule("get_pid", body, inputs, output=True)
         try:
             rule_output = json.loads(rule_output)
         except BaseException:
