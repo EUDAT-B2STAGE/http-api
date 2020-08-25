@@ -8,7 +8,10 @@ from datetime import datetime
 
 import pytz
 import requests
-from b2stage.apis.commons.oauth2clients import ExternalLogins, decorate_http_request
+from b2stage.endpoints.commons.oauth2clients import (
+    ExternalLogins,
+    decorate_http_request,
+)
 from flask import session
 from flask_oauthlib.client import OAuthResponse
 from restapi.rest.definition import EndpointResource

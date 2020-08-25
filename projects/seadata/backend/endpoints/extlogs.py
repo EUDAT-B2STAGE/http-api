@@ -33,7 +33,7 @@ class Extlogs(EndpointResource):
 
         ################################
         # FIXME: remove this vars
-        from seadata.apis.commons.queue import QUEUE_VARS as qvars
+        from seadata.endpoints.commons.queue import QUEUE_VARS as qvars
 
         # Add size=100 as param?
         url = "{}://{}:{}/app_{}-{}/_search?q=*:*".format(

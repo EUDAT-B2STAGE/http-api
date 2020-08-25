@@ -2,12 +2,12 @@
 Move data from ingestion to production
 """
 import requests
-from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from b2stage.endpoints.commons.b2handle import B2HandleEndpoint
 from restapi import decorators
 from restapi.utilities.logs import log
-from seadata.apis.commons.cluster import ClusterContainerEndpoint
-from seadata.apis.commons.seadatacloud import EndpointsInputSchema
-from seadata.apis.commons.seadatacloud import Metadata as md
+from seadata.endpoints.commons.cluster import ClusterContainerEndpoint
+from seadata.endpoints.commons.seadatacloud import EndpointsInputSchema
+from seadata.endpoints.commons.seadatacloud import Metadata as md
 
 
 #################

@@ -4,7 +4,7 @@ B2HANDLE utilities
 
 import os
 
-from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.endpoints.commons.endpoint import EudatEndpoint
 
 try:
     from b2handle import handleexceptions
@@ -12,7 +12,7 @@ try:
     from b2handle.handleclient import EUDATHandleClient as b2handle
 except BaseException:
     b2handle, credentials, handleexceptions = [None] * 3
-from b2stage.apis.commons import path
+from b2stage.endpoints.commons import path
 from restapi.exceptions import RestApiException
 from restapi.utilities.logs import log
 

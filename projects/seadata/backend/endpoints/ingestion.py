@@ -2,8 +2,8 @@
 Ingestion process submission to upload the SeaDataNet marine data.
 """
 import requests
-from b2stage.apis.commons import path
-from b2stage.apis.commons.endpoint import (
+from b2stage.endpoints.commons import path
+from b2stage.endpoints.commons.endpoint import (
     BATCH_MISCONFIGURATION,
     ENABLED_BATCH,
     MISSING_BATCH,
@@ -15,13 +15,13 @@ from irods.exception import NetworkException
 from restapi import decorators
 from restapi.services.uploader import Uploader
 from restapi.utilities.logs import log
-from seadata.apis.commons.cluster import (
+from seadata.endpoints.commons.cluster import (
     INGESTION_DIR,
     MOUNTPOINT,
     ClusterContainerEndpoint,
 )
-from seadata.apis.commons.queue import log_into_queue, prepare_message
-from seadata.apis.commons.seadatacloud import EndpointsInputSchema
+from seadata.endpoints.commons.queue import log_into_queue, prepare_message
+from seadata.endpoints.commons.seadatacloud import EndpointsInputSchema
 
 ingestion_user = "RM"
 BACKDOOR_SECRET = "howdeepistherabbithole"

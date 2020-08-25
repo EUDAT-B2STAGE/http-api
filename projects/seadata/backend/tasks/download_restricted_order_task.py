@@ -5,14 +5,14 @@ import zipfile
 from shutil import rmtree
 
 import requests
-from b2stage.apis.commons import path
-from b2stage.apis.commons.basher import BashCommands
 from b2stage.connectors.irods.client import IrodsException
+from b2stage.endpoints.commons import path
+from b2stage.endpoints.commons.basher import BashCommands
 from plumbum.commands.processes import ProcessExecutionError
 from restapi.connectors.celery import send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
-from seadata.apis.commons.seadatacloud import ErrorCodes
+from seadata.endpoints.commons.seadatacloud import ErrorCodes
 from seadata.tasks.seadata import (
     MAX_ZIP_SIZE,
     celery_app,

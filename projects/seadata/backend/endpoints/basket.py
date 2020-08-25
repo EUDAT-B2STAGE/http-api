@@ -21,18 +21,18 @@ DELETE /api/order/<OID>
 import urllib.parse
 
 import requests
-from b2stage.apis.commons import API_URL, CURRENT_HTTPAPI_SERVER, path
-from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from b2stage.endpoints.commons import API_URL, CURRENT_HTTPAPI_SERVER, path
+from b2stage.endpoints.commons.b2handle import B2HandleEndpoint
 from irods.exception import NetworkException
 from restapi import decorators
 from restapi.utilities.logs import log
-from seadata.apis.commons.cluster import (
+from seadata.endpoints.commons.cluster import (
     MOUNTPOINT,
     ORDERS_DIR,
     ClusterContainerEndpoint,
 )
-from seadata.apis.commons.queue import log_into_queue, prepare_message
-from seadata.apis.commons.seadatacloud import ORDERS_ENDPOINT, EndpointsInputSchema
+from seadata.endpoints.commons.queue import log_into_queue, prepare_message
+from seadata.endpoints.commons.seadatacloud import ORDERS_ENDPOINT, EndpointsInputSchema
 
 TMPDIR = "/tmp"
 

@@ -6,21 +6,21 @@ import os
 import time
 
 import requests
-from b2stage.apis.commons import path
-from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from b2stage.apis.commons.endpoint import (
+from b2stage.endpoints.commons import path
+from b2stage.endpoints.commons.b2handle import B2HandleEndpoint
+from b2stage.endpoints.commons.endpoint import (
     BATCH_MISCONFIGURATION,
     MISSING_BATCH,
     NOT_FILLED_BATCH,
 )
 from restapi import decorators
 from restapi.utilities.logs import log
-from seadata.apis.commons.cluster import (
+from seadata.endpoints.commons.cluster import (
     INGESTION_DIR,
     MOUNTPOINT,
     ClusterContainerEndpoint,
 )
-from seadata.apis.commons.seadatacloud import EndpointsInputSchema
+from seadata.endpoints.commons.seadatacloud import EndpointsInputSchema
 
 
 class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
@@ -169,8 +169,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         container_ingestion_path = self.get_ingestion_path_in_container()
 
         envs["BATCH_DIR_PATH"] = container_ingestion_path
-        from seadata.apis.commons.cluster import CONTAINERS_VARS
-        from seadata.apis.commons.queue import QUEUE_VARS
+        from seadata.endpoints.commons.cluster import CONTAINERS_VARS
+        from seadata.endpoints.commons.queue import QUEUE_VARS
 
         for key, value in QUEUE_VARS.items():
             if key in ["enable"]:

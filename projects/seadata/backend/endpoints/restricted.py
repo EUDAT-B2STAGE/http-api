@@ -1,11 +1,11 @@
 import requests
-from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.endpoints.commons.endpoint import EudatEndpoint
 from restapi import decorators
 from restapi.services.authentication import Role
 from restapi.services.uploader import Uploader
 from restapi.utilities.logs import log
-from seadata.apis.commons.cluster import ClusterContainerEndpoint
-from seadata.apis.commons.seadatacloud import EndpointsInputSchema
+from seadata.endpoints.commons.cluster import ClusterContainerEndpoint
+from seadata.endpoints.commons.seadatacloud import EndpointsInputSchema
 
 
 class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):

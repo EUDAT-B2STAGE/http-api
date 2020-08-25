@@ -5,7 +5,7 @@ Run unittests inside the RAPyDo framework
 import io
 import os
 
-from b2stage.apis.commons import path
+from b2stage.endpoints.commons import path
 from restapi.services.detect import detector
 from restapi.tests import API_URI, AUTH_URI
 from restapi.utilities.logs import log

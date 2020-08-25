@@ -2,8 +2,8 @@
 OAUTH2 authentication with EUDAT services
 """
 
-from b2stage.apis.commons import PRODUCTION
-from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.endpoints.commons import PRODUCTION
+from b2stage.endpoints.commons.endpoint import EudatEndpoint
 from flask import request, url_for
 from restapi import decorators
 from restapi.exceptions import RestApiException, ServiceUnavailable

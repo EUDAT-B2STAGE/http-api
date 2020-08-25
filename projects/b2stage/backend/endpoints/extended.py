@@ -8,12 +8,12 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/master/docs/user/endpoints.md
 
 """
 
-from b2stage.apis.commons import (
+from b2stage.endpoints.commons import (
     CURRENT_HTTPAPI_SERVER,
     CURRENT_MAIN_ENDPOINT,
     PUBLIC_ENDPOINT,
 )
-from b2stage.apis.commons.b2handle import B2HandleEndpoint
+from b2stage.endpoints.commons.b2handle import B2HandleEndpoint
 from restapi import decorators
 from restapi.models import fields
 from restapi.services.authentication import Role
@@ -84,7 +84,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
         """ Get metadata or file from pid """
 
         try:
-            from seadata.apis.commons.seadatacloud import seadata_pid
+            from seadata.endpoints.commons.seadatacloud import seadata_pid
 
             return seadata_pid(self, pid)
         except ImportError:
