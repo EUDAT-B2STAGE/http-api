@@ -1,11 +1,11 @@
 import os
 from socket import gethostname
 
-from b2stage.apis.commons.b2handle import PIDgenerator
+from b2stage.endpoints.commons.b2handle import PIDgenerator
 from restapi.connectors.celery import CeleryExt
 from restapi.env import Env
 from restapi.utilities.logs import log
-from seadata.apis.commons.seadatacloud import ImportManagerAPI, seadata_vars
+from seadata.endpoints.commons.seadatacloud import ImportManagerAPI, seadata_vars
 
 # Size in bytes
 # TODO: move me into the configuration

@@ -1,12 +1,12 @@
 import os
 
 import requests
-from b2stage.apis.commons.b2access import B2accessUtilities
+from b2stage.endpoints.commons.b2access import B2accessUtilities
 from restapi import decorators
 from restapi.exceptions import RestApiException
 from restapi.services.authentication import Role
 from restapi.utilities.logs import log
-from seadata.apis.commons.cluster import ClusterContainerEndpoint
+from seadata.endpoints.commons.cluster import ClusterContainerEndpoint
 
 
 class PidCache(ClusterContainerEndpoint, B2accessUtilities):

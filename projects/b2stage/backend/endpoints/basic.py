@@ -12,9 +12,9 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 import os
 import time
 
-from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
-from b2stage.apis.commons.endpoint import EudatEndpoint
 from b2stage.connectors.irods.client import IrodsException
+from b2stage.endpoints.commons import CURRENT_MAIN_ENDPOINT
+from b2stage.endpoints.commons.endpoint import EudatEndpoint
 from flask import request
 from restapi import decorators
 from restapi.confs import TESTING

@@ -4,8 +4,8 @@ Publish a digital object as a public resource for anyone
 NOTE: this package will be loaded only if IRODS_ANONYMOUS is set
 """
 
-from b2stage.apis.commons import path
-from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.endpoints.commons import path
+from b2stage.endpoints.commons.endpoint import EudatEndpoint
 from restapi import decorators
 from restapi.exceptions import RestApiException
 from restapi.utilities.logs import log
@@ -101,7 +101,7 @@ class Publish(EudatEndpoint):
     def public_path(path):
 
         # prepare the url to access
-        from b2stage.apis.commons import CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT
+        from b2stage.endpoints.commons import CURRENT_HTTPAPI_SERVER, PUBLIC_ENDPOINT
 
         return f"{CURRENT_HTTPAPI_SERVER}{PUBLIC_ENDPOINT}{path}"
 

@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from b2stage.apis.commons import path
+from b2stage.endpoints.commons import path
 from restapi.env import Env
 from restapi.rest.definition import EndpointResource
-from seadata.apis.commons.seadatacloud import seadata_vars
+from seadata.endpoints.commons.seadatacloud import seadata_vars
 
 # from restapi.utilities.logs import log
 
@@ -72,7 +72,7 @@ class ClusterContainerEndpoint(EndpointResource):
             self._handle = None
 
         if self._handle is None:
-            from seadata.apis.commons.rancher import Rancher
+            from seadata.endpoints.commons.rancher import Rancher
 
             params = self.load_credentials()
             self._handle = Rancher(**params)

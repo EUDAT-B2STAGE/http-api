@@ -4,7 +4,7 @@ Common functions for EUDAT endpoints
 
 import os
 
-from b2stage.apis.commons import (
+from b2stage.endpoints.commons import (
     CURRENT_B2SAFE_SERVER,
     CURRENT_HTTPAPI_SERVER,
     HTTP_PROTOCOL,
@@ -13,7 +13,7 @@ from b2stage.apis.commons import (
     PRODUCTION,
     InitObj,
 )
-from b2stage.apis.commons.b2access import B2accessUtilities
+from b2stage.endpoints.commons.b2access import B2accessUtilities
 from irods import exception as iexceptions
 from restapi.exceptions import RestApiException
 from restapi.utilities.logs import log
@@ -289,8 +289,8 @@ class EudatEndpoint(B2accessUtilities):
     def list_objects(self, icom, path, is_collection, location, public=False):
         """ DATA LISTING """
 
-        from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT, PUBLIC_ENDPOINT
         from b2stage.connectors.irods.client import IrodsException
+        from b2stage.endpoints.commons import CURRENT_MAIN_ENDPOINT, PUBLIC_ENDPOINT
 
         data = {}
         EMPTY_RESPONSE = {}

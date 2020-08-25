@@ -1,12 +1,12 @@
 import os
 from shutil import rmtree
 
-from b2stage.apis.commons import path
+from b2stage.endpoints.commons import path
 from glom import glom
 from restapi.connectors.celery import send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
-from seadata.apis.commons.seadatacloud import ErrorCodes
+from seadata.endpoints.commons.seadatacloud import ErrorCodes
 from seadata.tasks.seadata import celery_app, ext_api, notify_error
 
 TIMEOUT = 180

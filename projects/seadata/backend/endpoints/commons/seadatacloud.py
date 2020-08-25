@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from b2stage.apis.commons import path
+from b2stage.endpoints.commons import path
 from restapi.env import Env
 from restapi.models import InputSchema, fields
 from restapi.utilities.logs import log

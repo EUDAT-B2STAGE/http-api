@@ -12,7 +12,7 @@ from flask import request
 from restapi.env import Env
 from restapi.services.authentication import BaseAuthentication
 from restapi.utilities.logs import log
-from seadata.apis.commons.seadatacloud import seadata_vars
+from seadata.endpoints.commons.seadatacloud import seadata_vars
 
 QUEUE_SERVICE = "rabbit"
 QUEUE_VARS = Env.load_group(label=QUEUE_SERVICE)

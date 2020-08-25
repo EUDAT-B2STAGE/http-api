@@ -1,6 +1,6 @@
 import os
 
-from b2stage.apis.commons import path
+from b2stage.endpoints.commons import path
 from restapi.connectors.celery import send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout

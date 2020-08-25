@@ -5,8 +5,8 @@ Code to implement the /api/internal endpoint
 FIXME: TO BE DEPRECATED
 """
 
-from b2stage.apis.commons import CURRENT_MAIN_ENDPOINT
-from b2stage.apis.commons.endpoint import EudatEndpoint
+from b2stage.endpoints.commons import CURRENT_MAIN_ENDPOINT
+from b2stage.endpoints.commons.endpoint import EudatEndpoint
 from restapi import decorators
 from restapi.confs import TESTING
 from restapi.models import fields

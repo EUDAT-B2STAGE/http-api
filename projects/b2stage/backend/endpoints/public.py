@@ -5,8 +5,8 @@ Getting informations for public data.
 
 import os
 
-from b2stage.apis.commons.b2handle import B2HandleEndpoint
-from b2stage.apis.commons.statics import FOOTER, HEADER
+from b2stage.endpoints.commons.b2handle import B2HandleEndpoint
+from b2stage.endpoints.commons.statics import FOOTER, HEADER
 from restapi import decorators
 from restapi.models import fields
 from restapi.rest.response import ResponseMaker
