@@ -12,20 +12,13 @@ from seadata.apis.commons.cluster import ClusterContainerEndpoint
 class PidCache(ClusterContainerEndpoint, B2accessUtilities):
 
     labels = ["helper"]
-    _GET = {
-        "/pidcache": {
-            "summary": "Retrieve values from the PID cache",
-            "responses": {"200": {"description": "Async job started"}},
-        }
-    }
-    _POST = {
-        "/pidcache/<batch_id>": {
-            "summary": "Fill the PID cache",
-            "responses": {"200": {"description": "Async job started"}},
-        }
-    }
 
     @decorators.auth.require_any(Role.ADMIN, Role.STAFF)
+    @decorators.endpoint(
+        path="/pidcache",
+        summary="Retrieve values from the pid cache",
+        responses={200: "Async job started"},
+    )
     def get(self):
 
         celery = self.get_service_instance("celery")
@@ -34,6 +27,11 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
         return self.return_async_id(task.id)
 
     @decorators.auth.require_any(Role.ADMIN, Role.STAFF)
+    @decorators.endpoint(
+        path="/pidcache/<batch_id>",
+        summary="Fill the pid cache",
+        responses={200: "Async job started"},
+    )
     def post(self, batch_id):
 
         # imain = self.get_service_instance(service_name='irods')

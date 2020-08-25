@@ -9,15 +9,14 @@ from seadata.apis.commons.seadatacloud import EndpointsInputSchema
 class ListResources(EudatEndpoint, ClusterContainerEndpoint):
 
     labels = ["helper"]
-    _POST = {
-        "/resourceslist": {
-            "summary": "Request a list of existing batches and orders",
-            "responses": {"200": {"description": "returning id of async request"}},
-        }
-    }
 
     @decorators.auth.require()
     @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.endpoint(
+        path="/resourceslist",
+        summary="Request a list of existing batches and orders",
+        responses={200: "Returning id of async request"},
+    )
     def post(self, **json_input):
 
         try:

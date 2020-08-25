@@ -27,26 +27,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
     labels = ["ingestion"]
     depends_on = ["RESOURCES_PROJECT"]
-    _GET = {
-        "/ingestion/<batch_id>/qc/<qc_name>": {
-            "summary": "Resources management",
-            "responses": {"200": {"description": "unknown"}},
-        }
-    }
-    _PUT = {
-        "/ingestion/<batch_id>/qc/<qc_name>": {
-            "summary": "Launch a quality check as a docker container",
-            "responses": {"200": {"description": "unknown"}},
-        }
-    }
-    _DELETE = {
-        "/ingestion/<batch_id>/qc/<qc_name>": {
-            "summary": "Remove a quality check if existing",
-            "responses": {"200": {"description": "unknown"}},
-        }
-    }
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/ingestion/<batch_id>/qc/<qc_name>", summary="Resources management",
+    )
     def get(self, batch_id, qc_name):
         """ Check my quality check container """
 
@@ -92,6 +77,10 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
     @decorators.auth.require()
     @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.endpoint(
+        path="/ingestion/<batch_id>/qc/<qc_name>",
+        summary="Launch a quality check as a docker container",
+    )
     def put(self, batch_id, qc_name, **input_json):
         """ Launch a quality check inside a container """
 
@@ -263,6 +252,10 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         return self.response(response)
 
     @decorators.auth.require()
+    @decorators.endpoint(
+        path="/ingestion/<batch_id>/qc/<qc_name>",
+        summary="Remove a quality check if existing",
+    )
     def delete(self, batch_id, qc_name):
         """
         Remove a quality check executed
