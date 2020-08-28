@@ -17,7 +17,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     labels = ["ingestion"]
 
     @decorators.auth.require()
-    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.use_kwargs(EndpointsInputSchema)
     @decorators.endpoint(
         path="/ingestion/<batch_id>/approve",
         summary="Approve files in a batch that are passing all qcs",

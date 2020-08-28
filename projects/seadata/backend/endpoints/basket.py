@@ -230,7 +230,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
     @decorators.auth.require()
-    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.use_kwargs(EndpointsInputSchema)
     @decorators.endpoint(
         path="/orders",
         summary="Request one order preparation",
@@ -491,7 +491,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors("Could not connect to B2SAFE host", code=503)
 
     @decorators.auth.require()
-    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.use_kwargs(EndpointsInputSchema)
     @decorators.endpoint(
         path="/orders",
         summary="Remove one or more orders",
