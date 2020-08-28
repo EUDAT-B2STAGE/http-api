@@ -14,7 +14,7 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
     # Request for a file download into a restricted order
     @decorators.auth.require_any(Role.ADMIN, Role.STAFF)
-    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.use_kwargs(EndpointsInputSchema)
     @decorators.endpoint(
         path="/restricted/<order_id>",
         summary="Request to import a zip file into a restricted order",

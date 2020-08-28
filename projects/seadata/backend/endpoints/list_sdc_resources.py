@@ -11,7 +11,7 @@ class ListResources(EudatEndpoint, ClusterContainerEndpoint):
     labels = ["helper"]
 
     @decorators.auth.require()
-    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.use_kwargs(EndpointsInputSchema)
     @decorators.endpoint(
         path="/resourceslist",
         summary="Request a list of existing batches and orders",

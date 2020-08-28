@@ -34,7 +34,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
     @decorators.auth.require_all(Role.USER)
     # "description": "activate file downloading (if path is a single file)",
-    @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
+    @decorators.use_kwargs({"download": fields.Bool()}, location="query")
     @decorators.endpoint(
         path="/registered/<path:location>",
         summary="Retrieve digital object information or download it",

@@ -76,7 +76,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         return self.response(response)
 
     @decorators.auth.require()
-    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.use_kwargs(EndpointsInputSchema)
     @decorators.endpoint(
         path="/ingestion/<batch_id>/qc/<qc_name>",
         summary="Launch a quality check as a docker container",

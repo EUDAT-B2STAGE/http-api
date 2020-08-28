@@ -72,7 +72,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
     @decorators.auth.require_all(Role.USER)
     # "description": "Activate file downloading (if PID points to a single file)",
-    @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
+    @decorators.use_kwargs({"download": fields.Bool()}, location="query")
     @decorators.endpoint(
         path="/pids/<path:pid>",
         summary="Resolve a pid and retrieve metadata or download it link object",
@@ -92,7 +92,7 @@ class PIDEndpoint(Uploader, Downloader, B2HandleEndpoint):
 
     # "description": "Activate file downloading (if PID points to a single file)",
     @decorators.auth.require_all(Role.USER)
-    @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
+    @decorators.use_kwargs({"download": fields.Bool()}, location="query")
     @decorators.endpoint(
         path="/pids/<path:pid>",
         summary="Resolve a pid and verify permission of the digital object",

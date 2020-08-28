@@ -20,7 +20,7 @@ class Public(B2HandleEndpoint):
     depends_on = ["IRODS_ANONYMOUS", "ENABLE_PUBLIC_ENDPOINT"]
 
     # "description": "Activate file downloading (if PID points to a single file)",
-    @decorators.use_kwargs({"download": fields.Bool()}, locations=["query"])
+    @decorators.use_kwargs({"download": fields.Bool()}, location="query")
     @decorators.endpoint(
         path="/public/<path:location>",
         summary="Let non-authenticated users get data about a public data-object",

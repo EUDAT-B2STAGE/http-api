@@ -104,7 +104,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return self.send_errors("Could not connect to B2SAFE host", code=503)
 
     @decorators.auth.require()
-    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.use_kwargs(EndpointsInputSchema)
     @decorators.endpoint(
         path="/ingestion/<batch_id>",
         summary="Request to import a zip file to the ingestion cloud",
@@ -194,7 +194,7 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
     @decorators.auth.require()
-    @decorators.use_kwargs(EndpointsInputSchema, locations=["json", "form", "query"])
+    @decorators.use_kwargs(EndpointsInputSchema)
     @decorators.endpoint(
         path="/ingestion",
         summary="Delete one or more ingestion batches",
