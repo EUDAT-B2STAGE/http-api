@@ -2,6 +2,7 @@ from datetime import datetime
 
 from b2stage.endpoints.commons import path
 from restapi.env import Env
+from restapi.exceptions import BadRequest
 from restapi.models import Schema, fields
 from restapi.utilities.logs import log
 
@@ -176,30 +177,21 @@ class ImportManagerAPI:
 # NOTE this function is outside the previous class, and self is passed as parameter
 def seadata_pid(self, pid):
 
-    response = {"PID": pid, "verified": False, "metadata": {}}
-
-    #################
-    # b2handle to verify PID
     b2handle_output = self.check_pid_content(pid)
     if b2handle_output is None:
-        error = f"PID {pid} not found"
-        log.error(error)
-        return self.response(errors=error, code=400)
-    else:
-        log.verbose("PID {} verified", pid)
-        response["verified"] = True
+        raise BadRequest(f"PID {pid} not found")
 
-    #################
+    log.verbose("PID {} verified", pid)
     ipath = self.parse_pid_dataobject_path(b2handle_output)
-    response["temp_id"] = path.last_part(ipath)
-    response["batch_id"] = path.last_part(path.dir_name(ipath))
+    response = {
+        "PID": pid,
+        "verified": True,
+        "metadata": {},
+        "temp_id": path.last_part(ipath),
+        "batch_id": path.last_part(path.dir_name(ipath)),
+    }
 
-    #################
-    # get the metadata
     imain = self.get_main_irods_connection()
-    # data_object = imain.get_dataobject(ipath)
-    # response['creation'] = data_object.create_time
-    # response['modification'] = data_object.modify_time
     metadata, _ = imain.get_metadata(ipath)
 
     for key, value in metadata.items():

@@ -14,6 +14,7 @@ from b2stage.endpoints.commons.endpoint import (
     NOT_FILLED_BATCH,
 )
 from restapi import decorators
+from restapi.exceptions import Conflict
 from restapi.utilities.logs import log
 from seadata.endpoints.commons.cluster import (
     INGESTION_DIR,
@@ -158,7 +159,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         if container_obj is not None:
             log.error("Docker container {} already exists!", container_name)
             response["status"] = "existing"
-            return self.response(errors=response, code=409)
+            raise Conflict(response)
 
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
