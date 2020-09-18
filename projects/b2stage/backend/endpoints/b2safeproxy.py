@@ -2,11 +2,11 @@ from b2stage.connectors.irods.client import IrodsException, iexceptions
 from b2stage.endpoints.commons.b2access import B2accessUtilities
 from restapi import decorators
 from restapi.exceptions import RestApiException
-from restapi.models import InputSchema, fields
+from restapi.models import Schema, fields
 from restapi.utilities.logs import log
 
 
-class Credentials(InputSchema):
+class Credentials(Schema):
     username = fields.Str(required=True)
     password = fields.Str(required=True, password=True,)
     authscheme = fields.Str(default="credentials")
