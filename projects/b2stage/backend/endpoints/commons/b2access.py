@@ -121,11 +121,7 @@ class B2accessUtilities(EndpointResource):
         if SEADATA_PROJECT == "0":
 
             return super().response(
-                content=content,
-                errors=errors,
-                code=code,
-                headers=headers,
-                head_method=head_method,
+                content=content, code=code, headers=headers, head_method=head_method,
             )
 
         if content is None:
