@@ -5,8 +5,8 @@
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing data in EUDAT domains
-  version: 1.1.2
-  rapydo: 0.7.6
+  version: "1.1.2"
+  rapydo: "0.8"
 
 tags:
   eudat: all endpoints associated to EUDAT services
@@ -90,73 +90,6 @@ variables:
     # TO BE DEPRECATED
     HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
     HANDLE_BASE: "https://url.to.epic/handles/"
-
-# Keep track of releases and dependencies
-releases:
-  "0.5.1":
-    type: beta
-    rapydo: null
-    status: released
-  "0.5.2":
-    type: beta
-    rapydo: null
-    status: discontinued
-  "0.6.0":
-    type: RC1
-    rapydo: 0.5.3
-    status: discontinued
-  "0.6.1":
-    type: RC2
-    rapydo: 0.5.4
-    status: discontinued
-  "1.0.0":
-    type: stable
-    rapydo: 0.6.0
-    status: discontinued
-  "1.0.1":
-    type: patch
-    rapydo: 0.6.1
-    status: discontinued
-  "1.0.2":
-    type: patch
-    rapydo: 0.6.1
-    status: discontinued
-  "1.0.3":
-    type: stable
-    rapydo: 0.6.2
-    status: discontinued
-  "1.0.4":
-    type: stable
-    rapydo: 0.6.3
-    status: discontinued
-  "1.0.5":
-    type: stable
-    rapydo: 0.6.4
-    status: released
-  "1.0.6":
-    type: stable
-    rapydo: 0.6.5
-    status: released
-  "1.0.7":
-    type: stable
-    rapydo: 0.6.6
-    status: released
-  "1.0.8":
-    type: stable
-    rapydo: 0.6.7
-    status: released
-  "1.1.0":
-    type: stable
-    rapydo: 0.7.0
-    status: released
-  "1.1.1":
-    type: stable
-    rapydo: 0.7.1
-    status: released
-  "1.1.2":
-    type: development
-    rapydo: 0.7.6
-    status: development
 
 controller:
   commands:

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from b2stage.endpoints.commons import path
 from restapi.env import Env
-from restapi.models import InputSchema, fields
+from restapi.models import Schema, fields
 from restapi.utilities.logs import log
 
 seadata_vars = Env.load_group(label="seadata")
@@ -16,7 +16,7 @@ API_VERSION = seadata_vars.get("api_version")
 
 # Validation should raise:
 # f"Missing JSON key: {key}
-class EndpointsInputSchema(InputSchema):
+class EndpointsInputSchema(Schema):
     request_id = fields.Str(required=True)
     edmo_code = fields.Int(required=True)
     datetime = fields.Str(required=True)
