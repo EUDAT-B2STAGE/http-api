@@ -296,7 +296,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     )
                     log.warning(error_message)
                     status = 202
-                    errors = [error_message]
+                    errors = error_message
                 else:
                     pid_found = True
 
@@ -315,10 +315,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 ),
             }
 
-        if pid_found:
-            return self.response(content, errors=errors, code=status)
-        else:
-            return self.response(content, errors=errors, code=202)
+        if errors:
+            raise RestApiException(errors, status_code=status)
+
+        if not pid_found:
+            status = 202
+
+        return self.response(content, code=status)
 
     @decorators.auth.require_all(Role.USER)
     @decorators.use_kwargs({"newname": fields.Str(required=True)})
