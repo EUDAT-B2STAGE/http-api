@@ -2,7 +2,7 @@ version: "3"
 
 services:
   icat:
-    build: ${EXTENDED_PROJECT_PATH}/builds/icat
+    build: ${BASE_PROJECT_DIR}/builds/icat
     image: ${COMPOSE_PROJECT_NAME}/icat:${RAPYDO_VERSION}
     environment:
       SEADATA_PROJECT: ${SEADATA_PROJECT}
@@ -14,7 +14,7 @@ services:
       SEADATA_ORDERS_COLL: ${SEADATA_ORDERS_COLL}
 
   backend:
-    build: ${EXTENDED_PROJECT_PATH}/builds/backend
+    build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     environment:
       SEADATA_PROJECT: ${SEADATA_PROJECT}
