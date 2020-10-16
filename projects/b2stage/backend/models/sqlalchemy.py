@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
-
 """ CUSTOM Models for the relational database """
 
-from restapi.connectors.sqlalchemy.models import db, User
+from restapi.connectors.sqlalchemy.models import User, db
 
 # Add (inject) attributes to User
 # setattr(User, 'name', db.Column(db.String(255)))
 # setattr(User, 'surname', db.Column(db.String(255)))
-setattr(User, 'session', db.Column(db.LargeBinary()))
+setattr(User, "session", db.Column(db.LargeBinary()))
 
 
 class ExternalAccounts(db.Model):
@@ -21,7 +19,7 @@ class ExternalAccounts(db.Model):
     certificate_dn = db.Column(db.Text())
     proxyfile = db.Column(db.Text())
     description = db.Column(db.String(255))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     # Let iRODS exist and be linked
     irodsuser = db.Column(db.String(50))
@@ -30,15 +28,12 @@ class ExternalAccounts(db.Model):
     # Note: for pre-production release
     # we allow only one external account per local user
     main_user = db.relationship(
-        'User', backref=db.backref('authorization', lazy='dynamic')
+        "User", backref=db.backref("authorization", lazy="dynamic")
     )
 
     def __str__(self):
         return "db.{}({}, {})[{}]".format(
-            self.__class__.__name__,
-            self.username,
-            self.email,
-            self.main_user,
+            self.__class__.__name__, self.username, self.email, self.main_user,
         )
 
     def __repr__(self):
