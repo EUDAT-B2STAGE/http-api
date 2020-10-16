@@ -29,7 +29,7 @@ services:
 
   celery:
     restart: on-failure:15
-    build: ${EXTENDED_PROJECT_PATH}/builds/backend
+    build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q celery -n worker-%h
     volumes:
@@ -65,7 +65,7 @@ services:
 
   celeryui:
     restart: on-failure:5
-    build: ${EXTENDED_PROJECT_PATH}/builds/backend
+    build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     hostname: flower
     environment:
@@ -103,7 +103,7 @@ services:
 
   ingestion_celery:
     restart: on-failure:15
-    build: ${EXTENDED_PROJECT_PATH}/builds/backend
+    build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q ingestion -n worker-%h
@@ -116,8 +116,8 @@ services:
       # Vanilla code
       - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
       # From project, if any
-      - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
-      - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
+      - ${BASE_PROJECT_DIR}/backend:/code/${EXTENDED_PROJECT}
+      - ${BASE_PROJECT_DIR}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
 
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
 
@@ -192,7 +192,7 @@ services:
 
   restricted_celery:
     restart: on-failure:5
-    build: ${EXTENDED_PROJECT_PATH}/builds/backend
+    build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q restricted -n worker-%h
@@ -205,8 +205,8 @@ services:
       # Vanilla code
       - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
       # From project, if any
-      - ${EXTENDED_PROJECT_PATH}/backend:/code/${EXTENDED_PROJECT}
-      - ${EXTENDED_PROJECT_PATH}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
+      - ${BASE_PROJECT_DIR}/backend:/code/${EXTENDED_PROJECT}
+      - ${BASE_PROJECT_DIR}/project_configuration.yaml:/code/confs/extended_project_configuration.yaml
 
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
 
