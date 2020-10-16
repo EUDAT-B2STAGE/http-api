@@ -1,5 +1,4 @@
-import os
-
+from restapi.customizer import BaseCustomizer
 from restapi.utilities.logs import log
 
 
@@ -17,20 +16,46 @@ class Initializer:
             return
 
 
-class Customizer:
-    """
-    This class is used to manipulate user information
-    - custom_user_properties is executed just before user creation
-                             use this to removed or manipulate input properties
-                             before sending to the database
-    - custom_post_handle_user_input is used just after user registration
-                                    use this to perform setup operations,
-                                    such as verify default settings
-    """
+class Customizer(BaseCustomizer):
+    @staticmethod
+    def custom_user_properties_pre(properties):
+        extra_properties = {}
+        # if 'myfield' in properties:
+        #     extra_properties['myfield'] = properties['myfield']
+        return properties, extra_properties
 
-    def custom_user_properties(self, properties):
-        return properties
+    @staticmethod
+    def custom_user_properties_post(user, properties, extra_properties, db):
+        pass
 
-    def custom_post_handle_user_input(self, auth, user_node, properties):
+    @staticmethod
+    def manipulate_profile(ref, user, data):
+        # data['CustomField'] = user.custom_field
 
-        return True
+        return data
+
+    @staticmethod
+    def get_user_editable_fields(request):
+
+        # return custom fields or a part of them
+        # fields = Customizer.get_custom_fields(request)
+
+        # or return something else, maybe an empty dict if extra fields are not editable
+        return {}
+
+    @staticmethod
+    def get_custom_fields(request):
+
+        # required = request and request.method == "POST"
+        """
+        return {
+            'custom_field': fields.Int(
+                required=required,
+                # validate=validate.Range(min=0, max=???),
+                validate=validate.Range(min=0),
+                label="CustomField",
+                description="This is a custom field"
+            )
+        }
+        """
+        return {}
