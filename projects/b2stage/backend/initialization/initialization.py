@@ -37,14 +37,11 @@ class Customizer(BaseCustomizer):
     @staticmethod
     def get_user_editable_fields(request):
 
-        # return custom fields or a part of them
-        # fields = Customizer.get_custom_fields(request)
-
         # or return something else, maybe an empty dict if extra fields are not editable
         return {}
 
     @staticmethod
-    def get_custom_fields(request):
+    def get_custom_input_fields(request):
 
         # required = request and request.method == "POST"
         """
@@ -59,3 +56,7 @@ class Customizer(BaseCustomizer):
         }
         """
         return {}
+
+    @staticmethod
+    def get_custom_output_fields(request):
+        return Customizer.get_custom_input_fields(request)
