@@ -1,5 +1,4 @@
 import json
-import os
 import time
 
 from b2stage.endpoints.commons import path
@@ -10,7 +9,7 @@ from restapi.utilities.processes import start_timeout, stop_timeout
 from seadata.endpoints.commons.queue import prepare_message
 from seadata.endpoints.commons.seadatacloud import ErrorCodes
 from seadata.endpoints.commons.seadatacloud import Metadata as md
-from seadata.tasks.seadata import celery_app, ext_api, notify_error, r
+from seadata.tasks.seadata import celery_app, ext_api, mybatchpath, notify_error, r
 
 pmaker = PIDgenerator()
 
@@ -29,7 +28,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
 
         ###############
         log.info("I'm {} (move_to_production_task)!", self.request.id)
-        # local_path = path.join(mybatchpath, batch_id, return_str=True)
+        local_path = path.join(mybatchpath, batch_id, return_str=True)
 
         try:
             with celery_app.get_service(service="irods") as imain:
@@ -60,28 +59,13 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                     temp_id = element.get("temp_id")  # do not pop
                     record_id = element.get("format_n_code")
                     current_file_name = path.last_part(temp_id)
-                    # local_element = path.join(local_path, temp_id, return_str=False)
-                    batch_file = os.path.join(batch_path, current_file_name)
+                    local_element = path.join(local_path, temp_id, return_str=False)
 
                     # [fs -> irods]
-                    # if path.file_exists_and_nonzero(local_element):
-                    #     log.info('Found: {}', local_element)
-                    # else:
-                    #     log.error('NOT found: {}', local_element)
-                    #     errors.append({
-                    #         "error": ErrorCodes.INGESTION_FILE_NOT_FOUND[0],
-                    #         "description": ErrorCodes.INGESTION_FILE_NOT_FOUND[1],
-                    #         "subject": record_id,
-                    #     })
-
-                    #     self.update_state(state="PROGRESS", meta={
-                    #         'total': total, 'step': counter, 'errors': len(errors)})
-                    #     continue
-
-                    if imain.is_dataobject(batch_file):
-                        log.info("Found: {}", batch_file)
+                    if path.file_exists_and_nonzero(local_element):
+                        log.info("Found: {}", local_element)
                     else:
-                        log.error("NOT found: {}", batch_file)
+                        log.error("NOT found: {}", local_element)
                         errors.append(
                             {
                                 "error": ErrorCodes.INGESTION_FILE_NOT_FOUND[0],
@@ -102,36 +86,11 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
 
                     ###############
                     # 1. copy file (irods) [fs -> irods]
-                    # ifile = path.join(cloud_path, current_file_name, return_str=True)
-                    # for i in range(MAX_RETRIES):
-                    #     try:
-                    #         start_timeout(TIMEOUT)
-                    #         imain.put(str(local_element), str(ifile))
-                    #         log.info("File copied on irods: {}", ifile)
-                    #         stop_timeout()
-                    #         break
-                    #     except BaseException as e:
-                    #         log.error(e)
-                    #         time.sleep(SLEEP_TIME)
-                    #         continue
-                    # else:
-                    #     # failed upload for the file
-                    #     errors.append({
-                    #         "error": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[0],
-                    #         "description": ErrorCodes.UNABLE_TO_MOVE_IN_PRODUCTION[1],
-                    #         "subject": record_id,
-                    #     })
-
-                    #     self.update_state(state="PROGRESS", meta={
-                    #         'total': total, 'step': counter, 'errors': len(errors)})
-                    #     continue
-
-                    # 1. copy file (irods) [irods -> irods]
                     ifile = path.join(cloud_path, current_file_name, return_str=True)
                     for i in range(MAX_RETRIES):
                         try:
                             start_timeout(TIMEOUT)
-                            imain.icopy(batch_file, str(ifile))
+                            imain.put(str(local_element), str(ifile))
                             log.info("File copied on irods: {}", ifile)
                             stop_timeout()
                             break
@@ -160,6 +119,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
                             },
                         )
                         continue
+
                     ###############
                     # 2. request pid (irule)
                     for i in range(MAX_RETRIES):
