@@ -17,7 +17,7 @@ from b2stage.endpoints.commons import CURRENT_MAIN_ENDPOINT
 from b2stage.endpoints.commons.endpoint import EudatEndpoint
 from flask import request
 from restapi import decorators
-from restapi.confs import TESTING
+from restapi.config import TESTING
 from restapi.exceptions import RestApiException
 from restapi.models import fields
 from restapi.services.authentication import Role
