@@ -1,6 +1,5 @@
 import os
 
-from restapi.customizer import BaseCustomizer
 from restapi.services.authentication import Role
 from restapi.utilities.logs import log
 from restapi.utilities.uuid import getUUID
@@ -52,48 +51,3 @@ class Initializer:
                         log.info("User {} created with roles: {}", username, roles)
                     except BaseException as e:
                         log.error("Errors creating user {}: {}", username, str(e))
-
-
-class Customizer(BaseCustomizer):
-    @staticmethod
-    def custom_user_properties_pre(properties):
-        extra_properties = {}
-        # if 'myfield' in properties:
-        #     extra_properties['myfield'] = properties['myfield']
-        return properties, extra_properties
-
-    @staticmethod
-    def custom_user_properties_post(user, properties, extra_properties, db):
-        pass
-
-    @staticmethod
-    def manipulate_profile(ref, user, data):
-        # data['CustomField'] = user.custom_field
-
-        return data
-
-    @staticmethod
-    def get_user_editable_fields(request):
-
-        return {}
-
-    @staticmethod
-    def get_custom_input_fields(request):
-
-        # required = request and request.method == "POST"
-        """
-        return {
-            'custom_field': fields.Int(
-                required=required,
-                # validate=validate.Range(min=0, max=???),
-                validate=validate.Range(min=0),
-                label="CustomField",
-                description="This is a custom field"
-            )
-        }
-        """
-        return {}
-
-    @staticmethod
-    def get_custom_output_fields(request):
-        return Customizer.get_custom_input_fields(request)

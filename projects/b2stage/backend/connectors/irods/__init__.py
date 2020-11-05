@@ -164,3 +164,7 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
     def disconnect(self):
         self.prc.cleanup()
         self.disconnected = True
+
+    def is_connected(self):
+
+        return not self.disconnected
