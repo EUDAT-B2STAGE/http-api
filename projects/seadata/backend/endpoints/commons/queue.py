@@ -101,7 +101,7 @@ def log_into_queue(instance, dictionary_message):
 
     log.verbose("LOG MESSAGE to be passed to log-queue: {}", dictionary_message)
 
-    current_exchange = QUEUE_VARS.get("exchange")
+    exchange = QUEUE_VARS.get("exchange")
     routing_key = QUEUE_VARS.get("queue")
     app_name = QUEUE_VARS.get("app_name")
 
@@ -110,36 +110,28 @@ def log_into_queue(instance, dictionary_message):
 
     log.debug(
         'Log-queue service: exchange "{}", routing key "{}", app name "{}"',
-        current_exchange,
+        exchange,
         routing_key,
         app_name,
     )
 
     try:
 
-        # Error seem to be raised if we don't refresh connection?
-        # https://github.com/pika/pika/issues/397#issuecomment-35322410
-        # --> Has to be handled in rapydo/http-api, where connection is defined!
-
-        msg_queue = instance.get_service_instance(QUEUE_SERVICE)
-        headers = {
-            "app_name": app_name,
-            "filter_code": "de.dkrz.seadata.filter_code.json",
-        }
+        rabbit = instance.get_service_instance(QUEUE_SERVICE)
         log.verbose('Retrieved instance of log-queue service "{}"', QUEUE_SERVICE)
-        msg_queue.write_to_queue(
-            dictionary_message, routing_key, exchange=current_exchange, headers=headers
+        rabbit.send_json(
+            dictionary_message,
+            routing_key=routing_key,
+            exchange=exchange,
+            headers={
+                "app_name": app_name,
+                "filter_code": "de.dkrz.seadata.filter_code.json",
+            },
         )
 
     except BaseException as e:
-        log.error("Failed to log:\n{}({})", e.__class__.__name__, e)
+        log.error("Failed to send log: {} ({})", e.__class__.__name__, e)
     else:
-        log.verbose("Log message passed to log-queue service.")
-        # log.verbose("{}: sent msg '{}'", routing_key, dictionary_message)
-
-        # NOTE: bad! all connections would result in closed
-        # # close resource
-        # msg_queue.close()
-        # FIXME: Close it elsewhere! Catching sigkill for example.
+        log.verbose("Log message sent to queue service.")
 
     return True

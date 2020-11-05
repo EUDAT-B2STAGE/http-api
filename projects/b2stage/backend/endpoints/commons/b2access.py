@@ -37,7 +37,7 @@ class B2accessUtilities(EndpointResource):
 
     def irods_user(self, username, session):
 
-        user = self.auth.get_user_object(username)
+        user = self.auth.get_user(username)
 
         if user is not None:
             log.debug("iRODS user already cached: {}", username)
@@ -61,7 +61,7 @@ class B2accessUtilities(EndpointResource):
                 log.error(str(e))
                 log.error(type(e))
 
-                user = self.auth.get_user_object(username)
+                user = self.auth.get_user(username)
                 # Unable to do something...
                 if user is None:
                     raise e

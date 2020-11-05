@@ -31,7 +31,7 @@ services:
     restart: on-failure:15
     build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
-    command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q celery -n worker-%h
+    command: celery -A restapi.connectors.celery.worker.celery_app worker --concurrency=1 -Ofair -Q celery -n worker-%h
     volumes:
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
     environment:
@@ -106,7 +106,7 @@ services:
     build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q ingestion -n worker-%h
+    command: celery -A restapi.connectors.celery.worker.celery_app worker --concurrency=1 -Ofair -Q ingestion -n worker-%h
     # user: developer
     working_dir: /code
     volumes:
@@ -195,7 +195,7 @@ services:
     build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
-    command: celery worker --concurrency=1 -Ofair -A restapi.connectors.celery.worker.celery_app -Q restricted -n worker-%h
+    command: celery -A restapi.connectors.celery.worker.celery_app worker --concurrency=1 -Ofair -Q restricted -n worker-%h
     # user: developer
     working_dir: /code
     volumes:
