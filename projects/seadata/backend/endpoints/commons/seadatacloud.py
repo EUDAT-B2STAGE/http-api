@@ -139,7 +139,7 @@ class ImportManagerAPI:
             log.info(payload)
             return False
 
-        from restapi.confs import PRODUCTION
+        from restapi.config import PRODUCTION
 
         if not PRODUCTION:
             log.warning(

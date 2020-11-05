@@ -1,5 +1,5 @@
 from restapi import decorators
-from restapi.confs import PRODUCTION
+from restapi.config import PRODUCTION
 from restapi.exceptions import RestApiException
 from restapi.rest.definition import EndpointResource
 from restapi.utilities.logs import log

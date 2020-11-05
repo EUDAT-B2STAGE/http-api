@@ -3,7 +3,7 @@ Common functions for EUDAT endpoints
 """
 from attr import ib as attribute
 from attr import s as AttributedModel
-from restapi.confs import API_URL, PRODUCTION
+from restapi.config import API_URL, PRODUCTION
 from restapi.env import Env
 from restapi.services.detect import detector
 
