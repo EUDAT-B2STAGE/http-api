@@ -276,7 +276,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 removed = True
                 break
             else:
-                log.verbose("{} still exists", container_name)
+                log.debug("{} still exists", container_name)
 
         if not removed:
             log.warning("{} still in removal status", container_name)

@@ -233,7 +233,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 try:
                     # Handling (iRODS) path
                     ipath = self.complete_path(path, filename)
-                    log.verbose("Save into: {}", ipath)
+                    log.debug("Save into: {}", ipath)
                     iout = icom.save(
                         abs_file, destination=ipath, force=force, resource=resource
                     )

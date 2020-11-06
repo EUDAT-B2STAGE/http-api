@@ -40,7 +40,7 @@ class Certificates:
             for tup in sub.get_components():
                 dn += f"/{tup[0].decode()}={tup[1].decode()}"
 
-            log.verbose("Host DN computed is {}", dn)
+            log.debug("Host DN computed is {}", dn)
             return dn
 
     @staticmethod
@@ -212,7 +212,7 @@ class Certificates:
 
             # Pattern in plumbum library for executing a shell command
             command = local["openssl"]
-            log.verbose("Executing command openssl {}", command, args)
+            log.debug("Executing command openssl {}", command, args)
             output = command(args)
 
         except ProcessExecutionError as e:

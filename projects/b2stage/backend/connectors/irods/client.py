@@ -265,7 +265,7 @@ class IrodsPythonClient:
         if sourcepath == destpath:
             raise IrodsException("Source and destination path are the same")
         try:
-            log.verbose("Copy {} into {}", sourcepath, destpath)
+            log.debug("Copy {} into {}", sourcepath, destpath)
             source = self.prc.data_objects.get(sourcepath)
             self.create_empty(destpath, directory=False, ignore_existing=force)
             target = self.prc.data_objects.get(destpath)
@@ -576,7 +576,7 @@ class IrodsPythonClient:
         ACL = iRODSAccess(access_name=key, path=path, user_zone=zone)
         try:
             self.prc.permissions.set(ACL)  # , recursive=False)
-            log.verbose("Enabled {} to {}", key, path)
+            log.debug("Enabled {} to {}", key, path)
         except iexceptions.CAT_INVALID_ARGUMENT:
             if not self.is_collection(path) and not self.is_dataobject(path):
                 raise IrodsException("Cannot set Inherit: path not found")
@@ -946,7 +946,7 @@ class IrodsPythonClient:
 
         try:
             with self.prc.data_objects.open(path, "r") as obj:
-                log.verbose(obj.__class__.__name__)
+                log.debug(obj.__class__.__name__)
         except iexceptions.SYS_FILE_DESC_OUT_OF_RANGE:
             return False
         else:

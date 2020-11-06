@@ -99,7 +99,7 @@ def log_into_queue(instance, dictionary_message):
     # temporary disabled
     return False
 
-    log.verbose("LOG MESSAGE to be passed to log-queue: {}", dictionary_message)
+    log.debug("LOG MESSAGE to be passed to log-queue: {}", dictionary_message)
 
     exchange = QUEUE_VARS.get("exchange")
     routing_key = QUEUE_VARS.get("queue")
@@ -118,7 +118,7 @@ def log_into_queue(instance, dictionary_message):
     try:
 
         rabbit = instance.get_service_instance(QUEUE_SERVICE)
-        log.verbose('Retrieved instance of log-queue service "{}"', QUEUE_SERVICE)
+        log.debug('Retrieved instance of log-queue service "{}"', QUEUE_SERVICE)
         rabbit.send_json(
             dictionary_message,
             routing_key=routing_key,
@@ -132,6 +132,6 @@ def log_into_queue(instance, dictionary_message):
     except BaseException as e:
         log.error("Failed to send log: {} ({})", e.__class__.__name__, e)
     else:
-        log.verbose("Log message sent to queue service.")
+        log.debug("Log message sent to queue service.")
 
     return True

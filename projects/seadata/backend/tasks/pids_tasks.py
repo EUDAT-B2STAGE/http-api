@@ -88,7 +88,7 @@ def cache_batch_pids(self, irods_path):
 
                     r.set(pid, ifile)
                     r.set(ifile, pid)
-                    log.verbose(
+                    log.debug(
                         "{}: file {} cached with PID {}", stats["total"], ifile, pid
                     )
                     stats["cached"] += 1
