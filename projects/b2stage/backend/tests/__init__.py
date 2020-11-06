@@ -41,7 +41,7 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
     def setUp(self):
 
         log.debug("### Setting up the Flask server ###")
-        app = create_app(testing_mode=True)
+        app = create_app()
         self.app = app.test_client()
 
         i = detector.get_service_instance("irods")
