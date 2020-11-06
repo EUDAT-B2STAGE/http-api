@@ -4,6 +4,7 @@ src: http://j.mp/2nwz908
 """
 
 import os
+import sys
 from contextlib import contextmanager
 from pathlib import Path, PurePath
 
@@ -61,7 +62,8 @@ def home(relative_path=None):
         return Path.home()
     else:
         if relative_path.startswith(os.sep):
-            log.exit("Requested abspath '{}' in relative context", relative_path)
+            log.critical("Requested abspath '{}' in relative context", relative_path)
+            sys.exit(1)
         return build("~" + os.sep + relative_path).expanduser()
 
 
@@ -78,7 +80,8 @@ def create(pathobj, directory=False, force=False, parents=False):
             if force:
                 pass
             else:
-                log.exit("Cannot overwrite existing: {}", pathobj)
+                log.critical("Cannot overwrite existing: {}", pathobj)
+                sys.exit(1)
     else:
         raise NotImplementedError("Yet to do!")
 

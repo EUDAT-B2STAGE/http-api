@@ -103,10 +103,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         return notify_error(
                             ErrorCodes.B2HANDLE_ERROR, myjson, backdoor, self
                         )
-                    log.verbose("Handle called")
-                    # TODO: you should cache the obtained PID?
 
-                    ################
                     if b2handle_output is None:
                         errors.append(
                             {
@@ -127,7 +124,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         log.warning("PID not found: {}", pid)
                     else:
                         ipath = pmaker.parse_pid_dataobject_path(b2handle_output)
-                        log.verbose("PID verified: {}\n({})", pid, ipath)
+                        log.debug("PID verified: {}\n({})", pid, ipath)
                         files[pid] = ipath
                         r.set(pid, ipath)
                         r.set(ipath, pid)
@@ -215,7 +212,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                     # if pid not in metadata:
                     #     md = {pid: ipath}
                     #     imain.set_metadata(order_path, **md)
-                    #     log.verbose("Set metadata")
+                    #     log.debug("Set metadata")
 
                 zip_ipath = None
                 if counter > 0:

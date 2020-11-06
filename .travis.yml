@@ -11,9 +11,10 @@ env:
 
 script:
   - pip install git+https://github.com/rapydo/do.git@0.9
-  # - chmod -R o+Xw projects # fix permissions for coverage to be computed
-  # - /bin/bash templates/create_testing_projectrc.sh
   - rapydo --testing --project ${PROJECT} init
   - rapydo pull
+  - rapydo build
   - rapydo start
+  - sleep 20
+  - rapydo logs
   - rapydo shell backend --command 'restapi tests --wait'

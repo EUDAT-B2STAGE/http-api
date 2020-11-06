@@ -181,7 +181,7 @@ def seadata_pid(self, pid):
     if b2handle_output is None:
         raise BadRequest(f"PID {pid} not found")
 
-    log.verbose("PID {} verified", pid)
+    log.debug("PID {} verified", pid)
     ipath = self.parse_pid_dataobject_path(b2handle_output)
     response = {
         "PID": pid,

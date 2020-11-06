@@ -77,7 +77,7 @@ class PIDgenerator:
 
         # print("pieces", path_pieces)
         ipath = str(path.build(path_pieces))
-        log.verbose("Data object: {}", ipath)
+        log.debug("Data object: {}", ipath)
 
         return ipath
 

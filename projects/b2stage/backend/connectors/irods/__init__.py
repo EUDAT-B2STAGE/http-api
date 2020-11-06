@@ -86,7 +86,7 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
             # Server host certificate
             # In case not set, recover from the shared dockerized certificates
             if host_dn := variables.get("dn", None):
-                log.verbose('Existing DN:\n"{}"', host_dn)
+                log.debug('Existing DN:\n"{}"', host_dn)
             else:
                 host_dn = Certificates.get_dn_from_cert(
                     certdir="host", certfilename="hostcert"
@@ -144,7 +144,7 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
         # Do a simple command to test this session
         if not Env.to_bool(variables.get("only_check_proxy")):
             try:
-                u = obj.users.get(user, user_zone=variables.get("zone"))
+                obj.users.get(user, user_zone=variables.get("zone"))
 
             except iexceptions.CAT_INVALID_AUTHENTICATION as e:
                 raise e
@@ -152,8 +152,6 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
             # except iexceptions.PAM_AUTH_PASSWORD_FAILED as e:
             except iexceptions.PAM_AUTH_PASSWORD_FAILED as e:
                 raise e
-
-            log.verbose("Tested session retrieving '{}'", u.name)
 
         self.prc = obj
         self.variables = variables
