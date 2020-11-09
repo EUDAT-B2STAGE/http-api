@@ -111,6 +111,7 @@ class B2accessUtilities(EndpointResource):
         code=None,
         headers=None,
         head_method=False,
+        allow_html=False,
         meta=None,
         wrap_response=False,
     ):
@@ -121,7 +122,11 @@ class B2accessUtilities(EndpointResource):
         if SEADATA_PROJECT == "0":
 
             return super().response(
-                content=content, code=code, headers=headers, head_method=head_method,
+                content=content,
+                code=code,
+                headers=headers,
+                head_method=head_method,
+                allow_html=allow_html,
             )
 
         if content is None:
@@ -160,7 +165,11 @@ class B2accessUtilities(EndpointResource):
         }
 
         return super().response(
-            content=resp, code=code, headers=headers, head_method=head_method
+            content=resp,
+            code=code,
+            headers=headers,
+            head_method=head_method,
+            allow_html=allow_html,
         )
 
     def associate_object_to_attr(self, obj, key, value):
