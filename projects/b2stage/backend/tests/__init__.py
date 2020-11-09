@@ -1,8 +1,8 @@
 import json
 import unittest
 
+from b2stage.connectors import irods
 from restapi.server import create_app
-from restapi.services.detect import detector
 from restapi.tests import AUTH_URI
 from restapi.utilities.logs import log
 
@@ -44,7 +44,7 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         app = create_app()
         self.app = app.test_client()
 
-        i = detector.get_service_instance("irods")
+        i = irods.get_instance()
         # create a dedicated irods user and set the password
         if i.create_user(self._irods_user):
             i.modify_user_password(self._irods_user, self._irods_password)
@@ -88,11 +88,6 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
                 ep += "/" + element.get("id")
                 rdel = self.app.delete(ep, headers=self.__class__.auth_header)
                 assert rdel.status_code == 204
-
-        # i = detector.get_service_instance("irods")
-        # irods.exception.CAT_COLLECTION_NOT_EMPTY:
-        #          collection '/tempZone/trash/home/icatbetatester' is not empty
-        # i.remove_user(self._irods_user)
 
         # The end
         log.debug("### Tearing down the Flask server ###")

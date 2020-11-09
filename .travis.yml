@@ -11,7 +11,7 @@ env:
 
 script:
   - pip install git+https://github.com/rapydo/do.git@0.9
-  - rapydo --testing --project ${PROJECT} -e ACTIVATE_SMTP=0 init
+  - rapydo --testing --project ${PROJECT} init
   - rapydo pull
   - rapydo build
   - rapydo start
