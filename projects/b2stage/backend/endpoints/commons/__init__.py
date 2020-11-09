@@ -5,15 +5,14 @@ from attr import ib as attribute
 from attr import s as AttributedModel
 from restapi.config import API_URL, PRODUCTION
 from restapi.env import Env
-from restapi.services.detect import detector
 
 # from restapi.utilities.logs import log
 
 try:
-    IRODS_VARS = detector.load_variables(prefix="irods")
+    IRODS_VARS = Env.load_variables_group(prefix="irods")
 except AttributeError:
     IRODS_VARS = {}
-IRODS_EXTERNAL = IRODS_VARS.get("external", False)
+# IRODS_EXTERNAL = IRODS_VARS.get("external", False)
 
 CURRENT_B2SAFE_SERVER = IRODS_VARS.get("host")
 CURRENT_HTTPAPI_SERVER = Env.get("DOMAIN")
