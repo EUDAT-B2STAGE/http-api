@@ -8,6 +8,7 @@ import os
 from base64 import b64encode
 
 from flask_oauthlib.client import OAuth
+from restapi.env import Env
 from restapi.utilities.globals import mem
 from restapi.utilities.logs import log
 
@@ -74,9 +75,7 @@ class ExternalLogins:
 
     def b2access(self):
 
-        from restapi.services.detect import Detector as detect
-
-        b2access_vars = detect.load_variables(prefix="b2access")
+        b2access_vars = Env.load_variables_group(prefix="b2access")
         selected_b2access = b2access_vars.get("env")
         if selected_b2access is None:
             return {}

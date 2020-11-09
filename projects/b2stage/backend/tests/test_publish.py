@@ -6,7 +6,7 @@ import io
 import os
 
 from b2stage.endpoints.commons import path
-from restapi.services.detect import detector
+from restapi.env import Env
 from restapi.tests import API_URI, AUTH_URI
 from restapi.utilities.logs import log
 from tests.custom import RestTestsAuthenticatedBase
@@ -52,7 +52,7 @@ else:
             content = self.get_content(r)
             self.save_token(content.get("token"), suffix=self._anonymous_user)
 
-            self.irods_vars = detector.load_variables(prefix="irods")
+            self.irods_vars = Env.load_variables_group(prefix="irods")
             self._filename = "some_file.txt"
             home_dirname = "home"
             self._ipath = str(
