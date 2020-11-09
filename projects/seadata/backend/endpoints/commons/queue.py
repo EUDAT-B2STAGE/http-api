@@ -9,13 +9,13 @@ import re
 from datetime import datetime
 
 from flask import request
+from restapi.connectors import rabbitmq
 from restapi.env import Env
 from restapi.services.authentication import BaseAuthentication
 from restapi.utilities.logs import log
 from seadata.endpoints.commons.seadatacloud import seadata_vars
 
-QUEUE_SERVICE = "rabbit"
-QUEUE_VARS = Env.load_group(label=QUEUE_SERVICE)
+QUEUE_VARS = Env.load_group(label="rabbit")
 
 """
 :param instance: The Endpoint.
@@ -117,8 +117,8 @@ def log_into_queue(instance, dictionary_message):
 
     try:
 
-        rabbit = instance.get_service_instance(QUEUE_SERVICE)
-        log.debug('Retrieved instance of log-queue service "{}"', QUEUE_SERVICE)
+        rabbit = rabbitmq.get_instance()
+        log.debug("Retrieved instance of RabbitMQ service")
         rabbit.send_json(
             dictionary_message,
             routing_key=routing_key,
