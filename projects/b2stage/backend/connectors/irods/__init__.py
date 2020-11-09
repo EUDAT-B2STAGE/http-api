@@ -3,6 +3,7 @@ iRODS file-system flask connector
 """
 
 import logging
+from typing import Optional, Union
 
 from b2stage.connectors.irods.certificates import Certificates
 from b2stage.connectors.irods.client import IrodsPythonClient
@@ -166,3 +167,15 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
     def is_connected(self):
 
         return not self.disconnected
+
+
+instance = IrodsPythonExt()
+
+
+def get_instance(
+    verify: Optional[int] = None,
+    expiration: Optional[int] = None,
+    **kwargs: Union[Optional[str], int],
+) -> "IrodsPythonExt":
+
+    return instance.get_instance(verify=verify, expiration=expiration, **kwargs)
