@@ -13,6 +13,7 @@ from b2stage.endpoints.commons.endpoint import (
 )
 from irods.exception import NetworkException
 from restapi import decorators
+from restapi.connectors import celery
 from restapi.services.uploader import Uploader
 from restapi.utilities.logs import log
 from seadata.endpoints.commons.cluster import (
@@ -53,7 +54,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
         ########################
         # get irods session
 
-        # imain = self.get_service_instance(service_name='irods')
         try:
             imain = self.get_main_irods_connection()
 
@@ -178,12 +178,10 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             )
             log_into_queue(self, log_msg)
 
-            """
-                Download the file into the batch folder
-            """
+            # Download the file into the batch folder
 
-            celery = self.get_service_instance("celery")
-            task = celery.download_batch.apply_async(
+            celery_app = celery.get_instance()
+            task = celery_app.download_batch.apply_async(
                 args=[batch_path, str(local_path), json_input],
                 queue="ingestion",
                 routing_key="ingestion",
@@ -209,8 +207,8 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             log.debug("Batch collection: {}", batch_path)
             log.debug("Batch path: {}", local_batch_path)
 
-            celery = self.get_service_instance("celery")
-            task = celery.delete_batches.apply_async(
+            celery_app = celery.get_instance()
+            task = celery_app.delete_batches.apply_async(
                 args=[batch_path, local_batch_path, json_input],
                 queue="ingestion",
                 routing_key="ingestion",

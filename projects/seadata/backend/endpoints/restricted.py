@@ -1,6 +1,7 @@
 import requests
 from b2stage.endpoints.commons.endpoint import EudatEndpoint
 from restapi import decorators
+from restapi.connectors import celery
 from restapi.services.authentication import Role
 from restapi.services.uploader import Uploader
 from restapi.utilities.logs import log
@@ -30,8 +31,8 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 # Create the path and set permissions
                 imain.create_collection_inheritable(order_path, obj.username)
 
-            celery = self.get_service_instance("celery")
-            task = celery.download_restricted_order.apply_async(
+            celery_app = celery.get_instance()
+            task = celery_app.download_restricted_order.apply_async(
                 args=[order_id, order_path, json_input],
                 queue="restricted",
                 routing_key="restricted",
