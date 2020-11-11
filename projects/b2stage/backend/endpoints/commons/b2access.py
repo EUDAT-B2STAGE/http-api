@@ -19,9 +19,6 @@ from restapi.rest.definition import EndpointResource
 from restapi.utilities.logs import log
 from urllib3.exceptions import HTTPError
 
-# 12 h
-IRODS_CONNECTION_TTL = 43200
-
 
 class B2accessUtilities(EndpointResource):
 
@@ -184,7 +181,7 @@ class B2accessUtilities(EndpointResource):
 
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
-        return irods.get_instance(expiration=IRODS_CONNECTION_TTL)
+        return irods.get_instance()
 
     def create_b2access_client(self, auth, decorate=False):
         """ Create the b2access Flask oauth2 object """

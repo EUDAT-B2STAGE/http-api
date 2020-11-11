@@ -59,6 +59,9 @@ variables:
     IRODS_PORT: 1247
     IRODS_DB: ICAT
 
+    IRODS_EXPIRATION_TIME: 7200
+    IRODS_VERIFICATION_TIME: 900
+
     ###############################
     ## Dockerized DB
     ACTIVATE_POSTGRES: 1
