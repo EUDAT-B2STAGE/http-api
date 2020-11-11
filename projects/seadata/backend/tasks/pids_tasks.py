@@ -1,5 +1,6 @@
 import os
 
+from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
 from restapi.connectors.celery import send_errors_by_email
 from restapi.utilities.logs import log
@@ -31,7 +32,7 @@ def cache_batch_pids(self, irods_path):
         log.info("Task cache_batch_pids working on: {}", irods_path)
 
         try:
-            with celery_app.get_service(service="irods") as imain:
+            with irods.get_instance() as imain:
 
                 stats = {
                     "total": 0,

@@ -5,6 +5,7 @@ import zipfile
 from shutil import rmtree
 
 import requests
+from b2stage.connectors import irods
 from b2stage.connectors.irods.client import IrodsException
 from b2stage.endpoints.commons import path
 from b2stage.endpoints.commons.basher import BashCommands
@@ -82,7 +83,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
         order_path = order_path.rstrip("/")
 
         try:
-            with celery_app.get_service(service="irods") as imain:
+            with irods.get_instance() as imain:
                 if not imain.is_collection(order_path):
                     return notify_error(
                         ErrorCodes.ORDER_NOT_FOUND,

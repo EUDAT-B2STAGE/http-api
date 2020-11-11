@@ -1,6 +1,7 @@
 import os
 from shutil import rmtree
 
+from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
 from glom import glom
 from restapi.connectors.celery import send_errors_by_email
@@ -44,7 +45,7 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
             )
 
         try:
-            with celery_app.get_service(service="irods") as imain:
+            with irods.get_instance() as imain:
 
                 errors = []
                 counter = 0

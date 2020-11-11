@@ -1,6 +1,7 @@
 import json
 import time
 
+from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
 from b2stage.endpoints.commons.b2handle import PIDgenerator
 from restapi.connectors.celery import send_errors_by_email
@@ -31,7 +32,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
         local_path = path.join(mybatchpath, batch_id, return_str=True)
 
         try:
-            with celery_app.get_service(service="irods") as imain:
+            with irods.get_instance() as imain:
 
                 out_data = []
                 errors = []

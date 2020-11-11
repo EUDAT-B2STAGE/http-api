@@ -4,6 +4,7 @@ import zipfile
 from shutil import rmtree
 
 import requests
+from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
 from restapi.connectors.celery import send_errors_by_email
 from restapi.utilities.logs import log
@@ -127,7 +128,7 @@ def download_batch(self, batch_path, local_path, myjson):
             )
 
         try:
-            with celery_app.get_service(service="irods") as imain:
+            with irods.get_instance() as imain:
                 if not imain.is_collection(batch_path):
                     return notify_error(
                         ErrorCodes.BATCH_NOT_FOUND,
