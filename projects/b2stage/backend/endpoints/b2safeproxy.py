@@ -58,13 +58,14 @@ class B2safeProxy(B2accessUtilities):
         user = self.get_user()
         log.debug("Token user: {}", user)
 
-        if user.session is not None and len(user.session) > 0:
-            log.info("Valid B2SAFE user: {}", user.uuid)
-        else:
+        if not user.session:
             raise Unauthorized("This user is not registered inside B2SAFE")
 
-        icom = self.get_service_instance(service_name="irods", user_session=user)
+        log.info("Valid B2SAFE user: {}", user.uuid)
+
+        icom = irods.get_instance(user_session=user)
         icom.list()
+
         return "validated"
 
     @decorators.use_kwargs(Credentials)
@@ -108,15 +109,18 @@ class B2safeProxy(B2accessUtilities):
         encoded_session = irods.prc.serialize()
         token, irods_user = self.irods_user(username, encoded_session)
 
-        response = {"token": token}
-        imain = self.get_service_instance(service_name="irods")
+        imain = irods.get_instance()
 
         user_home = imain.get_user_home(irods_user)
         if imain.is_collection(user_home):
-            response["b2safe_home"] = user_home
+            b2safe_home = user_home
         else:
-            response["b2safe_home"] = imain.get_user_home(append_user=False)
+            b2safe_home = imain.get_user_home(append_user=False)
 
-        response["b2safe_user"] = irods_user
+        response = {
+            "token": token,
+            "b2safe_user": irods_user,
+            "b2safe_home": b2safe_home,
+        }
 
         return self.response(response)

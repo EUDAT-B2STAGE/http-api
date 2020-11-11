@@ -80,16 +80,15 @@ class EudatEndpoint(B2accessUtilities):
         else:
             log.error("Unknown credentials provided")
 
-        #################################
-        sql = self.get_service_instance("sqlalchemy")
+        # sql = sqlalchemy.get_instance()
         # update user variable to account email, which should be always unique
         user = internal_user.email
 
         return InitObj(
             username=user,
-            extuser_object=external_user,
+            # extuser_object=external_user,
             icommands=icom,
-            db_handler=sql,
+            # db_handler=sql,
             valid_credentials=True,
             refreshed=refreshed,
         )

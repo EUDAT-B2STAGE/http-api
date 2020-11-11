@@ -46,10 +46,10 @@ class InitObj:
 
     # User info
     username = attribute(default=None)
-    extuser_object = attribute(default=None)
+    # extuser_object = attribute(default=None)
     # Service handlers
     icommands = attribute(default=None)
-    db_handler = attribute(default=None)
+    # db_handler = attribute(default=None)
     valid_credentials = attribute(default=False)
     refreshed = attribute(default=False)
     # Save errors to report
