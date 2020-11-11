@@ -8,6 +8,7 @@ from datetime import datetime
 
 import pytz
 import requests
+from b2stage.connectors import irods
 from b2stage.endpoints.commons.oauth2clients import (
     ExternalLogins,
     decorate_http_request,
@@ -183,9 +184,7 @@ class B2accessUtilities(EndpointResource):
 
     def get_main_irods_connection(self):
         # NOTE: Main API user is the key to let this happen
-        return self.get_service_instance(
-            service_name="irods", cache_expiration=IRODS_CONNECTION_TTL
-        )
+        return irods.get_instance(expiration=IRODS_CONNECTION_TTL)
 
     def create_b2access_client(self, auth, decorate=False):
         """ Create the b2access Flask oauth2 object """

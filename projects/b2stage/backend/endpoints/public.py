@@ -5,6 +5,7 @@ Getting informations for public data.
 
 import os
 
+from b2stage.connectors import irods
 from b2stage.endpoints.commons.b2handle import B2HandleEndpoint
 from b2stage.endpoints.commons.statics import FOOTER, HEADER
 from restapi import decorators
@@ -32,11 +33,8 @@ class Public(B2HandleEndpoint):
 
         ####################
         # check if public, with anonymous access in irods
-        icom = self.get_service_instance(
-            service_name="irods",
-            user="anonymous",
-            password="null",
-            authscheme="credentials",
+        icom = irods.get_instance(
+            user="anonymous", password="null", authscheme="credentials",
         )
 
         path = self.parse_path(location)
