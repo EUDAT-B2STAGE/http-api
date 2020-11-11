@@ -1,3 +1,4 @@
+from b2stage.connectors import irods
 from restapi.connectors.celery import send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
@@ -14,7 +15,7 @@ def list_resources(self, batch_path, order_path, myjson):
     with celery_app.app.app_context():
 
         try:
-            with celery_app.get_service(service="irods") as imain:
+            with irods.get_instance() as imain:
 
                 param_key = "parameters"
 

@@ -3,6 +3,7 @@ import os
 import re
 from shutil import rmtree
 
+from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
 from b2stage.endpoints.commons.b2handle import PIDgenerator, b2handle
 from b2stage.endpoints.commons.basher import BashCommands
@@ -54,7 +55,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         path.create(local_zip_dir, directory=True, force=True)
 
         try:
-            with celery_app.get_service(service="irods") as imain:
+            with irods.get_instance() as imain:
 
                 log.info("Retrieving paths for {} PIDs", len(pids))
                 ##################
