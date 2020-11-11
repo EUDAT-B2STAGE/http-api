@@ -1,7 +1,8 @@
+from b2stage.connectors import irods
 from b2stage.connectors.irods.client import IrodsException, iexceptions
 from b2stage.endpoints.commons.b2access import B2accessUtilities
 from restapi import decorators
-from restapi.exceptions import RestApiException
+from restapi.exceptions import Unauthorized
 from restapi.models import Schema, fields
 from restapi.utilities.logs import log
 
@@ -20,20 +21,21 @@ class B2safeProxy(B2accessUtilities):
     baseuri = "/auth"
     labels = ["eudat", "b2safe", "authentication"]
 
-    def get_and_verify_irods_session(self, parameters):
+    def get_and_verify_irods_session(self, user, password, authscheme):
 
         obj = None
-        username = parameters.get("user")
 
         try:
-            obj = self.get_service_instance(**parameters)
+            obj = irods.get_instance(
+                user=user, password=password, authscheme=authscheme,
+            )
 
         except iexceptions.CAT_INVALID_USER:
-            log.warning("Invalid user: {}", username)
+            log.warning("Invalid user: {}", user)
         except iexceptions.UserDoesNotExist:
-            log.warning("Invalid iCAT user: {}", username)
+            log.warning("Invalid iCAT user: {}", user)
         except iexceptions.CAT_INVALID_AUTHENTICATION:
-            log.warning("Invalid password for {}", username)
+            log.warning("Invalid password for {}", user)
         except BaseException as e:
             log.warning('Failed with unknown reason:\n[{}] "{}"', type(e), e)
             error = "Failed to verify credentials against B2SAFE. " + "Unknown error: "
@@ -59,8 +61,7 @@ class B2safeProxy(B2accessUtilities):
         if user.session is not None and len(user.session) > 0:
             log.info("Valid B2SAFE user: {}", user.uuid)
         else:
-            msg = "This user is not registered inside B2SAFE"
-            raise RestApiException(msg, status_code=401)
+            raise Unauthorized("This user is not registered inside B2SAFE")
 
         icom = self.get_service_instance(service_name="irods", user_session=user)
         icom.list()
@@ -89,7 +90,7 @@ class B2safeProxy(B2accessUtilities):
             password = "WHATEVERYOUWANT:)"
 
         if not username or not password:
-            raise RestApiException("Missing username or password", status_code=401)
+            raise Unauthorized("Missing username or password")
 
         if authscheme.upper() == "OPENID":
             authscheme = "PAM"
@@ -97,25 +98,16 @@ class B2safeProxy(B2accessUtilities):
 
             username = self.get_irods_user_from_b2access(imain, username)
 
-        #############
-        params = {
-            "service_name": "irods",
-            "user": username,
-            "password": password,
-            "authscheme": authscheme,
-        }
-
         # we verify that irods connects with this credentials
-        irods = self.get_and_verify_irods_session(params)
+        irods = self.get_and_verify_irods_session(
+            user=username, password=password, authscheme=authscheme,
+        )
         if irods is None:
-            msg = "Failed to authenticate on B2SAFE"
-            raise RestApiException(msg, status_code=401)
-        else:
-            encoded_session = irods.prc.serialize()
+            raise Unauthorized("Failed to authenticate on B2SAFE")
 
+        encoded_session = irods.prc.serialize()
         token, irods_user = self.irods_user(username, encoded_session)
 
-        #############
         response = {"token": token}
         imain = self.get_service_instance(service_name="irods")
 
