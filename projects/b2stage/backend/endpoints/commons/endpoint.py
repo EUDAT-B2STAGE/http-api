@@ -4,6 +4,7 @@ Common functions for EUDAT endpoints
 
 import os
 
+from b2stage.connectors import irods
 from b2stage.endpoints.commons import (
     CURRENT_B2SAFE_SERVER,
     CURRENT_HTTPAPI_SERVER,
@@ -97,8 +98,7 @@ class EudatEndpoint(B2accessUtilities):
         external_user = self.oauth_from_local(internal_user)
 
         try:
-            icom = self.get_service_instance(
-                service_name="irods",
+            icom = irods.get_instance(
                 user=external_user.irodsuser,
                 password=external_user.token,
                 authscheme="PAM",
@@ -143,7 +143,7 @@ class EudatEndpoint(B2accessUtilities):
             raise RestApiException(msg, status_code=401)
 
         try:
-            return self.get_service_instance(service_name="irods", user_session=user)
+            return irods.get_instance(user_session=user)
         except iexceptions.PAM_AUTH_PASSWORD_FAILED:
             msg = "PAM Authentication failed, invalid password or token"
             raise RestApiException(msg, status_code=401)
@@ -163,8 +163,7 @@ class EudatEndpoint(B2accessUtilities):
             # 'guest' irods mode is only for debugging purpose
             raise ValueError("Invalid authentication")
 
-        icom = self.get_service_instance(
-            service_name="irods",
+        icom = irods.get_instance(
             only_check_proxy=True,
             user=IRODS_VARS.get("guest_user"),
             password=None,

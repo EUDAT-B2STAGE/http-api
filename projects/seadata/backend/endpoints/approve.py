@@ -4,6 +4,7 @@ Move data from ingestion to production
 import requests
 from b2stage.endpoints.commons.b2handle import B2HandleEndpoint
 from restapi import decorators
+from restapi.connectors import celery
 from restapi.utilities.logs import log
 from seadata.endpoints.commons.cluster import ClusterContainerEndpoint
 from seadata.endpoints.commons.seadatacloud import EndpointsInputSchema
@@ -61,7 +62,6 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
         ################
         # 1. check if irods path exists
-        # imain = self.get_service_instance(service_name='irods')
         try:
             imain = self.get_main_irods_connection()
             batch_path = self.get_irods_batch_path(imain, batch_id)
@@ -83,8 +83,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # ASYNC
             log.info("Submit async celery task")
 
-            celery = self.get_service_instance("celery")
-            task = celery.move_to_production_task.apply_async(
+            celery_app = celery.get_instance()
+            task = celery_app.move_to_production_task.apply_async(
                 args=[batch_id, batch_path, prod_path, json_input],
                 queue="ingestion",
                 routing_key="ingestion",

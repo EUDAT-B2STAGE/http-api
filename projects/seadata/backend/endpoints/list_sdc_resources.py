@@ -1,6 +1,7 @@
 import requests
 from b2stage.endpoints.commons.endpoint import EudatEndpoint
 from restapi import decorators
+from restapi.connectors import celery
 from restapi.utilities.logs import log
 from seadata.endpoints.commons.cluster import ClusterContainerEndpoint
 from seadata.endpoints.commons.seadatacloud import EndpointsInputSchema
@@ -21,8 +22,8 @@ class ListResources(EudatEndpoint, ClusterContainerEndpoint):
 
         try:
             imain = self.get_main_irods_connection()
-            celery = self.get_service_instance("celery")
-            task = celery.list_resources.apply_async(
+            celery_app = celery.get_instance()
+            task = celery_app.list_resources.apply_async(
                 args=[
                     self.get_irods_batch_path(imain),
                     self.get_irods_order_path(imain),
