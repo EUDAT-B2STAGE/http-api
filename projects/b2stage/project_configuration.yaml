@@ -42,6 +42,7 @@ variables:
 
     ###############################
     ## LOCAL (container) iRODS server
+    ACTIVATE_ICAT: 0
     IRODS_USER: irods
     IRODS_PASSWORD: chooseapasswordwisely # NOTE: must match ALCHEMY_PASSWORD
     IRODS_ZONE: tempZone
