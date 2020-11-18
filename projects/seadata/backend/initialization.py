@@ -45,7 +45,8 @@ class Initializer:
                         }
                         user = sql.User(**userdata)
                         for r in roles:
-                            user.roles.append(sql.Role.query.filter_by(name=r).first())
+                            role = sql.Role.query.filter_by(name=r.value).first()
+                            user.roles.append(role)
                         sql.session.add(user)
                         sql.session.commit()
                         log.info("User {} created with roles: {}", username, roles)

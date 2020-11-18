@@ -23,6 +23,7 @@ variables:
 
     ###############################
     IRODS_ANONYMOUS: 1
+    ACTIVATE_ICAT: 0
     # 72 hours
     TOKEN_LONG_TTL: 259200
     TOKEN_SHORT_TTL: 259200
