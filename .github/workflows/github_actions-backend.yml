@@ -3,13 +3,16 @@ name: Backend
 on:
   push:
   schedule:
-    - cron: "0 5 * * *"
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
 env:
   PROJECT: b2stage
 
 jobs:
   backend-tests:
     runs-on: ubuntu-20.04
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v2
@@ -36,9 +39,8 @@ jobs:
           rapydo shell --no-tty backend 'restapi tests --wait'
           docker cp ${PROJECT}_backend_1:/code/coverage.xml coverage.xml
           bash <(curl -s https://codecov.io/bash)
-
-      - name: Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: coverage
-          path: coverage.xml
+      # - name: Artifact
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: coverage
+      #     path: coverage.xml
