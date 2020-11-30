@@ -28,6 +28,10 @@ DEFAULT_CHUNK_SIZE = 1_048_576
 # Excluded from coverage because it is only used by a very specific service
 # No further tests will be included in the core
 class IrodsPythonExt(Connector, IrodsPythonClient):
+    def __init__(self, app=None):
+        self.prc = None
+        super().__init__(app)
+
     def get_connection_exception(self):
         # Do not catch irods.exceptions.PAM_AUTH_PASSWORD_FAILED and
         # irods.expcetions.CAT_INVALID_AUTHENTICATION because they are used
@@ -161,8 +165,9 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
         return self
 
     def disconnect(self):
-        self.prc.cleanup()
         self.disconnected = True
+        if self.prc:
+            self.prc.cleanup()
 
     def is_connected(self):
 
