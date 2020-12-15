@@ -1,6 +1,6 @@
 """
 B2SAFE HTTP REST API endpoints.
-Getting informations for public data.
+Getting information for public data.
 """
 
 import os
@@ -25,7 +25,7 @@ class Public(B2HandleEndpoint):
     @decorators.endpoint(
         path="/public/<path:location>",
         summary="Let non-authenticated users get data about a public data-object",
-        responses={200: "Informations about the data-object"},
+        responses={200: "Information about the data-object"},
     )
     def get(self, location, download=False):
 
