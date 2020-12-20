@@ -316,9 +316,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # TODO: investigate iticket expiration
         # iticket mod Ticket_string-or-id uses/expire string-or-none
 
-        unwanted = "/"
+        unwanted = ["/", "%"]
         ticket = unwanted
-        while unwanted in ticket:
+        # Create un iticket that does not contains any of the unwanted characters
+        while any(c in ticket for c in unwanted):
             obj = imain.ticket(path)
             ticket = obj.ticket
         encoded = urllib.parse.quote_plus(ticket)
