@@ -59,14 +59,15 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
         else:
 
             admin = variables.get("be_admin", False)
-            user_key = "default_admin_user" if admin else "user"
-            user = variables.get(user_key)
+            if admin:
+                user = variables.get("default_admin_user")
+            else:
+                user = variables.get("user")
             password = variables.get("password")
 
         if user is None:
             raise AttributeError("No user is defined")
         log.debug("Irods user: {}", user)
-        log.warning("Irods user: {}", user)
 
         ######################
         if session:
@@ -162,10 +163,8 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
 
         self.prc = obj
         # self.variables = variables
-        # New way to ovveride variables
-        self.services[self.name] = variables
 
-        self.chunk_size = self.variables.get("chunksize", DEFAULT_CHUNK_SIZE)
+        self.chunk_size = variables.get("chunksize", DEFAULT_CHUNK_SIZE)
 
         return self
 
