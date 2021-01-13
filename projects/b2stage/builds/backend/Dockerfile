@@ -1,8 +1,11 @@
 FROM rapydo/backend:1.0
 MAINTAINER "Mattia D'Antonio <m.dantonio@cineca.it>"
 
+ARG RAPYDO_VERSION
+RUN test -n "$RAPYDO_VERSION"
+
 #########################################################
-# Python 3.9 is not working for dballe, let's downgrade to python 3.8
+# Python 3.9 is not working for gssapi 1.5.1, let's downgrade to python 3.8
 ENV PYTHON_VERSION="3.8"
 RUN ln -sf /usr/bin/python${PYTHON_VERSION} /usr/bin/python3 \
     && curl --silent https://bootstrap.pypa.io/get-pip.py --output get-pip.py \
