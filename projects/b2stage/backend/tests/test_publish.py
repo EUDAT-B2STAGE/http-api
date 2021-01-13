@@ -21,17 +21,13 @@ if not maketests:
 else:
 
     class TestPublish(RestTestsAuthenticatedBase):
-
-        _anonymous_user = "anonymous"
-        _main_key = "published"
-
         def setUp(self, client):
 
             # Call father's method
-            super().setUp()
+            super().setUp(client)
 
             # Remove existing files
-            endpoint = f"{API_URI}/registered"  # + self._ipath
+            endpoint = f"{API_URI}/registered"
             r = client.delete(
                 endpoint,
                 data=dict(debugclean="True"),
@@ -41,7 +37,7 @@ else:
 
             log.info("\n### Creating a test token (ANONYMOUS IRODS user) ###")
             credentials = {
-                "username": self._anonymous_user,
+                "username": "anonymous",
                 "password": "notrequired",
             }
             endpoint = f"{AUTH_URI}/b2safeproxy"
@@ -50,7 +46,7 @@ else:
             r = client.post(endpoint, data=credentials)
             assert r.status_code == 200
             content = self.get_content(r)
-            self.save_token(content.get("token"), suffix=self._anonymous_user)
+            self.save_token(content.get("token"), suffix="anonymous")
 
             self.irods_vars = Env.load_variables_group(prefix="irods")
             self._filename = "some_file.txt"
@@ -95,7 +91,7 @@ else:
             r = client.get(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
-            assert data.get(self._main_key) is False
+            assert data.get("published") is False
 
             # Random file: does not work
             r = client.get(
@@ -122,13 +118,13 @@ else:
             r = client.put(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
-            assert data.get(self._main_key) is True
+            assert data.get("published") is True
 
             # Current file is now published
             r = client.get(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
-            assert data.get(self._main_key) is True
+            assert data.get("published") is True
 
             # Current file can be accessed by anonymous with /api/registered
             anonymous_endpoint = f"{API_URI}/registered"
@@ -181,7 +177,7 @@ else:
             r = client.put(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
-            assert data.get(self._main_key) is True
+            assert data.get("published") is True
 
             # Unpublish the file which was previously published
             r = client.delete(
@@ -189,13 +185,13 @@ else:
             )
             assert r.status_code == 200
             data = self.get_content(r)
-            assert data.get(self._main_key) is False
+            assert data.get("published") is False
 
             # Current file is now unpublished
             r = client.get(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
-            assert data.get(self._main_key) is False
+            assert data.get("published") is False
 
             # Current file cannot be accessed by anonymous
             anonymous_endpoint = f"{API_URI}/registered"
