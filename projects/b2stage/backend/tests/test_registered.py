@@ -4,28 +4,11 @@ from restapi.tests import API_URI
 from restapi.utilities.logs import log
 from tests.custom import RestTestsAuthenticatedBase
 
+IRODS_PATH = "/tempZone/home/icatbetatester/test"
+TEST_FILENAME = "test.txt"
+
 
 class TestDigitalObjects(RestTestsAuthenticatedBase):
-
-    _irods_test_name = "test"
-    _irods_home = "/tempZone/home/icatbetatester"
-    _irods_path = "/tempZone/home/icatbetatester/test"
-    _invalid_irods_path = "/tempZone/home/x/icatbetatester/test"
-    _test_filename = "test.txt"
-
-    def tearDown(self, client):
-
-        log.debug("### Cleaning custom data ###\n")
-
-        # Clean all test data
-        endpoint = f"{API_URI}/registered"
-        r = client.delete(
-            endpoint, data={"debugclean": True}, headers=self.__class__.auth_header
-        )
-        assert r.status_code == 200
-
-        super().tearDown()
-
     def test_01_POST_create_test_directory(self, client):
         """ Test directory creation: POST """
 
@@ -34,29 +17,25 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Create a directory
         endpoint = f"{API_URI}/registered"
         r = client.post(
-            endpoint,
-            data={"path": self._irods_path},
-            headers=self.__class__.auth_header,
+            endpoint, data={"path": IRODS_PATH}, headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
 
         # Overwrite a directory w/o force flag
         r = client.post(
-            endpoint,
-            data={"path": self._irods_path},
-            headers=self.__class__.auth_header,
+            endpoint, data={"path": IRODS_PATH}, headers=self.__class__.auth_header,
         )
         assert r.status_code == 409
 
         # Overwrite a directory
-        params = {"force": True, "path": self._irods_path}
+        params = {"force": True, "path": IRODS_PATH}
         r = client.post(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Create a directory in a non existing path
         r = client.post(
             endpoint,
-            data={"path": self._invalid_irods_path},
+            data={"path": "/tempZone/home/x/icatbetatester/test"},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 404
@@ -72,9 +51,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Create a directory
         endpoint = f"{API_URI}/registered"
         r = client.post(
-            endpoint,
-            data={"path": self._irods_path},
-            headers=self.__class__.auth_header,
+            endpoint, data={"path": IRODS_PATH}, headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
         ###################################################
@@ -82,10 +59,10 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         log.info("*** Testing PUT")
         content = b"a test"
         # Upload entity in test folder
-        endpoint = f"{API_URI}/registered{self._irods_path}/{self._test_filename}"
+        endpoint = f"{API_URI}/registered{IRODS_PATH}/{TEST_FILENAME}"
         r = client.put(
             endpoint,
-            data={"force": True, "file": (io.BytesIO(content), self._test_filename)},
+            data={"force": True, "file": (io.BytesIO(content), TEST_FILENAME)},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
@@ -100,7 +77,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         log.info("*** Testing PUT in streaming")
         # Upload entity in test folder
-        endpoint = f"{API_URI}/registered{self._irods_path}{self._test_filename}2"
+        endpoint = f"{API_URI}/registered{IRODS_PATH}{TEST_FILENAME}2"
         content = b"verywell\nbla bla\n"
         r = client.put(
             endpoint,
@@ -123,7 +100,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
             endpoint,
             data={
                 "force": True,
-                "file": (io.BytesIO(b"this is a test"), self._test_filename),
+                "file": (io.BytesIO(b"this is a test"), TEST_FILENAME),
             },
             headers=self.__class__.auth_header,
         )
@@ -132,7 +109,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Overwrite entity in test folder w/o force flag
         r = client.put(
             endpoint,
-            data={"file": (io.BytesIO(b"this is a test"), self._test_filename)},
+            data={"file": (io.BytesIO(b"this is a test"), TEST_FILENAME)},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 400
@@ -142,10 +119,10 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         assert r.status_code == 400
 
         # Upload entity in a non existing path
-        endpoint = f"{API_URI}/registered{self._invalid_irods_path}"
+        endpoint = f"{API_URI}/registered/tempZone/home/x/icatbetatester/test"
         r = client.put(
             endpoint,
-            data={"file": (io.BytesIO(b"this is a test"), self._test_filename)},
+            data={"file": (io.BytesIO(b"this is a test"), TEST_FILENAME)},
             headers=self.__class__.auth_header,
         )
         assert r.status_code == 404
@@ -156,7 +133,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         data = self.get_content(response)
 
         # get the only file in the response
-        data_object = data.pop().get(self._test_filename, {})
+        data_object = data.pop().get(TEST_FILENAME, {})
         # check for metadata
         key = "metadata"
         assert key in data_object
@@ -175,9 +152,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         log.info("*** Testing GET")
         # GET non existing entity
-        endpoint = (
-            f"{API_URI}/registered{self._irods_path}/{self._test_filename}NOTEXISTS"
-        )
+        endpoint = f"{API_URI}/registered{IRODS_PATH}/{TEST_FILENAME}NOTEXISTS"
         r = client.get(endpoint, headers=self.__class__.auth_header)
         assert r.status_code == 404
 
@@ -186,37 +161,31 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Create a directory
         endpoint = f"{API_URI}/registered"
         r = client.post(
-            endpoint,
-            data={"path": self._irods_path},
-            headers=self.__class__.auth_header,
+            endpoint, data={"path": IRODS_PATH}, headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
 
         # Upload entity in test folder
-        endpoint = f"{API_URI}/registered" + self._irods_path
+        endpoint = f"{API_URI}/registered" + IRODS_PATH
         r = client.put(
             endpoint,
-            data={"file": (io.BytesIO(STRANGE_BSTRING), self._test_filename)},
+            data={"file": (io.BytesIO(STRANGE_BSTRING), TEST_FILENAME)},
             headers=self.__class__.auth_header,
         )
         # ###################################################
 
         # Get list of entities in a directory
-        endpoint = f"{API_URI}/registered" + self._irods_path
+        endpoint = f"{API_URI}/registered" + IRODS_PATH
         r = client.get(endpoint, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Obtain entity metadata
-        endpoint = (
-            f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename
-        )
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + TEST_FILENAME
         r = client.get(endpoint, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Download an entity
-        endpoint = (
-            f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename
-        )
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + TEST_FILENAME
         r = client.get(
             endpoint,
             query_string={"download": True},
@@ -226,9 +195,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         assert r.data == STRANGE_BSTRING
 
         # Obtain EUDAT entity metadata (not present)
-        endpoint = (
-            f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename
-        )
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + TEST_FILENAME
         r = client.get(endpoint, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
@@ -237,14 +204,12 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         # Add EUDAT metadata
         params = {"PID": pid}
-        endpoint = API_URI + "/metadata" + self._irods_path + "/" + self._test_filename
+        endpoint = API_URI + "/metadata" + IRODS_PATH + "/" + TEST_FILENAME
         r = client.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Obtain EUDAT entity metadata
-        endpoint = (
-            f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename
-        )
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + TEST_FILENAME
         r = client.get(endpoint, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
@@ -264,61 +229,58 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Create a directory
         endpoint = f"{API_URI}/registered"
         r = client.post(
-            endpoint,
-            data={"path": self._irods_path},
-            headers=self.__class__.auth_header,
+            endpoint, data={"path": IRODS_PATH}, headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
 
         # Upload entity in test folder
-        endpoint = f"{API_URI}/registered" + self._irods_path
+        endpoint = f"{API_URI}/registered" + IRODS_PATH
         r = client.put(
             endpoint,
-            data={"file": (io.BytesIO(b"this is a test"), self._test_filename)},
+            data={"file": (io.BytesIO(b"this is a test"), TEST_FILENAME)},
             headers=self.__class__.auth_header,
         )
         ###################################################
 
         # Rename file
         params = {"newname": new_file_name}
-        endpoint = (
-            f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename
-        )
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + TEST_FILENAME
         r = client.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Rename again with the original name
-        params = {"newname": self._test_filename}
-        endpoint = f"{API_URI}/registered" + self._irods_path + "/" + new_file_name
+        params = {"newname": TEST_FILENAME}
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + new_file_name
         r = client.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Rename directory
         params = {"newname": new_directory_name}
-        endpoint = f"{API_URI}/registered" + self._irods_path
+        endpoint = f"{API_URI}/registered" + IRODS_PATH
         r = client.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Rename again with the original name
-        params = {"newname": self._irods_test_name}
-        endpoint = f"{API_URI}/registered" + self._irods_home + "/" + new_directory_name
+        params = {"newname": "test"}
+        irods_home = "/tempZone/home/icatbetatester"
+        endpoint = f"{API_URI}/registered" + irods_home + "/" + new_directory_name
         r = client.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 200
 
         # Rename non existing file
-        params = {"newname": self._test_filename}
-        endpoint = f"{API_URI}/registered" + self._irods_path + "/" + new_file_name
+        params = {"newname": TEST_FILENAME}
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + new_file_name
         r = client.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 404
 
         # Rename non existing directory
-        params = {"newname": self._irods_path}
+        params = {"newname": IRODS_PATH}
         endpoint = f"{API_URI}/registered" + new_directory_name
         r = client.patch(endpoint, data=params, headers=self.__class__.auth_header)
         assert r.status_code == 404
 
         # Rename w/o passing "newname"
-        endpoint = f"{API_URI}/registered" + self._irods_path + "/" + new_file_name
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + new_file_name
         r = client.patch(endpoint, headers=self.__class__.auth_header)
         assert r.status_code == 400
 
@@ -330,17 +292,15 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         # Create a directory
         endpoint = f"{API_URI}/registered"
         r = client.post(
-            endpoint,
-            data={"path": self._irods_path},
-            headers=self.__class__.auth_header,
+            endpoint, data={"path": IRODS_PATH}, headers=self.__class__.auth_header,
         )
         assert r.status_code == 200
 
         # Upload entity in test folder
-        endpoint = f"{API_URI}/registered" + self._irods_path
+        endpoint = f"{API_URI}/registered" + IRODS_PATH
         r = client.put(
             endpoint,
-            data={"file": (io.BytesIO(b"this is a test"), self._test_filename)},
+            data={"file": (io.BytesIO(b"this is a test"), TEST_FILENAME)},
             headers=self.__class__.auth_header,
         )
         ###################################################
@@ -348,20 +308,16 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
         log.info("*** Testing DELETE")
 
         # Delete entity
-        endpoint = (
-            f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename
-        )
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + TEST_FILENAME
         r = client.delete(endpoint, headers=self.__class__.auth_header)
         assert r.status_code == 405
 
         # Delete directory
-        endpoint = f"{API_URI}/registered" + self._irods_path
+        endpoint = f"{API_URI}/registered" + IRODS_PATH
         r = client.delete(endpoint, headers=self.__class__.auth_header)
         assert r.status_code == 405
 
         # Delete non existing entity
-        endpoint = (
-            f"{API_URI}/registered" + self._irods_path + "/" + self._test_filename + "x"
-        )
+        endpoint = f"{API_URI}/registered" + IRODS_PATH + "/" + TEST_FILENAME + "x"
         r = client.delete(endpoint, headers=self.__class__.auth_header)
         assert r.status_code == 405

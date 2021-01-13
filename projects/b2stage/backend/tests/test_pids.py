@@ -4,12 +4,6 @@ from tests.custom import RestTestsAuthenticatedBase
 
 
 class TestPids(RestTestsAuthenticatedBase):
-
-    # def tearDown(self):
-
-    #     log.debug('### Cleaning custom data ###\n')
-    #     super().tearDown()
-
     def test_01_GET_public_PID(self, client):
         """ Test directory creation: POST """
 
