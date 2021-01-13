@@ -5,8 +5,8 @@
 project:
   title: EUDAT-B2STAGE HTTP-API server
   description: Processing data in EUDAT domains
-  version: "1.1.3"
-  rapydo: "0.9"
+  version: "1.1.4"
+  rapydo: "1.0"
 
 tags:
   eudat: all endpoints associated to EUDAT services
@@ -30,7 +30,7 @@ variables:
     # BACKEND_BUILD_MODE: backendirods
     # PYTHON_PATH: /usr/local/lib/python3.6/dist-packages
 
-    ALLOW_ACCESS_TOKEN_PARAMETER: True
+    ALLOW_ACCESS_TOKEN_PARAMETER: 1
     RUN_SCHEMATHESIS: 0
 
     ###############################
@@ -55,7 +55,7 @@ variables:
     # IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
 
-    IRODS_ENABLE_CONNECTOR: True
+    IRODS_ENABLE_CONNECTOR: 1
     IRODS_HOST: rodserver.dockerized.io
     IRODS_PORT: 1247
     IRODS_DB: ICAT

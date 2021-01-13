@@ -1,14 +1,15 @@
 import os
 
+from restapi.connectors import sqlalchemy
 from restapi.services.authentication import Role
 from restapi.utilities.logs import log
 from restapi.utilities.uuid import getUUID
 
 
 class Initializer:
-    def __init__(self, services, app=None):
+    def __init__(self, app=None):
 
-        sql = services.get("sqlalchemy", None)
+        sql = sqlalchemy.get_instance()
 
         if sql is None:
             log.critical("Unable to retrieve sqlalchemy service")
