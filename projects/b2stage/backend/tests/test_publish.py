@@ -9,7 +9,7 @@ from b2stage.endpoints.commons import path
 from restapi.env import Env
 from restapi.tests import API_URI, AUTH_URI
 from restapi.utilities.logs import log
-from tests.custom import RestTestsAuthenticatedBase
+from tests.custom import IRODS_USER, RestTestsAuthenticatedBase
 
 maketests = (
     os.getenv("ENABLE_PUBLIC_ENDPOINT") == "1" and os.getenv("IRODS_ANONYMOUS") == "1"
@@ -56,7 +56,7 @@ else:
                     path.root(),
                     self.irods_vars.get("zone"),
                     home_dirname,
-                    self._irods_user,
+                    IRODS_USER,
                     self._filename,
                 )
             )
