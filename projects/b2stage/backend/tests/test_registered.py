@@ -4,7 +4,7 @@ from restapi.tests import API_URI
 from restapi.utilities.logs import log
 from tests.custom import RestTestsAuthenticatedBase
 
-IRODS_PATH = "/tempZone/home/icatbetatester/testregistered"
+IRODS_BASEPATH = "/tempZone/home/icatbetatester"
 TEST_FILENAME = "test.txt"
 
 
@@ -12,6 +12,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_01_POST_create_test_directory(self):
         """ Test directory creation: POST """
 
+        IRODS_PATH = f"{IRODS_BASEPATH}/testregistered1"
         log.info("*** Testing POST")
 
         # Create a directory
@@ -47,6 +48,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_02_PUT_upload_entity(self):
         """ Test file upload: PUT """
 
+        IRODS_PATH = f"{IRODS_BASEPATH}/testregistered2"
         ###################################################
         # Create a directory
         endpoint = f"{API_URI}/registered"
@@ -146,6 +148,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_03_GET_entities(self):
         """ Test the entity listingend retrieval: GET """
 
+        IRODS_PATH = f"{IRODS_BASEPATH}/testregistered3"
         pid = "123/123456789"
         # STRANGE_BSTRING = b"normal"
         STRANGE_BSTRING = "£$%&($)/(*é:_§°:#".encode()
@@ -221,6 +224,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
 
         log.info("*** Testing PATCH")
 
+        IRODS_PATH = f"{IRODS_BASEPATH}/testregistered4"
         new_file_name = "filetest1"
         new_directory_name = "directorytest1"
 
@@ -287,6 +291,7 @@ class TestDigitalObjects(RestTestsAuthenticatedBase):
     def test_05_DELETE_entities(self):
         """ Test the entity delete: DELETE """
 
+        IRODS_PATH = f"{IRODS_BASEPATH}/testregistered5"
         ###################################################
         # I need to upload some data to test the DELETE..
         # Create a directory
