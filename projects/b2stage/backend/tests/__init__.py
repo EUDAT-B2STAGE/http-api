@@ -11,36 +11,9 @@ IRODS_PASSWORD = "IAMABETATESTER"
 
 
 class RestTestsAuthenticatedBase(unittest.TestCase):
-
-    """
-    HOW TO
-
-    # initialization logic for the test suite declared in the test module
-    # code that is executed before all tests in one test run
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    # clean up logic for the test suite declared in the test module
-    # code that is executed after all tests in one test run
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    # initialization logic
-    # code that is executed before each test
-    def setUp(self):
-        pass
-
-    # clean up logic
-    # code that is executed after each test
-    def tearDown(self):
-        pass
-    """
-
     def setUp(self):
 
-        client = create_app().test_client()
+        self.client = create_app().test_client()
 
         log.debug("### Setting up the Flask server ###")
 
@@ -49,7 +22,7 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         if i.create_user(IRODS_USER):
             i.modify_user_password(IRODS_USER, IRODS_PASSWORD)
 
-        r = client.post(
+        r = self.client.post(
             AUTH_URI + "/b2safeproxy",
             data={"username": IRODS_USER, "password": IRODS_PASSWORD},
         )
