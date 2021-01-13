@@ -7,6 +7,7 @@ import os
 
 from b2stage.endpoints.commons import path
 from restapi.env import Env
+from restapi.server import create_app
 from restapi.tests import API_URI, AUTH_URI
 from restapi.utilities.logs import log
 from tests.custom import RestTestsAuthenticatedBase
@@ -21,10 +22,12 @@ if not maketests:
 else:
 
     class TestPublish(RestTestsAuthenticatedBase):
-        def setUp(self, client):
+        def setUp(self):
 
             # Call father's method
-            super().setUp(client)
+            super().setUp()
+
+            client = create_app().test_client()
 
             # Remove existing files
             endpoint = f"{API_URI}/registered"
