@@ -2,6 +2,7 @@ import json
 import unittest
 
 from b2stage.connectors import irods
+from restapi.server import create_app
 from restapi.tests import AUTH_URI
 from restapi.utilities.logs import log
 
@@ -37,7 +38,9 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         pass
     """
 
-    def setUp(self, client):
+    def setUp(self):
+
+        client = create_app().test_client()
 
         log.debug("### Setting up the Flask server ###")
 
