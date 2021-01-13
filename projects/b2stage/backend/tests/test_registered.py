@@ -4,7 +4,7 @@ from restapi.tests import API_URI
 from restapi.utilities.logs import log
 from tests.custom import RestTestsAuthenticatedBase
 
-IRODS_PATH = "/tempZone/home/icatbetatester/test"
+IRODS_PATH = "/tempZone/home/icatbetatester/testregistered"
 TEST_FILENAME = "test.txt"
 
 
