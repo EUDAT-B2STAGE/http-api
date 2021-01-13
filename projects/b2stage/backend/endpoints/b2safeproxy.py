@@ -26,6 +26,7 @@ class B2safeProxy(B2accessUtilities):
         obj = None
 
         try:
+            log.critical(user)
             obj = irods.get_instance(
                 user=user, password=password, authscheme=authscheme,
             )

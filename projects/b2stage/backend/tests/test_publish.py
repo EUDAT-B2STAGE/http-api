@@ -25,14 +25,14 @@ else:
         _anonymous_user = "anonymous"
         _main_key = "published"
 
-        def setUp(self):
+        def setUp(self, client):
 
             # Call father's method
             super().setUp()
 
             # Remove existing files
             endpoint = f"{API_URI}/registered"  # + self._ipath
-            r = self.app.delete(
+            r = client.delete(
                 endpoint,
                 data=dict(debugclean="True"),
                 headers=self.__class__.auth_header,
@@ -47,7 +47,7 @@ else:
             endpoint = f"{AUTH_URI}/b2safeproxy"
 
             log.debug("*** Testing anonymous authentication on {}", endpoint)
-            r = self.app.post(endpoint, data=credentials)
+            r = client.post(endpoint, data=credentials)
             assert r.status_code == 200
             content = self.get_content(r)
             self.save_token(content.get("token"), suffix=self._anonymous_user)
@@ -76,7 +76,7 @@ else:
 
             # Upload entity in test folder
             endpoint = f"{API_URI}/registered" + self._ipath
-            r = self.app.put(
+            r = client.put(
                 endpoint,
                 data={
                     "file": (io.BytesIO(b"just a test"), self._filename),
@@ -86,19 +86,19 @@ else:
             )
             assert r.status_code == 200
 
-        def test_01_GET_check_if_published(self):
+        def test_01_GET_check_if_published(self, client):
 
             endpoint = f"{API_URI}/publish"
             log.info("*** Testing GET call on {}", endpoint)
 
             # Current file is not published
-            r = self.app.get(endpoint + self._ipath, headers=self.__class__.auth_header)
+            r = client.get(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is False
 
             # Random file: does not work
-            r = self.app.get(
+            r = client.get(
                 endpoint + self._ipath + "wrong", headers=self.__class__.auth_header
             )
             assert r.status_code == 404
@@ -106,33 +106,33 @@ else:
             assert "not existing or no permissions" in error
 
             # Some other user directory: does not work
-            r = self.app.get(
+            r = client.get(
                 endpoint + self._no_permission_path, headers=self.__class__.auth_header
             )
             assert r.status_code == 404
             error = self.get_content(r)
             assert "not existing or no permissions" in error
 
-        def test_02_PUT_publish_dataobject(self):
+        def test_02_PUT_publish_dataobject(self, client):
 
             endpoint = f"{API_URI}/publish"
             log.info("*** Testing PUT call on {}", endpoint)
 
             # Publish the file which was already uploaded
-            r = self.app.put(endpoint + self._ipath, headers=self.__class__.auth_header)
+            r = client.put(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is True
 
             # Current file is now published
-            r = self.app.get(endpoint + self._ipath, headers=self.__class__.auth_header)
+            r = client.get(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is True
 
             # Current file can be accessed by anonymous with /api/registered
             anonymous_endpoint = f"{API_URI}/registered"
-            r = self.app.get(
+            r = client.get(
                 anonymous_endpoint + self._ipath,
                 headers=self.__class__.auth_header_anonymous,
             )
@@ -146,45 +146,45 @@ else:
             assert metadata.get("object_type") == "dataobject"
 
             # Random file: cannot unpublish
-            r = self.app.put(
+            r = client.put(
                 endpoint + self._ipath + "wrong", headers=self.__class__.auth_header
             )
             assert r.status_code == 404
             error = self.get_content(r)
             assert "not existing or no permissions" in error
 
-        def test_03_POST_not_working(self):
+        def test_03_POST_not_working(self, client):
 
             endpoint = f"{API_URI}/publish"
             log.info("*** Testing POST call on {}", endpoint)
 
             # Post method should not exist and/or not working
-            r = self.app.post(
+            r = client.post(
                 endpoint,
                 data=dict(path=self._ipath),
                 headers=self.__class__.auth_header,
             )
             assert r.status_code == 404
-            r = self.app.post(
+            r = client.post(
                 endpoint + "/some",
                 data=dict(path=self._ipath),
                 headers=self.__class__.auth_header,
             )
             assert r.status_code == 405
 
-        def test_04_DELETE_unpublish_dataobject(self):
+        def test_04_DELETE_unpublish_dataobject(self, client):
 
             endpoint = f"{API_URI}/publish"
             log.info("*** Testing DELETE call on {}", endpoint)
 
             # Publish the file which was already uploaded
-            r = self.app.put(endpoint + self._ipath, headers=self.__class__.auth_header)
+            r = client.put(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is True
 
             # Unpublish the file which was previously published
-            r = self.app.delete(
+            r = client.delete(
                 endpoint + self._ipath, headers=self.__class__.auth_header
             )
             assert r.status_code == 200
@@ -192,14 +192,14 @@ else:
             assert data.get(self._main_key) is False
 
             # Current file is now unpublished
-            r = self.app.get(endpoint + self._ipath, headers=self.__class__.auth_header)
+            r = client.get(endpoint + self._ipath, headers=self.__class__.auth_header)
             assert r.status_code == 200
             data = self.get_content(r)
             assert data.get(self._main_key) is False
 
             # Current file cannot be accessed by anonymous
             anonymous_endpoint = f"{API_URI}/registered"
-            r = self.app.get(
+            r = client.get(
                 anonymous_endpoint + self._ipath,
                 headers=self.__class__.auth_header_anonymous,
             )
@@ -209,20 +209,20 @@ else:
             assert "you don't have privileges" in errors.pop()
 
             # Random file: cannot unpublish
-            r = self.app.delete(
+            r = client.delete(
                 endpoint + self._ipath + "wrong", headers=self.__class__.auth_header
             )
             assert r.status_code == 404
             error = self.get_content(r)
             assert "not existing or no permissions" in error
 
-        def tearDown(self):
+        def tearDown(self, client):
 
             log.debug("\n### Cleaning anonymous data ###")
 
             # Remove the test file
             endpoint = f"{API_URI}/registered"  # + self._ipath
-            r = self.app.delete(
+            r = client.delete(
                 endpoint,
                 data=dict(debugclean="True"),
                 headers=self.__class__.auth_header,
@@ -231,7 +231,7 @@ else:
 
             # Recover current token id
             ep = f"{AUTH_URI}/tokens"
-            r = self.app.get(ep, headers=self.__class__.auth_header_anonymous)
+            r = client.get(ep, headers=self.__class__.auth_header_anonymous)
             assert r.status_code == 200
             content = self.get_content(r)
             for element in content:
@@ -239,7 +239,7 @@ else:
                 if element.get("token") == mytoken:
                     # delete only current token
                     ep += "/" + element.get("id")
-                    rdel = self.app.delete(
+                    rdel = client.delete(
                         ep, headers=self.__class__.auth_header_anonymous
                     )
                     assert rdel.status_code == 204
