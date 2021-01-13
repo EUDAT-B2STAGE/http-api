@@ -5,6 +5,9 @@ from b2stage.connectors import irods
 from restapi.tests import AUTH_URI
 from restapi.utilities.logs import log
 
+IRODS_USER = "icatbetatester"
+IRODS_PASSWORD = "IAMABETATESTER"
+
 
 class RestTestsAuthenticatedBase(unittest.TestCase):
 
@@ -34,21 +37,18 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         pass
     """
 
-    _irods_user = "icatbetatester"
-    _irods_password = "IAMABETATESTER"
-
     def setUp(self, client):
 
         log.debug("### Setting up the Flask server ###")
 
         i = irods.get_instance()
         # create a dedicated irods user and set the password
-        if i.create_user(self._irods_user):
-            i.modify_user_password(self._irods_user, self._irods_password)
+        if i.create_user(IRODS_USER):
+            i.modify_user_password(IRODS_USER, IRODS_PASSWORD)
 
         r = client.post(
             AUTH_URI + "/b2safeproxy",
-            data={"username": self._irods_user, "password": self._irods_password},
+            data={"username": IRODS_USER, "password": IRODS_PASSWORD},
         )
 
         assert r.status_code == 200

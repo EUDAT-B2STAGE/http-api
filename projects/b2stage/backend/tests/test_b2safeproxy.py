@@ -4,7 +4,7 @@ Run unittests inside the RAPyDo framework
 
 from restapi.tests import AUTH_URI
 from restapi.utilities.logs import log
-from tests.custom import RestTestsAuthenticatedBase
+from tests.custom import IRODS_PASSWORD, IRODS_USER, RestTestsAuthenticatedBase
 
 
 class TestB2safeProxy(RestTestsAuthenticatedBase):
@@ -13,7 +13,7 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
         log.info("*** Testing auth b2safe on {}", f"{AUTH_URI}/b2safeproxy")
         r = client.post(
             f"{AUTH_URI}/b2safeproxy",
-            data=dict(username=self._irods_user, password=self._irods_password),
+            data=dict(username=IRODS_USER, password=IRODS_PASSWORD),
         )
 
         assert r.status_code == 200
@@ -32,12 +32,12 @@ class TestB2safeProxy(RestTestsAuthenticatedBase):
         # verify wrong username or password
         r = client.post(
             f"{AUTH_URI}/b2safeproxy",
-            data=dict(username=self._irods_user + "a", password=self._irods_password),
+            data=dict(username=f"{IRODS_USER}_wrong", password=IRODS_PASSWORD),
         )
         assert r.status_code == 401
         r = client.post(
             f"{AUTH_URI}/b2safeproxy",
-            data=dict(username=self._irods_user, password=self._irods_password + "b"),
+            data=dict(username=IRODS_USER, password=f"{IRODS_PASSWORD}_wrongb"),
         )
         assert r.status_code == 401
 
