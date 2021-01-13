@@ -1,17 +1,5 @@
-FROM rapydo/backend:1.0
+FROM rapydo/backend:0.9
 MAINTAINER "Mattia D'Antonio <m.dantonio@cineca.it>"
-
-#########################################################
-# Python 3.9 is not working for dballe, let's downgrade to python 3.8
-ENV PYTHON_VERSION="3.8"
-RUN ln -sf /usr/bin/python${PYTHON_VERSION} /usr/bin/python3 \
-    && curl --silent https://bootstrap.pypa.io/get-pip.py --output get-pip.py \
-    && python3 get-pip.py \
-    && rm get-pip.py \
-    && apt-get update \
-    && apt-get install --yes python${PYTHON_VERSION}-dev \
-    && pip3 install --upgrade --no-cache-dir git+https://github.com/rapydo/http-api.git@$RAPYDO_VERSION
-#########################################################
 
 RUN apt-get update \
  && apt-get install -y zip libkrb5-dev unzip \
