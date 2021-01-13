@@ -159,7 +159,10 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
                 raise e
 
         self.prc = obj
-        self.variables = variables
+        # self.variables = variables
+        # New way to ovveride variables
+        self.services[self.name] = variables
+
         self.chunk_size = self.variables.get("chunksize", DEFAULT_CHUNK_SIZE)
 
         return self
