@@ -65,6 +65,7 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
         if user is None:
             raise AttributeError("No user is defined")
         log.debug("Irods user: {}", user)
+        log.warning("Irods user: {}", user)
 
         ######################
         if session:
