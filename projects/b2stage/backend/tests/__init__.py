@@ -60,25 +60,6 @@ class RestTestsAuthenticatedBase(unittest.TestCase):
         token = data.get("token")
         self.save_token(token)
 
-    def tearDown(self, client):
-
-        # Token clean up
-        log.debug("### Cleaning token ###")
-        ep = f"{AUTH_URI}/tokens"
-        # Recover current token id
-        r = client.get(ep, headers=self.__class__.auth_header)
-        assert r.status_code == 200
-        content = self.get_content(r)
-        for element in content:
-            if element.get("token") == self.__class__.bearer_token:
-                # delete only current token
-                ep += "/" + element.get("id")
-                rdel = client.delete(ep, headers=self.__class__.auth_header)
-                assert rdel.status_code == 204
-
-        # The end
-        log.debug("### Tearing down the Flask server ###")
-
     def save_token(self, token, suffix=None):
 
         if suffix is None:

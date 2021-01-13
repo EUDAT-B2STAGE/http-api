@@ -214,34 +214,3 @@ else:
             assert r.status_code == 404
             error = self.get_content(r)
             assert "not existing or no permissions" in error
-
-        def tearDown(self, client):
-
-            log.debug("\n### Cleaning anonymous data ###")
-
-            # Remove the test file
-            endpoint = f"{API_URI}/registered"  # + self._ipath
-            r = client.delete(
-                endpoint,
-                data=dict(debugclean="True"),
-                headers=self.__class__.auth_header,
-            )
-            assert r.status_code == 200
-
-            # Recover current token id
-            ep = f"{AUTH_URI}/tokens"
-            r = client.get(ep, headers=self.__class__.auth_header_anonymous)
-            assert r.status_code == 200
-            content = self.get_content(r)
-            for element in content:
-                mytoken = self.__class__.bearer_token_anonymous
-                if element.get("token") == mytoken:
-                    # delete only current token
-                    ep += "/" + element.get("id")
-                    rdel = client.delete(
-                        ep, headers=self.__class__.auth_header_anonymous
-                    )
-                    assert rdel.status_code == 204
-
-            # The end
-            super().tearDown()
