@@ -83,8 +83,9 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # ASYNC
             log.info("Submit async celery task")
 
-            celery_app = celery.get_instance()
-            task = celery_app.move_to_production_task.apply_async(
+            c = celery.get_instance()
+            task = c.celery_app.send_task(
+                "move_to_production_task",
                 args=[batch_id, batch_path, prod_path, json_input],
                 queue="ingestion",
                 routing_key="ingestion",

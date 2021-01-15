@@ -180,8 +180,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
 
             # Download the file into the batch folder
 
-            celery_app = celery.get_instance()
-            task = celery_app.download_batch.apply_async(
+            c = celery.get_instance()
+            task = c.celery_app.send_task(
+                "download_batch",
                 args=[batch_path, str(local_path), json_input],
                 queue="ingestion",
                 routing_key="ingestion",
@@ -207,8 +208,9 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
             log.debug("Batch collection: {}", batch_path)
             log.debug("Batch path: {}", local_batch_path)
 
-            celery_app = celery.get_instance()
-            task = celery_app.delete_batches.apply_async(
+            c = celery.get_instance()
+            task = c.celery_app.send_task(
+                "delete_batches",
                 args=[batch_path, local_batch_path, json_input],
                 queue="ingestion",
                 routing_key="ingestion",

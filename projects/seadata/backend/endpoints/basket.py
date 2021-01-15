@@ -299,9 +299,10 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # ASYNC
             if len(pids) > 0:
                 log.info("Submit async celery task")
-                celery_app = celery.get_instance()
-                task = celery_app.unrestricted_order.apply_async(
-                    args=[order_id, order_path, zip_file_name, json_input]
+                c = celery.get_instance()
+                task = c.celery_app.send_task(
+                    "unrestricted_order",
+                    args=[order_id, order_path, zip_file_name, json_input],
                 )
                 log.info("Async job: {}", task.id)
                 return self.return_async_id(task.id)
@@ -500,9 +501,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.debug("Order collection: {}", order_path)
             log.debug("Order path: {}", local_order_path)
 
-            celery_app = celery.get_instance()
-            task = celery_app.delete_orders.apply_async(
-                args=[order_path, local_order_path, json_input]
+            c = celery.get_instance()
+            task = c.celery_app.send_task(
+                "delete_orders", args=[order_path, local_order_path, json_input]
             )
             log.info("Async job: {}", task.id)
             return self.return_async_id(task.id)

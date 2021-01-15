@@ -22,8 +22,8 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
     )
     def get(self):
 
-        celery_app = celery.get_instance()
-        task = celery_app.inspect_pids_cache.apply_async()
+        c = celery.get_instance()
+        task = c.celery_app.send_task("inspect_pids_cache")
         log.info("Async job: {}", task.id)
         return self.return_async_id(task.id)
 
@@ -43,8 +43,8 @@ class PidCache(ClusterContainerEndpoint, B2accessUtilities):
             if not imain.exists(collection):
                 raise RestApiException(f"Invalid batch id {batch_id}", status_code=404)
 
-            celery_app = celery.get_instance()
-            task = celery_app.cache_batch_pids.apply_async(args=[collection])
+            c = celery.get_instance()
+            task = c.celery_app.send_task("cache_batch_pids", args=[collection])
             log.info("Async job: {}", task.id)
 
             return self.return_async_id(task.id)
