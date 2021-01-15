@@ -29,7 +29,12 @@ services:
 
   celery:
     restart: on-failure:15
-    build: ${BASE_PROJECT_DIR}/builds/backend
+    build:
+      context: ${BASE_PROJECT_DIR}/builds/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     command: celery -A restapi.connectors.celery.worker.celery_app worker --concurrency=1 -Ofair -Q celery -n worker-%h
     volumes:
@@ -67,7 +72,12 @@ services:
 
   celeryui:
     restart: on-failure:5
-    build: ${BASE_PROJECT_DIR}/builds/backend
+    build:
+      context: ${BASE_PROJECT_DIR}/builds/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     hostname: flower
     environment:
@@ -107,7 +117,12 @@ services:
 
   ingestion_celery:
     restart: on-failure:15
-    build: ${BASE_PROJECT_DIR}/builds/backend
+    build:
+      context: ${BASE_PROJECT_DIR}/builds/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery -A restapi.connectors.celery.worker.celery_app worker --concurrency=1 -Ofair -Q ingestion -n worker-%h
@@ -206,7 +221,12 @@ services:
 
   restricted_celery:
     restart: on-failure:5
-    build: ${BASE_PROJECT_DIR}/builds/backend
+    build:
+      context: ${BASE_PROJECT_DIR}/builds/backend
+      args:
+        RAPYDO_VERSION: ${RAPYDO_VERSION}
+        CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery -A restapi.connectors.celery.worker.celery_app worker --concurrency=1 -Ofair -Q restricted -n worker-%h
