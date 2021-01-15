@@ -22,13 +22,14 @@ class ListResources(EudatEndpoint, ClusterContainerEndpoint):
 
         try:
             imain = self.get_main_irods_connection()
-            celery_app = celery.get_instance()
-            task = celery_app.list_resources.apply_async(
+            c = celery.get_instance()
+            task = c.celery_app.send_task(
+                "list_resources",
                 args=[
                     self.get_irods_batch_path(imain),
                     self.get_irods_order_path(imain),
                     json_input,
-                ]
+                ],
             )
             log.info("Async job: {}", task.id)
             return self.return_async_id(task.id)

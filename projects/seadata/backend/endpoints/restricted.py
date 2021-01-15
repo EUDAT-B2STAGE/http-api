@@ -31,8 +31,9 @@ class Restricted(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 # Create the path and set permissions
                 imain.create_collection_inheritable(order_path, obj.username)
 
-            celery_app = celery.get_instance()
-            task = celery_app.download_restricted_order.apply_async(
+            c = celery.get_instance()
+            task = c.celery_app.send_task(
+                "download_restricted_order",
                 args=[order_id, order_path, json_input],
                 queue="restricted",
                 routing_key="restricted",
