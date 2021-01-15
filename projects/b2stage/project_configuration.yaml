@@ -95,6 +95,10 @@ variables:
     HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
     HANDLE_BASE: "https://url.to.epic/handles/"
 
+    MONGO_USER:
+    MONGO_PASSWORD:
+    REDIS_PASSWORD:
+
 controller:
   commands:
     irods_restart:
