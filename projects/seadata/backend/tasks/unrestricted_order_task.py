@@ -8,12 +8,13 @@ from b2stage.endpoints.commons import path
 from b2stage.endpoints.commons.b2handle import PIDgenerator, b2handle
 from b2stage.endpoints.commons.basher import BashCommands
 from plumbum.commands.processes import ProcessExecutionError
+from restapi.connectors import redis
 from restapi.connectors.celery import CeleryExt, send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
 from seadata.endpoints.commons.queue import prepare_message
 from seadata.endpoints.commons.seadatacloud import ErrorCodes
-from seadata.tasks.seadata import MAX_ZIP_SIZE, ext_api, myorderspath, notify_error, r
+from seadata.tasks.seadata import MAX_ZIP_SIZE, ext_api, myorderspath, notify_error
 
 TIMEOUT = 180
 
@@ -47,6 +48,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         local_zip_dir = path.join(local_dir, "tobezipped")
         path.create(local_zip_dir, directory=True, force=True)
 
+        r = redis.get_instance().r
         try:
             with irods.get_instance() as imain:
 

@@ -1,10 +1,8 @@
 import os
 import sys
-from socket import gethostname
 
 from b2stage.endpoints.commons.b2handle import PIDgenerator
 from restapi.connectors.celery import CeleryExt
-from restapi.env import Env
 from restapi.utilities.logs import log
 from seadata.endpoints.commons.seadatacloud import ImportManagerAPI, seadata_vars
 
@@ -45,21 +43,6 @@ CeleryExt.celery_app.conf.update(
     task_acks_late=True,
 )
 
-
-# worker connection to redis
-def get_redis():
-    if gethostname() == "rapydo_server":
-        return None
-    redis_vars = Env.load_variables_group(prefix="redis")
-    from redis import StrictRedis
-
-    # pid_prefix = redis_vars.get('prefix')
-    return StrictRedis(redis_vars.get("host"))
-
-
-r = get_redis()
-####################
-# preparing b2handle stuff
 pmaker = PIDgenerator()
 
 

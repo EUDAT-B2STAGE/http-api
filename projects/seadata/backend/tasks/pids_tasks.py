@@ -2,10 +2,10 @@ import os
 
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
+from restapi.connectors import redis
 from restapi.connectors.celery import CeleryExt, send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
-from seadata.tasks.seadata import r
 
 TIMEOUT = 180
 
@@ -31,6 +31,7 @@ def cache_batch_pids(self, irods_path):
 
         log.info("Task cache_batch_pids working on: {}", irods_path)
 
+        r = redis.get_instance().r
         try:
             with irods.get_instance() as imain:
 
@@ -112,6 +113,8 @@ def inspect_pids_cache(self):
         log.info("Inspecting cache...")
         counter = 0
         cache = {}
+        r = redis.get_instance().r
+
         for key in r.scan_iter("*"):
             folder = os.path.dirname(r.get(key))
 
