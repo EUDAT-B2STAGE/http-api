@@ -33,13 +33,12 @@ mybatchpath = os.path.join(mount_point, middle_path_ingestion)
 myorderspath = os.path.join(mount_point, middle_path_orders)
 
 ext_api = ImportManagerAPI()
-celery_app = CeleryExt.celery_app
 
 #####################
 # https://stackoverflow.com/q/16040039
 log.debug("celery: disable prefetching")
 # disable prefetching
-celery_app.conf.update(
+CeleryExt.celery_app.conf.update(
     # CELERYD_PREFETCH_MULTIPLIER=1,
     # CELERY_ACKS_LATE=True,
     worker_prefetch_multiplier=1,

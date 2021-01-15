@@ -6,11 +6,11 @@ from shutil import rmtree
 import requests
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
-from restapi.connectors.celery import send_errors_by_email
+from restapi.connectors.celery import CeleryExt, send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
 from seadata.endpoints.commons.seadatacloud import ErrorCodes
-from seadata.tasks.seadata import celery_app, ext_api, notify_error
+from seadata.tasks.seadata import ext_api, notify_error
 
 TIMEOUT = 180
 
@@ -24,11 +24,11 @@ DOWNLOAD_HEADERS = {
 }
 
 
-@celery_app.task(bind=True)
+@CeleryExt.celery_app.task(bind=True, name="download_batch")
 @send_errors_by_email
 def download_batch(self, batch_path, local_path, myjson):
 
-    with celery_app.app.app_context():
+    with CeleryExt.app.app_context():
         log.info("I'm {} (download_batch)", self.request.id)
         log.info("Batch irods path: {}", batch_path)
         log.info("Batch local path: {}", local_path)

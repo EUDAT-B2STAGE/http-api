@@ -1,18 +1,18 @@
 from b2stage.connectors import irods
-from restapi.connectors.celery import send_errors_by_email
+from restapi.connectors.celery import CeleryExt, send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
 from seadata.endpoints.commons.seadatacloud import ErrorCodes
-from seadata.tasks.seadata import celery_app, ext_api, notify_error
+from seadata.tasks.seadata import ext_api, notify_error
 
 TIMEOUT = 180
 
 
-@celery_app.task(bind=True)
+@CeleryExt.celery_app.task(bind=True, name="list_resources")
 @send_errors_by_email
 def list_resources(self, batch_path, order_path, myjson):
 
-    with celery_app.app.app_context():
+    with CeleryExt.app.app_context():
 
         try:
             with irods.get_instance() as imain:
