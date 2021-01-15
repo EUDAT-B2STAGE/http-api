@@ -4,24 +4,24 @@ import time
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
 from b2stage.endpoints.commons.b2handle import PIDgenerator
-from restapi.connectors.celery import send_errors_by_email
+from restapi.connectors.celery import CeleryExt, send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
 from seadata.endpoints.commons.queue import prepare_message
 from seadata.endpoints.commons.seadatacloud import ErrorCodes
 from seadata.endpoints.commons.seadatacloud import Metadata as md
-from seadata.tasks.seadata import celery_app, ext_api, mybatchpath, notify_error, r
+from seadata.tasks.seadata import ext_api, mybatchpath, notify_error, r
 
 pmaker = PIDgenerator()
 
 TIMEOUT = 180
 
 
-@celery_app.task(bind=True)
+@CeleryExt.celery_app.task(bind=True, name="move_to_production_task")
 @send_errors_by_email
 def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
 
-    with celery_app.app.app_context():
+    with CeleryExt.app.app_context():
 
         self.update_state(
             state="STARTING", meta={"total": None, "step": 0, "errors": 0}

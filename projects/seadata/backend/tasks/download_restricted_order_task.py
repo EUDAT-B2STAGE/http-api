@@ -10,17 +10,11 @@ from b2stage.connectors.irods.client import IrodsException
 from b2stage.endpoints.commons import path
 from b2stage.endpoints.commons.basher import BashCommands
 from plumbum.commands.processes import ProcessExecutionError
-from restapi.connectors.celery import send_errors_by_email
+from restapi.connectors.celery import CeleryExt, send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
 from seadata.endpoints.commons.seadatacloud import ErrorCodes
-from seadata.tasks.seadata import (
-    MAX_ZIP_SIZE,
-    celery_app,
-    ext_api,
-    myorderspath,
-    notify_error,
-)
+from seadata.tasks.seadata import MAX_ZIP_SIZE, ext_api, myorderspath, notify_error
 
 TIMEOUT = 180
 
@@ -65,11 +59,11 @@ def check_params(params):
     return None
 
 
-@celery_app.task(bind=True)
+@CeleryExt.celery_app.task(bind=True, name="download_restricted_order")
 @send_errors_by_email
 def download_restricted_order(self, order_id, order_path, myjson):
 
-    with celery_app.app.app_context():
+    with CeleryExt.app.app_context():
 
         myjson["parameters"]["request_id"] = myjson["request_id"]
         myjson["request_id"] = self.request.id

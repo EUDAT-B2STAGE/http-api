@@ -2,10 +2,10 @@ import os
 
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
-from restapi.connectors.celery import send_errors_by_email
+from restapi.connectors.celery import CeleryExt, send_errors_by_email
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
-from seadata.tasks.seadata import celery_app, r
+from seadata.tasks.seadata import r
 
 TIMEOUT = 180
 
@@ -23,11 +23,11 @@ def recursive_list_files(imain, irods_path):
     return data
 
 
-@celery_app.task(bind=True)
+@CeleryExt.celery_app.task(bind=True, name="cache_batch_pids")
 @send_errors_by_email
 def cache_batch_pids(self, irods_path):
 
-    with celery_app.app.app_context():
+    with CeleryExt.app.app_context():
 
         log.info("Task cache_batch_pids working on: {}", irods_path)
 
@@ -103,11 +103,11 @@ def cache_batch_pids(self, irods_path):
             log.error(type(e))
 
 
-@celery_app.task(bind=True)
+@CeleryExt.celery_app.task(bind=True, name="inspect_pids_cache")
 @send_errors_by_email
 def inspect_pids_cache(self):
 
-    with celery_app.app.app_context():
+    with CeleryExt.app.app_context():
 
         log.info("Inspecting cache...")
         counter = 0
