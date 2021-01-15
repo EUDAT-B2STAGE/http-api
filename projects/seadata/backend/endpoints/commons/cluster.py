@@ -45,7 +45,7 @@ FS_PATH_IN_CONTAINER = "/usr/share/batch"
 # environmental variable passed to the container. But it is safe
 # to leave it hard-coded like this.
 
-CONTAINERS_VARS = Env.load_group(label="containers")
+CONTAINERS_VARS = Env.load_variables_group(label="containers")
 
 
 class ClusterContainerEndpoint(EndpointResource):
@@ -56,7 +56,7 @@ class ClusterContainerEndpoint(EndpointResource):
     def load_credentials(self):
 
         if not hasattr(self, "_credentials") or not self._credentials:
-            self._credentials = Env.load_group(label="resources")
+            self._credentials = Env.load_variables_group(label="resources")
 
         return self._credentials
 

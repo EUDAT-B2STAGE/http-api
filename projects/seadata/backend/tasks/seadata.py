@@ -50,7 +50,7 @@ CeleryExt.celery_app.conf.update(
 def get_redis():
     if gethostname() == "rapydo_server":
         return None
-    redis_vars = Env.load_group(label="redis")
+    redis_vars = Env.load_variables_group(label="redis")
     from redis import StrictRedis
 
     # pid_prefix = redis_vars.get('prefix')

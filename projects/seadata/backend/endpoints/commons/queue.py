@@ -15,7 +15,7 @@ from restapi.services.authentication import BaseAuthentication
 from restapi.utilities.logs import log
 from seadata.endpoints.commons.seadatacloud import seadata_vars
 
-QUEUE_VARS = Env.load_group(label="rabbit")
+QUEUE_VARS = Env.load_variables_group(label="rabbit")
 
 """
 :param instance: The Endpoint.
