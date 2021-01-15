@@ -6,7 +6,7 @@ from restapi.exceptions import BadRequest
 from restapi.models import Schema, fields
 from restapi.utilities.logs import log
 
-seadata_vars = Env.load_group(label="seadata")
+seadata_vars = Env.load_variables_group(label="seadata")
 
 # SEADATA_ENABLED = seadata_vars.get('project')
 SEADATA_ENABLED = seadata_vars.get("project") == "1"
