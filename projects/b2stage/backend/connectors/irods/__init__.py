@@ -49,7 +49,6 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
         variables = self.variables.copy()
         variables.update(kwargs)
 
-        log.critical(variables)
         session = variables.get("user_session")
 
         authscheme = variables.get("authscheme", NORMAL_AUTH_SCHEME)
