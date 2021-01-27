@@ -67,7 +67,6 @@ variables:
     RABBIT_SSL_ENABLED: 0 # can be 0, 1, true, false
     ## OTHERS
     REDIS_HOST: redis-cache-1
-    REDIS_PREFIX: 01T10
     # CONTAINERS_RABBITUSER:
     # CONTAINERS_RABBITPASS:
     # CONTAINERS_DBUSER:
