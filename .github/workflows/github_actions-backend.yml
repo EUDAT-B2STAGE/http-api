@@ -45,24 +45,6 @@ jobs:
           docker cp ${PROJECT}_backend_1:/code/coverage.xml coverage.xml
           bash <(curl -s https://codecov.io/bash)
 
-      - name: Production mode
-        run: |
-          rapydo remove --all
-          rapydo --prod init --force
-          cat .projectrc
-          rapydo pull --quiet
-          rapydo ssl --volatile
-          rapydo start
-          sleep 45
-          rapydo logs
-          curl --insecure -X GET --max-time 5 https://localhost/api/status | grep "Server is alive"
-          rapydo -s proxy,backend logs --tail 20
-
-          LOGURU_LEVEL=WARNING rapydo list services
-          # This should fail if at least one container is in Exit status
-          # Except for frontend that is expected to be exited in prod mode
-          [[ ! $(LOGURU_LEVEL=WARNING rapydo list services | grep -v frontend | grep -E "Exit|Restarting|Created") ]]
-
       - name: Print Logs
         if: failure()
         run: tail -100 data/logs/backend-server.log
