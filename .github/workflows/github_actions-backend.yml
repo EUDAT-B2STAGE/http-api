@@ -49,6 +49,7 @@ jobs:
         run: |
           rapydo remove --all
           rapydo --prod init --force
+          cat .projectrc
           rapydo pull --quiet
           rapydo ssl --volatile
           rapydo start
