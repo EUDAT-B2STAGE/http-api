@@ -1,11 +1,10 @@
-version: '3'
+version: "3"
 
 volumes:
   localdata:
     driver: local
 
 services:
-
   backend:
     volumes:
       # B2HANDLE credentials to solve PID metadata in write mode
@@ -20,7 +19,6 @@ services:
       ## if string with chars -> True
       ACTIVATE: ${B2ACCESS_SECRET}
       B2ACCESS_CAS: ${B2ACCESS_CAS}
-      ## Warning: fake variables;
       ## icat is needed only to produce the b2access certificates
       POSTGRES_HOST: null
       POSTGRES_USER: null

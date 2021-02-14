@@ -7,8 +7,15 @@ project_configuration:
       {% if testing -%}
       IRODS_ANONYMOUS: 1
       ENABLE_PUBLIC_ENDPOINT: 1
-      AUTH_DEFAULT_PASSWORD: Test+Aa1!
+      AUTH_DEFAULT_PASSWORD: {{ "RANDOM"| password }}+Aa1-nowit'sstrong!
       APP_MODE: test
+
+      SMTP_HOST: mock.mail.service
+      SMTP_ADMIN: mock@nomail.org
+      SMTP_PORT: 0
+      SMTP_USERNAME: {{ "RANDOM"| username }}
+      SMTP_PASSWORD: {{ "RANDOM"| password }}
+
       {% else %}
       IRODS_HOST: your_irods_host
       # your own other local variables
