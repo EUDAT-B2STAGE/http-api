@@ -44,7 +44,6 @@ services:
       #############################
       ACTIVATE: 1
       MAIN_LOGIN_ENABLE: 0
-      DEBUG_ENDPOINTS: 1
       DEBUG_LEVEL: ${LOG_LEVEL}
       DOMAIN: ${PROJECT_DOMAIN}
       SEADATA_PROJECT: ${SEADATA_PROJECT}
@@ -89,7 +88,6 @@ services:
       ACTIVATE: ${ACTIVATE_CELERYUI}
       MAIN_LOGIN_ENABLE: 0
       JWT_APP_SECRETS: ${JWT_APP_SECRETS}
-      DEBUG_ENDPOINTS: 1
       DEBUG_LEVEL: ${LOG_LEVEL}
       DOMAIN: ${PROJECT_DOMAIN}
       SEADATA_PROJECT: ${SEADATA_PROJECT}
@@ -192,7 +190,6 @@ services:
       #############################
       ACTIVATE: 1
       MAIN_LOGIN_ENABLE: 0
-      DEBUG_ENDPOINTS: 1
       APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       DOMAIN: ${PROJECT_DOMAIN}
@@ -300,7 +297,6 @@ services:
       #############################
       ACTIVATE: 1
       MAIN_LOGIN_ENABLE: 0
-      DEBUG_ENDPOINTS: 1
       APP_MODE: ${APP_MODE}
       DEBUG_LEVEL: ${LOG_LEVEL}
       DOMAIN: ${PROJECT_DOMAIN}

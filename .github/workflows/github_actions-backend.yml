@@ -36,7 +36,7 @@ jobs:
 
           rapydo logs
 
-          rapydo shell --no-tty backend 'restapi tests --wait'
+          rapydo shell --no-tty backend 'restapi tests --wait --destroy'
 
           LOGURU_LEVEL=WARNING rapydo list services
           # This should fail if at least one container is in Exit status
