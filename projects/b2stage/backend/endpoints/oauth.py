@@ -16,12 +16,11 @@ class OauthLogin(EudatEndpoint):
     to ask the current user for authorization/token.
     """
 
-    baseuri = "/auth"
     labels = ["eudat", "b2access", "authentication"]
     depends_on = ["B2ACCESS_APPKEY"]
 
     @decorators.endpoint(
-        path="/askauth",
+        path="/auth/askauth",
         summary="Redirection to b2access oauth2 login",
         responses={200: "Redirected"},
     )
@@ -62,12 +61,11 @@ class Authorize(EudatEndpoint):
     Use the B2ACCESS token to retrieve info about the user
     """
 
-    baseuri = "/auth"
     labels = ["eudat", "b2access", "authentication"]
     depends_on = ["B2ACCESS_APPKEY"]
 
     @decorators.endpoint(
-        path="/authorize",
+        path="/auth/authorize",
         summary="Produce internal token if b2access authorization is granted",
         responses={200: "Rest api token from b2access authentication"},
     )
@@ -135,13 +133,12 @@ class B2accesProxyEndpoint(EudatEndpoint):
     using the stored b2access token (if still valid)
     """
 
-    baseuri = "/auth"
     labels = ["eudat", "b2access"]
     depends_on = ["B2ACCESS_APPKEY"]
 
     @decorators.auth.require()
     @decorators.endpoint(
-        path="/proxy",
+        path="/auth/proxy",
         summary="Check and/or refresh current b2access proxy credentials",
         responses={200: "Refresh status"},
     )

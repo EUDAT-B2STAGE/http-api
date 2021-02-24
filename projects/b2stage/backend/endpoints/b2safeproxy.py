@@ -18,7 +18,6 @@ class B2safeProxy(B2accessUtilities):
 
     _anonymous_user = "anonymous"
 
-    baseuri = "/auth"
     labels = ["eudat", "b2safe", "authentication"]
 
     def get_and_verify_irods_session(self, user, password, authscheme):
@@ -49,7 +48,7 @@ class B2safeProxy(B2accessUtilities):
 
     @decorators.auth.require()
     @decorators.endpoint(
-        path="/b2safeproxy",
+        path="/auth/b2safeproxy",
         summary="Test a token obtained as a b2safe user",
         responses={200: "Token is valid"},
     )
@@ -70,7 +69,7 @@ class B2safeProxy(B2accessUtilities):
 
     @decorators.use_kwargs(Credentials)
     @decorators.endpoint(
-        path="/b2safeproxy",
+        path="/auth/b2safeproxy",
         summary="Authenticate inside http api with b2safe user",
         description="Normal credentials (username and password) login endpoint",
         responses={
