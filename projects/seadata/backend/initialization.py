@@ -53,3 +53,7 @@ class Initializer:
                         log.info("User {} created with roles: {}", username, roles)
                     except BaseException as e:
                         log.error("Errors creating user {}: {}", username, str(e))
+
+    # This method is called after normal initialization if TESTING mode is enabled
+    def initialize_testing_environment(self):
+        pass
