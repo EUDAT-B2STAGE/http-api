@@ -6,7 +6,7 @@ project:
   title: SeaDataCloud HTTP-API
   description: Processing data in SeaDataCloud project
   version: "1.1.4"
-  rapydo: "1.0"
+  rapydo: "1.1"
   extends: b2stage
   extends-from: projects
 
