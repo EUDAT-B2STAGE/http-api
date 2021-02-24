@@ -45,6 +45,8 @@ class B2accessUtilities(EndpointResource):
             userdata = {
                 "email": username,
                 "name": username,
+                # Password will not be used because the authmedos is `irods`
+                "password": "",
                 "surname": "iCAT",
                 "authmethod": "irods",
                 "session": session,
