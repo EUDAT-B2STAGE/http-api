@@ -1,4 +1,4 @@
-# Prototype #
+# Prototype
 
 Hello EUDAT user!
 
@@ -36,7 +36,6 @@ The EUDAT B2STAGE HTTP API provide description of up-to-date specifications foll
 
 The description in `JSON` format is available at:
 https://b2stage-test.cineca.it/api/specs
-
 
 ## Clients
 

@@ -1,12 +1,10 @@
-version: '3'
+version: "3"
 
 services:
-
   backend:
     environment:
-
       CELERY_ENABLE: 1
-      MONGO_ENABLE: 0 
+      MONGO_ENABLE: 0
 
     volumes:
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}

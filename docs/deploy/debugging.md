@@ -1,8 +1,8 @@
-# Other operations #
+# Other operations
 
 Here we have more informations for further debugging/developing the project
 
-## launch interfaces ##
+## launch interfaces
 
 To explore data and query parameters there are few other services as options:
 

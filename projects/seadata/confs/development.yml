@@ -1,9 +1,8 @@
-version: '3'
+version: "3"
 
 # no specific configuration for debug, all inherited from b2stage
 
 services:
-
   rabbit:
     environment:
       ACTIVATE: ${ACTIVATE_RABBIT}

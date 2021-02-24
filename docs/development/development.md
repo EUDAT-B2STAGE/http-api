@@ -1,10 +1,11 @@
 # Development documentation
+
 ## Pre-requisites
+
 Before starting please make sure that you have installed on your system:
 
-* [Docker](http://docs.docker.com/) 1.11+
-* [docker-compose](https://docs.docker.com/compose/) 1.7+
-
+- [Docker](http://docs.docker.com/) 1.11+
+- [docker-compose](https://docs.docker.com/compose/) 1.7+
 
 ## Coding Style
 

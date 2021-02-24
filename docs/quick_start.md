@@ -1,19 +1,20 @@
-# Quick start #
+# Quick start
 
 This is a reference page to quick start your knowledge of the project.
 
-## Using the prototype online ##
+## Using the prototype online
 
 The quickest way to deploy or develop the current project state is to test online our [prototype](https://b2stage-test.cineca.it/api/status).
 Also see the [dedicated instructions](prototype.md). Please feel free [to report or comment](https://gitter.im/EUDAT-B2STAGE/http-api) to help us improve!
 
-## Set-up your "debug" instance (in very few commands) ##
+## Set-up your "debug" instance (in very few commands)
 
 If you feel comfortable with a terminal shell you could spin your first instace easily. Please head to the [pre-requisites](deploy/preq.md) page first, to make sure your current machine is qualified to host the project.
 
 NOTE: **DO NOT** run this instructions as administrator. Please make sure you are not the `root` user (e.g. with the `whoami` command); this behaviour is not allowed by the `rapydo` framework.
 
 Here's step-by-step tutorial to work with the HTTP API project:
+
 ```bash
 
 ################
@@ -36,6 +37,7 @@ rapydo shell backend --command 'restapi launch'
 ```
 
 If everything worked so far you may now try a test against your own server:
+
 ```bash
 # from another shell
 $ curl -i localhost:8080/api/status
@@ -60,7 +62,6 @@ Date: Tue, 05 Dec 2017 15:56:40 GMT
   }
 }
 ```
-
 
 ## Production
 
@@ -108,7 +109,6 @@ curl -i https://YOURDOMAIN.com/api/status
 open http://petstore.swagger.io/?url=https://YOURDOMAIN.com/api/specs&docExpansion=none
 ```
 
-
 ### Periodically update the SSL certificate
 
 Certificates issued using "Let's encrypt" lasts 90 days.
@@ -132,12 +132,12 @@ less /var/log/cron
 We implemented on the `rapydo` cli tool all needed Docker (or Docker compose) typical actions to manage running containers: `rapydo status`, `rapydo stop`, `rapydo remove`.
 
 To get a list of all available commands you can use one of the following:
+
 ```bash
 rapydo
 rapydo --help
 rapydo -h
 ```
-
 
 ## What's more
 
