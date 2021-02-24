@@ -1,10 +1,10 @@
-# Publish data #
+# Publish data
 
 Data available on `B2SAFE` can be shared to non-authenticated users.
 
-To allow such operations we are testing a new experimental feature. To mymic access for any user inside the iRODS technology behind B2SAFE [the irods *anonymous* user](https://docs.irods.org/4.2.0/system_overview/users_and_permissions/#tickets-guest-access) is the chosen implementation; this is the equivalent of a *guest* user mechanism.
+To allow such operations we are testing a new experimental feature. To mymic access for any user inside the iRODS technology behind B2SAFE [the irods _anonymous_ user](https://docs.irods.org/4.2.0/system_overview/users_and_permissions/#tickets-guest-access) is the chosen implementation; this is the equivalent of a _guest_ user mechanism.
 
-## The workflow ##
+## The workflow
 
 - You have some data object registered in `B2SAFE` on some `ipath`
 - You can check if your data object is publish with a call to `GET` method of `/api/publish/<ipath>`
@@ -13,7 +13,7 @@ To allow such operations we are testing a new experimental feature. To mymic acc
 
 When a data object is published to any guest user access, it's accessible via browser to the URL `/api/public/<ipath>`.
 
-## Caveats ##
+## Caveats
 
 NOTE: This feature is not enabled by default.
 
@@ -26,7 +26,3 @@ imkdir /$IRODS_ZONE/home/anonymous
 ichmod write anonymous /$IRODS_ZONE/home/anonymous
 ichmod read anonymous /$IRODS_ZONE/home/public
 ```
-
-
-
-

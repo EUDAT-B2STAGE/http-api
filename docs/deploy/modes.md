@@ -1,10 +1,10 @@
-# MODES #
+# MODES
 
 There are two main modes to work with the HTTP-API server developed with `rapydo`.
 
 The main one - called `development` - is for developers: you are expected to test, debug and develop new code. The other options is `production`, suited for deploying your server in a real use case scenario on top of your already running `B2SAFE` instance.
 
-## development mode ##
+## development mode
 
 NOTE: follow this paragraph only if you plan to develop new features on the HTTP API.
 
@@ -41,7 +41,7 @@ Make sure your IRODS parameters are correctly inserted before proceding further.
 ```bash
 # options are in .projectrc.yml
 $ rapydo start
-# this is equivalent to 
+# this is equivalent to
 $ rapydo --project b2stage --production --hostname b2stage.yourdomain.io start
 ```
 
@@ -59,7 +59,6 @@ $ rapydo ssl
 ```
 
 If you check again the server should now be correctly certificated. At this point the service should be completely functional.
-
 
 ### debugging production
 
@@ -91,4 +90,3 @@ $ LOGURU_LEVEL=VERBOSE restapi launch
 ```
 
 Also please take a look at how to launch interfaces in the upcoming paragraph, in case there is a problem with the database or swagger.
-

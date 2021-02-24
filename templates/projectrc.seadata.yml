@@ -26,7 +26,6 @@ hostname: your.host.name
 project_configuration:
   variables:
     env:
-
       # Can you obtain your code from http://seadatanet.maris2.nl
       SEADATA_EDMO_CODE: your_edmo_code
 
@@ -50,7 +49,7 @@ project_configuration:
       # Look at the URI or your environment in Rancher: https://your_rancher_host/env/your_rancher_project/infra/hosts
       RESOURCES_PROJECT: your_rancher_project
       # label assigned to quality check host in Rancher, default is qc
-      # RESOURCES_QCLABEL: qc 
+      # RESOURCES_QCLABEL: qc
 
       # GRNET private docker hub
       RESOURCES_HUB: private_docker_hub

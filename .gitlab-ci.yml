@@ -1,6 +1,5 @@
 image: python:3.4
 
-
 variables:
   DOCKER_COMPOSE_VERSION: 1.7.0
 
@@ -19,4 +18,4 @@ stages:
 script:
   stage: tests
   script:
-   - docker-compose -f containers/docker-compose.yml exec backend ./tests.sh
+    - docker-compose -f containers/docker-compose.yml exec backend ./tests.sh

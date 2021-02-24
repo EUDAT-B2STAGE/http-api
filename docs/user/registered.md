@@ -1,6 +1,6 @@
-# Registered APIs #
+# Registered APIs
 
-> NOTE: The endpoint called *registered* corresponds to a domain in iRODS, where each data object carries a persistent identifier (PID). The HTTP API itself does **not** assign the PID, this is done by iRODS rules, e.g. eventhooks in iRODS calliong the B2SAFE PID registration rule.
+> NOTE: The endpoint called _registered_ corresponds to a domain in iRODS, where each data object carries a persistent identifier (PID). The HTTP API itself does **not** assign the PID, this is done by iRODS rules, e.g. eventhooks in iRODS calliong the B2SAFE PID registration rule.
 
 > By default, when you enabled your iRODS instance with the HTTP API but did not install B2SAFE or configured these eventhooks **no PIDs will be assigned**.
 
@@ -8,88 +8,99 @@
 
 The registered APIs allow the management of entities on B2SAFE.
 The following operations are currently available:
+
 - list, upload, download and rename files (objects in iRODS)
 - create and rename directories (collection in iRODS).
 
 The endpoint methods will use the directory namespace (iRODS full path) to identify entities .
 The examples in this section use cURL commands. For information about cURL, see http://curl.haxx.se/.
 
-
 ## Methods
 
-* [GET](#get)
-* [PUT](#put)
-* [POST](#post)
-* [PATCH](#patch)
+- [GET](#get)
+- [PUT](#put)
+- [POST](#post)
+- [PATCH](#patch)
 
-> note: the `DELETE` action is **NOT** allowed in the *"registered" domain*.
+> note: the `DELETE` action is **NOT** allowed in the _"registered" domain_.
 
 ---
 
 ## **GET**
+
 ### Obtain entity metadata (with PID, if available)
+
 ##### Example
+
 ```bash
 # Get 'filename.txt' metadata
 $ curl \
   -H "Authorization: Bearer <auth_token>"  \
   <http_server:port>/api/registered/path/to/directory/filename.txt
 ```
+
 ##### Response
+
 ```json
 {
-    "Meta": {
-        "data_type": "<class 'list'>",
-        "elements": 1,
-        "errors": 0,
-        "status": 200
-    },
-    "Response": {
-        "data": [
-            {
-                "filename.txt": {
-                    "dataobject": "filename.txt",
-                    "link": "<http_server:port>/api/registered/path/to/directory/filename.txt",
-                    "location": "irods://rodserver.dockerized.io/path/to/directory/filename.txt",
-                    "metadata": {
-                        "PID": '123/1234567890',
-                        "checksum": '123456789',
-                        "name": "filename.txt",
-                        "object_type": "dataobject"
-                    },
-                    "path": "path/to/directory"
-                }
-            }
-        ],
-        "errors": null
-    }
+  "Meta": {
+    "data_type": "<class 'list'>",
+    "elements": 1,
+    "errors": 0,
+    "status": 200
+  },
+  "Response": {
+    "data": [
+      {
+        "filename.txt": {
+          "dataobject": "filename.txt",
+          "link": "<http_server:port>/api/registered/path/to/directory/filename.txt",
+          "location": "irods://rodserver.dockerized.io/path/to/directory/filename.txt",
+          "metadata": {
+            "PID": "123/1234567890",
+            "checksum": "123456789",
+            "name": "filename.txt",
+            "object_type": "dataobject"
+          },
+          "path": "path/to/directory"
+        }
+      }
+    ],
+    "errors": null
+  }
 }
-
-
 ```
 
 ### Download an entity
+
 ##### Example
+
 ```bash
 # Download 'filename.txt'
 $ curl -o localFileName \
   -H "Authorization: Bearer <auth_token>" \
   <http_server:port>/api/registered/path/to/directory/filename.txt?download=true
 ```
+
 ##### Response
+
 ```json
 Content of filename.txt
 ```
 
 ### Get list of entities in a directory
+
 ##### Example
+
 ```bash
 # Get list of entities inside 'directory'
 $ curl \
   -H "Authorization: Bearer <auth_token>" \
   <http_server:port>/api/registered/path/to/directory/
 ```
+
 ##### Response
+
 ```json
 {
   "Meta": {
@@ -132,11 +143,10 @@ $ curl \
     "errors": null
   }
 }
-
 ```
 
-
 ## **PUT**
+
 ### Upload an entity **and trigger the registration in B2SAFE**
 
 Both Form and Streaming upload are supported. Streaming is more advisable uploding large data. Also be aware that for larger and longer upload you might have to provide a bigger timeout parameter to your client if any (e.g. for `curl` there is a `--max-time` option)
@@ -145,13 +155,14 @@ Both Form and Streaming upload are supported. Streaming is more advisable uplodi
 
 ##### Parameters
 
-| Parameter | Type | Description
-|-----------|------|-------------
-| file (required) | string | Name of the local file to be uploaded
-| force | bool | Force overwrite
-| pid_await | bool | Return PID in the response: the response is returned as the registration is completed (or after 10 seconds if the PID is not ready yet)
+| Parameter       | Type   | Description                                                                                                                             |
+| --------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| file (required) | string | Name of the local file to be uploaded                                                                                                   |
+| force           | bool   | Force overwrite                                                                                                                         |
+| pid_await       | bool   | Return PID in the response: the response is returned as the registration is completed (or after 10 seconds if the PID is not ready yet) |
 
 ##### Example: Form upload
+
 ```bash
 # Form upload 'myfile' in '/path/to/directory/filename'
 $ curl -X PUT \
@@ -171,7 +182,9 @@ $ curl -X PUT \
   -F file=@myfile2 \
   <http_server:port>/api/registered/path/to/directory/filename?pid_await=true
 ```
+
 ##### Example: Streaming upload
+
 ```bash
 # Streaming upload 'myfile' in '/path/to/directory/filename'
 $ curl -T file \
@@ -179,7 +192,9 @@ $ curl -T file \
   -H "Content-Type: application/octet-stream"
   <http_server:port>/api/registered/path/to/directory/filename
 ```
+
 ##### Example: Streaming upload with python requests
+
 ```python
 # Streaming upload 'myfile' in '/path/to/directory/filename'
 import requests
@@ -191,38 +206,40 @@ with open('/tmp/file', 'rb') as f:
 ```
 
 ##### Response
+
 ```json
 {
-    "Meta": {
-        "data_type": "<class 'dict'>",
-        "elements": 6,
-        "errors": 0,
-        "status": 200
+  "Meta": {
+    "data_type": "<class 'dict'>",
+    "elements": 6,
+    "errors": 0,
+    "status": 200
+  },
+  "Response": {
+    "data": {
+      "PID": null,
+      "checksum": "123456789",
+      "filename": "filename",
+      "link": "<http_server:port>/api/registered/path/to/directory/filename",
+      "location": "irods://rodserver.dockerized.io/path/to/directory/filename",
+      "path": "/tempZone/home/guest"
     },
-    "Response": {
-        "data": {
-            "PID": null,
-            "checksum": '123456789',
-            "filename": "filename",
-            "link": "<http_server:port>/api/registered/path/to/directory/filename",
-            "location": "irods://rodserver.dockerized.io/path/to/directory/filename",
-            "path": "/tempZone/home/guest"
-        },
-        "errors": null
-    }
+    "errors": null
+  }
 }
-
 ```
 
-
 ## **POST**
+
 ### Create a new directory
-| Parameter | Type | Description
-|-----------|------|-------------
-| path (required) | string | Absolute directory path to be created
-<!-- | force | bool | Force recursive creation -->
+
+| Parameter       | Type   | Description                           |
+| --------------- | ------ | ------------------------------------- |
+| path (required) | string | Absolute directory path to be created |
+| <!--            | force  | bool                                  | Force recursive creation --> |
 
 ##### Example
+
 ```bash
 # Create the directory '/new_directory' in B2SAFE
 $ curl -X POST \
@@ -231,7 +248,9 @@ $ curl -X POST \
   -d '{"path":"/path/to/directory/new_directory"}' \
   <http_server:port>/api/registered
 ```
+
 ##### Response
+
 ```json
 {
   "Meta": {
@@ -252,15 +271,18 @@ $ curl -X POST \
 
 ```
 
-
 ## **PATCH**
+
 ### Update an entity name
+
 ##### Parameters
-| Parameter | Type | Description
-|-----------|------|-------------
-| newname | string | Name that will replace the old one
+
+| Parameter | Type   | Description                        |
+| --------- | ------ | ---------------------------------- |
+| newname   | string | Name that will replace the old one |
 
 ##### Example
+
 ```bash
 # Rename the file "path/to/directory/filename" in "path/to/directory/filename2"
 curl -X PATCH \
@@ -268,7 +290,9 @@ curl -X PATCH \
   -d '{"newname":"filename4"}' \
   <http_server:port>/api/registered/path/to/directory/filename
 ```
+
 ##### Response
+
 ```json
 {
   "Meta": {
@@ -290,12 +314,15 @@ curl -X PATCH \
 ```
 
 ### Update a directory name
+
 ##### Parameters
-| Parameter | Type | Description
-|-----------|------|-------------
-| newname | string | Name that will replace the old one
+
+| Parameter | Type   | Description                        |
+| --------- | ------ | ---------------------------------- |
+| newname   | string | Name that will replace the old one |
 
 ##### Example
+
 ```bash
 # Rename the directory "path/to/directory" in "path/to/directory2"
 curl -X PATCH \
@@ -303,7 +330,9 @@ curl -X PATCH \
   -d '{"newname":"directory2"}' \
   <http_server:port>/api/registered/path/to/directory
 ```
+
 ##### Response
+
 ```json
 {
   "Meta": {

@@ -1,12 +1,10 @@
-version: '3'
+version: "3"
 
 volumes:
   redis_cache:
     driver: local
 
-
 services:
-
   proxy:
     environment:
       ACTIVATE: 0
@@ -48,4 +46,3 @@ services:
   celery:
     environment:
       ACTIVATE: 0
-
