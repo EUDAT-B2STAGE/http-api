@@ -213,14 +213,13 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
             # Normal upload: inside the host tmp folder
             try:
+                username_path = Path(r.username)
                 errors = None
                 status = 200
-                response = self.upload(subfolder=r.username, force=force)
+                response = self.upload(subfolder=username_path, force=force)
                 content = response[0]
                 original_filename = content.get("filename")
-                abs_file = self.absolute_upload_file(
-                    original_filename, Path(r.username)
-                )
+                abs_file = self.absolute_upload_file(original_filename, username_path)
                 log.info("File is '{}'", abs_file)
 
                 # Move file in irods
