@@ -3,6 +3,7 @@ Common functions for EUDAT endpoints
 """
 
 import os
+from pathlib import Path
 
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import (
@@ -265,7 +266,7 @@ class EudatEndpoint(B2accessUtilities):
                 return self.send_errors(code=404, head_method=head)
 
         filename = self.filename_from_path(path)
-        abs_file = self.absolute_upload_file(filename, username)
+        abs_file = self.absolute_upload_file(filename, Path(username))
 
         # TODO: decide if we want to use a cache when streaming
         # what about nginx caching?
