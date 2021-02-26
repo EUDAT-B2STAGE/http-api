@@ -41,6 +41,7 @@ class Initializer:
                             "uuid": getUUID(),
                             "email": username,
                             "name": username,
+                            "password": "not-used",
                             "surname": "iCAT",
                             "authmethod": "irods",
                         }
