@@ -11,6 +11,7 @@ https://github.com/EUDAT-B2STAGE/http-api/blob/metadata_parser/docs/user/endpoin
 
 import os
 import time
+from pathlib import Path
 
 from b2stage.connectors.irods.client import IrodsException
 from b2stage.endpoints.commons import CURRENT_MAIN_ENDPOINT
@@ -204,6 +205,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # Manage both form and streaming upload
         ipath = None
+        filename = None
 
         #################
         # CASE 1- FORM UPLOAD
@@ -216,7 +218,9 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 response = self.upload(subfolder=r.username, force=force)
                 content = response[0]
                 original_filename = content.get("filename")
-                abs_file = self.absolute_upload_file(original_filename, r.username)
+                abs_file = self.absolute_upload_file(
+                    original_filename, Path(r.username)
+                )
                 log.info("File is '{}'", abs_file)
 
                 # Move file in irods
