@@ -28,7 +28,7 @@ variables:
   env:
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
     # BACKEND_BUILD_MODE: backendirods
-    PYTHON_PATH: /usr/local/lib/python3.8/dist-packagess
+    PYTHON_PATH: /usr/local/lib/python3.8/dist-packages
 
     ALLOW_ACCESS_TOKEN_PARAMETER: 1
     RUN_SCHEMATHESIS: 0
