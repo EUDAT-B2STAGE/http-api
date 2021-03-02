@@ -1,9 +1,8 @@
 """
 iRODS file-system flask connector
 """
-
 import logging
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from b2stage.connectors.irods.certificates import Certificates
 from b2stage.connectors.irods.client import IrodsPythonClient
@@ -28,6 +27,9 @@ DEFAULT_CHUNK_SIZE = 1_048_576
 # Excluded from coverage because it is only used by a very specific service
 # No further tests will be included in the core
 class IrodsPythonExt(Connector, IrodsPythonClient):
+
+    prc: Any
+
     def __init__(self):
         self.prc = None
         super().__init__()
