@@ -1,15 +1,13 @@
 import os
-from typing import Optional
 
 from restapi.connectors import sqlalchemy
-from restapi.customizer import FlaskApp
 from restapi.services.authentication import Role
 from restapi.utilities.logs import log
 from restapi.utilities.uuid import getUUID
 
 
 class Initializer:
-    def __init__(self, app: Optional[FlaskApp] = None):
+    def __init__(self):
 
         sql = sqlalchemy.get_instance()
 
