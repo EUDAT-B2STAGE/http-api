@@ -26,12 +26,10 @@ else:
             # Call father's method
             super().setUp()
 
-            # Remove existing files
+            # Remove existing files by using a special testing endpoint
             endpoint = f"{API_URI}/registered"
             r = self.client.delete(
-                endpoint,
-                data=dict(debugclean="True"),
-                headers=self.__class__.auth_header,
+                f"{API_URI}/testdeleteall", headers=self.__class__.auth_header,
             )
             assert r.status_code == 200
 
