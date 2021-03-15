@@ -365,18 +365,12 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         }
 
     @decorators.auth.require_all(Role.USER)
-    @decorators.use_kwargs({"debugclean": fields.Bool()})
-    @decorators.endpoint(
-        path="/registered",
-        summary="Delete an entity",
-        responses={200: "Entities deleted"},
-    )
     @decorators.endpoint(
         path="/registered/<path:location>",
         summary="Delete an entity",
         responses={200: "Entity deleted"},
     )
-    def delete(self, location=None, debugclean=False):
+    def delete(self, location):
         """
         Remove an object or an empty directory on iRODS
 
@@ -392,22 +386,44 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         if r.errors is not None:
             raise RestApiException(r.errors)
 
-        icom = r.icommands
-
-        ###################
-        # Testing option to remove the whole content of current home
-        if TESTING and debugclean:
-            home = icom.get_user_home()
-            files = icom.list(home)
-            for key, obj in files.items():
-                icom.remove(
-                    home + self._path_separator + obj["name"],
-                    recursive=obj["object_type"] == "collection",
-                )
-                log.debug("Removed {}", obj["name"])
-            return "Cleaned"
+        # icom = r.icommands
 
         # TODO: only if it has a PID?
         raise RestApiException(
             "Data removal NOT allowed inside the 'registered' domain", status_code=405,
         )
+
+
+class DeleteAllTestingMode(Uploader, EudatEndpoint):
+
+    labels = ["eudat", "registered"]
+    depends_on = ["TESTING"]
+
+    @decorators.auth.require_all(Role.USER)
+    @decorators.use_kwargs({"debugclean": fields.Bool()})
+    @decorators.endpoint(
+        path="/registered",
+        summary="Delete an entity",
+        responses={200: "Entities deleted"},
+    )
+    def delete(self, debugclean=False):
+        """
+        Cleanup a home collection, only enabled in TESTING mode
+        """
+
+        # get the base objects
+        r = self.init_endpoint()
+        if r.errors is not None:
+            raise RestApiException(r.errors)
+
+        icom = r.icommands
+
+        home = icom.get_user_home()
+        files = icom.list(home)
+        for key, obj in files.items():
+            icom.remove(
+                home + self._path_separator + obj["name"],
+                recursive=obj["object_type"] == "collection",
+            )
+            log.debug("Removed {}", obj["name"])
+        return self.response("Cleaned")
