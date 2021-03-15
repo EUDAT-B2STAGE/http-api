@@ -5,6 +5,7 @@ from restapi.env import Env
 from restapi.exceptions import BadRequest
 from restapi.models import Schema, fields
 from restapi.utilities.logs import log
+from webargs import fields as webargs_fields
 
 seadata_vars = Env.load_variables_group(prefix="seadata")
 
@@ -27,7 +28,7 @@ class EndpointsInputSchema(Schema):
 
     eudat_backdoor = fields.Bool(required=False, missing=False)
 
-    parameters = fields.Raw(required=True)
+    parameters = webargs_fields.Raw(required=True)
 
 
 class ErrorCodes:
