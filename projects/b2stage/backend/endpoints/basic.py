@@ -401,13 +401,12 @@ if TESTING:
         labels = ["eudat", "registered"]
 
         @decorators.auth.require_all(Role.USER)
-        @decorators.use_kwargs({"debugclean": fields.Bool()})
         @decorators.endpoint(
-            path="/registered",
+            path="/testdeleteall",
             summary="Delete an entity",
             responses={200: "Entities deleted"},
         )
-        def delete(self, debugclean=False):
+        def delete(self):
             """
             Cleanup a home collection, only enabled in TESTING mode
             """
