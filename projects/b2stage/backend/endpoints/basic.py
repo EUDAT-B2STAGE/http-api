@@ -394,36 +394,37 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         )
 
 
-class DeleteAllTestingMode(Uploader, EudatEndpoint):
+if TESTING:
 
-    labels = ["eudat", "registered"]
-    depends_on = ["TESTING"]
+    class DeleteAllTestingMode(Uploader, EudatEndpoint):
 
-    @decorators.auth.require_all(Role.USER)
-    @decorators.use_kwargs({"debugclean": fields.Bool()})
-    @decorators.endpoint(
-        path="/registered",
-        summary="Delete an entity",
-        responses={200: "Entities deleted"},
-    )
-    def delete(self, debugclean=False):
-        """
-        Cleanup a home collection, only enabled in TESTING mode
-        """
+        labels = ["eudat", "registered"]
 
-        # get the base objects
-        r = self.init_endpoint()
-        if r.errors is not None:
-            raise RestApiException(r.errors)
+        @decorators.auth.require_all(Role.USER)
+        @decorators.use_kwargs({"debugclean": fields.Bool()})
+        @decorators.endpoint(
+            path="/registered",
+            summary="Delete an entity",
+            responses={200: "Entities deleted"},
+        )
+        def delete(self, debugclean=False):
+            """
+            Cleanup a home collection, only enabled in TESTING mode
+            """
 
-        icom = r.icommands
+            # get the base objects
+            r = self.init_endpoint()
+            if r.errors is not None:
+                raise RestApiException(r.errors)
 
-        home = icom.get_user_home()
-        files = icom.list(home)
-        for key, obj in files.items():
-            icom.remove(
-                home + self._path_separator + obj["name"],
-                recursive=obj["object_type"] == "collection",
-            )
-            log.debug("Removed {}", obj["name"])
-        return self.response("Cleaned")
+            icom = r.icommands
+
+            home = icom.get_user_home()
+            files = icom.list(home)
+            for key, obj in files.items():
+                icom.remove(
+                    home + self._path_separator + obj["name"],
+                    recursive=obj["object_type"] == "collection",
+                )
+                log.debug("Removed {}", obj["name"])
+            return self.response("Cleaned")
