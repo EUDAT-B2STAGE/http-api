@@ -88,4 +88,4 @@ variables:
     # while QC containers uses an hard-code mount point (/usr/share)
     SEADATA_RESOURCES_MOUNTPOINT: /usr/share
 
-    CELERY_BACKEND: MONGODB
+    CELERY_BACKEND: REDIS

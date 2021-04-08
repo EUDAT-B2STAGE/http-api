@@ -2,13 +2,12 @@ version: "3"
 
 services:
   backend:
-    environment:
-      CELERY_ENABLE: 1
-      MONGO_ENABLE: 0
+    # environment:
+    #   CELERY_ENABLE: 1
+    #   MONGO_ENABLE: 0
 
     volumes:
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
-
-  mongodb:
-    environment:
-      ACTIVATE: 0
+  # mongodb:
+  #   environment:
+  #     ACTIVATE: 0
