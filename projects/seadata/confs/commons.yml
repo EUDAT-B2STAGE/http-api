@@ -17,6 +17,10 @@ services:
     ports:
       - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
 
+  redis:
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+
   backend:
     build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
