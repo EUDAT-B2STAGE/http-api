@@ -21,6 +21,7 @@ variables:
 
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
     CELERY_BACKEND: REDIS
+    CELERY_ENABLE_CONNECTOR: 1
     ACTIVATE_RABBIT: 1
     ACTIVATE_REDIS: 1
 
