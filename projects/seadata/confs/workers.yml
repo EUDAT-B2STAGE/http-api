@@ -13,6 +13,14 @@ services:
     environment:
       ACTIVATE: 0
 
+  rabbit:
+    environment:
+      ACTIVATE: 0
+
+  redis:
+    environment:
+      ACTIVATE: 0
+
   # rabbit:
   #   restart: always
   #   environment:

@@ -17,19 +17,22 @@ tags:
 
 variables:
   env:
-    SEADATA_API_VERSION: 1.1.4.0001
+    SEADATA_API_VERSION: 1.1.4.0002
 
     LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
+    CELERY_BACKEND: REDIS
+    ACTIVATE_RABBIT: 1
+    ACTIVATE_REDIS: 1
 
-    ###############################
-    IRODS_ANONYMOUS: 1
-    ACTIVATE_ICAT: 0
     # 72 hours
     TOKEN_LONG_TTL: 259200
     TOKEN_SHORT_TTL: 259200
 
     ###############################
     ## Seadata project variable
+    IRODS_ANONYMOUS: 1
+    ACTIVATE_ICAT: 0
+
     SEADATA_PROJECT: 1
     SEADATA_EDMO_CODE:
     # The names of the directories in the irods zone
@@ -66,7 +69,7 @@ variables:
     RABBIT_QUEUE: elkqueue
     RABBIT_SSL_ENABLED: 0 # can be 0, 1, true, false
     ## OTHERS
-    REDIS_HOST: redis-cache-1
+    # REDIS_HOST: redis-cache-1
     # CONTAINERS_RABBITUSER:
     # CONTAINERS_RABBITPASS:
     # CONTAINERS_DBUSER:
@@ -87,5 +90,3 @@ variables:
     # Note that this variable has only effect in backend and celery containers
     # while QC containers uses an hard-code mount point (/usr/share)
     SEADATA_RESOURCES_MOUNTPOINT: /usr/share
-
-    CELERY_BACKEND: REDIS
