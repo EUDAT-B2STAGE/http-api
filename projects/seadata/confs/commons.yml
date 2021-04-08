@@ -13,6 +13,10 @@ services:
       SEADATA_PRODUCTION_COLL: ${SEADATA_PRODUCTION_COLL}
       SEADATA_ORDERS_COLL: ${SEADATA_ORDERS_COLL}
 
+  rabbit:
+    ports:
+      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
+
   backend:
     build: ${BASE_PROJECT_DIR}/builds/backend
     image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
