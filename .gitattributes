@@ -1,7 +1,6 @@
 * text=auto
 
-# Git will always convert line endings to LF on checkout.
-# You should use this for files that must keep LF endings, even on Windows.
-*.py text eol=lf
-
-do text eol=lf
+*.py text eol=lf diff=python
+*.css text diff=css
+*.html text diff=html
+*.md text diff=markdown
