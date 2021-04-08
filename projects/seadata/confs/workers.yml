@@ -13,19 +13,19 @@ services:
     environment:
       ACTIVATE: 0
 
-  rabbit:
-    restart: always
-    environment:
-      ACTIVATE: ${ACTIVATE_RABBIT}
-    ports:
-      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
+  # rabbit:
+  #   restart: always
+  #   environment:
+  #     ACTIVATE: ${ACTIVATE_RABBIT}
+  #   ports:
+  #     - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
 
-  mongodb:
-    restart: always
-    environment:
-      ACTIVATE: ${ACTIVATE_MONGODB}
-    ports:
-      - ${MONGO_PORT}:${MONGO_PORT}
+  # mongodb:
+  #   restart: always
+  #   environment:
+  #     ACTIVATE: ${ACTIVATE_MONGODB}
+  #   ports:
+  #     - ${MONGO_PORT}:${MONGO_PORT}
 
   celery:
     restart: on-failure:15
