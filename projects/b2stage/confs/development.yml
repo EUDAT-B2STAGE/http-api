@@ -44,9 +44,3 @@ services:
       API_URL: http://localhost:8080/api/specs
     ports:
       - 80:8080
-  sqlalchemyui:
-    # http://localhost:81/?pgsql=psqldb.dockerized.io&username=rods&db=ICAT
-    # volumes:
-    #   - restlitedb:/dbs
-    ports:
-      - 81:8080
