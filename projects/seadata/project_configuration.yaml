@@ -5,8 +5,8 @@
 project:
   title: SeaDataCloud HTTP-API
   description: Processing data in SeaDataCloud project
-  version: "1.1.4"
-  rapydo: "1.1"
+  version: "1.2.0"
+  rapydo: "2.0"
   extends: b2stage
   extends-from: projects
 
@@ -17,9 +17,10 @@ tags:
 
 variables:
   env:
-    SEADATA_API_VERSION: 1.1.4.0002
+    SEADATA_API_VERSION: 1.2.0.0001
 
-    LOG_LEVEL: INFO # global, but can be configured separately in .projectrc
+    LOG_LEVEL: INFO
+    AUTH_SERVICE: sqlalchemy
     CELERY_BACKEND: REDIS
     CELERY_ENABLE_CONNECTOR: 1
     ACTIVATE_RABBIT: 1

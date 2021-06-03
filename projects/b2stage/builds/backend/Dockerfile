@@ -1,4 +1,4 @@
-FROM rapydo/backend:1.1
+FROM rapydo/backend:2.0
 MAINTAINER "Mattia D'Antonio <m.dantonio@cineca.it>"
 
 ARG RAPYDO_VERSION

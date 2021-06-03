@@ -1,7 +1,5 @@
 # B2STAGE HTTP-API for EUDAT project
 
-[![Build Status](https://travis-ci.com/EUDAT-B2STAGE/http-api.svg?branch=1.1.2)](https://travis-ci.com/EUDAT-B2STAGE/http-api) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3d59eae46ec040008a99116396229dff)](https://www.codacy.com/app/EUDAT/http-api?utm_source=github.com&utm_medium=referral&utm_content=EUDAT-B2STAGE/http-api&utm_campaign=Badge_Grade)
-
 ---
 
 ## Objectives
