@@ -13,7 +13,7 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
-    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
+    image: ${REGISTRY_HOST}${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     command: celery -A restapi.connectors.celery.worker.celery_app worker --concurrency=1 -Ofair -Q celery -n worker-%h
     volumes:
       - ${RESOURCES_LOCALPATH}:${SEADATA_RESOURCES_MOUNTPOINT}
@@ -55,7 +55,7 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
-    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
+    image: ${REGISTRY_HOST}${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     hostname: flower
     environment:
       AUTH_ENABLE: 0
@@ -103,7 +103,7 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
-    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
+    image: ${REGISTRY_HOST}${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery -A restapi.connectors.celery.worker.celery_app worker --concurrency=1 -Ofair -Q ingestion -n worker-%h
     # user: developer
@@ -211,7 +211,7 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
-    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
+    image: ${REGISTRY_HOST}${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     entrypoint: docker-entrypoint-celery
     command: celery -A restapi.connectors.celery.worker.celery_app worker --concurrency=1 -Ofair -Q restricted -n worker-%h
     # user: developer
