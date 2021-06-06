@@ -23,7 +23,7 @@ services:
         RAPYDO_VERSION: ${RAPYDO_VERSION}
         CURRENT_UID: ${CURRENT_UID}
         CURRENT_GID: ${CURRENT_GID}
-    image: ${COMPOSE_PROJECT_NAME}/icat:${RAPYDO_VERSION}
+    image: ${REGISTRY_HOST}${COMPOSE_PROJECT_NAME}/icat:${RAPYDO_VERSION}
     hostname: ${IRODS_HOST}
     # command: sleep infinity
     environment:
@@ -61,7 +61,7 @@ services:
 
   backend:
     build: ${PROJECT_DIR}/builds/backend
-    image: ${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
+    image: ${REGISTRY_HOST}${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     volumes:
       # Uploads dir
       - ${VANILLA_DIR}/data/uploads:${UPLOAD_PATH}
