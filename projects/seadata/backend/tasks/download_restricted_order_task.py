@@ -10,7 +10,7 @@ from b2stage.connectors.irods.client import IrodsException
 from b2stage.endpoints.commons import path
 from b2stage.endpoints.commons.basher import BashCommands
 from plumbum.commands.processes import ProcessExecutionError
-from restapi.connectors.celery import CeleryExt, send_errors_by_email
+from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
 from restapi.utilities.processes import start_timeout, stop_timeout
 from seadata.endpoints.commons.seadatacloud import ErrorCodes
@@ -87,7 +87,11 @@ def download_restricted_order(self, order_id, order_path, myjson):
             params_error = check_params(params)
             if params_error:
                 return notify_error(
-                    params_error, myjson, backdoor, self, edmo_code=request_edmo_code,
+                    params_error,
+                    myjson,
+                    backdoor,
+                    self,
+                    edmo_code=request_edmo_code,
                 )
 
             # order_number = params.get("order_number")
@@ -160,7 +164,10 @@ def download_restricted_order(self, order_id, order_path, myjson):
             log.info("Downloading file from {}", download_url)
             try:
                 r = requests.get(
-                    download_url, stream=True, verify=False, headers=DOWNLOAD_HEADERS,
+                    download_url,
+                    stream=True,
+                    verify=False,
+                    headers=DOWNLOAD_HEADERS,
                 )
             except requests.exceptions.ConnectionError:
                 return notify_error(
@@ -408,7 +415,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
                     backup_zip = final_zip + ".bak"
                     if imain.is_dataobject(backup_zip):
                         log.info(
-                            "{} already exists, removing previous backup", backup_zip,
+                            "{} already exists, removing previous backup",
+                            backup_zip,
                         )
                         imain.remove(backup_zip)
                     imain.move(final_zip, backup_zip)
