@@ -218,8 +218,6 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 status = 200
 
                 # DEBUG CODE
-                from pathlib import Path
-
                 log.critical(
                     "DEBUG CODE: /uploads permssions = {}",
                     oct(os.stat(Path("/uploads")).st_mode & 0o777),
