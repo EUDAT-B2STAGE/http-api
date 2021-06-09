@@ -44,7 +44,7 @@ class BasicEndpoint(Uploader, EudatEndpoint):
         },
     )
     def get(self, location, download=False):
-        """ Download file from filename """
+        """Download file from filename"""
 
         location = self.fix_location(location)
 
@@ -216,6 +216,16 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                 username_path = Path(r.username)
                 errors = None
                 status = 200
+
+                # DEBUG CODE
+                from pathlib import Path
+
+                log.critical(
+                    "DEBUG CODE: /uploads permssions = {}",
+                    oct(os.stat(Path("/uploads")).st_mode & 0o777),
+                )
+
+                # ################
                 response = self.upload(subfolder=username_path, force=force)
                 content = response[0]
                 original_filename = content.get("filename")
@@ -390,7 +400,8 @@ class BasicEndpoint(Uploader, EudatEndpoint):
 
         # TODO: only if it has a PID?
         raise RestApiException(
-            "Data removal NOT allowed inside the 'registered' domain", status_code=405,
+            "Data removal NOT allowed inside the 'registered' domain",
+            status_code=405,
         )
 
 
