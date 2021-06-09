@@ -38,6 +38,7 @@ jobs:
 
           # Permissions fix
           chmod -R 777 data/uploads
+          chown -R $USER data/uploads
 
           rapydo shell --no-tty backend 'restapi tests --wait --destroy'
 
