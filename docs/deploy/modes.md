@@ -9,9 +9,9 @@ The main one - called `development` - is for developers: you are expected to tes
 NOTE: follow this paragraph only if you plan to develop new features on the HTTP API.
 
 ```bash
-# bring up the docker containers in `debug` mode
+# bring up the docker containers in `debug` mode
 $ rapydo start
-# NOTE: this above is equivalent to default value `do --mode debug start`
+# NOTE: this above is equivalent to default value `do --mode debug start`
 
 # laungh the restful http-api server
 $ rapydo shell backend --command 'restapi launch'
@@ -70,7 +70,7 @@ $ rapydo --services YOURSERVICE logs
 # e.g. check all the logs from production, following new updates
 # $ rapydo logs --follow
 
-## if this is not enough:
+## if this is not enough:
 
 # check the backend as admin of the container
 $ rapydo shell --user root backend

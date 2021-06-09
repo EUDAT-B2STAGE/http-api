@@ -14,7 +14,7 @@ set -e
 #
 ######################################
 
-# Extra scripts
+# Extra scripts
 dedir="/docker-entrypoint.d"
 for f in `ls $dedir`; do
     case "$f" in
@@ -25,7 +25,7 @@ for f in `ls $dedir`; do
 done
 
 ###############
-# DO THE COPY
+# DO THE COPY
 
 if [ "$BATCH_SRC_PATH" == "" -o "$BATCH_DEST_PATH" == "" ]; then
     echo "Missing source and/or destination to be copied"
@@ -74,13 +74,13 @@ if [ "$IRODS_HOST" != "" ]; then
 
     if [ "$1" == 'download' ]; then
         # 4. copy the file into the destination directory
-        # TODO: build, push and test it
+        # TODO: build, push and test it
         iget -f $BATCH_SRC_PATH $BATCH_DEST_PATH
         echo "File copied"
 
         # whoami
         # fix permissions
-        # TODO: get to know which user should be mapped here
+        # TODO: get to know which user should be mapped here
         chown 1000 -R $BATCH_DEST_PATH
     elif [ "$1" == 'upload' ]; then
         # the variable this time is a list
@@ -92,7 +92,7 @@ if [ "$IRODS_HOST" != "" ]; then
     elif [ "$1" == 'addzip' ]; then
         echo
 
-        # 1. iget unzip uploaded
+        # 1. iget unzip uploaded
         zip1="uploaded.zip"
         iget -f $BATCH_DEST_PATH $zip1
         echo "Obtained: $BATCH_DEST_PATH"
@@ -133,5 +133,5 @@ else
     exit 1
 fi
 
-# # what else?
+# # what else?
 # exec sleep infinity

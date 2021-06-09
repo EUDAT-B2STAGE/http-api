@@ -12,14 +12,14 @@ RUN test -n "$CURRENT_GID"
 
 ### HOW TO ###
 
-## CREATE A USER
+## CREATE A USER
 # iadmin mkuser paolo rodsuser
 # iadmin moduser paolo password tester
 
-# Preparation
+# Preparation
 WORKDIR /tmp
 
-# GSI and Grid FTP dependencies + # update to globus toolkit 6
+# GSI and Grid FTP dependencies + # update to globus toolkit 6
 
 # globus toolkit 6.0.15 (current latest) fails to install, forcing 6.0.14
 RUN apt-get update -qq && apt-get install -y \
@@ -41,7 +41,7 @@ ENV URL https://packages.irods.org
 RUN wget -qO - $URL/irods-signing-key.asc | apt-key add - \
     && echo "deb [arch=amd64] https://packages.irods.org/apt/ trusty main" | tee /etc/apt/sources.list.d/renci-irods.list
 
-# Make sure the main irods user is the same id into HTTP API server
+# Make sure the main irods user is the same id into HTTP API server
 ENV IRODS_UNAME irods
 # FIXME: not possible at the moment to change this name from configuration
 ENV IRODS_UID $CURRENT_UID
@@ -61,7 +61,7 @@ RUN useradd \
 ENV IRODS_VERSION 4.2.1
 ENV GSI_VERSION 2.1.0
 
-# BUGGED against b2safe!
+# BUGGED against b2safe!
 # ENV IRODS_VERSION 4.2.2
 # ENV GSI_VERSION 2.2.0
 
@@ -89,30 +89,30 @@ COPY anonymous.sh /usr/local/bin/ianonymous
 RUN chmod +x /usr/local/bin/*
 
 ###################
-# Add bash rc commands
+# Add bash rc commands
 RUN echo "alias berods=\"HOME=/home/$IRODS_UNAME su -p irods\"" >> /root/.bash_aliases
 RUN echo "\\necho\\necho 'Become irods administrator user with the command:'\\necho '$ berods'" >> /root/.bashrc
 RUN echo "if [ \"\$IRODS_SWITCH\" != '1' ]; then echo; echo \"Switch to irods users with the 'switch' cli command\"; echo; fi" >> /home/$IRODS_UNAME/.bashrc
 
 ###################
-# VOLUMES
+# VOLUMES
 VOLUME /etc
 VOLUME /var/lib/irods
 VOLUME /opt/certificates
 
 ###################
-# OTHER OPERATIONS
+# OTHER OPERATIONS
 ENV TERM xterm-256color
 
 ###################
-# ENTRYPOINT
-# if you need to add future commands after irods installation:
+# ENTRYPOINT
+# if you need to add future commands after irods installation:
 # allow custom scripts to be executed at launch time
 # RUN mkdir /docker-entrypoint.d/
 COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 
 ###################
-# dumb init
+# dumb init
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64.deb \
     && dpkg -i dumb-init_*.deb \
     && rm *.deb

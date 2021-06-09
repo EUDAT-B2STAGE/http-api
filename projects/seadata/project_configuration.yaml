@@ -31,7 +31,7 @@ variables:
     TOKEN_SHORT_TTL: 259200
 
     ###############################
-    ## Seadata project variable
+    ## Seadata project variable
     IRODS_ANONYMOUS: 1
     ACTIVATE_ICAT: 0
 
@@ -50,17 +50,17 @@ variables:
     # SEADATA_BATCH_PROD_FILES_COLL: production
     ## IM APIs
     SEADATA_API_IM_URL: https://importmanager.seadatanet.org/api_v1
-    ## RANCHER
+    ## RANCHER
     RESOURCES_URL: https://cattle.yourdomain.com/v2-beta
     RESOURCES_QCLABEL: qc
     RESOURCES_KEY:
     RESOURCES_SECRET:
     RESOURCES_PROJECT:
-    ## PRIVATE DOCKERHUB
+    ## PRIVATE DOCKERHUB
     RESOURCES_HUB:
     RESOURCES_HUBUSER:
     RESOURCES_HUBPASS:
-    ## RABBIT SEADATA
+    ## RABBIT SEADATA
     ACTIVATE_LOGGING_RABBIT: 0
     RABBIT_HOST: rabbit.b2host.org
     RABBIT_PORT: 5672
@@ -70,7 +70,7 @@ variables:
     RABBIT_EXCHANGE: elkexchange
     RABBIT_QUEUE: elkqueue
     RABBIT_SSL_ENABLED: 0 # can be 0, 1, true, false
-    ## OTHERS
+    ## OTHERS
     # REDIS_HOST: redis-cache-1
     # CONTAINERS_RABBITUSER:
     # CONTAINERS_RABBITPASS:
@@ -86,7 +86,7 @@ variables:
     # worker containers. (Has to be the same, as they
     # exchange data).
     # This path needs permissions to user 1001
-    # as owner of subdir 'ingestion' and 'cloud'
+    # as owner of subdir 'ingestion' and 'cloud'
     RESOURCES_LOCALPATH: /nfs/share
     # This is the mount point of $RESOURCES_LOCALPATH inside the containers
     # Note that this variable has only effect in backend and celery containers

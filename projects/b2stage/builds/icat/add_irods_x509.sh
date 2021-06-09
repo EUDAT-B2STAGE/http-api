@@ -12,16 +12,16 @@ mkdir -p $mydir
 ## CERTIFICATES
 ##############################
 
-# NOTE TO SELF:
-# This must be splitted in two pieces.
-# The first one is set the certificates (CA auth + host) -> at init time
-# The second one is a binary -> to be called only if necessary
+# NOTE TO SELF:
+# This must be splitted in two pieces.
+# The first one is set the certificates (CA auth + host) -> at init time
+# The second one is a binary -> to be called only if necessary
 
 ## CA authority
 if [ ! -d "$GRIDCERTDIR/certificates" ]; then
     grid-ca-create -noint -dir $CADIR
     yes 1 | grid-default-ca
-    # do this if no certificates in simple ca
+    # do this if no certificates in simple ca
     cp $GRIDCERTDIR/certificates/* $CADIR
 fi
 # grid-default-ca -list
@@ -96,7 +96,7 @@ yes globus | grid-ca-sign -dir $CADIR \
     -in $certin -out $certout
 # clear
 
-# Check certificate
+# Check certificate
 openssl x509 -in $certout -noout -subject
 if [ "$?" == "0" ]; then
     echo "Created signed certificate"

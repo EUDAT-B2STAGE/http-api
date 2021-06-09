@@ -25,7 +25,7 @@ class User(UserBase):
 # setattr(User, 'name', StringProperty())
 # setattr(User, 'surname', StringProperty())
 
-#  // TO FIX:
+# // TO FIX:
 # should we consider roles?
 # _fields_to_show = {
 #     'role_1': ['name'],
@@ -134,7 +134,7 @@ class PID(StructuredNode):
 
 
 class MetaData(StructuredNode):
-    """ Any metaData stored in any service level """
+    """Any metaData stored in any service level"""
 
     # key = StringProperty(index=True)
     # metatype = StringProperty()         # Describe the level of metadata
@@ -149,7 +149,7 @@ class MetaData(StructuredNode):
 
 
 class Aggregation(StructuredNode):
-    """ A generic relationship between nodes (data and metadata) """
+    """A generic relationship between nodes (data and metadata)"""
 
     something = StringProperty()
     belonging = RelationshipFrom(DigitalEntity, "BELONGS_TO")

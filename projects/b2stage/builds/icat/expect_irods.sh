@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-# Clean
+# Clean
 SCRIPT=$1
 rm -rf $SCRIPT && touch $SCRIPT
 
@@ -42,9 +42,9 @@ echo "$POSTGRES_PASSWORD" >> $SCRIPT
 ##############################
 # IRODS setup
 
-# irods zone
+# irods zone
 echo "$IRODS_ZONE" >> $SCRIPT
-# irods port
+# irods port
 echo "$IRODS_PORT" >> $SCRIPT
 # range begin
 echo "20000" >> $SCRIPT

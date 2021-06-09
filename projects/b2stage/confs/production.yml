@@ -7,7 +7,7 @@ volumes:
 services:
   backend:
     volumes:
-      # B2HANDLE credentials to solve PID metadata in write mode
+      # B2HANDLE credentials to solve PID metadata in write mode
       - ${VANILLA_DIR}/data/b2handle:${HANDLE_CREDENTIALS_INTERNAL_PATH}
 
   icat:

@@ -16,7 +16,7 @@ services:
   ###################################
   icat:
     # restart: no
-    # B2safe instance on irods
+    # B2safe instance on irods
     build:
       context: ${PROJECT_DIR}/builds/icat
       args:
@@ -44,11 +44,11 @@ services:
     volumes:
       # Workaroud to make this works in extended mode
       - ${VANILLA_DIR}/projects/b2stage/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
-      # CERTIFICATES
+      # CERTIFICATES
       - sharedcerts:/opt/certificates
       # B2ACCESS certificates
       - ${VANILLA_DIR}/projects/b2stage/builds/b2access_certificates:${B2ACCESS_CAS}
-      # EXTRA EUDAT scripts
+      # EXTRA EUDAT scripts
       - ${VANILLA_DIR}/projects/b2stage/builds/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
 
     networks:
@@ -63,9 +63,7 @@ services:
     build: ${PROJECT_DIR}/builds/backend
     image: ${REGISTRY_HOST}${COMPOSE_PROJECT_NAME}/backend:${RAPYDO_VERSION}
     volumes:
-      # Uploads dir
-      - ${VANILLA_DIR}/data/uploads:${UPLOAD_PATH}
-      # SHARED
+      # SHARED
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
       - ${VANILLA_DIR}/data/certs:/usr/local/share/ca-certificates
@@ -73,12 +71,12 @@ services:
       # - ${SUBMODULE_DIR}/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 
     environment:
-      MAIN_LOGIN_ENABLE: 0 # this could disable the basic /auth/login method
+      MAIN_LOGIN_ENABLE: 0 # this could disable the basic /auth/login method
 
       MAIN_ENDPOINT: ${API_MAIN_ENDPOINT}
       PUBLIC_ENDPOINT: ${API_PUBLIC_ENDPOINT}
       ENABLE_PUBLIC_ENDPOINT: ${ENABLE_PUBLIC_ENDPOINT}
-      # app credentials to work inside the b2access environment
+      # app credentials to work inside the b2access environment
       B2ACCESS_ENV: ${B2ACCESS_ENV}
       B2ACCESS_APPNAME: ${B2ACCESS_ACCOUNT}
       B2ACCESS_APPKEY: ${B2ACCESS_SECRET}

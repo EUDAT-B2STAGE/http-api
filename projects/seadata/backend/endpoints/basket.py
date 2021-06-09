@@ -1,7 +1,7 @@
 """
 Orders from production data to be temporary downloadable with a zip file
 
-# order a zip @async
+# order a zip @async
 POST /api/order/<OID>
     pids=[PID1, PID2, ...]
 
@@ -84,7 +84,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         },
     )
     def get(self, order_id, ftype, code):
-        """ downloading (not authenticated) """
+        """downloading (not authenticated)"""
         log.info("Order request: {} (code '{}')", order_id, code)
         json = {"order_id": order_id, "code": code}
         msg = prepare_message(self, json=json, user="anonymous", log_string="start")
@@ -135,7 +135,9 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             # use anonymous to get the session here
             # because the ticket supply breaks the iuser session permissions
             icom = irods.get_instance(
-                user="anonymous", password="null", authscheme="credentials",
+                user="anonymous",
+                password="null",
+                authscheme="credentials",
             )
             log.info("DOWNLOAD DEBUG 9: {} (code '{}')", order_id, code)
             # obj = self.init_endpoint()
@@ -177,7 +179,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         responses={200: "The list of zip files available"},
     )
     def get(self, order_id):
-        """ listing, not downloading """
+        """listing, not downloading"""
 
         log.debug("GET request on orders")
         msg = prepare_message(self, json=None, log_string="start")
@@ -312,7 +314,7 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             return self.send_errors("B2SAFE is temporarily unavailable", code=503)
 
     def no_slash_ticket(self, imain, path):
-        """ irods ticket for HTTP """
+        """irods ticket for HTTP"""
         # TODO: prc list tickets so we can avoid more than once
         # TODO: investigate iticket expiration
         # iticket mod Ticket_string-or-id uses/expire string-or-none
@@ -351,7 +353,12 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             ftype += str(index)
 
         route = "{}{}/{}/{}/download/{}/c/{}".format(
-            CURRENT_HTTPAPI_SERVER, API_URL, ORDERS_ENDPOINT, order_id, ftype, code,
+            CURRENT_HTTPAPI_SERVER,
+            API_URL,
+            ORDERS_ENDPOINT,
+            order_id,
+            ftype,
+            code,
         )
 
         # If metadata already exists, remove them:

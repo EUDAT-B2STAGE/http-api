@@ -88,7 +88,7 @@ class IrodsPythonClient:
         get_pid=False,
         get_checksum=False,
     ):
-        """ List the files inside an iRODS path/collection """
+        """List the files inside an iRODS path/collection"""
 
         if path is None:
             path = self.get_user_home()
@@ -184,7 +184,8 @@ class IrodsPythonClient:
         except iexceptions.CATALOG_ALREADY_HAS_ITEM_BY_THAT_NAME:
             if not ignore_existing:
                 raise IrodsException(
-                    "Irods collection already exists", status_code=409,
+                    "Irods collection already exists",
+                    status_code=409,
                 )
             else:
                 log.debug("Irods collection already exists: {}", path)
@@ -915,7 +916,7 @@ class IrodsPythonClient:
 
             return raw_out
 
-        #  EXAMPLE FOR IRULE: METADATA RULE
+        #  EXAMPLE FOR IRULE: METADATA RULE
         # object_path = "/sdcCineca/home/httpadmin/tmp.txt"
         # test_name = 'paolo2'
         # inputs = {  # extra quotes for string literals

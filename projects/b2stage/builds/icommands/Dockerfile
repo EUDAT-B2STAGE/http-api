@@ -6,17 +6,17 @@ LABEL maintainer="Paolo D'Onorio De Meo <m.dantonio@cineca.it>"
 ##############
 ### HOW TO ###
 
-## CREATE A USER
+## CREATE A USER
 # iadmin mkuser paolo rodsuser
 # iadmin moduser paolo password tester
 
-## CLOCK SYNC ISSUES
+## CLOCK SYNC ISSUES
 # apt-get install -y tzdata
 # unlink /etc/localtime
 # ln -s /usr/share/zoneinfo/Etc/GMT+6 /etc/localtime
 
 ###################
-# Preparation
+# Preparation
 WORKDIR /tmp
 RUN apt-get update -qq && apt-get install -y \
         zip zipmerge \
@@ -48,12 +48,12 @@ RUN apt-get update && apt-get install -y \
     rm -rf /var/lib/cache /var/lib/log /tmp/*
 
 ###################
-# dumb init
+# dumb init
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64.deb \
     && dpkg -i dumb-init_*.deb \
     && rm *.deb
 ENV TERM xterm-256color
-# ENTRYPOINT
+# ENTRYPOINT
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 RUN mkdir /docker-entrypoint.d/
 COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint

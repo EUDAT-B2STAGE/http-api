@@ -6,7 +6,7 @@ if [ ! -z "$B2ACCESS_CAS" ]; then
     cd $CADIR
     gridcerts="$GRIDCERTDIR/certificates"
 
-    ## DEV
+    ## DEV
     label="b2access.ca.dev"
     caid=$(openssl x509 -in $B2ACCESS_CAS/$label.pem -hash -noout)
     # caid=$(openssl x509 -in $label.pem -hash -noout)
@@ -18,7 +18,7 @@ if [ ! -z "$B2ACCESS_CAS" ]; then
         cp $CADIR/$caid* $gridcerts/
     fi
 
-    ## STAGING
+    ## STAGING
     label="b2access.ca.staging"
     caid=$(openssl x509 -in $B2ACCESS_CAS/$label.pem -hash -noout)
     # caid=$(openssl x509 -in $label.pem -hash -noout)
@@ -30,7 +30,7 @@ if [ ! -z "$B2ACCESS_CAS" ]; then
         cp $CADIR/$caid* $gridcerts/
     fi
 
-    ## PROD
+    ## PROD
     label="b2access.ca.prod"
     caid=$(openssl x509 -in $B2ACCESS_CAS/$label.pem -hash -noout)
     if [ `ls -1 $gridcerts/$caid.* 2> /dev/null | wc -l` != "2" ]; then

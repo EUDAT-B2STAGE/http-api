@@ -15,7 +15,7 @@ export AUTH="Authorization:Bearer $TOKEN"
 http POST \
     $APP_HOST$APP_PORT/api/registered?path=/tempZone/home/guest/mydir "$AUTH"
 
-# upload a file
+# upload a file
 http --form PUT \
     $APP_HOST$APP_PORT/api/registered/tempZone/home/guest/myfile \
     file@/tmp/jqt/VERSION "$AUTH"

@@ -26,27 +26,27 @@ QUEUE_VARS = Env.load_variables_group(prefix="rabbit")
 
 def prepare_message(instance, user=None, get_json=False, **params):
     """
-{ # start
-    "request_id": # build a hash for the current request
-    "edmo_code": # which eudat centre is
-    "json": "the json input file" # parameters maris
-    "datetime":"20180328T10:08:30", # timestamp
-    "ip_number":"544.544.544.544", # request.remote_addr
-    "program":"program/function name", # what's mine?
-    "url" ?
-    "user":"username", # from maris? marine id?
-    "log_string":"start"
-}
+    { # start
+        "request_id": # build a hash for the current request
+        "edmo_code": # which eudat centre is
+        "json": "the json input file" # parameters maris
+        "datetime":"20180328T10:08:30", # timestamp
+        "ip_number":"544.544.544.544", # request.remote_addr
+        "program":"program/function name", # what's mine?
+        "url" ?
+        "user":"username", # from maris? marine id?
+        "log_string":"start"
+    }
 
-{ # end
-    "datetime":"20180328T10:08:30",
-    "request_id":"from the json input file",
-    "ip_number":"544.544.544.544",
-    "program":"program of function = name",
-    "user":"username",
-    "edmo_code":"sample 353",
-    "log_string":"end"
-}
+    { # end
+        "datetime":"20180328T10:08:30",
+        "request_id":"from the json input file",
+        "ip_number":"544.544.544.544",
+        "program":"program of function = name",
+        "user":"username",
+        "edmo_code":"sample 353",
+        "log_string":"end"
+    }
     """
     logmsg = dict(params)
 
@@ -94,7 +94,7 @@ It needs the following info from config:
 
 
 def log_into_queue(instance, dictionary_message):
-    """ RabbitMQ in the EUDAT infrastructure """
+    """RabbitMQ in the EUDAT infrastructure"""
 
     # temporary disabled
     return False

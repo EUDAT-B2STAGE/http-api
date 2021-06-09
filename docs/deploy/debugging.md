@@ -10,7 +10,7 @@ To explore data and query parameters there are few other services as options:
 SERVER=localhost  # or your IP / Domain
 PORT=8080
 
-# access a swagger web ui
+# access a swagger web ui
 rapydo interfaces swagger
 # access the webpage:
 open http://$SERVER/swagger-ui/?url=http://$SERVER:$PORT/api/specs
@@ -36,8 +36,8 @@ cp PATH/TO/YOUR/CREDENTIALS/FILES/* data/b2handle/
 If you need to clean everything you have stored in docker from this project:
 
 ```bash
-# BE CAREFUL!
-rapydo clean --rm  # very DANGEROUS
+# BE CAREFUL!
+rapydo clean --rm  # very DANGEROUS
 # With this command you lose all your current data!
 ```
 

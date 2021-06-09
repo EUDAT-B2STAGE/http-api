@@ -1,3 +1,3 @@
-# Workspace domain
+# Workspace domain
 
 `[TO DO]`

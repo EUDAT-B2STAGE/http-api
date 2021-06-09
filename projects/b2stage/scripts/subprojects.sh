@@ -13,7 +13,7 @@ if [ ! -z "SEADATA_PROJECT" ]; then
     PROD_PATH="/$IRODS_ZONE/$SEADATA_PRODUCTION_COLL"
     ORDERS_PATH="/$IRODS_ZONE/$SEADATA_ORDERS_COLL"
 
-    # NOTE: we are using the main HTTP API irods user
+    # NOTE: we are using the main HTTP API irods user
     # to manage batches across nodes
     BATCHES_MAIN_USER="$IRODS_USER"
 

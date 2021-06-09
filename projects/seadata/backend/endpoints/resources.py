@@ -31,10 +31,11 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
     @decorators.auth.require()
     @decorators.endpoint(
-        path="/ingestion/<batch_id>/qc/<qc_name>", summary="Resources management",
+        path="/ingestion/<batch_id>/qc/<qc_name>",
+        summary="Resources management",
     )
     def get(self, batch_id, qc_name):
-        """ Check my quality check container """
+        """Check my quality check container"""
 
         # log.info("Request for resources")
         rancher = self.get_or_create_handle()
@@ -83,7 +84,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         summary="Launch a quality check as a docker container",
     )
     def put(self, batch_id, qc_name, **input_json):
-        """ Launch a quality check inside a container """
+        """Launch a quality check inside a container"""
 
         ###########################
         # get name from batch
@@ -99,7 +100,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
 
             if batch_status == MISSING_BATCH:
                 return self.send_errors(
-                    f"Batch '{batch_id}' not found (or no permissions)", code=404,
+                    f"Batch '{batch_id}' not found (or no permissions)",
+                    code=404,
                 )
 
             if batch_status == NOT_FILLED_BATCH:
@@ -148,7 +150,8 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         except BaseException as e:
             log.critical(str(e))
             return self.send_errors(
-                "Cannot establish a connection with Rancher", code=500,
+                "Cannot establish a connection with Rancher",
+                code=500,
             )
 
         container_name = self.get_container_name(batch_id, qc_name, rancher._qclabel)
@@ -163,7 +166,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         docker_image_name = self.get_container_image(qc_name, prefix=im_prefix)
 
         ###########################
-        # ## ENVS
+        # ## ENVS
 
         host_ingestion_path = self.get_ingestion_path_on_host(batch_id)
         container_ingestion_path = self.get_ingestion_path_in_container()
@@ -204,7 +207,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
             log.info("Creating folder {}", json_path_backend)
             os.mkdir(json_path_backend)
 
-        json_input_file = "input.{}.json".format(int(time.time()))
+        json_input_file = f"input.{int(time.time())}.json"
         json_input_path = os.path.join(json_path_backend, json_input_file)
         with open(json_input_path, "w+") as f:
             f.write(json.dumps(input_json))

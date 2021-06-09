@@ -23,7 +23,7 @@ git clone https://github.com/EUDAT-B2STAGE/http-api.git latest
 cd latest
 
 ################
-# install the corrensponding rapydo framework version
+# install the corrensponding rapydo framework version
 sudo pip3 install rapydo-controller
 rapydo --project b2stage install auto
 
@@ -39,7 +39,7 @@ rapydo shell backend --command 'restapi launch'
 If everything worked so far you may now try a test against your own server:
 
 ```bash
-# from another shell
+# from another shell
 $ curl -i localhost:8080/api/status
 
 HTTP/1.0 200 OK

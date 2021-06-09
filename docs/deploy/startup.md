@@ -10,7 +10,7 @@ $ VERSION=1.2.0 \
     && cd http-api \
     && git checkout $VERSION
 
-# now you will have the current latest release
+# now you will have the current latest release
 ```
 
 ## 2. configure

@@ -34,7 +34,7 @@ else:
             )
             assert r.status_code == 200
 
-            log.info("\n### Creating a test token (ANONYMOUS IRODS user) ###")
+            log.info("\n### Creating a test token (ANONYMOUS IRODS user) ###")
             credentials = {
                 "username": "anonymous",
                 "password": "notrequired",

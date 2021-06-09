@@ -36,7 +36,7 @@ variables:
     ###############################
     ## B2ACCESS
     # Register a B2ACCESS 'app' and use credentials here
-    # if you want to provide the endpoints to authenticate with B2ACCESS site
+    # if you want to provide the endpoints to authenticate with B2ACCESS site
     B2ACCESS_ACCOUNT:
     B2ACCESS_SECRET:
 
@@ -47,10 +47,10 @@ variables:
     IRODS_PASSWORD: chooseapasswordwisely # NOTE: must match ALCHEMY_PASSWORD
     IRODS_ZONE: tempZone
     IRODS_HOME: home
-    IRODS_GUEST_USER: guest # intended to work only with GSI
+    IRODS_GUEST_USER: guest # intended to work only with GSI
     IRODS_DEFAULT_ADMIN_USER: rodsminer # intended to work only with GSI
     # DN of your iRODS host with GSI plugin installed
-    IRODS_DN: # automatically computed within the docker network
+    IRODS_DN: # automatically computed within the docker network
     IRODS_AUTHSCHEME: # to be auto-detected
     # IRODS_AUTHSCHEME: credentials
     # IRODS_AUTHSCHEME: GSI
@@ -64,7 +64,7 @@ variables:
     IRODS_VERIFICATION_TIME: 900
 
     ###############################
-    ## Dockerized DB
+    ## Dockerized DB
     ACTIVATE_POSTGRES: 1
     ALCHEMY_USER: rods
     ALCHEMY_PASSWORD: chooseapasswordwisely
@@ -73,7 +73,7 @@ variables:
     ALCHEMY_DB: SQL_API
 
     ###############################
-    ## Experimental features
+    ## Experimental features
     IRODS_ANONYMOUS: 0 # enable only if you know what it means
     ENABLE_PUBLIC_ENDPOINT: 0 # experimental endpoint, depending on anonymous
 
