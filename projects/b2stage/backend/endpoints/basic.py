@@ -222,6 +222,11 @@ class BasicEndpoint(Uploader, EudatEndpoint):
                     "DEBUG CODE: /uploads permssions = {}",
                     oct(os.stat(Path("/uploads")).st_mode & 0o777),
                 )
+                Path("/uploads/test123").mkdir(parents=True, exist_ok=True)
+                log.critical(
+                    "DEBUG CODE: /uploads/test123 permssions = {}",
+                    oct(os.stat(Path("/uploads/test123")).st_mode & 0o777),
+                )
 
                 # ################
                 response = self.upload(subfolder=username_path, force=force)
