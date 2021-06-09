@@ -29,7 +29,8 @@ else:
             # Remove existing files by using a special testing endpoint
             endpoint = f"{API_URI}/registered"
             r = self.client.delete(
-                f"{API_URI}/testdeleteall", headers=self.__class__.auth_header,
+                f"{API_URI}/testdeleteall",
+                headers=self.__class__.auth_header,
             )
             assert r.status_code == 200
 
@@ -66,19 +67,19 @@ else:
                     "nonexisting",
                 )
             )
-            log.debug("*** Upload a test file: {}", self._ipath)
+            # log.debug("*** Upload a test file: {}", self._ipath)
 
-            # Upload entity in test folder
-            endpoint = f"{API_URI}/registered" + self._ipath
-            r = self.client.put(
-                endpoint,
-                data={
-                    "file": (io.BytesIO(b"just a test"), self._filename),
-                    "force": True,
-                },
-                headers=self.__class__.auth_header,
-            )
-            assert r.status_code == 200
+            # # Upload entity in test folder
+            # endpoint = f"{API_URI}/registered" + self._ipath
+            # r = self.client.put(
+            #     endpoint,
+            #     data={
+            #         "file": (io.BytesIO(b"just a test"), self._filename),
+            #         "force": True,
+            #     },
+            #     headers=self.__class__.auth_header,
+            # )
+            # assert r.status_code == 200
 
         def test_01_GET_check_if_published(self):
 
