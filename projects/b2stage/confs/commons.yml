@@ -43,13 +43,13 @@ services:
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
     volumes:
       # Workaroud to make this works in extended mode
-      - ${VANILLA_DIR}/projects/b2stage/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
+      - ${BASE_PROJECT_DIR}/scripts/subprojects.sh:/docker-entrypoint.d/subprojects.sh
       # CERTIFICATES
       - sharedcerts:/opt/certificates
       # B2ACCESS certificates
-      - ${VANILLA_DIR}/projects/b2stage/builds/b2access_certificates:${B2ACCESS_CAS}
+      - ${BASE_PROJECT_DIR}/builds/b2access_certificates:${B2ACCESS_CAS}
       # EXTRA EUDAT scripts
-      - ${VANILLA_DIR}/projects/b2stage/builds/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
+      - ${BASE_PROJECT_DIR}/builds/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
 
     networks:
       app_net:
@@ -66,7 +66,7 @@ services:
       # SHARED
       - sharedcerts:/opt/certificates
       # B2ACCESS dev certificates
-      - ${VANILLA_DIR}/data/certs:/usr/local/share/ca-certificates
+      - ${DATA_DIR}/certs:/usr/local/share/ca-certificates
       # # mount irods code to develop patches
       # - ${SUBMODULE_DIR}/prc/irods:/usr/local/lib/python3.6/dist-packages/irods
 

@@ -125,7 +125,7 @@ services:
 
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
 
-      - ${VANILLA_DIR}/data/logs:/logs
+      - ${DATA_DIR}/logs:/logs
 
     networks:
       db_net:
@@ -234,7 +234,7 @@ services:
 
       - ${SUBMODULE_DIR}/http-api/restapi:${PYTHON_PATH}/restapi
 
-      - ${VANILLA_DIR}/data/logs:/logs
+      - ${DATA_DIR}/logs:/logs
 
     networks:
       db_net:
