@@ -81,7 +81,7 @@ else:
             # )
             # assert r.status_code == 200
 
-        def test_01_GET_check_if_published(self):
+        def stop_test_01_GET_check_if_published(self):
 
             endpoint = f"{API_URI}/publish"
             log.info("*** Testing GET call on {}", endpoint)
@@ -110,7 +110,7 @@ else:
             error = self.get_content(r)
             assert "not existing or no permissions" in error
 
-        def test_02_PUT_publish_dataobject(self):
+        def stop_test_02_PUT_publish_dataobject(self):
 
             endpoint = f"{API_URI}/publish"
             log.info("*** Testing PUT call on {}", endpoint)
@@ -154,7 +154,7 @@ else:
             error = self.get_content(r)
             assert "not existing or no permissions" in error
 
-        def test_03_POST_not_working(self):
+        def stop_test_03_POST_not_working(self):
 
             endpoint = f"{API_URI}/publish"
             log.info("*** Testing POST call on {}", endpoint)
@@ -173,7 +173,7 @@ else:
             )
             assert r.status_code == 405
 
-        def test_04_DELETE_unpublish_dataobject(self):
+        def stop_test_04_DELETE_unpublish_dataobject(self):
 
             endpoint = f"{API_URI}/publish"
             log.info("*** Testing DELETE call on {}", endpoint)
