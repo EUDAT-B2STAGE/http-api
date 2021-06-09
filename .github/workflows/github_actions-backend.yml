@@ -36,6 +36,9 @@ jobs:
 
           rapydo logs
 
+          # Permissions fix
+          chmod -R 777 data/uploads
+
           rapydo shell --no-tty backend 'restapi tests --wait --destroy'
 
           LOGURU_LEVEL=WARNING rapydo list services
