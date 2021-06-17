@@ -5,9 +5,9 @@ class Customizer(BaseCustomizer):
     @staticmethod
     def custom_user_properties_pre(properties):
         """
-            executed just before user creation
-            use this method to removed or manipulate input properties
-            before sending to the database
+        executed just before user creation
+        use this method to removed or manipulate input properties
+        before sending to the database
         """
         extra_properties = {}
         # if "myfield" in properties:
@@ -17,17 +17,17 @@ class Customizer(BaseCustomizer):
     @staticmethod
     def custom_user_properties_post(user, properties, extra_properties, db):
         """
-            executed just after user creation
-            use this method to implement extra operation needed to create a user
-            e.g. store additional relationships
+        executed just after user creation
+        use this method to implement extra operation needed to create a user
+        e.g. store additional relationships
         """
         pass
 
     @staticmethod
     def manipulate_profile(ref, user, data):
         """
-            execute before sending data from the profile endpoint
-            use this method to add additonal information to the user profile
+        execute before sending data from the profile endpoint
+        use this method to add additonal information to the user profile
         """
         # data["CustomField"] = user.custom_field
 
@@ -61,6 +61,6 @@ class Customizer(BaseCustomizer):
     @staticmethod
     def get_custom_output_fields(request):
         """
-            this method is used to extend the output model of admin users
+        this method is used to extend the output model of admin users
         """
-        return Customizer.get_custom_input_fields(request, scope=BaseCustomizer.ADMIN)
+        return {}

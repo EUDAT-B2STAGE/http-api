@@ -144,7 +144,7 @@ services:
       # configuration files
       - ${SUBMODULE_DIR}/do/controller/confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
       - ${PROJECT_DIR}/project_configuration.yaml:/code/confs/project_configuration.yaml
-      - letsencrypt_certs:/etc/letsencrypt
+      - ssl_certs:/etc/letsencrypt
       # Vanilla code
       - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
       # From project, if any
@@ -253,7 +253,7 @@ services:
       # configuration files
       - ${SUBMODULE_DIR}/do/controller/confs/projects_defaults.yaml:/code/confs/projects_defaults.yaml
       - ${PROJECT_DIR}/project_configuration.yaml:/code/confs/project_configuration.yaml
-      - letsencrypt_certs:/etc/letsencrypt
+      - ssl_certs:/etc/letsencrypt
       # Vanilla code
       - ${PROJECT_DIR}/backend:/code/${COMPOSE_PROJECT_NAME}
       # From project, if any
