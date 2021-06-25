@@ -40,7 +40,7 @@ jobs:
 
           rapydo logs
 
-          if [[ "${{ PROJECT }}" == "seadata" ]]; then
+          if [[ "${PROJECT}" == "seadata" ]]; then
             rapydo --stack workers start
             sleep 20
             rapydo --stack workers logs
