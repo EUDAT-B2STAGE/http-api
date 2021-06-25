@@ -28,4 +28,4 @@ jobs:
           project: ${{ matrix.PROJECT }}
           allow_untyped_defs: true
           # install: ...
-          ignore: b2handle flask_oauthlib gssapi irods plumbum urllib3 tests
+          ignore: b2handle flask_oauthlib glom gssapi irods plumbum urllib3 tests

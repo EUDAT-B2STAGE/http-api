@@ -9,12 +9,15 @@ from restapi.utilities.logs import log
 
 class Credentials(Schema):
     username = fields.Str(required=True)
-    password = fields.Str(required=True, password=True,)
+    password = fields.Str(
+        required=True,
+        password=True,
+    )
     authscheme = fields.Str(default="credentials")
 
 
 class B2safeProxy(B2accessUtilities):
-    """ Login to B2SAFE: directly. """
+    """Login to B2SAFE: directly."""
 
     _anonymous_user = "anonymous"
 
@@ -26,7 +29,9 @@ class B2safeProxy(B2accessUtilities):
 
         try:
             obj = irods.get_instance(
-                user=user, password=password, authscheme=authscheme,
+                user=user,
+                password=password,
+                authscheme=authscheme,
             )
 
         except iexceptions.CAT_INVALID_USER:
@@ -57,7 +62,7 @@ class B2safeProxy(B2accessUtilities):
         user = self.get_user()
         log.debug("Token user: {}", user)
 
-        if not user.session:
+        if not user or not user.session:
             raise Unauthorized("This user is not registered inside B2SAFE")
 
         log.info("Valid B2SAFE user: {}", user.uuid)
@@ -100,7 +105,9 @@ class B2safeProxy(B2accessUtilities):
 
         # we verify that irods connects with this credentials
         irods = self.get_and_verify_irods_session(
-            user=username, password=password, authscheme=authscheme,
+            user=username,
+            password=password,
+            authscheme=authscheme,
         )
         if irods is None:
             raise Unauthorized("Failed to authenticate on B2SAFE")

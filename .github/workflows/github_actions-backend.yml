@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        PROJECT: [b2stage, seadata]
+        PROJECT: [b2stage]
 
     env:
       PROJECT: ${{ matrix.PROJECT }}

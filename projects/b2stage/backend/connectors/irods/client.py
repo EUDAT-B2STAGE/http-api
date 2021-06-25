@@ -19,12 +19,9 @@ class IrodsException(RestApiException):
 
 # Mostly excluded from coverage because it is only used by a very specific service
 # No further tests will be included in the core
-class IrodsPythonClient:
+class IrodsPythonClient:  # type: ignore
 
     prc: Any
-    # DEFAULT_CHUNK_SIZE
-    chunk_size = 1_048_576
-
     anonymous_user = "anonymous"
 
     @staticmethod

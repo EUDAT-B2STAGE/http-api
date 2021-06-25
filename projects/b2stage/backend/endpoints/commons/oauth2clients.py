@@ -21,7 +21,7 @@ B2ACCESS_URLS = {
 }
 
 
-class ExternalLogins:
+class ExternalLogins:  # type: ignore
 
     _available_services = {}
 
