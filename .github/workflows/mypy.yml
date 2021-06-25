@@ -27,4 +27,4 @@ jobs:
         with:
           project: ${{ matrix.PROJECT }}
           # install: ...
-          ignore: b2handle flask_oauthlib gssapi irods
+          ignore: b2handle flask_oauthlib gssapi irods plumbum urllib3

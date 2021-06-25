@@ -40,6 +40,12 @@ jobs:
 
           rapydo logs
 
+          if [[ "${{ PROJECT }}" == "seadata" ]]; then
+            rapydo --stack workers start
+            sleep 20
+            rapydo --stack workers logs
+          fi
+
           rapydo shell --no-tty backend 'restapi tests --wait --destroy'
 
           LOGURU_LEVEL=WARNING rapydo list services

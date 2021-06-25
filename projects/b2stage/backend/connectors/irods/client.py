@@ -1,5 +1,6 @@
 import os
 from functools import lru_cache
+from typing import Any
 
 from flask import Response, request, stream_with_context
 from irods import exception as iexceptions
@@ -20,6 +21,7 @@ class IrodsException(RestApiException):
 # No further tests will be included in the core
 class IrodsPythonClient:
 
+    prc: Any
     anonymous_user = "anonymous"
 
     @staticmethod
