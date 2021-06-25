@@ -63,3 +63,6 @@ jobs:
         if: failure()
         run: |
           rapydo logs
+          if [[ "${PROJECT}" == "seadata" ]]; then
+            rapydo --stack workers logs
+          fi

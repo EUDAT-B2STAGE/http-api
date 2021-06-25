@@ -22,6 +22,9 @@ class IrodsException(RestApiException):
 class IrodsPythonClient:
 
     prc: Any
+    # DEFAULT_CHUNK_SIZE
+    chunk_size = 1_048_576
+
     anonymous_user = "anonymous"
 
     @staticmethod

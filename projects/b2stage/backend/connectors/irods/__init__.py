@@ -21,7 +21,6 @@ irodslogger.setLevel(logging.INFO)
 NORMAL_AUTH_SCHEME = "credentials"
 GSI_AUTH_SCHEME = "GSI"
 PAM_AUTH_SCHEME = "PAM"
-DEFAULT_CHUNK_SIZE = 1_048_576
 
 
 # Excluded from coverage because it is only used by a very specific service
@@ -161,8 +160,6 @@ class IrodsPythonExt(Connector, IrodsPythonClient):
 
         self.prc = obj
         # self.variables = variables
-
-        self.chunk_size = variables.get("chunksize", DEFAULT_CHUNK_SIZE)
 
         return self
 

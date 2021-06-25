@@ -82,8 +82,6 @@ variables:
     API_PUBLIC_ENDPOINT: public
     # LETSENCRYPT_MODE: --staging
     LETSENCRYPT_MODE:
-    # irods fixed
-    IRODS_CHUNKSIZE: 1048576
 
     B2ACCESS_ENV: development
     # B2ACCESS_ENV: staging
