@@ -6,11 +6,11 @@ on:
   #   - cron: "0 4 * * *"
   workflow_dispatch:
 
-strategy:
-  matrix:
-    PROJECT: [b2stage, seadata]
-
 jobs:
+  strategy:
+    matrix:
+      PROJECT: [b2stage, seadata]
+
   backend-tests:
     runs-on: ubuntu-20.04
     timeout-minutes: 20
