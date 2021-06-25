@@ -12,6 +12,8 @@ from irods.ticket import Ticket
 from restapi.exceptions import RestApiException
 from restapi.utilities.logs import log
 
+DEFAULT_CHUNK_SIZE = 1_048_576
+
 
 class IrodsException(RestApiException):
     pass
@@ -403,7 +405,7 @@ class IrodsPythonClient:  # type: ignore
         Default chunk size: 1k.
         """
         if chunk_size is None:
-            chunk_size = self.chunk_size
+            chunk_size = DEFAULT_CHUNK_SIZE
 
         while True:
             data = file_object.read(chunk_size)
@@ -414,7 +416,7 @@ class IrodsPythonClient:  # type: ignore
     def write_in_chunks(self, target, chunk_size=None):
 
         if chunk_size is None:
-            chunk_size = self.chunk_size
+            chunk_size = DEFAULT_CHUNK_SIZE
         while True:
             chunk = request.stream.read(chunk_size)
             # print("\n\n\nCONTENT", chunk)
@@ -430,7 +432,7 @@ class IrodsPythonClient:  # type: ignore
         log.info(
             "Downloading file {} in streaming with chunk size {}",
             absolute_path,
-            self.chunk_size,
+            DEFAULT_CHUNK_SIZE,
         )
         try:
             obj = self.prc.data_objects.get(absolute_path)
@@ -440,7 +442,7 @@ class IrodsPythonClient:  # type: ignore
             if headers is None:
                 headers = {}
             return Response(
-                stream_with_context(self.read_in_chunks(handle, self.chunk_size)),
+                stream_with_context(self.read_in_chunks(handle, DEFAULT_CHUNK_SIZE)),
                 headers=headers,
             )
 
@@ -469,7 +471,7 @@ class IrodsPythonClient:  # type: ignore
         log.info(
             "Uploading file in streaming to {} with chunk size {}",
             destination,
-            self.chunk_size,
+            DEFAULT_CHUNK_SIZE,
         )
         try:
             self.create_empty(destination, directory=False, ignore_existing=force)
@@ -477,7 +479,7 @@ class IrodsPythonClient:  # type: ignore
 
             try:
                 with obj.open("w") as target:
-                    self.write_in_chunks(target, self.chunk_size)
+                    self.write_in_chunks(target, DEFAULT_CHUNK_SIZE)
 
             except BaseException as ex:
                 log.critical("Failed streaming upload: {}", ex)
@@ -502,7 +504,7 @@ class IrodsPythonClient:  # type: ignore
     def save(self, path, destination, force=False, resource=None, chunk_size=None):
 
         if chunk_size is None:
-            chunk_size = self.chunk_size
+            chunk_size = DEFAULT_CHUNK_SIZE
 
         # FIXME: resource is not used!
         # log.warning("Resource not used in saving irods data...")
@@ -958,7 +960,7 @@ class IrodsPythonClient:  # type: ignore
     def stream_ticket(self, path, headers=None):
         obj = self.prc.data_objects.open(path, "r")
         return Response(
-            stream_with_context(self.read_in_chunks(obj, self.chunk_size)),
+            stream_with_context(self.read_in_chunks(obj, DEFAULT_CHUNK_SIZE)),
             headers=headers,
         )
 
