@@ -1,8 +1,5 @@
 name: MyPy
 
-env:
-  PROJECT: b2stage
-
 on:
   push:
   workflow_dispatch:
@@ -12,6 +9,10 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 10
 
+    strategy:
+      matrix:
+        PROJECT: [b2stage, seadata]
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -20,10 +21,10 @@ jobs:
           python-version: 3.8
       - uses: rapydo/actions/install@v1
         with:
-          project: ${PROJECT}
+          project: ${{ matrix.PROJECT }}
           submodule: http-api
       - uses: rapydo/actions/mypy@v1
         with:
-          project: ${PROJECT}
+          project: ${{ matrix.PROJECT }}
           # install: ...
-          # ignore: ...
+          ignore: b2handle flask_oauthlib gssapi irods
