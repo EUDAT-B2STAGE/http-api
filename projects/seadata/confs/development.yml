@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 # no specific configuration for debug, all inherited from b2stage
 
 # services:
