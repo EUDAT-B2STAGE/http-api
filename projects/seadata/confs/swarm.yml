@@ -130,8 +130,6 @@ services:
     networks:
       db_net:
       worker_net:
-    # depends_on:
-    #   - rabbit
     environment:
       CURRENT_UID: ${CURRENT_UID}
       PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
@@ -239,8 +237,6 @@ services:
     networks:
       db_net:
       worker_net:
-    # depends_on:
-    #   - rabbit
     environment:
       CURRENT_UID: ${CURRENT_UID}
       PROJECT_NAME: ${COMPOSE_PROJECT_NAME}

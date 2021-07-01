@@ -56,8 +56,6 @@ services:
         aliases:
           - ${IRODS_HOST}
       db_net:
-    depends_on:
-      - postgres
 
   backend:
     build: ${PROJECT_DIR}/builds/backend
