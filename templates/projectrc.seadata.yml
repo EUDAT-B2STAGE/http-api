@@ -87,8 +87,8 @@ project_configuration:
       SMTP_PASSWORD: your_smtp_password
 
       # Set whatever you want, credentials will be injected in flower
-      CELERYUI_USER: your_flower_username
-      CELERYUI_PASSWORD: your_flower_password
+      FLOWER_USER: your_flower_username
+      FLOWER_PASSWORD: your_flower_password
 
       # Default log level for HTTP APIs
       LOG_LEVEL: DEBUG
