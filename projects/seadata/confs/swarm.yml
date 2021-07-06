@@ -110,8 +110,7 @@ services:
       - ${DATA_DIR}/logs:/logs
 
     networks:
-      db_net:
-      worker_net:
+      default:
     environment:
       CURRENT_UID: ${CURRENT_UID}
       PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
@@ -217,8 +216,7 @@ services:
       - ${DATA_DIR}/logs:/logs
 
     networks:
-      db_net:
-      worker_net:
+      default:
     environment:
       CURRENT_UID: ${CURRENT_UID}
       PROJECT_NAME: ${COMPOSE_PROJECT_NAME}

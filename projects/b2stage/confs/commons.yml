@@ -52,10 +52,9 @@ services:
       - ${BASE_PROJECT_DIR}/builds/extra_b2access.sh:/docker-entrypoint.d/b2access.sh
 
     networks:
-      app_net:
+      default:
         aliases:
           - ${IRODS_HOST}
-      db_net:
 
   backend:
     build: ${PROJECT_DIR}/builds/backend
