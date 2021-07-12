@@ -13,7 +13,7 @@ RUN ln -sf /usr/bin/python${PYTHON_VERSION} /usr/bin/python3 \
     && rm get-pip.py \
     && apt-get update \
     && apt-get install --yes python${PYTHON_VERSION}-dev \
-    && pip3 install --upgrade --no-cache-dir git+https://github.com/rapydo/http-api.git@$RAPYDO_VERSION
+    && pip3 install --upgrade --no-cache-dir watchdog[watchmedo]==2.1.3 git+https://github.com/rapydo/http-api.git@$RAPYDO_VERSION
 #########################################################
 
 RUN apt-get update \
