@@ -39,6 +39,7 @@ services:
       IRODS_USER: ${IRODS_USER}
       IRODS_PASSWORD: ${IRODS_PASSWORD}
       IRODS_DB: "${IRODS_DB}"
+      B2ACCESS_CAS: ${B2ACCESS_CAS}
 
       IRODS_ANONYMOUS: ${IRODS_ANONYMOUS}
     volumes:

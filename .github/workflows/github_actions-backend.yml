@@ -31,6 +31,7 @@ jobs:
       - name: Run Pytest
         run: |
 
+          rapydo --testing -e ACTIVATE_ICAT=1 init --force
           rapydo pull --quiet;
           rapydo build --force;
           rapydo add task test_task;

@@ -16,10 +16,6 @@ services:
   icat:
     environment:
       ACTIVATE: 1
-      POSTGRES_HOST: "${ALCHEMY_HOST}"
-      POSTGRES_USER: "${ALCHEMY_USER}"
-      POSTGRES_PASSWORD: "${ALCHEMY_PASSWORD}"
-      B2ACCESS_CAS: ${B2ACCESS_CAS}
 
     volumes:
       - etcconf:/etc

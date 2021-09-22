@@ -18,7 +18,6 @@ services:
       ## In python if B2ACCESS_SECRET is empty string -> False
       ## if string with chars -> True
       ACTIVATE: ${B2ACCESS_SECRET}
-      B2ACCESS_CAS: ${B2ACCESS_CAS}
       ## icat is needed only to produce the b2access certificates
       POSTGRES_HOST: null
       POSTGRES_USER: null
