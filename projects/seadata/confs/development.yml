@@ -1,15 +1,7 @@
 version: "3.8"
-# no specific configuration for debug, all inherited from b2stage
 
-# services:
-#   rabbit:
-#     environment:
-#       ACTIVATE: ${ACTIVATE_RABBIT}
-#     ports:
-#       - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
-
-#   mongodb:
-#     environment:
-#       ACTIVATE: ${ACTIVATE_MONGODB}
-#     ports:
-#       - ${MONGO_PORT}:${MONGO_PORT}
+services:
+  backend:
+    environment:
+      # trick for unittests
+      MAIN_LOGIN_ENABLE: 1
