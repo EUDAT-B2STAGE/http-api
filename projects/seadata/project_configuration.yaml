@@ -34,7 +34,7 @@ variables:
     ###############################
     ## Seadata project variable
     IRODS_ANONYMOUS: 1
-    ACTIVATE_ICAT: 0
+    ACTIVATE_ICAT: 1
 
     SEADATA_PROJECT: 1
     SEADATA_EDMO_CODE:
