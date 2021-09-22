@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        PROJECT: [b2stage]
+        PROJECT: [b2stage, seadata]
 
     env:
       PROJECT: ${{ matrix.PROJECT }}
@@ -40,11 +40,11 @@ jobs:
 
           rapydo logs
 
-          if [[ "${PROJECT}" == "seadata" ]]; then
-            rapydo --stack workers start
-            sleep 20
-            rapydo --stack workers logs
-          fi
+          # if [[ "${PROJECT}" == "seadata" ]]; then
+          #   rapydo --stack workers start
+          #   sleep 20
+          #   rapydo --stack workers logs
+          # fi
 
           rapydo shell --no-tty backend 'restapi tests --wait --destroy'
 
@@ -63,6 +63,6 @@ jobs:
         if: failure()
         run: |
           rapydo logs
-          if [[ "${PROJECT}" == "seadata" ]]; then
-            rapydo --stack workers logs
-          fi
+          # if [[ "${PROJECT}" == "seadata" ]]; then
+          #   rapydo --stack workers logs
+          # fi

@@ -14,9 +14,7 @@ These are the names of the directories in the irods
 zone for ingestion (i.e. pre-production) batches,
 for production batches, and for orders being prepared.
 
-They are being defined in b2stage/confs/commons.yml,
-which references config values defined in
-b2stage/project_configuration.yml
+They are being defined project_configuration.yml / .projectrc
 """
 INGESTION_COLL = seadata_vars.get("ingestion_coll")  # "batches"
 ORDERS_COLL = seadata_vars.get("orders_coll")  # "orders"

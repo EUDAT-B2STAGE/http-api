@@ -13,9 +13,6 @@ services:
       LINES: 28
       COLUMNS: 160
 
-    ports:
-      - ${BACKEND_PORT}:${FLASK_DEFAULT_PORT}
-
   icat:
     environment:
       ACTIVATE: 1
@@ -35,9 +32,3 @@ services:
     # ## CAREFULL: don't uncomment the two lines below if you don't know why
     # ports:
     #     - 1247:1247
-
-  swaggerui:
-    environment:
-      API_URL: http://localhost:8080/api/specs
-    ports:
-      - 80:8080
