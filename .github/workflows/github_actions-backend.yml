@@ -31,7 +31,6 @@ jobs:
       - name: Run Pytest
         run: |
 
-          rapydo --testing -e ACTIVATE_ICAT=1 init --force
           rapydo pull --quiet;
           rapydo build --force;
           rapydo add task test_task;
@@ -40,12 +39,6 @@ jobs:
           rapydo shell --no-tty backend 'restapi wait';
 
           rapydo logs
-
-          # if [[ "${PROJECT}" == "seadata" ]]; then
-          #   rapydo --stack workers start
-          #   sleep 20
-          #   rapydo --stack workers logs
-          # fi
 
           rapydo shell --no-tty backend 'restapi tests --wait --destroy'
 

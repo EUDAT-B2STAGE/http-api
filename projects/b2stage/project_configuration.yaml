@@ -68,9 +68,7 @@ variables:
     ACTIVATE_POSTGRES: 1
     ALCHEMY_USER: rods
     ALCHEMY_PASSWORD: chooseapasswordwisely
-    ALCHEMY_ENGINE: postgresql
-    ALCHEMY_DBS: "ICAT SQL_API"
-    ALCHEMY_DB: SQL_API
+    ALCHEMY_DBS: "SQL_API ICAT"
 
     ###############################
     ## Experimental features
@@ -80,27 +78,12 @@ variables:
     AUTH_SERVICE: sqlalchemy
     API_MAIN_ENDPOINT: registered
     API_PUBLIC_ENDPOINT: public
-    # LETSENCRYPT_MODE: --staging
-    LETSENCRYPT_MODE:
 
     B2ACCESS_ENV: development
     # B2ACCESS_ENV: staging
     # B2ACCESS_ENV: production
     B2ACCESS_CAS: /tmp/certificates/b2access
-    # FULL_JWT: false
 
     # TO BE DEPRECATED
     HANDLE_CREDENTIALS_INTERNAL_PATH: /opt/certificates/b2handle
     HANDLE_BASE: "https://url.to.epic/handles/"
-
-    # MONGO_USER:
-    # MONGO_PASSWORD:
-    # REDIS_PASSWORD:
-
-controller:
-  commands:
-    irods_restart:
-      description: Try to restart the current iCAT server instance
-      command: service irods restart
-      service: icat
-      user: root
