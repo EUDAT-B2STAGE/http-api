@@ -30,16 +30,17 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         if len(params) < 1:
             return self.send_errors("parameters is empty", code=400)
 
-        files = params.get("pids", {})
-        if len(files) < 1:
-            return self.send_errors("pids' parameter is empty list", code=400)
+        files = params.get("pids", [])
+        if not files:
+            return self.send_errors("pids parameter is empty list", code=400)
 
         filenames = []
         for data in files:
 
             if not isinstance(data, dict):
                 return self.send_errors(
-                    "File list contains at least one wrong entry", code=400,
+                    "File list contains at least one wrong entry",
+                    code=400,
                 )
 
             # print("TEST", data)
@@ -69,7 +70,8 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
 
             if not imain.is_collection(batch_path):
                 return self.send_errors(
-                    f"Batch '{batch_id}' not enabled (or no permissions)", code=404,
+                    f"Batch '{batch_id}' not enabled (or no permissions)",
+                    code=404,
                 )
 
             ################

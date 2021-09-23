@@ -36,3 +36,12 @@ class TestApp(SeadataTests):
 
         r = client.delete(f"{API_URI}/pidcache/my_batch")
         assert r.status_code == 405
+
+        headers = self.login(client)
+
+        r = client.get(f"{API_URI}/pidcache", headers=headers)
+        # Default user is not an admin
+        assert r.status_code == 401
+
+        r = client.post(f"{API_URI}/pidcache/my_batch", headers=headers)
+        assert r.status_code == 401

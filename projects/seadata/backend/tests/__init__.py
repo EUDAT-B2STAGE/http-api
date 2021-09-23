@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, List, Union, cast
 
 from flask.wrappers import Response
@@ -59,3 +60,15 @@ class SeadataTests(BaseTests):
 
         assert "version" in response
         assert "Missing data for required field." in response["version"]
+
+    def get_input_data(self) -> Dict[str, Union[bool, int, str]]:
+        data = {
+            "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%s"),
+            "edmo_code": 1234,
+            "parameters": {},
+            "request_id": "my_request_id",
+            "test_mode": "1",
+            "version": "1",
+            "eudat_backdoor": True,
+        }
+        return data

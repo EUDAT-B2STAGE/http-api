@@ -25,3 +25,27 @@ class TestApp(SeadataTests):
 
         assert isinstance(response, dict)
         self.check_endpoints_input_schema(response)
+
+        data = self.get_input_data()
+        r = client.post(
+            f"{API_URI}/ingestion/my_batch_id/approve", headers=headers, data=data
+        )
+        assert r.status_code == 400
+        assert self.get_seadata_response(r) == "pids parameter is empty list"
+
+        data["pids"] = []
+        r = client.post(
+            f"{API_URI}/ingestion/my_batch_id/approve", headers=headers, data=data
+        )
+        assert r.status_code == 400
+        assert self.get_seadata_response(r) == "pids parameter is empty list"
+
+        data["pids"] = ["wrong"]
+        r = client.post(
+            f"{API_URI}/ingestion/my_batch_id/approve", headers=headers, data=data
+        )
+        assert r.status_code == 400
+        assert (
+            self.get_seadata_response(r)
+            == "File list contains at least one wrong entry"
+        )
