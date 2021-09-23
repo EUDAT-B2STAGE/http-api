@@ -15,7 +15,7 @@ class TestApp(SeadataTests):
         r = client.put(f"{API_URI}/restricted/my_order_id")
         assert r.status_code == 405
 
-        r = client.path(f"{API_URI}/restricted/my_order_id")
+        r = client.patch(f"{API_URI}/restricted/my_order_id")
         assert r.status_code == 405
 
         r = client.delete(f"{API_URI}/restricted/my_order_id")
