@@ -1,7 +1,8 @@
-from restapi.tests import API_URI, BaseTests, FlaskClient
+from restapi.tests import API_URI, FlaskClient
+from tests.custom import SeadataTests
 
 
-class TestApp(BaseTests):
+class TestApp(SeadataTests):
     def test_01(self, client: FlaskClient) -> None:
 
         # POST /api/resourceslist

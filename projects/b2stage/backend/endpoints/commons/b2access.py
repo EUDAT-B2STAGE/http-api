@@ -86,7 +86,7 @@ class B2accessUtilities(EndpointResource):
         return token, username
 
     def send_errors(self, errors=None, code=None, head_method=False):
-        """ Setup an error message """
+        """Setup an error message"""
 
         if errors is None:
             errors = []
@@ -144,16 +144,6 @@ class B2accessUtilities(EndpointResource):
         if code is None:
             code = 200
 
-        if errors is None and content is None:
-            if not head_method or code is None:
-                code = 204
-        elif errors is None:
-            if code >= 300:
-                code = 200
-        elif content is None:
-            if code < 400:
-                code = 500
-
         resp = {
             "Response": {"data": content, "errors": errors},
             "Meta": {
@@ -186,7 +176,7 @@ class B2accessUtilities(EndpointResource):
         return irods.get_instance()
 
     def create_b2access_client(self, auth, decorate=False):
-        """ Create the b2access Flask oauth2 object """
+        """Create the b2access Flask oauth2 object"""
 
         b2access = B2accessUtilities.ext_auth._available_services.get("b2access")
         # B2ACCESS requires some fixes to make authorization work...
@@ -195,7 +185,7 @@ class B2accessUtilities(EndpointResource):
         return b2access
 
     def request_b2access_token(self, b2access):
-        """ Use b2access client to get a token for all necessary operations """
+        """Use b2access client to get a token for all necessary operations"""
         resp = None
         b2a_token = None
         b2a_refresh_token = None
@@ -229,7 +219,7 @@ class B2accessUtilities(EndpointResource):
     def get_b2access_user_info(
         self, auth, b2access, b2access_token, b2access_refresh_token
     ):
-        """ Get user info from current b2access token """
+        """Get user info from current b2access token"""
 
         # To use the b2access token with oauth2 client
         # We have to save it into session
@@ -410,15 +400,15 @@ class B2accessUtilities(EndpointResource):
 
     def refresh_b2access_token(self, auth, b2access_user, b2access, refresh_token):
         """
-            curl -X POST
-                 -u 'myClientID':'myClientSecret'
-                 -d '
-                     grant_type=refresh_token&
-                     refresh_token=myRefreshToken&
-                     scope=USER_PROFILE'
-                  'https://unity.eudat-aai.fz-juelich.de/oauth2/token'
+        curl -X POST
+             -u 'myClientID':'myClientSecret'
+             -d '
+                 grant_type=refresh_token&
+                 refresh_token=myRefreshToken&
+                 scope=USER_PROFILE'
+              'https://unity.eudat-aai.fz-juelich.de/oauth2/token'
 
-            OR -H "Authorization Basic base64(client_id:client_secret)" instead of -u
+        OR -H "Authorization Basic base64(client_id:client_secret)" instead of -u
         """
 
         client_id = b2access._consumer_key
@@ -455,7 +445,7 @@ class B2accessUtilities(EndpointResource):
         return access_token
 
     def get_irods_user_from_b2access(self, icom, email):
-        """ EUDAT RULE for b2access-to-b2safe user mapping """
+        """EUDAT RULE for b2access-to-b2safe user mapping"""
 
         inputs = {}
         body = """

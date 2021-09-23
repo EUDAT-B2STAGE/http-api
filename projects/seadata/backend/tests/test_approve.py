@@ -1,7 +1,8 @@
-from restapi.tests import API_URI, BaseTests, FlaskClient
+from restapi.tests import API_URI, FlaskClient
+from tests.custom import SeadataTests
 
 
-class TestApp(BaseTests):
+class TestApp(SeadataTests):
     def test_01(self, client: FlaskClient) -> None:
 
         # POST /api/ingestion/my_batch_id/approve
@@ -15,3 +16,9 @@ class TestApp(BaseTests):
         assert r.status_code == 405
         r = client.patch(f"{API_URI}/ingestion/my_batch_id/approve")
         assert r.status_code == 405
+
+        headers = self.login(client)
+
+        r = client.post(f"{API_URI}/ingestion/my_batch_id/approve", headers=headers)
+        assert r.status_code == 400
+        assert self.get_content(r) == "parameters is empty"
