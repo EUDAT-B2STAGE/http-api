@@ -10,7 +10,7 @@ IRODS_PASSWORD = Env.get("IRODS_PASSWORD")
 class SeadataTests(BaseTests):
     def login(self, client: FlaskClient) -> Dict[str, str]:
 
-        r = client.client.post(
+        r = client.post(
             f"{AUTH_URI}/b2safeproxy",
             data={"username": IRODS_USER, "password": IRODS_PASSWORD},
         )
