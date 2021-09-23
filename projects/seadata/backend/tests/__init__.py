@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from typing import Any, Dict, List, Union, cast
 
@@ -65,7 +66,7 @@ class SeadataTests(BaseTests):
         data = {
             "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%s"),
             "edmo_code": 1234,
-            "parameters": {},
+            "parameters": json.dumps({}),
             "request_id": "my_request_id",
             "test_mode": "1",
             "version": "1",
