@@ -43,11 +43,11 @@ class TestApp(SeadataTests):
         response = self.get_content(r)
 
         assert isinstance(response, dict)
-        self.test_endpoints_input_schema(response)
+        self.check_endpoints_input_schema(response)
 
         r = client.delete(f"{API_URI}/ingestion", headers=headers)
         assert r.status_code == 400
         response = self.get_content(r)
 
         assert isinstance(response, dict)
-        self.test_endpoints_input_schema(response)
+        self.check_endpoints_input_schema(response)

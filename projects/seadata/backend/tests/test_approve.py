@@ -24,4 +24,4 @@ class TestApp(SeadataTests):
         response = self.get_content(r)
 
         assert isinstance(response, dict)
-        self.test_endpoints_input_schema(response)
+        self.check_endpoints_input_schema(response)

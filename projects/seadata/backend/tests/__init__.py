@@ -26,7 +26,7 @@ class SeadataTests(BaseTests):
 
         return {"Authorization": f"Bearer {token}"}
 
-    def test_endpoints_input_schema(self, response: Dict[str, Any]) -> None:
+    def check_endpoints_input_schema(self, response: Dict[str, Any]) -> None:
         assert "api_function" in response
         assert "Missing data for required field." in response["api_function"]
 
