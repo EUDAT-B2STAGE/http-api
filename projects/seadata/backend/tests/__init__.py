@@ -17,9 +17,11 @@ class SeadataTests(BaseTests):
 
         assert r.status_code == 200
         data = self.get_content(r)
-        assert "token" in data
-        token = data.get("token")
+        assert "Response" in data
+        assert "data" in data["Response"]
+        assert "token" in data["Response"]["data"]
 
+        token = data["Response"]["data"]["token"]
         assert token is not None
 
         return {"Authorization": f"Bearer {token}"}
