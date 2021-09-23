@@ -21,4 +21,25 @@ class TestApp(SeadataTests):
 
         r = client.post(f"{API_URI}/ingestion/my_batch_id/approve", headers=headers)
         assert r.status_code == 400
-        assert self.get_content(r) == "parameters is empty"
+        response = self.get_content(r)
+
+        assert "api_function" in response
+        assert "Missing data for required field." in response["api_function"]
+
+        assert "datetime" in response
+        assert "Missing data for required field." in response["datetime"]
+
+        assert "edmo_code" in response
+        assert "Missing data for required field." in response["edmo_code"]
+
+        assert "parameters" in response
+        assert "Missing data for required field." in response["parameters"]
+
+        assert "request_id" in response
+        assert "Missing data for required field." in response["request_id"]
+
+        assert "test_mode" in response
+        assert "Missing data for required field." in response["test_mode"]
+
+        assert "version" in response
+        assert "Missing data for required field." in response["version"]
