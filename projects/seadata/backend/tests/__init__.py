@@ -18,7 +18,8 @@ class SeadataTests(BaseTests):
         assert "data" in response["Response"]
 
         return cast(
-            Union[str, float, int, bool, List[Any], Dict[str, Any]], response["data"]
+            Union[str, float, int, bool, List[Any], Dict[str, Any]],
+            response["Response"]["data"],
         )
 
     def login(self, client: FlaskClient) -> Dict[str, str]:
