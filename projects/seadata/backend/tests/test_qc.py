@@ -22,3 +22,14 @@ class TestApp(SeadataTests):
 
         r = client.patch(f"{API_URI}/ingestion/my_batch_id/qc/my_qc_name")
         assert r.status_code == 401
+
+        headers = self.login(client)
+
+        r = client.put(
+            f"{API_URI}/ingestion/my_batch_id/qc/my_qc_name", headers=headers
+        )
+        assert r.status_code == 400
+        response = self.get_content(r)
+
+        assert isinstance(response, dict)
+        self.test_endpoints_input_schema(response)

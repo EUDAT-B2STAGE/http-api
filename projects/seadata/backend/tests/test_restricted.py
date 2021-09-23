@@ -20,3 +20,12 @@ class TestApp(SeadataTests):
 
         r = client.delete(f"{API_URI}/restricted/my_order_id")
         assert r.status_code == 405
+
+        headers = self.login(client)
+
+        r = client.post(f"{API_URI}/restricted/my_order_id", headers=headers)
+        assert r.status_code == 400
+        response = self.get_content(r)
+
+        assert isinstance(response, dict)
+        self.test_endpoints_input_schema(response)
