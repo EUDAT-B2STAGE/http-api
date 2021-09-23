@@ -27,16 +27,16 @@ class TestApp(SeadataTests):
         r = client.post(f"{API_URI}/orders")
         assert r.status_code == 401
 
-        r = client.put(f"{API_URI}/orders")
+        r = client.delete(f"{API_URI}/orders")
         assert r.status_code == 401
 
         r = client.get(f"{API_URI}/orders")
         assert r.status_code == 405
 
-        r = client.patch(f"{API_URI}/orders")
+        r = client.put(f"{API_URI}/orders")
         assert r.status_code == 405
 
-        r = client.delete(f"{API_URI}/orders")
+        r = client.patch(f"{API_URI}/orders")
         assert r.status_code == 405
 
         # GET /api/orders/<order_id>/download/<ftype>/c/<code>
