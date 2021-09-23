@@ -54,7 +54,7 @@ class TestApp(SeadataTests):
         self.check_endpoints_input_schema(response)
 
         # GET - invalid batch
-        r = client.get(f"{API_URI}/ingestion/my_batch_id")
+        r = client.get(f"{API_URI}/ingestion/my_batch_id", headers=headers)
         assert r.status_code == 404
 
         error = "Batch 'my_batch_id' not enabled or you have no permissions"
