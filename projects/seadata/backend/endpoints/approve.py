@@ -27,7 +27,7 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
     def post(self, batch_id, **json_input):
 
         params = json_input.get("parameters", {})
-        if len(params) < 1:
+        if not params:
             return self.send_errors("parameters is empty", code=400)
 
         files = params.get("pids", [])

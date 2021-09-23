@@ -1,4 +1,6 @@
+import json
 from datetime import datetime
+from typing import Any, Mapping, Optional
 
 from b2stage.endpoints.commons import path
 from restapi.env import Env
@@ -16,6 +18,28 @@ EDMO_CODE = seadata_vars.get("edmo_code")
 API_VERSION = seadata_vars.get("api_version")
 
 
+class Parameter(webargs_fields.Raw):
+    def _deserialize(
+        self,
+        value: Any,
+        attr: Optional[str],
+        data: Optional[Mapping[str, Any]],
+        **kwargs: Any,
+    ) -> Any:
+
+        if isinstance(value, dict):
+            return value
+
+        if isinstance(value, str):
+            try:
+                return json.loads(value)
+            except json.JSONDecodeError:
+                log.error("Not a valid dictionary: {}", value)
+                return super()._deserialize(value, attr, data, **kwargs)
+
+        return super()._deserialize(value, attr, data, **kwargs)
+
+
 # Validation should raise:
 # f"Missing JSON key: {key}
 class EndpointsInputSchema(Schema):
@@ -28,7 +52,7 @@ class EndpointsInputSchema(Schema):
 
     eudat_backdoor = fields.Bool(required=False, missing=False)
 
-    parameters = webargs_fields.Raw(required=True)
+    parameters = Parameter(required=True)
 
 
 class ErrorCodes:
@@ -96,12 +120,12 @@ class ErrorCodes:
 
 class Metadata:
 
-    """ {
+    """{
     "cdi_n_code": "1522222",
     "format_n_code": "541555",
     "data_format_l24": "CFPOINT",
     "version": "1"
-    } """
+    }"""
 
     tid = "temp_id"
     keys = [

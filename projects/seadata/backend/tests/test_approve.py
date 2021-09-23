@@ -1,3 +1,5 @@
+import json
+
 from restapi.tests import API_URI, FlaskClient
 from tests.custom import SeadataTests
 
@@ -33,14 +35,15 @@ class TestApp(SeadataTests):
         assert r.status_code == 400
         assert self.get_seadata_response(r) == "pids parameter is empty list"
 
-        data["pids"] = []
+        data["parameters"] = json.dumps({"pids": []})
         r = client.post(
             f"{API_URI}/ingestion/my_batch_id/approve", headers=headers, data=data
         )
         assert r.status_code == 400
         assert self.get_seadata_response(r) == "pids parameter is empty list"
 
-        data["pids"] = ["wrong"]
+        data["parameters"] = json.dumps({"pids": ["wrong"]})
+
         r = client.post(
             f"{API_URI}/ingestion/my_batch_id/approve", headers=headers, data=data
         )
