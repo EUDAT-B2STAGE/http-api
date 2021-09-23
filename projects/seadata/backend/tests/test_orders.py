@@ -42,7 +42,7 @@ class TestApp(SeadataTests):
         # GET /api/orders/<order_id>/download/<ftype>/c/<code>
         r = client.get(f"{API_URI}/orders/my_order_id/download/my_ftype/c/my_code")
         assert r.status_code == 500
-        assert self.get_content(r) == "Invalid file type my_ftype"
+        assert self.get_seadata_response(r) == ["Invalid file type my_ftype"]
 
         r = client.post(f"{API_URI}/orders/my_order_id/download/my_ftype/c/my_code")
         assert r.status_code == 405

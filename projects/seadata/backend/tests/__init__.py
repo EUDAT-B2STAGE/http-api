@@ -1,5 +1,6 @@
-from typing import Any, Dict
+from typing import Any, Dict, List, Union, cast
 
+from flask.wrappers import Response
 from restapi.env import Env
 from restapi.tests import AUTH_URI, BaseTests, FlaskClient
 
@@ -8,6 +9,18 @@ IRODS_PASSWORD = Env.get("IRODS_PASSWORD")
 
 
 class SeadataTests(BaseTests):
+    def get_seadata_response(
+        self, http_out: Response
+    ) -> Union[str, float, int, bool, List[Any], Dict[str, Any]]:
+
+        response = self.get_content(http_out)
+        assert "Response" in response
+        assert "data" in response["Response"]
+
+        return cast(
+            Union[str, float, int, bool, List[Any], Dict[str, Any]], response["data"]
+        )
+
     def login(self, client: FlaskClient) -> Dict[str, str]:
 
         r = client.post(
@@ -16,12 +29,10 @@ class SeadataTests(BaseTests):
         )
 
         assert r.status_code == 200
-        data = self.get_content(r)
-        assert "Response" in data
-        assert "data" in data["Response"]
-        assert "token" in data["Response"]["data"]
+        data = self.get_seadata_response(r)
+        assert "token" in data
 
-        token = data["Response"]["data"]["token"]
+        token = data["token"]
         assert token is not None
 
         return {"Authorization": f"Bearer {token}"}
