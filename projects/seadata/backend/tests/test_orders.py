@@ -71,3 +71,16 @@ class TestApp(SeadataTests):
 
         assert isinstance(response, dict)
         self.check_endpoints_input_schema(response)
+
+        # Test download with wrong ftype (only accepts 0 and 1 as types)
+
+        r = client.get(f"{API_URI}/orders/my_order_id/download/2/c/my_code")
+        assert r.status_code == 500
+        assert self.get_seadata_response(r) == ["Invalid file type 2"]
+
+        # Test download with wrong code
+        # ftype 0 == unrestricted orders
+        r = client.get(f"{API_URI}/orders/my_order_id/download/0/c/my_code")
+        assert r.status_code == 500
+        error = {"my_order_id": "Order 'my_order_id' not found (or no permissions)"}
+        assert self.get_seadata_response(r) == [error]

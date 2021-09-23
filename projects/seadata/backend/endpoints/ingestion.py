@@ -25,11 +25,10 @@ from seadata.endpoints.commons.queue import log_into_queue, prepare_message
 from seadata.endpoints.commons.seadatacloud import EndpointsInputSchema
 
 ingestion_user = "RM"
-BACKDOOR_SECRET = "howdeepistherabbithole"
 
 
 class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
-    """ Create batch folder and upload zip files inside it """
+    """Create batch folder and upload zip files inside it"""
 
     labels = ["ingestion"]
 
@@ -46,13 +45,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
     def get(self, batch_id):
 
         log.info("Batch request: {}", batch_id)
-        # json = {'batch_id': batch_id}
-        # msg = prepare_message(
-        #     self, json=json, user=ingestion_user, log_string='start')
-        # log_into_queue(self, msg)
-
-        ########################
-        # get irods session
 
         try:
             imain = self.get_main_irods_connection()
@@ -66,8 +58,6 @@ class IngestionEndpoint(Uploader, EudatEndpoint, ClusterContainerEndpoint):
                 imain, batch_path, local_path
             )
 
-            ########################
-            # if not imain.is_collection(batch_path):
             if batch_status == MISSING_BATCH:
                 return self.send_errors(
                     f"Batch '{batch_id}' not enabled or you have no permissions",

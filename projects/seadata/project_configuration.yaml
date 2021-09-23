@@ -32,7 +32,7 @@ variables:
     TOKEN_SHORT_TTL: 259200
 
     ###############################
-    ## Seadata project variable
+    # anonymous user is used to download the orders via iticket
     IRODS_ANONYMOUS: 1
     ACTIVATE_ICAT: 1
 
