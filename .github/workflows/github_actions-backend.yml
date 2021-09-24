@@ -31,6 +31,13 @@ jobs:
       - name: Run Pytest
         run: |
 
+          # == ${RESOURCES_LOCALPATH}/${SEADATA_WORKSPACE_INGESTION}
+          sudo mkdir -p /nfs/share/batches
+          # == ${RESOURCES_LOCALPATH}/${SEADATA_WORKSPACE_ORDERS}
+          sudo mkdir -p /nfs/share/orders
+
+          sudo chmod 777 -R /nfs/share
+
           rapydo pull --quiet;
           rapydo build --force;
           rapydo add task test_task;
