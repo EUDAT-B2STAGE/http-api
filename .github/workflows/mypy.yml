@@ -20,11 +20,11 @@ jobs:
           python-version: 3.8
       - uses: rapydo/actions/install@v1
         with:
-          project: ${{ matrix.PROJECT }}
+          project: ${PROJECT}
           submodule: http-api
       - uses: rapydo/actions/mypy@v1
         with:
-          project: ${{ matrix.PROJECT }}
+          project: ${PROJECT}
           allow_untyped_defs: true
           # install: ...
           ignore: b2stage b2handle flask_oauthlib glom gssapi gdapi irods irods.exception urllib3 tests, websocket
