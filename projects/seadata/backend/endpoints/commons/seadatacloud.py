@@ -177,6 +177,11 @@ class ImportManagerAPI:
         import requests
 
         # print("TEST", self._uri)
+
+        if not self._uri:
+            log.error("Invalid external APIs URI")
+            return False
+
         r = requests.post(self._uri, json=payload)
         log.info("POST external IM API, status={}, uri={}", r.status_code, self._uri)
 
@@ -194,9 +199,6 @@ class ImportManagerAPI:
                 self._uri,
             )
             return True
-
-        log.warning("Unknown external APIs status")
-        return False
 
 
 # NOTE this function is outside the previous class, and self is passed as parameter

@@ -9,12 +9,12 @@ import re
 from datetime import datetime
 
 from flask import request
-from restapi.connectors import rabbitmq
 from restapi.env import Env
 from restapi.services.authentication import BaseAuthentication
-from restapi.utilities.logs import log
 from seadata.endpoints.commons.seadatacloud import seadata_vars
 
+# from restapi.connectors import rabbitmq
+# from restapi.utilities.logs import log
 QUEUE_VARS = Env.load_variables_group(prefix="rabbit")
 
 """
@@ -99,39 +99,39 @@ def log_into_queue(instance, dictionary_message):
     # temporary disabled
     return False
 
-    log.debug("LOG MESSAGE to be passed to log-queue: {}", dictionary_message)
+    # log.debug("LOG MESSAGE to be passed to log-queue: {}", dictionary_message)
 
-    exchange = QUEUE_VARS.get("exchange")
-    routing_key = QUEUE_VARS.get("queue")
-    app_name = QUEUE_VARS.get("app_name")
+    # exchange = QUEUE_VARS.get("exchange")
+    # routing_key = QUEUE_VARS.get("queue")
+    # app_name = QUEUE_VARS.get("app_name")
 
-    if app_name is None:
-        app_name = routing_key
+    # if app_name is None:
+    #     app_name = routing_key
 
-    log.debug(
-        'Log-queue service: exchange "{}", routing key "{}", app name "{}"',
-        exchange,
-        routing_key,
-        app_name,
-    )
+    # log.debug(
+    #     'Log-queue service: exchange "{}", routing key "{}", app name "{}"',
+    #     exchange,
+    #     routing_key,
+    #     app_name,
+    # )
 
-    try:
+    # try:
 
-        rabbit = rabbitmq.get_instance()
-        log.debug("Retrieved instance of RabbitMQ service")
-        rabbit.send_json(
-            dictionary_message,
-            routing_key=routing_key,
-            exchange=exchange,
-            headers={
-                "app_name": app_name,
-                "filter_code": "de.dkrz.seadata.filter_code.json",
-            },
-        )
+    #     rabbit = rabbitmq.get_instance()
+    #     log.debug("Retrieved instance of RabbitMQ service")
+    #     rabbit.send_json(
+    #         dictionary_message,
+    #         routing_key=routing_key,
+    #         exchange=exchange,
+    #         headers={
+    #             "app_name": app_name,
+    #             "filter_code": "de.dkrz.seadata.filter_code.json",
+    #         },
+    #     )
 
-    except BaseException as e:
-        log.error("Failed to send log: {} ({})", e.__class__.__name__, e)
-    else:
-        log.debug("Log message sent to queue service.")
+    # except BaseException as e:
+    #     log.error("Failed to send log: {} ({})", e.__class__.__name__, e)
+    # else:
+    #     log.debug("Log message sent to queue service.")
 
-    return True
+    # return True

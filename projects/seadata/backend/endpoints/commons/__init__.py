@@ -13,7 +13,7 @@ except AttributeError:
 # IRODS_EXTERNAL = IRODS_VARS.get("external", False)
 
 CURRENT_B2SAFE_SERVER = IRODS_VARS.get("host")
-CURRENT_HTTPAPI_SERVER = Env.get("DOMAIN")
+CURRENT_HTTPAPI_SERVER = Env.get("DOMAIN", "")
 CURRENT_B2ACCESS_ENVIRONMENT = Env.get("B2ACCESS_ENV")
 
 MAIN_ENDPOINT_NAME = Env.get("MAIN_ENDPOINT", default="")
@@ -29,4 +29,5 @@ if PRODUCTION:
     HTTP_PROTOCOL = "https"
 else:
     # FIXME: how to get the PORT?
+    # It is not equivalent to config.get_backend_url() ??
     CURRENT_HTTPAPI_SERVER += ":8080"

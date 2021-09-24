@@ -11,16 +11,12 @@ class Initializer:
 
         sql = sqlalchemy.get_instance()
 
-        if sql is None:
-            log.critical("Unable to retrieve sqlalchemy service")
-            return
+        privileged_users = os.getenv("SEADATA_PRIVILEGED_USERS")
 
-        users = os.getenv("SEADATA_PRIVILEGED_USERS")
-
-        if users is None or users == "":
+        if not privileged_users:
             users = []
         else:
-            users = users.replace(" ", "").split(",")
+            users = privileged_users.replace(" ", "").split(",")
         roles = [Role.USER, Role.STAFF]
         if len(users) == 0:
             log.info("No privileged user found")
