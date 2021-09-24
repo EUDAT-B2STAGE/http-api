@@ -86,4 +86,4 @@ class TestApp(SeadataTests):
         r = client.get(f"{API_URI}/orders/my_order_id/download/00/c/my_code")
         assert r.status_code == 404
         error = {"my_order_id": "Order 'my_order_id' not found (or no permissions)"}
-        assert self.get_seadata_response(r) == [error]
+        assert self.get_seadata_response(r) == error
