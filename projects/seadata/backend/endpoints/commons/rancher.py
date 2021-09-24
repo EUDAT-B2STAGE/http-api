@@ -23,6 +23,9 @@ PERPAGE_LIMIT = 1000
 # module "b2stage/backend/apis/commons/cluster.py".
 # It receives all config that starts with "RESOURCES".
 class Rancher:
+
+    _localpath: str = ""
+
     def __init__(
         self, key, secret, url, project, hub, hubuser, hubpass, localpath, qclabel
     ):
@@ -202,7 +205,7 @@ class Rancher:
         return out
 
     def catalog_images(self):
-        """ check if container image is there """
+        """check if container image is there"""
         catalog_url = f"https://{self._hub_uri}/v2/_catalog"
         # print(catalog_url)
         try:

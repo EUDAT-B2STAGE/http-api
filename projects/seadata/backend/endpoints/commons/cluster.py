@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Dict
 
 from b2stage.endpoints.commons import path
 from restapi.env import Env
@@ -50,6 +51,8 @@ class ClusterContainerEndpoint(EndpointResource):
     """
     Base to use rancher in many endpoints
     """
+
+    _credentials: Dict[str, str] = {}
 
     def load_credentials(self):
 

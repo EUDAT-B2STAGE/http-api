@@ -1,8 +1,6 @@
 """
 Common functions for EUDAT endpoints
 """
-from attr import ib as attribute
-from attr import s as AttributedModel
 from restapi.config import API_URL, PRODUCTION
 from restapi.env import Env
 
@@ -13,7 +11,7 @@ except AttributeError:
 # IRODS_EXTERNAL = IRODS_VARS.get("external", False)
 
 CURRENT_B2SAFE_SERVER = IRODS_VARS.get("host")
-CURRENT_HTTPAPI_SERVER = Env.get("DOMAIN", "")
+CURRENT_HTTPAPI_SERVER = Env.get("DOMAIN") or ""
 CURRENT_B2ACCESS_ENVIRONMENT = Env.get("B2ACCESS_ENV")
 
 MAIN_ENDPOINT_NAME = Env.get("MAIN_ENDPOINT", default="")
