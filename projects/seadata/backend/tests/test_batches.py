@@ -65,11 +65,11 @@ class TestApp(SeadataTests):
         r = client.post(f"{API_URI}/ingestion/my_batch_id", headers=headers, data=data)
         # The request is accepted because no input validation is implemented.
         # The errors will be raised by celery
-        assert r.status_code == 202
+        assert r.status_code == 200
 
         # Even if the previous batch request was empty, the batch has been created
         # But the batch can be executed again
         r = client.post(f"{API_URI}/ingestion/my_batch_id", headers=headers, data=data)
         # The request is accepted because no input validation is implemented.
         # The errors will be raised by celery
-        assert r.status_code == 202
+        assert r.status_code == 200
