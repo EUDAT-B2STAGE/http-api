@@ -64,9 +64,9 @@ class SeadataTests(BaseTests):
     def get_input_data(self) -> Dict[str, Union[bool, int, str]]:
         data = {
             "api_function": "my_api_function",
-            "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%s"),
+            "datetime": cast(str, datetime.now().strftime("%Y-%m-%d %H:%M:%s")),
             "edmo_code": 1234,
-            "parameters": cast(str, json.dumps({})),
+            "parameters": json.dumps({}),
             "request_id": "my_request_id",
             "test_mode": "1",
             "version": "1",

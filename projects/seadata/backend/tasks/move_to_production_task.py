@@ -258,5 +258,3 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
         log.error(e)
         log.error(type(e))
         return notify_error(ErrorCodes.UNEXPECTED_ERROR, myjson, backdoor, self)
-
-    return myjson

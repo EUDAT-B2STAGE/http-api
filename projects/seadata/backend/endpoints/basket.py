@@ -19,13 +19,13 @@ DELETE /api/order/<OID>
 #################
 # IMPORTS
 import urllib.parse
+from pathlib import Path
 
 import requests
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import API_URL, CURRENT_HTTPAPI_SERVER, path
 from b2stage.endpoints.commons.b2handle import B2HandleEndpoint
 from irods.exception import NetworkException
-from Pathlib import Path
 from restapi import decorators
 from restapi.connectors import celery
 from restapi.utilities.logs import log

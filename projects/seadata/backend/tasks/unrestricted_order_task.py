@@ -33,7 +33,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
     pids = params.get("pids", [])
     total = len(pids)
     self.update_state(
-        state="STARTING", meta={"total": total, "step": 0, "errors": 0, "verified": 0},
+        state="STARTING",
+        meta={"total": total, "step": 0, "errors": 0, "verified": 0},
     )
 
     ##################
@@ -282,7 +283,8 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                         m = re.search(regexp, subzip_file)
                         if not m:
                             log.error(
-                                "Cannot extract index from zip name: {}", subzip_file,
+                                "Cannot extract index from zip name: {}",
+                                subzip_file,
                             )
                             return notify_error(
                                 ErrorCodes.INVALID_ZIP_SPLIT_OUTPUT,
@@ -313,7 +315,6 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
                                 self,
                                 extra=str(subzip_path),
                             )
-                            continue
 
             #########################
             # NOTE: should I close the iRODS session ?
@@ -360,5 +361,3 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
         log.error(e)
         log.error(type(e))
         return notify_error(ErrorCodes.UNEXPECTED_ERROR, myjson, backdoor, self)
-
-    return myjson
