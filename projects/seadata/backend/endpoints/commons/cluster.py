@@ -1,9 +1,10 @@
 from datetime import datetime
+from pathlib import Path
 from typing import Dict
 
-from b2stage.endpoints.commons import path
 from restapi.env import Env
 from restapi.rest.definition import EndpointResource
+from seadata.endpoints.commons.rancher import Rancher
 from seadata.endpoints.commons.seadatacloud import seadata_vars
 
 # from restapi.utilities.logs import log
@@ -69,20 +70,10 @@ class ClusterContainerEndpoint(EndpointResource):
         set to "/nfs/share".
         """
 
-        if not hasattr(self, "_handle"):
-            self._handle = None
+        params = self.load_credentials()
+        return Rancher(**params)
 
-        if self._handle is None:
-            from seadata.endpoints.commons.rancher import Rancher
-
-            params = self.load_credentials()
-            self._handle = Rancher(**params)
-        return self._handle
-
-    def join_paths(self, paths):
-        return str(path.build(paths))
-
-    def get_ingestion_path_on_host(self, batch_id):
+    def get_ingestion_path_on_host(self, localpath: str, batch_id: str) -> str:
         """
         Return the path where the data is located
         on the Rancher host.
@@ -93,10 +84,14 @@ class ClusterContainerEndpoint(EndpointResource):
 
         Example: /usr/share/ingestion/<batch_id>
         """
-        paths = [self._handle._localpath]  # "/usr/share" (default)
-        paths.append(INGESTION_DIR)  # "batches"  (default)
-        paths.append(batch_id)
-        return str(path.build(paths))
+
+        return str(
+            Path(
+                localpath,  # "/usr/share" (default)
+                INGESTION_DIR,  # "batches"  (default)
+                batch_id,
+            )
+        )
 
     def get_ingestion_path_in_container(self):
         """
@@ -116,8 +111,8 @@ class ClusterContainerEndpoint(EndpointResource):
 
         Example: /usr/share/batch/
         """
-        paths = [FS_PATH_IN_CONTAINER]  # "/usr/share/batch" (hard-coded)
-        return str(path.build(paths))
+        # "/usr/share/batch" (hard-coded)
+        return str(Path(FS_PATH_IN_CONTAINER))
 
     def get_input_zip_filename(self, filename=None, extension="zip", sep="."):
         if filename is None:
@@ -136,12 +131,11 @@ class ClusterContainerEndpoint(EndpointResource):
         IrodsPythonClient, defined in module
         rapydo/http-api/restapi/connectors/irods/client
         """
-        paths = [mypath]
-        if suffix is not None:
-            paths.append(suffix)
+        suffix_path = Path(mypath)
+        if suffix:
+            suffix_path.joinpath(suffix)
 
-        suffix_path = str(path.build(paths))
-        return irods_client.get_current_zone(suffix=suffix_path)
+        return irods_client.get_current_zone(suffix=str(suffix_path))
         # TODO: Move to other module, has nothing to do with Rancher cluster!
 
     def get_irods_production_path(self, irods_client, batch_id=None):

@@ -23,9 +23,6 @@ PERPAGE_LIMIT = 1000
 # module "b2stage/backend/apis/commons/cluster.py".
 # It receives all config that starts with "RESOURCES".
 class Rancher:
-
-    _localpath: str = ""
-
     def __init__(
         self, key, secret, url, project, hub, hubuser, hubpass, localpath, qclabel
     ):

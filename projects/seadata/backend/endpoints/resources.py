@@ -168,7 +168,9 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         ###########################
         # ## ENVS
 
-        host_ingestion_path = self.get_ingestion_path_on_host(batch_id)
+        host_ingestion_path = self.get_ingestion_path_on_host(
+            rancher._localpath, batch_id
+        )
         container_ingestion_path = self.get_ingestion_path_in_container()
 
         envs["BATCH_DIR_PATH"] = container_ingestion_path
@@ -212,7 +214,7 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         with open(json_input_path, "w+") as f:
             f.write(json.dumps(input_json))
 
-        json_path_qc = self.get_ingestion_path_on_host(JSON_DIR)
+        json_path_qc = self.get_ingestion_path_on_host(rancher._localpath, JSON_DIR)
         json_path_qc = os.path.join(json_path_qc, batch_id)
         envs["JSON_FILE"] = os.path.join(QC_MOUNTPOINT, json_input_file)
 
