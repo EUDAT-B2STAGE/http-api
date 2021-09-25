@@ -4,7 +4,6 @@ from typing import Dict
 
 from restapi.env import Env
 from restapi.rest.definition import EndpointResource
-from seadata.endpoints.commons.rancher import Rancher
 from seadata.endpoints.commons.seadatacloud import seadata_vars
 
 # from restapi.utilities.logs import log
@@ -69,6 +68,9 @@ class ClusterContainerEndpoint(EndpointResource):
         including the localpath, which is
         set to "/nfs/share".
         """
+
+        # Import here to prevent circular imports
+        from seadata.endpoints.commons.rancher import Rancher
 
         params = self.load_credentials()
         return Rancher(**params)
