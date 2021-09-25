@@ -182,12 +182,17 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
                 continue
 
             if key == "user":
-                value = CONTAINERS_VARS.get("rabbituser")
+                rabbituser = CONTAINERS_VARS.get("rabbituser")
+                if not rabbituser:  # pragma: no cover
+                    log.warning("Unable to retrieve Rabbit User")
+                    continue
+                value = rabbituser
             elif key == "password":
-                value = CONTAINERS_VARS.get("rabbitpass")
-
-            if value is None:  # pragma: no cover
-                continue
+                rabbitpass = CONTAINERS_VARS.get("rabbitpass")
+                if not rabbitpass:  # pragma: no cover
+                    log.warning("Unable to retrieve Rabbit Password")
+                    continue
+                value = rabbitpass
 
             envs["LOGS_" + key.upper()] = value
         # envs['DB_USERNAME'] = CONTAINERS_VARS.get('dbuser')
