@@ -27,4 +27,4 @@ jobs:
           project: ${PROJECT}
           allow_untyped_defs: true
           # install: ...
-          ignore: b2stage b2handle flask_oauthlib glom gssapi gdapi irods irods.exception urllib3 tests, websocket
+          ignore: b2stage b2handle flask_oauthlib glom gssapi gdapi irods irods.exception urllib3 tests websocket
