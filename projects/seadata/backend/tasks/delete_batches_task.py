@@ -1,5 +1,6 @@
 import os
 from shutil import rmtree
+from typing import Dict, List
 
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
@@ -42,7 +43,7 @@ def delete_batches(self, batches_path, local_batches_path, myjson):
     try:
         with irods.get_instance() as imain:
 
-            errors = []
+            errors: List[Dict[str, str]] = []
             counter = 0
             for batch in batches:
 

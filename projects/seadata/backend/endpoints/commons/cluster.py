@@ -18,10 +18,10 @@ for production batches, and for orders being prepared.
 
 They are being defined project_configuration.yml / .projectrc
 """
-INGESTION_COLL = seadata_vars.get("ingestion_coll")  # "batches"
-ORDERS_COLL = seadata_vars.get("orders_coll")  # "orders"
-PRODUCTION_COLL = seadata_vars.get("production_coll")  # "cloud"
-MOUNTPOINT = seadata_vars.get("resources_mountpoint")  # "/usr/share"
+INGESTION_COLL = seadata_vars.get("ingestion_coll") or "batches"
+ORDERS_COLL = seadata_vars.get("orders_coll") or "orders"
+PRODUCTION_COLL = seadata_vars.get("production_coll") or "cloud"
+MOUNTPOINT = seadata_vars.get("resources_mountpoint") or "/usr/share"
 
 """
 These are the paths to the data on the hosts

@@ -47,17 +47,15 @@ class MoveToProductionEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             for key in md.keys:  # + [md.tid]:
                 value = data.get(key)
                 if value is None:
-                    error = f"Missing parameter: {key}"
-                    return self.send_errors(error, code=400)
+                    return self.send_errors(f"Missing parameter: {key}", code=400)
 
-                error = None
                 value_len = len(value)
                 if value_len > md.max_size:
-                    error = f"Param '{key}': exceeds size {md.max_size}"
+                    return self.send_errors(
+                        f"Param '{key}': exceeds size {md.max_size}", code=400
+                    )
                 elif value_len < 1:
-                    error = f"Param '{key}': empty"
-                if error is not None:
-                    return self.send_errors(error, code=400)
+                    return self.send_errors(f"Param '{key}': empty", code=400)
 
             filenames.append(data.get(md.tid))
 

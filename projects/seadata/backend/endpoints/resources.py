@@ -178,12 +178,17 @@ class Resources(B2HandleEndpoint, ClusterContainerEndpoint):
         from seadata.endpoints.commons.queue import QUEUE_VARS
 
         for key, value in QUEUE_VARS.items():
-            if key in ["enable"]:
+            if key == "enable":
                 continue
-            elif key == "user":
+
+            if key == "user":
                 value = CONTAINERS_VARS.get("rabbituser")
             elif key == "password":
                 value = CONTAINERS_VARS.get("rabbitpass")
+
+            if value is None:  # pragma: no cover
+                continue
+
             envs["LOGS_" + key.upper()] = value
         # envs['DB_USERNAME'] = CONTAINERS_VARS.get('dbuser')
         # envs['DB_PASSWORD'] = CONTAINERS_VARS.get('dbpass')

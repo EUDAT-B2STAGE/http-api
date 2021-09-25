@@ -1,5 +1,6 @@
 import json
 import time
+from typing import Dict, List
 
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
@@ -31,7 +32,7 @@ def move_to_production_task(self, batch_id, batch_path, cloud_path, myjson):
         with irods.get_instance() as imain:
 
             out_data = []
-            errors = []
+            errors: List[Dict[str, str]] = []
             counter = 0
             param_key = "parameters"
             params = myjson.get(param_key, {})

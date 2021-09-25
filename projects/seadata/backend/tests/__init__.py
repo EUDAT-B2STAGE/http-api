@@ -62,9 +62,9 @@ class SeadataTests(BaseTests):
         assert "Missing data for required field." in response["version"]
 
     def get_input_data(self) -> Dict[str, Union[bool, int, str]]:
-        data = {
+        data: Dict[str, Union[bool, int, str]] = {
             "api_function": "my_api_function",
-            "datetime": cast(str, datetime.now().strftime("%Y-%m-%d %H:%M:%s")),
+            "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%s"),
             "edmo_code": 1234,
             "parameters": json.dumps({}),
             "request_id": "my_request_id",

@@ -2,6 +2,7 @@ import logging
 import os
 import re
 from shutil import rmtree
+from typing import Dict, List
 
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
@@ -53,7 +54,7 @@ def unrestricted_order(self, order_id, order_path, zip_file_name, myjson):
             ##################
             # Verify pids
             files = {}
-            errors = []
+            errors: List[Dict[str, str]] = []
             counter = 0
             verified = 0
             for pid in pids:

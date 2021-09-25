@@ -1,7 +1,9 @@
 import os
+from typing import Dict
 
 from b2stage.connectors import irods
 from b2stage.endpoints.commons import path
+from celery.app.task import Task
 from restapi.connectors import redis
 from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
@@ -24,7 +26,7 @@ def recursive_list_files(imain, irods_path):
 
 
 @CeleryExt.task()
-def cache_batch_pids(self, irods_path):
+def cache_batch_pids(self: Task, irods_path: str) -> Dict[str, int]:
 
     log.info("Task cache_batch_pids working on: {}", irods_path)
 
@@ -76,7 +78,10 @@ def cache_batch_pids(self, irods_path):
             if pid is None:
                 stats["errors"] += 1
                 log.warning(
-                    "{}: file {} has not a PID assigned", stats["total"], ifile, pid,
+                    "{}: file {} has not a PID assigned",
+                    stats["total"],
+                    ifile,
+                    pid,
                 )
                 self.update_state(state="PROGRESS", meta=stats)
                 continue
@@ -93,11 +98,11 @@ def cache_batch_pids(self, irods_path):
 
 
 @CeleryExt.task()
-def inspect_pids_cache(self):
+def inspect_pids_cache(self: Task) -> None:
 
     log.info("Inspecting cache...")
     counter = 0
-    cache = {}
+    cache: Dict[str, Dict[str, int]] = {}
     r = redis.get_instance().r
 
     for key in r.scan_iter("*"):

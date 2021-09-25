@@ -141,7 +141,10 @@ def download_batch(self, batch_path, local_path, myjson):
             log.info("Downloading file from {}", download_url)
             try:
                 r = requests.get(
-                    download_url, stream=True, verify=False, headers=DOWNLOAD_HEADERS,
+                    download_url,
+                    stream=True,
+                    verify=False,
+                    headers=DOWNLOAD_HEADERS,
                 )
             except requests.exceptions.ConnectionError:
                 return notify_error(
@@ -262,9 +265,8 @@ def download_batch(self, batch_path, local_path, myjson):
                 zip_ref.close()
 
             # 6 - verify num files?
-            local_file_count = 0
-            for f in os.listdir(str(local_unzipdir)):
-                local_file_count += 1
+            local_file_count = len(os.listdir(str(local_unzipdir)))
+
             log.info("Unzipped {} files from {}", local_file_count, batch_file)
 
             if local_file_count != int(file_count):

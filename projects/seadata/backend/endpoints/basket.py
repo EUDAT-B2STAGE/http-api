@@ -72,7 +72,7 @@ class DownloadBasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
             log.warning("Unable to extract numeric index from ftype {}", ftype)
 
         if index == 0:
-            index = None
+            return get_order_zip_file_name(order_id, restricted=restricted, index=None)
 
         return get_order_zip_file_name(order_id, restricted=restricted, index=index)
 
@@ -308,8 +308,9 @@ class BasketEndpoint(B2HandleEndpoint, ClusterContainerEndpoint):
         # iticket mod Ticket_string-or-id uses/expire string-or-none
 
         unwanted = ["/", "%"]
-        ticket = unwanted
-        # Create un iticket that does not contains any of the unwanted characters
+        # Initialize the ticket with an unwanted characters to enter the first loop
+        ticket = unwanted[0]
+        # Create an iticket that does not contains any of the unwanted characters
         while any(c in ticket for c in unwanted):
             obj = imain.ticket(path)
             ticket = obj.ticket

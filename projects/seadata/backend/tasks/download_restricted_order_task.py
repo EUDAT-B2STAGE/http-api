@@ -3,6 +3,7 @@ import os
 import re
 import zipfile
 from shutil import rmtree
+from typing import Dict, List
 
 import requests
 from b2stage.connectors import irods
@@ -152,7 +153,7 @@ def download_restricted_order(self, order_id, order_path, myjson):
 
             self.update_state(state="PROGRESS")
 
-            errors = []
+            errors: List[Dict[str, str]] = []
             local_finalzip_path = None
             log.info("Merging zip file", file_name)
 
@@ -294,9 +295,8 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 zip_ref.close()
 
             # 5 - verify num files?
-            local_file_count = 0
-            for f in os.listdir(str(local_unzipdir)):
-                local_file_count += 1
+            local_file_count = len(os.listdir(str(local_unzipdir)))
+
             log.info("Unzipped {} files from {}", local_file_count, local_zip_path)
 
             if local_file_count != int(file_count):
@@ -394,9 +394,11 @@ def download_restricted_order(self, order_id, order_path, myjson):
                 log.info("Adding files to local zipfile")
                 if zip_ref is not None:
                     try:
-                        for f in os.listdir(str(local_unzipdir)):
-                            # log.debug("Adding {}", f)
-                            zip_ref.write(os.path.join(str(local_unzipdir), f), f)
+                        for loc_file in os.listdir(str(local_unzipdir)):
+                            # log.debug("Adding {}", loc_file)
+                            zip_ref.write(
+                                os.path.join(str(local_unzipdir), loc_file), loc_file
+                            )
                         zip_ref.close()
                     except BaseException as e:
                         log.error(e)
