@@ -9,7 +9,9 @@ https://github.com/rancher/validation-tests/tree/master/tests/v2_validation/catt
 """
 
 import time
+from typing import Any, List
 
+import gdapi
 from restapi.utilities.logs import log
 from seadata.endpoints.commons.cluster import CONTAINERS_VARS
 
@@ -17,9 +19,12 @@ from seadata.endpoints.commons.cluster import CONTAINERS_VARS
 # PERPAGE_LIMIT = 50
 PERPAGE_LIMIT = 1000
 
+# probably can't do better sinice gdapi is not typed
+Container = Any
+
 
 # Dev note:
-# This object initialized in get_or_create_handle() in
+# This object is initialized by get_or_create_handle() in
 # module "b2stage/backend/apis/commons/cluster.py".
 # It receives all config that starts with "RESOURCES".
 class Rancher:
@@ -44,7 +49,6 @@ class Rancher:
         # self.project_handle(project)
 
     def connect(self, key, secret):
-        import gdapi
 
         self._client = gdapi.Client(
             url=self._project_uri, access_key=key, secret_key=secret
@@ -96,14 +100,14 @@ class Rancher:
 
         return json.loads(obj.__repr__().replace("'", '"'))
 
-    def all_containers_available(self):
+    def all_containers_available(self) -> List[Container]:
         """
         Handle paginations properly
         https://rancher.com/docs/rancher/v1.5/en/api/v2-beta/
         """
 
         is_all = False
-        containers = []
+        containers: List[Container] = []
 
         while not is_all:
             marker = len(containers)
@@ -288,11 +292,11 @@ class Rancher:
 
             # Should we wait for the container?
             if wait_stopped is None:
-                x = CONTAINERS_VARS.get("wait_stopped")
+                x = CONTAINERS_VARS.get("wait_stopped") or ""
                 wait_stopped = not (x.lower() == "false" or int(x) == 0)
 
             if wait_running is None:
-                x = CONTAINERS_VARS.get("wait_running")
+                x = CONTAINERS_VARS.get("wait_running") or ""
                 wait_running = not (x.lower() == "false" or int(x) == 0)
 
             if wait_stopped or wait_running:

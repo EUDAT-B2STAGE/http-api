@@ -27,8 +27,8 @@ MOUNTPOINT = seadata_vars.get("resources_mountpoint")  # "/usr/share"
 These are the paths to the data on the hosts
 that runs containers (both backend, celery and QC containers)
 """
-INGESTION_DIR = seadata_vars.get("workspace_ingestion")  # "batches"
-ORDERS_DIR = seadata_vars.get("workspace_orders")  # "orders"
+INGESTION_DIR = seadata_vars.get("workspace_ingestion") or "batches"
+ORDERS_DIR = seadata_vars.get("workspace_orders") or "orders"
 
 """
 These are how the paths to the data on the host

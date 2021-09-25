@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Union, cast
+from typing import Any, Dict, Union, cast
 
 from flask.wrappers import Response
 from restapi.env import Env
@@ -11,16 +11,15 @@ IRODS_PASSWORD = Env.get("IRODS_PASSWORD")
 
 
 class SeadataTests(BaseTests):
-    def get_seadata_response(
-        self, http_out: Response
-    ) -> Union[str, float, int, bool, List[Any], Dict[str, Any]]:
+    def get_seadata_response(self, http_out: Response) -> Dict[str, Any]:
 
         response = self.get_content(http_out)
+        assert isinstance(response, dict)
         assert "Response" in response
         assert "data" in response["Response"]
 
         return cast(
-            Union[str, float, int, bool, List[Any], Dict[str, Any]],
+            Dict[str, Any],
             response["Response"]["data"],
         )
 
@@ -67,7 +66,7 @@ class SeadataTests(BaseTests):
             "api_function": "my_api_function",
             "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%s"),
             "edmo_code": 1234,
-            "parameters": json.dumps({}),
+            "parameters": cast(str, json.dumps({})),
             "request_id": "my_request_id",
             "test_mode": "1",
             "version": "1",

@@ -1,5 +1,4 @@
 import os
-import sys
 
 from b2stage.endpoints.commons.b2handle import PIDgenerator
 from restapi.connectors.celery import CeleryExt
@@ -22,9 +21,6 @@ in workers.yml, so if you change the /usr/local
 here, you need to change it there too.
 """
 mount_point = seadata_vars.get("resources_mountpoint") or "/usr/share"
-if mount_point is None:
-    log.critical("Unable to obtain variable: SEADATA_RESOURCES_MOUNTPOINT")
-    sys.exit(1)
 middle_path_ingestion = seadata_vars.get("workspace_ingestion") or "ingestion"
 middle_path_orders = seadata_vars.get("workspace_orders") or "orders"
 mybatchpath = os.path.join(mount_point, middle_path_ingestion)
